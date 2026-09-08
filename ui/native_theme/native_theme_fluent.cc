@@ -10,7 +10,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/cstring_view.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/font_utils.h"
@@ -51,18 +50,28 @@ constexpr int kScrollbarPartsRadius = 999;
 // The outline width used to paint track and buttons in High Contrast mode.
 constexpr float kScrollbarTrackOutlineWidth = 1.0f;
 
+constexpr auto kArrowCodePoints =
+    base::MakeFixedFlatMap<NativeTheme::Part, SkUnichar>(
+        {{NativeTheme::kScrollbarDownArrow, 0xEDDC},
+         {NativeTheme::kScrollbarLeftArrow, 0xEDD9},
+         {NativeTheme::kScrollbarRightArrow, 0xEDDA},
+         {NativeTheme::kScrollbarUpArrow, 0xEDDB}});
+
 }  // namespace
 
 int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
   return 1;
 }
 
-bool NativeThemeFluent::GetArrowIconsAvailable() const {
-  return !!GetArrowIconTypeface();
+bool NativeThemeFluent::IsArrowIconAvailable(Part part) const {
+  if (arrow_icons_available_for_testing_.has_value()) {
+    return arrow_icons_available_for_testing_.value();
+  }
+  return GetArrowGlyph(part) != 0;
 }
 
 void NativeThemeFluent::SetArrowIconsAvailableForTesting(bool available) {
-  typeface_ = available ? skia::DefaultTypeface() : nullptr;
+  arrow_icons_available_for_testing_ = available;
 }
 
 NativeThemeFluent::NativeThemeFluent() {
@@ -83,10 +92,10 @@ gfx::Size NativeThemeFluent::GetVerticalScrollbarThumbSize() const {
 gfx::RectF NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
                                            Part part,
                                            State state) const {
-  const bool arrow_icons_available = GetArrowIconsAvailable();
+  const bool arrow_icon_available = IsArrowIconAvailable(part);
   int unscaled_arrow_side = 9;
   if (state == kPressed) {
-    unscaled_arrow_side = arrow_icons_available ? 8 : 7;
+    unscaled_arrow_side = arrow_icon_available ? 8 : 7;
   }
 
   // Note: Using initializer_list form forces returning by copy, not ref.
@@ -97,7 +106,7 @@ gfx::RectF NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
   int arrow_side = base::ClampCeil(unscaled_arrow_side * scale_factor);
 
   gfx::RectF arrow_rect(rect);
-  if (arrow_icons_available) {
+  if (arrow_icon_available) {
     arrow_rect.ClampToCenteredSize(
         static_cast<gfx::SizeF>(gfx::Size(arrow_side, arrow_side)));
   } else {
@@ -232,27 +241,20 @@ void NativeThemeFluent::PaintArrowButton(
   // Paint arrow.
   const SkColor fg_color = GetScrollbarArrowForegroundColor(
       bg_color, extra_params, state, dark_mode, contrast, color_provider);
-  if (const auto typeface = GetArrowIconTypeface()) {
-    static constexpr auto kCodePointMap =
-        base::MakeFixedFlatMap<Part, base::cstring_view>(
-            {{kScrollbarDownArrow, "\uEDDC"},
-             {kScrollbarLeftArrow, "\uEDD9"},
-             {kScrollbarRightArrow, "\uEDDA"},
-             {kScrollbarUpArrow, "\uEDDB"}});
-
+  if (const SkGlyphID glyph = GetArrowGlyph(part)) {
     const gfx::RectF bounding_rect = GetArrowRect(rect, part, state);
     // The bounding rect for an arrow is square, so we can use the width
     // regardless of the arrow direction.
-    SkFont font(typeface, bounding_rect.width());
+    SkFont font(GetArrowIconTypeface(), bounding_rect.width());
     font.setEdging(SkFont::Edging::kAntiAlias);
     font.setSubpixel(true);
 
     cc::PaintFlags fg_flags;
     fg_flags.setAntiAlias(true);
     fg_flags.setColor(fg_color);
-    canvas->drawTextBlob(
-        SkTextBlob::MakeFromString(kCodePointMap.at(part).c_str(), font),
-        bounding_rect.x(), bounding_rect.bottom(), fg_flags);
+    canvas->drawTextBlob(SkTextBlob::MakeFromText(&glyph, sizeof(glyph), font,
+                                                  SkTextEncoding::kGlyphID),
+                         bounding_rect.x(), bounding_rect.bottom(), fg_flags);
   } else {
     // Paint regular triangular arrows if arrow icons are not available.
     PaintArrow(canvas, rect, part, state, fg_color);
@@ -342,6 +344,11 @@ sk_sp<SkTypeface> NativeThemeFluent::GetArrowIconTypeface() const {
     typeface_ = font_manager->matchFamilyStyle("Segoe Fluent Icons", {});
   }
   return typeface_.value();
+}
+
+SkGlyphID NativeThemeFluent::GetArrowGlyph(Part part) const {
+  const sk_sp<SkTypeface> typeface = GetArrowIconTypeface();
+  return typeface ? typeface->unicharToGlyph(kArrowCodePoints.at(part)) : 0;
 }
 
 }  // namespace ui

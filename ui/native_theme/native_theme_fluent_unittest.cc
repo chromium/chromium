@@ -11,12 +11,21 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
@@ -32,10 +41,14 @@ class NativeThemeFluentTest : public ::testing::Test,
  protected:
   const NativeThemeFluent& theme() const { return theme_; }
 
-  // Mocks the availability of the font for drawing arrow icons.
+  // Mocks the availability of arrow icons for metric computations.
   void SetArrowIconsAvailable(bool available) {
     theme_.SetArrowIconsAvailableForTesting(available);
-    EXPECT_EQ(theme().GetArrowIconsAvailable(), available);
+    for (const NativeTheme::Part part :
+         {NativeTheme::kScrollbarDownArrow, NativeTheme::kScrollbarLeftArrow,
+          NativeTheme::kScrollbarRightArrow, NativeTheme::kScrollbarUpArrow}) {
+      EXPECT_EQ(theme().IsArrowIconAvailable(part), available);
+    }
   }
 
   void VerifyArrowRect() const {
@@ -60,7 +73,7 @@ class NativeThemeFluentTest : public ::testing::Test,
         const gfx::RectF arrow_rect =
             theme().GetArrowRect(gfx::ToNearestRect(button_rect), part, state);
         VerifyArrowRectCommonDimensions(arrow_rect);
-        if (!theme().GetArrowIconsAvailable()) {
+        if (!theme().IsArrowIconAvailable(part)) {
           VerifyArrowRectIsIntRect(arrow_rect);
         }
         VerifyArrowRectIsCentered(button_rect, arrow_rect, part);
@@ -74,6 +87,20 @@ class NativeThemeFluentTest : public ::testing::Test,
     theme_.PaintScrollbarThumb(canvas, &color_provider,
                                NativeTheme::kScrollbarVerticalThumb,
                                NativeTheme::kNormal, gfx::Rect(15, 100), {});
+  }
+
+  void SetArrowIconTypeface(sk_sp<SkTypeface> typeface) {
+    theme_.typeface_ = std::move(typeface);
+  }
+
+  void PaintArrowButton(cc::PaintCanvas* canvas,
+                        const ColorProvider* color_provider,
+                        NativeTheme::Part part) const {
+    theme_.PaintArrowButton(canvas, color_provider,
+                            gfx::Rect(theme_.GetVerticalScrollbarButtonSize()),
+                            part, NativeTheme::kNormal, /*forced_colors=*/false,
+                            /*dark_mode=*/false,
+                            NativeTheme::PreferredContrast::kNoPreference, {});
   }
 
   SkColor GetScrollbarArrowForegroundColor(
@@ -112,7 +139,7 @@ class NativeThemeFluentTest : public ::testing::Test,
     // The arrow is shifted away from center along the length axis by one dp,
     // rounded to integral px.
     float expected_shift = std::round(ScaleFromDIP());
-    if (!theme().GetArrowIconsAvailable()) {
+    if (!theme().IsArrowIconAvailable(part)) {
       // For triangular arrows, rect coordinates are snapped to integers, which
       // may introduce an additional half pixel shift.
       expected_shift += 0.5f;
@@ -185,6 +212,49 @@ TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
   EXPECT_EQ(canvas.TotalOpCount(), 1u);
   EXPECT_EQ(canvas.ReleaseAsRecord().GetFirstOp().GetType(),
             cc::PaintOpType::kDrawRRect);
+}
+
+// Verifies that the triangular fallback arrows are painted when a typeface is
+// found that matches the requested "Segoe Fluent Icons" but doesn't actually
+// have the arrow glyphs.
+TEST_F(NativeThemeFluentTest, PaintsTriangleWhenTypefaceLacksArrowGlyphs) {
+  // Load the Ahem font, which doesn't have arrow glyphs.
+  base::FilePath module_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &module_path));
+  const auto font_data = base::ReadFileToBytes(
+      module_path.Append(FILE_PATH_LITERAL("test_fonts/Ahem.ttf")));
+  ASSERT_TRUE(font_data.has_value());
+  sk_sp<SkTypeface> typeface = skia::DefaultFontMgr()->makeFromData(
+      SkData::MakeWithCopy(font_data->data(), font_data->size()));
+  ASSERT_TRUE(typeface);
+  SetArrowIconTypeface(std::move(typeface));
+
+  const std::unique_ptr<ColorProvider> color_provider =
+      CreateDefaultColorProviderForBlink(/*dark_mode=*/false);
+  CompleteFluentScrollbarColorsDefinition(color_provider->AddMixer());
+
+  // For each arrow part: verify that the Ahem font doesn't have their glyph,
+  // call `PaintArrowButton` and ensure that the only paint ops that came out of
+  // that are the ones that would be included when drawing the fallback triangle
+  // instead of the font arrows.
+  for (const NativeTheme::Part part :
+       {NativeTheme::kScrollbarDownArrow, NativeTheme::kScrollbarLeftArrow,
+        NativeTheme::kScrollbarRightArrow, NativeTheme::kScrollbarUpArrow}) {
+    SCOPED_TRACE(::testing::Message() << "Arrow part: " << part);
+    ASSERT_FALSE(theme().IsArrowIconAvailable(part));
+
+    cc::RecordPaintCanvas canvas;
+    PaintArrowButton(&canvas, color_provider.get(), part);
+
+    size_t draw_path_count = 0;
+    size_t draw_text_blob_count = 0;
+    for (const cc::PaintOp& op : canvas.ReleaseAsRecord()) {
+      draw_path_count += op.GetType() == cc::PaintOpType::kDrawPath;
+      draw_text_blob_count += op.GetType() == cc::PaintOpType::kDrawTextBlob;
+    }
+    EXPECT_EQ(draw_path_count, 1u);
+    EXPECT_EQ(draw_text_blob_count, 0u);
+  }
 }
 
 // Verify that GetThumbColor returns the correct color given the scrollbar state

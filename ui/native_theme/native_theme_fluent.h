@@ -44,9 +44,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   // NativeThemeBase:
   int GetPaintedScrollbarTrackInset() const override;
 
-  // Gets/sets whether arrow icons are treated as available for metric
-  // computations.
-  bool GetArrowIconsAvailable() const;
+  // Gets whether an arrow icon is available. The setter overrides availability
+  // for metric computations in tests.
+  bool IsArrowIconAvailable(Part part) const;
   void SetArrowIconsAvailableForTesting(bool available);
 
  protected:
@@ -109,10 +109,16 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   // typeface is not available. Lazily loads the typeface on first call.
   sk_sp<SkTypeface> GetArrowIconTypeface() const;
 
+  // Returns the glyph to use for an arrow icon, or 0 if it is unavailable.
+  SkGlyphID GetArrowGlyph(Part part) const;
+
   // The typeface which contains arrow icons. Because `GetArrowIconTypeface()`
   // lazily loads, a null optional means "no load attempted" while a null
   // pointer inside the optional means "load failed and will not be retried".
   mutable std::optional<sk_sp<SkTypeface>> typeface_;
+
+  // Overrides glyph availability for geometry tests.
+  std::optional<bool> arrow_icons_available_for_testing_;
 };
 
 }  // namespace ui
