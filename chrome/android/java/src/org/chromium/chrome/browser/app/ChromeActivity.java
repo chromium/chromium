@@ -186,6 +186,7 @@ import org.chromium.chrome.browser.screenshot_protection.ScreenshotProtectionCon
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.SettingsTabUtil;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -2981,11 +2982,21 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.preferences_id) {
             if (shouldOpenSettingsInTab()) {
-                LoadUrlParams params =
-                        new LoadUrlParams(UrlConstants.SETTINGS_URL, PageTransition.LINK);
-                // Settings are associated with the on-the-record profile, never incognito.
-                getTabCreator(/* incognito= */ false)
-                        .createNewTab(params, TabLaunchType.FROM_CHROME_UI, getActivityTab());
+                Tab settingsTab =
+                        areTabModelsInitialized()
+                                ? SettingsTabUtil.findSettingsTab(getTabModelSelector())
+                                : null;
+                if (settingsTab != null) {
+                    // Activate an existing settings tab if one exists.
+                    SettingsTabUtil.activateSettingsTab(getTabModelSelector(), settingsTab);
+                } else {
+                    // Otherwise create a new settings tab.
+                    LoadUrlParams params =
+                            new LoadUrlParams(UrlConstants.SETTINGS_URL, PageTransition.LINK);
+                    // Settings are associated with the on-the-record profile, never incognito.
+                    getTabCreator(/* incognito= */ false)
+                            .createNewTab(params, TabLaunchType.FROM_CHROME_UI, getActivityTab());
+                }
             } else {
                 SettingsNavigation settingsNavigation =
                         SettingsNavigationFactory.createSettingsNavigation();

@@ -8,10 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +71,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.SettingsPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -459,6 +462,11 @@ public class ChromeActivityUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
+        doReturn(true).when(chromeActivity).areTabModelsInitialized();
+        doReturn(mTabModelSelector).when(chromeActivity).getTabModelSelector();
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getCount()).thenReturn(0);
+
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
 
@@ -468,6 +476,34 @@ public class ChromeActivityUnitTest {
                 .createNewTab(
                         paramsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mActivityTab));
         assertEquals(UrlConstants.SETTINGS_URL, paramsCaptor.getValue().getUrl());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testPreferencesMenuItem_SettingsInTabEnabled_ExistingSettingsTabActivated() {
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+
+        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+
+        doReturn(true).when(chromeActivity).areTabModelsInitialized();
+        doReturn(mTabModelSelector).when(chromeActivity).getTabModelSelector();
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+
+        Tab settingsTab = mock(Tab.class);
+        when(settingsTab.getNativePage()).thenReturn(mock(SettingsPage.class));
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(settingsTab);
+        when(mTabModel.indexOf(settingsTab)).thenReturn(0);
+
+        assertTrue(
+                chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
+
+        // Verify that createNewTab was NOT called because the existing settings tab was activated.
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+        verify(mTabModel).setIndex(eq(0), eq(TabSelectionType.FROM_USER));
     }
 
     @Test
