@@ -342,8 +342,6 @@ class BrowserWindowFeatures {
     return pinned_toolbar_actions_;
   }
 
-  TabStripModel* tab_strip_model() { return tab_strip_model_; }
-
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
