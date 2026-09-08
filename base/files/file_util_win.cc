@@ -653,6 +653,7 @@ bool ReplaceFile(const FilePath& from_path,
   }
 
   const DWORD replace_error_code = GetLastError();
+  DWORD move_error_code = ERROR_SUCCESS;
   if (replace_error_code == ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 &&
       !backup_path.empty()) {
     // In the case of ERROR_UNABLE_TO_MOVE_REPLACEMENT_2, the replace operation
@@ -702,6 +703,9 @@ bool ReplaceFile(const FilePath& from_path,
     // doesn't already exist.
     const bool is_move_success =
         ::MoveFile(from_path.value().c_str(), to_path.value().c_str());
+    if (!is_move_success) {
+      move_error_code = GetLastError();
+    }
     RecordReplaceFileResult(/*is_backup_path_valid=*/!backup_path.empty(),
                             replace_error_code, is_move_success);
 
@@ -722,8 +726,9 @@ bool ReplaceFile(const FilePath& from_path,
   if (error) {
     const File::Error replace_error =
         File::OSErrorToFileError(replace_error_code);
-    *error = replace_error == File::FILE_ERROR_NOT_FOUND
-                 ? File::GetLastFileError()
+    *error = (replace_error == File::FILE_ERROR_NOT_FOUND &&
+              move_error_code != ERROR_SUCCESS)
+                 ? File::OSErrorToFileError(move_error_code)
                  : replace_error;
   }
   return false;

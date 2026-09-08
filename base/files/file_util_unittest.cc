@@ -1822,7 +1822,9 @@ TEST_F(FileUtilTest, ReplaceFileNotFoundMoveFailed) {
 
   // from_file_path doesn't exist, so ReplaceFile should fail and the fallback
   // MoveFile will also fail.
-  EXPECT_FALSE(ReplaceFile(from_file_path, to_file_path, /*error=*/nullptr));
+  File::Error error = File::FILE_OK;
+  EXPECT_FALSE(ReplaceFile(from_file_path, to_file_path, &error));
+  EXPECT_EQ(error, File::FILE_ERROR_NOT_FOUND);
 
   tester.ExpectUniqueSample(
       "Windows.ReplaceFileResult",
