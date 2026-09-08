@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -44,10 +46,11 @@ public class AccountMenuViewBinderTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mItemView =
                 (TextView) LayoutInflater.from(mActivity).inflate(R.layout.account_menu_item, null);
         mModel = new PropertyModel(MenuItemProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mModel, mItemView, AccountMenuViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mItemView, AccountMenuViewBinder::bindMenuItem);
     }
 
     @Test
@@ -72,5 +75,22 @@ public class AccountMenuViewBinderTest {
         mModel.set(MenuItemProperties.CLICK_LISTENER, mClickListener);
         mItemView.performClick();
         verify(mClickListener).onClick(mItemView);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPromoCard_onSigninClickListener() {
+        View promoView =
+                LayoutInflater.from(mActivity).inflate(R.layout.account_menu_promo_card, null);
+        View signinButton = promoView.findViewById(R.id.account_menu_signin_button);
+
+        PropertyModel model =
+                new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
+                        .with(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER, mClickListener)
+                        .build();
+        PropertyModelChangeProcessor.create(model, promoView, AccountMenuViewBinder::bindPromoCard);
+
+        signinButton.performClick();
+        verify(mClickListener).onClick(signinButton);
     }
 }

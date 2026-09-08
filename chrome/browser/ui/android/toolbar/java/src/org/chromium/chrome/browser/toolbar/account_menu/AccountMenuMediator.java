@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.account_menu;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -14,6 +15,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -21,8 +24,19 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -37,6 +51,9 @@ public class AccountMenuMediator {
     private final ModelList mModelList;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<@Nullable Profile> mProfileSupplier;
+    private final Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
+            mSigninCoordinatorSupplier;
+    private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final Runnable mDismissCallback;
 
     public AccountMenuMediator(
@@ -44,11 +61,16 @@ public class AccountMenuMediator {
             ModelList modelList,
             WindowAndroid windowAndroid,
             Supplier<@Nullable Profile> profileSupplier,
+            Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
+                    signinCoordinatorSupplier,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
             Runnable dismissCallback) {
         mContext = context;
         mModelList = modelList;
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
+        mSigninCoordinatorSupplier = signinCoordinatorSupplier;
+        mSigninLauncher = signinLauncher;
         mDismissCallback = dismissCallback;
 
         updateMenuItems();
@@ -57,6 +79,9 @@ public class AccountMenuMediator {
     /** Populates the menu action items. */
     public void updateMenuItems() {
         mModelList.clear();
+
+        maybeAddHeader();
+
         mModelList.add(
                 new ListItem(
                         ItemType.MENU_ITEM,
@@ -85,6 +110,74 @@ public class AccountMenuMediator {
                                         mDismissCallback.run();
                                         openIncognito();
                                     })));
+        }
+    }
+
+    private void maybeAddHeader() {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return;
+        }
+
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        if (signinManager != null && signinManager.isSigninAllowed()) {
+            mModelList.add(
+                    new ListItem(
+                            ItemType.PROMO_CARD,
+                            PromoCardProperties.createModel(
+                                    v -> {
+                                        mDismissCallback.run();
+                                        startSigninFlow();
+                                    })));
+        }
+    }
+
+    private void startSigninFlow() {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return;
+        }
+
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        if (signinManager == null || !signinManager.isSigninAllowed()) {
+            return;
+        }
+
+        Profile originalProfile = profile.getOriginalProfile();
+        String title = mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
+        String subtitle =
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_benefits_subtitle);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(title)
+                        .setSubtitleString(subtitle)
+                        .build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.OPTIONAL,
+                                mContext.getString(R.string.history_sync_title),
+                                mContext.getString(R.string.history_sync_subtitle))
+                        .signinSurveyType(SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
+                        .build();
+
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            BottomSheetSigninAndHistorySyncCoordinator signinCoordinator =
+                    mSigninCoordinatorSupplier.get();
+            if (signinCoordinator != null) {
+                signinCoordinator.startSigninFlow(config);
+            }
+        } else {
+            @Nullable Intent intent =
+                    mSigninLauncher.createBottomSheetSigninIntentOrShowError(
+                            mContext,
+                            originalProfile,
+                            config,
+                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+            if (intent != null) {
+                mContext.startActivity(intent);
+            }
         }
     }
 

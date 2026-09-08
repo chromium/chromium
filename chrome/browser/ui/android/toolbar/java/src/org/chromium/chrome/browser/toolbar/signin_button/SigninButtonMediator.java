@@ -398,22 +398,34 @@ final class SigninButtonMediator
                 && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)) {
             if (mAccountMenuCoordinator == null) {
                 mAccountMenuCoordinator =
-                        new AccountMenuCoordinator(mContext, mWindowAndroid, mProfileSupplier);
+                        new AccountMenuCoordinator(
+                                mContext,
+                                mWindowAndroid,
+                                mProfileSupplier,
+                                () -> mSigninCoordinator,
+                                mSigninAndHistorySyncActivityLauncher);
             }
             mAccountMenuCoordinator.show(view);
             return;
         }
 
+        startSigninFlow();
+    }
+
+    private void startSigninFlow() {
+        if (mProfile == null || mProfile.isOffTheRecord()) {
+            return;
+        }
+
         Profile originalProfile = mProfile.getOriginalProfile();
         if (assumeNonNull(mSigninManager).isSigninAllowed()) {
+            String title = mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
+            String subtitle =
+                    mContext.getString(
+                            R.string.signin_account_picker_bottom_sheet_benefits_subtitle);
             AccountPickerBottomSheetStrings bottomSheetStrings =
-                    new AccountPickerBottomSheetStrings.Builder(
-                                    mContext.getString(
-                                            R.string.signin_account_picker_bottom_sheet_title))
-                            .setSubtitleString(
-                                    mContext.getString(
-                                            R.string
-                                                    .signin_account_picker_bottom_sheet_benefits_subtitle))
+                    new AccountPickerBottomSheetStrings.Builder(title)
+                            .setSubtitleString(subtitle)
                             .build();
             BottomSheetSigninAndHistorySyncConfig config =
                     new BottomSheetSigninAndHistorySyncConfig.Builder(

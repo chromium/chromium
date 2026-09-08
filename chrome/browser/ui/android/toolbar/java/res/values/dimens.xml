@@ -113,4 +113,6 @@ found in the LICENSE file.
     <dimen name="account_menu_padding_vertical">12dp</dimen>
     <dimen name="account_menu_horizontal_padding">24dp</dimen>
     <dimen name="account_menu_row_min_height">40dp</dimen>
+    <dimen name="account_menu_containment_corner_radius">12dp</dimen>
+    <dimen name="account_menu_avatar_size">56dp</dimen>
 </resources>

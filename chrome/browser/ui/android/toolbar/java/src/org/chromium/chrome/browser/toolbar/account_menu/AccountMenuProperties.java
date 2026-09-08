@@ -25,11 +25,12 @@ public class AccountMenuProperties {
     private AccountMenuProperties() {}
 
     /** Item types supported by the Account Menu RecyclerView. */
-    @IntDef({ItemType.MENU_ITEM, ItemType.DIVIDER})
+    @IntDef({ItemType.MENU_ITEM, ItemType.DIVIDER, ItemType.PROMO_CARD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemType {
         int MENU_ITEM = 0;
         int DIVIDER = 1;
+        int PROMO_CARD = 2;
     }
 
     /** Properties for menu items in the Account Menu. */
@@ -55,6 +56,24 @@ public class AccountMenuProperties {
                     .with(TITLE_ID, titleId)
                     .with(START_ICON_ID, iconId)
                     .with(CLICK_LISTENER, clickListener)
+                    .build();
+        }
+    }
+
+    /** Properties for the promo card item in the Account Menu. */
+    public static class PromoCardProperties {
+        /** Click listener for the sign-in button. */
+        public static final WritableObjectPropertyKey<OnClickListener> ON_SIGNIN_CLICK_LISTENER =
+                new WritableObjectPropertyKey<>();
+
+        public static final PropertyKey[] ALL_KEYS = {ON_SIGNIN_CLICK_LISTENER};
+
+        private PromoCardProperties() {}
+
+        /** Factory helper to create a PromoCard PropertyModel. */
+        public static PropertyModel createModel(OnClickListener onSigninClickListener) {
+            return new PropertyModel.Builder(ALL_KEYS)
+                    .with(ON_SIGNIN_CLICK_LISTENER, onSigninClickListener)
                     .build();
         }
     }

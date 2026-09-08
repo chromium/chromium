@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -46,19 +48,27 @@ public class AccountMenuCoordinator {
     public AccountMenuCoordinator(
             Context context,
             WindowAndroid windowAndroid,
-            Supplier<@Nullable Profile> profileSupplier) {
+            Supplier<@Nullable Profile> profileSupplier,
+            Supplier<@Nullable BottomSheetSigninAndHistorySyncCoordinator>
+                    signinCoordinatorSupplier,
+            SigninAndHistorySyncActivityLauncher signinLauncher) {
         mContext = context;
         mContentView = LayoutInflater.from(context).inflate(R.layout.account_menu, null);
 
         RecyclerView recyclerView = (RecyclerView) mContentView;
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setItemAnimator(null);
 
         ModelList modelList = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(modelList);
         mAdapter.registerType(
+                ItemType.PROMO_CARD,
+                new LayoutViewBuilder<>(R.layout.account_menu_promo_card),
+                AccountMenuViewBinder::bindPromoCard);
+        mAdapter.registerType(
                 ItemType.MENU_ITEM,
                 new LayoutViewBuilder<>(R.layout.account_menu_item),
-                AccountMenuViewBinder::bind);
+                AccountMenuViewBinder::bindMenuItem);
         mAdapter.registerType(
                 ItemType.DIVIDER,
                 new LayoutViewBuilder<>(R.layout.account_menu_divider),
@@ -67,7 +77,13 @@ public class AccountMenuCoordinator {
 
         mMediator =
                 new AccountMenuMediator(
-                        context, modelList, windowAndroid, profileSupplier, this::dismiss);
+                        context,
+                        modelList,
+                        windowAndroid,
+                        profileSupplier,
+                        signinCoordinatorSupplier,
+                        signinLauncher,
+                        this::dismiss);
     }
 
     /** Shows the account menu popup anchored to the provided signin button view. */

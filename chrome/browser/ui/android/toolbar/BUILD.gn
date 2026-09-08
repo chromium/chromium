@@ -424,6 +424,7 @@ android_resources("java_resources") {
     "java/res/layout/account_menu.xml",
     "java/res/layout/account_menu_divider.xml",
     "java/res/layout/account_menu_item.xml",
+    "java/res/layout/account_menu_promo_card.xml",
     "java/res/layout/adaptive_toolbar_header_preference.xml",
     "java/res/layout/address_bar_header_preference.xml",
     "java/res/layout/address_bar_preference.xml",

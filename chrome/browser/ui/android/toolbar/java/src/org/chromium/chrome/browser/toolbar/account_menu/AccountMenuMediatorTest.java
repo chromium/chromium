@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.account_menu;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
@@ -28,12 +29,17 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -42,8 +48,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -58,13 +69,17 @@ public class AccountMenuMediatorTest {
 
     @Mock private Activity mActivity;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Profile mProfile;
+    @Mock private @Nullable Profile mProfile;
     @Mock private TabCreator mIncognitoTabCreator;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private MultiInstanceOrchestrator mOrchestrator;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private Runnable mDismissCallback;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SigninManager mSigninManager;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
 
     private Context mContext;
     private ModelList mModelList;
@@ -74,6 +89,10 @@ public class AccountMenuMediatorTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
+        doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
+        doReturn(true).when(mSigninManager).isSigninAllowed();
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mOrchestrator);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
         doReturn(mTabCreatorManager).when(mTabModelSelector).getTabCreatorManager();
@@ -84,19 +103,86 @@ public class AccountMenuMediatorTest {
         mModelList = new ModelList();
         mMediator =
                 new AccountMenuMediator(
-                        mContext, mModelList, mWindowAndroid, () -> mProfile, mDismissCallback);
+                        mContext,
+                        mModelList,
+                        mWindowAndroid,
+                        () -> mProfile,
+                        () -> mSigninCoordinator,
+                        mSigninLauncher,
+                        mDismissCallback);
     }
 
     @After
     public void tearDown() {
         SettingsNavigationFactory.setInstanceForTesting(null);
+        IdentityServicesProvider.setInstanceForTests(null);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testSignedOut_showsPromoCardAndSigninsOnClick() {
+        assertEquals(4, mModelList.size());
+        ListItem item = mModelList.get(0);
+        assertEquals(ItemType.PROMO_CARD, item.type);
+
+        OnClickListener onSigninClick =
+                item.model.get(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER);
+        assertNotNull(onSigninClick);
+
+        onSigninClick.onClick(null);
+
+        verify(mDismissCallback).run();
+        verify(mSigninLauncher)
+                .createBottomSheetSigninIntentOrShowError(
+                        eq(mContext),
+                        eq(mProfile),
+                        any(),
+                        eq(SigninAccessPoint.NTP_SIGNED_OUT_ICON));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testSignedOut_activitylessSigninOnClick() {
+        assertEquals(4, mModelList.size());
+        ListItem item = mModelList.get(0);
+        assertEquals(ItemType.PROMO_CARD, item.type);
+
+        OnClickListener onSigninClick =
+                item.model.get(PromoCardProperties.ON_SIGNIN_CLICK_LISTENER);
+        assertNotNull(onSigninClick);
+
+        onSigninClick.onClick(null);
+
+        verify(mDismissCallback).run();
+        verify(mSigninCoordinator).startSigninFlow(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testSigninNotAllowed_omitsPromoCard() {
+        doReturn(false).when(mSigninManager).isSigninAllowed();
+        mMediator.updateMenuItems();
+
+        assertEquals(3, mModelList.size());
+        assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
+        assertEquals(
+                R.string.menu_passwords_and_autofill,
+                mModelList.get(0).model.get(MenuItemProperties.TITLE_ID));
     }
 
     @Test
     @SmallTest
     public void testAutofillItemClick_dismissesAndOpensAutofillSettings() {
-        assertEquals(3, mModelList.size());
-        ListItem item = mModelList.get(0);
+        assertEquals(4, mModelList.size());
+        ListItem item = mModelList.get(1);
         assertEquals(ItemType.MENU_ITEM, item.type);
 
         PropertyModel model = item.model;
@@ -122,9 +208,9 @@ public class AccountMenuMediatorTest {
 
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
 
-        assertEquals(3, mModelList.size());
-        assertEquals(ItemType.DIVIDER, mModelList.get(1).type);
-        ListItem item = mModelList.get(2);
+        assertEquals(4, mModelList.size());
+        assertEquals(ItemType.DIVIDER, mModelList.get(2).type);
+        ListItem item = mModelList.get(3);
         assertEquals(ItemType.MENU_ITEM, item.type);
         assertEquals(
                 R.string.menu_new_incognito_window, item.model.get(MenuItemProperties.TITLE_ID));
@@ -151,8 +237,8 @@ public class AccountMenuMediatorTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
         mMediator.updateMenuItems();
 
-        assertEquals(3, mModelList.size());
-        ListItem item = mModelList.get(2);
+        assertEquals(4, mModelList.size());
+        ListItem item = mModelList.get(3);
         assertEquals(ItemType.MENU_ITEM, item.type);
         assertEquals(R.string.menu_new_incognito_tab, item.model.get(MenuItemProperties.TITLE_ID));
 
@@ -170,10 +256,11 @@ public class AccountMenuMediatorTest {
         IncognitoUtils.setEnabledForTesting(false);
         mMediator.updateMenuItems();
 
-        assertEquals(1, mModelList.size());
-        assertEquals(ItemType.MENU_ITEM, mModelList.get(0).type);
+        assertEquals(2, mModelList.size());
+        assertEquals(ItemType.PROMO_CARD, mModelList.get(0).type);
+        assertEquals(ItemType.MENU_ITEM, mModelList.get(1).type);
         assertEquals(
                 R.string.menu_passwords_and_autofill,
-                mModelList.get(0).model.get(MenuItemProperties.TITLE_ID));
+                mModelList.get(1).model.get(MenuItemProperties.TITLE_ID));
     }
 }
