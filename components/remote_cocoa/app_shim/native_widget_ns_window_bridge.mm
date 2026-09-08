@@ -593,6 +593,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
     mojom::NativeWidgetNSWindowInitParamsPtr params) {
   modal_type_ = params->modal_type;
   is_translucent_window_ = params->is_translucent;
+  prevent_stale_content_after_hide_ = params->prevent_stale_content_after_hide;
   pending_restoration_data_ = params->state_restoration_data.Clone();
 
   if (display::Screen::Get()->IsHeadless()) {
@@ -1004,6 +1005,11 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // DCHECK(![window_ attachedSheet]);
 
     [window_ orderOut:nil];
+
+    if (prevent_stale_content_after_hide_) {
+      should_reset_alpha_on_show_ = true;
+    }
+
     DCHECK(!window_visible_);
     return;
   } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
@@ -1015,11 +1021,11 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
 
   if (!ca_transaction_sync_suppressed_) {
     if (base::FeatureList::IsEnabled(features::kAlphaInsteadOfCATransaction)) {
-      // If the window isn't visible and a compositor frame for the window size
-      // hasn't come in yet, keep the window effectively invisible via
-      // `alphaValue`. It will be made visible when a correctly sized compositor
-      // frame arrives.
-      if (!window_.visible && compositor_frame_dip_size_ != content_dip_size_) {
+      // If the window isn't visible and is marked as needing a fresh compositor
+      // frame (e.g. on initial show or after hide), keep the window
+      // effectively invisible via `alphaValue`. It will be made visible when a
+      // correctly sized compositor frame arrives.
+      if (!window_.visible && should_reset_alpha_on_show_) {
         if (!pending_alpha_value_.has_value()) {
           pending_alpha_value_ = window_.alphaValue;
         }
@@ -1506,6 +1512,10 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
   } else {
     ReleaseCapture();  // Capture on hidden windows is not permitted.
 
+    if (prevent_stale_content_after_hide_) {
+      should_reset_alpha_on_show_ = true;
+    }
+
     // When becoming invisible, remove the entry in any parent's childWindow
     // list. Cocoa's childWindow management breaks down when child windows are
     // hidden.
@@ -1989,6 +1999,7 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
   if (content_dip_size_ != frame_dip_size)
     return;
   compositor_frame_dip_size_ = frame_dip_size;
+  should_reset_alpha_on_show_ = false;
 
   // Update the contents atomically with the NSWindow frame resize.
   std::optional<ScopedCAActionDisabler> disabler;

@@ -2298,6 +2298,114 @@ TEST_F(NativeWidgetMacTest, ChangeOpacity) {
   widget->CloseNow();
 }
 
+// Test that hiding and showing a window with kAlphaInsteadOfCATransaction
+// restores the configured opacity when hidden, and triggers opacity fix on
+// subsequent show only when `prevent_stale_content_after_hide` is set.
+TEST_F(NativeWidgetMacTest, HideAndShowOpacityWithAlphaFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAlphaInsteadOfCATransaction);
+
+  // Case 1: Window without prevent_stale_content_after_hide (default).
+  // Once the first frame arrives, subsequent hide-then-show does not reset
+  // alpha.
+  {
+    Widget* widget = CreateTopLevelPlatformWidget();
+    NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+
+    widget->SetOpacity(0.7f);
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    // Showing the widget should set alphaValue to 0 until a compositor frame
+    // arrives.
+    widget->Show();
+    EXPECT_FLOAT_EQ(0.0f, [ns_window alphaValue]);
+
+    // Frame arrives, restoring opacity.
+    BridgedNativeWidgetTestApi(widget).SimulateFrameSwap(
+        widget->GetClientAreaBoundsInScreen().size());
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    // Hiding the widget.
+    widget->Hide();
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    // Showing it again does not reset alpha to 0 since
+    // prevent_stale_content_after_hide is false and frame size didn't change.
+    widget->Show();
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    widget->CloseNow();
+  }
+
+  // Case 2: Window with prevent_stale_content_after_hide = true.
+  // Hide-then-show sets alpha to 0 until a new compositor frame arrives.
+  {
+    auto widget = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.prevent_stale_content_after_hide = true;
+    params.native_widget = new TestWindowNativeWidgetMac(widget.get());
+    widget->Init(std::move(params));
+    NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+
+    widget->SetOpacity(0.7f);
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    // Showing the widget should set alphaValue to 0 until a compositor frame
+    // arrives.
+    widget->Show();
+    EXPECT_FLOAT_EQ(0.0f, [ns_window alphaValue]);
+
+    // Initial frame arrives.
+    BridgedNativeWidgetTestApi(widget.get())
+        .SimulateFrameSwap(widget->GetClientAreaBoundsInScreen().size());
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    // Hiding the widget.
+    widget->Hide();
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    // Showing it again sets alphaValue to 0 because
+    // prevent_stale_content_after_hide is true.
+    widget->Show();
+    EXPECT_FLOAT_EQ(0.0f, [ns_window alphaValue]);
+
+    // Fresh frame arrives, restoring opacity.
+    BridgedNativeWidgetTestApi(widget.get())
+        .SimulateFrameSwap(widget->GetClientAreaBoundsInScreen().size());
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    widget->CloseNow();
+  }
+
+  // Case 3: Window hidden before initial frame arrives.
+  {
+    Widget* widget = CreateTopLevelPlatformWidget();
+    NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+
+    widget->SetOpacity(0.7f);
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    widget->Show();
+    EXPECT_FLOAT_EQ(0.0f, [ns_window alphaValue]);
+
+    // Hide before any frame arrives.
+    widget->Hide();
+    EXPECT_FLOAT_EQ(0.0f, [ns_window alphaValue]);
+
+    // Showing it again and receiving a frame restores opacity.
+    widget->Show();
+    EXPECT_FLOAT_EQ(0.0f, [ns_window alphaValue]);
+
+    BridgedNativeWidgetTestApi(widget).SimulateFrameSwap(
+        widget->GetClientAreaBoundsInScreen().size());
+    EXPECT_FLOAT_EQ(0.7f, [ns_window alphaValue]);
+
+    widget->CloseNow();
+  }
+}
+
 // Ensure traversing NSView focus correctly updates the views::FocusManager.
 TEST_F(NativeWidgetMacTest, ChangeFocusOnChangeFirstResponder) {
   Widget* widget = CreateTopLevelPlatformWidget();

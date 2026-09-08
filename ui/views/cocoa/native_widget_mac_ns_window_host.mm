@@ -486,6 +486,8 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->is_translucent =
         params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
     window_params->is_tooltip = is_tooltip;
+    window_params->prevent_stale_content_after_hide =
+        params.prevent_stale_content_after_hide;
 
     // macOS likes to put shadows on most things. However, frameless windows
     // (with styleMask = NSWindowStyleMaskBorderless) default to no shadow. So

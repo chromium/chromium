@@ -531,6 +531,14 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // frame is received is stored here.
   std::optional<float> pending_alpha_value_;
 
+  // If true, window alpha will be set to 0.0 when shown after being hidden
+  // until a fresh compositor frame arrives.
+  bool prevent_stale_content_after_hide_ = false;
+
+  // Set to true initially and on hide if `prevent_stale_content_after_hide_` is
+  // enabled, and cleared once a fresh compositor frame is received.
+  bool should_reset_alpha_on_show_ = true;
+
   // This tracks whether current window can go back or go forward.
   bool can_go_back_ = false;
   bool can_go_forward_ = false;

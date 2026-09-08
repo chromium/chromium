@@ -550,6 +550,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // If set to true, enable system default show and hide animations.
     bool animation_enabled = false;
+
+    // If set to true, window opacity will be set to 0.0 when shown after being
+    // hidden until a fresh compositor frame arrives, preventing stale content
+    // from displaying. Enabling eliminates stale frames when showing after a
+    // hide at the cost of waiting for the next frame to be produced before
+    // showing. This may make sense for ephemeral UI that is normally displayed
+    // with new state (ex. Omnibox) but be less advantageous in scenarios where
+    // showing stale content faster will seem more responsive (eg. browser
+    // window).
+    bool prevent_stale_content_after_hide = false;
 #endif
 
     // Initial native widget background color, if supported.
