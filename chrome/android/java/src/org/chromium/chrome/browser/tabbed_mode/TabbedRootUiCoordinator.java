@@ -196,6 +196,7 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManagerImpl;
@@ -2268,12 +2269,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     return;
                 }
 
+                int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
+                if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+                    Tab tab = tabModel.getTabById(tabId);
+                    if (tab != null) {
+                        tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
+                    }
+                    return;
+                }
                 // Due to crbug.com/396159718 (see also crbug.com/395847973) it was possible to
                 // reach this method without the tab switcher being open. For now this will
-                // remain as a safegaurd against bugs as internally it will noop if the tab switcher
+                // remain as a safeguard against bugs as internally it will noop if the tab switcher
                 // is already opened. It could be removed in the future with some care taken to add
                 // an assert and verify no callers are using it in an unexpected flow.
-                int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
                 assert mLayoutManager != null;
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager,
