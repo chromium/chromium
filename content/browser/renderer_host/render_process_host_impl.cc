@@ -3868,6 +3868,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       sandbox::policy::switches::kEnableSandboxLogging,
 #endif
       switches::kAllowCommandLinePlugins,
+      switches::kAllowFileAccessFromFiles,
       switches::kAllowLoopbackInPeerConnection,
       switches::kAudioBufferSize,
       switches::kAutoplayPolicy,

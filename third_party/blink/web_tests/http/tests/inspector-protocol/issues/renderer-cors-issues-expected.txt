@@ -5,7 +5,7 @@ Cors issue: {
         corsIssueDetails : {
             corsErrorStatus : {
                 corsError : CorsDisabledScheme
-                failedParameter : file
+                failedParameter : ftp
             }
             initiatorOrigin : http://127.0.0.1:8000
             isWarning : false
@@ -16,7 +16,7 @@ Cors issue: {
                 url :
             }
             request : {
-                url : file://doesnt.matter/
+                url : ftp://doesnt.matter/
             }
         }
     }

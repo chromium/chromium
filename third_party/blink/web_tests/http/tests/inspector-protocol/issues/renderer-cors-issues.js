@@ -23,7 +23,7 @@
 
   session.evaluate(`
     try {
-      fetch('file://doesnt.matter');
+      fetch('ftp://doesnt.matter');
     } catch (e) {}
 
     try {

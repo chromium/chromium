@@ -898,6 +898,13 @@ void RenderThreadImpl::RegisterSchemes() {
   WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(
       chrome_untrusted_scheme);
 
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kAllowFileAccessFromFiles)) {
+    WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(
+        WebString::FromAscii(url::kFileScheme));
+  }
+
   if (base::FeatureList::IsEnabled(features::kWebUICodeCache)) {
     WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(chrome_scheme);
     WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(

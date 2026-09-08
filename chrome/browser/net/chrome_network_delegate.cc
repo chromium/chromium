@@ -130,6 +130,7 @@ bool IsAccessAllowedAndroid(const base::FilePath& path) {
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
       "/sdcard",
       "/mnt/sdcard",
+      "/data/local/tmp",
   };
   for (const auto* allowlisted_path : kLocalAccessAllowList)
     allowlist.emplace_back(allowlisted_path);
