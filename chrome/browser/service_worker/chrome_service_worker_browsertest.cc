@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/service_worker/service_worker_prewarm.h"
@@ -1288,6 +1289,170 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   EXPECT_FALSE(dict.FindBool("loadTimesExists").value_or(true));
   EXPECT_FALSE(dict.FindBool("csiExists").value_or(true));
   EXPECT_FALSE(dict.FindBool("benchmarkingExists").value_or(true));
+}
+
+class ChromeServiceWorkerPartitionedTest : public InProcessBrowserTest {
+ public:
+  ChromeServiceWorkerPartitionedTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&ChromeServiceWorkerPartitionedTest::HandleRequest,
+                            base::Unretained(this)));
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (request.relative_url == "/page.html") {
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(base::StringPrintf(
+          R"(<!DOCTYPE html>
+             <iframe id="child" src="%s"></iframe>
+             <script>
+               window.addEventListener('message', e => {
+                 window.lastMessage = e.data;
+               });
+             </script>)",
+          https_server_.GetURL("b.test", "/iframe.html").spec().c_str()));
+      return response;
+    }
+    if (request.relative_url == "/iframe.html") {
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(
+          R"(<!DOCTYPE html>
+             <script>
+               navigator.serviceWorker.register('./sw.js').then(async () => {
+                 await navigator.serviceWorker.ready;
+                 window.parent.postMessage('READY', '*');
+               });
+               window.addEventListener('message', async (e) => {
+                 if (e.data === 'test_cache') {
+                   const reg = await navigator.serviceWorker.ready;
+                   const ch = new MessageChannel();
+                   ch.port1.onmessage = (ev) => {
+                     window.parent.postMessage(ev.data, '*');
+                   };
+                   reg.active.postMessage({ type: 'open_cache' }, [ch.port2]);
+                 }
+               });
+             </script>)");
+      return response;
+    }
+    if (request.relative_url == "/sw.js") {
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("application/javascript");
+      response->set_content(
+          R"(self.addEventListener('message', (event) => {
+               if (event.data && event.data.type === 'open_cache') {
+                 const port = event.ports[0];
+                 caches.open('sw-cache-test')
+                   .then(() => caches.delete('sw-cache-test'))
+                   .then(() => port.postMessage('OK'))
+                   .catch((err) => port.postMessage(err.name));
+               }
+             });)");
+      return response;
+    }
+    return nullptr;
+  }
+
+ protected:
+  net::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerPartitionedTest,
+                       PartitionedWorkerCacheStorageAccess) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL page_url = https_server_.GetURL("a.test", "/page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Wait for the iframe's service worker to become ready.
+  content::EvalJsResult ready_result =
+      content::EvalJs(web_contents,
+                      R"(new Promise(resolve => {
+           if (window.lastMessage === 'READY') {
+             resolve('READY');
+           } else {
+             window.addEventListener('message', e => {
+               if (e.data === 'READY') resolve(e.data);
+             }, {once: true});
+           }
+         });)");
+  EXPECT_EQ("READY", ready_result);
+
+  auto test_cache_access = [&]() {
+    return content::EvalJs(web_contents,
+                           R"(new Promise(resolve => {
+             window.addEventListener('message', e => {
+               resolve(e.data);
+             }, {once: true});
+             document.getElementById('child').contentWindow.postMessage(
+                 'test_cache', '*');
+           });)");
+  };
+
+  // 1. By default, partitioned service worker CacheStorage access is allowed.
+  EXPECT_EQ("OK", test_cache_access());
+
+  // 2. When third-party cookies are blocked, partitioned service worker
+  // CacheStorage access is still allowed because partitioned storage is allowed
+  // by default.
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  EXPECT_EQ("OK", test_cache_access());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeServiceWorkerPartitionedTest,
+    PartitionedWorkerCacheStorageAccess_BlockedBySiteSetting) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL page_url = https_server_.GetURL("a.test", "/page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Wait for the iframe's service worker to become ready.
+  content::EvalJsResult ready_result =
+      content::EvalJs(web_contents,
+                      R"(new Promise(resolve => {
+           if (window.lastMessage === 'READY') {
+             resolve('READY');
+           } else {
+             window.addEventListener('message', e => {
+               if (e.data === 'READY') resolve(e.data);
+             }, {once: true});
+           }
+         });)");
+  EXPECT_EQ("READY", ready_result);
+
+  // Block cookies for b.test after the service worker has started, but before
+  // it accesses CacheStorage for the first time.
+  GURL b_url = https_server_.GetURL("b.test", "/");
+  CookieSettingsFactory::GetForProfile(browser()->GetProfile())
+      ->SetCookieSetting(b_url, CONTENT_SETTING_BLOCK);
+
+  auto test_cache_access = [&]() {
+    return content::EvalJs(web_contents,
+                           R"(new Promise(resolve => {
+             window.addEventListener('message', e => {
+               resolve(e.data);
+             }, {once: true});
+             document.getElementById('child').contentWindow.postMessage(
+                 'test_cache', '*');
+           });)");
+  };
+
+  // CacheStorage access is denied with SecurityError.
+  EXPECT_EQ("SecurityError", test_cache_access());
 }
 
 }  // namespace chrome_service_worker_browser_test
