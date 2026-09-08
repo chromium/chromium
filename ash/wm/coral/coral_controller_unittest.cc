@@ -7,12 +7,15 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/ambient/ambient_controller.h"
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -82,6 +85,17 @@ class CoralControllerTestBase : public AshTestBase {
     birch_client_ = std::make_unique<TestBirchClient>(birch_model);
     birch_model->SetClientAndInit(birch_client_.get());
 
+    // BirchWeatherProvider fetches weather in the morning if a non-stub user is
+    // signed in (which ScopedCoralGenAIAvailability does). On official/branded
+    // builds, AmbientController defaults to AmbientBackendControllerImpl which
+    // makes real network requests that hang in unit tests. Install
+    // FakeAmbientBackendControllerImpl so weather fetches complete immediately.
+    // Reset existing controller first to satisfy DCHECK(!g_ambient_backend_controller).
+    Shell::Get()->ambient_controller()->set_backend_controller_for_testing(
+        nullptr);
+    Shell::Get()->ambient_controller()->set_backend_controller_for_testing(
+        std::make_unique<FakeAmbientBackendControllerImpl>());
+
     base::RunLoop run_loop;
     birch_model->GetItemRemoverForTest()->SetProtoInitCallbackForTest(
         run_loop.QuitClosure());
@@ -94,6 +108,8 @@ class CoralControllerTestBase : public AshTestBase {
   }
 
   void TearDown() override {
+    Shell::Get()->ambient_controller()->set_backend_controller_for_testing(
+        nullptr);
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     birch_client_.reset();
     // Do not reset `coral_gen_ai_availability_` here: it installs the
