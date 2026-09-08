@@ -37,11 +37,11 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
@@ -100,7 +100,9 @@ constexpr base::TimeDelta kTimeUntilIdle = base::Milliseconds(100);
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return Profile::FromBrowserContext(
+             BrowserContextHelper::Get()->GetSigninBrowserContext())
+      ->GetOriginalProfile();
 }
 
 // Custom implementation of the UserDataAuthClient that triggers the
@@ -556,8 +558,9 @@ class SecurityTokenSessionBehaviorTest : public SecurityTokenLoginTest {
     StartLoginAndWaitForPinDialog();
     LoginScreenTestApi::SubmitPinRequestWidget(kCorrectPin);
     WaitForActiveSession();
-    profile_ = ProfileHelper::Get()->GetProfileByAccountId(
-        GetChallengeResponseAccountId());
+    profile_ = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            GetChallengeResponseAccountId()));
   }
 
   void Lock() {
@@ -826,8 +829,9 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorSamlTest, Logout) {
   test::WaitForPrimaryUserSessionStart();
 
   // Setup extension and pref.
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetActiveUser());
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetActiveUser()));
   PrepareUserCertificateProviderExtension(profile);
   g_browser_process->local_state()->SetString(
       ash::prefs::kSecurityTokenSessionBehavior, "LOGOUT");
