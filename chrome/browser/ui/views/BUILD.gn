@@ -467,6 +467,7 @@ source_set("media_picker_utils") {
     "//components/web_modal",
     "//content/public/browser",
     "//extensions/browser",
+    "//ui/display",
     "//ui/views",
   ]
 }

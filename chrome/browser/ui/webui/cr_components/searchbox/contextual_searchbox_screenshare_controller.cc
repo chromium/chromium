@@ -343,11 +343,16 @@ void ContextualSearchboxScreenshareController::FallbackToChromeDefaultPicker(
 
   gfx::NativeWindow parent_window = gfx::NativeWindow();
   if (web_contents_) {
-    auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
-    if (browser_window && browser_window->GetWindow()) {
-      parent_window = browser_window->GetWindow()->GetNativeWindow();
-    } else {
-      parent_window = web_contents_->GetTopLevelNativeWindow();
+    // Prefer `web_contents_->GetTopLevelNativeWindow()` so that when invoked
+    // from a standalone popup (e.g. Loomnibox / Omnibox Everywhere), the
+    // picker is positioned relative to the searchbox widget's monitor rather
+    // than the main browser window.
+    parent_window = web_contents_->GetTopLevelNativeWindow();
+    if (!parent_window) {
+      auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
+      if (browser_window && browser_window->GetWindow()) {
+        parent_window = browser_window->GetWindow()->GetNativeWindow();
+      }
     }
   }
 

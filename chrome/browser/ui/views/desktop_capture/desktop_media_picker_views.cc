@@ -678,12 +678,16 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   ConfigureUIForNewPane(previously_selected_category_);
 
   bool modal_dialog = MediaPickerCanShowAsWebModal(params.web_contents);
+  // Pass `params.context` or fallback to `params.parent` (which Mac callers
+  // often set instead of `context`) so that `CreateMediaPickerDialogWidget` can
+  // identify the target display and parent window.
   views::Widget* widget = CreateMediaPickerDialogWidget(
       modal_dialog ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                          params.web_contents)
                    : nullptr,
       params.web_contents,
-      /*delegate=*/this, params.context, /*parent=*/gfx::NativeView());
+      /*delegate=*/this, params.context ? params.context : params.parent,
+      /*parent=*/gfx::NativeView());
 
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 

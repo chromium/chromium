@@ -4,20 +4,79 @@
 
 #include "chrome/browser/ui/views/media_picker_utils.h"
 
+#include <algorithm>
+
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace {
 
 bool IsExtensionPopupWebContents(content::WebContents* web_contents) {
   return extensions::GetViewType(web_contents) ==
          extensions::mojom::ViewType::kExtensionPopup;
+}
+
+// Positions an unparented top-level dialog widget centered over the originating
+// window or within the work area of that window's display. This avoids
+// platforms defaulting to placing new windows on the primary display (e.g.
+// Mac's `-[NSWindow center]` falling back to `[NSScreen mainScreen]`, and
+// Windows unpositioned HWNDs defaulting to the primary monitor).
+void CenterDialogOnTargetDisplay(views::Widget* widget,
+                                 gfx::NativeWindow context,
+                                 content::WebContents* web_contents) {
+  gfx::NativeWindow window_for_display = context;
+  if (!window_for_display && web_contents) {
+    window_for_display = web_contents->GetTopLevelNativeWindow();
+  }
+  if (!window_for_display) {
+    return;
+  }
+
+  display::Screen* const screen = display::Screen::Get();
+  if (!screen) {
+    return;
+  }
+
+  display::Display display =
+      screen->GetDisplayNearestWindow(window_for_display);
+  gfx::Rect parent_bounds = display.work_area();
+  if (views::Widget* context_widget =
+          views::Widget::GetWidgetForNativeWindow(window_for_display)) {
+    gfx::Rect context_bounds = context_widget->GetWindowBoundsInScreen();
+    if (!context_bounds.IsEmpty()) {
+      parent_bounds = context_bounds;
+    }
+  }
+
+  gfx::Rect dialog_bounds = parent_bounds;
+  gfx::Size dialog_size = widget->GetWindowBoundsInScreen().size();
+  if (dialog_size.IsEmpty() && widget->non_client_view()) {
+    dialog_size = widget->non_client_view()->GetPreferredSize();
+  }
+  dialog_size.SetToMax(widget->GetMinimumSize());
+  if (!dialog_size.IsEmpty()) {
+    dialog_bounds.ToCenteredSize(dialog_size);
+    // Clamp origin so the dialog remains within the display work area when
+    // possible, or anchored at top-left if the display is smaller than the
+    // dialog, without shrinking below minimum size.
+    const gfx::Rect work_area = display.work_area();
+    dialog_bounds.set_x(std::max(
+        work_area.x(),
+        std::min(dialog_bounds.x(), work_area.right() - dialog_size.width())));
+    dialog_bounds.set_y(std::max(
+        work_area.y(), std::min(dialog_bounds.y(),
+                                work_area.bottom() - dialog_size.height())));
+    widget->SetBounds(dialog_bounds);
+  }
 }
 
 }  // namespace
@@ -65,6 +124,11 @@ views::Widget* CreateMediaPickerDialogWidget(BrowserWindowInterface* browser,
     }
     widget =
         views::DialogDelegate::CreateDialogWidget(delegate, context, parent);
+
+    if (!parent) {
+      CenterDialogOnTargetDisplay(widget, context, web_contents);
+    }
+
     widget->Show();
   }
 
