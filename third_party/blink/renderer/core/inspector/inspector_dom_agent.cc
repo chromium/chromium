@@ -2956,10 +2956,7 @@ void InspectorDOMAgent::DidInvalidateStyleAttr(Element* element) {
 }
 
 bool InspectorDOMAgent::isNodeScrollable(Node* node) {
-  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
-    if (!box->Style()) {
-      return false;
-    }
+  if (const auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
     return box->IsUserScrollable();
   }
   return false;

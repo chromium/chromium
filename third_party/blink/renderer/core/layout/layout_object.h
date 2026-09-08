@@ -2525,11 +2525,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 #endif
 
-  const ComputedStyle* Style() const {
-    NOT_DESTROYED();
-    return style_.Get();
-  }
-
   // style_ can only be nullptr before the first style is set, thus most
   // callers will never see a nullptr style and should use StyleRef().
   const ComputedStyle& StyleRef() const {
