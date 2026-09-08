@@ -94,8 +94,13 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstTabMenuItemIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kImageUploadMenuItemIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFileUploadMenuItemIdForTesting);
-  explicit OmniboxContextMenuController(OmniboxPopupFileSelector* file_selector,
-                                        content::WebContents* web_contents);
+  // If `contextual_searchbox_handler` is provided (primarily for dependency
+  // injection in unit tests), it will be used instead of looking up the active
+  // handler dynamically from `web_contents`.
+  explicit OmniboxContextMenuController(
+      OmniboxPopupFileSelector* file_selector,
+      content::WebContents* web_contents,
+      ContextualSearchboxHandler* contextual_searchbox_handler = nullptr);
   struct TabInfo {
     int tab_id;
     std::u16string title;
@@ -294,6 +299,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   std::unique_ptr<TabSimpleMenuModel> shared_tabs_menu_model_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
   base::WeakPtr<content::WebContents> web_contents_;
+  raw_ptr<ContextualSearchboxHandler> contextual_searchbox_handler_ = nullptr;
   raw_ptr<OmniboxEditModel> edit_model_;
 
   // Needed for using FaviconService.

@@ -67,18 +67,16 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
 class TestOmniboxContextMenuController : public OmniboxContextMenuController {
  public:
+  using OmniboxContextMenuController::BuildMenu;
   using OmniboxContextMenuController::GetIconForInputType;
   using OmniboxContextMenuController::GetIconForModel;
   using OmniboxContextMenuController::GetIconForTool;
   using OmniboxContextMenuController::OmniboxContextMenuController;
   using OmniboxContextMenuController::OnGetInputState;
-
-  ContextualSearchboxHandler* GetContextualSearchboxHandler() const override {
-    return handler_;
-  }
+  using OmniboxContextMenuController::OnInputStateChanged;
 
   void SetContextualSearchboxHandler(ContextualSearchboxHandler* handler) {
-    handler_ = handler;
+    contextual_searchbox_handler_ = handler;
   }
 
   OmniboxPopupUI* GetOmniboxPopupUI() const override { return nullptr; }
@@ -92,11 +90,7 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
     mock_tabs_ = std::move(tabs);
   }
 
-  void RebuildMenu() {
-    menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
-    shared_tabs_menu_model_.reset();
-    BuildMenu();
-  }
+  void RebuildMenu() { BuildMenu(); }
 
   bool IsContentSharingEnabled() const override {
     return is_content_sharing_enabled_;
@@ -111,7 +105,6 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
   void SetTabContextEnabled(bool enabled) { is_tab_context_enabled_ = enabled; }
 
  private:
-  raw_ptr<ContextualSearchboxHandler> handler_ = nullptr;
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs_;
   bool is_content_sharing_enabled_ = true;
   bool is_tab_context_enabled_ = true;
@@ -843,4 +836,142 @@ TEST_F(OmniboxContextMenuControllerTest,
   // If upload is successful, state should transition to `kAim`.
   EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
             OmniboxPopupState::kAim);
+}
+
+TEST_F(OmniboxContextMenuControllerTest, BuildMenu_IsIdempotent_LegacyApi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kAimUsePecApi);
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab1;
+  tab1.tab_id = 1;
+  tab1.title = u"Tab 1";
+  tab1.url = GURL("https://example.com/1");
+  mock_tabs.push_back(tab1);
+
+  OmniboxContextMenuController::TabInfo tab2;
+  tab2.tab_id = 2;
+  tab2.title = u"Tab 2";
+  tab2.url = GURL("https://example.com/2");
+  mock_tabs.push_back(tab2);
+
+  // Set mock tabs after construction and build the initial menu with them.
+  controller()->SetMockTabs(mock_tabs);
+  controller()->BuildMenu();
+
+  size_t initial_count = controller()->menu_model()->GetItemCount();
+  EXPECT_GT(initial_count, 0u);
+
+  // Calling BuildMenu again should reset and rebuild without duplicating items.
+  controller()->BuildMenu();
+  EXPECT_EQ(controller()->menu_model()->GetItemCount(), initial_count);
+
+  controller()->BuildMenu();
+  EXPECT_EQ(controller()->menu_model()->GetItemCount(), initial_count);
+}
+
+TEST_F(OmniboxContextMenuControllerTest, BuildMenu_IsIdempotent_PecApi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimUsePecApi, omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox},
+      {});
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab1;
+  tab1.tab_id = 1;
+  tab1.title = u"Tab 1";
+  tab1.url = GURL("https://example.com/1");
+  mock_tabs.push_back(tab1);
+  controller()->SetMockTabs(mock_tabs);
+
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  // Update input state and build menu with state and mock tabs.
+  controller()->OnInputStateChanged(state);
+  size_t initial_count = controller()->menu_model()->GetItemCount();
+  EXPECT_GT(initial_count, 0u);
+
+  // Rebuilding directly should produce the identical menu count.
+  controller()->BuildMenu();
+  EXPECT_EQ(controller()->menu_model()->GetItemCount(), initial_count);
+
+  controller()->BuildMenu();
+  EXPECT_EQ(controller()->menu_model()->GetItemCount(), initial_count);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       OnInputStateChanged_RebuildsMenuWithoutDuplicates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimUsePecApi, omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox},
+      {});
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab1;
+  tab1.tab_id = 1;
+  tab1.title = u"Tab 1";
+  tab1.url = GURL("https://example.com/1");
+  mock_tabs.push_back(tab1);
+  controller()->SetMockTabs(mock_tabs);
+
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  controller()->OnInputStateChanged(state);
+  size_t count_after_first = controller()->menu_model()->GetItemCount();
+  EXPECT_GT(count_after_first, 0u);
+
+  // Updating or receiving the state again must not duplicate items.
+  controller()->OnInputStateChanged(state);
+  EXPECT_EQ(controller()->menu_model()->GetItemCount(), count_after_first);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       Constructor_WithInjectedHandler_SynchronousInputStateDoesNotDuplicate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimUsePecApi, omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox},
+      {});
+
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+
+  // Construct controller with injected searchbox handler to exercise the
+  // constructor execution path with a known handler.
+  TestOmniboxContextMenuController test_controller(
+      file_selector_.get(), web_contents_.get(), &fake_handler);
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab1;
+  tab1.tab_id = 1;
+  tab1.title = u"Tab 1";
+  tab1.url = GURL("https://example.com/1");
+  mock_tabs.push_back(tab1);
+  test_controller.SetMockTabs(mock_tabs);
+
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  state.allowed_tools.push_back(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  test_controller.OnInputStateChanged(state);
+  size_t count = test_controller.menu_model()->GetItemCount();
+  EXPECT_GT(count, 0u);
+
+  test_controller.BuildMenu();
+  EXPECT_EQ(test_controller.menu_model()->GetItemCount(), count);
 }

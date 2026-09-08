@@ -257,44 +257,43 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     OmniboxPopupFileSelector* file_selector,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    ContextualSearchboxHandler* contextual_searchbox_handler)
     : file_selector_(file_selector->GetWeakPtr()),
-      web_contents_(web_contents->GetWeakPtr()) {
+      web_contents_(web_contents->GetWeakPtr()),
+      contextual_searchbox_handler_(contextual_searchbox_handler) {
   menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
-  next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
-  auto* contextual_searchbox_handler = GetContextualSearchboxHandler();
-  if (contextual_searchbox_handler &&
+  auto* contextual_searchbox_handler_ptr = GetContextualSearchboxHandler();
+  if (contextual_searchbox_handler_ptr &&
       base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     // Pre-populate `input_state_` synchronously from the cached model state
     // so dynamic items like recent tabs are available during initial menu
     // build. Otherwise, menu will not have tabs.
-    if (contextual_searchbox_handler->input_state_model()) {
-      input_state_ =
-          contextual_searchbox_handler->input_state_model()->GetInputState();
+    if (contextual_searchbox_handler_ptr->input_state_model()) {
+      input_state_ = contextual_searchbox_handler_ptr->input_state_model()
+                         ->GetInputState();
       input_state_subscription_ =
-          contextual_searchbox_handler->input_state_model()->subscribe(
+          contextual_searchbox_handler_ptr->input_state_model()->subscribe(
               base::BindRepeating(
                   &OmniboxContextMenuController::OnInputStateChanged,
                   weak_ptr_factory_.GetWeakPtr()));
     }
-    contextual_searchbox_handler->GetInputState(
+    contextual_searchbox_handler_ptr->GetInputState(
         base::BindOnce(&OmniboxContextMenuController::OnGetInputState,
                        weak_ptr_factory_.GetWeakPtr()));
-    InitializeMenuItemInfo();
   }
-  // Set remaining command ID start point. If max tabs
-  // is known, reserve command ID's now. Otherwise, tab
-  // command ID's will be dynamically added later for tabs.
-  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
-  min_tools_and_models_command_id_ =
-      kMinOmniboxContextMenuRecentTabsCommandId +
-      static_cast<int>(max_suggestions.value_or(0));
+  // TODO(crbug.com/558703434): Avoid redundant BuildMenu() call if
+  // GetInputState() already executed synchronously during construction.
   BuildMenu();
 }
 
 OmniboxContextMenuController::~OmniboxContextMenuController() = default;
 
 void OmniboxContextMenuController::InitializeMenuItemInfo() {
+  input_type_info_.clear();
+  tool_info_.clear();
+  model_info_.clear();
+
   for (omnibox::InputType input_type : input_state_.allowed_input_types) {
     input_type_info_.insert(
         {input_type,
@@ -319,7 +318,20 @@ void OmniboxContextMenuController::InitializeMenuItemInfo() {
 }
 
 void OmniboxContextMenuController::BuildMenu() {
+  menu_model_->Clear();
+  shared_tabs_menu_model_.reset();
+  input_type_for_command_id_.clear();
+  tool_for_command_id_.clear();
+  model_for_command_id_.clear();
+  next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
+  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
+  min_tools_and_models_command_id_ =
+      kMinOmniboxContextMenuRecentTabsCommandId +
+      static_cast<int>(max_suggestions.value_or(0));
+
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    InitializeMenuItemInfo();
+
     auto is_browser_tab =
         [](const std::pair<omnibox::InputType, MenuItemInfo> p) {
           return p.first == omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
@@ -841,20 +853,6 @@ void OmniboxContextMenuController::OnGetInputState(
 void OmniboxContextMenuController::OnInputStateChanged(
     const omnibox::InputState& new_state) {
   input_state_ = new_state;
-  input_type_info_.clear();
-  input_type_for_command_id_.clear();
-  tool_info_.clear();
-  tool_for_command_id_.clear();
-  model_info_.clear();
-  model_for_command_id_.clear();
-  InitializeMenuItemInfo();
-  menu_model_->Clear();
-  shared_tabs_menu_model_.reset();
-  next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
-  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
-  min_tools_and_models_command_id_ =
-      kMinOmniboxContextMenuRecentTabsCommandId +
-      static_cast<int>(max_suggestions.value_or(0));
   BuildMenu();
   if (menu_model_->menu_model_delegate()) {
     menu_model_->menu_model_delegate()->OnMenuStructureChanged();
@@ -2074,6 +2072,9 @@ OmniboxContextMenuController::GetOrCreateContextualSessionHandle() const {
 
 ContextualSearchboxHandler*
 OmniboxContextMenuController::GetContextualSearchboxHandler() const {
+  if (contextual_searchbox_handler_) {
+    return contextual_searchbox_handler_;
+  }
   return GetContextualSearchboxHandler(web_contents_.get());
 }
 
