@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 
@@ -47,6 +48,10 @@ class SwitchAccessMenuBubbleControllerTest : public AshTestBase {
     for (views::View* button : GetMenuView()->children())
       buttons.push_back(static_cast<SwitchAccessMenuButton*>(button));
     return buttons;
+  }
+
+  views::Label* GetLabelForButton(SwitchAccessMenuButton* button) {
+    return button->label_;
   }
 
   gfx::Rect GetBackButtonBounds() {
@@ -87,6 +92,28 @@ TEST_F(SwitchAccessMenuBubbleControllerTest, ShowMenu) {
   }
 
   EXPECT_EQ(GetMenuView()->width(), GetExpectedBubbleWidth());
+}
+
+TEST_F(SwitchAccessMenuBubbleControllerTest, MenuButtonLabelsAreNotTruncated) {
+  gfx::Rect anchor_rect(10, 10, 0, 0);
+  GetBubbleController()->ShowMenu(anchor_rect,
+                                  {"select", "scrollDown", "pointScan"});
+  ASSERT_TRUE(GetMenuView());
+
+  for (SwitchAccessMenuButton* button : GetMenuButtons()) {
+    views::Label* label = GetLabelForButton(button);
+    ASSERT_TRUE(label);
+    GetMenuView()->GetWidget()->LayoutRootViewIfNecessary();
+
+    // Ensure the layout engine has not squeezed the label into a very narrow
+    // column, bounded by the width of the icon above it (kIconSizeDip = 20). We
+    // assert that the label's width is strictly greater than the icon's width,
+    // ensuring it has claimed proper horizontal space and is not severely
+    // truncated.
+    EXPECT_GT(label->width(), 20 /* kIconSizeDip */);
+    EXPECT_LE(label->width(), SwitchAccessMenuButton::kWidthDip);
+    EXPECT_GT(label->height(), 0);
+  }
 }
 
 TEST_F(SwitchAccessMenuBubbleControllerTest, SetActions) {
