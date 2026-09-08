@@ -13,6 +13,4 @@ include_rules = [
   "+chrome/browser/ash/wallpaper",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/webui/ash/settings",
-  "+chrome/test",
 ]
