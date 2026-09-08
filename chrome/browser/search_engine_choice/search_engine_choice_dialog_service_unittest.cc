@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -575,12 +576,126 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
       SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile());
   ASSERT_TRUE(choice_data.has_value());
   EXPECT_EQ(choice_data->default_search_engine.url(), underlying_default_url);
+  EXPECT_FALSE(choice_data->metadata.has_value());
 
   histogram_tester.ExpectUniqueSample(
       "Search.ChoiceDebug.PropagatedDataOutcome",
       SearchEngineChoiceDialogService::CurrentDefaultPropagationOutcome::
           kPropagatedCurrentDefault,
       1);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       GetChoiceDataFromProfileIncludesMetadata) {
+  base::HistogramTester histogram_tester;
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  SetUserSelectedDefaultSearchProvider(template_url_service,
+                                       /*created_by_policy=*/false);
+
+  const TemplateURL* underlying_default =
+      template_url_service->GetDefaultSearchProvider();
+  ASSERT_TRUE(underlying_default);
+
+  search_engines::ChoiceCompletionMetadata original_metadata{
+      .timestamp = base::Time::Now(),
+      .version = version_info::GetVersion(),
+      .serialized_program = regional_capabilities::SerializeProgram(
+          regional_capabilities::Program::kWaffle),
+  };
+  search_engines::SetChoiceCompletionMetadata(*profile()->GetPrefs(),
+                                              original_metadata);
+
+  std::optional<search_engines::ChoiceData> choice_data =
+      SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile());
+  ASSERT_TRUE(choice_data.has_value());
+  EXPECT_EQ(choice_data->default_search_engine.url(),
+            underlying_default->url());
+  ASSERT_TRUE(choice_data->metadata.has_value());
+  EXPECT_EQ(
+      choice_data->metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds(),
+      original_metadata.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(choice_data->metadata->version, original_metadata.version);
+  EXPECT_EQ(choice_data->metadata->serialized_program,
+            original_metadata.serialized_program);
+
+  histogram_tester.ExpectUniqueSample(
+      "Search.ChoiceDebug.PropagatedDataOutcome",
+      SearchEngineChoiceDialogService::CurrentDefaultPropagationOutcome::
+          kPropagatedCurrentDefault,
+      1);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       UpdateProfileFromChoiceDataSetsMetadata) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  TemplateURLData default_search_engine;
+  default_search_engine.SetURL("https://www.example.com/?q={searchTerms}");
+  default_search_engine.SetShortName(u"Example");
+  default_search_engine.SetKeyword(u"example");
+
+  search_engines::ChoiceCompletionMetadata expected_metadata{
+      .timestamp = base::Time::Now(),
+      .version = version_info::GetVersion(),
+      .serialized_program = regional_capabilities::SerializeProgram(
+          regional_capabilities::Program::kWaffle),
+  };
+
+  search_engines::ChoiceData choice_data{
+      .metadata = expected_metadata,
+      .default_search_engine = default_search_engine,
+  };
+
+  SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(*profile(),
+                                                               choice_data);
+
+  EXPECT_EQ(template_url_service->GetDefaultSearchProvider()->url(),
+            default_search_engine.url());
+
+  base::expected<search_engines::ChoiceCompletionMetadata,
+                 search_engines::ChoiceCompletionMetadata::ParseError>
+      profile_metadata =
+          search_engines::GetChoiceCompletionMetadata(*profile()->GetPrefs());
+  ASSERT_TRUE(profile_metadata.has_value());
+  EXPECT_EQ(profile_metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds(),
+            expected_metadata.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(profile_metadata->version, expected_metadata.version);
+  EXPECT_EQ(profile_metadata->serialized_program,
+            expected_metadata.serialized_program);
+}
+
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       UpdateProfileFromChoiceDataWithoutMetadataDoesNotSetMetadata) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  TemplateURLData default_search_engine;
+  default_search_engine.SetURL("https://www.example.com/?q={searchTerms}");
+  default_search_engine.SetShortName(u"Example");
+  default_search_engine.SetKeyword(u"example");
+
+  search_engines::ChoiceData choice_data{
+      .metadata = std::nullopt,
+      .default_search_engine = default_search_engine,
+  };
+
+  SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(*profile(),
+                                                               choice_data);
+
+  EXPECT_EQ(template_url_service->GetDefaultSearchProvider()->url(),
+            default_search_engine.url());
+
+  base::expected<search_engines::ChoiceCompletionMetadata,
+                 search_engines::ChoiceCompletionMetadata::ParseError>
+      profile_metadata =
+          search_engines::GetChoiceCompletionMetadata(*profile()->GetPrefs());
+  EXPECT_FALSE(profile_metadata.has_value());
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest,

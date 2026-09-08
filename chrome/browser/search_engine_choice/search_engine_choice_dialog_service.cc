@@ -13,6 +13,7 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -33,7 +34,6 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -327,10 +327,8 @@ SearchEngineChoiceDialogService::GetChoiceDataFromProfile(Profile& profile) {
       CurrentDefaultPropagationOutcome::kPropagatedCurrentDefault);
 
   return search_engines::ChoiceData{
-      .timestamp = pref_service->GetInt64(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
-      .chrome_version = pref_service->GetString(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+      .metadata = base::OptionalFromExpected(
+          search_engines::GetChoiceCompletionMetadata(*pref_service)),
       .default_search_engine = default_search_engine};
 }
 
@@ -342,26 +340,15 @@ void SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
     return;
   }
 
-  const TemplateURLData& default_search_engine =
-      choice_data->default_search_engine;
-
-  PrefService* pref_service = profile.GetPrefs();
-  if (choice_data->timestamp != 0) {
-    pref_service->SetInt64(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-        choice_data->timestamp);
-  }
-
-  if (!choice_data->chrome_version.empty()) {
-    pref_service->SetString(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-        choice_data->chrome_version);
+  if (choice_data->metadata.has_value()) {
+    search_engines::SetChoiceCompletionMetadata(*profile.GetPrefs(),
+                                                *choice_data->metadata);
   }
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
   CHECK(template_url_service);
-  TemplateURL template_url(default_search_engine);
+  TemplateURL template_url(choice_data->default_search_engine);
   template_url_service->SetUserSelectedDefaultSearchProvider(&template_url);
 }
 

@@ -31,6 +31,7 @@ inline constexpr char kDefaultSearchProviderChoiceInvalidationTimestamp[] =
 // the choice screen.
 // The timestamp and the version indicate that the user has already made a
 // search engine choice in the choice screen or in settings.
+// TODO(crbug.com/556263496): Restrict direct access to this pref.
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
     "default_search_provider.choice_screen_completion_timestamp";
 

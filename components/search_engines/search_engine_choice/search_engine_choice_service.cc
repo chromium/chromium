@@ -1257,6 +1257,7 @@ void SearchEngineChoiceService::RegisterLocalStatePrefs(
 // static
 void SearchEngineChoiceService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  // TODO(crbug.com/556263496): Restrict direct access to this pref.
   registry->RegisterInt64Pref(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
   registry->RegisterStringPref(

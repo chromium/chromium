@@ -63,7 +63,8 @@
 #include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -2938,16 +2939,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
 
   SetupGaiaResponses();
 
-  int64_t search_engine_choice_timestamp =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds();
-  const char kChoiceVersion[] = "1.2.3.4";
-  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
-  pref_service->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      search_engine_choice_timestamp);
-  pref_service->SetString(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-      kChoiceVersion);
+  search_engines::MarkSearchEngineChoiceCompletedForTesting(
+      *browser()->GetProfile()->GetPrefs());
+  base::expected<search_engines::ChoiceCompletionMetadata,
+                 search_engines::ChoiceCompletionMetadata::ParseError>
+      original_metadata = search_engines::GetChoiceCompletionMetadata(
+          *browser()->GetProfile()->GetPrefs());
+  ASSERT_TRUE(original_metadata.has_value());
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
@@ -2987,12 +2985,17 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
                   .has_value());
 
   PrefService* new_pref_service = new_profile->GetPrefs();
-  EXPECT_EQ(new_pref_service->GetInt64(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
-            search_engine_choice_timestamp);
-  EXPECT_EQ(new_pref_service->GetString(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
-            kChoiceVersion);
+  base::expected<search_engines::ChoiceCompletionMetadata,
+                 search_engines::ChoiceCompletionMetadata::ParseError>
+      new_metadata =
+          search_engines::GetChoiceCompletionMetadata(*new_pref_service);
+  ASSERT_TRUE(new_metadata.has_value());
+  EXPECT_EQ(
+      new_metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds(),
+      original_metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(new_metadata->version, original_metadata->version);
+  EXPECT_EQ(new_metadata->serialized_program,
+            original_metadata->serialized_program);
 
   TemplateURLService* new_template_url_service =
       TemplateURLServiceFactory::GetForProfile(new_profile);

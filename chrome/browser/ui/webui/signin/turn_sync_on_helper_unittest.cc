@@ -49,7 +49,8 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -1522,16 +1523,13 @@ TEST_F(TurnSyncOnHelperTest, SearchEngineImportedToNewProfile) {
 
   // Set some search engine in the source profile.
   const char kCustomSearchEngineDomain[] = "bar.com";
-  int64_t search_engine_choice_timestamp =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds();
-  const char kChoiceVersion[] = "1.2.3.4";
-  PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      search_engine_choice_timestamp);
-  pref_service->SetString(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-      kChoiceVersion);
+  search_engines::MarkSearchEngineChoiceCompletedForTesting(
+      *profile()->GetPrefs());
+  base::expected<search_engines::ChoiceCompletionMetadata,
+                 search_engines::ChoiceCompletionMetadata::ParseError>
+      original_metadata =
+          search_engines::GetChoiceCompletionMetadata(*profile()->GetPrefs());
+  ASSERT_TRUE(original_metadata.has_value());
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
@@ -1561,12 +1559,17 @@ TEST_F(TurnSyncOnHelperTest, SearchEngineImportedToNewProfile) {
 
   // Check that the search engine was imported in the created profile.
   PrefService* new_pref_service = created_profile->GetPrefs();
-  EXPECT_EQ(new_pref_service->GetInt64(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
-            search_engine_choice_timestamp);
-  EXPECT_EQ(new_pref_service->GetString(
-                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
-            kChoiceVersion);
+  base::expected<search_engines::ChoiceCompletionMetadata,
+                 search_engines::ChoiceCompletionMetadata::ParseError>
+      new_metadata =
+          search_engines::GetChoiceCompletionMetadata(*new_pref_service);
+  ASSERT_TRUE(new_metadata.has_value());
+  EXPECT_EQ(
+      new_metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds(),
+      original_metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(new_metadata->version, original_metadata->version);
+  EXPECT_EQ(new_metadata->serialized_program,
+            original_metadata->serialized_program);
 
   TemplateURLService* new_template_url_service =
       TemplateURLServiceFactory::GetForProfile(created_profile);

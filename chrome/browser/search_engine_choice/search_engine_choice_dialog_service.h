@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 
@@ -33,13 +34,11 @@ namespace search_engines {
 class ChoiceScreenData;
 
 // Profile specific data related to the search engine choice.
-// `timestamp` is the search engine choice timestamp that's saved in the
-// `kDefaultSearchProviderChoiceScreenCompletionTimestamp` pref.
-// `chrome_version` is the Chrome version when the user made the choice.
+// `metadata` is the optional choice completion metadata (timestamp, Chrome
+// version, and regional program) if a choice screen was completed.
 // `default_search_engine` is the profile's default search engine.
 struct ChoiceData {
-  int64_t timestamp = 0;
-  std::string chrome_version;
+  std::optional<ChoiceCompletionMetadata> metadata;
   TemplateURLData default_search_engine;
 };
 
