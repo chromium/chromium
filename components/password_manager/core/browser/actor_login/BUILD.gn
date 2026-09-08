@@ -28,6 +28,20 @@ source_set("common") {
   ]
 }
 
+source_set("frame_util") {
+  sources = [
+    "actor_login_frame_util.cc",
+    "actor_login_frame_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//net",
+    "//url",
+  ]
+}
+
 source_set("permissions_manager_impl") {
   sources = [
     "actor_login_permissions_manager_impl.cc",
@@ -78,6 +92,7 @@ source_set("actor_login_service_impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_login_frame_util_unittest.cc",
     "actor_login_permissions_manager_unittest.cc",
     "actor_login_quality_logger_unittest.cc",
     "actor_login_service_impl_unittest.cc",
@@ -85,6 +100,7 @@ source_set("unit_tests") {
   deps = [
     ":actor_login_service_impl",
     ":common",
+    ":frame_util",
     ":permissions_manager_impl",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
