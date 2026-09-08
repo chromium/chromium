@@ -1414,7 +1414,7 @@ BASE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR,
 // Enables VideoToolbox zero-copy encode of opaque SharedImage-backed
 // VideoFrames.
 BASE_FEATURE(kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_APPLE)
 
