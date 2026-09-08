@@ -46,7 +46,6 @@
 #include "net/quic/quic_connection_logger.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http3_logger.h"
-#include "net/quic/quic_migration_attempt_context.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/socket_performance_watcher.h"
@@ -104,6 +103,21 @@ enum class ConnectionMigrationMode {
   FULL_MIGRATION_V1,
   NO_MIGRATION_ON_PATH_DEGRADING_V2,
   FULL_MIGRATION_V2
+};
+
+// Cause of a migration.
+enum MigrationCause {
+  UNKNOWN_CAUSE,
+  ON_NETWORK_CONNECTED,                       // No probing.
+  ON_NETWORK_DISCONNECTED,                    // No probing.
+  ON_WRITE_ERROR,                             // No probing.
+  ON_NETWORK_MADE_DEFAULT,                    // With probing.
+  ON_MIGRATE_BACK_TO_DEFAULT_NETWORK,         // With probing.
+  CHANGE_NETWORK_ON_PATH_DEGRADING,           // With probing.
+  CHANGE_PORT_ON_PATH_DEGRADING,              // With probing.
+  NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING,  // With probing.
+  ON_SERVER_PREFERRED_ADDRESS_AVAILABLE,      // With probing.
+  MIGRATION_CAUSE_MAX
 };
 
 // Result of connection migration.
@@ -496,21 +510,23 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
    public:
     QuicChromiumPathValidationContext(
         const quic::QuicSocketAddress& self_address,
-        std::unique_ptr<QuicMigrationAttemptContext> migration_context);
+        const quic::QuicSocketAddress& peer_address,
+        handles::NetworkHandle network,
+        std::unique_ptr<QuicChromiumPacketWriter> writer,
+        std::unique_ptr<QuicChromiumPacketReader> reader);
     ~QuicChromiumPathValidationContext() override;
 
-    handles::NetworkHandle network() const;
+    handles::NetworkHandle network();
     quic::QuicPacketWriter* WriterToUse() override;
 
-    // Consumes `context` and returns the underlying migration context.
-    static std::unique_ptr<QuicMigrationAttemptContext> ReleaseMigrationContext(
-        std::unique_ptr<quic::QuicPathValidationContext> context);
-    QuicMigrationAttemptContext* migration_context() const {
-      return migration_context_.get();
-    }
+    // Transfer the ownership from |this| to the caller.
+    std::unique_ptr<QuicChromiumPacketWriter> ReleaseWriter();
+    std::unique_ptr<QuicChromiumPacketReader> ReleaseReader();
 
    private:
-    std::unique_ptr<QuicMigrationAttemptContext> migration_context_;
+    handles::NetworkHandle network_handle_;
+    std::unique_ptr<QuicChromiumPacketReader> reader_;
+    std::unique_ptr<QuicChromiumPacketWriter> writer_;
   };
 
   // This class implements Chrome logic for path validation events associated
@@ -733,16 +749,25 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnWriteUnblocked() override;
 
   void OnConnectionMigrationProbeSucceeded(
+      handles::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<QuicMigrationAttemptContext> migration_context);
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      std::unique_ptr<QuicChromiumPacketReader> reader);
 
   void OnPortMigrationProbeSucceeded(
+      handles::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<QuicMigrationAttemptContext> migration_context);
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      std::unique_ptr<QuicChromiumPacketReader> reader);
 
   void OnServerPreferredAddressProbeSucceeded(
+      handles::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<QuicMigrationAttemptContext> migration_context);
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      std::unique_ptr<QuicChromiumPacketReader> reader);
 
   void OnProbeFailed(handles::NetworkHandle network,
                      const quic::QuicSocketAddress& peer_address);
@@ -818,7 +843,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // ConnectAndConfigureSocket and uses it to create the multiport path context.
   void FinishCreateContextForMultiPortPath(
       std::unique_ptr<quic::MultiPortPathContextObserver> context_observer,
-      std::unique_ptr<QuicMigrationAttemptContext> context,
+      std::unique_ptr<DatagramClientSocket> probing_socket,
       int rv);
 
   // Performs a crypto handshake with the server.
@@ -1044,8 +1069,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Helper to finish network probe once socket has been opened. Always called
   // asynchronously.
+  // TODO(crbug.com/518753285): Stop accepting a `network` parameter. Instead,
+  // require `probing_socket` to have already been bound at creation time.
   void FinishStartProbing(ProbingCallback probing_callback,
-                          std::unique_ptr<QuicMigrationAttemptContext> context,
+                          std::unique_ptr<DatagramClientSocket> probing_socket,
+                          handles::NetworkHandle network,
+                          const quic::QuicSocketAddress& peer_address,
                           int rv);
 
   // Perform a few checks before StartProbing. If any of those checks fails,
