@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -214,6 +215,7 @@ public class ViewArcAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/553221391")
     public void testQuadrantIII_Clockwise() throws IOException {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
