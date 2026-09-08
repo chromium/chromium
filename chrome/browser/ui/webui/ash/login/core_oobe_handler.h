@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "ui/events/event_source.h"
+
+class PrefService;
 
 namespace ui {
 class EventSink;
@@ -83,7 +86,8 @@ class CoreOobeHandler final : public BaseWebUIHandler,
                               public CoreOobeView,
                               public ui::EventSource {
  public:
-  CoreOobeHandler();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit CoreOobeHandler(PrefService* local_state);
   CoreOobeHandler(const CoreOobeHandler&) = delete;
   CoreOobeHandler& operator=(const CoreOobeHandler&) = delete;
   ~CoreOobeHandler() override;
@@ -135,6 +139,8 @@ class CoreOobeHandler final : public BaseWebUIHandler,
   // When keyboard_utils.js arrow key down event is reached, raise it
   // to tab/shift-tab event.
   void HandleRaiseTabKeyEvent(bool reverse);
+
+  const raw_ref<PrefService> local_state_;
 
   // Initialization state that is kept in sync with |CoreOobe|.
   UiState ui_init_state_ = UiState::kUninitialized;

@@ -721,12 +721,11 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   display_type_ = GetDisplayType(url);
 
   // TODO(crbug.com/489929275): Avoid using g_browser_process.
-  const PrefService& local_state =
-      CHECK_DEREF(g_browser_process->local_state());
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
-  auto core_oobe_handler = std::make_unique<CoreOobeHandler>();
+  auto core_oobe_handler = std::make_unique<CoreOobeHandler>(&local_state);
   core_handler_ = core_oobe_handler.get();
   core_oobe_ =
       std::make_unique<CoreOobe>(local_state, browser_policy_connector_ash,
