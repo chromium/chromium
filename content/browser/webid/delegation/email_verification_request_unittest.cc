@@ -1495,6 +1495,7 @@ TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
 }
 
 TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
+  base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("https://rp.example.com"));
 
   RenderFrameHost* cross_origin_iframe =
@@ -1525,6 +1526,16 @@ TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
   email_verification_request_.CheckIfVerifiable(kEmail, base::DoNothing(),
                                                 future.GetCallback());
   EXPECT_FALSE(future.Get<0>().has_value());
+  EXPECT_EQ(future.Get<1>(),
+            EmailVerificationRequestResult::kCrossOriginIframeNotSupported);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kCrossOriginIframeNotSupported, 1);
+  EXPECT_EQ(
+      1,
+      static_cast<TestRenderFrameHost*>(cross_origin_iframe)
+          ->GetEmailVerificationRequestIssueCount(
+              EmailVerificationRequestResult::kCrossOriginIframeNotSupported));
 }
 
 TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
@@ -1642,12 +1653,16 @@ TEST_F(EmailVerificationRequestTest,
   email_verification_request_.CheckIfVerifiable(kEmail, base::DoNothing(),
                                                 future.GetCallback());
   EXPECT_FALSE(future.Get<0>().has_value());
+  EXPECT_EQ(future.Get<1>(),
+            EmailVerificationRequestResult::kCrossOriginIframeNotSupported);
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.IsVerifiable",
-      EmailVerificationRequestResult::kRpOriginIsOpaque, 1);
-  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(iframe_a)
-                   ->GetEmailVerificationRequestIssueCount(
-                       EmailVerificationRequestResult::kRpOriginIsOpaque));
+      EmailVerificationRequestResult::kCrossOriginIframeNotSupported, 1);
+  EXPECT_EQ(
+      1,
+      static_cast<TestRenderFrameHost*>(iframe_a)
+          ->GetEmailVerificationRequestIssueCount(
+              EmailVerificationRequestResult::kCrossOriginIframeNotSupported));
 }
 
 TEST_F(EmailVerificationRequestTest, DnsResolvedCallbackCalledOnDnsSuccess) {
