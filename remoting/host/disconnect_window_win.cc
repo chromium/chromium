@@ -330,6 +330,14 @@ bool DisconnectWindowWin::BeginDialog() {
     return false;
   }
 
+  // IDD_DISCONNECT must have WS_EX_TOOLWINDOW and must NOT have
+  // WS_EX_APPWINDOW. Unowned WS_EX_TOOLWINDOW popups are excluded from Windows
+  // Shell Virtual Desktop management, ensuring Desktop Window Manager (DWM)
+  // never cloaks the disconnect window when switching virtual desktops
+  // (Win+Ctrl+D). See crbug.com/556259957.
+  DCHECK(GetWindowLong(hwnd_, GWL_EXSTYLE) & WS_EX_TOOLWINDOW);
+  DCHECK(!(GetWindowLong(hwnd_, GWL_EXSTYLE) & WS_EX_APPWINDOW));
+
   // Set up handler for Ctrl-Alt-Esc shortcut.
   if (!has_hotkey_ && RegisterHotKey(hwnd_, DISCONNECT_HOTKEY_ID,
                                      MOD_ALT | MOD_CONTROL, VK_ESCAPE)) {

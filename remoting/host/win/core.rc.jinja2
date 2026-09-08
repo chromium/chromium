@@ -53,6 +53,15 @@ IDI_CHROME_REMOTE_DESKTOP      ICON    "remoting/resources/chromoting.ico"
 
 #endif  // (REMOTING_HOST_BINARY == BINARY_CORE)
 
+// Note on dialog extended styles:
+// WS_EX_TOOLWINDOW is required so that Desktop Window Manager (DWM) treats
+// this unowned dialog as a tool window and excludes it from Windows Shell
+// Virtual Desktop management. This ensures the indicator dialog is never
+// cloaked (DWMWA_CLOAKED) and remains visible and interactive across all
+// virtual desktops (e.g. when Win+Ctrl+D is pressed).
+// WS_EX_APPWINDOW must NOT be added here, as it would force the window into
+// virtual desktop tracking and cause it to be cloaked when switching desktops.
+// See crbug.com/556259957.
 IDD_DISCONNECT DIALOGEX 0, 0, 145, 24
 STYLE DS_SETFONT | WS_POPUP
 EXSTYLE WS_EX_TOPMOST | WS_EX_TOOLWINDOW {% if IsRtlLanguage(lang) %} | WS_EX_LAYOUTRTL | WS_EX_RTLREADING {% endif %}
