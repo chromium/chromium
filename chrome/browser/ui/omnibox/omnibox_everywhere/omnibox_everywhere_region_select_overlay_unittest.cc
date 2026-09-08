@@ -80,12 +80,20 @@ class OmniboxEverywhereRegionSelectOverlayTest : public ChromeViewsTestBase {
     for (const auto& d : list) {
       test_screen_->display_list().RemoveDisplay(d.id());
     }
-    for (size_t i = 0; i < displays.size(); ++i) {
+    if (primary_index < displays.size()) {
       test_screen_->display_list().AddDisplay(
-          displays[i], i == primary_index
-                           ? display::DisplayList::Type::PRIMARY
-                           : display::DisplayList::Type::NOT_PRIMARY);
+          displays[primary_index], display::DisplayList::Type::PRIMARY);
     }
+    for (size_t i = 0; i < displays.size(); ++i) {
+      if (i != primary_index) {
+        test_screen_->display_list().AddDisplay(
+            displays[i], display::DisplayList::Type::NOT_PRIMARY);
+      }
+    }
+  }
+
+  void SetCursorScreenPoint(const gfx::Point& point) {
+    test_screen_->set_cursor_screen_point(point);
   }
 
   SkBitmap CreateTestBitmap(int width = 100,
@@ -613,6 +621,111 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   EXPECT_TRUE(toast_chip->GetVisible());
   EXPECT_EQ(toast_chip->y(), 28);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ToastPositioning_PortraitPrimaryAndLandscapeSecondaryMixedDpi) {
+  display::Display display1(1, gfx::Rect(0, 0, 1440, 2560));
+  display1.set_device_scale_factor(1.5f);
+
+  display::Display display2(2, gfx::Rect(1440, 864, 2048, 1153));
+  display2.set_device_scale_factor(1.25f);
+
+  SetDisplays({display1, display2});
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(4720, 3840);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  // 1. When cursor is on primary portrait display (1.5x scale).
+  {
+    SetCursorScreenPoint(gfx::Point(700, 1000));
+    base::test::TestFuture<const SkBitmap&> future;
+    auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+        bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+        GetContext());
+    ASSERT_TRUE(overlay);
+    ASSERT_TRUE(overlay->widget());
+
+    views::View* contents_view = overlay->widget()->GetContentsView();
+    ASSERT_TRUE(contents_view);
+    ASSERT_GE(contents_view->children().size(), 1u);
+    views::View* toast_chip = contents_view->children()[0];
+    ASSERT_TRUE(toast_chip);
+
+    EXPECT_TRUE(toast_chip->GetVisible());
+    EXPECT_EQ(toast_chip->y(), 28);
+    EXPECT_EQ(toast_chip->x(), (1440 - toast_chip->width()) / 2);
+  }
+
+  // 2. When cursor is on secondary landscape display (1.25x scale).
+  {
+    SetCursorScreenPoint(gfx::Point(2000, 1000));
+    base::test::TestFuture<const SkBitmap&> future2;
+    auto overlay2 = OmniboxEverywhereRegionSelectOverlay::Create(
+        bitmap, RegionCaptureSource::AllDisplays(), future2.GetCallback(),
+        GetContext());
+    ASSERT_TRUE(overlay2);
+    ASSERT_TRUE(overlay2->widget());
+
+    views::View* contents_view2 = overlay2->widget()->GetContentsView();
+    ASSERT_TRUE(contents_view2);
+    ASSERT_GE(contents_view2->children().size(), 1u);
+    views::View* toast_chip2 = contents_view2->children()[0];
+    ASSERT_TRUE(toast_chip2);
+
+    EXPECT_TRUE(toast_chip2->GetVisible());
+    EXPECT_EQ(toast_chip2->y(), 864 + 28);
+
+    // Secondary display width in overlay window coordinates:
+    // base::ClampRound(2048 * 1.25 / 1.5) = 1707.
+    int expected_toast2_x = 1440 + (1707 - toast_chip2->width()) / 2;
+    EXPECT_EQ(toast_chip2->x(), expected_toast2_x);
+  }
+}
+
+TEST_F(
+    OmniboxEverywhereRegionSelectOverlayTest,
+    ToastPositioning_SecondaryDisplayExtendingPastCanvasEdgeClampedToCanvas) {
+  // Primary display: [0, 0, 1000, 1000] at 1.0x scale.
+  display::Display display1(1, gfx::Rect(0, 0, 1000, 1000));
+  display1.set_device_scale_factor(1.0f);
+
+  // Secondary display: [1000, 0, 1000, 1000] at 2.0x scale.
+  // In native DIP space, total overlay width = 2000.
+  // In host DIP space, display2's scaled view width = 1000 * 2.0 / 1.0 = 2000,
+  // meaning its right edge (1000 + 2000 = 3000) extends past the canvas width
+  // (2000).
+  display::Display display2(2, gfx::Rect(1000, 0, 1000, 1000));
+  display2.set_device_scale_factor(2.0f);
+
+  SetDisplays({display1, display2});
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(3000, 1000);
+  bitmap.eraseColor(SK_ColorBLUE);
+
+  SetCursorScreenPoint(gfx::Point(1500, 500));
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->widget());
+
+  views::View* contents_view = overlay->widget()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+  ASSERT_GE(contents_view->children().size(), 1u);
+  views::View* toast_chip = contents_view->children()[0];
+  ASSERT_TRUE(toast_chip);
+
+  EXPECT_TRUE(toast_chip->GetVisible());
+  EXPECT_EQ(toast_chip->y(), 28);
+  // Allowed bounds are intersected with canvas [0, 0, 2000, 1000], giving
+  // [1000, 0, 1000, 1000]. Toast right edge must not exceed canvas width 2000.
+  EXPECT_LE(toast_chip->x() + toast_chip->width(), contents_view->width());
+  EXPECT_GE(toast_chip->x(), 1000);
+  EXPECT_EQ(toast_chip->x(), 2000 - toast_chip->width());
 }
 
 }  // namespace omnibox_everywhere
