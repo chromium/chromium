@@ -5,9 +5,13 @@
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_controller.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/pref_url_list_matcher.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
@@ -38,33 +42,45 @@ SaasUsageReportingController::~SaasUsageReportingController() = default;
 
 void SaasUsageReportingController::RecordNavigation(
     const NavigationDataDelegate& delegate) const {
-  RecordUsage(delegate.GetUrl(), delegate.GetEncryptionProtocol());
+  if (DomainMatches matches = MatchDomains(delegate.GetUrl());
+      matches.HasMatch()) {
+    delegate.GetEncryptionProtocol(base::BindOnce(
+        &SaasUsageReportingController::OnEncryptionProtocolFetched,
+        weak_ptr_factory_.GetWeakPtr(), std::move(matches)));
+  }
 }
 
 void SaasUsageReportingController::RecordGeminiInChromeUsage() const {
-  if (base::FeatureList::IsEnabled(kGeminiInChromeUsageReporting)) {
-    RecordUsage(GURL(kGeminiInChromeUsageUrl), /*encryption_protocol=*/"");
+  if (!base::FeatureList::IsEnabled(kGeminiInChromeUsageReporting)) {
+    return;
+  }
+  if (DomainMatches matches = MatchDomains(GURL(kGeminiInChromeUsageUrl));
+      matches.HasMatch()) {
+    OnEncryptionProtocolFetched(std::move(matches), /*encryption_protocol=*/"");
   }
 }
 
-void SaasUsageReportingController::RecordUsage(
-    const GURL& url,
+void SaasUsageReportingController::OnEncryptionProtocolFetched(
+    DomainMatches matches,
     std::string_view encryption_protocol) const {
-  std::optional<std::string> profile_matched_domain =
-      profile_matcher_->GetMatchedURL(url);
-  if (profile_matched_domain) {
+  if (matches.profile_domain) {
     enterprise_reporting::RecordNavigation(profile_pref_service_.get(),
-                                           profile_matched_domain.value(),
+                                           matches.profile_domain.value(),
                                            encryption_protocol);
   }
-
-  std::optional<std::string> browser_matched_domain =
-      browser_matcher_->GetMatchedURL(url);
-  if (browser_matched_domain) {
+  if (matches.browser_domain) {
     enterprise_reporting::RecordNavigation(local_state_pref_service_.get(),
-                                           browser_matched_domain.value(),
+                                           matches.browser_domain.value(),
                                            encryption_protocol);
   }
+}
+
+SaasUsageReportingController::DomainMatches
+SaasUsageReportingController::MatchDomains(const GURL& url) const {
+  return {
+      .browser_domain = browser_matcher_->GetMatchedURL(url),
+      .profile_domain = profile_matcher_->GetMatchedURL(url),
+  };
 }
 
 }  // namespace enterprise_reporting

@@ -4,6 +4,11 @@
 
 #include "chrome/browser/enterprise/reporting/saas_usage/navigation_handle_data_delegate.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/functional/bind.h"
+#include "base/test/test_future.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
@@ -11,6 +16,17 @@
 #include "url/gurl.h"
 
 namespace enterprise_reporting {
+
+namespace {
+
+std::string GetEncryptionProtocol(
+    const NavigationHandleDataDelegate& delegate) {
+  base::test::TestFuture<std::string_view> result;
+  delegate.GetEncryptionProtocol(result.GetCallback());
+  return std::string(result.Get());
+}
+
+}  // namespace
 
 class NavigationHandleDataDelegateTest : public testing::Test {};
 
@@ -28,7 +44,7 @@ TEST_F(NavigationHandleDataDelegateTest, GetEncryptionProtocol_NoSslInfo) {
   navigation_handle.set_url(GURL("http://example.com/"));
 
   NavigationHandleDataDelegate delegate(navigation_handle);
-  EXPECT_EQ("Unencrypted", delegate.GetEncryptionProtocol());
+  EXPECT_EQ("Unencrypted", GetEncryptionProtocol(delegate));
 }
 
 TEST_F(NavigationHandleDataDelegateTest, GetEncryptionProtocol_UnknownVersion) {
@@ -39,7 +55,7 @@ TEST_F(NavigationHandleDataDelegateTest, GetEncryptionProtocol_UnknownVersion) {
   navigation_handle.set_ssl_info(ssl_info);
 
   NavigationHandleDataDelegate delegate(navigation_handle);
-  EXPECT_EQ("Unknown", delegate.GetEncryptionProtocol());
+  EXPECT_EQ("Unknown", GetEncryptionProtocol(delegate));
 }
 
 struct EncryptionProtocolTestParam {
@@ -61,7 +77,7 @@ TEST_P(NavigationHandleDataDelegateEncryptionTest, GetEncryptionProtocol) {
   navigation_handle.set_ssl_info(ssl_info);
 
   NavigationHandleDataDelegate delegate(navigation_handle);
-  EXPECT_EQ(param.expected_protocol, delegate.GetEncryptionProtocol());
+  EXPECT_EQ(param.expected_protocol, GetEncryptionProtocol(delegate));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

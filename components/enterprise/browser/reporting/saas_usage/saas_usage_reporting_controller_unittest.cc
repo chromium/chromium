@@ -31,13 +31,42 @@ class FakeNavigationDataDelegate
   ~FakeNavigationDataDelegate() override = default;
 
   GURL GetUrl() const override { return url_; }
-  std::string GetEncryptionProtocol() const override {
-    return encryption_protocol_;
+  void GetEncryptionProtocol(
+      EncryptionProtocolCallback callback) const override {
+    std::move(callback).Run(encryption_protocol_);
   }
 
  private:
   GURL url_;
   std::string encryption_protocol_;
+};
+
+class CallbackCapturingNavigationDataDelegate
+    : public SaasUsageReportingController::NavigationDataDelegate {
+ public:
+  explicit CallbackCapturingNavigationDataDelegate(GURL url)
+      : url_(std::move(url)) {}
+  ~CallbackCapturingNavigationDataDelegate() override = default;
+
+  GURL GetUrl() const override { return url_; }
+  void GetEncryptionProtocol(
+      EncryptionProtocolCallback callback) const override {
+    protocol_callback_count_++;
+    saved_callback_ = std::move(callback);
+  }
+
+  int protocol_callback_count() const { return protocol_callback_count_; }
+
+  void RunCallback(std::string_view protocol) {
+    if (saved_callback_) {
+      std::move(saved_callback_).Run(protocol);
+    }
+  }
+
+ private:
+  GURL url_;
+  mutable int protocol_callback_count_ = 0;
+  mutable EncryptionProtocolCallback saved_callback_;
 };
 
 class SaasUsageReportingControllerTest : public testing::Test {
@@ -190,6 +219,50 @@ TEST_F(SaasUsageReportingControllerTest, RecordGeminiInChromeUsage) {
   // with an empty encryption protocol.
   VerifyReportEntry(GetBrowserReport(), "gemini-in-chrome", 1, {});
   VerifyReportEntry(GetProfileReport(), "gemini-in-chrome", 1, {});
+}
+
+TEST_F(SaasUsageReportingControllerTest, NoMatch_DoesNotLookupProtocol) {
+  SetBrowserUrls({"google.com"});
+  SetProfileUrls({"google.com"});
+
+  CallbackCapturingNavigationDataDelegate delegate(
+      GURL("https://example.com/page"));
+  controller_->RecordNavigation(delegate);
+
+  EXPECT_EQ(0, delegate.protocol_callback_count());
+  EXPECT_TRUE(GetBrowserReport().empty());
+  EXPECT_TRUE(GetProfileReport().empty());
+}
+
+TEST_F(SaasUsageReportingControllerTest,
+       RecordNavigation_AsynchronousProtocolResolution) {
+  SetBrowserUrls({"example.com"});
+
+  CallbackCapturingNavigationDataDelegate delegate(
+      GURL("https://example.com/page"));
+  controller_->RecordNavigation(delegate);
+
+  EXPECT_EQ(1, delegate.protocol_callback_count());
+  EXPECT_TRUE(GetBrowserReport().empty());
+
+  delegate.RunCallback("TLS 1.3");
+
+  VerifyReportEntry(GetBrowserReport(), "example.com", 1, {"TLS 1.3"});
+}
+
+TEST_F(SaasUsageReportingControllerTest,
+       RecordNavigation_DestroyedControllerDoesNotCrash) {
+  SetBrowserUrls({"example.com"});
+
+  CallbackCapturingNavigationDataDelegate delegate(
+      GURL("https://example.com/page"));
+  controller_->RecordNavigation(delegate);
+
+  EXPECT_EQ(1, delegate.protocol_callback_count());
+  controller_.reset();
+
+  delegate.RunCallback("TLS 1.3");
+  EXPECT_TRUE(GetBrowserReport().empty());
 }
 
 }  // namespace enterprise_reporting

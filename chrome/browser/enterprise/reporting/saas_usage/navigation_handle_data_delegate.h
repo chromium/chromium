@@ -23,7 +23,8 @@ class NavigationHandleDataDelegate
 
   // SaasUsageReportingController::NavigationDataDelegate
   GURL GetUrl() const override;
-  std::string GetEncryptionProtocol() const override;
+  void GetEncryptionProtocol(
+      EncryptionProtocolCallback callback) const override;
 
  private:
   const raw_ref<content::NavigationHandle> navigation_handle_;

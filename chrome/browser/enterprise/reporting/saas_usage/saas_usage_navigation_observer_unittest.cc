@@ -4,10 +4,13 @@
 
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 
+#include <string>
 #include <string_view>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -16,8 +19,8 @@
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
@@ -45,17 +48,23 @@ class MockSaasUsageReportingController : public SaasUsageReportingController {
               (const, override));
 };
 
-auto SaasUsageNavigationMatcher(const GURL& url,
-                                const std::string& encryption_protocol) {
+std::string GetEncryptionProtocol(
+    const SaasUsageReportingController::NavigationDataDelegate& delegate) {
+  base::test::TestFuture<std::string_view> result;
+  delegate.GetEncryptionProtocol(result.GetCallback());
+  return std::string(result.Get());
+}
+
+auto SaasUsageNavigationMatcher(
+    const testing::Matcher<GURL>& url,
+    const testing::Matcher<std::string>& encryption_protocol) {
   return testing::AllOf(
       testing::Property(
           &SaasUsageReportingController::NavigationDataDelegate::GetUrl, url),
-      testing::Property(&SaasUsageReportingController::NavigationDataDelegate::
-                            GetEncryptionProtocol,
-                        encryption_protocol));
+      testing::ResultOf(&GetEncryptionProtocol, encryption_protocol));
 }
 
-auto SaasUsageNavigationMatcher(const GURL& url) {
+auto SaasUsageNavigationMatcher(const testing::Matcher<GURL>& url) {
   return testing::Property(
       &SaasUsageReportingController::NavigationDataDelegate::GetUrl, url);
 }
