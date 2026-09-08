@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -20,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,6 +30,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -109,7 +111,9 @@ base::Value GetCellularNetworkInfoValue(const NetworkState* network,
 
 class MobileSetupUIHTMLSource : public content::URLDataSource {
  public:
-  MobileSetupUIHTMLSource();
+  // `application_locale_storage` must not be null and must outlive `this`.
+  explicit MobileSetupUIHTMLSource(
+      const ApplicationLocaleStorage* application_locale_storage);
 
   MobileSetupUIHTMLSource(const MobileSetupUIHTMLSource&) = delete;
   MobileSetupUIHTMLSource& operator=(const MobileSetupUIHTMLSource&) = delete;
@@ -131,6 +135,8 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
   }
 
  private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   base::WeakPtrFactory<MobileSetupUIHTMLSource> weak_ptr_factory_{this};
 };
 
@@ -196,7 +202,9 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-MobileSetupUIHTMLSource::MobileSetupUIHTMLSource() = default;
+MobileSetupUIHTMLSource::MobileSetupUIHTMLSource(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 std::string MobileSetupUIHTMLSource::GetSource() {
   return ash::kChromeUIMobileSetupHost;
@@ -256,8 +264,7 @@ void MobileSetupUIHTMLSource::StartDataRequest(
   strings.Set("cancel_button", l10n_util::GetStringUTF16(IDS_CANCEL));
   strings.Set("ok_button", l10n_util::GetStringUTF16(IDS_OK));
 
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  webui::SetLoadTimeDataDefaults(app_locale, &strings);
+  webui::SetLoadTimeDataDefaults(application_locale_storage_->Get(), &strings);
 
   // mobile_setup_ui.cc will only be triggered from the detail page for
   // activated cellular network.
@@ -411,16 +418,41 @@ void MobileSetupHandler::UpdatePortalReachability(const NetworkState* network,
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+// MobileSetupUIConfig
+//
+////////////////////////////////////////////////////////////////////////////////
+
+MobileSetupUIConfig::MobileSetupUIConfig(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : WebUIConfig(content::kChromeUIScheme, ash::kChromeUIMobileSetupHost),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+
+MobileSetupUIConfig::~MobileSetupUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+MobileSetupUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                           const GURL& url) {
+  return std::make_unique<MobileSetupUI>(web_ui,
+                                         &application_locale_storage_.get());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
 // MobileSetupUI
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-MobileSetupUI::MobileSetupUI(content::WebUI* web_ui) : ui::WebDialogUI(web_ui) {
+MobileSetupUI::MobileSetupUI(
+    content::WebUI* web_ui,
+    const ApplicationLocaleStorage* application_locale_storage)
+    : ui::WebDialogUI(web_ui) {
+  CHECK(application_locale_storage);
   web_ui->AddMessageHandler(std::make_unique<MobileSetupHandler>());
 
   // Set up the chrome://mobilesetup/ source.
-  content::URLDataSource::Add(Profile::FromWebUI(web_ui),
-                              std::make_unique<MobileSetupUIHTMLSource>());
+  content::URLDataSource::Add(
+      Profile::FromWebUI(web_ui),
+      std::make_unique<MobileSetupUIHTMLSource>(application_locale_storage));
 }
 
 MobileSetupUI::~MobileSetupUI() = default;

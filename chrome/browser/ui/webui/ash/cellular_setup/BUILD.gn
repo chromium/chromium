@@ -26,11 +26,11 @@ static_library("cellular_setup") {
   deps = [
     "//ash/constants",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:simple_message_box_headers",
     "//chromeos/ash/components/network",
+    "//components/application_locale_storage",
     "//components/login",
     "//components/strings:components_strings",
     "//content/public/browser",

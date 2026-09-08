@@ -369,7 +369,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
   AddWebUIConfig(MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,
                                                  ChromeCameraAppUIDelegate>());
-  AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>());
+  AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>(
+      &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<chromeos::ChromeURLDisabledUIConfig>());
   AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
   AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
