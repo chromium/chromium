@@ -8,8 +8,11 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
@@ -74,9 +78,16 @@ class SignedWebBundleMetadataTest : public WebAppTest {
   IsolatedWebAppUrlInfo WriteBundleToDisk(
       TestSignedWebBundleBuilder::BuildOptions options =
           TestSignedWebBundleBuilder::BuildOptions()) {
+    return WriteBundleToDiskForProfile(profile(), options);
+  }
+
+  IsolatedWebAppUrlInfo WriteBundleToDiskForProfile(
+      Profile* target_profile,
+      TestSignedWebBundleBuilder::BuildOptions options =
+          TestSignedWebBundleBuilder::BuildOptions()) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     auto bundle = TestSignedWebBundleBuilder::BuildDefault(options);
-    base::FilePath bundle_path = location_.GetPath(profile()->GetPath());
+    base::FilePath bundle_path = location_.GetPath(target_profile->GetPath());
     EXPECT_TRUE(base::CreateDirectory(bundle_path.DirName()));
     EXPECT_TRUE(base::WriteFile(bundle_path, bundle.data));
 
@@ -84,7 +95,13 @@ class SignedWebBundleMetadataTest : public WebAppTest {
   }
 
   IwaSourceBundleProdMode bundle_source() const {
-    return IwaSourceBundleProdMode(location_.GetPath(profile()->GetPath()));
+    return bundle_source_for_profile(profile());
+  }
+
+  IwaSourceBundleProdMode bundle_source_for_profile(
+      Profile* target_profile) const {
+    return IwaSourceBundleProdMode(
+        location_.GetPath(target_profile->GetPath()));
   }
 
   void MockIconAndPageState(FakeWebContentsManager& fake_web_contents_manager,
@@ -161,6 +178,42 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
       metadata,
       ErrorIs(HasSubstr("Failed to parse integrity block: Invalid integrity "
                         "block array length: expected 4, got 6.")));
+}
+
+TEST_F(SignedWebBundleMetadataTest, ProfileDestroyedDuringFetchDoesNotCrash) {
+  TestingProfile* temp_profile =
+      profile_manager().CreateTestingProfile("temp_profile");
+  test::AwaitStartWebAppProviderAndSubsystems(temp_profile);
+  auto* temp_provider = FakeWebAppProvider::Get(temp_profile);
+
+  IsolatedWebAppUrlInfo url_info = WriteBundleToDiskForProfile(temp_profile);
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
+
+  base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
+      metadata_future;
+
+  bool profile_deleted = false;
+  base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
+      "WebApp.Isolated.SwbnFileUsabilitySuccess",
+      base::BindLambdaForTesting([&](std::string_view name, uint64_t,
+                                     base::HistogramBase::Sample32 sample) {
+        if (!profile_deleted) {
+          profile_deleted = true;
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindLambdaForTesting([&]() {
+                profile_manager().DeleteTestingProfile("temp_profile");
+              }));
+        }
+      }));
+
+  SignedWebBundleMetadata::Create(temp_profile, temp_provider, url_info,
+                                  bundle_source_for_profile(temp_profile),
+                                  metadata_future.GetCallback());
+
+  base::expected<SignedWebBundleMetadata, std::string> metadata =
+      metadata_future.Get();
+  EXPECT_THAT(metadata, base::test::ErrorIs(
+                            testing::HasSubstr("Profile is shutting down")));
 }
 
 }  // namespace

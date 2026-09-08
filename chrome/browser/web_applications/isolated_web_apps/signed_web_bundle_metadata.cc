@@ -40,8 +40,8 @@ class WebAppInstallInfoFetcher {
                                     WebAppProvider* provider,
                                     const IsolatedWebAppUrlInfo& url_info,
                                     const IwaSourceBundleWithMode& source)
-      : profile_(*profile),
-        provider_(*provider),
+      : profile_(profile->GetWeakPtr()),
+        provider_(provider->AsWeakPtr()),
         source_(source),
         url_info_(url_info) {}
 
@@ -64,9 +64,13 @@ class WebAppInstallInfoFetcher {
   }
 
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback) {
+    if (!profile_ || !provider_) {
+      FailWithError("Profile is shutting down.");
+      return;
+    }
     web_app::CheckTrustAndSignatures(
         url_info_.web_bundle_id(), source_, IwaMetadataReadingOperation{},
-        &*profile_,
+        profile_.get(),
         base::BindOnce(&WebAppInstallInfoFetcher::OnTrustAndSignaturesChecked,
                        weak_factory_.GetWeakPtr(),
                        std::move(next_step_callback)));
@@ -74,6 +78,10 @@ class WebAppInstallInfoFetcher {
 
   void OnTrustAndSignaturesChecked(base::OnceClosure next_step_callback,
                                    TrustCheckResult trust_check_result) {
+    if (!profile_ || !provider_) {
+      FailWithError("Profile is shutting down.");
+      return;
+    }
     RETURN_IF_ERROR(trust_check_result,
                     [&](const std::string& error) { FailWithError(error); });
     std::move(next_step_callback).Run();
@@ -82,6 +90,10 @@ class WebAppInstallInfoFetcher {
   void PrepareInstallInfo(
       base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
           next_step_callback) {
+    if (!profile_ || !provider_) {
+      FailWithError("Profile is shutting down.");
+      return;
+    }
     prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
         *profile_, source_, IwaMetadataReadingOperation{},
         /*expected_version=*/std::nullopt, url_info_,
@@ -94,6 +106,11 @@ class WebAppInstallInfoFetcher {
       PrepareInstallInfoJob::InstallInfoOrFailure result) {
     prepare_install_info_job_.reset();
 
+    if (!profile_ || !provider_) {
+      FailWithError("Profile is shutting down.");
+      return;
+    }
+
     ASSIGN_OR_RETURN(
         WebAppInstallInfo install_info, std::move(result),
         [&](const auto& failure) { FailWithError(failure.message); });
@@ -102,8 +119,8 @@ class WebAppInstallInfoFetcher {
     std::move(callback_).Run(std::move(install_info));
   }
 
-  const raw_ref<Profile> profile_;
-  const raw_ref<WebAppProvider> provider_;
+  base::WeakPtr<Profile> profile_;
+  base::WeakPtr<WebAppProvider> provider_;
 
   IwaSourceBundleWithMode source_;
   IsolatedWebAppUrlInfo url_info_;
