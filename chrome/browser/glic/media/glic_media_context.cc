@@ -32,10 +32,7 @@ namespace glic {
 DOCUMENT_USER_DATA_KEY_IMPL(GlicMediaContext);
 
 GlicMediaContext::GlicMediaContext(content::RenderFrameHost* frame)
-    : DocumentUserData(frame),
-      // It is safe to access the frame here because DocumentUserData ensures
-      // that GlicMediaContext is only constructed for a valid RenderFrameHost.
-      ukm_source_id_(frame->GetPageUkmSourceId()) {}
+    : DocumentUserData(frame) {}
 
 GlicMediaContext::~GlicMediaContext() {
   // If we got any transcript, then record its max length we saw as its total.
@@ -49,9 +46,16 @@ GlicMediaContext::~GlicMediaContext() {
     }
   }
 
-  ukm::builders::Glic_MediaContext(ukm_source_id_)
-      .SetHasTranscript(has_recorded_any_final_chunk_)
-      .Record(ukm::UkmRecorder::Get());
+  const bool is_prerendering = render_frame_host().IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPrerendering);
+
+  // UKM recording is not allowed during prerendering. GetPageUkmSourceId()
+  // will CHECK-fail if called while the frame is still prerendering.
+  if (!is_prerendering) {
+    ukm::builders::Glic_MediaContext(render_frame_host().GetPageUkmSourceId())
+        .SetHasTranscript(has_recorded_any_final_chunk_)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {

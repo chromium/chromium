@@ -151,8 +151,6 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   size_t num_peer_connections_ = 0;
 
-  ukm::SourceId ukm_source_id_;
-
   // Set to true if any final transcript chunk was recorded for any title.
   bool has_recorded_any_final_chunk_ = false;
 };
