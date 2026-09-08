@@ -442,6 +442,48 @@ SuggestResponseMetadata ParseSuggestResponseMetadata(
 
   return metadata;
 }
+
+void PopulateSuggestTemplateInfoFromEntityInfo(
+    const omnibox::EntityInfo& entity_info,
+    omnibox::SuggestTemplateInfo* suggest_template_info) {
+  suggest_template_info->set_style(omnibox::SuggestTemplateInfo::ENRICHED);
+  if (entity_info.has_name()) {
+    suggest_template_info->mutable_primary_text()->set_text(entity_info.name());
+  }
+
+  if (entity_info.has_annotation()) {
+    suggest_template_info->mutable_secondary_text()->set_text(
+        entity_info.annotation());
+  }
+
+  if (entity_info.has_image_url()) {
+    suggest_template_info->mutable_image()->set_url(entity_info.image_url());
+    if (entity_info.has_dominant_color()) {
+      suggest_template_info->mutable_image()->set_dominant_color(
+          entity_info.dominant_color());
+    }
+  }
+
+  if (entity_info.has_suggest_search_parameters()) {
+    base::StringPairs kv_pairs;
+    base::SplitStringIntoKeyValuePairs(entity_info.suggest_search_parameters(),
+                                       '=', '&', &kv_pairs);
+    for (const auto& pair : kv_pairs) {
+      (*suggest_template_info
+            ->mutable_default_search_parameters())[pair.first] = pair.second;
+    }
+  }
+
+  for (const auto& action : entity_info.action_suggestions()) {
+    auto* template_action = suggest_template_info->add_action_suggestions();
+    template_action->set_action_uri(action.action_uri());
+    template_action->set_logs_action_type(action.logs_action_type());
+    template_action->set_action_type(
+        static_cast<omnibox::SuggestTemplateInfo::TemplateAction::ActionType>(
+            action.action_type()));
+    *template_action->mutable_search_parameters() = action.search_parameters();
+  }
+}
 }  // namespace
 
 omnibox::SuggestSubtype SuggestSubtypeForNumber(int value) {
@@ -1094,8 +1136,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
         // Entity.
         const auto* entity_info_string =
             suggestion_detail.FindString("google:entityinfo");
-        DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
-                                                   entity_info);
+        bool has_entity_info = DecodeProtoFromBase64<omnibox::EntityInfo>(
+            entity_info_string, entity_info);
 
         // Suggest Template Info.
         const auto* suggest_info_string =
@@ -1120,6 +1162,15 @@ bool SearchSuggestionParser::ParseSuggestResults(
         if (suggest_template.has_rich_answer_template()) {
           answer_template = suggest_template.rich_answer_template();
           answer_parsed_successfully = true;
+        }
+
+        // Entity to SUIT Fallback Translation Layer.
+        // If the server sends legacy EntityInfo without SuggestTemplateInfo,
+        // we synthesize a SuggestTemplateInfo on the client.
+        if (!has_suggest_template && has_entity_info) {
+          has_suggest_template = true;
+          PopulateSuggestTemplateInfoFromEntityInfo(entity_info,
+                                                    &suggest_template_info);
         }
       }
 
