@@ -224,15 +224,12 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
 
   // 2. Initialize Hunspell dictionaries.
   if (run_hunspell_init) {
-    if (defer_spellcheck) {
-      content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&SpellcheckService::InitializeDictionaries,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    base::DoNothing()));
-    } else {
-      InitializeDictionaries(base::DoNothing());
-    }
+    // Do initialization directly instead of as a posted task. Hunspell
+    // dictionary file loading already runs asynchronously on a background
+    // task runner, but the dictionary objects and metrics must be registered
+    // synchronously so that renderers created during startup know spellcheck
+    // is enabled and do not disable spelling services.
+    InitializeDictionaries(base::DoNothing());
   }
 }
 
