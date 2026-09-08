@@ -496,16 +496,15 @@ gfx::Size ConstrainedDialogWebView::CalculatePreferredSize(
 }
 
 gfx::Size ConstrainedDialogWebView::GetMinimumSize() const {
-  return AutoResizeMinSize();
+  return min_size();
 }
 
 gfx::Size ConstrainedDialogWebView::GetMaximumSize() const {
-  return !AutoResizeMaxSize().IsEmpty() ? AutoResizeMaxSize()
-                                        : WebView::GetMaximumSize();
+  return !max_size().IsEmpty() ? max_size() : WebView::GetMaximumSize();
 }
 
 void ConstrainedDialogWebView::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (!AutoResizeMaxSize().IsEmpty() && initiator_web_contents_) {
+  if (!max_size().IsEmpty() && initiator_web_contents_) {
     content::WebContents* top_level_web_contents =
         constrained_window::GetTopLevelWebContents(
             initiator_web_contents_.get());

@@ -215,14 +215,6 @@ void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
   }
 }
 
-const gfx::Size& WebView::AutoResizeMinSize() const {
-  return min_size_;
-}
-
-const gfx::Size& WebView::AutoResizeMaxSize() const {
-  return max_size_;
-}
-
 void WebView::TakeCrashedOverlayViewImpl(
     std::unique_ptr<View> crashed_overlay_view,
     ReturnCrashOverlayToOwnerCallback return_to_owner) {
