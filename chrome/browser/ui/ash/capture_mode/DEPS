@@ -35,9 +35,6 @@ include_rules = [
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common",
-  "+chrome/test",
-  "+components/lens/proto/server",
-  "+third_party/lens_server_proto",
 ]
 
 specific_include_rules = {

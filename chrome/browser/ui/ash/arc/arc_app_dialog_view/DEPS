@@ -8,12 +8,7 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list",
-  "+chrome/browser/ash/app_list/app_service",
-  "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/arc/session",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/test/base",
 ]

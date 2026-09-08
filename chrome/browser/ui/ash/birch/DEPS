@@ -24,9 +24,7 @@ include_rules = [
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/ash/main_extra_parts",
-  "+chrome/common",
   "+chrome/grit",
-  "+chrome/test",
 ]
 
 specific_include_rules = {
