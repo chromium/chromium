@@ -8,9 +8,11 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
-#include "chrome/browser/sync/sync_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/sync/sync_service_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/sync/base/data_type.h"
@@ -68,8 +70,17 @@ void AppDiscoveryMetricsManager::OnLauncherOpen() {
 }
 
 bool AppDiscoveryMetricsManager::IsAppSyncEnabled() {
-  switch (syncer::GetUploadToGoogleState(
-      SyncServiceFactory::GetForProfile(profile_), syncer::DataType::APPS)) {
+  // Guest and other non-user profiles carry no usable AccountId -- the
+  // annotation is either absent or an empty, invalid AccountId -- and so have
+  // no SyncService. GetUploadToGoogleState() treats that the same as the null
+  // the Profile-keyed factory used to return for them.
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_);
+  const syncer::SyncService* sync_service =
+      account_id && account_id->is_valid()
+          ? ash::SyncServiceProvider::Get().Find(*account_id)
+          : nullptr;
+  switch (
+      syncer::GetUploadToGoogleState(sync_service, syncer::DataType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     case syncer::UploadState::INITIALIZING:

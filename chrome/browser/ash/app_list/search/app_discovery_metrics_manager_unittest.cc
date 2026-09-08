@@ -12,6 +12,10 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/sync/fake_sync_service_provider.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
@@ -20,10 +24,15 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
 namespace {
+
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@example.com",
+                                            GaiaId::Literal("fake-gaia-id"));
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
@@ -91,6 +100,14 @@ class AppDiscoveryMetricsManagerTest : public testing::Test {
             testing_profile_.get(),
             base::BindRepeating(&TestingSyncFactoryFunction)));
 
+    // AppDiscoveryMetricsManager reaches the SyncService through
+    // ash::SyncServiceProvider now, which is keyed on AccountId, so the test
+    // profile needs an account and the fake provider needs to map it to the
+    // TestSyncService installed above.
+    ash::AnnotatedAccountId::Set(testing_profile_.get(), kTestAccountId);
+    sync_service_provider_.SetSyncServiceForAccount(kTestAccountId,
+                                                    sync_service_);
+
     app_discovery_metrics_ =
         std::make_unique<AppDiscoveryMetricsManager>(testing_profile_.get());
   }
@@ -142,6 +159,11 @@ class AppDiscoveryMetricsManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> testing_profile_;
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
+
+  // Declared after `testing_profile_` so it is destroyed first: it holds a
+  // raw_ptr to the TestSyncService that the profile's keyed-service
+  // infrastructure owns.
+  ash::FakeSyncServiceProvider sync_service_provider_;
   std::unique_ptr<AppDiscoveryMetricsManager> app_discovery_metrics_;
 
   std::unique_ptr<TestRecorder> test_recorder_;
