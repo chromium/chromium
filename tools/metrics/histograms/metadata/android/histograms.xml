@@ -6254,6 +6254,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.TabGroupSync.WindowStateOnFailedOpen"
     enum="TabGroupCreationFinalSelections" expires_after="2026-11-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -6264,7 +6266,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.ActiveTabs.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>bbetini@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -6275,7 +6279,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.ActiveTabsPicked.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>bbetini@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -6285,8 +6291,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.BackgroundTabs.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     Records the number of background tabs that are shown for the tab picker.
@@ -6296,7 +6303,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.CachedTabs.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>bbetini@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -6307,7 +6316,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.CachedTabsPicked.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>bbetini@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -6318,6 +6329,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.TabItemPicker.Cancel.SelectedTabs.Count" units="count"
     expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -6327,7 +6340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.OnDemandLoadDuration.{Result}"
-    units="ms" expires_after="2026-09-20">
+    units="ms" expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>madhavpruthi@google.com</owner>
   <summary>
@@ -6344,7 +6357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.OnDemandThumbnailFetchDuration"
-    units="ms" expires_after="2026-09-20">
+    units="ms" expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>madhavpruthi@google.com</owner>
   <summary>
@@ -6354,7 +6367,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.SelectableTabs.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>haileywang@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -6364,7 +6379,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabItemPicker.SelectedTabs.Count" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-07-07">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
   <owner>haileywang@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -6675,7 +6692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ThumbnailCache.InMemoryCacheEntries"
-    units="thumbnails" expires_after="2026-09-20">
+    units="thumbnails" expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
@@ -6686,7 +6703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ThumbnailCache.InMemoryCacheSize" units="KiB"
-    expires_after="2026-09-20">
+    expires_after="2027-07-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
