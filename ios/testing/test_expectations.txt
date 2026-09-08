@@ -121,3 +121,6 @@ crbug.com/557277880 [ iPad Simulator ] FeatureEngagementTestCase/testRequestDesk
 crbug.com/557278187 [ iPad Simulator ] TabStripGroupTestCase/testDragLastTabOutOfGroupCancel [ Pass Failure ]
 crbug.com/557278123 [ iPhone Simulator ] PinnedTabsDragDropTestCase/testDragRegularTabInPinnedView [ Pass Failure ]
 crbug.com/557276970 [ iPhone Simulator ] PinnedTabsGenericConsistencyTestCase/testCloseAllPinnedThenRegularTabs [ Pass Failure ]
+
+# Gardening suppression 2026-09-08
+crbug.com/556842646 [ Simulator ] AutofillAIEGTest/testWalletFailureShowsErrorDialog [ Pass Failure ]
