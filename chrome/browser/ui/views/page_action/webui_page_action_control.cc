@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -169,6 +169,8 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // controller if the model still requested an anchored message.
   void OnAnchoredMessageWidgetClose(views::Widget::ClosedReason closed_reason);
 
+  void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
+
   const actions::ActionId action_id_;
   // Safe because the ActionItem tree is owned by BrowserActions (via
   // BrowserWindowFeatures), which is owned by Browser. The delegate is owned
@@ -320,10 +322,8 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
 void WebUIPageActionControl::WebUIPageActionDelegate::
     OnPageActionModelWillBeDeleted(
         const page_actions::PageActionModelInterface& model) {
-  if (anchored_message_widget_ && !anchored_message_widget_->IsClosed()) {
-    anchored_message_widget_->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
-  }
+  anchored_message_ = nullptr;
+  anchored_message_widget_.reset();
   element_shown_subscription_ = {};
   observation_.Reset();
   action_item_subscription_ = {};
@@ -573,14 +573,23 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
   }
   CHECK(anchored_message_widget_);
   anchored_message_ = nullptr;
-  if (anchored_message_widget_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(anchored_message_widget_));
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebUIPageActionControl::WebUIPageActionDelegate::CloseWidgetDeferred,
+          weak_factory_.GetWeakPtr(), anchored_message_widget_->GetWeakPtr()));
 
   if (observation_.IsObserving() &&
       observation_.GetSource()->ShouldShowAnchoredMessage()) {
     CloseAnchoredMessage();
+  }
+}
+
+void WebUIPageActionControl::WebUIPageActionDelegate::CloseWidgetDeferred(
+    base::WeakPtr<views::Widget> widget_to_close) {
+  if (anchored_message_widget_ &&
+      anchored_message_widget_.get() == widget_to_close.get()) {
+    anchored_message_widget_.reset();
   }
 }
 
