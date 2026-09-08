@@ -20,7 +20,9 @@
 
 namespace net {
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Property;
 
 TEST(ParsedCookieTest, TestBasic) {
   ParsedCookie pc1("a=b");
@@ -862,6 +864,62 @@ TEST(ParsedCookieTest, MultipleDomainAttributes) {
   EXPECT_EQ("bar.com", pc1.Domain());
   ParsedCookie pc2("name=value; domain=foo.com; domain=");
   EXPECT_EQ(std::string(), pc2.Domain());
+}
+
+// Set the SameSite attribute multiple times in a cookie line. The last
+// attribute determines the SameSite mode, even if preceding or succeeding
+// attributes are unrecognized or invalid.
+TEST(ParsedCookieTest, MultipleSameSiteAttributes) {
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=None; SameSite=blah"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(
+                                 CookieSameSite::UNSPECIFIED,
+                                 CookieSameSiteString::kUnrecognized))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=blah; SameSite=None"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(CookieSameSite::NO_RESTRICTION,
+                                            CookieSameSiteString::kNone))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=None; SameSite=Lax"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(CookieSameSite::LAX_MODE,
+                                            CookieSameSiteString::kLax))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=Lax; SameSite=Strict"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(CookieSameSite::STRICT_MODE,
+                                            CookieSameSiteString::kStrict))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=Strict; SameSite=None"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(CookieSameSite::NO_RESTRICTION,
+                                            CookieSameSiteString::kNone))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=blah; SameSite=invalid"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(
+                                 CookieSameSite::UNSPECIFIED,
+                                 CookieSameSiteString::kUnrecognized))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=None; SameSite="),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(
+                                 CookieSameSite::UNSPECIFIED,
+                                 CookieSameSiteString::kEmptyString))));
+
+  EXPECT_THAT(ParsedCookie("name=value; SameSite=; SameSite=None"),
+              AllOf(Property(&ParsedCookie::IsValid, true),
+                    Property(&ParsedCookie::SameSite,
+                             std::make_pair(CookieSameSite::NO_RESTRICTION,
+                                            CookieSameSiteString::kNone))));
 }
 
 TEST(ParsedCookieTest, SetPriority) {

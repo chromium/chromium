@@ -684,6 +684,39 @@ TEST(CanonicalCookieTest, CreateNonStandardSameSite) {
   EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
 }
 
+TEST(CanonicalCookieTest, CreateMultipleSameSite) {
+  GURL url("http://www.example.com/test/foo.html");
+  base::Time now = base::Time::Now();
+  std::optional<base::Time> server_time = std::nullopt;
+
+  // When multiple SameSite attributes are present, the last one takes
+  // precedence. An unrecognized trailing attribute results in
+  // CookieSameSite::UNSPECIFIED.
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::CreateForTesting(
+      url, "A=2; SameSite=None; SameSite=blah", now, CookieSourceType::kOther,
+      server_time);
+  ASSERT_TRUE(cookie);
+  EXPECT_EQ(CookieSameSite::UNSPECIFIED, cookie->SameSite());
+
+  cookie = CanonicalCookie::CreateForTesting(
+      url, "A=2; SameSite=blah; SameSite=None", now, CookieSourceType::kOther,
+      server_time);
+  ASSERT_TRUE(cookie);
+  EXPECT_EQ(CookieSameSite::NO_RESTRICTION, cookie->SameSite());
+
+  cookie = CanonicalCookie::CreateForTesting(
+      url, "A=2; SameSite=Strict; SameSite=Lax", now, CookieSourceType::kOther,
+      server_time);
+  ASSERT_TRUE(cookie);
+  EXPECT_EQ(CookieSameSite::LAX_MODE, cookie->SameSite());
+
+  cookie = CanonicalCookie::CreateForTesting(
+      url, "A=2; SameSite=Lax; SameSite=Strict", now, CookieSourceType::kOther,
+      server_time);
+  ASSERT_TRUE(cookie);
+  EXPECT_EQ(CookieSameSite::STRICT_MODE, cookie->SameSite());
+}
+
 TEST(CanonicalCookieTest, CreateSameSiteInCrossSiteContexts) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time now = base::Time::Now();
