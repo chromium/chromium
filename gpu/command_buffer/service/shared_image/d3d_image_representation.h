@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_image/d3d_access_object.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
@@ -132,7 +133,7 @@ class D3DVideoImageRepresentation : public VideoImageRepresentation {
   D3DVideoImageRepresentation(SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
-                              Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+                              D3DAccessObject access_object,
                               D3D11TextureAndArrayIndex d3d11_texture);
   ~D3DVideoImageRepresentation() override;
 
@@ -143,7 +144,7 @@ class D3DVideoImageRepresentation : public VideoImageRepresentation {
   void EndReadAccess() override;
   D3D11TextureAndArrayIndex GetD3D11Texture() const override;
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  D3DAccessObject access_object_;
   D3D11TextureAndArrayIndex d3d11_texture_;
 };
 

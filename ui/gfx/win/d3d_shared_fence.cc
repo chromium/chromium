@@ -69,6 +69,31 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateForD3D11(
 }
 
 // static
+scoped_refptr<D3DSharedFence> D3DSharedFence::CreateForD3D12(
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_signal_queue) {
+  CHECK(d3d12_signal_queue);
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
+  HRESULT hr = d3d12_signal_queue->GetDevice(IID_PPV_ARGS(&d3d12_device));
+  CHECK_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence;
+  hr = d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_SHARED,
+                                 IID_PPV_ARGS(&d3d12_fence));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "CreateFence failed with error "
+                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  scoped_refptr<D3DSharedFence> fence =
+      CreateFromD3D12Fence(std::move(d3d12_fence), /*fence_value=*/0);
+  if (fence) {
+    fence->d3d12_signal_queue_ = std::move(d3d12_signal_queue);
+  }
+  return fence;
+}
+
+// static
 scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromD3D11Fence(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device,
     Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
@@ -188,7 +213,8 @@ D3DSharedFence::D3DSharedFence(base::win::ScopedHandle shared_handle,
                                const DXGIHandleToken& dxgi_token)
     : shared_handle_(std::move(shared_handle)),
       dxgi_token_(dxgi_token),
-      d3d11_wait_fence_map_(kMaxD3D11FenceMapSize) {}
+      d3d11_wait_fence_map_(kMaxD3D11FenceMapSize),
+      d3d12_wait_fence_map_(kMaxD3D12FenceMapSize) {}
 
 D3DSharedFence::~D3DSharedFence() = default;
 
@@ -284,6 +310,63 @@ bool D3DSharedFence::IncrementAndSignalD3D11() {
   HRESULT hr = context4->Signal(d3d11_signal_fence_.Get(), fence_value_ + 1);
   if (FAILED(hr)) {
     DLOG(ERROR) << "D3D11 fence signal failed: "
+                << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  fence_value_++;
+  return true;
+}
+
+bool D3DSharedFence::WaitD3D12(
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_wait_queue) {
+  CHECK(d3d12_wait_queue);
+  // Skip wait if passed in queue is the same as the signaling queue since work
+  // is serialized on a single queue.
+  if (d3d12_wait_queue == d3d12_signal_queue_) {
+    return true;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_wait_device;
+  HRESULT hr = d3d12_wait_queue->GetDevice(IID_PPV_ARGS(&d3d12_wait_device));
+  CHECK_EQ(hr, S_OK);
+
+  auto it = d3d12_wait_fence_map_.Get(d3d12_wait_device);
+  if (it == d3d12_wait_fence_map_.end()) {
+    Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence;
+    hr = d3d12_wait_device->OpenSharedHandle(shared_handle_.get(),
+                                             IID_PPV_ARGS(&d3d12_fence));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "OpenSharedHandle failed: "
+                  << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
+    it = d3d12_wait_fence_map_.Put(d3d12_wait_device, std::move(d3d12_fence));
+  }
+
+  const Microsoft::WRL::ComPtr<ID3D12Fence>& fence = it->second;
+  // Skip wait if we're already past the wait value.
+  if (fence->GetCompletedValue() >= fence_value_) {
+    return true;
+  }
+
+  hr = d3d12_wait_queue->Wait(fence.Get(), fence_value_);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "D3D12 fence wait failed: "
+                << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return true;
+}
+
+bool D3DSharedFence::IncrementAndSignalD3D12() {
+  CHECK(d3d12_signal_queue_)
+      << "D3D12 fence is expected to be signaled externally";
+  DCHECK(d3d12_signal_fence_);
+
+  HRESULT hr =
+      d3d12_signal_queue_->Signal(d3d12_signal_fence_.Get(), fence_value_ + 1);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "D3D12 fence signal failed: "
                 << logging::SystemErrorCodeToString(hr);
     return false;
   }

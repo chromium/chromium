@@ -124,7 +124,7 @@ bool D3D11ImageSameAdapterCopyStrategy::Copy(SharedImageBacking* source_backing,
   auto* d3d_source_backing = static_cast<D3DImageBacking*>(source_backing);
   auto* d3d_dest_backing = static_cast<D3DImageBacking*>(dest_backing);
 
-  if (!d3d_source_backing->BeginAccessD3D11(
+  if (!d3d_source_backing->BeginAccessD3D(
           d3d_source_backing->texture_d3d11_device_, /*write_access=*/false)) {
     return false;
   }
@@ -132,8 +132,8 @@ bool D3D11ImageSameAdapterCopyStrategy::Copy(SharedImageBacking* source_backing,
     d3d_source_backing->EndAccessD3D(d3d_source_backing->texture_d3d11_device_);
   };
 
-  if (!d3d_dest_backing->BeginAccessD3D11(
-          d3d_dest_backing->texture_d3d11_device_, /*write_access=*/true)) {
+  if (!d3d_dest_backing->BeginAccessD3D(d3d_dest_backing->texture_d3d11_device_,
+                                        /*write_access=*/true)) {
     return false;
   }
   absl::Cleanup dest_end_access = [&] {

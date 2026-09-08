@@ -27,6 +27,7 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/d3d_access_object.h"
 #include "gpu/command_buffer/service/shared_image/dawn_shared_texture_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -68,6 +69,16 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       bool want_dcomp_texture = false,
       bool is_thread_safe = false,
       bool share_dxgi_handle_with_other_backings = true);
+
+  // Create a backing wrapping a D3D12 resource.
+  static std::unique_ptr<D3DImageBacking> CreateFromD3D12Texture(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+      const GLFormatCaps& gl_format_caps,
+      GLenum texture_target,
+      size_t array_slice,
+      bool is_thread_safe = false);
 
   // Creation method meant for buffers originating as placed ID3D12Resources.
   static std::unique_ptr<D3DImageBacking> CreateFromD3D12Buffer(
@@ -115,10 +126,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   void UpdateExternalFence(
       scoped_refptr<gfx::D3DSharedFence> external_fence) override;
 
-  bool BeginAccessD3D(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+  bool BeginAccessD3D(const D3DAccessObject& access_object,
                       bool write_access,
                       bool is_overlay_access = false);
-  void EndAccessD3D(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+  void EndAccessD3D(const D3DAccessObject& access_object,
                     bool is_overlay_access = false);
 
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
@@ -247,21 +258,23 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   std::unique_ptr<VideoImageRepresentation> ProduceVideo(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      VideoDevice device) override;
+      VideoDevice video_device) override;
 
  private:
   using D3DSharedFenceSet = base::flat_set<scoped_refptr<gfx::D3DSharedFence>>;
-  D3DImageBacking(const Mailbox& mailbox,
-                  const SharedImageInfo& si_info,
-                  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-                  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
-                  const GLFormatCaps& gl_format_caps,
-                  GLenum texture_target = GL_TEXTURE_2D,
-                  size_t array_slice = 0u,
-                  bool use_update_subresource1 = false,
-                  bool want_dcomp_texture = false,
-                  bool is_thread_safe = false,
-                  bool share_dxgi_handle_with_other_backings = true);
+  D3DImageBacking(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+      const GLFormatCaps& gl_format_caps,
+      GLenum texture_target = GL_TEXTURE_2D,
+      size_t array_slice = 0u,
+      bool use_update_subresource1 = false,
+      bool want_dcomp_texture = false,
+      bool is_thread_safe = false,
+      bool share_dxgi_handle_with_other_backings = true,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource = nullptr);
 
   D3DImageBacking(
       const Mailbox& mailbox,
@@ -288,13 +301,9 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Returns a staging texture for CPU uploads/readback, creating one if needed.
   ID3D11Texture2D* GetOrCreateStagingTexture() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool BeginAccessD3D12(Microsoft::WRL::ComPtr<ID3D11Device> d3d11on12_device,
-                        bool write_access,
-                        bool is_overlay_access = false);
-
-  bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-                        bool write_access,
-                        bool is_overlay_access = false);
+  // Returns true if `access_object` is the device that owns the backing's
+  // native resource.
+  bool IsSameAccessObject(const D3DAccessObject& access_object) const;
 
   bool CopyToStagingTexture() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool ReadbackFromStagingTexture(const std::vector<SkPixmap>& pixmaps)
@@ -339,17 +348,16 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   void InvalidatePersistentGraphiteDawnAccess() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
-  // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be
-  // specified to skip over fences for the same device since the wait will be a
-  // no-op. Similarly, |wait_dawn_device| can be provided to skip over waits on
-  // fences previously signaled on the same Dawn device which are cached in
-  // |dawn_signaled_fence_map_|.
+  // Get a list of fences to wait on in BeginAccessD3D/Dawn. `access_object`
+  // identifies the accessing device (a D3D11 device or a D3D12 command queue)
+  // and is used to skip over fences for the same device since the wait would be
+  // a no-op. `wait_dawn_device` can be provided to skip over waits on fences
+  // previously signaled on the same Dawn device which are cached in
+  // `dawn_signaled_fence_map_`.
   std::optional<std::vector<scoped_refptr<gfx::D3DSharedFence>>>
-  GetPendingWaitFences(
-      const Microsoft::WRL::ComPtr<ID3D11Device>& wait_d3d11_device,
-      const wgpu::Device& wait_dawn_device,
-      bool write_access) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  GetPendingWaitFences(const D3DAccessObject& access_object,
+                       const wgpu::Device& wait_dawn_device,
+                       bool write_access) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Uses either DXGISharedHandleState or internal |dawn_shared_texture_cache_|
   // depending on whether the texture has a shared handle or not.
@@ -466,6 +474,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // D3D11 device corresponding to the |d3d11_texture_| provided on creation.
   // Can be different from the ANGLE D3D11 device when using Graphite.
+  // TODO(crbug.com/543937339): Consider making this a variant that can also
+  // hold a D3D12 command queue.
   Microsoft::WRL::ComPtr<ID3D11Device> texture_d3d11_device_;
 
   // D3D11 device used by ANGLE. Can be different from |d3d11_device_| when
@@ -497,12 +507,12 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // and/or write.
   D3DSharedFenceSet write_fences_ GUARDED_BY(lock_);
 
-  // Fences used for signaling after D3D11 access. Lazily created as needed.
+  // Fences used for signaling after a device's access, keyed by the accessing
+  // device (a D3D11 device or a D3D12 command queue). Lazily created as needed.
   // TODO(sunnyps): This doesn't need to be per D3DImageBacking. Find a better
   // place for this so that they can be shared by all backings.
-  base::flat_map<Microsoft::WRL::ComPtr<ID3D11Device>,
-                 scoped_refptr<gfx::D3DSharedFence>>
-      d3d11_signaled_fence_map_ GUARDED_BY(lock_);
+  base::flat_map<D3DAccessObject, scoped_refptr<gfx::D3DSharedFence>>
+      signaled_fence_map_ GUARDED_BY(lock_);
 
   // DawnSharedTextureCache that keeps an internal cache of per-device
   // SharedTextureData that vends WebGPU textures for the underlying d3d

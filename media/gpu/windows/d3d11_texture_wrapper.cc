@@ -229,8 +229,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 
   auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
   std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep =
-      shared_image_manager->ProduceVideo(
-          video_device.Get(), shared_image->mailbox(), memory_type_tracker);
+      shared_image_manager->ProduceVideo(video_device, shared_image->mailbox(),
+                                         memory_type_tracker);
   if (!shared_image_rep) {
     std::move(on_error_cb)
         .Run(D3D11Status::Codes::kProduceVideoDecodeImageRepresentationFailed);

@@ -254,17 +254,17 @@ D3DVideoImageRepresentation::D3DVideoImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    D3DAccessObject access_object,
     D3D11TextureAndArrayIndex d3d11_texture)
     : VideoImageRepresentation(manager, backing, tracker),
-      d3d11_device_(std::move(d3d11_device)),
+      access_object_(std::move(access_object)),
       d3d11_texture_(std::move(d3d11_texture)) {}
 
 D3DVideoImageRepresentation::~D3DVideoImageRepresentation() = default;
 
 bool D3DVideoImageRepresentation::BeginWriteAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  if (!d3d_image_backing->BeginAccessD3D(d3d11_device_,
+  if (!d3d_image_backing->BeginAccessD3D(access_object_,
                                          /*write_access=*/true)) {
     return false;
   }
@@ -273,12 +273,12 @@ bool D3DVideoImageRepresentation::BeginWriteAccess() {
 
 void D3DVideoImageRepresentation::EndWriteAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D(d3d11_device_);
+  d3d_image_backing->EndAccessD3D(access_object_);
 }
 
 bool D3DVideoImageRepresentation::BeginReadAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  if (!d3d_image_backing->BeginAccessD3D(d3d11_device_,
+  if (!d3d_image_backing->BeginAccessD3D(access_object_,
                                          /*write_access=*/false)) {
     return false;
   }
@@ -287,7 +287,7 @@ bool D3DVideoImageRepresentation::BeginReadAccess() {
 
 void D3DVideoImageRepresentation::EndReadAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessD3D(d3d11_device_);
+  d3d_image_backing->EndAccessD3D(access_object_);
 }
 
 D3D11TextureAndArrayIndex D3DVideoImageRepresentation::GetD3D11Texture() const {
@@ -405,12 +405,15 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(
     std::string_view debug_label,
     ID3D11Device* texture_device) {
   auto* d3d_backing = static_cast<D3DImageBacking*>(backing);
-  if (!d3d_backing->BeginAccessD3D(texture_device, /*write_access=*/false,
+  Microsoft::WRL::ComPtr<ID3D11Device> texture_access_device(texture_device);
+  if (!d3d_backing->BeginAccessD3D(texture_access_device,
+                                   /*write_access=*/false,
                                    /*is_overlay_access=*/false)) {
     return nullptr;
   }
   absl::Cleanup end_access = [&] {
-    d3d_backing->EndAccessD3D(texture_device, /*is_overlay_access=*/false);
+    d3d_backing->EndAccessD3D(texture_access_device,
+                              /*is_overlay_access=*/false);
   };
 
   D3D11_TEXTURE2D_DESC source_desc;

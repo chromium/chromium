@@ -38,6 +38,8 @@
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
 #include <wrl/client.h>
+
+#include "gpu/command_buffer/service/shared_image/d3d_access_object.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -126,7 +128,8 @@ enum class SharedImageBackingType {
 };
 
 #if BUILDFLAG(IS_WIN)
-using VideoDevice = Microsoft::WRL::ComPtr<ID3D11Device>;
+// The device performing video access: a D3D11 device or a D3D12 command queue.
+using VideoDevice = D3DAccessObject;
 #else
 // This parameter is only used on Windows so null is expected.
 using VideoDevice = void*;

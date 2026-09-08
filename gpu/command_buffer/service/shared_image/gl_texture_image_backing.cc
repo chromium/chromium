@@ -484,11 +484,15 @@ std::unique_ptr<VideoImageRepresentation> GLTextureImageBacking::ProduceVideo(
     VideoDevice device) {
 #if BUILDFLAG(IS_WIN)
   DCHECK_EQ(textures_.size(), 1u);
-  DCHECK(device);
+  // The GL copy path requires a D3D11 device; a D3D12 command queue cannot use
+  // it.
+  const auto* d3d11_device =
+      std::get_if<Microsoft::WRL::ComPtr<ID3D11Device>>(&device);
+  CHECK(d3d11_device);
 
   return D3D11VideoImageCopyRepresentation::CreateFromGL(
-      textures_[0]->GetServiceId(), debug_label(), device.Get(), manager, this,
-      tracker);
+      textures_[0]->GetServiceId(), debug_label(), d3d11_device->Get(), manager,
+      this, tracker);
 #else
   return nullptr;
 #endif

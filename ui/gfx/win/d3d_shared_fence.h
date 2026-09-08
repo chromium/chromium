@@ -33,6 +33,12 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   static scoped_refptr<D3DSharedFence> CreateForD3D11(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device);
 
+  // Create a new ID3D12Fence with initial value 0 on the device owning
+  // `d3d12_signal_queue`. The provided queue is considered the owning queue for
+  // the fence, and is the queue used for signaling the fence.
+  static scoped_refptr<D3DSharedFence> CreateForD3D12(
+      Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_signal_queue);
+
   // Create from an existing ID3D11Fence with a specified value to wait on. The
   // |d3d11_signal_device| is passed explicitly in the case that the device
   // signaling the fence is different than the device that created it.
@@ -101,6 +107,15 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   // success.
   bool IncrementAndSignalD3D11();
 
+  // Issue a wait for the fence on `d3d12_wait_queue` using `fence_value`. The
+  // wait is skipped if the passed in queue is the same as `d3d12_signal_queue`.
+  // Returns true on success.
+  bool WaitD3D12(Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_wait_queue);
+
+  // Increment `fence_value` and issue a signal for the fence on
+  // `d3d12_signal_queue` using `fence_value`. Returns true on success.
+  bool IncrementAndSignalD3D12();
+
   // Returns the D3D12 fence if this fence was created using
   // CreateFromD3D12Fence.
   Microsoft::WRL::ComPtr<ID3D12Fence> GetD3D12Fence() const;
@@ -110,6 +125,9 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
 
   // 5 D3D11 devices ought to be enough for anybody.
   static constexpr size_t kMaxD3D11FenceMapSize = 5;
+
+  // 5 D3D12 devices ought to be enough for anybody.
+  static constexpr size_t kMaxD3D12FenceMapSize = 5;
 
   explicit D3DSharedFence(base::win::ScopedHandle shared_handle,
                           const DXGIHandleToken& dxgi_token);
@@ -138,10 +156,20 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   // used for signaling.
   Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_signal_fence_;
 
+  // If present, this is the D3D12 command queue that `d3d12_signal_fence` will
+  // be signaled on in `IncrementAndSignalD3D12`. Can be null if the fence will
+  // be signaled externally.
+  Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_signal_queue_;
+
   // Map of D3D11 device to D3D11 fence objects used by WaitD3D11().
   base::LRUCache<Microsoft::WRL::ComPtr<ID3D11Device>,
                  Microsoft::WRL::ComPtr<ID3D11Fence>>
       d3d11_wait_fence_map_;
+
+  // Map of D3D12 device to D3D12 fence objects used by WaitD3D12().
+  base::LRUCache<Microsoft::WRL::ComPtr<ID3D12Device>,
+                 Microsoft::WRL::ComPtr<ID3D12Fence>>
+      d3d12_wait_fence_map_;
 };
 
 }  // namespace gfx
