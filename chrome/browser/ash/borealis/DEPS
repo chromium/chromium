@@ -19,10 +19,8 @@ include_rules = [
   "+chrome/browser/ash/hats",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/sessions",
   "+chrome/test/base",
 ]
 

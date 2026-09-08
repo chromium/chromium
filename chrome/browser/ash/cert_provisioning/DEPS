@@ -23,5 +23,4 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/test/base",
-  "+components/invalidation",
 ]
