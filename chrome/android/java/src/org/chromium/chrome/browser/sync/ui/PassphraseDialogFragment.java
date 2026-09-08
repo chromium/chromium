@@ -180,7 +180,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                             @Override
                             public void onClick(View view) {
                                 SyncSettingsUtils.openSyncDashboard(
-                                        getActivity(), new SettingsCustomTabLauncherImpl());
+                                        getContext(), new SettingsCustomTabLauncherImpl());
                             }
                         }));
     }

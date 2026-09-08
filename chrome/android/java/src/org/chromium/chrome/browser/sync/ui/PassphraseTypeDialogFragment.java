@@ -104,7 +104,7 @@ public class PassphraseTypeDialogFragment extends DialogFragment
                             @Override
                             public void onClick(View view) {
                                 SyncSettingsUtils.openSyncDashboard(
-                                        getActivity(), new SettingsCustomTabLauncherImpl());
+                                        getContext(), new SettingsCustomTabLauncherImpl());
                             }
                         }));
     }

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.test.filters.SmallTest;
 
@@ -76,12 +76,12 @@ public class SyncSettingsUtilsTest {
     @Test
     @SmallTest
     public void testOpenBookmarkLimitHelpPage() {
-        Activity activity = Mockito.mock(Activity.class);
+        Context context = Mockito.mock(Context.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncSettingsUtils.openBookmarkLimitHelpPage(
-                            activity,
+                            context,
                             mSyncService,
                             BookmarksLimitExceededHelpClickedSource.SETTINGS,
                             mCustomTabLauncher);
@@ -91,6 +91,6 @@ public class SyncSettingsUtilsTest {
                 .acknowledgeBookmarksLimitExceededError(
                         BookmarksLimitExceededHelpClickedSource.SETTINGS);
         Mockito.verify(mCustomTabLauncher)
-                .openUrlInCct(activity, SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
+                .openUrlInCct(context, SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
     }
 }

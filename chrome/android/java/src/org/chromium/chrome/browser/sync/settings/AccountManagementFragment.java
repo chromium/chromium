@@ -335,7 +335,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                                     .getIdentityManager(getProfile()))
                                     .hasPrimaryAccount();
                             SyncSettingsUtils.openGoogleMyAccount(
-                                    getActivity(), getCustomTabLauncher());
+                                    getContext(), getCustomTabLauncher());
                         }));
 
         return manageYourGoogleAccountPreference;

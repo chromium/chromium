@@ -448,7 +448,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         this,
                         () ->
                                 SyncSettingsUtils.openSyncDashboard(
-                                        getActivity(), getCustomTabLauncher())));
+                                        getContext(), getCustomTabLauncher())));
     }
 
     private void setupAccountManagementPreferences() {
@@ -458,7 +458,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         this,
                         () -> {
                             SyncSettingsUtils.openGoogleMyAccount(
-                                    getActivity(), getCustomTabLauncher());
+                                    getContext(), getCustomTabLauncher());
                         }));
         Preference manageAccountsOnThisDevice =
                 findPreference(PREF_ACCOUNT_ANDROID_DEVICE_ACCOUNTS);
@@ -911,7 +911,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 return;
             case UserActionableError.BOOKMARKS_LIMIT_EXCEEDED:
                 SyncSettingsUtils.openBookmarkLimitHelpPage(
-                        getActivity(),
+                        getContext(),
                         mSyncService,
                         BookmarksLimitExceededHelpClickedSource.SETTINGS,
                         getCustomTabLauncher());
