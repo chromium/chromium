@@ -365,7 +365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.BufferDelay" units="Blocks/2"
-    expires_after="2026-07-25">
+    expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -374,7 +374,8 @@ chromium-metrics-reviews@google.com.
     echo canceller. The value 0 means that no delay could be estimated,
     otherwise the logged delay corresponds to the actual delay + 1. A new value
     is logged every 10 seconds and the logged value constitutes the current
-    buffer delay at the time when the value is logged.
+    buffer delay at the time when the value is logged. Warning: this histogram
+    was expired from 2026-07-25 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
@@ -403,7 +404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.DelayChanges"
-    enum="WebRTCEventFrequency" expires_after="2026-08-24">
+    enum="WebRTCEventFrequency" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -411,12 +412,13 @@ chromium-metrics-reviews@google.com.
     This histogram logs the frequency of echo path delay changes that are
     detected by the delay estimator in the WebRTC echo canceller. A new value is
     logged every 10 seconds and the logged value indicates how frequent delay
-    changes have been during the last 10 seconds.
+    changes have been during the last 10 seconds. Warning: this histogram was
+    expired from 2026-08-24 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.EchoPathDelay" units="Blocks/2"
-    expires_after="2026-07-25">
+    expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -426,7 +428,8 @@ chromium-metrics-reviews@google.com.
     means that no delay could be estimated, otherwise the logged delay
     corresponds to the actual delay + 1. A new value is logged every 10 seconds
     and the logged value is the estimate of the delay of the echo path at the
-    time when the value is logged.
+    time when the value is logged. Warning: this histogram was expired from
+    2026-07-25 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
@@ -465,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.FilterDelay" units="Blocks"
-    expires_after="2026-07-25">
+    expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -475,7 +478,8 @@ chromium-metrics-reviews@google.com.
     means that no delay could be estimated from the linear filter, otherwise the
     logged delay corresponds to the actual delay + 1. A new value is logged
     every 10 seconds and the logged value is the estimate of the filter delay at
-    the time when the value is logged.
+    the time when the value is logged. Warning: this histogram was expired from
+    2026-07-25 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
@@ -525,7 +529,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebRTC.Audio.EchoCanceller.PersistentMultichannelContentEverDetected"
-    enum="Boolean" expires_after="2026-07-25">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -533,13 +537,14 @@ chromium-metrics-reviews@google.com.
     This histogram logs whether the WebRTC echo canceller has encountered
     persistent multichannel playout reference content during its lifetime. The
     value is logged at the end of the AEC lifetime if the AEC has processed at
-    least 5 seconds of audio.
+    least 5 seconds of audio. Warning: this histogram was expired from
+    2026-07-25 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram
     name="WebRTC.Audio.EchoCanceller.ProcessingPersistentMultichannelContent"
-    enum="Boolean" expires_after="2026-07-25">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -547,12 +552,13 @@ chromium-metrics-reviews@google.com.
     This histogram logs the frequency of persistent multichannel playout
     reference content detected by the WebRTC echo canceller. `true` if a
     majority of the last 10 seconds of audio was classified as persistent
-    multichannel. A new value is logged every 10 seconds.
+    multichannel. A new value is logged every 10 seconds. Warning: this
+    histogram was expired from 2026-07-25 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.ReliableDelayEstimates"
-    enum="WebRTCAecDelayEstimateReliability" expires_after="2026-07-25">
+    enum="WebRTCAecDelayEstimateReliability" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -560,24 +566,27 @@ chromium-metrics-reviews@google.com.
     This histogram logs the assessed reliability of the delay estimates produced
     by the delay estimator in the WebRTC echo canceller. A new value is logged
     every 10 seconds and the logged value is a meausure based on how often
-    during that period the delay estimate was reliable.
+    during that period the delay estimate was reliable. Warning: this histogram
+    was expired from 2026-07-25 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.RenderOverruns"
-    enum="WebRTCEventFrequency" expires_after="2026-07-25">
+    enum="WebRTCEventFrequency" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     This histogram logs the frequency of overruns in the render buffer of the
     WebRTC echo canceller. A new value is logged every 10 seconds and the logged
-    value is a meausure that indicates how often overruns occurred.
+    value is a meausure that indicates how often overruns occurred. Warning:
+    this histogram was expired from 2026-07-25 to 2026-09-08; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.RenderUnderruns"
-    enum="WebRTCEventFrequency" expires_after="2026-10-27">
+    enum="WebRTCEventFrequency" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -590,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.UsableLinearEstimate"
-    enum="Boolean" expires_after="2026-07-25">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -599,7 +608,8 @@ chromium-metrics-reviews@google.com.
     the linear filter in the echo canceller is sufficiently well adapted to be
     usable. A new value is logged every 10 seconds and the logged value is the
     assessment of whether the filter is usable at the time when the value is
-    logged.
+    logged. Warning: this histogram was expired from 2026-07-25 to 2026-09-08;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -696,7 +706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioInputChannelLayout" enum="ChannelLayout"
-    expires_after="2026-10-27">
+    expires_after="2027-03-07">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -736,7 +746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRate" enum="AudioSampleRate"
-    expires_after="2026-10-27">
+    expires_after="2027-03-07">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -963,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingAudioRtpPacketsInSeconds" units="s"
-    expires_after="2026-10-27">
+    expires_after="2027-03-07">
   <owner>saza@chromium.org</owner>
   <owner>hlundin@chromium.org</owner>
   <summary>
@@ -977,7 +987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingVideoRtpPacketsInSeconds" units="s"
-    expires_after="2026-10-27">
+    expires_after="2027-03-07">
   <owner>saza@chromium.org</owner>
   <owner>hlundin@chromium.org</owner>
   <summary>
