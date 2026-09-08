@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_block_button.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -21,10 +22,12 @@
 ActionAppMenuBlockView::ActionAppMenuBlockView(
     actions::ActionItem* block_action_item,
     views::ActionViewController* action_view_controller,
-    base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map) {
+    base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map,
+    base::RepeatingCallback<void(actions::ActionId)> execute_command_callback) {
   CHECK(block_action_item);
   CHECK(action_view_controller);
   CHECK(command_to_action_map);
+  CHECK(execute_command_callback);
 
   const auto* provider = ChromeLayoutProvider::Get();
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -44,6 +47,9 @@ ActionAppMenuBlockView::ActionAppMenuBlockView(
     action_view_controller->CreateActionViewRelationship(
         button.get(), block_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = block_child_ptr;
+
+    button->SetCallback(
+        base::BindRepeating(execute_command_callback, action_id.value()));
 
     if (std::u16string* text_override =
             block_child->GetProperty(ActionAppMenuManager::kTextOverrideKey)) {

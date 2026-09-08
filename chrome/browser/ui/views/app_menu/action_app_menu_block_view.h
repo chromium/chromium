@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_BLOCK_VIEW_H_
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -27,7 +29,9 @@ class ActionAppMenuBlockView : public views::BoxLayoutView {
   ActionAppMenuBlockView(
       actions::ActionItem* block_action_item,
       views::ActionViewController* action_view_controller,
-      base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map);
+      base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map,
+      base::RepeatingCallback<void(actions::ActionId)>
+          execute_command_callback);
   ActionAppMenuBlockView(const ActionAppMenuBlockView&) = delete;
   ActionAppMenuBlockView& operator=(const ActionAppMenuBlockView&) = delete;
   ~ActionAppMenuBlockView() override;

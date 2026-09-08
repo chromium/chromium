@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_footer_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -19,10 +20,12 @@
 ActionAppMenuFooterView::ActionAppMenuFooterView(
     actions::ActionItem* footer_action_item,
     views::ActionViewController* action_view_controller,
-    base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map) {
+    base::flat_map<int, raw_ptr<actions::ActionItem>>* command_to_action_map,
+    base::RepeatingCallback<void(actions::ActionId)> execute_command_callback) {
   CHECK(footer_action_item);
   CHECK(action_view_controller);
   CHECK(command_to_action_map);
+  CHECK(execute_command_callback);
 
   const auto* provider = ChromeLayoutProvider::Get();
 
@@ -64,6 +67,9 @@ ActionAppMenuFooterView::ActionAppMenuFooterView(
     action_view_controller->CreateActionViewRelationship(
         button.get(), footer_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = footer_child_ptr;
+
+    button->SetCallback(
+        base::BindRepeating(execute_command_callback, action_id.value()));
 
     if (action_id.value() == kActionExit) {
       right_container->AddChildView(std::move(button));

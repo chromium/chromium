@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/command_id_constants.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -52,6 +54,8 @@ class ActionAppMenu : public views::MenuDelegate {
   ActionAppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
 
  private:
+  void CancelAndEvaluate(actions::ActionId action_id);
+
   // Recursively populates the menu item with the `base_action_item`'s
   // children.
   void PopulateMenu(views::MenuItemView* view_parent,
@@ -109,6 +113,9 @@ class ActionAppMenu : public views::MenuDelegate {
   raw_ptr<ActionAppMenuSearchBarView> search_bar_ = nullptr;
 
   size_t section_header_count_ = 0;
+
+  // The action to execute when the menu is closed.
+  std::optional<actions::ActionId> action_to_execute_on_close_;
 
   // Manages the ActionItem hierarchy and dynamic submenus.
   std::unique_ptr<ActionAppMenuManager> menu_manager_;

@@ -59,6 +59,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -519,6 +520,84 @@ TEST_F(ActionAppMenuTest, BlockActionsInvocation) {
       .Times(1);
   incognito_action->InvokeAction();
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
+}
+
+TEST_F(ActionAppMenuTest, BlockButtonClickExecutesActionAfterMenuClosed) {
+  testing::InSequence s;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // The block section is in the top MenuItemView.
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  auto* block_section_view =
+      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_section_view);
+
+  // The first child button in the block view is kActionNewTab.
+  auto* new_tab_button = views::AsViewClass<ActionAppMenuBlockButton>(
+      block_section_view->children()[0]);
+  ASSERT_TRUE(new_tab_button);
+
+  // Verify strict ordering:
+  // 1. Menu must close and run on_menu_closed callback FIRST.
+  // 2. Action must be executed SECOND.
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))
+      .Times(1);
+
+  // Simulate button click on the block button.
+  views::test::ButtonTestApi(new_tab_button).NotifyDefaultMouseClick();
+
+  EXPECT_FALSE(menu.IsShowing());
+}
+
+TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
+  testing::InSequence s;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // The footer row is the last item in the submenu.
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  ASSERT_NE(footer_item, nullptr);
+
+  auto* footer_view =
+      views::AsViewClass<ActionAppMenuFooterView>(footer_item->children()[0]);
+  ASSERT_TRUE(footer_view);
+
+  // Left container child 0 is kActionOptions (Settings).
+  views::View* left_container = footer_view->children()[0];
+  auto* settings_button = views::AsViewClass<ActionAppMenuFooterButton>(
+      left_container->children()[0]);
+  ASSERT_TRUE(settings_button);
+
+  // Verify strict ordering:
+  // 1. Menu must close and run on_menu_closed callback FIRST.
+  // 2. Action must be executed SECOND.
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionOptions, testing::_, testing::_))
+      .Times(1);
+
+  // Simulate button click on the footer button.
+  views::test::ButtonTestApi(settings_button).NotifyDefaultMouseClick();
+
+  EXPECT_FALSE(menu.IsShowing());
 }
 
 // Tests that changing the enabled state of a delegate action item

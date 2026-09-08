@@ -142,13 +142,26 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
+  actions::ActionItem* action_to_execute = nullptr;
+  if (action_to_execute_on_close_) {
+    auto action_iterator =
+        command_to_action_map_.find(action_to_execute_on_close_.value());
+    CHECK(action_iterator != command_to_action_map_.end());
+    action_to_execute = action_iterator->second->GetActionItem();
+  }
+
   search_bar_ = nullptr;
+  action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
   section_header_count_ = 0;
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
   menu_manager_->GetAppMenuRoot()->ResetActionList();
+
+  if (action_to_execute) {
+    action_to_execute->InvokeAction();
+  }
 }
 
 const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
@@ -166,6 +179,13 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
         ui::kColorMenuItemForeground);
   }
   return std::nullopt;
+}
+
+void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id) {
+  if (!action_to_execute_on_close_.has_value()) {
+    action_to_execute_on_close_ = action_id;
+    CloseMenu();
+  }
 }
 
 void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
@@ -347,7 +367,9 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
   footer_item->set_vertical_margin(0);
 
   auto footer_view = std::make_unique<ActionAppMenuFooterView>(
-      footer_action_item, &action_view_controller_, &command_to_action_map_);
+      footer_action_item, &action_view_controller_, &command_to_action_map_,
+      base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
+                          base::Unretained(this)));
   footer_view->SetProperty(views::kMarginsKey,
                            ChromeLayoutProvider::Get()->GetInsetsMetric(
                                INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
@@ -363,7 +385,9 @@ void ActionAppMenu::PopulateBlockSection(
   block_item->set_vertical_margin(0);
 
   block_item->AddChildView(std::make_unique<ActionAppMenuBlockView>(
-      block_action_item, &action_view_controller_, &command_to_action_map_));
+      block_action_item, &action_view_controller_, &command_to_action_map_,
+      base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
+                          base::Unretained(this))));
 }
 
 void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
