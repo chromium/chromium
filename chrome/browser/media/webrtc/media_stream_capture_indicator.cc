@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -52,6 +54,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/media/webrtc/data_protection_tab_capture_handler.h"
+#include "content/public/browser/render_frame_host.h"
 #endif
 
 using content::BrowserThread;
@@ -260,6 +268,8 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
 // the stream.
 class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
  public:
+  friend class MediaStreamCaptureIndicator;
+
   UIDelegate(WebContents* web_contents,
              base::WeakPtr<WebContentsDeviceUsage> device_usage,
              const blink::mojom::StreamDevices& devices,
@@ -321,6 +331,13 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
         state_change_callback, source_callback);
 #endif
 
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    state_change_callback_ = state_change_callback;
+    for (const auto& media_id : screen_capture_ids) {
+      AddDataProtectionHandler(media_id);
+    }
+#endif
+
     // If a custom |ui_| is specified, notify it that the stream started and let
     // it handle the |stop_callback| and |source_callback|.
     if (ui_)
@@ -339,12 +356,19 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     policy::DlpContentManager::Get()->OnScreenShareSourceChanging(
         label, old_media_id, new_media_id, captured_surface_control_active);
 #endif
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    RemoveDataProtectionHandler(old_media_id);
+    AddDataProtectionHandler(new_media_id);
+#endif
   }
 
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {
 #if BUILDFLAG(IS_CHROMEOS)
     policy::DlpContentManager::Get()->OnScreenShareStopped(label, media_id);
+#endif
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+    RemoveDataProtectionHandler(media_id);
 #endif
   }
 
@@ -373,6 +397,38 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     capture_policy::ShowCaptureTerminatedDialog(contents);
   }
 
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  void AddDataProtectionHandler(const content::DesktopMediaID& media_id) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (!base::FeatureList::IsEnabled(
+            enterprise_data_protection::kEnableTabSharingProtection)) {
+      return;
+    }
+    if (media_id.type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+      return;
+    }
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+        media_id.web_contents_id.render_process_id,
+        media_id.web_contents_id.main_render_frame_id);
+    content::WebContents* captured_contents =
+        content::WebContents::FromRenderFrameHost(rfh);
+    if (!captured_contents) {
+      data_protection_handlers_.erase(media_id.web_contents_id);
+      return;
+    }
+    data_protection_handlers_[media_id.web_contents_id] =
+        std::make_unique<DataProtectionTabCaptureHandler>(
+            captured_contents, media_id, state_change_callback_);
+  }
+
+  void RemoveDataProtectionHandler(const content::DesktopMediaID& media_id) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+      data_protection_handlers_.erase(media_id.web_contents_id);
+    }
+  }
+#endif
+
   base::WeakPtr<WebContentsDeviceUsage> device_usage_;
   const blink::mojom::StreamDevices devices_;
   const std::unique_ptr<::MediaStreamUI> ui_;
@@ -383,7 +439,29 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   bool started_ = false;
   const int stop_callback_id_;
   std::unique_ptr<SameOriginObserver> same_origin_observer_;
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  content::MediaStreamUI::StateChangeCallback state_change_callback_;
+  base::flat_map<content::WebContentsMediaCaptureId,
+                 std::unique_ptr<DataProtectionTabCaptureHandler>>
+      data_protection_handlers_;
+#endif
 };
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+// static
+bool MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+    const content::MediaStreamUI* ui,
+    const content::DesktopMediaID& media_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!ui ||
+      media_id.type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    return false;
+  }
+  const auto* ui_delegate = static_cast<const UIDelegate*>(ui);
+  return ui_delegate->data_protection_handlers_.contains(
+      media_id.web_contents_id);
+}
+#endif
 
 std::unique_ptr<content::MediaStreamUI>
 MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(

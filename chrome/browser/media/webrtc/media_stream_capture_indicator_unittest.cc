@@ -10,11 +10,19 @@
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "content/public/browser/render_process_host.h"
+#endif
 
 namespace {
 
@@ -375,3 +383,135 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaStreamCaptureIndicatorStreamTypeTest,
                          testing::ValuesIn(kStreamTypeTestParams));
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+class MediaStreamCaptureIndicatorDataProtectionTest
+    : public MediaStreamCaptureIndicatorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  MediaStreamCaptureIndicatorDataProtectionTest() = default;
+  ~MediaStreamCaptureIndicatorDataProtectionTest() override = default;
+
+  void SetUp() override {
+    MediaStreamCaptureIndicatorTest::SetUp();
+    indicator()->RemoveObserver(observer());
+    scoped_feature_list_.InitWithFeatureState(
+        enterprise_data_protection::kEnableTabSharingProtection,
+        IsTabSharingProtectionEnabled());
+  }
+
+  void TearDown() override {
+    indicator()->AddObserver(observer());
+    MediaStreamCaptureIndicatorTest::TearDown();
+  }
+
+  bool IsTabSharingProtectionEnabled() const { return GetParam(); }
+
+  content::DesktopMediaID MakeMediaID(content::WebContents* contents) {
+    content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+    return content::DesktopMediaID(
+        content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        content::DesktopMediaID::kNullId,
+        content::WebContentsMediaCaptureId(rfh->GetProcess()->GetDeprecatedID(),
+                                           rfh->GetRoutingID()));
+  }
+
+  blink::mojom::StreamDevices CreateFakeDevices() {
+    blink::mojom::StreamDevices fake_devices;
+    blink::MediaStreamDevice device(
+        blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE, "fake_device",
+        "fake_device");
+    fake_devices.video_device = device;
+    return fake_devices;
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::MockRepeatingCallback<void(const content::DesktopMediaID&,
+                                   blink::mojom::MediaStreamStateChange)>
+      mock_state_change_callback_;
+};
+
+TEST_P(MediaStreamCaptureIndicatorDataProtectionTest, TabCaptureLifecycle) {
+  content::WebContents* source = web_contents();
+  std::unique_ptr<content::WebContents> second_tab = CreateTestWebContents();
+  content::WebContentsTester::For(second_tab.get())
+      ->NavigateAndCommit(GURL("https://www.example.com/"));
+
+  content::DesktopMediaID media_id1 = MakeMediaID(source);
+  content::DesktopMediaID media_id2 = MakeMediaID(second_tab.get());
+
+  std::unique_ptr<content::MediaStreamUI> ui =
+      indicator()->RegisterMediaStream(source, CreateFakeDevices());
+  ASSERT_NE(ui, nullptr);
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), media_id1));
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), media_id2));
+
+  // 1. Starting capture adds data protection handler for tab if enabled.
+  ui->OnStarted(
+      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
+      /*label=*/"test_label",
+      /*screen_capture_ids=*/{media_id1}, mock_state_change_callback_.Get());
+  EXPECT_EQ(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+                ui.get(), media_id1),
+            IsTabSharingProtectionEnabled());
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), media_id2));
+
+  // 2. Switching capture source updates handlers (removes old, adds new).
+  ui->OnDeviceStoppedForSourceChange("test_label", media_id1, media_id2,
+                                     /*captured_surface_control_active=*/false);
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), media_id1));
+  EXPECT_EQ(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+                ui.get(), media_id2),
+            IsTabSharingProtectionEnabled());
+
+  // 3. Stopping device removes the handler.
+  ui->OnDeviceStopped("test_label", media_id2);
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), media_id1));
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), media_id2));
+}
+
+TEST_P(MediaStreamCaptureIndicatorDataProtectionTest,
+       NonTabAndInvalidIdHandledSafely) {
+  content::WebContents* source = web_contents();
+  std::unique_ptr<content::MediaStreamUI> ui =
+      indicator()->RegisterMediaStream(source, CreateFakeDevices());
+  ASSERT_NE(ui, nullptr);
+
+  // Non-tab capture ID (e.g. TYPE_SCREEN).
+  content::DesktopMediaID screen_id(content::DesktopMediaID::TYPE_SCREEN, 1);
+  // Invalid tab ID (non-existent process/frame).
+  content::DesktopMediaID invalid_id(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(9999, 9999));
+
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
+                /*label=*/"test_label",
+                /*screen_capture_ids=*/{screen_id, invalid_id},
+                mock_state_change_callback_.Get());
+
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), screen_id));
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), invalid_id));
+
+  ui->OnDeviceStopped("test_label", screen_id);
+  ui->OnDeviceStopped("test_label", invalid_id);
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), screen_id));
+  EXPECT_FALSE(MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
+      ui.get(), invalid_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaStreamCaptureIndicatorDataProtectionTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

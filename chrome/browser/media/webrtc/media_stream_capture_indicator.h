@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/media/webrtc/media_stream_ui.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -120,6 +121,12 @@ class MediaStreamCaptureIndicator
   // of this object.
   void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  static bool HasDataProtectionHandlerForTesting(
+      const content::MediaStreamUI* ui,
+      const content::DesktopMediaID& media_id);
+#endif
 
  private:
   class UIDelegate;
