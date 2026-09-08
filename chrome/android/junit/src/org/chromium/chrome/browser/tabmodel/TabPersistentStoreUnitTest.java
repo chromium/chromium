@@ -1415,6 +1415,77 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testRestoreTab_nonAuthoritativeStore_skipsBackgroundTabPool() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        TabRestoreDetails details =
+                new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
+        Tab newTab = mock(Tab.class);
+        when(newTab.getId()).thenReturn(101);
+        when(mNormalTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(newTab);
+        when(mNormalTabModel.indexOf(newTab)).thenReturn(0);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ false,
+                        /* recordLegacyTabCountMetrics= */ true);
+
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        mPersistentStore.restoreTabs(true);
+        mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
+
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
+        verify(mNormalTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testRestoreTab_backgroundTabDeduplicationViaSeenTabIds() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        TabRestoreDetails details =
+                new TabRestoreDetails(101, 0, TriState.FALSE, "https://google.com/", false);
+        BackgroundPoolTab backgroundPoolTab = mock(BackgroundPoolTab.class);
+        Tab restoredTab = mock(Tab.class);
+        when(restoredTab.getId()).thenReturn(101);
+        when(backgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab);
+        when(mBackgroundTabPool.loadTab(101)).thenReturn(backgroundPoolTab);
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        mPersistentStore.restoreTabs(true);
+        mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
+
+        // First call restores via pool.
+        verify(mBackgroundTabPool, times(1)).loadTab(101);
+
+        // Second call with same tab ID should be ignored because of mSeenTabIds.
+        mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
+        verify(mBackgroundTabPool, times(1)).loadTab(101);
+        verify(mNormalTabCreator, never()).createNewTab(any(), anyInt(), any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreTab_nonTabbed_skipsBackgroundTabPool() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         TabRestoreDetails details =

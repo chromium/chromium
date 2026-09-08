@@ -61,7 +61,8 @@ public class CombinedTabRestorerUnitTest {
                 SupplierUtils.ofNull(),
                 mTabModelSelector,
                 /* logRestoreDuration= */ false,
-                /* isFromRecreating= */ false);
+                /* isFromRecreating= */ false,
+                /* isAuthoritative= */ true);
     }
 
     @Test

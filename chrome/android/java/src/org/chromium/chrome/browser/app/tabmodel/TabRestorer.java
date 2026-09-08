@@ -130,6 +130,7 @@ class TabRestorer {
 
     private final @TabOrchestratorType int mOrchestratorType;
     private final boolean mIncognito;
+    private final boolean mIsAuthoritative;
     private final TabRestorerDelegate mDelegate;
     private final TabCreator mTabCreator;
     private final Supplier<ScopedStorageBatch> mBatchFactory;
@@ -159,6 +160,7 @@ class TabRestorer {
      * @param batchFactory The factory to create scoped storage batches.
      * @param tabModelSelector The tab model selector.
      * @param isFromRecreating Whether the current activity is launched from recreating.
+     * @param isAuthoritative Whether this restorer is authoritative.
      */
     TabRestorer(
             @TabOrchestratorType int orchestratorType,
@@ -167,7 +169,8 @@ class TabRestorer {
             TabCreator tabCreator,
             Supplier<ScopedStorageBatch> batchFactory,
             TabModelSelector tabModelSelector,
-            boolean isFromRecreating) {
+            boolean isFromRecreating,
+            boolean isAuthoritative) {
         mOrchestratorType = orchestratorType;
         mIncognito = incognito;
         mDelegate = delegate;
@@ -175,6 +178,7 @@ class TabRestorer {
         mBatchFactory = batchFactory;
         mTabModelSelector = tabModelSelector;
         mIsFromRecreating = isFromRecreating;
+        mIsAuthoritative = isAuthoritative;
     }
 
     /**
@@ -226,7 +230,7 @@ class TabRestorer {
 
         mBackgroundTabIds =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mOrchestratorType, mTabModelSelector, mIncognito);
+                        mOrchestratorType, mTabModelSelector, mIncognito, mIsAuthoritative);
 
         // Special case for when cancellation happened during loading. In this case we cancel as
         // soon as loading has finished.
@@ -428,10 +432,7 @@ class TabRestorer {
                         ? activeTabIndex
                         : 0;
         LoadedTabState activeTabState = loadedTabStates[restoredActiveTabIndex];
-        restoreTab(
-                activeTabState,
-                restoredActiveTabIndex,
-                /* isActive= */ true);
+        restoreTab(activeTabState, restoredActiveTabIndex, /* isActive= */ true);
 
         if (loadedTabStates.length == 1) {
             postTaskToFinish();
@@ -548,10 +549,17 @@ class TabRestorer {
         }
 
         Tab tab = null;
-        if (mBackgroundTabIds.contains(tabId)) {
+        if (BackgroundTabRestorationHelper.shouldIntercept(
+                        mOrchestratorType, mIncognito, mIsAuthoritative)
+                && mBackgroundTabIds.contains(tabId)) {
             tab =
                     BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                            mOrchestratorType, mTabModelSelector, tabId, index, tabState);
+                            mOrchestratorType,
+                            mTabModelSelector,
+                            tabId,
+                            index,
+                            tabState,
+                            mIsAuthoritative);
         }
         GURL url = tabState.url;
         boolean hasEmptyBuffer =
