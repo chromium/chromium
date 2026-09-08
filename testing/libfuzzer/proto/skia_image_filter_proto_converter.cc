@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <array>
 
@@ -46,6 +42,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -700,20 +697,20 @@ void Converter::WriteNum(const T num) {
   if (sizeof(T) > 4) {
     auto four_byte_num = base::checked_cast<uint32_t>(num);
     char num_arr[sizeof(four_byte_num)];
-    memcpy(num_arr, &four_byte_num, sizeof(four_byte_num));
+    UNSAFE_TODO(memcpy(num_arr, &four_byte_num, sizeof(four_byte_num)));
     for (size_t idx = 0; idx < sizeof(four_byte_num); idx++)
-      output_.push_back(num_arr[idx]);
+      output_.push_back(UNSAFE_TODO(num_arr[idx]));
     return;
   }
   char num_arr[sizeof(T)];
-  memcpy(num_arr, &num, sizeof(T));
+  UNSAFE_TODO(memcpy(num_arr, &num, sizeof(T)));
   for (size_t idx = 0; idx < sizeof(T); idx++)
-    output_.push_back(num_arr[idx]);
+    output_.push_back(UNSAFE_TODO(num_arr[idx]));
 }
 
 void Converter::InsertSize(const size_t size, const uint32_t position) {
   std::array<char, sizeof(uint32_t)> size_arr;
-  memcpy(size_arr.data(), &size, sizeof(uint32_t));
+  UNSAFE_TODO(memcpy(size_arr.data(), &size, sizeof(uint32_t)));
 
   for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
     const size_t output__idx = position + idx - sizeof(uint32_t);
@@ -736,7 +733,7 @@ void Converter::WriteString(std::string_view str) {
   WriteNum(str.size());
   const char* c_str = str.data();
   for (size_t idx = 0; idx < str.size(); idx++)
-    output_.push_back(c_str[idx]);
+    output_.push_back(UNSAFE_TODO(c_str[idx]));
 
   output_.push_back('\0');  // Add trailing NULL.
 
@@ -755,7 +752,7 @@ void Converter::WriteArray(
 void Converter::WriteArray(const char* arr, const size_t size) {
   WriteNum(size);
   for (size_t idx = 0; idx < size; idx++)
-    output_.push_back(arr[idx]);
+    output_.push_back(UNSAFE_TODO(arr[idx]));
 
   for (unsigned idx = 0; idx < size % 4; idx++)
     output_.push_back('\0');
@@ -768,7 +765,7 @@ void Converter::WriteBool(const bool bool_val) {
 
 void Converter::WriteNum(const char (&num_arr)[4]) {
   for (size_t idx = 0; idx < 4; idx++)
-    output_.push_back(num_arr[idx]);
+    output_.push_back(UNSAFE_TODO(num_arr[idx]));
 }
 
 void Converter::Visit(const PictureShader& picture_shader) {
@@ -1004,10 +1001,10 @@ void Converter::Visit(const LooperChild& looper) {
 static uint8_t* flush_diff8(uint8_t* dst, const uint8_t* src, size_t count) {
   while (count > 0) {
     size_t n = count > 128 ? 128 : count;
-    *dst++ = (uint8_t)(n + 127);
-    memcpy(dst, src, n);
-    src += n;
-    dst += n;
+    UNSAFE_TODO(*dst++ = (uint8_t)(n + 127));
+    UNSAFE_TODO(memcpy(dst, src, n));
+    UNSAFE_TODO(src += n);
+    UNSAFE_TODO(dst += n);
     count -= n;
   }
   return dst;
@@ -1017,8 +1014,8 @@ static uint8_t* flush_diff8(uint8_t* dst, const uint8_t* src, size_t count) {
 static uint8_t* flush_same8(uint8_t dst[], uint8_t value, size_t count) {
   while (count > 0) {
     size_t n = count > 128 ? 128 : count;
-    *dst++ = (uint8_t)(n - 1);
-    *dst++ = (uint8_t)value;
+    UNSAFE_TODO(*dst++ = (uint8_t)(n - 1));
+    UNSAFE_TODO(*dst++ = (uint8_t)value);
     count -= n;
   }
   return dst;
@@ -1040,21 +1037,21 @@ static size_t pack8(const uint8_t* src,
   }
 
   uint8_t* const origDst = dst;
-  const uint8_t* stop = src + srcSize;
+  const uint8_t* stop = UNSAFE_TODO(src + srcSize);
 
   for (intptr_t count = stop - src; count > 0; count = stop - src) {
     if (1 == count) {
-      *dst++ = 0;
-      *dst++ = *src;
+      UNSAFE_TODO(*dst++ = 0);
+      UNSAFE_TODO(*dst++ = *src);
       break;
     }
 
     unsigned value = *src;
-    const uint8_t* s = src + 1;
+    const uint8_t* s = UNSAFE_TODO(src + 1);
 
     if (*s == value) {  // accumulate same values...
       do {
-        s++;
+        UNSAFE_TODO(s++);
         if (s == stop) {
           break;
         }
@@ -1062,13 +1059,14 @@ static size_t pack8(const uint8_t* src,
       dst = flush_same8(dst, value, (size_t)(s - src));
     } else {  // accumulate diff values...
       do {
-        if (++s == stop) {
+        if (UNSAFE_TODO(++s) == stop) {
           goto FLUSH_DIFF;
         }
         // only stop if we hit 3 in a row,
         // otherwise we get bigger than compuatemax
-      } while (*s != s[-1] || s[-1] != s[-2]);
-      s -= 2;  // back up so we don't grab the "same" values that follow
+      } while (UNSAFE_TODO(*s != s[-1] || s[-1] != s[-2]));
+      // Back up so we don't grab the "same" values that follow.
+      UNSAFE_TODO(s -= 2);
     FLUSH_DIFF:
       dst = flush_diff8(dst, src, (size_t)(s - src));
     }
@@ -1085,7 +1083,8 @@ const uint8_t* Converter::ColorTableToArray(const ColorTable& color_table) {
   CHECK(descriptor);
   const Reflection* reflection = color_table.GetReflection();
   CHECK(reflection);
-  for (int field_num = 1; field_num <= array_size; field_num++, dst++) {
+  for (int field_num = 1; field_num <= array_size;
+       field_num++, UNSAFE_TODO(dst++)) {
     const FieldDescriptor* field_descriptor =
         descriptor->FindFieldByNumber(field_num);
     CHECK(field_descriptor);
@@ -1107,31 +1106,31 @@ void Converter::Visit(const Table_ColorFilter& table__color_filter) {
   uint8_t* dst = f_storage;
 
   if (table__color_filter.has_table_a()) {
-    memcpy(dst, ColorTableToArray(table__color_filter.table_a()),
-           kColorTableBufferLength);
+    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_a()),
+                       kColorTableBufferLength));
 
-    dst += kColorTableBufferLength;
+    UNSAFE_TODO(dst += kColorTableBufferLength);
     flags |= kA_Flag;
   }
   if (table__color_filter.has_table_r()) {
-    memcpy(dst, ColorTableToArray(table__color_filter.table_r()),
-           kColorTableBufferLength);
+    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_r()),
+                       kColorTableBufferLength));
 
-    dst += kColorTableBufferLength;
+    UNSAFE_TODO(dst += kColorTableBufferLength);
     flags |= kR_Flag;
   }
   if (table__color_filter.has_table_g()) {
-    memcpy(dst, ColorTableToArray(table__color_filter.table_g()),
-           kColorTableBufferLength);
+    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_g()),
+                       kColorTableBufferLength));
 
-    dst += kColorTableBufferLength;
+    UNSAFE_TODO(dst += kColorTableBufferLength);
     flags |= kG_Flag;
   }
   if (table__color_filter.has_table_b()) {
-    memcpy(dst, ColorTableToArray(table__color_filter.table_b()),
-           kColorTableBufferLength);
+    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_b()),
+                       kColorTableBufferLength));
 
-    dst += kColorTableBufferLength;
+    UNSAFE_TODO(dst += kColorTableBufferLength);
     flags |= kB_Flag;
   }
   uint8_t storage[5 * kColorTableBufferLength];
@@ -1144,7 +1143,7 @@ void Converter::Visit(const Table_ColorFilter& table__color_filter) {
   WriteNum(flags_32);
   WriteNum((uint32_t)size);
   for (size_t idx = 0; idx < size; idx++)
-    output_.push_back(storage[idx]);
+    output_.push_back(UNSAFE_TODO(storage[idx]));
   Pad(output_.size());
 }
 
@@ -1715,7 +1714,7 @@ void Converter::WriteUInt8(T num) {
 
 void Converter::WriteUInt16(uint16_t num) {
   std::array<char, 2> num_arr;
-  memcpy(num_arr.data(), &num, 2);
+  UNSAFE_TODO(memcpy(num_arr.data(), &num, 2));
   for (size_t idx = 0; idx < 2; idx++)
     output_.push_back(num_arr[idx]);
 }
