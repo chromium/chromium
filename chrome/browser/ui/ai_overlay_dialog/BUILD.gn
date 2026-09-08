@@ -43,6 +43,7 @@ source_set("ai_overlay_dialog") {
     ]
     public_deps += [ "//ui/views" ]
     deps += [
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/toolbar",
       "//extensions/browser",

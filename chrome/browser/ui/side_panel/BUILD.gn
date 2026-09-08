@@ -48,6 +48,10 @@ source_set("side_panel") {
     deps += [ "//extensions/common:common_constants" ]
   }
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_actions" ]
+  }
+
   if (is_android) {
     deps += [ "//chrome/browser/ui/side_panel/android" ]
   }

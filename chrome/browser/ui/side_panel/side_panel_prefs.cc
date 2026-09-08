@@ -6,8 +6,8 @@
 
 #include "base/i18n/rtl.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -18,6 +18,12 @@
 #include "components/prefs/pref_service.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+// gn check does not evaluate the guard above, and browser_actions is only
+// defined for non-Android.
+#include "chrome/browser/ui/browser_actions.h"  // nogncheck crbug.com/428946261
+#endif
 
 namespace side_panel_prefs {
 
@@ -53,8 +59,9 @@ base::ListValue GetConfigurableSidePanelAlignments(Profile* profile) {
     return panels;
   }
 
+  BrowserActions* const browser_actions = BrowserActions::From(browser);
   actions::ActionItem* root_action_item =
-      browser->GetFeatures().GetRootActionItem();
+      browser_actions ? browser_actions->root_action_item() : nullptr;
 
   const base::DictValue& overrides =
       profile->GetPrefs()->GetDict(prefs::kSidePanelAlignmentOverrides);

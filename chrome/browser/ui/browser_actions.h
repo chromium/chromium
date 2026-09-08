@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserActionPrefsListener;

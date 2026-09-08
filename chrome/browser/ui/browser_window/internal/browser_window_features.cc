@@ -1263,10 +1263,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   actor_border_view_controller_.reset();
 }
 
-actions::ActionItem* BrowserWindowFeatures::GetRootActionItem() {
-  return browser_actions_ ? browser_actions_->root_action_item() : nullptr;
-}
-
 LocationBar* BrowserWindowFeatures::location_bar() {
   // Return nullptr if not initialized. This can happen in tests where
   // BrowserWindowFeatures is stubbed without being initialized with a browser.

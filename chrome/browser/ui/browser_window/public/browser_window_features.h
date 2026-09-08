@@ -145,10 +145,6 @@ class OverscrollPrefManager;
 class DefaultSearchExtensionControlledController;
 #endif
 
-namespace actions {
-class ActionItem;
-}  // namespace actions
-
 #if BUILDFLAG(IS_CHROMEOS)
 namespace ash::boca {
 class OnTaskLockedController;
@@ -321,8 +317,6 @@ class BrowserWindowFeatures {
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
-
-  actions::ActionItem* GetRootActionItem();
 
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
