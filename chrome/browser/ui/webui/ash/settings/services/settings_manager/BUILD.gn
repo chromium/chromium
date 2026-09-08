@@ -25,6 +25,8 @@ static_library("settings_manager") {
 
   deps = [
     "//ash/public/cpp",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",
@@ -32,6 +34,7 @@ static_library("settings_manager") {
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/printing",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/signin",

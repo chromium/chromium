@@ -8,8 +8,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/enterprise/browser_management",
   "+chrome/browser/obsolete_system",
   "+chrome/browser/ui/webui/ash/settings/pages",

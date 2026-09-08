@@ -31,7 +31,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "os_settings_manager_factory\\.cc": [
+    "+chrome/browser/ash/policy/core/browser_policy_connector_ash.h",
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
   "os_settings_manager_unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
-  ]
+  ],
 }

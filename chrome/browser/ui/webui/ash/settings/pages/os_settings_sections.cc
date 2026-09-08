@@ -35,6 +35,7 @@ using ::chromeos::settings::mojom::Section;
 }
 
 OsSettingsSections::OsSettingsSections(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
@@ -89,7 +90,8 @@ OsSettingsSections::OsSettingsSections(
 
   AddSection(
       mojom::Section::kAboutChromeOs,
-      std::make_unique<AboutSection>(profile, search_tag_registry, prefs));
+      std::make_unique<AboutSection>(browser_policy_connector_ash, profile,
+                                     search_tag_registry, prefs));
 
   AddSection(mojom::Section::kKerberos,
              std::make_unique<KerberosSection>(profile, search_tag_registry,

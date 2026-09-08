@@ -13,6 +13,7 @@
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -24,8 +25,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -188,19 +187,15 @@ std::string GetSafetyInfoLink() {
   return std::string();
 }
 
-std::string GetDeviceManager() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  DCHECK(connector);
-  return connector->GetEnterpriseDomainManager();
-}
-
 }  // namespace
 
-AboutSection::AboutSection(Profile* profile,
-                           SearchTagRegistry* search_tag_registry,
-                           PrefService* pref_service)
+AboutSection::AboutSection(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    Profile* profile,
+    SearchTagRegistry* search_tag_registry,
+    PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       pref_service_(pref_service),
       crostini_subsection_(profile, search_tag_registry, pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
@@ -372,7 +367,9 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("managementPage",
                          ManagementUI::GetManagementPageSubtitle(profile()));
 
-  html_source->AddString("deviceManager", GetDeviceManager());
+  html_source->AddString(
+      "deviceManager",
+      browser_policy_connector_ash_->GetEnterpriseDomainManager());
 
   if (user_manager::UserManager::IsInitialized()) {
     bool is_enterprise_managed =
