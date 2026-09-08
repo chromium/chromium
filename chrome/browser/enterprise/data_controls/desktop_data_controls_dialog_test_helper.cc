@@ -7,6 +7,10 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace data_controls {
 
@@ -34,6 +38,7 @@ void DesktopDataControlsDialogTestHelper::OnConstructed(
   dialog_ = dialog;
   dialog_delegate_ = dialog_delegate;
   ASSERT_EQ(dialog->type(), expected_dialog_type_);
+  ASSERT_FALSE(dialog_delegate_->EscShouldCancelDialog());
 }
 
 void DesktopDataControlsDialogTestHelper::OnWidgetInitialized(
@@ -89,6 +94,23 @@ void DesktopDataControlsDialogTestHelper::CloseDialogWithoutBypass() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&views::DialogDelegate::AcceptDialog,
                                 base::Unretained(dialog_delegate_)));
+}
+
+void DesktopDataControlsDialogTestHelper::DismissWithEsc() {
+  // Some platforms crash if the dialog has been accepted/cancelled before fully
+  // launching modally, so to avoid that issue closing the dialog
+  // is done asynchronously.
+  ASSERT_TRUE(dialog_delegate_);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](views::DialogDelegate* dialog_delegate) {
+                       views::DialogClientView* dialog_client_view =
+                           dialog_delegate->GetDialogClientView();
+                       ASSERT_TRUE(dialog_client_view);
+                       dialog_client_view->AcceleratorPressed(
+                           ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+                     },
+                     base::Unretained(dialog_delegate_)));
 }
 
 void DesktopDataControlsDialogTestHelper::WaitForDialogToInitialize() {

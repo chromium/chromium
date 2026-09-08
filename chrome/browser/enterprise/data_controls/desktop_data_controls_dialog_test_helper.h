@@ -35,6 +35,9 @@ class DesktopDataControlsDialogTestHelper
   void BypassWarning();
   void CloseDialogWithoutBypass();
 
+  // Mimics the user closing the dialog using the Esc key.
+  void DismissWithEsc();
+
   // Runs `dialog_init_loop_`.
   void WaitForDialogToInitialize();
 
