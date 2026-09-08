@@ -4,7 +4,10 @@
 
 #include "crypto/hash.h"
 
+#include <cstdint>
 #include <ostream>
+#include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -29,6 +32,16 @@ void Hash(HashKind kind,
 
 void Hash(HashKind kind, std::string_view data, base::span<uint8_t> digest) {
   Hash(kind, base::as_byte_span(data), digest);
+}
+
+std::vector<uint8_t> Hash(HashKind kind, base::span<const uint8_t> data) {
+  std::vector<uint8_t> result(DigestSizeForHashKind(kind));
+  Hash(kind, data, result);
+  return result;
+}
+
+std::vector<uint8_t> Hash(HashKind kind, std::string_view data) {
+  return Hash(kind, base::as_byte_span(data));
 }
 
 std::array<uint8_t, kSha256Size> Sha256(base::span<const uint8_t> data) {
