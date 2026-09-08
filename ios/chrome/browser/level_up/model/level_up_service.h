@@ -67,6 +67,9 @@ class LevelUpService : public KeyedService {
   // Increments the stat type by `delta`.
   void IncrementStatValue(LevelUpTaskStatType stat_type, int delta = 1);
 
+  // Returns up to 4 recommended tasks prioritized by category recency.
+  std::vector<const TaskInfo*> GetRecommendedTasks() const;
+
   // Returns all available tasks.
   const std::map<TaskType, std::unique_ptr<TaskInfo>>& GetTasks() const;
 
@@ -117,10 +120,10 @@ class LevelUpService : public KeyedService {
   std::unique_ptr<LevelUpTabGroupObserver> tab_group_observer_;
   std::map<TaskType, std::unique_ptr<TaskInfo>> tasks_;
   std::map<std::string, LevelUpTaskStatType> stat_trigger_user_actions_;
-  // Set of completed task identifiers. Stored as strings rather than TaskType
-  // enums to support storing unknown tasks received via sync from newer
-  // versions of the app.
-  std::set<std::string> completed_tasks_;
+  // List of completed task identifiers in the order they were completed.
+  // Stored as strings rather than TaskType enums to support storing unknown
+  // tasks received via sync from newer versions of the app.
+  std::vector<std::string> completed_tasks_;
   int current_level_ = 1;
   bool is_ui_enabled_ = false;
 };

@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/logging.h"
+#import "base/rand_util.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "base/values.h"
@@ -303,7 +304,8 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
     return;
   }
 
-  if (completed_tasks_.insert(storage_id).second) {
+  if (!std::ranges::contains(completed_tasks_, storage_id)) {
+    completed_tasks_.push_back(storage_id);
     // Update prefs.
     ScopedListPrefUpdate update(pref_service_, prefs::kLevelUpCompletedTasks);
     update->Append(storage_id);
@@ -329,7 +331,108 @@ void LevelUpService::ResetAllTasksStatus() {
 
 bool LevelUpService::IsTaskCompleted(TaskType task_type) const {
   std::string storage_id = TaskTypeToString(task_type);
-  return completed_tasks_.contains(storage_id);
+  return std::ranges::contains(completed_tasks_, storage_id);
+}
+
+std::vector<const TaskInfo*> LevelUpService::GetRecommendedTasks() const {
+  // Algorithm for selecting recommended tasks:
+  // 1. Order categories by recency of task completion (most recently completed
+  //    category first).
+  // 2. Select up to two uncompleted tasks at random from the most recent
+  //    category to support user momentum in their current level up flow.
+  // 3. Select up to one uncompleted task at random from each of the remaining
+  //    categories to ensure cross-category representation.
+  // 4. If fewer than 4 tasks are selected (e.g., a category has no remaining
+  //    uncompleted tasks), fill remaining slots with any uncompleted tasks at
+  //    random.
+  // 5. If fewer than 4 tasks are still selected, backfill remaining slots with
+  //    any completed tasks at random.
+
+  // Determine category recency from `completed_tasks_` in reverse order (most
+  // recent first). Default category order if no completed tasks exist:
+  // Productivity, Safety, Search.
+  std::vector<LevelUpTaskCategory> category_recency;
+  std::vector<LevelUpTaskCategory> default_categories = {
+      LevelUpTaskCategory::kProductivity, LevelUpTaskCategory::kSafety,
+      LevelUpTaskCategory::kSearch};
+
+  for (auto it = completed_tasks_.rbegin(); it != completed_tasks_.rend();
+       ++it) {
+    TaskType task_type = StringToTaskType(*it);
+    const TaskInfo* info = GetTaskInfo(task_type);
+    if (!info) {
+      continue;
+    }
+    LevelUpTaskCategory cat = info->GetCategory();
+    if (!std::ranges::contains(category_recency, cat)) {
+      category_recency.push_back(cat);
+      std::erase(default_categories, cat);
+    }
+  }
+
+  category_recency.insert(category_recency.end(), default_categories.begin(),
+                          default_categories.end());
+
+  // Partition all tasks into uncompleted and completed in a single pass.
+  std::vector<const TaskInfo*> all_uncompleted;
+  std::vector<const TaskInfo*> all_completed;
+
+  for (const auto& [type, info] : tasks_) {
+    if (IsTaskCompleted(type)) {
+      all_completed.push_back(info.get());
+    } else {
+      all_uncompleted.push_back(info.get());
+    }
+  }
+
+  // Shuffle upfront for random selection variety.
+  base::RandomShuffle(all_uncompleted.begin(), all_uncompleted.end());
+  base::RandomShuffle(all_completed.begin(), all_completed.end());
+
+  // Group uncompleted tasks by category (preserves shuffled order).
+  std::map<LevelUpTaskCategory, std::vector<const TaskInfo*>>
+      uncompleted_by_category;
+  for (const TaskInfo* info : all_uncompleted) {
+    uncompleted_by_category[info->GetCategory()].push_back(info);
+  }
+
+  std::vector<const TaskInfo*> recommended;
+
+  // Phase 1: Select uncompleted tasks by category caps (Rank 1: 2, Rank 2: 1,
+  // Rank 3: 1).
+  constexpr std::array<size_t, 3> caps = {2, 1, 1};
+  for (size_t i = 0; i < category_recency.size() && i < caps.size(); ++i) {
+    LevelUpTaskCategory cat = category_recency[i];
+    const auto& uncompleted = uncompleted_by_category[cat];
+    size_t count_to_take = std::min(caps[i], uncompleted.size());
+    for (size_t j = 0; j < count_to_take; ++j) {
+      recommended.push_back(uncompleted[j]);
+    }
+  }
+
+  constexpr size_t kMaxRecommendedTasks = 4;
+
+  // Phase 2: Backfill from remaining uncompleted tasks.
+  for (const TaskInfo* info : all_uncompleted) {
+    if (recommended.size() >= kMaxRecommendedTasks) {
+      break;
+    }
+    if (!std::ranges::contains(recommended, info)) {
+      recommended.push_back(info);
+    }
+  }
+
+  // Phase 3: Backfill from remaining completed tasks.
+  for (const TaskInfo* info : all_completed) {
+    if (recommended.size() >= kMaxRecommendedTasks) {
+      break;
+    }
+    if (!std::ranges::contains(recommended, info)) {
+      recommended.push_back(info);
+    }
+  }
+
+  return recommended;
 }
 
 const TaskInfo* LevelUpService::GetTaskInfo(TaskType task_type) const {
@@ -386,12 +489,15 @@ void LevelUpService::PopulateTasks() {
 void LevelUpService::LoadPrefs() {
   is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
 
+  completed_tasks_.clear();
   const base::ListValue& list =
       pref_service_->GetList(prefs::kLevelUpCompletedTasks);
   for (const auto& value : list) {
-    if (value.is_string()) {
-      completed_tasks_.insert(value.GetString());
+    const std::string* str = value.GetIfString();
+    if (!str || std::ranges::contains(completed_tasks_, *str)) {
+      continue;
     }
+    completed_tasks_.push_back(*str);
   }
 
   UpdateLevelAndPref();

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_
 
 #import <string>
+#import <string_view>
 
 // Enum for all available tasks in the Level Up feature.
 enum class TaskType {
@@ -22,6 +23,7 @@ enum class TaskType {
   kLensWebsiteSearch = 10,
   kAISearch = 11,
   kLensCameraSearch = 12,
+  kMaxValue = kLensCameraSearch,
 };
 
 // Categories grouping the level-up tasks.
@@ -36,6 +38,9 @@ enum class LevelUpTaskCategory {
 
 // Returns a string representation of the TaskType.
 std::string TaskTypeToString(TaskType type);
+
+// Returns the TaskType represented by `str`, or TaskType::kUnknown if invalid.
+TaskType StringToTaskType(std::string_view str);
 
 // Types representing the stats associated with completed tasks.
 enum class LevelUpTaskStatType {

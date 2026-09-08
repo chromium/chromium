@@ -280,4 +280,95 @@ TEST_F(LevelUpServiceTest, TestOptedOutDoesNotTrack) {
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
 }
 
+// Tests that GetRecommendedTasks returns 4 tasks matching default category
+// order (2 Productivity, 1 Safety, 1 Search) when no tasks are completed.
+TEST_F(LevelUpServiceTest, TestGetRecommendedTasksDefaultOrder) {
+  std::vector<const TaskInfo*> recommended = service_->GetRecommendedTasks();
+  ASSERT_EQ(4u, recommended.size());
+
+  int productivity_count = 0;
+  int safety_count = 0;
+  int search_count = 0;
+
+  for (const TaskInfo* info : recommended) {
+    switch (info->GetCategory()) {
+      case LevelUpTaskCategory::kProductivity:
+        productivity_count++;
+        break;
+      case LevelUpTaskCategory::kSafety:
+        safety_count++;
+        break;
+      case LevelUpTaskCategory::kSearch:
+        search_count++;
+        break;
+    }
+  }
+
+  EXPECT_EQ(2, productivity_count);
+  EXPECT_EQ(1, safety_count);
+  EXPECT_EQ(1, search_count);
+}
+
+// Tests that completing a task in a category promotes that category to rank 1
+// in recommendations.
+TEST_F(LevelUpServiceTest, TestGetRecommendedTasksCategoryRecency) {
+  // Complete a Safety task.
+  service_->MarkTaskCompleted(TaskType::kQuickDelete);
+
+  std::vector<const TaskInfo*> recommended = service_->GetRecommendedTasks();
+  ASSERT_EQ(4u, recommended.size());
+
+  int productivity_count = 0;
+  int safety_count = 0;
+  int search_count = 0;
+
+  for (const TaskInfo* info : recommended) {
+    switch (info->GetCategory()) {
+      case LevelUpTaskCategory::kProductivity:
+        productivity_count++;
+        break;
+      case LevelUpTaskCategory::kSafety:
+        safety_count++;
+        break;
+      case LevelUpTaskCategory::kSearch:
+        search_count++;
+        break;
+    }
+  }
+
+  // Safety is now rank 1 (2 tasks), Productivity rank 2 (1 task), Search rank
+  // 3 (1 task).
+  EXPECT_EQ(2, safety_count);
+  EXPECT_EQ(1, productivity_count);
+  EXPECT_EQ(1, search_count);
+}
+
+// Tests that GetRecommendedTasks backfills with completed tasks when almost all
+// tasks are completed.
+TEST_F(LevelUpServiceTest, TestGetRecommendedTasksBackfillCompleted) {
+  // Complete all 12 tasks.
+  const auto& tasks = service_->GetTasks();
+  for (const auto& [type, info] : tasks) {
+    service_->MarkTaskCompleted(type);
+  }
+
+  std::vector<const TaskInfo*> recommended = service_->GetRecommendedTasks();
+  EXPECT_EQ(4u, recommended.size());
+}
+
+// Tests that all TaskType enum values roundtrip cleanly through
+// TaskTypeToString and StringToTaskType.
+TEST_F(LevelUpServiceTest, TestTaskTypeStringRoundTrip) {
+  for (int i = 0; i <= static_cast<int>(TaskType::kMaxValue); ++i) {
+    TaskType type = static_cast<TaskType>(i);
+    std::string str = TaskTypeToString(type);
+    if (type == TaskType::kUnknown) {
+      EXPECT_EQ("Unknown", str);
+    } else {
+      EXPECT_NE("Unknown", str);
+    }
+    EXPECT_EQ(type, StringToTaskType(str));
+  }
+}
+
 }  // namespace

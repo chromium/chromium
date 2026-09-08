@@ -34,3 +34,26 @@ std::string TaskTypeToString(TaskType type) {
       return "LensCameraSearch";
   }
 }
+
+#import "base/containers/fixed_flat_map.h"
+
+TaskType StringToTaskType(std::string_view str) {
+  static constexpr auto kMap =
+      base::MakeFixedFlatMap<std::string_view, TaskType>({
+          {"AISearch", TaskType::kAISearch},
+          {"Autofill", TaskType::kAutofill},
+          {"Gemini", TaskType::kGemini},
+          {"Incognito", TaskType::kIncognito},
+          {"LensCameraSearch", TaskType::kLensCameraSearch},
+          {"LensWebsiteSearch", TaskType::kLensWebsiteSearch},
+          {"PasswordCheckup", TaskType::kPasswordCheckup},
+          {"PaymentMethods", TaskType::kPaymentMethods},
+          {"PinTabs", TaskType::kPinTabs},
+          {"QuickDelete", TaskType::kQuickDelete},
+          {"SafeBrowsing", TaskType::kSafeBrowsing},
+          {"TabGroups", TaskType::kTabGroups},
+      });
+
+  auto it = kMap.find(str);
+  return it != kMap.end() ? it->second : TaskType::kUnknown;
+}

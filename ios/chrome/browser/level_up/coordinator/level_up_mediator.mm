@@ -134,22 +134,18 @@
     }
   }
 
-  // TODO(crbug.com/523325903): Update this to match the final design spec. Use
-  // the first 4 uncompleted tasks for now.
-  NSMutableArray<LevelUpTask*>* uncompletedTasks =
+  NSMutableArray<LevelUpTask*>* recommendedTasks =
       [[NSMutableArray alloc] init];
-  for (LevelUpTask* task in allTasks) {
-    if (!task.completed) {
-      [uncompletedTasks addObject:task];
-      if (uncompletedTasks.count == 4) {
-        break;
-      }
-    }
+  const auto recommendedTaskInfos = _levelUpService->GetRecommendedTasks();
+  for (const TaskInfo* info : recommendedTaskInfos) {
+    BOOL completed = _levelUpService->IsTaskCompleted(info->GetTaskType());
+    [recommendedTasks
+        addObject:[[LevelUpTask alloc] initWithTaskInfo:info
+                                              completed:completed]];
   }
-  NSArray<LevelUpTask*>* tasksForCurrentLevel = uncompletedTasks;
 
   if ([self.consumer respondsToSelector:@selector(setLevel:tasksForLevel:)]) {
-    [self.consumer setLevel:level tasksForLevel:tasksForCurrentLevel];
+    [self.consumer setLevel:level tasksForLevel:recommendedTasks];
   }
 
   _categories = @[
