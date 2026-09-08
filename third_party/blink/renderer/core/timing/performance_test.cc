@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_callback.h"
@@ -461,6 +462,43 @@ TEST_F(PerformanceTest, DeclarativePerformanceObserverOptimization) {
   // Clean up binder
   scope.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::DeclarativePerformanceObserverHost::Name_, {});
+}
+
+TEST_F(PerformanceTest, GetEntriesByTypeUseCounters) {
+  struct TestCase {
+    const char* entry_type;
+    std::vector<WebFeature> expected_features;
+  };
+
+  const TestCase kTestCases[] = {
+      {"resource", {WebFeature::kResourceTiming}},
+      {"navigation", {WebFeature::kNavigationTimingL2}},
+      {"paint", {WebFeature::kPaintTimingRequested}},
+      {"long-animation-frame", {WebFeature::kLongAnimationFrameRequested}},
+      {"first-input",
+       {WebFeature::kEventTimingExplicitlyRequested,
+        WebFeature::kEventTimingFirstInputExplicitlyRequested}},
+      {"soft-navigation",
+       {WebFeature::kSoftNavigationHeuristics,
+        WebFeature::kSoftNavigationExplicitlyRequested}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.entry_type);
+    V8TestingScope scope;
+    auto* window = LocalDOMWindow::From(scope.GetScriptState());
+    auto* performance = DOMWindowPerformance::performance(*window);
+
+    for (WebFeature feature : test_case.expected_features) {
+      EXPECT_FALSE(scope.GetDocument().IsUseCounted(feature));
+    }
+
+    performance->getEntriesByType(AtomicString(test_case.entry_type));
+
+    for (WebFeature feature : test_case.expected_features) {
+      EXPECT_TRUE(scope.GetDocument().IsUseCounted(feature));
+    }
+  }
 }
 
 }  // namespace blink

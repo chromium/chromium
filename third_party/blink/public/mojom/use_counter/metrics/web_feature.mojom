@@ -5323,6 +5323,12 @@ enum WebFeature {
   kHTMLMenuItemElement = 6006,
   kHTMLMenuListElement = 6007,
   kHTMLMenuItemInMenu = 6008,
+  kSoftNavigationEntryEmitted = 6009,
+  kSoftNavigationExplicitlyRequested = 6010,
+  kSoftNavigationObserved = 6011,
+  kInteractionContentfulPaintEntryEmitted = 6012,
+  kInteractionContentfulPaintExplicitlyRequested = 6013,
+  kInteractionContentfulPaintObserved = 6014,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

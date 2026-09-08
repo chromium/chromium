@@ -571,6 +571,8 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
               GetExecutionContext())) {
         UseCounter::Count(GetExecutionContext(),
                           WebFeature::kSoftNavigationHeuristics);
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kSoftNavigationExplicitlyRequested);
         entries = &soft_navigation_buffer_;
       }
       break;

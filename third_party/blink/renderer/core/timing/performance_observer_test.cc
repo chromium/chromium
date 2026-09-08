@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -174,5 +176,65 @@ TEST_F(PerformanceObserverTest, ObserveAfterContextDetached) {
   // should now be null.
   EXPECT_FALSE(observer_->GetExecutionContext());
   observer_->observe(script_state, options, exception_state);
+}
+
+TEST_F(PerformanceObserverTest, ObserveEntryTypesUseCounters) {
+  ScopedContainerTimingForTest enable_container_timing(true);
+
+  struct TestCase {
+    const char* entry_type;
+    WebFeature expected_feature;
+  };
+
+  static constexpr TestCase kTestCases[] = {
+      {"layout-shift", WebFeature::kLayoutShiftExplicitlyRequested},
+      {"element", WebFeature::kElementTimingExplicitlyRequested},
+      {"largest-contentful-paint",
+       WebFeature::kLargestContentfulPaintExplicitlyRequested},
+      {"resource", WebFeature::kResourceTiming},
+      {"longtask", WebFeature::kLongTaskObserver},
+      {"visibility-state", WebFeature::kVisibilityStateObserver},
+      {"long-animation-frame", WebFeature::kLongAnimationFrameObserver},
+      {"container", WebFeature::kContainerTimingObserverRegistered},
+      {"soft-navigation", WebFeature::kSoftNavigationExplicitlyRequested},
+      {"interaction-contentful-paint",
+       WebFeature::kInteractionContentfulPaintExplicitlyRequested},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.entry_type);
+
+    // Test with entryTypes argument.
+    {
+      V8TestingScope scope;
+      NonThrowableExceptionState exception_state;
+      Initialize(scope.GetScriptState());
+
+      EXPECT_FALSE(
+          scope.GetDocument().IsUseCounted(test_case.expected_feature));
+
+      PerformanceObserverInit* options = PerformanceObserverInit::Create();
+      options->setEntryTypes({test_case.entry_type});
+      observer_->observe(scope.GetScriptState(), options, exception_state);
+
+      EXPECT_TRUE(scope.GetDocument().IsUseCounted(test_case.expected_feature));
+    }
+
+    // Test with type argument.
+    {
+      V8TestingScope scope;
+      NonThrowableExceptionState exception_state;
+      Initialize(scope.GetScriptState());
+
+      EXPECT_FALSE(
+          scope.GetDocument().IsUseCounted(test_case.expected_feature));
+
+      PerformanceObserverInit* options = PerformanceObserverInit::Create();
+      options->setType(test_case.entry_type);
+      observer_->observe(scope.GetScriptState(), options, exception_state);
+
+      EXPECT_TRUE(scope.GetDocument().IsUseCounted(test_case.expected_feature));
+    }
+  }
 }
 }  // namespace blink

@@ -334,6 +334,15 @@ void PerformanceObserver::observe(ScriptState* script_state,
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kContainerTimingObserverRegistered);
   }
+  if (filter_options_ & PerformanceEntry::kSoftNavigation) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kSoftNavigationExplicitlyRequested);
+  }
+  if (filter_options_ & PerformanceEntry::kInteractionContentfulPaint) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kInteractionContentfulPaintExplicitlyRequested);
+  }
 
   requires_dropped_entries_ = true;
   if (is_registered_)

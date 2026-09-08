@@ -6744,6 +6744,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6006" label="HTMLMenuItemElement"/>
   <int value="6007" label="HTMLMenuListElement"/>
   <int value="6008" label="HTMLMenuItemInMenu"/>
+  <int value="6009" label="SoftNavigationEntryEmitted"/>
+  <int value="6010" label="SoftNavigationExplicitlyRequested"/>
+  <int value="6011" label="SoftNavigationObserved"/>
+  <int value="6012" label="InteractionContentfulPaintEntryEmitted"/>
+  <int value="6013" label="InteractionContentfulPaintExplicitlyRequested"/>
+  <int value="6014" label="InteractionContentfulPaintObserved"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -9240,6 +9246,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="448" label="DRAFT_Haptics"/>
   <int value="449" label="LargestContentfulPaint"/>
   <int value="450" label="EventTiming"/>
+  <int value="451" label="SoftNavigations"/>
+  <int value="452" label="InteractionContentfulPaint"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
