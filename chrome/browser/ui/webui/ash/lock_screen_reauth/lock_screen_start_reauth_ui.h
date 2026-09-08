@@ -8,30 +8,60 @@
 #include "ash/constants/webui_url_constants.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}
 
 namespace ash {
 
 class LockScreenStartReauthUI;
 
 // WebUIConfig for chrome://lock-reauth
-class LockScreenStartReauthUIConfig
-    : public content::DefaultWebUIConfig<LockScreenStartReauthUI> {
+class LockScreenStartReauthUIConfig : public content::WebUIConfig {
  public:
-  LockScreenStartReauthUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           ash::kChromeUILockScreenStartReauthHost) {}
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  LockScreenStartReauthUIConfig(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
+  LockScreenStartReauthUIConfig(const LockScreenStartReauthUIConfig&) = delete;
+  LockScreenStartReauthUIConfig& operator=(
+      const LockScreenStartReauthUIConfig&) = delete;
+  ~LockScreenStartReauthUIConfig() override;
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 };
 
 // For chrome:://lock-reauth
 class LockScreenStartReauthUI : public ui::WebDialogUI {
  public:
-  explicit LockScreenStartReauthUI(content::WebUI* web_ui);
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  LockScreenStartReauthUI(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      content::WebUI* web_ui);
   ~LockScreenStartReauthUI() override;
 
   LockScreenReauthHandler* GetMainHandler() { return main_handler_; }

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
@@ -17,7 +18,12 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/cookie_access_result.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}
 
 namespace ash {
 
@@ -25,8 +31,13 @@ class LockScreenReauthManager;
 
 class LockScreenReauthHandler : public content::WebUIMessageHandler {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  LockScreenReauthHandler(PrefService* local_state, const std::string& email);
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  LockScreenReauthHandler(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      const std::string& email);
   ~LockScreenReauthHandler() override;
 
   void RegisterMessages() override;
@@ -114,6 +125,11 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void UpdateOrientationAndWidth();
 
   void CallJavascript(const std::string& function, base::ValueView params);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   AuthenticatorState authenticator_state_ = AuthenticatorState::NOT_LOADED;
 

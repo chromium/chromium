@@ -13,8 +13,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/enterprise/util",
   "+chrome/browser/extensions/tab_helper.h",
   "+chrome/browser/media/webrtc",
@@ -30,6 +28,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "lock_screen_reauth_dialogs\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
   "lock_screen_start_reauth_ui\\.cc": [
     "+chrome/browser/ui/webui/theme_source.h",
   ],

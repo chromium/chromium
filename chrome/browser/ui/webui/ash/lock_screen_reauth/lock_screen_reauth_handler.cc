@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -20,8 +21,6 @@
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
@@ -33,6 +32,8 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -80,12 +81,6 @@ bool ShouldDoSamlRedirect(const std::string& email) {
   return user && user->using_saml();
 }
 
-std::string GetSSOProfile() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetSSOProfile();
-}
-
 std::string GetDeviceId(const user_manager::KnownUser& known_user) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
@@ -106,9 +101,16 @@ const char kMainElement[] = "$(\'main-element\').";
 
 }  // namespace
 
-LockScreenReauthHandler::LockScreenReauthHandler(PrefService* local_state,
-                                                 const std::string& email)
-    : email_(email), auth_flow_auto_reload_manager_(local_state) {}
+LockScreenReauthHandler::LockScreenReauthHandler(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const std::string& email)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      email_(email),
+      auth_flow_auto_reload_manager_(local_state) {}
 
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
@@ -165,7 +167,7 @@ void LockScreenReauthHandler::LoadAuthenticatorParam(
                         ->GetAccountId()
                         .GetGaiaId();
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   if (!context.email.empty()) {
     context.gaps_cookie = known_user.GetGAPSCookie(
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
@@ -257,12 +259,13 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     LOG(ERROR) << "Couldn't get domain for account.";
   }
   params.Set("enableGaiaActionButtons", !do_saml_redirect);
-  const std::string sso_profile(GetSSOProfile());
+  const std::string sso_profile =
+      browser_policy_connector_ash_->GetSSOProfile();
   if (!sso_profile.empty()) {
     params.Set("ssoProfile", sso_profile);
   }
 
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   DCHECK(!app_locale.empty());
   params.Set("hl", app_locale);
   params.Set("email", context.email);
@@ -270,11 +273,10 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("extractSamlPasswordAttributes", true);
   params.Set("clientVersion", version_info::GetVersionNumber());
   params.Set("readOnlyEmail", true);
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state->IsManagedPreference(
+  if (local_state_->IsManagedPreference(
           ash::prefs::kUrlParameterToAutofillSAMLUsername)) {
     params.Set("urlParameterToAutofillSAMLUsername",
-               local_state->GetString(
+               local_state_->GetString(
                    ash::prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
@@ -484,7 +486,7 @@ void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {
 
 void LockScreenReauthHandler::HandleGetDeviceId(
     const std::string& callback_id) {
-  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  user_manager::KnownUser known_user{&local_state_.get()};
   ResolveJavascriptCallback(callback_id, GetDeviceId(known_user));
 }
 

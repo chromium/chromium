@@ -421,7 +421,9 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<KerberosInBrowserUIConfig>());
   AddWebUIConfig(std::make_unique<LauncherInternalsUIConfig>());
   AddWebUIConfig(std::make_unique<LockScreenNetworkUIConfig>());
-  AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>());
+  AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>(
+      &local_state_.get(), &application_locale_storage_.get(),
+      browser_policy_connector_ash_.get()));
   AddWebUIConfig(MakeComponentConfigWithDelegate<MallUIConfig, MallUI,
                                                  ChromeMallUIDelegate>());
   AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
