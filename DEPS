@@ -1227,10 +1227,10 @@ deps = {
     'condition': 'checkout_gpu_meet_effects and non_git_source',
     'objects': [
       {
-        'object_name': 'meet-gpu-tests/977239864.tar.gz',
-        'sha256sum': '3f41dbfb5dd82245836e021d112a266e5ff446b82ec82aac22e69a4de0ab0ea2',
-        'size_bytes': 278376183,
-        'generation': 1788770808868665,
+        'object_name': 'meet-gpu-tests/977669979.tar.gz',
+        'sha256sum': '5409f13b65c03ad8e509fc75f5d0029ea9e6330dc92a7f2e7d7166d6b617c485',
+        'size_bytes': 278375828,
+        'generation': 1788857362474156,
       },
     ],
   },
