@@ -280,16 +280,6 @@ void BindNoStatePrefetchProcessor(
 
 #if BUILDFLAG(IS_ANDROID)
 template <typename Interface>
-void ForwardToJavaWebContents(content::RenderFrameHost* frame_host,
-                              mojo::PendingReceiver<Interface> receiver) {
-  content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(frame_host);
-  if (contents) {
-    contents->GetJavaInterfaces()->GetInterface(std::move(receiver));
-  }
-}
-
-template <typename Interface>
 void ForwardToJavaFrame(content::RenderFrameHost* render_frame_host,
                         mojo::PendingReceiver<Interface> receiver) {
   render_frame_host->GetJavaInterfaces()->GetInterface(std::move(receiver));
@@ -555,7 +545,7 @@ void PopulateChromeFrameBinders(
 #endif
 #if BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::ShareService>(
-      &ForwardToJavaWebContents<blink::mojom::ShareService>);
+      &ForwardToJavaFrame<blink::mojom::ShareService>);
 #endif
 
   map->Add<network_hints::mojom::NetworkHintsHandler>(&BindNetworkHintsHandler);

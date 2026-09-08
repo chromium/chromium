@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.webauthn.ChromeAuthenticatorFactory;
 import org.chromium.chrome.browser.webshare.ShareServiceImplementationFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -28,21 +27,8 @@ import org.chromium.webshare.mojom.ShareService;
 class ChromeInterfaceRegistrar {
     @CalledByNative
     private static void registerMojoInterfaces() {
-        InterfaceRegistrar.Registry.addWebContentsRegistrar(
-                new ChromeWebContentsInterfaceRegistrar());
         InterfaceRegistrar.Registry.addRenderFrameHostRegistrar(
                 new ChromeRenderFrameHostInterfaceRegistrar());
-    }
-
-    private static class ChromeWebContentsInterfaceRegistrar
-            implements InterfaceRegistrar<WebContents> {
-        @Override
-        public void registerInterfaces(
-                InterfaceRegistry registry, @Nullable final WebContents webContents) {
-            assert webContents != null;
-            registry.addInterface(
-                    ShareService.MANAGER, new ShareServiceImplementationFactory(webContents));
-        }
     }
 
     private static class ChromeRenderFrameHostInterfaceRegistrar
@@ -59,6 +45,8 @@ class ChromeInterfaceRegistrar {
                     Authenticator.MANAGER, new ChromeAuthenticatorFactory(renderFrameHost));
             registry.addInterface(
                     DigitalGoodsFactory.MANAGER, new DigitalGoodsFactoryFactory(renderFrameHost));
+            registry.addInterface(
+                    ShareService.MANAGER, new ShareServiceImplementationFactory(renderFrameHost));
         }
     }
 }

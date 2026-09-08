@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webshare;
 
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -17,6 +16,7 @@ import org.chromium.components.browser_ui.webshare.ShareServiceImpl;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.services.service_manager.InterfaceFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.webshare.mojom.ShareService;
@@ -26,15 +26,18 @@ import java.util.function.Supplier;
 /** Factory that creates instances of ShareService. */
 @NullMarked
 public class ShareServiceImplementationFactory implements InterfaceFactory<@Nullable ShareService> {
-    private final WebContents mWebContents;
+    private final RenderFrameHost mRenderFrameHost;
     private @Nullable Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
     private @Nullable WindowAndroid mWindowAndroid;
 
-    public ShareServiceImplementationFactory(WebContents webContents) {
-        mWebContents = webContents;
-        mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+    public ShareServiceImplementationFactory(RenderFrameHost renderFrameHost) {
+        mRenderFrameHost = renderFrameHost;
+        WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+        mWindowAndroid =
+                (webContents != null && !webContents.isDestroyed())
+                        ? webContents.getTopLevelNativeWindow()
+                        : null;
         mShareDelegateSupplier = getShareDelegateSupplier(mWindowAndroid);
-        assert mShareDelegateSupplier != null;
     }
 
     private static @Nullable Supplier<@Nullable ShareDelegate> getShareDelegateSupplier(
@@ -50,11 +53,12 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<@Null
                 new ShareServiceImpl.WebShareDelegate() {
                     @Override
                     public boolean canShare() {
-                        if (mWebContents.isDestroyed()) return false;
+                        WebContents webContents =
+                                WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+                        if (webContents == null || webContents.isDestroyed()) return false;
                         return getShareDelegate() != null
-                                && mWebContents
-                                        .getMainFrame()
-                                        .isFeatureEnabled(PermissionsPolicyFeature.WEB_SHARE);
+                                && mRenderFrameHost.isFeatureEnabled(
+                                        PermissionsPolicyFeature.WEB_SHARE);
                     }
 
                     @Override
@@ -65,26 +69,25 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<@Null
                                 params,
                                 new ChromeShareExtras.Builder()
                                         .setDetailedContentType(DetailedContentType.WEB_SHARE)
+                                        .setRenderFrameHost(mRenderFrameHost)
                                         .build(),
                                 ShareOrigin.WEBSHARE_API);
                     }
 
                     @Override
                     public @Nullable WindowAndroid getWindowAndroid() {
-                        if (mWebContents.isDestroyed()) return null;
+                        WebContents webContents =
+                                WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+                        if (webContents == null || webContents.isDestroyed()) return null;
                         if (mWindowAndroid == null || mWindowAndroid.isDestroyed()) {
-                            mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+                            mWindowAndroid = webContents.getTopLevelNativeWindow();
                         }
                         return mWindowAndroid;
                     }
 
                     @Override
                     public void terminateRendererDueToBadMessage(int reason) {
-                        if (mWebContents.isDestroyed()) return;
-                        RenderFrameHost mainFrame = mWebContents.getMainFrame();
-                        if (mainFrame != null) {
-                            mainFrame.terminateRendererDueToBadMessage(reason);
-                        }
+                        mRenderFrameHost.terminateRendererDueToBadMessage(reason);
                     }
 
                     /**
@@ -95,16 +98,18 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<@Null
                      * necessitates getting a new ShareDelegate. See https://crbug.com/40838216.
                      */
                     private @Nullable ShareDelegate getShareDelegate() {
-                        if (mWebContents.isDestroyed()) return null;
+                        WebContents webContents =
+                                WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+                        if (webContents == null || webContents.isDestroyed()) return null;
+                        WindowAndroid currentWindow = webContents.getTopLevelNativeWindow();
                         if (mWindowAndroid != null
-                                && mWindowAndroid.equals(mWebContents.getTopLevelNativeWindow())
+                                && mWindowAndroid.equals(currentWindow)
                                 && mShareDelegateSupplier != null) {
                             return mShareDelegateSupplier.get();
                         }
-                        mWindowAndroid = getWindowAndroid();
+                        mWindowAndroid = currentWindow;
                         mShareDelegateSupplier = getShareDelegateSupplier(mWindowAndroid);
-                        assert mShareDelegateSupplier != null;
-                        return mShareDelegateSupplier.get();
+                        return mShareDelegateSupplier != null ? mShareDelegateSupplier.get() : null;
                     }
                 };
 
