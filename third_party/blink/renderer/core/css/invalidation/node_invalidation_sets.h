@@ -7,14 +7,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class CORE_EXPORT NodeInvalidationSets final {
+class CORE_EXPORT NodeInvalidationSets final
+    : public GarbageCollected<NodeInvalidationSets> {
  public:
   NodeInvalidationSets() = default;
-  NodeInvalidationSets(NodeInvalidationSets&&) = default;
-  NodeInvalidationSets& operator=(NodeInvalidationSets&&) = default;
   NodeInvalidationSets(const NodeInvalidationSets&) = delete;
   NodeInvalidationSets& operator=(const NodeInvalidationSets&) = delete;
 
@@ -22,6 +22,8 @@ class CORE_EXPORT NodeInvalidationSets final {
   const InvalidationSetVector& Descendants() const { return descendants_; }
   InvalidationSetVector& Siblings() { return siblings_; }
   const InvalidationSetVector& Siblings() const { return siblings_; }
+
+  void Trace(Visitor*) const {}
 
  private:
   InvalidationSetVector descendants_;

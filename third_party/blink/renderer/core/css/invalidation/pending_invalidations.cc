@@ -227,7 +227,7 @@ NodeInvalidationSets& PendingInvalidations::EnsurePendingInvalidations(
   }
   PendingInvalidationMap::AddResult add_result =
       pending_invalidation_map_.insert(
-          &node, std::make_unique<NodeInvalidationSets>());
+          &node, MakeGarbageCollected<NodeInvalidationSets>());
   return *add_result.stored_value->value;
 }
 

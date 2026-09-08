@@ -19,10 +19,9 @@ class Element;
 
 // HeapHashMap is not node-based and thus does not have stable iterators,
 // but we rely on pointers to stay stable even during modification of the map.
-// Thus, use unique_ptr to make sure the NodeInvalidationSets has a stable
-// address.
+// With Oilpan, Member<NodeInvalidationSets> provides a stable address.
 using PendingInvalidationMap =
-    HeapHashMap<Member<ContainerNode>, std::unique_ptr<NodeInvalidationSets>>;
+    HeapHashMap<Member<ContainerNode>, Member<NodeInvalidationSets>>;
 
 // Performs deferred style invalidation for DOM subtrees.
 //
