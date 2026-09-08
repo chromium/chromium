@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Profile-scoped manager for the ActorForegroundService. Observes ActorKeyedService to start/stop
@@ -37,7 +38,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     private static final String TAG = "ActorFgsMngr";
     public static final int INVALID_NOTIFICATION_ID = -1;
     // Delay to ensure start/stop foreground doesn't happen too quickly.
-    private static long sWaitTimeMs = 200;
+    private static long sWaitTimeMs = TimeUnit.SECONDS.toMillis(30);
 
     @Nullable private static ActorForegroundServiceManager sInstance;
 
