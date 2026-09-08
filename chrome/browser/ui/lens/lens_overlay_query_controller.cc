@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/lens/lens_identity_delegation_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -35,6 +37,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -97,6 +100,9 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
+constexpr char kEncodeResponseIfExecutableHeader[] =
+    "X-Goog-Encode-Response-If-Executable";
+constexpr char kBase64Value[] = "base64";
 inline constexpr char kModeParameterKey[] = "udm";
 inline constexpr char kAimModeParameterValue[] = "50";
 
@@ -698,6 +704,13 @@ LensOverlayQueryController::CreateEndpointFetcher(
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers,
     UploadProgressCallback upload_progress_callback) {
+  std::vector<std::string> headers = request_headers;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    // Request base64-encoded response from ESP safely.
+    headers.push_back(kEncodeResponseIfExecutableHeader);
+    headers.push_back(kBase64Value);
+  }
+
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/profile_
           ? profile_->GetURLLoaderFactory().get()
@@ -710,7 +723,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
           .SetContentType(kContentType)
           .SetCorsExemptHeaders(cors_exempt_headers)
           .SetCredentialsMode(CredentialsMode::kInclude)
-          .SetHeaders(request_headers)
+          .SetHeaders(headers)
           .SetPostData(std::move(request_string))
           .SetSetSiteForCookies(true)
           .SetTimeout(timeout)
@@ -842,7 +855,14 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   }
 
   lens::LensOverlayServerClusterInfoResponse server_response;
-  if (!server_response.ParseFromString(response->response)) {
+  std::string response_string = response->response;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    std::string decoded_response;
+    if (base::Base64Decode(response_string, &decoded_response)) {
+      response_string = decoded_response;
+    }
+  }
+  if (!server_response.ParseFromString(response_string)) {
     // If there was an error with the cluster info request, we should still try
     // and send the full image request as a fallback.
     PrepareAndFetchFullImageRequest();
@@ -1132,7 +1152,14 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   }
 
   lens::LensOverlayServerResponse server_response;
-  if (!server_response.ParseFromString(response->response)) {
+  std::string response_string = response->response;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    std::string decoded_response;
+    if (base::Base64Decode(response_string, &decoded_response)) {
+      response_string = decoded_response;
+    }
+  }
+  if (!server_response.ParseFromString(response_string)) {
     RunFullImageCallbackForError();
     return;
   }
@@ -1377,9 +1404,15 @@ void LensOverlayQueryController::PageContentResponseHandler(
 
 bool LensOverlayQueryController::MaybeRetryPageContentUpload(
     std::unique_ptr<EndpointResponse> response) {
-  if (upload_chunker_ &&
-      upload_chunker_->HandlePageContentResponse(response->response)) {
-    return true;
+  if (upload_chunker_) {
+    std::string response_string = response->response;
+    if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+      std::string decoded_response;
+      if (base::Base64Decode(response_string, &decoded_response)) {
+        response_string = decoded_response;
+      }
+    }
+    return upload_chunker_->HandlePageContentResponse(response_string);
   }
   return false;
 }
@@ -1887,7 +1920,14 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
   }
 
   lens::LensOverlayServerResponse server_response;
-  if (!server_response.ParseFromString(response->response)) {
+  std::string response_string = response->response;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    std::string decoded_response;
+    if (base::Base64Decode(response_string, &decoded_response)) {
+      response_string = decoded_response;
+    }
+  }
+  if (!server_response.ParseFromString(response_string)) {
     RunInteractionCallbackForError();
     return;
   }
@@ -2087,6 +2127,15 @@ LensOverlayQueryController::CreateClientContext() {
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
 LensOverlayQueryController::CreateOAuthHeadersAndContinue(
     OAuthHeadersCreatedCallback callback) {
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    // The Lens overlay flow always uses the default (first) signed-in user in
+    // the cookie jar (authuser=0).
+    lens::FetchIdentityDelegationHeaders(
+        profile_, identity_manager_, google_util::kGoogleHomepageURL,
+        /*authuser_index=*/0, std::move(callback));
+    return nullptr;
+  }
+
   // Use OAuth if the flag is enabled and the user is logged in.
   if (lens::features::UseOauthForLensOverlayRequests() && identity_manager_ &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {

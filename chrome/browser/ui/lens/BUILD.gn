@@ -58,6 +58,7 @@ source_set("backend_logic_impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/lens:lens_identity_delegation_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
@@ -66,6 +67,7 @@ source_set("backend_logic_impl") {
     "//chrome/common:channel_info",
     "//components/application_locale_storage",
     "//components/base32",
+    "//components/google/core/common",
     "//components/language/core/common",
     "//components/lens:enterprise_policy",
     "//components/metrics_services_manager",
@@ -559,6 +561,10 @@ if (!is_android) {
       "//ui/gfx/geometry",
       "//url",
     ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/ash/components/network:test_support" ]
+    }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.

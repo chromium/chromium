@@ -4,6 +4,7 @@
 
 #include "test_lens_overlay_query_controller.h"
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
@@ -347,6 +348,17 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   }
 
   sent_fetch_url_ = fetch_url;
+  sent_request_headers_ = request_headers;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    sent_request_headers_.push_back("X-Goog-Encode-Response-If-Executable");
+    sent_request_headers_.push_back("base64");
+  }
+
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests() &&
+      !fake_server_response_string.empty()) {
+    fake_server_response_string =
+        base::Base64Encode(fake_server_response_string);
+  }
 
   // Create the fake endpoint fetcher to return the fake response.
   EndpointResponse fake_endpoint_response;

@@ -179,6 +179,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // Accessors.
   const GURL& sent_fetch_url() const { return sent_fetch_url_; }
 
+  const std::vector<std::string>& sent_request_headers() const {
+    return sent_request_headers_;
+  }
+
   const lens::LensOverlayClientLogs& sent_client_logs() const {
     return sent_client_logs_;
   }
@@ -484,6 +488,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;
+
+  // The last request headers sent by the query controller.
+  std::vector<std::string> sent_request_headers_;
 
   // The last significant region boxes sent to the query controller.
   std::vector<lens::mojom::CenterRotatedBoxPtr>
