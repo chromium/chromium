@@ -282,7 +282,6 @@ class _ApkDelegate:
 
         coverage_index = None
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
-            # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
             device_coverage_dir = code_coverage_utils.GetDeviceClangCoverageDir(
                 device
             )
@@ -374,11 +373,16 @@ class _ApkDelegate:
                 if coverage_index is not None:
                     if not os.path.isdir(self._coverage_dir):
                         os.makedirs(self._coverage_dir)
+                    if self._env.force_main_user:
+                        device_coverage_dir = device.ResolveSpecialPath(
+                            device_coverage_dir
+                        )
                     code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
                         device,
                         device_coverage_dir,
                         self._coverage_dir,
                         str(coverage_index),
+                        as_root=self._env.force_main_user,
                     )
 
             stdout_file_path = stdout_file.name
@@ -500,12 +504,16 @@ class _ExeDelegate:
         )
 
         if coverage_index is not None:
-            # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
+            if self._env.force_main_user:
+                device_coverage_dir = device.ResolveSpecialPath(
+                    device_coverage_dir
+                )
             code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
                 device,
                 device_coverage_dir,
                 self._coverage_dir,
                 str(coverage_index),
+                as_root=self._env.force_main_user,
             )
 
         return output

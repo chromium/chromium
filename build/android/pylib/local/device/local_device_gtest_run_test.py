@@ -6,11 +6,11 @@
 
 # pylint: disable=protected-access
 
-import random
 import os
-import unittest
-
+import random
 import sys
+import unittest
+from unittest import mock
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
@@ -20,8 +20,6 @@ from pylib.base import base_test_result
 from pylib.gtest import gtest_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_gtest_run
-
-import mock  # pylint: disable=import-error
 
 
 def isSliceInList(s, l):
@@ -244,6 +242,89 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
             ['TestSuite1.PRE_TestName3', 'TestSuite1.TestName3'],
         ]
         self.assertListEqual(actual_retry, expected_retry)
+
+    @mock.patch(
+        'pylib.utils.code_coverage_utils.PullAndMaybeMergeClangCoverageFiles'
+    )
+    @mock.patch('os.path.isdir', return_value=True)
+    def test_ApkDelegate_Run_coverage_force_main_user(
+        self, _mock_isdir, mock_pull_clang
+    ):
+        mock_env = mock.MagicMock(
+            spec=local_device_environment.LocalDeviceEnvironment
+        )
+        mock_env.force_main_user = True
+        mock_ti = mock.MagicMock(spec=gtest_test_instance.GtestTestInstance)
+        mock_ti.coverage_dir = '/host/coverage/dir'
+        mock_ti.suite = 'base_unittests'
+        mock_ti.extras = {}
+        mock_ti.wait_for_java_debugger = False
+        mock_ti.package = 'com.example.test'
+        mock_ti.runner = 'TestRunner'
+        mock_ti.permissions = []
+        mock_ti.use_existing_test_data = False
+        mock_ti.additional_apks = []
+        mock_ti.apk_helper = None
+        mock_ti.test_apk_incremental_install_json = None
+
+        delegate = local_device_gtest_run._ApkDelegate(mock_ti, mock_env)
+
+        device = mock.MagicMock()
+        device.build_version_sdk = 34
+        device.GetExternalStoragePath.return_value = '/sdcard'
+        device.GetAppWritablePath.return_value = '/data/data/com.example.test'
+        device.ResolveSpecialPath.side_effect = lambda p: (
+            '/data/media/10' + p[len('/sdcard') :]
+            if p.startswith('/sdcard')
+            else p
+        )
+        device.ReadFile.return_value = 'output'
+
+        delegate.Run(['TestSuite.test1'], device)
+
+        mock_pull_clang.assert_called_once_with(
+            device,
+            '/data/media/10/chrome/test/coverage/profraw',
+            '/host/coverage/dir',
+            '0',
+            as_root=True,
+        )
+
+    @mock.patch(
+        'pylib.utils.code_coverage_utils.PullAndMaybeMergeClangCoverageFiles'
+    )
+    def test_ExeDelegate_Run_coverage_force_main_user(self, mock_pull_clang):
+        mock_env = mock.MagicMock(
+            spec=local_device_environment.LocalDeviceEnvironment
+        )
+        mock_env.force_main_user = True
+        mock_ti = mock.MagicMock(spec=gtest_test_instance.GtestTestInstance)
+        mock_ti.coverage_dir = '/host/coverage/dir'
+        mock_ti.suite = 'base_unittests'
+        mock_ti.exe_dist_dir = '/path/to/test_exe__dist'
+
+        mock_tr = mock.MagicMock()
+        delegate = local_device_gtest_run._ExeDelegate(
+            mock_tr, mock_ti, mock_env
+        )
+
+        device = mock.MagicMock()
+        device.GetExternalStoragePath.return_value = '/sdcard'
+        device.ResolveSpecialPath.side_effect = lambda p: (
+            '/data/media/10' + p[len('/sdcard') :]
+            if p.startswith('/sdcard')
+            else p
+        )
+
+        delegate.Run(['TestSuite.test1'], device)
+
+        mock_pull_clang.assert_called_once_with(
+            device,
+            '/data/media/10/chrome/test/coverage/profraw',
+            '/host/coverage/dir',
+            '0',
+            as_root=True,
+        )
 
 
 if __name__ == '__main__':

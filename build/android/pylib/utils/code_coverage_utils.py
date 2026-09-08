@@ -42,7 +42,11 @@ def GetDeviceClangCoverageDir(device):
 
 
 def PullAndMaybeMergeClangCoverageFiles(
-    device, device_coverage_dir, output_dir, output_subfolder_name
+    device,
+    device_coverage_dir,
+    output_dir,
+    output_subfolder_name,
+    as_root=False,
 ):
     """Pulls and possibly merges clang coverage file to a single file.
 
@@ -58,8 +62,9 @@ def PullAndMaybeMergeClangCoverageFiles(
       output_subfolder_name: The subfolder in |output_dir| to pull
           |device_coverage_dir| into. It will be deleted after merging if
           merging happens.
+      as_root: Whether root permissions should be used to pull and remove files.
     """
-    if not device.PathExists(device_coverage_dir, retries=0):
+    if not device.PathExists(device_coverage_dir, as_root=as_root, retries=0):
         logging.warning(
             'Clang coverage data folder does not exist on device: %s',
             device_coverage_dir,
@@ -70,7 +75,9 @@ def PullAndMaybeMergeClangCoverageFiles(
     # Note: The function pulls |device_coverage_dir| folder,
     # instead of profraw files, into |profraw_parent_dir|. the
     # function also removes |device_coverage_dir| from device.
-    PullClangCoverageFiles(device, device_coverage_dir, profraw_parent_dir)
+    PullClangCoverageFiles(
+        device, device_coverage_dir, profraw_parent_dir, as_root=as_root
+    )
     # Merge data into one merged file if llvm-profdata tool exists.
     if os.path.isfile(LLVM_PROFDATA_PATH):
         profraw_folder_name = os.path.basename(
@@ -81,24 +88,29 @@ def PullAndMaybeMergeClangCoverageFiles(
         shutil.rmtree(profraw_parent_dir)
 
 
-def PullClangCoverageFiles(device, device_coverage_dir, output_dir):
+def PullClangCoverageFiles(
+    device, device_coverage_dir, output_dir, as_root=False
+):
     """Pulls clang coverage files on device to host directory.
 
     Args:
       device: The working device.
       device_coverage_dir: The directory to store coverage data on device.
       output_dir: The output directory on host.
+      as_root: Whether root permissions should be used to pull and remove files.
     """
     try:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        device.PullFile(device_coverage_dir, output_dir)
+        device.PullFile(device_coverage_dir, output_dir, as_root=as_root)
         if not os.listdir(os.path.join(output_dir, 'profraw')):
             logging.warning('No clang coverage data was generated for this run')
     except (OSError, base_error.BaseError) as e:
         logging.warning('Failed to pull clang coverage data, error: %s', e)
     finally:
-        device.RemovePath(device_coverage_dir, force=True, recursive=True)
+        device.RemovePath(
+            device_coverage_dir, force=True, recursive=True, as_root=as_root
+        )
 
 
 def MergeClangCoverageFiles(coverage_dir, profdata_dir):

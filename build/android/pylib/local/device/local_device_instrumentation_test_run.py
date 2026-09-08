@@ -1511,27 +1511,44 @@ class LocalDeviceInstrumentationTestRun(
 
                         # Handling Jacoco coverage data.
                         # Retries add time to test execution.
+                        jacoco_device_file = jacoco_coverage_device_file
+                        if self._env.force_main_user:
+                            jacoco_device_file = device.ResolveSpecialPath(
+                                jacoco_device_file
+                            )
                         if device.PathExists(
-                            jacoco_coverage_device_file, retries=0
+                            jacoco_device_file,
+                            as_root=self._env.force_main_user,
+                            retries=0,
                         ):
                             device.PullFile(
-                                jacoco_coverage_device_file,
+                                jacoco_device_file,
                                 self._test_instance.coverage_directory,
+                                as_root=self._env.force_main_user,
                             )
-                            device.RemovePath(jacoco_coverage_device_file, True)
+                            device.RemovePath(
+                                jacoco_device_file,
+                                force=True,
+                                as_root=self._env.force_main_user,
+                            )
                         else:
                             logging.warning(
                                 'Jacoco coverage file does not exist: %s',
-                                jacoco_coverage_device_file,
+                                jacoco_device_file,
                             )
 
                         # Handling Clang coverage data.
-                        # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
+                        clang_profile_dir = device_clang_profile_dir
+                        if self._env.force_main_user:
+                            clang_profile_dir = device.ResolveSpecialPath(
+                                clang_profile_dir
+                            )
                         code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
                             device,
-                            device_clang_profile_dir,
+                            clang_profile_dir,
                             self._test_instance.coverage_directory,
                             coverage_basename,
+                            as_root=self._env.force_main_user,
                         )
 
                     except (OSError, base_error.BaseError) as e:

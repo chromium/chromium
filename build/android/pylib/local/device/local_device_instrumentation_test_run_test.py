@@ -7,11 +7,12 @@
 
 # pylint: disable=protected-access
 
-import unittest
-
-import random
+import contextlib
 import os
+import random
 import sys
+import unittest
+from unittest import mock
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
@@ -27,6 +28,7 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self._env = mock_environment.MockEnvironment()
+        self._env.trace_output = None
         self._ti = mock_test_instance.MockTestInstance()
         self._obj = local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun(
             self._env, self._ti
@@ -209,6 +211,129 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
             test4,
         ]
         self.assertListEqual(actual_retry, expected_retry)
+
+    @mock.patch.object(
+        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun,
+        '_ArchiveLogcat',
+        return_value=contextlib.nullcontext(mock.MagicMock()),
+    )
+    @mock.patch('os.path.exists', return_value=True)
+    @mock.patch(
+        'pylib.utils.code_coverage_utils.PullAndMaybeMergeClangCoverageFiles'
+    )
+    def test_RunTest_coverage_force_main_user(
+        self, mock_pull_clang, _mock_exists, _mock_logcat
+    ):
+        self._env.force_main_user = True
+        self._ti.coverage_directory = '/host/coverage/dir'
+        self._ti.apk_under_test = None
+        self._ti.use_native_coverage_listener = False
+        self._ti.enable_breakpad_dump = False
+        self._ti.coverage_on_the_fly = False
+        self._ti.GetRunDisabledFlag.return_value = False
+        self._ti.is_unit_test = False
+        self._ti.GetTimeout.return_value = 60
+        self._ti.flags = []
+        self._ti.package = 'com.example.test'
+        self._ti.activity = 'TestActivity'
+        self._ti.test_runner = 'TestRunner'
+
+        device = mock.MagicMock()
+        device.product_cpu_abi = 'x86_64'
+        device.build_version_sdk = 34
+        device.GetExternalStoragePath.return_value = '/sdcard'
+        device.ResolveSpecialPath.side_effect = lambda p: (
+            '/data/media/10' + p[len('/sdcard') :]
+            if p.startswith('/sdcard')
+            else p
+        )
+        device.PathExists.return_value = True
+        device.StartInstrumentation.return_value = (0, ['OK'])
+
+        test = {
+            'class': 'com.example.MyTest',
+            'method': 'testFoo',
+            'annotations': {},
+        }
+        self._obj._RunTest(device, test)
+
+        expected_jacoco_device_file = '/data/media/10/chrome/test/coverage/com.example.MyTest_testFoo.exec'
+        device.PathExists.assert_any_call(
+            expected_jacoco_device_file, as_root=True, retries=0
+        )
+        device.PullFile.assert_any_call(
+            expected_jacoco_device_file, '/host/coverage/dir', as_root=True
+        )
+        device.RemovePath.assert_any_call(
+            expected_jacoco_device_file, force=True, as_root=True
+        )
+        mock_pull_clang.assert_called_once_with(
+            device,
+            '/data/media/10/chrome/test/coverage/profraw',
+            '/host/coverage/dir',
+            'com.example.MyTest_testFoo',
+            as_root=True,
+        )
+
+    @mock.patch.object(
+        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun,
+        '_ArchiveLogcat',
+        return_value=contextlib.nullcontext(mock.MagicMock()),
+    )
+    @mock.patch('os.path.exists', return_value=True)
+    @mock.patch(
+        'pylib.utils.code_coverage_utils.PullAndMaybeMergeClangCoverageFiles'
+    )
+    def test_RunTest_coverage_normal_user(
+        self, mock_pull_clang, _mock_exists, _mock_logcat
+    ):
+        self._env.force_main_user = False
+        self._ti.coverage_directory = '/host/coverage/dir'
+        self._ti.apk_under_test = None
+        self._ti.use_native_coverage_listener = False
+        self._ti.enable_breakpad_dump = False
+        self._ti.coverage_on_the_fly = False
+        self._ti.GetRunDisabledFlag.return_value = False
+        self._ti.is_unit_test = False
+        self._ti.GetTimeout.return_value = 60
+        self._ti.flags = []
+        self._ti.package = 'com.example.test'
+        self._ti.activity = 'TestActivity'
+        self._ti.test_runner = 'TestRunner'
+
+        device = mock.MagicMock()
+        device.product_cpu_abi = 'x86_64'
+        device.build_version_sdk = 34
+        device.GetExternalStoragePath.return_value = '/sdcard'
+        device.PathExists.return_value = True
+        device.StartInstrumentation.return_value = (0, ['OK'])
+
+        test = {
+            'class': 'com.example.MyTest',
+            'method': 'testFoo',
+            'annotations': {},
+        }
+        self._obj._RunTest(device, test)
+
+        expected_jacoco_device_file = (
+            '/sdcard/chrome/test/coverage/com.example.MyTest_testFoo.exec'
+        )
+        device.PathExists.assert_any_call(
+            expected_jacoco_device_file, as_root=False, retries=0
+        )
+        device.PullFile.assert_any_call(
+            expected_jacoco_device_file, '/host/coverage/dir', as_root=False
+        )
+        device.RemovePath.assert_any_call(
+            expected_jacoco_device_file, force=True, as_root=False
+        )
+        mock_pull_clang.assert_called_once_with(
+            device,
+            '/sdcard/chrome/test/coverage/profraw',
+            '/host/coverage/dir',
+            'com.example.MyTest_testFoo',
+            as_root=False,
+        )
 
 
 def create_test(annotation_dict, class_name, method_name):
