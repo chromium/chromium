@@ -17,7 +17,7 @@ Each having their own concrete type that corresponds to a single worklet animati
  * Main context: allows creation and provides playback controls for animation and integration with
    DOM. The corresponding type is a `blink::WorkletAnimation`.
  * Compositor context: determines the input for composited (accelerated) animations and draws them.
-   The corresponding type is a `cc::WorkletAnimationPlayer`.
+   The corresponding type is a `cc::WorkletAnimation`.
  * Animation context: executes of the javascript `animate` function. The corresponding type is a
    `blink::Animator`.
 
@@ -48,8 +48,8 @@ compositor. This may however change as we support non-composited animations.
 
 ### Interaction with Compositor
 
-The compositor player object controls the life time and play state of the corresponding animator
-object in the worklet context. In particular the compositor player Id also identifies the
+The compositor animation object controls the life time and play state of the corresponding animator
+object in the worklet context. In particular the compositor animation Id also identifies the
 corresponding animator in the worklet context.
 
 Compositor animation inputs depend on impl frame timestamp and layer's scroll offsets. Whenever

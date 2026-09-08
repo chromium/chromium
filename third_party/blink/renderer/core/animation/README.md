@@ -1512,7 +1512,7 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
     Animations that can be accelerated get added to the [PendingAnimations][]
     list. The pending list is updated as part of document lifecycle and ensures
     each pending animation gets a corresponding [cc::Animation][]
-    representing the animation on the compositor. The player is initialized with
+    representing the animation on the compositor. The animation is initialized with
     appropriate timing values and corresponding effects.
 
     Note that changing that animation playback rate, start time, or effect,
@@ -1540,7 +1540,7 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
 
 [CheckCanStartAnimationOnCompositor()]: https://cs.chromium.org/search/?q=file:animation.h+function:CheckCanStartAnimationOnCompositor
 [FailureCodes]: https://cs.chromium.org/search/?q=return%5Cs%2B(CompositorAnimations::)?FailureCode
-[cc::AnimationPlayer]: https://cs.chromium.org/search/?q=file:src/cc/animation/animation_player.h+class:AnimationPlayer
+[cc::Animation]: https://cs.chromium.org/search/?q=file:src/cc/animation/animation.h+class:Animation
 [PendingAnimations]: https://cs.chromium.org/search/?q=file:pending_animations.h+class:PendingAnimations
 [Animation::PreCommit()]: https://cs.chromium.org/search/?q=file:animation.h+function:PreCommit
 [CompositorAnimationDelegate]: https://cs.chromium.org/search/?q=file:compositor_animation_delegate.h
