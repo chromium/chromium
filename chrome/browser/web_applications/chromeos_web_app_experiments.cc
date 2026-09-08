@@ -138,8 +138,7 @@ bool ChromeOsWebAppExperiments::IgnoreManifestColor(
 
 bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForTargetApp(
     const webapps::AppId& target_app_id) {
-  return ::chromeos::features::IsOfficeNavigationCapturingReimplEnabled() &&
-         IsExperimentEnabled(target_app_id);
+  return IsExperimentEnabled(target_app_id);
 }
 
 bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForSourceApp(
@@ -150,8 +149,7 @@ bool ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForSourceApp(
   // user to stay inside the Office PWA (note that URLs that are already within
   // the PWA's scope are covered by
   // `IsNavigationCapturingReimplEnabledForTargetApp()`).
-  return ::chromeos::features::IsOfficeNavigationCapturingReimplEnabled() &&
-         IsExperimentEnabled(source_app_id) && url == url::kAboutBlankURL;
+  return IsExperimentEnabled(source_app_id) && url == url::kAboutBlankURL;
 }
 
 bool ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(

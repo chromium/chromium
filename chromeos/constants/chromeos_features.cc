@@ -79,11 +79,6 @@ BASE_FEATURE(kMahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the Navigation Capturing Reimpl for the Office
-// PWA.
-BASE_FEATURE(kOfficeNavigationCapturingReimpl,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -332,10 +327,6 @@ bool IsMahiSummarizeSelectedEnabled() {
 
 bool IsNotificationWidthIncreaseEnabled() {
   return base::FeatureList::IsEnabled(kNotificationWidthIncrease);
-}
-
-bool IsOfficeNavigationCapturingReimplEnabled() {
-  return base::FeatureList::IsEnabled(kOfficeNavigationCapturingReimpl);
 }
 
 bool IsOrcaEnabled() {

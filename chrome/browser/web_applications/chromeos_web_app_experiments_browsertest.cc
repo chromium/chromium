@@ -271,9 +271,6 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
         )",
         redirector_url.spec().c_str());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kOfficeNavigationCapturingReimpl};
 };
 
 // Test that submitting a POST form in the app's window doesn't result in

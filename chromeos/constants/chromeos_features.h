@@ -66,8 +66,6 @@ BASE_DECLARE_FEATURE(kFeatureManagementRoundedWindows);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationWidthIncrease);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kOfficeNavigationCapturingReimpl);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kMicrosoft365ScopeExtensions);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs;
@@ -147,8 +145,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kRoundedWindowsRadius[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsSystemBlurEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsSeparateWebAppShortcutBadgeIconEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsOfficeNavigationCapturingReimplEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsOrcaEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersV2SettingsSubToggleEnabled();
