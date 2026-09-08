@@ -17,7 +17,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "rlz/lib/rlz_api.h"
 #include "rlz/lib/rlz_enums.h"
@@ -94,7 +96,7 @@ std::optional<std::string> RLZ_LIB_API GetAccessPointRlz(AccessPoint point);
 // new_rlz should come from a server-response. Client applications should not
 // create their own RLZ values.
 // Access: HKCU write.
-bool RLZ_LIB_API SetAccessPointRlz(AccessPoint point, const char* new_rlz);
+bool RLZ_LIB_API SetAccessPointRlz(AccessPoint point, std::string_view new_rlz);
 
 // Use |brand| to replace the brand code contained in existing access point RLZ
 // strings found in the RLZ data file. Return true if at least one access point
@@ -112,11 +114,10 @@ bool RLZ_LIB_API UpdateExistingAccessPointRlz(const std::string& brand);
 // Forms the HTTP request to send to the RLZ financial server.
 //
 // product            : The product to ping for.
-// access_points      : The access points this product affects. Array must be
-//                      terminated with NO_ACCESS_POINT.
+// access_points      : The access points this product affects.
 // product_signature  : The signature sent with daily pings (e.g. swg, ietb)
 // product_brand      : The brand of the pinging product, if any.
-// product_id         : The product-specific installation ID (can be NULL).
+// product_id         : The product-specific installation ID (can be empty).
 // product_lang       : The language for the product (used to determine cohort).
 // exclude_machine_id : Whether the Machine ID should be explicitly excluded
 //                      based on the products privacy policy.
@@ -126,11 +127,11 @@ bool RLZ_LIB_API UpdateExistingAccessPointRlz(const std::string& brand);
 // Access: HKCU read.
 std::optional<std::string> RLZ_LIB_API
 FormFinancialPingRequest(Product product,
-                         const AccessPoint* access_points,
-                         const char* product_signature,
-                         const char* product_brand,
-                         const char* product_id,
-                         const char* product_lang,
+                         base::span<const AccessPoint> access_points,
+                         std::string_view product_signature,
+                         std::string_view product_brand,
+                         std::string_view product_id,
+                         std::string_view product_lang,
                          bool exclude_machine_id);
 
 // Complex helpers built on top of other functions.
@@ -149,11 +150,10 @@ bool RLZ_LIB_API ParseFinancialPingResponse(Product product,
 // SetURLLoaderFactory() needs to be called before calling this function.
 //
 // product            : The product to ping for.
-// access_points      : The access points this product affects. Array must be
-//                      terminated with NO_ACCESS_POINT.
+// access_points      : The access points this product affects.
 // product_signature  : The signature sent with daily pings (e.g. swg, ietb)
 // product_brand      : The brand of the pinging product, if any.
-// product_id         : The product-specific installation ID (can be NULL).
+// product_id         : The product-specific installation ID (can be empty).
 // product_lang       : The language for the product (used to determine cohort).
 // exclude_machine_id : Whether the Machine ID should be explicitly excluded
 //                      based on the products privacy policy.
@@ -163,23 +163,23 @@ bool RLZ_LIB_API ParseFinancialPingResponse(Product product,
 // Returns true on successful ping and response, false otherwise.
 // Access: HKCU write.
 bool RLZ_LIB_API SendFinancialPing(Product product,
-                                   const AccessPoint* access_points,
-                                   const char* product_signature,
-                                   const char* product_brand,
-                                   const char* product_id,
-                                   const char* product_lang,
+                                   base::span<const AccessPoint> access_points,
+                                   std::string_view product_signature,
+                                   std::string_view product_brand,
+                                   std::string_view product_id,
+                                   std::string_view product_lang,
                                    bool exclude_machine_id);
 
 // An alternate implementations of SendFinancialPing with the same behavior,
 // except the caller can optionally choose to skip the timing check.
 bool RLZ_LIB_API SendFinancialPing(Product product,
-                                   const AccessPoint* access_points,
-                                   const char* product_signature,
-                                   const char* product_brand,
-                                   const char* product_id,
-                                   const char* product_lang,
+                                   base::span<const AccessPoint> access_points,
+                                   std::string_view product_signature,
+                                   std::string_view product_brand,
+                                   std::string_view product_id,
+                                   std::string_view product_lang,
                                    bool exclude_machine_id,
-                                   const bool skip_time_check);
+                                   bool skip_time_check);
 
 // Parses RLZ related ping response information from the server.
 // Updates stored RLZ values and clears stored events accordingly.
@@ -189,11 +189,9 @@ bool RLZ_LIB_API ParsePingResponse(Product product, const char* response);
 // Returns the events associated with the product and the RLZ's for each access
 // point in access_points. This string can be directly appended to a ping (will
 // need an & if not first parameter). Returns std::nullopt on error.
-// access_points must be an array of AccessPoints terminated with
-// NO_ACCESS_POINT.
 // Access: HKCU read.
 std::optional<std::string> RLZ_LIB_API
-GetPingParams(Product product, const AccessPoint* access_points);
+GetPingParams(Product product, base::span<const AccessPoint> access_points);
 
 }  // namespace rlz_lib
 

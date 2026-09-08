@@ -132,20 +132,20 @@ void GetEventsFromResponseString(
     if (event_string.size() != 3)  // 3 = 2(AP) + 1(E)
       continue;
 
-    rlz_lib::AccessPoint point = rlz_lib::NO_ACCESS_POINT;
-    rlz_lib::Event event = rlz_lib::INVALID_EVENT;
     std::string_view event_sv(event_string);
-    if (!GetAccessPointFromName(event_sv.substr(0, 2), &point) ||
-        point == rlz_lib::NO_ACCESS_POINT) {
+    std::optional<rlz_lib::AccessPoint> point =
+        rlz_lib::GetAccessPointFromName(event_sv.substr(0, 2));
+    if (!point || *point == rlz_lib::NO_ACCESS_POINT) {
       continue;
     }
 
-    if (!GetEventFromName(event_sv.substr(2), &event) ||
-        event == rlz_lib::INVALID_EVENT) {
+    std::optional<rlz_lib::Event> event =
+        rlz_lib::GetEventFromName(event_sv.substr(2));
+    if (!event || *event == rlz_lib::INVALID_EVENT) {
       continue;
     }
 
-    ReturnedEvent current_event = {point, event};
+    ReturnedEvent current_event = {*point, *event};
     event_array->push_back(current_event);
   } while (event_end_index >= 0);
 }
@@ -262,16 +262,11 @@ std::optional<std::string> GetAccessPointRlz(AccessPoint point) {
   return store->ReadAccessPointRlz(point);
 }
 
-bool SetAccessPointRlz(AccessPoint point, const char* new_rlz) {
+bool SetAccessPointRlz(AccessPoint point, std::string_view new_rlz) {
   ScopedRlzValueStoreLock lock;
   RlzValueStore* store = lock.GetStore();
   if (!store || !store->HasAccess(RlzValueStore::kWriteAccess))
     return false;
-
-  if (!new_rlz) {
-    ASSERT_STRING("SetAccessPointRlz: Invalid buffer");
-    return false;
-  }
 
   // Return false if the access point is not set to Google.
   if (!IsAccessPointSupported(point)) {
@@ -281,14 +276,12 @@ bool SetAccessPointRlz(AccessPoint point, const char* new_rlz) {
   }
 
   // Verify the RLZ length.
-  size_t rlz_length = strlen(new_rlz);
-  if (rlz_length > kMaxRlzLength) {
+  if (new_rlz.size() > kMaxRlzLength) {
     ASSERT_STRING("SetAccessPointRlz: RLZ length is exceeds max allowed.");
     return false;
   }
 
   std::string normalized_rlz = NormalizeRlz(new_rlz);
-  VERIFY(strlen(new_rlz) == rlz_length);
 
   // Setting RLZ to empty == clearing.
   if (normalized_rlz.empty()) {
@@ -309,11 +302,11 @@ bool UpdateExistingAccessPointRlz(const std::string& brand) {
 
 std::optional<std::string> FormFinancialPingRequest(
     Product product,
-    const AccessPoint* access_points,
-    const char* product_signature,
-    const char* product_brand,
-    const char* product_id,
-    const char* product_lang,
+    base::span<const AccessPoint> access_points,
+    std::string_view product_signature,
+    std::string_view product_brand,
+    std::string_view product_id,
+    std::string_view product_lang,
     bool exclude_machine_id) {
   std::string request;
   if (!FinancialPing::FormRequest(product, access_points, product_signature,
@@ -334,11 +327,11 @@ bool ParseFinancialPingResponse(Product product, const char* response) {
 }
 
 bool SendFinancialPing(Product product,
-                       const AccessPoint* access_points,
-                       const char* product_signature,
-                       const char* product_brand,
-                       const char* product_id,
-                       const char* product_lang,
+                       base::span<const AccessPoint> access_points,
+                       std::string_view product_signature,
+                       std::string_view product_brand,
+                       std::string_view product_id,
+                       std::string_view product_lang,
                        bool exclude_machine_id) {
   return SendFinancialPing(product, access_points, product_signature,
                            product_brand, product_id, product_lang,
@@ -346,11 +339,11 @@ bool SendFinancialPing(Product product,
 }
 
 bool SendFinancialPing(Product product,
-                       const AccessPoint* access_points,
-                       const char* product_signature,
-                       const char* product_brand,
-                       const char* product_id,
-                       const char* product_lang,
+                       base::span<const AccessPoint> access_points,
+                       std::string_view product_signature,
+                       std::string_view product_brand,
+                       std::string_view product_id,
+                       std::string_view product_lang,
                        bool exclude_machine_id,
                        const bool skip_time_check) {
   // Create the financial ping request.
@@ -427,10 +420,9 @@ bool ParsePingResponse(Product product, const char* response) {
 
       // Get the access point.
       std::string point_name =
-        response_line.substr(3, separator_index - rlz_cgi_length);
-      AccessPoint point = NO_ACCESS_POINT;
-      if (!GetAccessPointFromName(point_name, &point) ||
-          point == NO_ACCESS_POINT) {
+          response_line.substr(3, separator_index - rlz_cgi_length);
+      std::optional<AccessPoint> point = GetAccessPointFromName(point_name);
+      if (!point || *point == NO_ACCESS_POINT) {
         continue;  // Not a valid access point.
       }
 
@@ -445,8 +437,9 @@ bool ParsePingResponse(Product product, const char* response) {
       if (rlz_length > kMaxRlzLength)
         continue;  // Too long.
 
-      if (IsAccessPointSupported(point))
-        SetAccessPointRlz(point, rlz_value.substr(0, rlz_length).c_str());
+      if (IsAccessPointSupported(*point)) {
+        SetAccessPointRlz(*point, rlz_value.substr(0, rlz_length));
+      }
     } else if (base::StartsWith(response_line, events_variable,
                                 base::CompareCase::SENSITIVE)) {
       // Clear events which server parsed.
@@ -475,13 +468,9 @@ bool ParsePingResponse(Product product, const char* response) {
   return true;
 }
 
-std::optional<std::string> GetPingParams(Product product,
-                                         const AccessPoint* access_points) {
-  if (!access_points) {
-    ASSERT_STRING("GetPingParams: access_points is NULL");
-    return std::nullopt;
-  }
-
+std::optional<std::string> GetPingParams(
+    Product product,
+    base::span<const AccessPoint> access_points) {
   // Add the RLZ Exchange Protocol version.
   std::string cgi_string(kProtocolCgiArgument);
 
@@ -497,12 +486,12 @@ std::optional<std::string> GetPingParams(Product product,
       return std::nullopt;
     }
     bool first_rlz = true;  // comma before every RLZ but the first.
-    // SAFETY: `access_points` is an array of AccessPoints terminated by
-    // `NO_ACCESS_POINT` per the function contract.
-    for (const AccessPoint* ap = access_points; *ap != NO_ACCESS_POINT;
-         UNSAFE_BUFFERS(++ap)) {
-      if (std::optional<std::string> rlz = GetAccessPointRlz(*ap)) {
-        std::string_view access_point = GetAccessPointName(*ap);
+    for (AccessPoint ap : access_points) {
+      if (ap == NO_ACCESS_POINT) {
+        break;
+      }
+      if (std::optional<std::string> rlz = GetAccessPointRlz(ap)) {
+        std::string_view access_point = GetAccessPointName(ap);
         if (access_point.empty()) {
           continue;
         }

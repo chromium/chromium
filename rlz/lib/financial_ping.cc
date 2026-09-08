@@ -54,10 +54,13 @@
 namespace rlz_lib {
 
 bool FinancialPing::FormRequest(Product product,
-    const AccessPoint* access_points, const char* product_signature,
-    const char* product_brand, const char* product_id,
-    const char* product_lang, bool exclude_machine_id,
-    std::string* request) {
+                                base::span<const AccessPoint> access_points,
+                                std::string_view product_signature,
+                                std::string_view product_brand,
+                                std::string_view product_id,
+                                std::string_view product_lang,
+                                bool exclude_machine_id,
+                                std::string* request) {
   if (!request) {
     ASSERT_STRING("FinancialPing::FormRequest: request is NULL");
     return false;
@@ -70,13 +73,8 @@ bool FinancialPing::FormRequest(Product product,
   if (!store || !store->HasAccess(RlzValueStore::kReadAccess))
     return false;
 
-  if (!access_points) {
-    ASSERT_STRING("FinancialPing::FormRequest: access_points is NULL");
-    return false;
-  }
-
-  if (!product_signature) {
-    ASSERT_STRING("FinancialPing::FormRequest: product_signature is NULL");
+  if (product_signature.empty()) {
+    ASSERT_STRING("FinancialPing::FormRequest: product_signature is empty");
     return false;
   }
 
@@ -87,21 +85,23 @@ bool FinancialPing::FormRequest(Product product,
     }
   }
 
-  base::StringAppendF(request, "%s?", kFinancialPingPath);
+  base::StrAppend(request,
+                  {kFinancialPingPath, "?", kProductSignatureCgiVariable, "=",
+                   product_signature});
 
-  // Add the signature, brand, product id and language.
-  base::StringAppendF(request, "%s=%s", kProductSignatureCgiVariable,
-                      product_signature);
-  if (product_brand)
-    base::StringAppendF(request, "&%s=%s", kProductBrandCgiVariable,
-                        product_brand);
+  if (!product_brand.empty()) {
+    base::StrAppend(request,
+                    {"&", kProductBrandCgiVariable, "=", product_brand});
+  }
 
-  if (product_id)
-    base::StringAppendF(request, "&%s=%s", kProductIdCgiVariable, product_id);
+  if (!product_id.empty()) {
+    base::StrAppend(request, {"&", kProductIdCgiVariable, "=", product_id});
+  }
 
-  if (product_lang)
-    base::StringAppendF(request, "&%s=%s", kProductLanguageCgiVariable,
-                        product_lang);
+  if (!product_lang.empty()) {
+    base::StrAppend(request,
+                    {"&", kProductLanguageCgiVariable, "=", product_lang});
+  }
 
   // Add the product events.
   std::optional<std::string> events_cgi = GetProductEventsAsCgi(product);
@@ -113,8 +113,8 @@ bool FinancialPing::FormRequest(Product product,
   // that we know about and have a current RLZ value, even if they are not
   // used by this product.
   std::array<AccessPoint, LAST_ACCESS_POINT> all_points{};
+  size_t idx = 0;
   if (!events_cgi) {
-    size_t idx = 0;
     for (int ap = NO_ACCESS_POINT + 1; ap < LAST_ACCESS_POINT; ap++) {
       AccessPoint point = static_cast<AccessPoint>(ap);
       std::optional<std::string> rlz = GetAccessPointRlz(point);
@@ -122,21 +122,20 @@ bool FinancialPing::FormRequest(Product product,
         all_points[idx++] = point;
       }
     }
-    all_points[idx] = NO_ACCESS_POINT;
   }
 
   // Add the RLZ's and the DCC if needed. This is the same as get PingParams.
   // This will also include the RLZ Exchange Protocol CGI Argument.
   if (std::optional<std::string> ping_params = GetPingParams(
-          product, events_cgi ? access_points : all_points.data())) {
+          product,
+          events_cgi ? access_points : base::span(all_points).first(idx))) {
     base::StrAppend(request, {"&", *ping_params});
   }
 
   if (events_cgi && !exclude_machine_id) {
     std::string machine_id;
     if (GetMachineId(&machine_id)) {
-      base::StringAppendF(request, "&%s=%s", kMachineIdCgiVariable,
-                          machine_id.c_str());
+      base::StrAppend(request, {"&", kMachineIdCgiVariable, "=", machine_id});
     }
   }
 

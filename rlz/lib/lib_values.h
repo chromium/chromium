@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string_view>
 
 #include "rlz/lib/rlz_enums.h"
@@ -89,10 +90,10 @@ extern const char* kFinancialPingResponseObjects[];
 // as those used/understood by the server.
 //
 std::string_view GetAccessPointName(AccessPoint point);
-bool GetAccessPointFromName(std::string_view name, AccessPoint* point);
+std::optional<AccessPoint> GetAccessPointFromName(std::string_view name);
 
 std::string_view GetEventName(Event event);
-bool GetEventFromName(std::string_view name, Event* event);
+std::optional<Event> GetEventFromName(std::string_view name);
 
 // The names for products are used only client-side.
 std::string_view GetProductName(Product product);

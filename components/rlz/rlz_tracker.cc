@@ -140,7 +140,6 @@ bool SendFinancialPing(const std::string& brand,
     RLZTracker::ChromeHomePage(),
     RLZTracker::ChromeAppList(),
 #endif
-    rlz_lib::NO_ACCESS_POINT
   };
   std::string lang_ascii(base::UTF16ToASCII(lang));
   std::string referral_ascii(base::UTF16ToASCII(referral));
@@ -150,9 +149,9 @@ bool SendFinancialPing(const std::string& brand,
 #else
   product_signature = "chrome";
 #endif
-  return rlz_lib::SendFinancialPing(
-      rlz_lib::CHROME, points, product_signature.c_str(), brand.c_str(),
-      referral_ascii.c_str(), lang_ascii.c_str(), false, true);
+  return rlz_lib::SendFinancialPing(rlz_lib::CHROME, points, product_signature,
+                                    brand, referral_ascii, lang_ascii, false,
+                                    true);
 }
 
 }  // namespace

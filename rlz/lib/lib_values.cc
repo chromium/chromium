@@ -6,6 +6,7 @@
 
 #include "rlz/lib/lib_values.h"
 
+#include <optional>
 #include <string_view>
 
 #include "rlz/lib/assert.h"
@@ -134,22 +135,15 @@ std::string_view GetAccessPointName(AccessPoint point) {
   return "";
 }
 
-bool GetAccessPointFromName(std::string_view name, AccessPoint* point) {
-  if (!point) {
-    ASSERT_STRING("GetAccessPointFromName: point is NULL");
-    return false;
-  }
-  *point = NO_ACCESS_POINT;
-
+std::optional<AccessPoint> GetAccessPointFromName(std::string_view name) {
   for (int i = NO_ACCESS_POINT; i < LAST_ACCESS_POINT; i++) {
-    std::string_view ap_name = GetAccessPointName(static_cast<AccessPoint>(i));
-    if (name == ap_name) {
-      *point = static_cast<AccessPoint>(i);
-      return true;
+    AccessPoint point = static_cast<AccessPoint>(i);
+    if (name == GetAccessPointName(point)) {
+      return point;
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 std::string_view GetEventName(Event event) {
@@ -171,22 +165,15 @@ std::string_view GetEventName(Event event) {
   return "";
 }
 
-bool GetEventFromName(std::string_view name, Event* event) {
-  if (!event) {
-    ASSERT_STRING("GetEventFromName: event is NULL");
-    return false;
-  }
-  *event = INVALID_EVENT;
-
+std::optional<Event> GetEventFromName(std::string_view name) {
   for (int i = INVALID_EVENT; i < LAST_EVENT; i++) {
-    std::string_view ev_name = GetEventName(static_cast<Event>(i));
-    if (name == ev_name) {
-      *event = static_cast<Event>(i);
-      return true;
+    Event event = static_cast<Event>(i);
+    if (name == GetEventName(event)) {
+      return event;
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 std::string_view GetProductName(Product product) {
