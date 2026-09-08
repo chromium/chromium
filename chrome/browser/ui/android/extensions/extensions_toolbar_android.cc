@@ -111,8 +111,10 @@ base::android::ScopedJavaLocalRef<jobject>
 ExtensionsToolbarAndroid::GetRequestAccessButtonParams(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  ExtensionsToolbarViewModel::RequestAccessButtonParams params =
-      toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+  ExtensionsToolbarViewModel::RequestAccessButtonParams params;
+  if (ToolbarActionsModel::CanShowActionsInToolbar(*browser_)) {
+    params = toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
+  }
   return Java_RequestAccessButtonParams_Constructor(env, params.extension_ids,
                                                     params.tooltip_text);
 }
@@ -290,6 +292,9 @@ ExtensionsToolbarAndroid::GetAllActionIds(JNIEnv* env) {
 
 std::vector<ToolbarActionsModel::ActionId>
 ExtensionsToolbarAndroid::GetPinnedActionIds(JNIEnv* env) {
+  if (!ToolbarActionsModel::CanShowActionsInToolbar(*browser_)) {
+    return {};
+  }
   const auto& ids = toolbar_view_model_->GetPinnedActionIds();
   return std::vector(ids.begin(), ids.end());
 }

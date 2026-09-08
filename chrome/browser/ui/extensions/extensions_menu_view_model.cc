@@ -871,7 +871,9 @@ ExtensionsMenuViewModel::GetHostAccessRequest(
 ExtensionsMenuViewModel::ControlState
 ExtensionsMenuViewModel::GetContextMenuButtonState(
     ExtensionActionViewModel* action_model) {
-  bool is_action_pinned = toolbar_model_->IsActionPinned(action_model->GetId());
+  bool is_action_pinned =
+      ToolbarActionsModel::CanShowActionsInToolbar(*browser_) &&
+      toolbar_model_->IsActionPinned(action_model->GetId());
   ControlState button_state;
   button_state.accessible_name = GetContextMenuAccessibleName(
       is_action_pinned, action_model->GetActionName());
