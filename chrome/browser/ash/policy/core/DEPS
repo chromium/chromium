@@ -41,7 +41,6 @@ include_rules = [
   "+chrome/browser/ash/printing",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/ash/system",
   "+chrome/browser/ash/tpm",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
@@ -66,7 +65,6 @@ include_rules = [
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_content_client.h",
   "+chrome/common/chrome_paths.h",
-  "+chrome/common/extensions",
 ]
 
 specific_include_rules = {

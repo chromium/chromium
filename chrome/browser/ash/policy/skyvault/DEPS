@@ -24,13 +24,10 @@ include_rules = [
   "+chrome/browser/download/download_dir_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
   "+chrome/grit/generated_resources.h",
   "+chrome/test/base",
-  "+chromeos/ash/components/system/fake_statistics_provider.h",
-  "+chromeos/ash/components/system/statistics_provider.h",
 
   "+ui/message_center/message_center.h",
   "+ui/message_center/message_center_observer.h",

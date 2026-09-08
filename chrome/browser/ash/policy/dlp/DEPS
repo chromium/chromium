@@ -14,8 +14,6 @@ include_rules = [
   "+chrome/browser/ash/file_system_provider",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/policy/core",
-  "+chrome/browser/ash/policy/login",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/enterprise/connectors",
@@ -23,14 +21,11 @@ include_rules = [
   "+chrome/browser/extensions/api/file_system",
   "+chrome/browser/extensions/api/tab_capture",
   "+chrome/browser/file_select_helper.h",
-  "+chrome/browser/media",
   "+chrome/browser/notifications",
   "+chrome/browser/policy/messaging_layer/public",
-  "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common/chrome_paths.h",
-  "+chrome/common/extensions",
   "+chrome/grit",
 ]
 
