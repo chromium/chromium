@@ -720,6 +720,8 @@
     // end
     "flex-start",
     "flex-end",
+    "flow-start",
+    "flow-end",
     // center
     "space-between",
     "space-around",

@@ -484,6 +484,7 @@ LayoutUnit AlignContentOffset(
     case ContentPosition::kLeft:
     case ContentPosition::kStart:
     case ContentPosition::kFlexStart:
+    case ContentPosition::kFlowStart:
     case ContentPosition::kNormal:
       adjusted_offset = LayoutUnit();
       break;
@@ -493,6 +494,7 @@ LayoutUnit AlignContentOffset(
     case ContentPosition::kRight:
     case ContentPosition::kEnd:
     case ContentPosition::kFlexEnd:
+    case ContentPosition::kFlowEnd:
       adjusted_offset = free_space;
       break;
     case ContentPosition::kBaseline:

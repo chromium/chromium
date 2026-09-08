@@ -71,6 +71,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
 
     case ContentPosition::kEnd:
     case ContentPosition::kFlexEnd:
+    case ContentPosition::kFlowEnd:
       return is_safe ? BlockContentAlignment::kSafeEnd
                      : BlockContentAlignment::kUnsafeEnd;
 
@@ -108,6 +109,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
 
     case ContentPosition::kStart:
     case ContentPosition::kFlexStart:
+    case ContentPosition::kFlowStart:
       return BlockContentAlignment::kStart;
 
     case ContentPosition::kBaseline:
@@ -249,6 +251,7 @@ LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
   switch (align_self) {
     case ItemPosition::kEnd:
     case ItemPosition::kFlexEnd:
+    case ItemPosition::kFlowEnd:
     case ItemPosition::kLastBaseline:
     case ItemPosition::kRight: {
       return should_swap_inline_axis ? LogicalStaticPosition::kInlineStart
@@ -259,6 +262,7 @@ LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
       return LogicalStaticPosition::kInlineCenter;
     case ItemPosition::kBaseline:
     case ItemPosition::kFlexStart:
+    case ItemPosition::kFlowStart:
     case ItemPosition::kLeft:
     case ItemPosition::kStart:
     case ItemPosition::kStretch: {
@@ -298,6 +302,7 @@ LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
   switch (align_self) {
     case ItemPosition::kEnd:
     case ItemPosition::kFlexEnd:
+    case ItemPosition::kFlowEnd:
     case ItemPosition::kLastBaseline:
       return LogicalStaticPosition::kBlockEnd;
     case ItemPosition::kAnchorCenter:
@@ -305,6 +310,7 @@ LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
       return LogicalStaticPosition::kBlockCenter;
     case ItemPosition::kBaseline:
     case ItemPosition::kFlexStart:
+    case ItemPosition::kFlowStart:
     case ItemPosition::kStart:
     case ItemPosition::kStretch:
       return LogicalStaticPosition::kBlockStart;

@@ -4353,11 +4353,21 @@ bool IsBaselineKeyword(CSSValueID id) {
                       CSSValueID::kBaseline>(id);
 }
 
+namespace {
+
+bool IsFlowAlignmentKeyword(CSSValueID id) {
+  return RuntimeEnabledFeatures::CSSFlowStartAndEndEnabled() &&
+         IdentMatches<CSSValueID::kFlowStart, CSSValueID::kFlowEnd>(id);
+}
+
+}  // namespace
+
 bool IsSelfAlignmentKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
                       CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
                       CSSValueID::kFlexStart, CSSValueID::kFlexEnd,
-                      CSSValueID::kAnchorCenter>(id);
+                      CSSValueID::kAnchorCenter>(id) ||
+         IsFlowAlignmentKeyword(id);
 }
 
 bool IsSelfAlignmentOrLeftOrRightKeyword(CSSValueID id) {
@@ -4367,7 +4377,8 @@ bool IsSelfAlignmentOrLeftOrRightKeyword(CSSValueID id) {
 bool IsDefaultAlignmentKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
                       CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
-                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id);
+                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id) ||
+         IsFlowAlignmentKeyword(id);
 }
 
 bool IsDefaultAlignmentOrLeftOrRightKeyword(CSSValueID id) {
@@ -4376,7 +4387,8 @@ bool IsDefaultAlignmentOrLeftOrRightKeyword(CSSValueID id) {
 
 bool IsContentPositionKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
-                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id);
+                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id) ||
+         IsFlowAlignmentKeyword(id);
 }
 
 bool IsContentPositionOrLeftOrRightKeyword(CSSValueID id) {

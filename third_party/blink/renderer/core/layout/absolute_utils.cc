@@ -76,6 +76,7 @@ InsetBias GetAlignmentInsetBias(
   switch (alignment.GetPosition()) {
     case ItemPosition::kStart:
     case ItemPosition::kFlexStart:
+    case ItemPosition::kFlowStart:
     case ItemPosition::kBaseline:
     case ItemPosition::kStretch:
     case ItemPosition::kNormal:
@@ -85,6 +86,7 @@ InsetBias GetAlignmentInsetBias(
       return InsetBias::kEqual;
     case ItemPosition::kEnd:
     case ItemPosition::kFlexEnd:
+    case ItemPosition::kFlowEnd:
     case ItemPosition::kLastBaseline:
       return is_justify_axis ? bias.InlineEnd() : bias.BlockEnd();
     case ItemPosition::kSelfStart:

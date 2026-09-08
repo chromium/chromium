@@ -2067,8 +2067,8 @@
       valid_for_permission_element: true,
       invalidate: ["layout"],
       keywords: ["auto", "normal", "stretch", "baseline", "center", "start",
-                 "end", "self-start", "self-end", "flex-start", "flex-end",
-                 "anchor-center"],
+                 "end", "flow-start", "flow-end", "self-start", "self-end",
+                 "flex-start", "flex-end", "anchor-center"],
     },
     {
       name: "anchor-name",
@@ -4173,8 +4173,8 @@
       valid_for_permission_element: true,
       invalidate: ["layout"],
       keywords: ["auto", "normal", "stretch", "baseline", "center", "start",
-        "end", "self-start", "self-end", "flex-start", "flex-end", "left",
-        "right", "anchor-center"],
+        "end", "flow-start", "flow-end", "self-start", "self-end", "flex-start",
+        "flex-end", "left", "right", "anchor-center"],
     },
     {
       name: "left",

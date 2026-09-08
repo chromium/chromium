@@ -1685,8 +1685,10 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
     case ContentPosition::kEnd:
       return free_space;
     case ContentPosition::kFlexEnd:
+    case ContentPosition::kFlowEnd:
       return is_reverse ? LayoutUnit() : free_space;
     case ContentPosition::kFlexStart:
+    case ContentPosition::kFlowStart:
     case ContentPosition::kNormal:
     case ContentPosition::kBaseline:
     case ContentPosition::kLastBaseline:

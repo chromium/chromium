@@ -289,12 +289,14 @@ GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
       return geometry;
     }
     case ContentPosition::kEnd:
-    case ContentPosition::kFlexEnd: {
+    case ContentPosition::kFlexEnd:
+    case ContentPosition::kFlowEnd: {
       geometry.start_offset += FreeSpace();
       return geometry;
     }
     case ContentPosition::kStart:
     case ContentPosition::kFlexStart:
+    case ContentPosition::kFlowStart:
     case ContentPosition::kNormal:
     case ContentPosition::kBaseline:
     case ContentPosition::kLastBaseline:

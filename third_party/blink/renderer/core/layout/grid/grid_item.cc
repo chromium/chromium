@@ -112,9 +112,11 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
     case ItemPosition::kCenter:
       return AxisEdge::kCenter;
     case ItemPosition::kFlexStart:
+    case ItemPosition::kFlowStart:
     case ItemPosition::kStart:
       return AxisEdge::kStart;
     case ItemPosition::kFlexEnd:
+    case ItemPosition::kFlowEnd:
     case ItemPosition::kEnd:
       return AxisEdge::kEnd;
     case ItemPosition::kStretch:
