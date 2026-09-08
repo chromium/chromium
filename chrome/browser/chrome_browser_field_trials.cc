@@ -385,6 +385,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/556810751) Enable on non-AL form factors.
   feature_overrides.EnableFeature(blink::features::kAndroidHandlePdfInIframe);
 
+  // Enables nested submenus in the app menu on Desktop Android.
+  // TODO(crbug.com/404074424): Remove when rollout to all form factors is
+  // complete.
+  feature_overrides.EnableFeature(chrome::android::kSubmenusInAppMenuLff);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
