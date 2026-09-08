@@ -210,7 +210,8 @@ class PageContentAnnotationsService
   // Invoked when related searches have been extracted for |visit|, to store
   // the related searches in History Service.
   void OnRelatedSearchesExtracted(
-      const HistoryVisit& visit,
+      base::Time navigation_timestamp,
+      const GURL& navigation_url,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
 
@@ -306,7 +307,8 @@ class PageContentAnnotationsService
   //
   // Virtualized for testing.
   virtual void AddRelatedSearchesForVisit(
-      const HistoryVisit& visit,
+      base::Time navigation_timestamp,
+      const GURL& navigation_url,
       const std::vector<std::string>& related_searches);
 
   // Persist |page_entities_metadata| for |visit| in |history_service_|.
@@ -331,13 +333,14 @@ class PageContentAnnotationsService
   // |history_service| once the visits to the given URL have returned. The
   // |annotation_type| of data to be stored in History Service is passed along
   // for metrics purposes.
-  void QueryURL(const HistoryVisit& visit,
+  void QueryURL(base::Time navigation_timestamp,
+                const GURL& navigation_url,
                 PersistAnnotationsCallback callback,
                 PageContentAnnotationsType annotation_type);
   // Callback invoked when |history_service| has returned results for the visits
   // to a URL. In turn invokes |callback| to write the bound content annotations
   // to |history_service|.
-  void OnURLQueried(const HistoryVisit& visit,
+  void OnURLQueried(base::Time navigation_timestamp,
                     PersistAnnotationsCallback callback,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLAndVisitsResult url_result);

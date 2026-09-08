@@ -20,13 +20,8 @@ namespace page_content_annotations {
 
 namespace {
 
-// Creates a HistoryVisit based on the current state of |web_contents|.
-HistoryVisit CreateHistoryVisitFromWebContents(
-    content::WebContents* web_contents) {
-  HistoryVisit visit(
-      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
-      web_contents->GetLastCommittedURL());
-  return visit;
+base::Time GetTimestampFromWebContents(content::WebContents* web_contents) {
+  return web_contents->GetController().GetLastCommittedEntry()->GetTimestamp();
 }
 
 }  // namespace
@@ -58,13 +53,13 @@ void PageContentAnnotationsWebContentsObserver::
     return;
   }
 
-  HistoryVisit history_visit =
-      CreateHistoryVisitFromWebContents(web_contents());
   search_result_extractor_client_.RequestData(
       web_contents(), {continuous_search::mojom::ResultType::kRelatedSearches},
       base::BindOnce(&PageContentAnnotationsWebContentsObserver::
                          OnRelatedSearchesExtracted,
-                     weak_ptr_factory_.GetWeakPtr(), history_visit));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     GetTimestampFromWebContents(web_contents()),
+                     web_contents()->GetLastCommittedURL()));
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
       "RelatedSearchesExtractRequest",
@@ -80,21 +75,20 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
 }
 
 void PageContentAnnotationsWebContentsObserver::OnRelatedSearchesExtracted(
-    const HistoryVisit& visit,
+    base::Time navigation_timestamp,
+    const GURL& navigation_url,
     continuous_search::SearchResultExtractorClientStatus status,
     continuous_search::mojom::CategoryResultsPtr results) {
   page_content_annotations_service_->OnRelatedSearchesExtracted(
-      visit, status, std::move(results));
+      navigation_timestamp, navigation_url, status, std::move(results));
 }
 
 void PageContentAnnotationsWebContentsObserver::OnPageContentAnnotated(
     const HistoryVisit& annotated_visit,
     const PageContentAnnotationsResult& result) {
-  HistoryVisit history_visit =
-      CreateHistoryVisitFromWebContents(web_contents());
-  if (history_visit.nav_entry_timestamp !=
+  if (GetTimestampFromWebContents(web_contents()) !=
           annotated_visit.nav_entry_timestamp ||
-      history_visit.url != annotated_visit.url) {
+      web_contents()->GetLastCommittedURL() != annotated_visit.url) {
     return;
   }
 

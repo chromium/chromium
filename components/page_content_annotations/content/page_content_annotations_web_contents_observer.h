@@ -57,7 +57,8 @@ class PageContentAnnotationsWebContentsObserver
 
   // Invoked when related searches have been extracted for |visit|.
   void OnRelatedSearchesExtracted(
-      const HistoryVisit& visit,
+      base::Time navigation_timestamp,
+      const GURL& navigation_url,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
 

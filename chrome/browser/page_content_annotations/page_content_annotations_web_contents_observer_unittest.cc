@@ -118,9 +118,10 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   }
 
   void AddRelatedSearchesForVisit(
-      const HistoryVisit& visit,
+      base::Time navigation_timestamp,
+      const GURL& navigation_url,
       const std::vector<std::string>& related_searches) override {
-    last_related_searches_extraction_request_.emplace(visit);
+    last_related_searches_extraction_request_ = navigation_url;
     last_related_searches_extraction_results_.emplace(related_searches);
   }
 
@@ -130,7 +131,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
 
   void ClearLastAnnotationRequest() { last_annotation_request_ = std::nullopt; }
 
-  std::optional<HistoryVisit> last_related_searches_extraction_request() const {
+  std::optional<GURL> last_related_searches_extraction_request() const {
     return last_related_searches_extraction_request_;
   }
 
@@ -141,7 +142,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
 
  private:
   std::optional<HistoryVisit> last_annotation_request_;
-  std::optional<HistoryVisit> last_related_searches_extraction_request_;
+  std::optional<GURL> last_related_searches_extraction_request_;
   std::optional<std::vector<std::string>>
       last_related_searches_extraction_results_;
 };
@@ -219,9 +220,9 @@ class PageContentAnnotationsWebContentsObserverTest
 
   void OnRelatedSearchesExtracted(const GURL& url,
                                   const std::vector<std::string>& results) {
-    HistoryVisit visit(base::Time::Now(), url);
     helper()->OnRelatedSearchesExtracted(
-        visit, continuous_search::SearchResultExtractorClientStatus::kSuccess,
+        base::Time::Now(), url,
+        continuous_search::SearchResultExtractorClientStatus::kSuccess,
         GenerateMockRelatedSearchExtractorResults(url, results));
   }
 
@@ -283,7 +284,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
         1);
     auto last_request = service()->last_related_searches_extraction_request();
     EXPECT_TRUE(last_request.has_value());
-    EXPECT_EQ(last_request->url, GURL("http://default-engine.com/search?q=a"));
+    EXPECT_EQ(*last_request, GURL("http://default-engine.com/search?q=a"));
 
     auto last_results = service()->last_related_searches_extraction_results();
     EXPECT_TRUE(last_results.has_value());
@@ -390,7 +391,7 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest,
     // Extractor request will be sent for a Google SRP visit.
     auto last_request = service()->last_related_searches_extraction_request();
     EXPECT_TRUE(last_request.has_value());
-    EXPECT_EQ(last_request->url, google_srp_url);
+    EXPECT_EQ(*last_request, google_srp_url);
 
     auto last_results = service()->last_related_searches_extraction_results();
     EXPECT_TRUE(last_results.has_value());
