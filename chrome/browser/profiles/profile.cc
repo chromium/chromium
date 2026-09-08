@@ -53,7 +53,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/pref_names.h"
 #endif
 
@@ -248,11 +247,6 @@ std::string Profile::OTRProfileID::Serialize() const {
 Profile::Profile(const OTRProfileID* otr_profile_id)
     : otr_profile_id_(otr_profile_id ? std::make_optional(*otr_profile_id)
                                      : std::nullopt) {
-#if BUILDFLAG(IS_CHROMEOS)
-  new_guest_profile_impl_ =
-      base::FeatureList::IsEnabled(chromeos::features::kNewGuestProfile);
-#endif
-
 #if DCHECK_IS_ON()
   base::AutoLock lock(GetProfileInstancesLock());
   GetProfileInstances().insert(this);
@@ -443,12 +437,6 @@ bool Profile::IsPrimaryOTRProfileWithRegularParent() const {
 }
 
 bool Profile::IsGuestSession() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!new_guest_profile_impl_) {
-    return base::CommandLine::ForCurrentProcess()->HasSwitch(
-        ash::switches::kGuestSession);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kGuest;
 }

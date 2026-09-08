@@ -78,11 +78,6 @@ BASE_FEATURE(kMahiSendingUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the summary of selected text feature.
 BASE_FEATURE(kMahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch to disable the new guest profile implementation on CrOS that is
-// consistent with desktop chrome.
-// TODO(crbug.com/40233408): Remove if the change is fully launched.
-BASE_FEATURE(kNewGuestProfile, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Changes the ChromeOS notification width size from 360px to 400px for pop-up
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -491,12 +491,9 @@ ProfileImpl::ProfileImpl(
   // In ChromeOS Guest Mode, there can be only three profiles, main guest
   // profile, otr guest profile and sign in profile, and only main and otr ,
   // which are 'user profile', should be the guest
-  bool is_guest_session = path == ProfileManager::GetGuestProfilePath();
-  if (new_guest_profile_impl_) {
-    is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
-                           ash::switches::kGuestSession) &&
-                       ash::IsUserBrowserContextBaseName(path_.BaseName());
-  }
+  bool is_guest_session = base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              ash::switches::kGuestSession) &&
+                          ash::IsUserBrowserContextBaseName(path_.BaseName());
 #else
   bool is_guest_session = path == ProfileManager::GetGuestProfilePath();
 #endif
