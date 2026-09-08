@@ -153,15 +153,14 @@ void BlobReader::DidReadSideData(StatusCallback done,
                                  int result,
                                  mojo_base::BigBuffer data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result >= 0) {
-    DCHECK_EQ(expected_size, result);
+  if (result == expected_size) {
     DCHECK_EQ(static_cast<size_t>(expected_size), data.size());
     RecordBytesReadFromDataHandle(/* item_index= */ 0, result);
     side_data_ = std::move(data);
     std::move(done).Run(Status::DONE);
     return;
   }
-  std::move(done).Run(ReportError(result));
+  std::move(done).Run(ReportError(result < 0 ? result : net::ERR_FAILED));
 }
 
 BlobReader::Status BlobReader::SetReadRange(uint64_t offset, uint64_t length) {

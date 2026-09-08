@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,6 +68,41 @@ class MockBlobReaderClient : public blink::mojom::BlobReaderClient {
   bool completed_ = false;
   net::Error status_ = net::OK;
   uint64_t data_length_ = 0;
+};
+
+class ShortReadDataHandle : public BlobDataItem::DataHandle {
+ public:
+  ShortReadDataHandle(uint64_t size,
+                      uint64_t side_data_size,
+                      uint64_t actual_side_data_size)
+      : size_(size),
+        side_data_size_(side_data_size),
+        actual_side_data_size_(actual_side_data_size) {}
+
+  uint64_t GetSize() const override { return size_; }
+  void Read(mojo::ScopedDataPipeProducerHandle /*producer*/,
+            uint64_t /*src_offset*/,
+            uint64_t /*bytes_to_read*/,
+            base::OnceCallback<void(int)> callback) override {
+    std::move(callback).Run(net::OK);
+  }
+  uint64_t GetSideDataSize() const override { return side_data_size_; }
+  void ReadSideData(
+      base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) override {
+    mojo_base::BigBuffer buffer(static_cast<size_t>(side_data_size_));
+    std::ranges::fill(buffer, 'X');
+    std::move(callback).Run(static_cast<int>(actual_side_data_size_),
+                            std::move(buffer));
+  }
+  void PrintTo(::std::ostream* os) const override {
+    *os << "<ShortReadDataHandle>";
+  }
+
+ private:
+  ~ShortReadDataHandle() override = default;
+  uint64_t size_;
+  uint64_t side_data_size_;
+  uint64_t actual_side_data_size_;
 };
 
 }  // namespace
@@ -394,6 +431,31 @@ TEST_F(BlobImplTest, ReadRange_InvalidRange) {
   EXPECT_TRUE(client.completed_);
   EXPECT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE, client.status_);
   EXPECT_EQ(0u, client.data_length_);
+}
+
+TEST_F(BlobImplTest, ReadSideDataShortRead) {
+  const std::string kId = "id";
+  auto builder = std::make_unique<BlobDataBuilder>(kId);
+  builder->AppendReadableDataHandle(
+      base::MakeRefCounted<ShortReadDataHandle>(100, 2048, 10));
+  auto handle = context_->AddFinishedBlob(std::move(builder));
+
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
+
+  base::RunLoop loop;
+  std::optional<mojo_base::BigBuffer> received_buffer;
+  bool called = false;
+  remote->ReadSideData(
+      base::BindLambdaForTesting([&](std::optional<mojo_base::BigBuffer> data) {
+        received_buffer = std::move(data);
+        called = true;
+        loop.Quit();
+      }));
+  loop.Run();
+
+  EXPECT_TRUE(called);
+  EXPECT_FALSE(received_buffer.has_value());
 }
 
 }  // namespace storage

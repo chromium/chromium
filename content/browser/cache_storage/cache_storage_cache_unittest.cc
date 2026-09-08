@@ -376,6 +376,174 @@ class FailableBackend : public disk_cache::Backend {
   FailureStage stage_;
 };
 
+// A disk_cache::Entry wrapper that returns fewer bytes than requested when
+// reading side data, to simulate the side data being truncated by another
+// caller after GetDataSize() was sampled.
+class ShortReadCacheEntry : public disk_cache::Entry {
+ public:
+  ShortReadCacheEntry(disk_cache::Entry* entry, int side_data_read_len)
+      : entry_(entry), side_data_read_len_(side_data_read_len) {}
+
+  void Doom() override { entry_->Doom(); }
+  void Close() override {
+    entry_.ExtractAsDangling()->Close();
+    delete this;
+  }
+  std::string GetKey() const override { return entry_->GetKey(); }
+  base::Time GetLastUsed() const override { return entry_->GetLastUsed(); }
+  int64_t GetDataSize(int index) const override {
+    return entry_->GetDataSize(index);
+  }
+  int ReadData(int index,
+               int64_t offset,
+               IOBuffer* buf,
+               int buf_len,
+               CompletionOnceCallback callback) override {
+    if (index == CacheStorageCache::INDEX_SIDE_DATA) {
+      buf_len = std::min(buf_len, side_data_read_len_);
+    }
+    return entry_->ReadData(index, offset, buf, buf_len, std::move(callback));
+  }
+  int WriteData(int index,
+                int64_t offset,
+                IOBuffer* buf,
+                int buf_len,
+                CompletionOnceCallback callback,
+                bool truncate) override {
+    return entry_->WriteData(index, offset, buf, buf_len, std::move(callback),
+                             truncate);
+  }
+  int ReadSparseData(int64_t offset,
+                     IOBuffer* buf,
+                     int buf_len,
+                     CompletionOnceCallback callback) override {
+    return entry_->ReadSparseData(offset, buf, buf_len, std::move(callback));
+  }
+  int WriteSparseData(int64_t offset,
+                      IOBuffer* buf,
+                      int buf_len,
+                      CompletionOnceCallback callback) override {
+    return entry_->WriteSparseData(offset, buf, buf_len, std::move(callback));
+  }
+  disk_cache::RangeResult GetAvailableRange(
+      int64_t offset,
+      int len,
+      disk_cache::RangeResultCallback callback) override {
+    return entry_->GetAvailableRange(offset, len, std::move(callback));
+  }
+  bool CouldBeSparse() const override { return entry_->CouldBeSparse(); }
+  void CancelSparseIO() override { entry_->CancelSparseIO(); }
+  net::Error ReadyForSparseIO(CompletionOnceCallback callback) override {
+    return entry_->ReadyForSparseIO(std::move(callback));
+  }
+  void SetLastUsedTimeForTest(base::Time time) override {
+    entry_->SetLastUsedTimeForTest(time);
+  }
+
+ private:
+  ~ShortReadCacheEntry() override = default;
+
+  raw_ptr<disk_cache::Entry> entry_;
+  const int side_data_read_len_;
+};
+
+// A disk_cache::Backend wrapper that wraps entries returned from OpenEntry()
+// in a ShortReadCacheEntry.
+class ShortReadBackend : public disk_cache::Backend {
+ public:
+  ShortReadBackend(std::unique_ptr<disk_cache::Backend> backend,
+                   int side_data_read_len)
+      : Backend(backend->GetCacheType()),
+        backend_(std::move(backend)),
+        side_data_read_len_(side_data_read_len) {}
+
+  // disk_cache::Backend overrides
+  base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const override {
+    return backend_->GetEntryCount(std::move(callback));
+  }
+
+  EntryResult OpenEntry(const std::string& key,
+                        net::RequestPriority request_priority,
+                        EntryResultCallback callback) override {
+    auto split_callback = base::SplitOnceCallback(
+        base::BindOnce(&ShortReadBackend::WrapEntry, side_data_read_len_,
+                       std::move(callback)));
+    EntryResult result = backend_->OpenEntry(key, request_priority,
+                                             std::move(split_callback.first));
+    if (result.net_error() == net::ERR_IO_PENDING) {
+      return result;
+    }
+    std::move(split_callback.second).Run(std::move(result));
+    return EntryResult::MakeError(net::ERR_IO_PENDING);
+  }
+
+  EntryResult CreateEntry(const std::string& key,
+                          net::RequestPriority request_priority,
+                          EntryResultCallback callback) override {
+    return backend_->CreateEntry(key, request_priority, std::move(callback));
+  }
+  EntryResult OpenOrCreateEntry(const std::string& key,
+                                net::RequestPriority request_priority,
+                                EntryResultCallback callback) override {
+    return backend_->OpenOrCreateEntry(key, request_priority,
+                                       std::move(callback));
+  }
+  net::Error DoomEntry(const std::string& key,
+                       net::RequestPriority request_priority,
+                       CompletionOnceCallback callback) override {
+    return backend_->DoomEntry(key, request_priority, std::move(callback));
+  }
+  net::Error DoomAllEntries(CompletionOnceCallback callback) override {
+    return backend_->DoomAllEntries(std::move(callback));
+  }
+  net::Error DoomEntriesBetween(base::Time initial_time,
+                                base::Time end_time,
+                                CompletionOnceCallback callback) override {
+    return backend_->DoomEntriesBetween(initial_time, end_time,
+                                        std::move(callback));
+  }
+  net::Error DoomEntriesSince(base::Time initial_time,
+                              CompletionOnceCallback callback) override {
+    return backend_->DoomEntriesSince(initial_time, std::move(callback));
+  }
+  int64_t CalculateSizeOfAllEntries(
+      Int64CompletionOnceCallback callback) override {
+    return backend_->CalculateSizeOfAllEntries(std::move(callback));
+  }
+  std::unique_ptr<Iterator> CreateIterator() override {
+    return backend_->CreateIterator();
+  }
+  void GetStats(base::StringPairs* stats) override {
+    return backend_->GetStats(stats);
+  }
+  void OnExternalCacheHit(const std::string& key) override {
+    return backend_->OnExternalCacheHit(key);
+  }
+  int64_t MaxFileSize() const override { return backend_->MaxFileSize(); }
+  void SetMaxBytes(base::ByteSize max_bytes) override {
+    backend_->SetMaxBytes(max_bytes);
+  }
+  base::ByteSize GetMaxBytesForTesting() const override {
+    return backend_->GetMaxBytesForTesting();
+  }
+
+ private:
+  static void WrapEntry(int side_data_read_len,
+                        EntryResultCallback callback,
+                        EntryResult result) {
+    if (result.net_error() != net::OK) {
+      std::move(callback).Run(std::move(result));
+      return;
+    }
+    std::move(callback).Run(EntryResult::MakeOpened(
+        new ShortReadCacheEntry(result.ReleaseEntry(), side_data_read_len)));
+  }
+
+  std::unique_ptr<disk_cache::Backend> backend_;
+  const int side_data_read_len_;
+};
+
 std::string CopySideData(blink::mojom::Blob* actual_blob) {
   std::string output;
   base::RunLoop loop;
@@ -506,6 +674,12 @@ class TestCacheStorageCache : public CacheStorageCache {
     auto failable_backend =
         std::make_unique<FailableBackend>(std::move(backend_), stage);
     backend_ = std::move(failable_backend);
+  }
+
+  void UseShortReadBackend(int side_data_read_len) {
+    EXPECT_TRUE(backend_);
+    backend_ = std::make_unique<ShortReadBackend>(std::move(backend_),
+                                                  side_data_read_len);
   }
 
   void Init() { InitBackend(); }
@@ -2046,6 +2220,55 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_NotFound) {
   EXPECT_FALSE(WriteSideData(GURL("http://www.example.com/not_exist"),
                              base::Time::Now(), buffer, kSize));
   EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);
+}
+
+TEST_P(CacheStorageCacheTestP, ReadSideDataShortRead) {
+  base::Time response_time(base::Time::Now());
+  blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
+  response->response_time = response_time;
+  EXPECT_TRUE(Put(body_request_, std::move(response)));
+
+  const std::string side_data(2048, 'X');
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(side_data);
+  EXPECT_TRUE(WriteSideData(body_request_->url, response_time, buffer,
+                            side_data.length()));
+
+  // Simulate the side data stream being shorter at read time than the value
+  // returned by GetDataSize() when the read was issued.
+  cache_->UseShortReadBackend(/*side_data_read_len=*/1);
+
+  EXPECT_TRUE(Match(body_request_));
+  ASSERT_TRUE(callback_response_->blob);
+  mojo::Remote<blink::mojom::Blob> blob(
+      std::move(callback_response_->blob->blob));
+  // Since it is a short read, it should be treated as an error and return
+  // empty.
+  EXPECT_EQ("", CopySideData(blob.get()));
+}
+
+TEST_P(CacheStorageCacheTestP, ReadSideDataZeroRead) {
+  base::Time response_time(base::Time::Now());
+  blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
+  response->response_time = response_time;
+  EXPECT_TRUE(Put(body_request_, std::move(response)));
+
+  const std::string side_data(2048, 'X');
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(side_data);
+  EXPECT_TRUE(WriteSideData(body_request_->url, response_time, buffer,
+                            side_data.length()));
+
+  // Simulate the side data stream returning 0 bytes at read time despite
+  // GetDataSize() reporting a positive value when sampled.
+  cache_->UseShortReadBackend(/*side_data_read_len=*/0);
+
+  EXPECT_TRUE(Match(body_request_));
+  ASSERT_TRUE(callback_response_->blob);
+  mojo::Remote<blink::mojom::Blob> blob(
+      std::move(callback_response_->blob->blob));
+  // Since 0 bytes were read, an empty string should be returned.
+  EXPECT_EQ("", CopySideData(blob.get()));
 }
 
 TEST_F(CacheStorageCacheTest, CaselessServiceWorkerFetchRequestHeaders) {

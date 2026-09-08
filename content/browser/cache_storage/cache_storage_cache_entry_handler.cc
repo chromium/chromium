@@ -142,15 +142,24 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     // Use a WrappedIOBuffer so that the DiskCacheBlobEntry writes directly
     // to the BigBuffer without a copy.
     int length = blob_entry_->GetSize(side_data_disk_cache_index_);
+    if (length <= 0) {
+      std::move(callback).Run(length, mojo_base::BigBuffer());
+      return;
+    }
     mojo_base::BigBuffer output_buf(static_cast<size_t>(length));
     auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(output_buf);
 
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
-        [](mojo_base::BigBuffer output_buf, ReadSideDataCallback callback,
-           int result) {
+        [](int expected_length, mojo_base::BigBuffer output_buf,
+           ReadSideDataCallback callback, int result) {
+          if (result != expected_length) {
+            std::move(callback).Run(result < 0 ? result : net::ERR_FAILED,
+                                    mojo_base::BigBuffer());
+            return;
+          }
           std::move(callback).Run(result, std::move(output_buf));
         },
-        std::move(output_buf), std::move(callback)));
+        length, std::move(output_buf), std::move(callback)));
 
     uint64_t offset = 0;
     int result =

@@ -176,15 +176,15 @@ void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
           return;
         }
         item->data_handle()->ReadSideData(base::BindOnce(
-            [](ReadSideDataCallback callback, int result,
+            [](int32_t expected_size, ReadSideDataCallback callback, int result,
                mojo_base::BigBuffer buffer) {
-              if (result < 0) {
+              if (result < 0 || result != expected_size) {
                 std::move(callback).Run(std::nullopt);
                 return;
               }
               std::move(callback).Run(std::move(buffer));
             },
-            std::move(callback)));
+            body_size, std::move(callback)));
       },
       *handle_, std::move(callback)));
 }
