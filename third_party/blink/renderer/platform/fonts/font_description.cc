@@ -392,8 +392,8 @@ void FontDescription::UpdateTypesettingFeatures() {
     fields_.typesetting_features_ |= blink::kCaps;
 }
 
-unsigned FontDescription::StyleHashWithoutFamilyList() const {
-  unsigned hash = 0;
+uint32_t FontDescription::StyleHashWithoutFamilyList() const {
+  uint32_t hash = 0;
   const FontFeatureSettings* settings = FeatureSettings();
   if (settings) {
     unsigned num_features = settings->size();
@@ -434,8 +434,8 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   return hash;
 }
 
-unsigned FontDescription::GetHash() const {
-  unsigned hash = StyleHashWithoutFamilyList();
+uint32_t FontDescription::GetHash() const {
+  uint32_t hash = StyleHashWithoutFamilyList();
   for (const FontFamily* family = &family_list_; family;
        family = family->Next()) {
     if (family->FamilyName().empty())

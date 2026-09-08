@@ -872,7 +872,7 @@ struct EmptyString {
 
 template <>
 struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
-  static unsigned GetHash(const EmptyString&) { return 0; }
+  static uint32_t GetHash(const EmptyString&) { return 0; }
   static const bool kEmptyValueIsZero = false;
 
   // This overrides SimpleClassHashTraits<EmptyString>::EmptyValue() which
@@ -1034,7 +1034,7 @@ struct Complicated {
 };
 
 struct ComplicatedHashTraits : blink::GenericHashTraits<Complicated> {
-  static unsigned GetHash(const Complicated& key) { return key.simple_.value_; }
+  static uint32_t GetHash(const Complicated& key) { return key.simple_.value_; }
   static bool Equal(const Complicated& a, const Complicated& b) {
     return a.simple_.value_ == b.simple_.value_;
   }
@@ -1044,7 +1044,7 @@ struct ComplicatedHashTraits : blink::GenericHashTraits<Complicated> {
 };
 
 struct ComplexityTranslator {
-  static unsigned GetHash(const Simple& key) { return key.value_; }
+  static uint32_t GetHash(const Simple& key) { return key.value_; }
   static bool Equal(const Complicated& a, const Simple& b) {
     return a.simple_.value_ == b.value_;
   }

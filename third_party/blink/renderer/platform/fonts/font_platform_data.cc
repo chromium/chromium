@@ -199,8 +199,8 @@ bool FontPlatformData::HasSpaceInLigaturesOrKerning(
   return hb_face->HasSpaceInLigaturesOrKerning(features);
 }
 
-unsigned FontPlatformData::GetHash() const {
-  unsigned h = UniqueID();
+uint32_t FontPlatformData::GetHash() const {
+  uint32_t h = UniqueID();
   h ^= 0x01010101 * ((static_cast<int>(is_hash_table_deleted_value_) << 3) |
                      (static_cast<int>(orientation_) << 2) |
                      (static_cast<int>(synthetic_bold_) << 1) |

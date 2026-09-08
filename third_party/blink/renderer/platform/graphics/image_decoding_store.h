@@ -169,7 +169,7 @@ class DecoderCacheEntry final : public CacheEntry {
 template <>
 struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
   STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const DecoderCacheKey& p) {
+  static uint32_t GetHash(const DecoderCacheKey& p) {
     auto first =
         HashInts(blink::GetHash(const_cast<ImageFrameGenerator*>(p.gen_.get())),
                  blink::GetHash(p.size_));

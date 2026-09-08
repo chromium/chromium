@@ -87,7 +87,7 @@ class IntWrapper : public GarbageCollected<IntWrapper> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return blink::GetHash(x_); }
+  uint32_t GetHash() { return blink::GetHash(x_); }
 
   IntWrapper(int x) : x_(x) {}
 
@@ -98,7 +98,7 @@ class IntWrapper : public GarbageCollected<IntWrapper> {
 std::atomic_int IntWrapper::destructor_calls_{0};
 
 struct IntWrapperHashTraits : GenericHashTraits<IntWrapper> {
-  static unsigned GetHash(const IntWrapper& key) {
+  static uint32_t GetHash(const IntWrapper& key) {
     return HashInt(static_cast<uint32_t>(key.Value()));
   }
 };
@@ -487,8 +487,8 @@ class ThreadMarker {
 // ThreadMarkerHash is the default hash for ThreadMarker
 template <>
 struct HashTraits<ThreadMarker> : SimpleClassHashTraits<ThreadMarker> {
-  static unsigned GetHash(const ThreadMarker& key) {
-    return static_cast<unsigned>(
+  static uint32_t GetHash(const ThreadMarker& key) {
+    return static_cast<uint32_t>(
         reinterpret_cast<uintptr_t>(key.creating_thread_) + key.num_);
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
@@ -1651,7 +1651,7 @@ class ThingWithDestructor {
 
   static int live_things_with_destructor_;
 
-  unsigned GetHash() { return blink::GetHash(x_); }
+  uint32_t GetHash() { return blink::GetHash(x_); }
 
  private:
   static const int kEmptyValue = 0;
@@ -2611,7 +2611,7 @@ class OffHeapInt : public RefCounted<OffHeapInt> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return blink::GetHash(x_); }
+  uint32_t GetHash() { return blink::GetHash(x_); }
   void VoidFunction() {}
 
   OffHeapInt() = delete;
@@ -3127,7 +3127,7 @@ class KeyWithCopyingMoveConstructor final {
   DISALLOW_NEW();
 
  public:
-  unsigned GetHash() const { return hash_; }
+  uint32_t GetHash() const { return hash_; }
 
   KeyWithCopyingMoveConstructor() = default;
   explicit KeyWithCopyingMoveConstructor(HashTableDeletedValueType)

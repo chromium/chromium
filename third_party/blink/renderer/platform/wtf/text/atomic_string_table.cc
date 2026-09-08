@@ -266,7 +266,7 @@ class UCharBuffer {
 };
 
 struct UCharBufferTranslator {
-  static unsigned GetHash(const UCharBuffer& buf) { return buf.hash(); }
+  static uint32_t GetHash(const UCharBuffer& buf) { return buf.hash(); }
 
   static bool Equal(StringImpl* const& str, const UCharBuffer& buf) {
     return blink::Equal(str, buf.characters());
@@ -282,7 +282,7 @@ struct UCharBufferTranslator {
 };
 
 struct StringViewLookupTranslator {
-  static unsigned GetHash(const StringView& buf) {
+  static uint32_t GetHash(const StringView& buf) {
     StringImpl* shared_impl = buf.SharedImpl();
     if (shared_impl) [[likely]] {
       return shared_impl->GetHash();
@@ -332,16 +332,16 @@ class HashTranslatorLowercaseBuffer {
   }
 
   const StringImpl* impl() const { return impl_; }
-  unsigned hash() const { return hash_; }
+  uint32_t hash() const { return hash_; }
 
  private:
   const StringImpl* impl_;
-  unsigned hash_;
+  uint32_t hash_;
 };
 struct LowercaseLookupTranslator {
   // Computes the hash that |query| would have if it were first converted to
   // ASCII lowercase.
-  static unsigned GetHash(const HashTranslatorLowercaseBuffer& buf) {
+  static uint32_t GetHash(const HashTranslatorLowercaseBuffer& buf) {
     return buf.hash();
   }
 
@@ -452,19 +452,19 @@ class LCharBuffer {
         // This is a common path from V8 strings, so inlining is worth it.
         hash_(StringHasher::ComputeHashAndMaskTop8BitsInline(chars)) {}
 
-  ALWAYS_INLINE LCharBuffer(base::span<const LChar> chars, unsigned hash)
+  ALWAYS_INLINE LCharBuffer(base::span<const LChar> chars, uint32_t hash)
       : characters_(chars), hash_(hash) {}
 
   base::span<const LChar> characters() const { return characters_; }
-  unsigned hash() const { return hash_; }
+  uint32_t hash() const { return hash_; }
 
  private:
   const base::span<const LChar> characters_;
-  const unsigned hash_;
+  const uint32_t hash_;
 };
 
 struct LCharBufferTranslator {
-  static unsigned GetHash(const LCharBuffer& buf) { return buf.hash(); }
+  static uint32_t GetHash(const LCharBuffer& buf) { return buf.hash(); }
 
   static bool Equal(StringImpl* const& str, const LCharBuffer& buf) {
     return blink::Equal(str, buf.characters());
@@ -472,7 +472,7 @@ struct LCharBufferTranslator {
 
   static void Store(StringImpl*& location,
                     const LCharBuffer& buf,
-                    unsigned hash) {
+                    uint32_t hash) {
     auto string = StringImpl::Create(buf.characters());
     location = string.release();
     location->SetHash(hash);

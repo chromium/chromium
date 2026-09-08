@@ -190,8 +190,8 @@ scoped_refptr<FontVariantAlternates> FontVariantAlternates::Resolve(
   return clone;
 }
 
-unsigned FontVariantAlternates::GetHash() const {
-  unsigned computed_hash = 0;
+uint32_t FontVariantAlternates::GetHash() const {
+  uint32_t computed_hash = 0;
   AddIntToHash(computed_hash,
                stylistic_.has_value() ? blink::GetHash(*stylistic_) : -1);
   AddIntToHash(computed_hash, historical_forms_);

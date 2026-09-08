@@ -87,10 +87,10 @@ struct FontCacheKey {
            device_scale_factor_ == std::numeric_limits<float>::max();
   }
 
-  unsigned GetHash() const {
+  uint32_t GetHash() const {
     // Convert from float with 3 digit precision before hashing.
-    unsigned device_scale_factor_hash = device_scale_factor_ * 1000;
-    unsigned hash_codes[10] = {
+    uint32_t device_scale_factor_hash = device_scale_factor_ * 1000;
+    uint32_t hash_codes[10] = {
         creation_params_.GetHash(),
         font_size_,
         options_,

@@ -187,7 +187,7 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
 
   bool operator==(const FontPalette& other) const;
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
  private:
   explicit FontPalette(KeywordPaletteName palette_name)

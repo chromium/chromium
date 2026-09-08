@@ -142,7 +142,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   // Therefore, provide two hashing functions, one for raw pointers, another for
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
-  static unsigned GetHash(const T* key) {
+  static uint32_t GetHash(const T* key) {
 #if defined(CPPGC_POINTER_COMPRESSION)
     cppgc::internal::CompressedPointer st(key);
 #else
@@ -152,7 +152,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   }
   template <typename Member>
     requires(IsAnyMemberType<Member>::value)
-  static unsigned GetHash(const Member& m) {
+  static uint32_t GetHash(const Member& m) {
     return blink::GetHash(m.GetRawStorage().GetAsInteger());
   }
 

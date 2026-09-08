@@ -15,10 +15,10 @@ namespace blink {
 template <>
 struct HashTraits<base::UnguessableToken>
     : GenericHashTraits<base::UnguessableToken> {
-  static unsigned GetHash(const base::UnguessableToken& token) {
+  static uint32_t GetHash(const base::UnguessableToken& token) {
     return token.is_empty()
                ? 0
-               : static_cast<unsigned>(base::UnguessableTokenHash()(token));
+               : static_cast<uint32_t>(base::UnguessableTokenHash()(token));
   }
 
   static constexpr bool kEmptyValueIsZero = true;

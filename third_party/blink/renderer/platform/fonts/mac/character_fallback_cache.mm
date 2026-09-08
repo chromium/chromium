@@ -104,9 +104,9 @@ std::optional<CharacterFallbackKey> CharacterFallbackKey::Make(
   return returnKey;
 }
 
-unsigned CharacterFallbackKeyHashTraits::GetHash(
+uint32_t CharacterFallbackKeyHashTraits::GetHash(
     const CharacterFallbackKey& key) {
-  unsigned hash = blink::GetHash(key.font_identifier);
+  uint32_t hash = blink::GetHash(key.font_identifier);
   AddIntToHash(hash, HashInt(key.weight));
   AddIntToHash(hash, HashInt(key.style));
   AddIntToHash(hash, HashInt(key.orientation));

@@ -16,7 +16,7 @@ namespace blink {
 struct IgnoringAsciiCaseHash {
   STATIC_ONLY(IgnoringAsciiCaseHash);
 
-  static unsigned GetHash(const String& string) {
+  static uint32_t GetHash(const String& string) {
     if (string.ContainsOnlyAsciiOrEmpty() && string.ContainsNoAsciiUpper()) {
       return HashTraits<String>::GetHash(string);
     }
@@ -33,7 +33,7 @@ struct IgnoringAsciiCaseHash {
         AsciiLowerHashReader<UChar>>(bytes);
   }
 
-  static unsigned GetHash(const AtomicString& string) {
+  static uint32_t GetHash(const AtomicString& string) {
     return GetHash(string.GetString());
   }
 
@@ -66,7 +66,7 @@ struct IgnoringAsciiCaseHashTraits : HashTraits<T>, IgnoringAsciiCaseHash {
 struct IgnoringAsciiCaseHashTranslator {
   STATIC_ONLY(IgnoringAsciiCaseHashTranslator);
 
-  static unsigned GetHash(StringView string) {
+  static uint32_t GetHash(StringView string) {
     if (string.SharedImpl()) {
       return IgnoringAsciiCaseHash::GetHash(string.ToString());
     }

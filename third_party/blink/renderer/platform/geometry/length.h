@@ -375,7 +375,7 @@ class PLATFORM_EXPORT Length {
 
   String ToString() const;
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
  private:
   float GetFloatValue() const {

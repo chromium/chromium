@@ -137,7 +137,7 @@ class PLATFORM_EXPORT FontVariationSettings
   FontVariationSettings(const FontVariationSettings&) = delete;
   FontVariationSettings& operator=(const FontVariationSettings&) = delete;
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
  private:
   FontVariationSettings() = default;

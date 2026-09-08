@@ -96,7 +96,7 @@ class FontFaceCreationParams {
     return ttc_index_;
   }
 
-  unsigned GetHash() const {
+  uint32_t GetHash() const {
     if (creation_type_ == kCreateFontByFciIdAndTtcIndex) {
       // Hashing the filename and ints in this way is sensitive to character
       // encoding and endianness. However, since the hash is not transferred

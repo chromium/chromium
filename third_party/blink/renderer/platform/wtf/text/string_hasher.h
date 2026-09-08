@@ -85,7 +85,7 @@ class StringHasher {
   // enough to inline. The same goes if you are the only user of your
   // HashReader.
   template <class Reader = PlainHashReader>
-  ALWAYS_INLINE static unsigned ComputeHashAndMaskTop8BitsInline(
+  ALWAYS_INLINE static uint32_t ComputeHashAndMaskTop8BitsInline(
       base::span<const uint8_t> data) {
     return MaskTop8Bits(rapidhash<Reader>(data.data(), data.size()));
   }
@@ -110,7 +110,7 @@ class StringHasher {
   }
 
  private:
-  static unsigned MaskTop8Bits(uint64_t result) {
+  static uint32_t MaskTop8Bits(uint64_t result) {
     // Reserving space from the high bits for flags preserves most of the hash's
     // value, since hash lookup typically masks out the high bits anyway.
     result &= (1U << (32 - kFlagCount)) - 1;
@@ -123,7 +123,7 @@ class StringHasher {
       result = 0x80000000 >> kFlagCount;
     }
 
-    return static_cast<unsigned>(result);
+    return static_cast<uint32_t>(result);
   }
 };
 

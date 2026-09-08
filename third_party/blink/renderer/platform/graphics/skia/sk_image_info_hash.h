@@ -13,8 +13,8 @@ namespace blink {
 
 template <>
 struct HashTraits<SkImageInfo> : GenericHashTraits<SkImageInfo> {
-  static unsigned GetHash(const SkImageInfo& key) {
-    unsigned result = HashInts(key.width(), key.height());
+  static uint32_t GetHash(const SkImageInfo& key) {
+    uint32_t result = HashInts(key.width(), key.height());
     result = HashInts(result, key.colorType());
     result = HashInts(result, key.alphaType());
     if (auto* cs = key.colorSpace())

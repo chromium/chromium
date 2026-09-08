@@ -214,7 +214,7 @@ class HashMap {
   // An alternate version of find() that finds the object by hashing and
   // comparing with some other type, to avoid the cost of type conversion.
   // HashTranslator must have the following function members:
-  //   static unsigned GetHash(const T&);
+  //   static uint32_t GetHash(const T&);
   //   static bool Equal(const ValueType&, const T&);
   template <typename HashTranslator, typename T>
   iterator Find(const T&);
@@ -352,7 +352,7 @@ template <typename KeyTraits, typename ValueTraits>
 struct HashMapTranslator {
   STATIC_ONLY(HashMapTranslator);
   template <typename T>
-  static unsigned GetHash(const T& key) {
+  static uint32_t GetHash(const T& key) {
     return KeyTraits::GetHash(key);
   }
   template <typename T, typename U>

@@ -355,8 +355,8 @@ String Length::ToString() const {
   return builder.ToString();
 }
 
-unsigned Length::GetHash() const {
-  unsigned hash = 0;
+uint32_t Length::GetHash() const {
+  uint32_t hash = 0;
   AddFloatToHash(hash, value_);
   AddIntToHash(hash, type_);
   AddIntToHash(hash, quirk_);

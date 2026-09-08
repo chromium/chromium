@@ -100,7 +100,7 @@ class PLATFORM_EXPORT FontPlatformData
   HarfBuzzFace* GetHarfBuzzFace() const;
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures) const;
   SkTypefaceID UniqueID() const;
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   FontOrientation Orientation() const { return orientation_; }
   const ResolvedFontFeatures& ResolvedFeatures() const {

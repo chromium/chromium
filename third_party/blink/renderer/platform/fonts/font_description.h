@@ -495,8 +495,8 @@ class PLATFORM_EXPORT FontDescription {
 
   bool HasLanguageOverride() const { return !language_override_.empty(); }
 
-  unsigned StyleHashWithoutFamilyList() const;
-  unsigned GetHash() const;
+  uint32_t StyleHashWithoutFamilyList() const;
+  uint32_t GetHash() const;
 
   SkFontStyle SkiaFontStyle() const;
 

@@ -60,7 +60,7 @@ using IntHashBits = typename IntTypes<sizeof(T)>::UnsignedType;
 
 // Thomas Wang's 32 Bit Mix Function:
 // https://web.archive.org/web/20060507103516/http://www.cris.com/~Ttwang/tech/inthash.htm
-constexpr unsigned HashInt(uint32_t key) {
+constexpr uint32_t HashInt(uint32_t key) {
   key += ~(key << 15);
   key ^= (key >> 10);
   key += (key << 3);
@@ -70,19 +70,19 @@ constexpr unsigned HashInt(uint32_t key) {
   return key;
 }
 
-constexpr unsigned HashInt(uint16_t key16) {
+constexpr uint32_t HashInt(uint16_t key16) {
   uint32_t key = key16;
   return HashInt(key);
 }
 
-constexpr unsigned HashInt(uint8_t key8) {
+constexpr uint32_t HashInt(uint8_t key8) {
   uint32_t key = key8;
   return HashInt(key);
 }
 
 // Thomas Wang's 64 bit Mix Function:
 // https://web.archive.org/web/20060507103516/http://www.cris.com/~Ttwang/tech/inthash.htm
-constexpr unsigned HashInt(uint64_t key) {
+constexpr uint32_t HashInt(uint64_t key) {
   key += ~(key << 32);
   key ^= (key >> 22);
   key += ~(key << 13);
@@ -91,28 +91,28 @@ constexpr unsigned HashInt(uint64_t key) {
   key ^= (key >> 15);
   key += ~(key << 27);
   key ^= (key >> 31);
-  return static_cast<unsigned>(key);
+  return static_cast<uint32_t>(key);
 }
 
 }  // namespace internal
 
 // Compound integer hash method:
 // http://opendatastructures.org/versions/edition-0.1d/ods-java/node33.html#SECTION00832000000000000000
-constexpr unsigned HashInts(unsigned key1, unsigned key2) {
-  unsigned short_random1 = 277951225;          // A random 32-bit value.
-  unsigned short_random2 = 95187966;           // A random 32-bit value.
+constexpr uint32_t HashInts(uint32_t key1, uint32_t key2) {
+  uint32_t short_random1 = 277951225;          // A random 32-bit value.
+  uint32_t short_random2 = 95187966;           // A random 32-bit value.
   uint64_t long_random = 19248658165952623LL;  // A random, odd 64-bit value.
 
   uint64_t product =
       long_random * short_random1 * key1 + long_random * short_random2 * key2;
-  unsigned high_bits = static_cast<unsigned>(
-      product >> (8 * (sizeof(uint64_t) - sizeof(unsigned))));
+  uint32_t high_bits = static_cast<uint32_t>(
+      product >> (8 * (sizeof(uint64_t) - sizeof(uint32_t))));
   return high_bits;
 }
 
 template <typename T>
   requires(std::integral<T> || std::is_enum_v<T>)
-constexpr unsigned HashInt(T key) {
+constexpr uint32_t HashInt(T key) {
   return internal::HashInt(static_cast<internal::IntHashBits<T>>(key));
 }
 
@@ -125,7 +125,7 @@ constexpr T NormalizeSign(T number) {
 
 template <typename T>
   requires std::floating_point<T>
-constexpr unsigned HashFloat(T key) {
+constexpr uint32_t HashFloat(T key) {
   return internal::HashInt(
       base::bit_cast<internal::IntHashBits<T>>(NormalizeSign(key)));
 }
@@ -138,18 +138,18 @@ constexpr bool FloatEqualForHash(T a, T b) {
 }
 
 template <typename T>
-inline unsigned HashPointer(T* key) {
+inline uint32_t HashPointer(T* key) {
   return HashInt(reinterpret_cast<internal::IntHashBits<T*>>(key));
 }
 
 // Useful compounding hash functions.
-constexpr void AddIntToHash(unsigned& hash, unsigned key) {
+constexpr void AddIntToHash(uint32_t& hash, uint32_t key) {
   hash = ((hash << 5) + hash) + key;  // Djb2
 }
 
 // Normalizes -0.0 to +0.0 to reduce risk of hash and value comparisons
 // mismatching.
-constexpr void AddFloatToHash(unsigned& hash, float value) {
+constexpr void AddFloatToHash(uint32_t& hash, float value) {
   AddIntToHash(hash, HashFloat(value));
 }
 

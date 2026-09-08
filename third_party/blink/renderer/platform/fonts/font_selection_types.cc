@@ -30,7 +30,7 @@
 
 namespace blink {
 
-unsigned FontSelectionRequest::GetHash() const {
+uint32_t FontSelectionRequest::GetHash() const {
   int16_t val[] = {
       weight.RawValue(),
       width.RawValue(),
@@ -39,13 +39,13 @@ unsigned FontSelectionRequest::GetHash() const {
   return StringHasher::HashMemory32(base::as_byte_span(val));
 }
 
-unsigned FontSelectionRequestKeyHashTraits::GetHash(
+uint32_t FontSelectionRequestKeyHashTraits::GetHash(
     const FontSelectionRequestKey& key) {
   uint32_t val[] = {key.request.GetHash(), key.isDeletedValue};
   return StringHasher::HashMemory32(base::as_byte_span(val));
 }
 
-unsigned FontSelectionCapabilitiesHashTraits::GetHash(
+uint32_t FontSelectionCapabilitiesHashTraits::GetHash(
     const FontSelectionCapabilities& key) {
   uint32_t val[] = {key.width.UniqueValue(), key.slope.UniqueValue(),
                     key.weight.UniqueValue(), key.IsHashTableDeletedValue()};

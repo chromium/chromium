@@ -19,7 +19,7 @@ using V8ScriptId = base::StrongAlias<class V8ScriptIdTag, int>;
 
 template <>
 struct HashTraits<V8ScriptId> : GenericHashTraits<V8ScriptId> {
-  static unsigned GetHash(const V8ScriptId& value) {
+  static uint32_t GetHash(const V8ScriptId& value) {
     return blink::HashInt(value.value());
   }
   static constexpr bool kEmptyValueIsZero = true;

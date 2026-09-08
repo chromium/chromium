@@ -365,8 +365,8 @@ struct HashTraits<DisplayItem::Id::HashKey>
   }
   static bool IsDeletedValue(const Key& id) { return id.fragment == kNotFound; }
 
-  static unsigned GetHash(const Key& id) {
-    unsigned hash = blink::GetHash(id.client_id);
+  static uint32_t GetHash(const Key& id) {
+    uint32_t hash = blink::GetHash(id.client_id);
     AddIntToHash(hash, id.type);
     AddIntToHash(hash, id.fragment);
     return hash;

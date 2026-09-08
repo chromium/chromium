@@ -40,7 +40,7 @@ namespace blink {
 
 struct FontDataCacheKeyHashTraits : GenericHashTraits<const FontPlatformData*> {
   STATIC_ONLY(FontDataCacheKeyHashTraits);
-  static unsigned GetHash(const FontPlatformData* platform_data) {
+  static uint32_t GetHash(const FontPlatformData* platform_data) {
     return platform_data->GetHash();
   }
 

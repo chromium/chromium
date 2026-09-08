@@ -12,8 +12,8 @@
 
 namespace blink {
 
-unsigned FontPalette::GetHash() const {
-  unsigned computed_hash = 0;
+uint32_t FontPalette::GetHash() const {
+  uint32_t computed_hash = 0;
   AddIntToHash(computed_hash, palette_keyword_);
 
   if (palette_keyword_ == kInterpolablePalette) {

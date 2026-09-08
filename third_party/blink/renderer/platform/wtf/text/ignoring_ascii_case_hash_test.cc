@@ -18,7 +18,7 @@ TEST(IgnoringAsciiCaseHashTest, GetHashIgnoringCase) {
   EXPECT_EQ(HashTraits<String>::GetHash(String("a")),
             iac::GetHash(AtomicString("a")));
 
-  unsigned hash = iac::GetHash(String("a"));
+  uint32_t hash = iac::GetHash(String("a"));
   EXPECT_EQ(hash, iac::GetHash("A"));
   EXPECT_EQ(hash, iac::GetHash(u"A"));
   EXPECT_EQ(hash, iac::GetHash(AtomicString("A")));

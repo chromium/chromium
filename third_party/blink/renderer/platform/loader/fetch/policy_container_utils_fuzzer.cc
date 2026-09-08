@@ -43,7 +43,7 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
 
   String url(data.first(url_length));
   String header(data.subspan(url_length + 1));
-  unsigned hash = header.IsNull() ? 0 : header.Impl()->GetHash();
+  uint32_t hash = header.IsNull() ? 0 : header.Impl()->GetHash();
 
   // Use the 'hash' value to pick header_type and header_source input.
   // 1st bit: header type.
@@ -79,4 +79,3 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
 }
 
 }  // namespace blink
-

@@ -377,7 +377,7 @@ class PLATFORM_EXPORT Color {
            alpha_ == other.alpha_;
   }
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   // What colorspace space a color wants to interpolate in. This is not
   // equivalent to the colorspace of the color itself.

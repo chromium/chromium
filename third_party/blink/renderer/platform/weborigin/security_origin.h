@@ -510,26 +510,26 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 template <>
 struct HashTraits<scoped_refptr<const SecurityOrigin>>
     : GenericHashTraits<scoped_refptr<const SecurityOrigin>> {
-  static unsigned GetHash(const SecurityOrigin* origin) {
+  static uint32_t GetHash(const SecurityOrigin* origin) {
     const base::UnguessableToken* nonce = origin->GetNonceForSerialization();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
 
-    unsigned hash_codes[] = {
-      origin->Protocol().Impl() ? origin->Protocol().Impl()->GetHash() : 0,
-      origin->Host().Impl() ? origin->Host().Impl()->GetHash() : 0,
-      origin->Port(),
+    uint32_t hash_codes[] = {
+        origin->Protocol().Impl() ? origin->Protocol().Impl()->GetHash() : 0,
+        origin->Host().Impl() ? origin->Host().Impl()->GetHash() : 0,
+        origin->Port(),
 #if ARCH_CPU_32_BITS
-      nonce_hash,
+        nonce_hash,
 #elif ARCH_CPU_64_BITS
-      static_cast<unsigned>(nonce_hash),
-      static_cast<unsigned>(nonce_hash >> 32),
+        static_cast<uint32_t>(nonce_hash),
+        static_cast<uint32_t>(nonce_hash >> 32),
 #else
 #error "Unknown bits"
 #endif
     };
     return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
   }
-  static unsigned GetHash(const scoped_refptr<const SecurityOrigin>& origin) {
+  static uint32_t GetHash(const scoped_refptr<const SecurityOrigin>& origin) {
     return GetHash(origin.get());
   }
 

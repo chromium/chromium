@@ -68,7 +68,7 @@ class PLATFORM_EXPORT FontVariantAlternates
 
   const ResolvedFontFeatures& GetResolvedFontFeatures() const;
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   bool IsNormal() const;
 

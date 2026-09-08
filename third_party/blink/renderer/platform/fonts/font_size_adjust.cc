@@ -29,11 +29,11 @@ StringView ToString(FontSizeAdjust::Metric metric) {
 
 }  // namespace
 
-unsigned FontSizeAdjust::GetHash() const {
-  unsigned computed_hash = 0;
+uint32_t FontSizeAdjust::GetHash() const {
+  uint32_t computed_hash = 0;
   AddFloatToHash(computed_hash, value_);
-  AddIntToHash(computed_hash, static_cast<const unsigned>(metric_));
-  AddIntToHash(computed_hash, static_cast<const unsigned>(type_));
+  AddIntToHash(computed_hash, static_cast<const uint32_t>(metric_));
+  AddIntToHash(computed_hash, static_cast<const uint32_t>(type_));
   return computed_hash;
 }
 

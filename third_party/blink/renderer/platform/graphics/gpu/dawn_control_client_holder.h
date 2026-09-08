@@ -30,7 +30,7 @@ namespace blink {
 template <>
 struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
   STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const wgpu::Buffer& buffer) {
+  static uint32_t GetHash(const wgpu::Buffer& buffer) {
     return HashPointer(buffer.Get());
   }
   static bool Equal(const wgpu::Buffer& a, const wgpu::Buffer& b) {

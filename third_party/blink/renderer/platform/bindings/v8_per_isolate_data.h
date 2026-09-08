@@ -306,9 +306,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // possible keys for this is relatively small and fixed at compile time, so
   // collisions are less of a worry than they would otherwise be.
   struct SimplePtrHashTraits : public GenericHashTraits<const void*> {
-    static unsigned GetHash(const void* key) {
+    static uint32_t GetHash(const void* key) {
       uintptr_t k = reinterpret_cast<uintptr_t>(key);
-      return static_cast<unsigned>(k ^ (k >> 8));
+      return static_cast<uint32_t>(k ^ (k >> 8));
     }
   };
   using V8TemplateMap =

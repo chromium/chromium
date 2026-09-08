@@ -34,7 +34,7 @@ struct PLATFORM_EXPORT CharacterFallbackKeyHashTraits
     : GenericHashTraits<CharacterFallbackKey> {
   STATIC_ONLY(CharacterFallbackKeyHashTraits);
 
-  static unsigned GetHash(const CharacterFallbackKey& key);
+  static uint32_t GetHash(const CharacterFallbackKey& key);
 
   static bool Equal(const CharacterFallbackKey& a,
                     const CharacterFallbackKey& b) {

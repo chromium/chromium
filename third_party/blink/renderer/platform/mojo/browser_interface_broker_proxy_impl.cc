@@ -20,7 +20,7 @@ namespace {
 // `StringHasher::DefaultConverter` and `StringView(const LChar* chars, unsigned
 // length)` work fine here.
 struct InterfaceNameHashTranslator {
-  static unsigned GetHash(std::string_view s) {
+  static uint32_t GetHash(std::string_view s) {
     return StringHasher::HashMemory32(base::as_byte_span(s));
   }
 

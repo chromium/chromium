@@ -39,8 +39,8 @@ struct AttributionGroup {
 template <>
 struct HashTraits<scheduler::AttributionGroup>
     : SimpleClassHashTraits<scheduler::AttributionGroup> {
-  static unsigned GetHash(const scheduler::AttributionGroup& group) {
-    return static_cast<unsigned>(group.attribution.GetHash());
+  static uint32_t GetHash(const scheduler::AttributionGroup& group) {
+    return static_cast<uint32_t>(group.attribution.GetHash());
   }
   static const bool kEmptyValueIsZero = false;
 };

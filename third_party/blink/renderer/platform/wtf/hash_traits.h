@@ -65,7 +65,7 @@ namespace blink {
 // A simple hash traits type for a key type can be like:
 //   template <>
 //   HashTraits<KeyType> : GenericHashTraits<KeyType> {
-//     static unsigned GetHash(const KeyType& key) { ...; }
+//     static uint32_t GetHash(const KeyType& key) { ...; }
 //     static KeyType EmptyValue() { ...; }
 //     static KeyType DeletedValue() { ...; }
 //   };
@@ -102,7 +102,7 @@ struct GenericHashTraitsBase {
 
   // Computes the hash code.
   // This is for key types only.
-  static unsigned GetHash(const T&) = delete;
+  static uint32_t GetHash(const T&) = delete;
 
   // Whether two values are equal. By default, operator== is used.
   // This is for key types only.
@@ -205,7 +205,7 @@ struct GenericHashTraitsBase {
 template <typename T, auto empty_value, auto deleted_value>
 struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
   static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
-  static unsigned GetHash(T key) { return blink::HashInt(key); }
+  static uint32_t GetHash(T key) { return blink::HashInt(key); }
   static constexpr bool kEmptyValueIsZero =
       static_cast<int64_t>(empty_value) == 0;
   static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
@@ -249,7 +249,7 @@ struct GenericHashTraits<T> : EnumHashTraits<T> {};
 template <typename T>
   requires std::floating_point<T>
 struct GenericHashTraits<T> : internal::GenericHashTraitsBase<T> {
-  static unsigned GetHash(T key) { return HashFloat(key); }
+  static uint32_t GetHash(T key) { return HashFloat(key); }
   static bool Equal(T a, T b) { return FloatEqualForHash(a, b); }
   static constexpr T EmptyValue() { return std::numeric_limits<T>::infinity(); }
   static constexpr T DeletedValue() {
@@ -268,16 +268,16 @@ struct IntWithZeroKeyHashTraits
                     std::numeric_limits<T>::max() - 1> {};
 
 // This hash traits can be used in cases where the key is already a good hash.
-struct AlreadyHashedTraits : GenericHashTraits<unsigned> {
-  static unsigned GetHash(unsigned key) { return key; }
+struct AlreadyHashedTraits : GenericHashTraits<uint32_t> {
+  static uint32_t GetHash(uint32_t key) { return key; }
 };
-struct AlreadyHashedWithZeroKeyTraits : IntWithZeroKeyHashTraits<unsigned> {
-  static unsigned GetHash(unsigned key) { return key; }
+struct AlreadyHashedWithZeroKeyTraits : IntWithZeroKeyHashTraits<uint32_t> {
+  static uint32_t GetHash(uint32_t key) { return key; }
 };
 
 template <typename P>
 struct GenericHashTraits<P*> : internal::GenericHashTraitsBase<P*> {
-  static unsigned GetHash(P* key) { return HashPointer(key); }
+  static uint32_t GetHash(P* key) { return HashPointer(key); }
   static constexpr bool kEmptyValueIsZero = true;
   static constexpr P* DeletedValue() { return reinterpret_cast<P*>(-1); }
 };
@@ -289,8 +289,8 @@ struct GenericHashTraits<scoped_refptr<P>>
                 "Unexpected RefPtr size."
                 " RefPtr needs to be single pointer to support deleted value.");
 
-  static unsigned GetHash(P* key) { return HashPointer(key); }
-  static unsigned GetHash(const scoped_refptr<P>& key) {
+  static uint32_t GetHash(P* key) { return HashPointer(key); }
+  static uint32_t GetHash(const scoped_refptr<P>& key) {
     return GetHash(key.get());
   }
 
@@ -344,8 +344,8 @@ struct GenericHashTraits<scoped_refptr<P>>
 template <typename T>
 struct GenericHashTraits<std::unique_ptr<T>>
     : internal::GenericHashTraitsBase<std::unique_ptr<T>> {
-  static unsigned GetHash(T* key) { return HashPointer(key); }
-  static unsigned GetHash(const std::unique_ptr<T>& key) {
+  static uint32_t GetHash(T* key) { return HashPointer(key); }
+  static uint32_t GetHash(const std::unique_ptr<T>& key) {
     return GetHash(key.get());
   }
 
@@ -391,11 +391,11 @@ struct GenericHashTraits<std::unique_ptr<T>>
 template <typename T>
 struct HashTraits : GenericHashTraits<T> {};
 
-// Helper to avoid HashTraits<unsigned> sentinel values (0 and 0xFFFFFFFF)
+// Helper to avoid HashTraits<uint32_t> sentinel values (0 and 0xFFFFFFFF)
 // by turning them into 1.
-constexpr unsigned EnsureValidHash(unsigned hash) {
-  return (hash == HashTraits<unsigned>::EmptyValue() ||
-          hash == HashTraits<unsigned>::DeletedValue())
+constexpr uint32_t EnsureValidHash(uint32_t hash) {
+  return (hash == HashTraits<uint32_t>::EmptyValue() ||
+          hash == HashTraits<uint32_t>::DeletedValue())
              ? 1
              : hash;
 }
@@ -403,7 +403,7 @@ constexpr unsigned EnsureValidHash(unsigned hash) {
 // This hash traits type requires the following methods in class T, unless
 // the corresponding hash traits method is overridden:
 //   // Computes the hash code, for GetHash().
-//   unsigned GetHash() const;
+//   uint32_t GetHash() const;
 //   // Creates the deleted value, for ConstructDeletedValue().
 //   T(HashTableDeletedValueType);
 //   // Checks if `this` is a deleted value, for IsDeletedValue().
@@ -413,7 +413,7 @@ constexpr unsigned EnsureValidHash(unsigned hash) {
 template <typename T>
 struct SimpleClassHashTraits : GenericHashTraits<T> {
   static_assert(std::is_class_v<T>);
-  static unsigned GetHash(const T& key) { return key.GetHash(); }
+  static uint32_t GetHash(const T& key) { return key.GetHash(); }
   static constexpr bool kEmptyValueIsZero = true;
   template <typename U = void>
   struct NeedsToForbidGCOnMove {
@@ -510,7 +510,7 @@ template <typename T,
               std::remove_reference_t<decltype(std::declval<T>().*field)>>>
 struct OneFieldHashTraits : GenericHashTraits<T> {
   using TraitType = T;
-  static unsigned GetHash(const T& p) { return FieldTraits::GetHash(p.*field); }
+  static uint32_t GetHash(const T& p) { return FieldTraits::GetHash(p.*field); }
   static bool Equal(const T& a, const T& b) {
     return FieldTraits::Equal(a.*field, b.*field);
   }
@@ -552,7 +552,7 @@ template <
         std::remove_reference_t<decltype(std::declval<T>().*second_field)>>>
 struct TwoFieldsHashTraits : OneFieldHashTraits<T, first_field, FirstTraits> {
   using TraitType = T;
-  static unsigned GetHash(const T& p) {
+  static uint32_t GetHash(const T& p) {
     return HashInts(FirstTraits::GetHash(p.*first_field),
                     SecondTraits::GetHash(p.*second_field));
   }
@@ -606,7 +606,7 @@ struct HashTraits<std::pair<First, Second>>
 
 // Shortcut of HashTraits<T>::GetHash(), which can deduct T automatically.
 template <typename T>
-unsigned GetHash(const T& key) {
+uint32_t GetHash(const T& key) {
   return HashTraits<T>::GetHash(key);
 }
 

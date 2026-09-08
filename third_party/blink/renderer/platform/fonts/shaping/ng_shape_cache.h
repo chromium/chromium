@@ -93,8 +93,8 @@ struct ShapeCacheKey {
 
   bool IsHashTableDeletedValue() const { return text_ == g_empty_string; }
 
-  unsigned GetHash() const {
-    unsigned hash = blink::GetHash(text_);
+  uint32_t GetHash() const {
+    uint32_t hash = blink::GetHash(text_);
     AddIntToHash(hash, start_offset_);
     AddIntToHash(hash, end_offset_);
     AddIntToHash(hash, locale_ ? blink::GetHash(locale_) : 0);

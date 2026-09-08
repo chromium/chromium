@@ -38,7 +38,7 @@ class PLATFORM_EXPORT FontSizeAdjust {
   float Value() const { return value_; }
   Metric GetMetric() const { return metric_; }
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
   String ToString() const;
 
  private:

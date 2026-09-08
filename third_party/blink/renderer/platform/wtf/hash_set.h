@@ -106,7 +106,7 @@ class HashSet {
   // An alternate version of find() that finds the object by hashing and
   // comparing with some other type, to avoid the cost of type
   // conversion. HashTranslator must have the following function members:
-  //   static unsigned GetHash(const T&);
+  //   static uint32_t GetHash(const T&);
   //   static bool Equal(const ValueType&, const T&);
   template <typename HashTranslator, typename T>
   iterator Find(const T&) const;
@@ -122,9 +122,9 @@ class HashSet {
   // comparing with some other type, to avoid the cost of type conversion if
   // the object is already in the table. HashTranslator must have the
   // following function members:
-  //   static unsigned GetHash(const T&);
+  //   static uint32_t GetHash(const T&);
   //   static bool Equal(const ValueType&, const T&);
-  //   static Store(ValueType&, T&&, unsigned hash_code);
+  //   static Store(ValueType&, T&&, uint32_t hash_code);
   template <typename HashTranslator, typename T>
   AddResult AddWithTranslator(T&&);
 
@@ -204,7 +204,7 @@ template <typename Translator>
 struct HashSetTranslatorAdapter {
   STATIC_ONLY(HashSetTranslatorAdapter);
   template <typename T>
-  static unsigned GetHash(const T& key) {
+  static uint32_t GetHash(const T& key) {
     return Translator::GetHash(key);
   }
   template <typename T, typename U>
@@ -212,7 +212,7 @@ struct HashSetTranslatorAdapter {
     return Translator::Equal(a, b);
   }
   template <typename T, typename U, typename V>
-  static void Store(T& location, U&& key, const V&, unsigned hash_code) {
+  static void Store(T& location, U&& key, const V&, uint32_t hash_code) {
     Translator::Store(location, std::forward<U>(key), hash_code);
   }
 };

@@ -128,14 +128,14 @@ class IntegerObject : public GarbageCollected<IntegerObject> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return blink::GetHash(x_); }
+  uint32_t GetHash() { return blink::GetHash(x_); }
 
  private:
   int x_;
 };
 
 struct IntegerObjectHash {
-  static unsigned GetHash(const IntegerObject& key) {
+  static uint32_t GetHash(const IntegerObject& key) {
     return HashInt(static_cast<uint32_t>(key.Value()));
   }
 

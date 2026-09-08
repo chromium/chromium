@@ -14,7 +14,7 @@ namespace blink {
 template <>
 struct HashTraits<gfx::SizeF> : GenericHashTraits<gfx::SizeF> {
   STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const gfx::SizeF& key) {
+  static uint32_t GetHash(const gfx::SizeF& key) {
     return HashInts(blink::GetHash(key.width()), blink::GetHash(key.height()));
   }
   static bool Equal(const gfx::SizeF& a, const gfx::SizeF& b) {
@@ -34,7 +34,7 @@ struct HashTraits<gfx::SizeF> : GenericHashTraits<gfx::SizeF> {
 template <>
 struct HashTraits<SkIRect> : GenericHashTraits<SkIRect> {
   STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const SkIRect& key) {
+  static uint32_t GetHash(const SkIRect& key) {
     return HashInts(HashInts(key.x(), key.y()),
                     HashInts(key.right(), key.bottom()));
   }

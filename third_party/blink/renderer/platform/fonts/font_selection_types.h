@@ -306,7 +306,7 @@ struct PLATFORM_EXPORT FontSelectionRequest {
                        FontSelectionValue slope)
       : weight(weight), width(width), slope(slope) {}
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   bool operator==(const FontSelectionRequest& other) const {
     return weight == other.weight && width == other.width &&
@@ -343,7 +343,7 @@ struct FontSelectionRequestKey {
 
 struct PLATFORM_EXPORT FontSelectionRequestKeyHashTraits
     : SimpleClassHashTraits<FontSelectionRequestKey> {
-  static unsigned GetHash(const FontSelectionRequestKey&);
+  static uint32_t GetHash(const FontSelectionRequestKey&);
 };
 
 struct FontSelectionCapabilities {
@@ -388,7 +388,7 @@ struct FontSelectionCapabilities {
 
 struct PLATFORM_EXPORT FontSelectionCapabilitiesHashTraits
     : SimpleClassHashTraits<FontSelectionCapabilities> {
-  static unsigned GetHash(const FontSelectionCapabilities& key);
+  static uint32_t GetHash(const FontSelectionCapabilities& key);
 };
 
 template <>

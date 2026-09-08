@@ -99,7 +99,7 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
   static bool IsDeletedValue(const MoveOnlyHashValue& value) {
     return value.Value() == MoveOnlyHashValue::kDeleted;
   }
-  static unsigned GetHash(const MoveOnlyHashValue& value) {
+  static uint32_t GetHash(const MoveOnlyHashValue& value) {
     return blink::GetHash(value.Value());
   }
   static bool Equal(const MoveOnlyHashValue& left,
@@ -144,7 +144,7 @@ struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
   static bool IsDeletedValue(const CountCopy& value) {
     return value.Counter() == CountCopy::kDeletedValue;
   }
-  static unsigned GetHash(const CountCopy& value) {
+  static uint32_t GetHash(const CountCopy& value) {
     return blink::GetHash(value.Counter());
   }
   static bool Equal(const CountCopy& left, const CountCopy& right) {
@@ -208,7 +208,7 @@ struct ValueInstanceCountHashTraits
   static bool IsDeletedValue(const ValueInstanceCount<T>& value) {
     return value.Counter() == ValueInstanceCount<T>::kDeletedValue;
   }
-  static unsigned GetHash(const ValueInstanceCount<T>& value) {
+  static uint32_t GetHash(const ValueInstanceCount<T>& value) {
     return blink::GetHash(value.Counter());
   }
   static bool Equal(const ValueInstanceCount<T>& left,

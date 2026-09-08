@@ -37,7 +37,7 @@ namespace blink {
 
 template <>
 struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
-  static unsigned GetHash(const AtomicString& key) { return key.Hash(); }
+  static uint32_t GetHash(const AtomicString& key) { return key.Hash(); }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 

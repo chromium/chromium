@@ -17,8 +17,8 @@ template <>
 struct HashTraits<net::IPAddress> : GenericHashTraits<net::IPAddress> {
   static const bool kEmptyValueIsZero = true;
 
-  static unsigned GetHash(const net::IPAddress& ip_address) {
-    return static_cast<unsigned>(
+  static uint32_t GetHash(const net::IPAddress& ip_address) {
+    return static_cast<uint32_t>(
         base::FastHash(base::span(ip_address.bytes())));
   }
 

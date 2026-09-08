@@ -102,9 +102,9 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver,
   // Compares not the pointers, but the arrays. Uses pointers to save space.
   struct SecureStringDigestHashTraits
       : GenericHashTraits<const SecureStringDigest*> {
-    static unsigned GetHash(const SecureStringDigest* digest) {
+    static uint32_t GetHash(const SecureStringDigest* digest) {
       // The first bytes of the hash are as good as anything else.
-      return *reinterpret_cast<const unsigned*>(digest->data());
+      return *reinterpret_cast<const uint32_t*>(digest->data());
     }
 
     static bool Equal(const SecureStringDigest* const a,

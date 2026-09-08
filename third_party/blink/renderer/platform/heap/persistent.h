@@ -86,7 +86,7 @@ struct VectorTraits<WeakPersistent<T>>
 template <typename T, typename PersistentType>
 struct BasePersistentHashTraits : SimpleClassHashTraits<PersistentType> {
   template <typename U>
-  static unsigned GetHash(const U& key) {
+  static uint32_t GetHash(const U& key) {
     return blink::GetHash<T*>(key);
   }
 

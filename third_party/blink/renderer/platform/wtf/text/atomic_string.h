@@ -140,7 +140,7 @@ class WTF_EXPORT AtomicString {
   operator const String&() const { return string_; }
   const String& GetString() const { return string_; }
 
-  unsigned Hash() const { return string_.Impl()->ExistingHash(); }
+  uint32_t Hash() const { return string_.Impl()->ExistingHash(); }
 
   // Returns an LChar span of the underlying representation of the string.
   // This function must only be called on 8-bit strings.

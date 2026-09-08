@@ -26,8 +26,8 @@ AtomicString FourByteTagToAtomicString(uint32_t tag) {
   return AtomicString(tag_string);
 }
 
-unsigned FontVariationSettings::GetHash() const {
-  unsigned computed_hash = size() ? 5381 : 0;
+uint32_t FontVariationSettings::GetHash() const {
+  uint32_t computed_hash = size() ? 5381 : 0;
   unsigned num_features = size();
   for (unsigned i = 0; i < num_features; ++i) {
     AddIntToHash(computed_hash, at(i).Tag());

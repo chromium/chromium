@@ -42,7 +42,7 @@ typedef uint64_t LinkHash;
 
 // Use the low 32-bits of the 64-bit LinkHash as the key for HashSets.
 struct LinkHashHashTraits : GenericHashTraits<LinkHash> {
-  static unsigned GetHash(LinkHash key) { return static_cast<unsigned>(key); }
+  static uint32_t GetHash(LinkHash key) { return static_cast<uint32_t>(key); }
 };
 
 // Resolves the potentially relative URL "attributeURL" relative to the given
