@@ -6,6 +6,7 @@ include_rules = [
   "+components/search_engines",
   "+components/signin/public",
   "+components/sync_preferences/testing_pref_service_syncable.h",
+  "+components/variations",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

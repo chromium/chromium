@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -40,6 +41,8 @@
 #include "components/search_provider_logos/google_logo_api.h"
 #include "components/search_provider_logos/logo_cache.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -347,8 +350,7 @@ class LogoServiceImplTest : public ::testing::Test {
       : logo_cache_(new NiceMock<MockLogoCache>()),
         shared_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        use_gray_background_(false) {
+                &test_url_loader_factory_)) {
     test_url_loader_factory_.SetInterceptor(base::BindRepeating(
         &LogoServiceImplTest::CapturingInterceptor, base::Unretained(this)));
 
@@ -433,13 +435,18 @@ class LogoServiceImplTest : public ::testing::Test {
 
   SigninHelper signin_helper_;
 
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
+
   GURL latest_url_;
-  bool use_gray_background_;
+  network::ResourceRequest latest_request_;
+  bool use_gray_background_ = false;
 };
 
 void LogoServiceImplTest::CapturingInterceptor(
     const network::ResourceRequest& request) {
   latest_url_ = request.url;
+  latest_request_ = request;
 }
 
 std::string LogoServiceImplTest::ServerResponse(const Logo& logo) {
@@ -525,6 +532,53 @@ void LogoServiceImplTest::AddSearchEngine(std::string_view keyword,
 }
 
 // Tests -----------------------------------------------------------------------
+
+TEST_F(LogoServiceImplTest, IncludesVariationsHeaderWhenDSEIsGoogle) {
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"12345"}, {});
+  AddSearchEngine("g", "Google", "{google:baseURL}search?q={searchTerms}",
+                  GURL(), /*make_default=*/true);
+
+  Logo logo = GetSampleLogo(GURL("https://www.google.com/async/ddljson"),
+                            test_clock_.Now());
+  test_url_loader_factory_.AddResponse(
+      "https://www.google.com/async/ddljson?async=ntp:1", ServerResponse(logo),
+      net::HTTP_OK);
+  base::RunLoop run_loop;
+  StrictMock<MockLogoCallback> fresh;
+  EXPECT_CALL(fresh, Run(_, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  LogoCallbacks callbacks;
+  callbacks.on_fresh_decoded_logo_available = fresh.Get();
+  logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/false,
+                         /*enable_animated_logo=*/false);
+  run_loop.Run();
+
+  EXPECT_TRUE(variations::HasVariationsHeader(latest_request_));
+}
+
+TEST_F(LogoServiceImplTest, DoesNotIncludeVariationsHeaderWhenDSEIsNotGoogle) {
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"12345"}, {});
+  GURL query_url = AppendFingerprintParamToDoodleURL(
+      AppendPreliminaryParamsToDoodleURL(false, false, false, DoodleURL()),
+      std::string());
+  test_url_loader_factory_.AddResponse(
+      query_url.spec(),
+      ServerResponse(GetSampleLogo(DoodleURL(), test_clock_.Now())),
+      net::HTTP_OK);
+  base::RunLoop run_loop;
+  StrictMock<MockLogoCallback> fresh;
+  EXPECT_CALL(fresh, Run(_, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  LogoCallbacks callbacks;
+  callbacks.on_fresh_decoded_logo_available = fresh.Get();
+  logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/false,
+                         /*enable_animated_logo=*/false);
+  run_loop.Run();
+
+  EXPECT_FALSE(variations::HasVariationsHeader(latest_request_));
+}
 
 TEST_F(LogoServiceImplTest, CTARequestedBackgroundCanUpdate) {
   std::string response =
