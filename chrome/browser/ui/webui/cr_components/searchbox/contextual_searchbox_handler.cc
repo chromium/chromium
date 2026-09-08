@@ -1617,6 +1617,7 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
     content::WebContents* active_web_contents,
     contextual_search::ContextualSearchSessionHandle* session_handle) {
   if (!active_web_contents ||
+      session_handle->GetSubmittedContextTokens().size() != 1 ||
       !session_handle->IsTabInContext(
           sessions::SessionTabHelper::IdForTab(active_web_contents))) {
     return false;
