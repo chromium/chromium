@@ -39,7 +39,6 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/test/base",
-  "+chromeos/ash/experiences/arc/video",
 
   "+mojo/core",
 ]
