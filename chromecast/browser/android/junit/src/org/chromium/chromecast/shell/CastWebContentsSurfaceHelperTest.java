@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -46,7 +45,6 @@ import java.util.function.Consumer;
 
 /** Tests for CastWebContentsSurfaceHelper. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CastWebContentsSurfaceHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

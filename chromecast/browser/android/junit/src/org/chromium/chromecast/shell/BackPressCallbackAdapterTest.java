@@ -17,14 +17,12 @@ import androidx.lifecycle.LifecycleRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chromecast.base.Box;
 import org.chromium.chromecast.base.Scope;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BackPressCallbackAdapterTest {
     private OnBackPressedDispatcher mDispatcher;
     private PlaceholderLifecycleOwner mLifecycleOwner;

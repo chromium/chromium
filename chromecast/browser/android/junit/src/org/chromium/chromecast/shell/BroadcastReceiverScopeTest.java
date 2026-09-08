@@ -20,7 +20,6 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -29,7 +28,6 @@ import java.util.List;
 
 /** Tests for BroadcastReceiverScope. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class BroadcastReceiverScopeTest {
     private Context mContext;
 

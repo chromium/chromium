@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -28,7 +27,6 @@ import java.util.List;
  * <p>Full testing of elision of PII is done in LogcatElisionUnitTest.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ElidedLogcatProviderUnitTest {
     private static final String LOG_FILE_NAME = "log.txt";
 

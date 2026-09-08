@@ -11,7 +11,6 @@ import android.os.Looper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for HandlerScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class HandlerSchedulerTest {
     @Test
     public void testInjectedHandler() {

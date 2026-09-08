@@ -16,7 +16,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -26,7 +25,6 @@ import java.util.List;
 
 /** Tests for LocalBroadcastReceiverScope. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class LocalBroadcastReceiverScopeTest {
     @Test
     public void testConstructorRegistersReceiver() {

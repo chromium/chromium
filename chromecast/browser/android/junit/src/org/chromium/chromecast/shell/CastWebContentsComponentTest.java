@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ContextUtils;
@@ -38,7 +37,6 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Tests for CastWebContentsComponent. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CastWebContentsComponentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

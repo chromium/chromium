@@ -84,7 +84,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
  * <p>TODO(sanfin): Add more tests.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CastWebContentsActivityTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
