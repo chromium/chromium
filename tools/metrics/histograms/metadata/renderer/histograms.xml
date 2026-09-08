@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad6" units="%"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>lizeb@chromium.org</owner>
   <owner>shaseley@chromium.org</owner>
   <summary>
@@ -664,7 +664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad6.Foreground"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-03-07">
   <owner>lizeb@chromium.org</owner>
   <owner>shaseley@chromium.org</owner>
   <summary>

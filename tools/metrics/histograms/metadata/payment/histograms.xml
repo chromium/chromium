@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>slobodan@chromium.org</owner>
   <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>

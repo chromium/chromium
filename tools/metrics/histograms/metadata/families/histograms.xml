@@ -407,7 +407,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalApprovalOutcome.{Flow}"
-    enum="FamilyLinkUserLocalApprovalOutcome" expires_after="2027-01-03">
+    enum="FamilyLinkUserLocalApprovalOutcome" expires_after="2027-03-07">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -892,7 +892,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionEnablement"
-    enum="SupervisedUserExtensionEnablement" expires_after="2027-01-03">
+    enum="SupervisedUserExtensionEnablement" expires_after="2027-03-07">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -908,7 +908,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionInstallDialog"
-    enum="SupervisedUserExtensionInstallDialog" expires_after="2027-01-03">
+    enum="SupervisedUserExtensionInstallDialog" expires_after="2027-03-07">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>

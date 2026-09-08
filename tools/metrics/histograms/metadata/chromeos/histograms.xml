@@ -1440,7 +1440,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2026-12-31">
+    enum="CrosDiagnosticsRoutineResult" expires_after="2027-03-07">
   <owner>byronlee@google.com</owner>
   <owner>lt-diagnostics@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
@@ -1791,7 +1791,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.HardwareVerifier.Report{HardwareVerifierSupportCategory}"
-    enum="HardwareVerifierQualificationStatus" expires_after="2026-12-31">
+    enum="HardwareVerifierQualificationStatus" expires_after="2027-03-07">
   <owner>itspeter@chromium.org</owner>
   <owner>stimim@chromium.org</owner>
   <owner>chromeos-runtime-probe@google.com</owner>
@@ -1862,7 +1862,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.DiagnosticResult.{Routine}"
-    enum="CrosHealthdDiagnosticResult" expires_after="2026-12-31">
+    enum="CrosHealthdDiagnosticResult" expires_after="2027-03-07">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
   <owner>lt-diagnostics@google.com</owner>
@@ -1933,7 +1933,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.RoutineCreation"
-    enum="CrosHealthdRoutineCategory" expires_after="2026-12-31">
+    enum="CrosHealthdRoutineCategory" expires_after="2027-03-07">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
   <owner>lt-diagnostics@google.com</owner>
@@ -4672,7 +4672,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.DeviceError" enum="ChromeOSUsbDeviceError"
-    expires_after="2027-01-01">
+    expires_after="2027-03-07">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4683,7 +4683,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.USB.ExternalDeviceAttached.{USBDeviceRecognized}.{USBDeviceClass}"
-    enum="ChromeOSUsbEventTiming" expires_after="2027-01-01">
+    enum="ChromeOSUsbEventTiming" expires_after="2027-03-07">
   <owner>jthies@google.com</owner>
   <owner>allenwebb@chromium.org</owner>
   <owner>chromeos-usb@google.com</owner>
@@ -4741,7 +4741,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceSpeed"
-    enum="ChromeOSUsbDeviceSpeed" expires_after="2027-01-01">
+    enum="ChromeOSUsbDeviceSpeed" expires_after="2027-03-07">
   <owner>jthies@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -4822,7 +4822,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.WXMountCount" units="count"
-    expires_after="2026-12-16">
+    expires_after="2027-03-07">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>

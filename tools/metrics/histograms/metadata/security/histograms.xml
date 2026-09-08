@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.InterstitialReason"
-    enum="HttpsFirstModeInterstitialReason" expires_after="2027-01-03">
+    enum="HttpsFirstModeInterstitialReason" expires_after="2027-03-07">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingChanged2"
-    enum="HttpsFirstModeSetting" expires_after="2027-01-03">
+    enum="HttpsFirstModeSetting" expires_after="2027-03-07">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PopupBypassAllowedType" enum="PopupBypassType"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -733,7 +733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PopupBypassDeniedByContentEmbedder" enum="Boolean"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1155,7 +1155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.MainFrameProcessReuse.BlockReason2"
-    enum="MainFrameProcessReuseBlockReason" expires_after="2026-12-31">
+    enum="MainFrameProcessReuseBlockReason" expires_after="2027-03-07">
   <owner>bashi@chromium.org</owner>
   <owner>gjc@google.com</owner>
   <owner>blink-network-stack@google.com</owner>

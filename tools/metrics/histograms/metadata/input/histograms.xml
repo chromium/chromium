@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.Digitizer.{Interaction}" enum="PointerDigitizerType"
-    expires_after="2027-01-01">
+    expires_after="2027-03-07">
   <owner>kouhei@chromium.org</owner>
   <owner>gastonr@microsoft.com</owner>
   <owner>gerchiko@microsoft.com</owner>

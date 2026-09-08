@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty"
-    units="bool" expires_after="2027-01-03">
+    units="bool" expires_after="2027-03-07">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.Populate.{AllowlistSource}Version"
-    units="versioncode" expires_after="2027-01-03">
+    units="versioncode" expires_after="2027-03-07">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize"
-    units="count" expires_after="2027-01-03">
+    units="count" expires_after="2027-03-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{UserCategory}"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -818,7 +818,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.ReportType"
-    enum="ClientSafeBrowsingReportType" expires_after="2027-01-03">
+    enum="ClientSafeBrowsingReportType" expires_after="2027-03-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1675,7 +1675,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.ApiExceptionStatusCode"
-    enum="SafeBrowsingApiExceptionStatusCode" expires_after="2027-01-03">
+    enum="SafeBrowsingApiExceptionStatusCode" expires_after="2027-03-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2411,7 +2411,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.NotificationContentDetection.SuspiciousScore"
-    units="score" expires_after="2027-01-03">
+    units="score" expires_after="2027-03-07">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3041,7 +3041,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupSuccessful{UserCategory}"
-    enum="BooleanSuccess" expires_after="2027-01-03">
+    enum="BooleanSuccess" expires_after="2027-03-07">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4249,7 +4249,7 @@ and applied correctly. -->
 
 <histogram
     name="SafeBrowsing.V4Store.VerifyChecksum.ValidStoreChecksumEmpty{SafeBrowsing_SBStore_Metrics}"
-    enum="Boolean" expires_after="2027-01-01">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4942,7 +4942,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}StoreFileOpenError"
-    enum="PlatformFileError" expires_after="2027-01-03">
+    enum="PlatformFileError" expires_after="2027-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4954,7 +4954,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}StoreFileWriteError"
-    enum="PlatformFileError" expires_after="2027-01-03">
+    enum="PlatformFileError" expires_after="2027-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4966,7 +4966,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}StoreWriteError"
-    enum="SBHashPrefixWriteError" expires_after="2027-01-03">
+    enum="SBHashPrefixWriteError" expires_after="2027-03-07">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

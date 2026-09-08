@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.RemoteDebugging.ConnectionPermission"
     enum="DevToolsRemoteDebuggingConnectionPermission"
-    expires_after="2027-01-01">
+    expires_after="2027-03-07">
   <owner>alexrudenko@google.com</owner>
   <owner>hablich@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RemoteDebugging.ServerAction"
-    enum="DevToolsRemoteDebuggingServerAction" expires_after="2027-01-01">
+    enum="DevToolsRemoteDebuggingServerAction" expires_after="2027-03-07">
   <owner>alexrudenko@google.com</owner>
   <owner>hablich@google.com</owner>
   <summary>

@@ -918,7 +918,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.LaunchErrorCode"
-    enum="LaunchErrorCodes" expires_after="2026-12-09">
+    enum="LaunchErrorCodes" expires_after="2027-03-07">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

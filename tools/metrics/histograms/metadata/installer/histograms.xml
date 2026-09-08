@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Setup.Install.SCM.{Operation}.Result" enum="WinGetLastError"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>grt@chromium.org</owner>
   <owner>ganesh@chromium.org</owner>
   <summary>

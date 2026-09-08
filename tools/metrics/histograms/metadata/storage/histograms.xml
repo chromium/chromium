@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.BackendDuration.WriteBlobs.{IndexedDBBackingStoreType}"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
@@ -334,7 +334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.BackingStore.ReadBlob.{IndexedDBBackingStoreType}"
-    enum="NetErrorCodes" expires_after="2027-01-03">
+    enum="NetErrorCodes" expires_after="2027-03-07">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.DatabaseConnectionOpenResult.{IndexedDBBackingStoreType}"
-    enum="DatabaseConnectionOpenResult" expires_after="2027-01-03">
+    enum="DatabaseConnectionOpenResult" expires_after="2027-03-07">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
@@ -475,7 +475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.DeleteBucketDataSuccess.{IndexedDBBackingStoreType}"
-    enum="BooleanSuccess" expires_after="2027-01-03">
+    enum="BooleanSuccess" expires_after="2027-03-07">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
@@ -890,7 +890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}IsConnected"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1301,7 +1301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.QuotaKb" units="KB"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

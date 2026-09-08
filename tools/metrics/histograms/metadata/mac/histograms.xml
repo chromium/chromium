@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mac.Experimental.Process.{Counter}.{ProcessType}{StartupState}"
-    units="counter value" expires_after="2027-01-03">
+    units="counter value" expires_after="2027-03-07">
   <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

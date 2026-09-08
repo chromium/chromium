@@ -249,7 +249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.ContextMenu.{Entrypoint}.Action"
-    enum="BookmarkBarContextMenuAction" expires_after="2027-01-01">
+    enum="BookmarkBarContextMenuAction" expires_after="2027-03-07">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>
   <owner>chrome-collections@google.com</owner>
@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceAdded" units="days"
-    expires_after="2026-11-22">
+    expires_after="2027-03-07">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>

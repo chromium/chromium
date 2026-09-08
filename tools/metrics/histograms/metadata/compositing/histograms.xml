@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.BeginMainFrame.MainResult"
-    enum="BeginMainFrameMainResult" expires_after="2027-01-03">
+    enum="BeginMainFrameMainResult" expires_after="2027-03-07">
   <owner>lizeb@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.BeginMainFrame.TimeUs" units="microseconds"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>lizeb@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.BeginMainFrame.TimeUs.NoUpdate"
-    units="microseconds" expires_after="2027-01-03">
+    units="microseconds" expires_after="2027-03-07">
   <owner>lizeb@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -261,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.TotalDamage" units="%"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>vasilyt@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.RenderPassDrawnRectMatch"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -703,7 +703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.TileManager.LimitWhenNotEnoughMemory.{ProcessType}"
-    units="MB" expires_after="2027-01-03">
+    units="MB" expires_after="2027-03-07">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>
@@ -909,7 +909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-03-07">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -981,7 +981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Checkerboarding{Version}.{Sequence}"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-03-07">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Graphics.Smoothness.Checkerboarding{Version}.{Thread}{Sequence}"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-03-07">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1195,7 +1195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-03-07">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1225,7 +1225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames4.AllSequences"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-03-07">
   <owner>jonross@chromium.org</owner>
   <owner>gaiko@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>

@@ -315,7 +315,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Action.SetTitleLength" units="bytes"
-    expires_after="M155">
+    expires_after="2027-03-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>bershanskyi@gmail.com</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -899,7 +899,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Database.Local.ErrorByOperation"
-    enum="ExtensionsDatabaseOperation" expires_after="2027-01-03">
+    enum="ExtensionsDatabaseOperation" expires_after="2027-03-07">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1149,7 +1149,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RedirectAction"
-    enum="DeclarativeNetRequestRedirectType" expires_after="2026-12-31">
+    enum="DeclarativeNetRequestRedirectType" expires_after="2027-03-07">
   <owner>quarz@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1540,7 +1540,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3091,7 +3091,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Install.PinReason" enum="ExtensionPinReason"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3404,7 +3404,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3686,7 +3686,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.NativeMessaging.MessageSize{NativeMessagingSource}"
-    units="bytes" expires_after="2027-01-01">
+    units="bytes" expires_after="2027-03-07">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4438,7 +4438,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Settings.DefaultPinningStartupState" enum="Boolean"
-    expires_after="2027-01-01">
+    expires_after="2027-03-07">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4450,7 +4450,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Settings.DefaultPinningToggled" enum="Boolean"
-    expires_after="2027-01-01">
+    expires_after="2027-03-07">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4593,7 +4593,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Startup.DefaultPinnedExtensionState"
-    enum="DefaultPinnedExtensionState" expires_after="2027-01-01">
+    enum="DefaultPinnedExtensionState" expires_after="2027-03-07">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4633,14 +4633,14 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Tabs.RemoveAction" enum="TabsRemoveActionType"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>quarz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Tracks Tabs API remove actions.</summary>
 </histogram>
 
 <histogram name="Extensions.Tabs.UpdateAction" enum="TabsUpdateActionType"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>quarz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Tracks Tabs API update actions.</summary>

@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BatchUpload.Requests3" enum="SyncDataTypes"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -1032,7 +1032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeNumUnsyncedEntities{Event}{SyncDataType}"
-    units="entities" expires_after="2027-01-03">
+    units="entities" expires_after="2027-03-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PendingInvalidationStatus"
-    enum="PendingInvalidationStatus" expires_after="2027-01-03">
+    enum="PendingInvalidationStatus" expires_after="2027-03-07">
   <owner>shabdan@google.com</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -2253,7 +2253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SearchEngine.AddedKeywordHasAccountData" enum="Boolean"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>ankushkush@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2284,7 +2284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SearchEngine.DuplicateIsDefaultSearchProvider"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>ankushkush@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -2969,7 +2969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultAddKeysSuccessfully"
-    enum="TrustedVaultUserActionTrigger" expires_after="2027-01-03">
+    enum="TrustedVaultUserActionTrigger" expires_after="2027-03-07">
   <owner>thomasth@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

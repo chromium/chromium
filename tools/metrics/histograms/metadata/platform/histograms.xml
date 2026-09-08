@@ -711,7 +711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
-    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2026-12-31">
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2027-03-07">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -724,7 +724,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2026-12-31">
+    units="count" expires_after="2027-03-07">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -752,7 +752,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
     enum="Platform.FbPreprocessor.PseudonymizationResult"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileDescriptors.Count" units="count"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>keiichiw@google.com</owner>
   <owner>uekawa@google.com</owner>
   <summary>
@@ -821,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Firmware.Mismatch" enum="BooleanDetected"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -1619,7 +1619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MicrocodeVersion" enum="MicrocodeVersion"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>hikalium@chromium.org</owner>
   <owner>chromeos-kernel-stability@google.com</owner>
   <summary>

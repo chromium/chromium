@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Variant.OnPageLoad"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2027-01-03">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2027-03-07">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -1060,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.Intercept{Direction}"
-    enum="BackPressConsumer" expires_after="2027-01-03">
+    enum="BackPressConsumer" expires_after="2027-03-07">
   <owner>mschillaci@google.com</owner>
   <owner>adelm@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
@@ -2667,7 +2667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.HubSearch.SearchBoxEntrypointV2"
-    enum="HubSearchEntrypoint" expires_after="2027-01-03">
+    enum="HubSearchEntrypoint" expires_after="2027-03-07">
   <owner>bjfong@google.com</owner>
   <owner>wylieb@google.com</owner>
   <owner>clank-hub-dev@google.com</owner>
@@ -2679,7 +2679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -3040,7 +3040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.BringTabToFront.Result"
-    enum="BringTabToFrontResult" expires_after="2026-12-31">
+    enum="BringTabToFrontResult" expires_after="2027-03-07">
   <owner>philyan@chromium.org</owner>
   <owner>skavuluru@google.com</owner>
   <summary>
@@ -3107,7 +3107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.LaunchInInstance.EarlyFailureReason"
-    enum="LaunchInInstanceEarlyFailureReason" expires_after="2026-12-31">
+    enum="LaunchInInstanceEarlyFailureReason" expires_after="2027-03-07">
   <owner>philyan@chromium.org</owner>
   <owner>skavuluru@google.com</owner>
   <summary>
@@ -3117,7 +3117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.LaunchInInstance.{Api}.Result"
-    enum="BooleanSuccess" expires_after="2026-12-31">
+    enum="BooleanSuccess" expires_after="2027-03-07">
   <owner>philyan@chromium.org</owner>
   <owner>skavuluru@google.com</owner>
   <summary>
@@ -4497,7 +4497,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.SuggestionsDropdown.AsyncInflationDropdownAvailable"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4528,7 +4528,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.SuggestionsDropdown.ContainerInflationWallTime"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4541,7 +4541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.ForcedSyncInflation"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4556,7 +4556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.InflationThreadMatches"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4616,7 +4616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmingThreadMatches"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>peterkang@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4889,7 +4889,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownDelay.{AndroidNavigationPrefetchOnly}"
-    units="ms" expires_after="2026-12-31">
+    units="ms" expires_after="2027-03-07">
   <owner>thesalsa@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -5491,7 +5491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PredictiveGestureNavigation{Transition}"
-    enum="PredictiveNavTransitionPhase" expires_after="2026-12-31">
+    enum="PredictiveNavTransitionPhase" expires_after="2027-03-07">
   <owner>jinsukkim@google.com</owner>
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -5547,7 +5547,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.PredictiveNavigationTransition.NTPSmoothTransitionByFallback"
-    enum="Boolean" expires_after="2026-12-31">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>jinsukkim@google.com</owner>
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -5961,7 +5961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectionMenu.TimeToShowMenu.ActionMode" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>jhimawan@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5972,7 +5972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectionMenu.TimeToShowMenu.Dropdown" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>jhimawan@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5983,7 +5983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectionMenu.UsedCachedMenu" enum="Boolean"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>alexmitra@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -6607,7 +6607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TimeToSwitchTab" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>gauravjj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>

@@ -135,7 +135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NewTabPage.Count" units="count" expires_after="2027-01-03">
+<histogram name="NewTabPage.Count" units="count" expires_after="2027-03-07">
   <owner>kawasin@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.MvtEnabled" enum="BooleanEnabled"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>hanxi@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NewTabPage.Customization.Theme.UploadImage.PreviewInteractions"
     enum="NtpCustomizationThemeUploadImagePreviewInteractions"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.Theme.UploadImage.PreviewShow"
-    enum="BooleanVisible" expires_after="2027-01-03">
+    enum="BooleanVisible" expires_after="2027-03-07">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Customization.UserEngagement.MostVisitedSitesEnabled"
-    enum="BooleanVisible" expires_after="2027-01-03">
+    enum="BooleanVisible" expires_after="2027-03-07">
   <owner>hanxi@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -756,7 +756,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeSidePanelAction"
-    enum="NTPCustomizeChromeSidePanelAction" expires_after="2027-01-03">
+    enum="NTPCustomizeChromeSidePanelAction" expires_after="2027-03-07">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
@@ -1434,7 +1434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemoval" units="count"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1448,7 +1448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemovalModuleId" enum="NtpModules"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1509,7 +1509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemovalUndone" units="count"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1523,7 +1523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemovalUndoneModuleId"
-    enum="NtpModules" expires_after="2027-01-03">
+    enum="NtpModules" expires_after="2027-03-07">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.ImpressionRatio{NewTabPageModules}"
-    units="perdecage" expires_after="2027-01-03">
+    units="perdecage" expires_after="2027-03-07">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1899,7 +1899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.AutoRemovalSkipped"
-    enum="NtpShortcutsAutoRemovalReason" expires_after="2027-01-03">
+    enum="NtpShortcutsAutoRemovalReason" expires_after="2027-03-07">
   <owner>giannich@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
@@ -1916,7 +1916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.AutoRemovalStaleDays" units="count"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>giannich@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
@@ -2279,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.SelectedTileType"
-    enum="SuggestTileType" expires_after="2027-01-03">
+    enum="SuggestTileType" expires_after="2027-03-07">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2304,7 +2304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabGroups.CreateNewTabGroup{ExperimentalState}"
-    units="count" expires_after="2026-12-31">
+    units="count" expires_after="2027-03-07">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2511,7 +2511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.VoiceErrors" enum="NewTabPageVoiceError"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

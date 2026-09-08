@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="UpdateEngine.Attempt.ConnectionType"
-    enum="UpdateEngineConnectionType" expires_after="2026-12-31">
+    enum="UpdateEngineConnectionType" expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.Number" units="count"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.Result" enum="UpdateEngineAttemptResult"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Daily.OSAgeDays" units="days"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -430,7 +430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.FailedUpdateCount" units="count"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2026-12-31">
+    enum="UpdateEnginePayloadFormat" expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.RebootCount" units="count"
-    expires_after="2026-12-31">
+    expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationMinutes"
-    units="minutes" expires_after="2026-12-31">
+    units="minutes" expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -599,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationUptimeMinutes"
-    units="minutes" expires_after="2026-12-31">
+    units="minutes" expires_after="2027-03-07">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.ActiveRegionalProgram3{Profile}"
-    enum="ActiveRegionalProgram" expires_after="2027-01-03">
+    enum="ActiveRegionalProgram" expires_after="2027-03-07">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.AndroidProgramResolution"
-    enum="AndroidProgramResolution" expires_after="2027-01-03">
+    enum="AndroidProgramResolution" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.HasActiveRegionalProgram"
-    enum="Boolean" expires_after="2027-01-03">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.ProgramSpecificExclusion"
-    enum="RegionalProgramSpecificExclusion" expires_after="2027-01-03">
+    enum="RegionalProgramSpecificExclusion" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="RegionalCapabilities.Debug.TriggeringEligibility.{SessionType}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2027-01-03">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
