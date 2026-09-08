@@ -204,7 +204,10 @@ export class MemoryBanksElement extends CrLitElement {
     const {id, collection, note, tags} = e.detail;
     this.entries = this.entries.map(
         entry => entry.id === id ? {...entry, collection, note, tags} : entry);
-    this.selectedCollection = collection || '';
+    if (this.selectedCollection &&
+        !this.getAvailableCollections_().includes(this.selectedCollection)) {
+      this.selectedCollection = '';
+    }
     this.editingEntry_ = null;
   }
 
