@@ -667,7 +667,7 @@ class CheckNoNewBrowserWindowMemberCallTest(unittest.TestCase):
 
 class CheckNoNewBrowserUsageTest(unittest.TestCase):
 
-    def testWarnsOnBrowserHeaderInclude(self):
+    def testErrorsOnBrowserHeaderInclude(self):
         input_api = MockInputApi()
         input_api.files = [
             MockAffectedFile('chrome/browser/ui/include_quotes.cc',
@@ -679,12 +679,14 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
         self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
         message = results[0].message
+        self.assertIn('is prohibited as part', message)
         self.assertIn('chrome/browser/ui/include_quotes.cc', message)
         self.assertIn('chrome/browser/ui/include_brackets.h', message)
         self.assertIn('chrome/browser/ui/include_spaces.mm', message)
 
-    def testWarnsOnBrowserClassUsage(self):
+    def testErrorsOnBrowserClassUsage(self):
         input_api = MockInputApi()
         input_api.files = [
             MockAffectedFile('chrome/browser/ui/ptr.cc',
@@ -719,6 +721,7 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
         self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
         message = results[0].message
         self.assertIn('chrome/browser/ui/ptr.cc', message)
         self.assertIn('chrome/browser/ui/const_ptr.cc', message)
@@ -735,7 +738,7 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         self.assertIn('chrome/browser/ui/new_expr.cc', message)
         self.assertIn('chrome/browser/ui/func_sig.h', message)
 
-    def testWarnsOnBannedHeadersInDesktopUnitTests(self):
+    def testErrorsOnBannedHeadersInDesktopUnitTests(self):
         input_api = MockInputApi()
         input_api.files = [
             MockAffectedFile(
@@ -758,7 +761,7 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         message = results[0].message
         self.assertIn('chrome/browser/ui/foo_unittest.cc', message)
         self.assertIn('chrome/browser/ui/views/bar_unittest.cc', message)
@@ -766,7 +769,7 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         self.assertIn('chrome/browser/qux_unittest.cc', message)
         self.assertIn('chrome/browser/ui/header_unittest.h', message)
 
-    def testWarnsOnBannedFixturesInDesktopUnitTests(self):
+    def testErrorsOnBannedFixturesInDesktopUnitTests(self):
         input_api = MockInputApi()
         input_api.files = [
             MockAffectedFile(
@@ -788,7 +791,7 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual('error', results[0].type)
         message = results[0].message
         self.assertIn('chrome/browser/ui/foo_unittest.cc', message)
         self.assertIn('chrome/browser/ui/bar_unittest.cc', message)

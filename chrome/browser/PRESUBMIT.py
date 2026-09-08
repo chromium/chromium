@@ -591,12 +591,12 @@ def _CheckNoNewBrowserWindowMemberCall(input_api, output_api):
 
 
 ###############################################################################
-# Discourage including chrome/browser/ui/browser.h and using the
+# Ban including chrome/browser/ui/browser.h and using the
 # Browser class in favor of BrowserWindowInterface.
 ###############################################################################
 
 # Fixture classes banned in desktop unit tests (Project Bedrock).
-# Discourages inheriting from monolithic test fixtures, such as:
+# Bans inheriting from monolithic test fixtures, such as:
 #   class FooTest : public BrowserWithTestWindowTest { ... };
 #   class BarTest : public TestWithBrowserView { ... };
 _BEDROCK_BANNED_FIXTURE_CLASSES = (
@@ -605,7 +605,7 @@ _BEDROCK_BANNED_FIXTURE_CLASSES = (
 )
 
 # Header includes banned in desktop unit tests (Project Bedrock).
-# Discourages including monolithic browser headers in unit tests, such
+# Bans including monolithic browser headers in unit tests, such
 # as:
 #   #include "chrome/test/base/browser_with_test_window_test.h"
 #   #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -715,14 +715,14 @@ def _CheckNoNewBrowserUsage(input_api, output_api):
     if not problems:
         return []
 
-    # Return a unified PresubmitPromptWarning with Bedrock best-practice
+    # Return a unified PresubmitError with Bedrock best-practice
     # guidance.
     return [
-        output_api.PresubmitPromptWarning(
+        output_api.PresubmitError(
             'Direct usage of the Browser class, including browser.h, and '
             'monolithic\nbrowser test fixtures/headers '
             '(BrowserWithTestWindowTest,\nTestWithBrowserView, '
-            'test_browser_window.h) is discouraged as part\nof Project '
+            'test_browser_window.h) is prohibited as part\nof Project '
             'Bedrock.\n\n'
             'Please use modern interfaces and focused test doubles '
             'instead:\n'
