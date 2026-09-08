@@ -2935,6 +2935,18 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
     }
 
+    /** Returns true if settings should be opened in a tab instead of an independent activity. */
+    private boolean shouldOpenSettingsInTab() {
+        if (!SettingsInTab.isEnabled()) return false;
+
+        // Foldables support settings in a tab so that a tab opened while unfolded continues
+        // to display settings when folded. However, when opening settings from the menu while
+        // in phone mode (non-tablet), open them in an activity instead of a tab.
+        if (DeviceInfo.isFoldable() && !isTablet()) return false;
+
+        return true;
+    }
+
     /**
      * @return The {@link MenuOrKeyboardActionController} for registering menu or keyboard action
      *     handler for this activity.
@@ -2968,7 +2980,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
 
         if (id == R.id.preferences_id) {
-            if (SettingsInTab.isEnabled()) {
+            if (shouldOpenSettingsInTab()) {
                 LoadUrlParams params =
                         new LoadUrlParams(UrlConstants.SETTINGS_URL, PageTransition.LINK);
                 // Settings are associated with the on-the-record profile, never incognito.
