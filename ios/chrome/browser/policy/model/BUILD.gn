@@ -166,6 +166,21 @@ source_set("cloud_profile_reporting") {
   ]
 }
 
+source_set("saas_usage_reporting") {
+  sources = [
+    "reporting/saas_usage/saas_usage_report_factory_delegate_ios.h",
+    "reporting/saas_usage/saas_usage_report_factory_delegate_ios.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
 source_set("browser_agent") {
   sources = [
     "policy_watcher_browser_agent.h",
