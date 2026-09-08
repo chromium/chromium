@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/host.h"
@@ -362,8 +363,29 @@ void GlicInvokeHandler::Invoke() {
                        weak_ptr_factory_.GetWeakPtr())));
   }
 
-  main_task_ = std::make_unique<SequentialTaskGroup>(std::move(tasks));
+  main_task_ = std::make_unique<SequentialTaskGroup>(
+      std::move(tasks),
+      base::BindRepeating(
+          [](base::WeakPtr<GlicInvokeHandler> handler,
+             std::optional<GlicTaskType> task_type, base::TimeDelta duration) {
+            if (handler && handler->metrics_) {
+              handler->metrics_->RecordTaskPhaseCompleted(task_type, duration);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 
+  int target_embedder_type = -1;
+  if (std::holds_alternative<TabSurface>(resolved_target_)) {
+    target_embedder_type = 0;
+  } else if (std::holds_alternative<Floating>(resolved_target_)) {
+    target_embedder_type = 1;
+  } else {
+    NOTIMPLEMENTED();
+  }
+
+  metrics_->RecordStarted(
+      options_.feature_mode.value_or(mojom::FeatureMode::kUnspecified),
+      target_embedder_type);
   main_task_->Start(base::BindOnce(&GlicInvokeHandler::OnSuccess,
                                    weak_ptr_factory_.GetWeakPtr()));
 }
@@ -410,7 +432,7 @@ void GlicInvokeHandler::OnSuccess() {
     main_task_->NotifySequenceCompleted(/*success=*/true);
   }
 
-  metrics_->RecordSuccess();
+  metrics_->RecordSuccess(GetLastActiveTaskType());
 
   if (options_.on_success) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -428,7 +450,7 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
     main_task_->NotifySequenceCompleted(/*success=*/false);
   }
 
-  metrics_->RecordError(error);
+  metrics_->RecordError(error, GetLastActiveTaskType());
 
   if (options_.on_error) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

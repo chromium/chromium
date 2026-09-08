@@ -71,7 +71,10 @@ class SequentialTaskGroup : public GlicInvokeTask {
 
   SequentialTaskGroup();
   explicit SequentialTaskGroup(
-      std::vector<std::unique_ptr<GlicInvokeTask>> tasks);
+      std::vector<std::unique_ptr<GlicInvokeTask>> tasks,
+      base::RepeatingCallback<void(std::optional<GlicTaskType>,
+                                   base::TimeDelta)> telemetry_cb =
+          base::NullCallback());
   ~SequentialTaskGroup() override;
 
   void Start(base::OnceClosure done_callback) override;
@@ -87,6 +90,9 @@ class SequentialTaskGroup : public GlicInvokeTask {
  private:
   void RunNextTask();
   std::vector<std::unique_ptr<GlicInvokeTask>> tasks_;
+  base::RepeatingCallback<void(std::optional<GlicTaskType>, base::TimeDelta)>
+      telemetry_cb_;
+  base::TimeTicks current_task_start_time_;
   size_t next_task_index_ = 0;
   base::OnceClosure done_callback_;
   base::WeakPtrFactory<SequentialTaskGroup> weak_ptr_factory_{this};

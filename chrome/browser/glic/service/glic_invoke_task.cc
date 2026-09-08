@@ -45,7 +45,9 @@ std::u16string GetImageMarkup(const GURL& src_url,
 }
 
 ui::ClipboardMetadata CreateClipboardMetadata(
-    ui::ClipboardFormatType format_type, size_t size, bool is_drag_and_drop) {
+    ui::ClipboardFormatType format_type,
+    size_t size,
+    bool is_drag_and_drop) {
   ui::ClipboardMetadata metadata;
   metadata.format_type = format_type;
   metadata.size = size;
@@ -91,8 +93,10 @@ content::BrowserContext* GetBrowserContext(
 
 SequentialTaskGroup::SequentialTaskGroup() = default;
 SequentialTaskGroup::SequentialTaskGroup(
-    std::vector<std::unique_ptr<GlicInvokeTask>> tasks)
-    : tasks_(std::move(tasks)) {}
+    std::vector<std::unique_ptr<GlicInvokeTask>> tasks,
+    base::RepeatingCallback<void(std::optional<GlicTaskType>, base::TimeDelta)>
+        telemetry_cb)
+    : tasks_(std::move(tasks)), telemetry_cb_(std::move(telemetry_cb)) {}
 SequentialTaskGroup::~SequentialTaskGroup() = default;
 
 void SequentialTaskGroup::Start(base::OnceClosure done_callback) {
@@ -117,10 +121,17 @@ std::optional<GlicTaskType> SequentialTaskGroup::GetLastActiveTaskType() const {
 }
 
 void SequentialTaskGroup::RunNextTask() {
+  if (next_task_index_ > 0 && telemetry_cb_) {
+    base::TimeDelta duration =
+        base::TimeTicks::Now() - current_task_start_time_;
+    telemetry_cb_.Run(tasks_[next_task_index_ - 1]->GetType(), duration);
+  }
+
   if (next_task_index_ >= tasks_.size()) {
     std::move(done_callback_).Run();
     return;
   }
+  current_task_start_time_ = base::TimeTicks::Now();
   auto& task = tasks_[next_task_index_++];
   task->Start(base::BindOnce(&SequentialTaskGroup::RunNextTask,
                              weak_ptr_factory_.GetWeakPtr()));

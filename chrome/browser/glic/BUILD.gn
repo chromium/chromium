@@ -293,6 +293,7 @@ source_set("glic_metrics") {
     "service/metrics/glic_metrics_session_manager.cc",
     "service/metrics/glic_metrics_session_manager.h",
   ]
+  public_deps = [ "//components/metrics/structured/buildflags" ]
   deps = [
     ":enum",
     ":glic",
@@ -301,6 +302,7 @@ source_set("glic_metrics") {
     "//base",
     "//chrome/browser/glic/public:features",
     "//components/metrics",
+    "//components/metrics/structured:structured_events",
     "//components/prefs",
     "//components/skills/public",
     "//content/public/browser",
