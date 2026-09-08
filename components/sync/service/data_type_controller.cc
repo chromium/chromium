@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -81,68 +82,63 @@ void DataTypeController::InitDataTypeController(
     delegate_map_.emplace(SyncMode::kTransportOnly,
                           std::move(delegate_for_transport_mode));
   } else {
-    // New Sync data types must generally support kTransportOnly mode. Only
-    // legacy types are still allowed to *not* support it for historical reasons
-    // (they will all be either migrated or retired eventually).
+    // New Sync data types must support kTransportOnly mode. Only some legacy
+    // types are still allowed to *not* support it for historical reasons. These
+    // types will all be retired eventually.
+    //
     // There are two general ways to go about this:
     // * Single storage: The feature is available to all signed-in users (no
     //   distinction between syncing or non-syncing users), and doesn't support
     //   signed-out users at all - so only a single storage is required.
     //   Examples: SEND_TAB_TO_SELF, SHARING_MESSAGE.
-    // * Dual storage: The feature is also available to signed-out users (and
-    //   its behavior may or may not differ for syncing vs signed-in-not-syncing
-    //   users). Two storages are required to distinguish "local data" from
-    //   "account data" and keep them separate. Examples: PASSWORDS, BOOKMARKS.
-
-    // Notes on individual data types:
+    // * Dual storage: The feature is also available to signed-out users. Two
+    //   storages are required to distinguish "local data" from "account data"
+    //   and keep them separate. Examples: PASSWORDS, BOOKMARKS.
+    //
+    // Notes:
+    // * APPS/APP_SETTINGS: Deprecated and will be removed.
+    // * AUTOFILL/AUTOFILL_PROFILE: Deprecated and will be removed.
+    // * DICTIONARY: Transport mode is implemented but not launched yet.
     // * NIGORI *does* actually support transport-mode, but avoids a separate
     //   delegate, see SyncEngineBackend::LoadAndConnectNigoriController().
-    // * BOOKMARKS and READING_LIST: Support is WIP.
-    // * PASSWORDS: Already supported on desktop; mobile is WIP.
-    // * PREFERENCES in all variants: Support is WIP.
-    // * History-related types (HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS)
-    //   are okay to *not* support transport mode.
-    // * APPS/APP_SETTINGS: Deprecated and will eventually be removed.
-    // * AUTOFILL/AUTOFILL_PROFILE: Semi-deprecated; will eventually be removed
-    //   or replaced by CONTACT_INFO.
-    //
-    // Note on ChromeOS-Ash: On this platform, the sync machinery always runs in
-    // full-sync mode, never transport-mode. So for data types that only exist
-    // on this platform, it doesn't matter if they support transport mode or not
-    // (this includes PRINTERS, WIFI_CONFIGURATIONS, OS_PREFERENCES,
-    // OS_PRIORITY_PREFERENCES, WORKSPACE_DESK, PRINTERS_AUTHORIZATION_SERVERS,
-    // COOKIES).
-    //
-    // All other data types listed here will likely have to be migrated.
-    static constexpr DataTypeSet kLegacyTypes = {BOOKMARKS,
-                                                 PREFERENCES,
-                                                 PASSWORDS,
-                                                 AUTOFILL_PROFILE,
-                                                 AUTOFILL,
-                                                 AUTOFILL_WALLET_METADATA,
-                                                 AUTOFILL_WALLET_OFFER,
-                                                 THEMES,
-                                                 EXTENSIONS,
-                                                 SEARCH_ENGINES,
-                                                 SESSIONS,
-                                                 APPS,
-                                                 APP_SETTINGS,
-                                                 EXTENSION_SETTINGS,
-                                                 HISTORY_DELETE_DIRECTIVES,
-                                                 DICTIONARY,
-                                                 PRIORITY_PREFERENCES,
-                                                 PRINTERS,
-                                                 READING_LIST,
-                                                 USER_EVENTS,
-                                                 WIFI_CONFIGURATIONS,
-                                                 WEB_APPS,
-                                                 OS_PREFERENCES,
-                                                 OS_PRIORITY_PREFERENCES,
-                                                 WORKSPACE_DESK,
-                                                 HISTORY,
-                                                 PRINTERS_AUTHORIZATION_SERVERS,
-                                                 NIGORI,
-                                                 COOKIES};
+    // * For many types, transport mode is implemented and launched on
+    //   desktop/mobile, but not on ChromeOS yet, and may still run in
+    //   full-sync-only mode in tests or when feature flags are disabled:
+    //   AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER, BOOKMARKS, HISTORY,
+    //   HISTORY_DELETE_DIRECTIVES, PASSWORDS, PREFERENCES, PRIORITY_PREFERENCES,
+    //   READING_LIST, SEARCH_ENGINES, SESSIONS, THEMES, USER_EVENTS.
+    // * ChromeOS-specific types (COOKIES, PRINTERS,
+    //   PRINTERS_AUTHORIZATION_SERVERS, WIFI_CONFIGURATIONS, WORKSPACE_DESK):
+    //   Single-storage. Transport mode support is implemented but not launched
+    //   yet.
+    static constexpr DataTypeSet kLegacyTypes = {
+        APPS,
+        APP_SETTINGS,
+        AUTOFILL,
+        AUTOFILL_PROFILE,
+        AUTOFILL_WALLET_METADATA,
+        AUTOFILL_WALLET_OFFER,
+        BOOKMARKS,
+        DICTIONARY,
+        HISTORY,
+        HISTORY_DELETE_DIRECTIVES,
+        NIGORI,
+        PASSWORDS,
+        PREFERENCES,
+        PRIORITY_PREFERENCES,
+        READING_LIST,
+        SEARCH_ENGINES,
+        SESSIONS,
+        THEMES,
+        USER_EVENTS,
+#if BUILDFLAG(IS_CHROMEOS)
+        COOKIES,
+        PRINTERS,
+        PRINTERS_AUTHORIZATION_SERVERS,
+        WIFI_CONFIGURATIONS,
+        WORKSPACE_DESK,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    };
     CHECK(kLegacyTypes.Has(type()))
         << DataTypeToDebugString(type())
         << " must support running in transport mode!";
