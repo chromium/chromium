@@ -25,7 +25,6 @@ static_library("arc_power_control") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
@@ -35,6 +34,7 @@ static_library("arc_power_control") {
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/throttle",
     "//chromeos/ash/experiences/arc/session",
+    "//components/application_locale_storage",
     "//services/network/public/mojom:url_loader_base",
     "//ui/base",
   ]

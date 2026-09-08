@@ -376,7 +376,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
   AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
   AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
-  AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
+  AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>(
+      &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
   AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
   AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
