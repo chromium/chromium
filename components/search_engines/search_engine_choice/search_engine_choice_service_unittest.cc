@@ -168,8 +168,11 @@ TEST_F(SearchEngineChoiceServiceTest, PreserveImportedChoice) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
-       switches::kWipeChoicePrefsOnMissingDefaultSearchEngine},
+      {
+#if !BUILDFLAG(IS_IOS)
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+#endif
+          switches::kWipeChoicePrefsOnMissingDefaultSearchEngine},
       /*disabled_features=*/{});
 
   InitServiceArgs args = {
@@ -1762,6 +1765,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceServiceWipeOnMissingDSETest,
                          ::testing::Bool());
 
+#if !BUILDFLAG(IS_IOS)
 struct DeviceRestoreTestParam {
   std::string test_suffix;
   bool restore_detected_in_current_session;
@@ -1939,6 +1943,7 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       search_engines::kSearchEngineChoiceRepromptHistogram,
       RepromptResult::kInvalidDictionary, 0);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 struct RepromptTestParam {
   // Whether the user should be reprompted or not.

@@ -1027,7 +1027,9 @@ struct Spec {
   };
 
   enum class RestoreFeatureState {
+#if !BUILDFLAG(IS_IOS)
     kDisabled,
+#endif
     kEnableJustInTime,
     kEnabledRetroactive
   };
@@ -1167,6 +1169,7 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
+#if !BUILDFLAG(IS_IOS)
   if (param.restore_feature_state == Spec::RestoreFeatureState::kDisabled) {
     disabled_features.push_back(
         switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
@@ -1179,6 +1182,7 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
                ? "true"
                : "false"}}});
   }
+#endif  // !BUILDFLAG(IS_IOS)
   if (param.waffle_restrict_to_associated_countries_feature_enabled
           .has_value()) {
     if (param.waffle_restrict_to_associated_countries_feature_enabled.value()) {
@@ -1425,6 +1429,7 @@ INSTANTIATE_TEST_SUITE_P(
                       },
                   }},
 #endif  // BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
          Spec{
              .test_name = "1pNoRestoreDetection",
              .restore_feature_state = Spec::RestoreFeatureState::kDisabled,
@@ -1469,6 +1474,7 @@ INSTANTIATE_TEST_SUITE_P(
                      },
                  },
          },
+#endif  // !BUILDFLAG(IS_IOS)
          Spec{.test_name = "3p",
               .restore_feature_state =
                   Spec::RestoreFeatureState::kEnableJustInTime,
@@ -1548,6 +1554,7 @@ INSTANTIATE_TEST_SUITE_P(
                           .expect_choice_status_after = ChoiceStatus::kValid,
                       },
                   }},
+#if !BUILDFLAG(IS_IOS)
          Spec{
              .test_name = "3pNoRestoreDetection",
              .restore_feature_state = Spec::RestoreFeatureState::kDisabled,
@@ -1604,6 +1611,7 @@ INSTANTIATE_TEST_SUITE_P(
                      },
                  },
          },
+#endif  // !BUILDFLAG(IS_IOS)
          Spec{
              .test_name = "custom",
              .restore_feature_state =

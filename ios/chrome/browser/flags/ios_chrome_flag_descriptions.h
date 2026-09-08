@@ -1226,17 +1226,6 @@ inline constexpr char kInfobarBannerRevampName[] = "Infobar Banner Revamp";
 inline constexpr char kInfobarBannerRevampDescription[] =
     "Enables the revamped UI design for Infobar Banner.";
 
-inline constexpr char
-    kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[] =
-        "Invalidate search engine choice after device restore";
-inline constexpr char
-    kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[] =
-        "When enabled, search engine choices made before backup & restore will "
-        "not "
-        "be considered valid on the restored device, leading to the choice "
-        "screen "
-        "potentially retriggering.";
-
 inline constexpr char kLensBypassCompressionForC2paName[] =
     "Lens Bypass Compression for C2PA";
 inline constexpr char kLensBypassCompressionForC2paDescription[] =

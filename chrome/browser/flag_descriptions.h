@@ -3132,16 +3132,6 @@ inline constexpr char kIsolatedWebAppInlineUpdateName[] =
 inline constexpr char kIsolatedWebAppInlineUpdateDescription[] =
     "Enables the inline manual update flow for Isolated Web Apps in Settings.";
 
-inline constexpr char
-    kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[] =
-        "Invalidate search engine choice after the install detects it has been "
-        "transferred to a new device";
-inline constexpr char
-    kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionDescription[] =
-        "When enabled, search engine choices made on what we assume was a "
-        "different device will not be considered valid, leading to the choice "
-        "screen potentially retriggering.";
-
 inline constexpr char kJavascriptHarmonyName[] = "Experimental JavaScript";
 inline constexpr char kJavascriptHarmonyDescription[] =
     "Enable web pages to use experimental JavaScript features.";

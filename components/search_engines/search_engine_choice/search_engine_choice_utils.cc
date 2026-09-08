@@ -309,8 +309,8 @@ void ClearSearchEngineChoiceInvalidation(PrefService& prefs) {
 }
 
 bool IsSearchEngineChoiceInvalid(const PrefService& prefs) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
+  if (!switches::
+          IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled()) {
     // Ensure that we never consider a search engine choice invalid when the
     // feature is disabled. This could happen if a user changes experiment
     // groups for example.

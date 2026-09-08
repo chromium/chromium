@@ -297,8 +297,8 @@ void RecordLegacyStaticEligibilityInternal(
     search_engines::SearchEngineChoiceService::Client& client,
     metrics::ProfileMetricsService& profile_metrics_service,
     SearchEngineChoiceScreenConditions condition) {
-  if (base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+  if (switches::
+          IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled() &&
       client.IsDeviceRestoreDetectedInCurrentSession()) {
     base::UmaHistogramEnumeration(
         kChoiceScreenProfileInitConditionsPostRestoreHistogram, condition);
@@ -315,8 +315,8 @@ bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
                       SearchEngineChoiceService::Client& client,
                       const PrefService& profile_prefs,
                       bool include_previous_just_in_time_detection) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
+  if (!switches::
+          IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled()) {
     // Feature disabled, don't detect imported choices.
     return false;
   }
@@ -325,7 +325,7 @@ bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
     return false;
   }
 
-  if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get()) {
+  if (switches::IsInvalidateChoiceOnRestoreRetroactive()) {
     // Retroactive detection is activated, report the choice as imported.
     return true;
   }
@@ -764,8 +764,8 @@ bool SearchEngineChoiceService::IsSurfaceEligible(
 
 void SearchEngineChoiceService::RecordTriggeringEligibility(
     SearchEngineChoiceScreenConditions condition) {
-  if (base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+  if (switches::
+          IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled() &&
       client_->IsDeviceRestoreDetectedInCurrentSession()) {
     base::UmaHistogramEnumeration(
         kChoiceScreenNavigationConditionsPostRestoreHistogram, condition);
@@ -785,8 +785,8 @@ void SearchEngineChoiceService::RecordTriggeringEligibility(
 
 void SearchEngineChoiceService::RecordChoiceScreenEvent(
     SearchEngineChoiceScreenEvents event) {
-  if (base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+  if (switches::
+          IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled() &&
       client_->IsDeviceRestoreDetectedInCurrentSession()) {
     base::UmaHistogramEnumeration(kChoiceScreenEventsPostRestoreHistogram,
                                   event);

@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engines_switches.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 
 namespace switches {
@@ -34,25 +35,36 @@ BASE_FEATURE(kVisitCustomSearchOnUndefaulting,
 
 BASE_FEATURE(kIgnoreSearchProviderOverrides, base::FEATURE_ENABLED_BY_DEFAULT);
 
+bool IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(
+      kInvalidateSearchEngineChoiceOnDeviceRestoreDetection);
+#endif
+}
+
+bool IsInvalidateChoiceOnRestoreRetroactive() {
+  CHECK(IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled());
+#if BUILDFLAG(IS_IOS)
+  return true;
+#else
+  return kInvalidateChoiceOnRestoreIsRetroactive.Get();
+#endif
+}
+
+#if !BUILDFLAG(IS_IOS)
 // Invalidates old search engine choices when Chrome detects that it has been
 // transferred to a new device.
 BASE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kInvalidateChoiceOnRestoreIsRetroactive{
     /*feature=*/&kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
     /*name=*/"is_retroactive",
-#if BUILDFLAG(IS_IOS)
-    /*default_value=*/true
-#else
-    /*default_value=*/false
-#endif
+    /*default_value=*/false,
 };
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users
 // who saw the choice screen in M121.
