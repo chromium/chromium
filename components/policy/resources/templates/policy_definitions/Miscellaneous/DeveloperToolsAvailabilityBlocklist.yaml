@@ -10,6 +10,8 @@ desc: |-
 
   If this policy is not set, the availability of <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> is determined by the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> and <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policies.
 
+  This policy affects <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>, direct Chrome DevTools Protocol (CDP) access (for instance, when launched with --remote-debugging-port or --remote-debugging-pipe), and Chrome DevTools Protocol (CDP) access via chrome.debugger APIs. Both this policy and the <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME">RemoteDebuggingAllowed</ph> policy apply: <ph name="REMOTE_DEBUGGING_ALLOWED_POLICY_NAME">RemoteDebuggingAllowed</ph> controls whether remote debugging can start, while this policy restricts whether individual targets can be inspected even when remote debugging is running.
+
   This policy is limited to 1,000 entries.
 
 example_value:
