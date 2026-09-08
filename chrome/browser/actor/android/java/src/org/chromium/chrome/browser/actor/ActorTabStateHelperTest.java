@@ -40,6 +40,9 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -48,6 +51,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -62,6 +66,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -673,5 +682,82 @@ public class ActorTabStateHelperTest {
                 mActivity, mTabModelSelector, supplier, mTab, "test_glic_conv_id");
 
         verify(mGlicKeyedService, never()).invokeWithConversation(any(), any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false",
+        ChromeFeatureList.GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC
+    })
+    public void testSetTabGroupSyncPaused() {
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
+
+        ActorTabStateHelper.setTabGroupSyncPaused(syncService, true);
+        verify(syncService).setLocalObservationMode(false);
+
+        ActorTabStateHelper.setTabGroupSyncPaused(syncService, false);
+        verify(syncService).setLocalObservationMode(true);
+
+        // Null syncService should be safely handled as a no-op
+        ActorTabStateHelper.setTabGroupSyncPaused(null, true);
+        ActorTabStateHelper.setTabGroupSyncPaused(null, false);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC)
+    public void testTabGroupSync_flagDisabled_doesNotInteractWithSync() {
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
+        assertNull(ActorTabStateHelper.getTabGroupSyncService(mTabModel));
+
+        ActorTabStateHelper.setTabGroupSyncPaused(syncService, true);
+        verify(syncService, never()).setLocalObservationMode(anyBoolean());
+
+        ActorTabStateHelper.updateTabGroupSyncMapping(syncService, mTabModel, mTab, 202);
+        verify(syncService, never()).updateLocalTabId(any(), any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false",
+        ChromeFeatureList.GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC
+    })
+    public void testUpdateTabGroupSyncMapping() {
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
+        Token tabGroupId = Token.createRandom();
+        when(mTab.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.localId = localTabGroupId;
+
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID;
+        savedTab.syncId = "test_sync_id_123";
+        savedGroup.savedTabs.add(savedTab);
+
+        when(syncService.getGroup(localTabGroupId)).thenReturn(savedGroup);
+
+        ActorTabStateHelper.updateTabGroupSyncMapping(syncService, mTabModel, mTab, 202);
+
+        verify(syncService).updateLocalTabId(localTabGroupId, "test_sync_id_123", 202);
+    }
+
+    @Test
+    public void testRestoreSessionTabToForeground_tabAlreadyPresentInModel_skipsAddTab() {
+        WindowAndroid window = mock(WindowAndroid.class);
+        TabDelegateFactory delegateFactory = mock(TabDelegateFactory.class);
+
+        when(mTab.getId()).thenReturn(TAB_ID);
+        Tab existingTabInModel = mock(Tab.class);
+        when(existingTabInModel.getId()).thenReturn(TAB_ID);
+        when(mTabModel.getTabById(TAB_ID)).thenReturn(existingTabInModel);
+
+        ActorTabStateHelper.restoreSessionTabToForeground(
+                mTab, 999, 0, mTabModel, window, delegateFactory);
+
+        verify(mTabModel, never()).addTab(any(), anyInt(), anyInt(), anyInt());
+        verify(mTabRemover, never()).removeTab(any(), anyBoolean());
     }
 }

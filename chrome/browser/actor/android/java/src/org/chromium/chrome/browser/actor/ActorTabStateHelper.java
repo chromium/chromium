@@ -23,12 +23,19 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -74,6 +81,7 @@ public class ActorTabStateHelper {
     private static List<BackgroundSession> findAndDetachActiveSessions(
             TabModel model, ActorKeyedService service, int windowId, Callback<Tab> onTabDetaching) {
         List<BackgroundSession> sessions = new ArrayList<>();
+        TabGroupSyncService syncService = getTabGroupSyncService(model);
 
         for (Tab originalTab : model) {
             if (originalTab == null) continue;
@@ -82,7 +90,19 @@ public class ActorTabStateHelper {
             if (taskId == null) continue;
 
             int originalIndex = model.indexOf(originalTab);
-            Tab placeholderTab = createAndInsertPlaceholder(originalTab, model);
+
+            setTabGroupSyncPaused(syncService, /* isPaused= */ true);
+            Tab placeholderTab;
+            try {
+                placeholderTab = createAndInsertPlaceholder(originalTab, model);
+                if (placeholderTab != null) {
+                    updateTabGroupSyncMapping(
+                            syncService, model, originalTab, placeholderTab.getId());
+                }
+            } finally {
+                setTabGroupSyncPaused(syncService, /* isPaused= */ false);
+            }
+
             if (placeholderTab == null) {
                 continue;
             }
@@ -97,8 +117,15 @@ public class ActorTabStateHelper {
                 sessions.add(new BackgroundSession(tabData, taskId));
             }
             onTabDetaching.onResult(originalTab);
-            // TODO(b/544014273) : Consider canceling the task if detaching tab was not successful
-            model.getTabRemover().removeTab(originalTab, /* allowDialog= */ false);
+
+            setTabGroupSyncPaused(syncService, /* isPaused= */ true);
+            try {
+                // TODO(b/544014273) : Consider canceling the task if detaching tab was not
+                // successful
+                model.getTabRemover().removeTab(originalTab, /* allowDialog= */ false);
+            } finally {
+                setTabGroupSyncPaused(syncService, /* isPaused= */ false);
+            }
         }
 
         return sessions;
@@ -193,6 +220,83 @@ public class ActorTabStateHelper {
         return ActorKeyedServiceFactory.getForProfile(profile.getOriginalProfile());
     }
 
+    // TODO(crbug.com/558754457): Clean up TabGroupSync coordination and decouple Actor
+    // from TabGroupSyncService by attaching a UserData marker during restore.
+    public static @Nullable TabGroupSyncService getTabGroupSyncService(@Nullable TabModel model) {
+        if (!ActorUtils.isTabGroupSyncHandlingEnabled()) {
+            return null;
+        }
+        if (model == null) return null;
+        Profile profile = model.getProfile();
+        if (profile == null || profile.isOffTheRecord()) {
+            return null;
+        }
+        try {
+            if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
+                return null;
+            }
+            return TabGroupSyncServiceFactory.getForProfile(profile);
+        } catch (RuntimeException | UnsatisfiedLinkError e) {
+            return null;
+        }
+    }
+
+    /**
+     * Sets whether local observation mode for {@link TabGroupSyncService} is paused. Pausing local
+     * observation prevents transient tab swaps (like placeholder replacement) from triggering sync
+     * deletions or mutations to remote devices.
+     *
+     * @param syncService The {@link TabGroupSyncService}, or null.
+     * @param isPaused True to pause sync observation; false to resume.
+     */
+    public static void setTabGroupSyncPaused(
+            @Nullable TabGroupSyncService syncService, boolean isPaused) {
+        if (syncService != null && ActorUtils.isTabGroupSyncHandlingEnabled()) {
+            syncService.setLocalObservationMode(!isPaused);
+        }
+    }
+
+    /**
+     * Updates the local Tab ID mapping in {@link TabGroupSyncService} when an in-group tab is
+     * swapped with another tab (e.g. placeholder tab replacing original tab, or vice versa).
+     *
+     * <p>Synced tab groups identify tabs by a persistent sync ID (GUID). On Android, this sync ID
+     * is mapped to a local integer tab ID. When an acting tab is swapped with a placeholder tab,
+     * its local tab ID changes while representing the same logical tab in the synced group. Without
+     * updating this local ID mapping, TabGroupSync would interpret the removal of the old tab ID as
+     * a user deletion and propagate that deletion to other synced devices, followed by adding a
+     * duplicate tab for the new ID.
+     *
+     * @param syncService The {@link TabGroupSyncService} instance, or null.
+     * @param model The {@link TabModel} containing the tab group.
+     * @param sourceTab The tab currently mapped in the sync group.
+     * @param destinationTabId The new local tab ID to associate with the existing sync ID.
+     */
+    public static void updateTabGroupSyncMapping(
+            @Nullable TabGroupSyncService syncService,
+            TabModel model,
+            Tab sourceTab,
+            int destinationTabId) {
+        if (syncService == null || !ActorUtils.isTabGroupSyncHandlingEnabled()) return;
+        Token tabGroupId = sourceTab.getTabGroupId();
+        if (tabGroupId == null) return;
+
+        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(model, tabGroupId);
+        if (localTabGroupId == null) return;
+
+        SavedTabGroup savedGroup = syncService.getGroup(localTabGroupId);
+        if (savedGroup == null) return;
+
+        for (SavedTabGroupTab savedTab : savedGroup.savedTabs) {
+            if (savedTab.localId != null
+                    && savedTab.localId == sourceTab.getId()
+                    && savedTab.syncId != null) {
+                syncService.updateLocalTabId(localTabGroupId, savedTab.syncId, destinationTabId);
+                break;
+            }
+        }
+    }
+
     /**
      * Restores a background session tab to the foreground {@link TabModel}, stopping offscreen
      * rendering, updating window attachment, transferring grouping and pinning properties, and
@@ -206,6 +310,10 @@ public class ActorTabStateHelper {
             WindowAndroid window,
             TabDelegateFactory tabDelegateFactory) {
         stopOffscreenAndAttachToWindow(originalTab, window, tabDelegateFactory);
+
+        if (model.getTabById(originalTab.getId()) != null) {
+            return;
+        }
 
         if (model.indexOf(originalTab) == TabModel.INVALID_TAB_INDEX) {
             Tab placeholderTab =
@@ -228,19 +336,28 @@ public class ActorTabStateHelper {
                                 : modelCount;
             }
 
-            model.addTab(
-                    originalTab,
-                    targetIndex,
-                    TabLaunchType.FROM_RESTORE,
-                    TabCreationState.LIVE_IN_FOREGROUND);
+            TabGroupSyncService syncService = getTabGroupSyncService(model);
+            setTabGroupSyncPaused(syncService, /* isPaused= */ true);
+            try {
+                model.addTab(
+                        originalTab,
+                        targetIndex,
+                        TabLaunchType.FROM_RESTORE,
+                        TabCreationState.LIVE_IN_FOREGROUND);
 
-            if (placeholderTab != null) {
-                transferGroupAndPinState(placeholderTab, originalTab, model, targetIndex);
-                removePlaceholderTab(model, placeholderTab.getId());
+                if (placeholderTab != null) {
+                    transferGroupAndPinState(placeholderTab, originalTab, model, targetIndex);
+                    updateTabGroupSyncMapping(
+                            syncService, model, placeholderTab, originalTab.getId());
+                    model.getTabRemover().removeTab(placeholderTab, /* allowDialog= */ false);
+                    placeholderTab.destroy();
 
-                if (wasActive) {
-                    TabModelUtils.setIndex(model, model.indexOf(originalTab));
+                    if (wasActive) {
+                        TabModelUtils.setIndex(model, model.indexOf(originalTab));
+                    }
                 }
+            } finally {
+                setTabGroupSyncPaused(syncService, /* isPaused= */ false);
             }
         }
     }

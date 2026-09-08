@@ -1722,6 +1722,11 @@ inline constexpr char kGlicBackgroundActuationName[] =
     "Glic background actuation";
 inline constexpr char kGlicBackgroundActuationDescription[] =
     "Enables background actuation for Glic.";
+inline constexpr char kGlicBackgroundActuationTabGroupSyncName[] =
+    "Glic background actuation tab group sync";
+inline constexpr char kGlicBackgroundActuationTabGroupSyncDescription[] =
+    "Enables TabGroupSync coordination during background tab detachment and "
+    "restoration for Actor tasks on Android.";
 inline constexpr char kGlicBackgroundTriggeringName[] =
     "Glic background triggering";
 inline constexpr char kGlicBackgroundTriggeringDescription[] =

@@ -5734,6 +5734,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-background-actuation-tab-group-sync",
+    "owners": [
+      "ritikagup@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-background-triggering",
     "owners": [
       "bbetini@google.com",

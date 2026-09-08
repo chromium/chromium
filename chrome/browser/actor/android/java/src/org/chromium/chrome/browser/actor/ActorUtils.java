@@ -103,4 +103,13 @@ public class ActorUtils {
         return !ChromeFeatureList.sGlicBackgroundActuationRequireNotifications.getValue()
                 || areActorNotificationsEnabled();
     }
+
+    /**
+     * Returns whether TabGroupSync coordination during background tab detachment and restoration is
+     * enabled.
+     */
+    public static boolean isTabGroupSyncHandlingEnabled() {
+        return ChromeFeatureList.sGlicBackgroundActuationTabGroupSync.isEnabled()
+                && isBackgroundActuationEnabled();
+    }
 }
