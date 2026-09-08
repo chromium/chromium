@@ -5874,7 +5874,7 @@
       name: "scroll-snap-stop",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
-      keywords: ["normal", "always"],
+      keywords: ["normal", "always", "before"],
       default_value: "normal",
       typedom_types: ["Keyword"],
     },

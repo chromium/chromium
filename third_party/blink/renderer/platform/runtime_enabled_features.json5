@@ -1990,6 +1990,10 @@
       implied_by: ["CSSScrollSnapChangeEvent", "CSSScrollSnapChangingEvent"],
     },
     {
+      name: "CSSScrollSnapStopBefore",
+      status: "test",
+    },
+    {
       name: "CSSScrollSnapTypePair",
       status: "test",
     },
