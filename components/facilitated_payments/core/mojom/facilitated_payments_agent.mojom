@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module payments.facilitated.mojom;
+
+// There is one instance of this interface per render frame in the renderer
+// process. All methods are called by the browser on the renderer.
+interface FacilitatedPaymentsAgent {
+  // Enables or disables autonomous QR code detection heuristics in the
+  // renderer (e.g. enabling on allowlisted merchant sites, or disabling
+  // once a code is found).
+  SetQrCodeDetectionEnabled(bool enabled);
+};
+
+// Interface implemented by the browser process (e.g.
+// `ContentFacilitatedPaymentsDriver`) to receive reports from
+// `FacilitatedPaymentsAgent` in the renderer process.
+interface FacilitatedPaymentsDriver {
+  // Reports the heuristic score indicating the likelihood of a payment QR
+  // code being present on the current page.
+  ReportHeuristicScore(double heuristic_score);
+};

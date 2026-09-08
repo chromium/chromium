@@ -117,6 +117,7 @@ browser_exposed_mojom_targets = [
   "//components/dom_distiller/core/mojom:mojom",
   "//components/download/public/common:interfaces",
   "//components/enterprise/connectors:mojom",
+  "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
   "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
   "//components/global_media_controls/public/mojom:device_service",
   "//components/guest_contents/common:mojom",
