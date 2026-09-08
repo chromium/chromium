@@ -49,7 +49,7 @@ public class MessagesMetrics {
         String histogramName =
                 DISMISSED_HISTOGRAM_PREFIX + messageIdentifierToHistogramSuffix(messageIdentifier);
         RecordHistogram.recordEnumeratedHistogram(
-                histogramName, dismissReason, DismissReason.COUNT);
+                histogramName, dismissReason, DismissReason.MAX_VALUE + 1);
     }
 
     /**

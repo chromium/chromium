@@ -124,7 +124,7 @@ public class MerchantTrustMetrics {
     public void recordMetricsForMessageDismissed(@DismissReason int dismissReason) {
         finishMessageShownTimer();
         RecordHistogram.recordEnumeratedHistogram(
-                "MerchantTrust.Message.DismissReason", dismissReason, DismissReason.COUNT);
+                "MerchantTrust.Message.DismissReason", dismissReason, DismissReason.MAX_VALUE + 1);
         resetMessageMetrics();
     }
 

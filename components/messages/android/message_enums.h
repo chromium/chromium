@@ -46,11 +46,7 @@ enum class DismissReason {
   DISMISSED_BY_FEATURE = 9,
   // A message was dismissed by a close button click.
   CLOSE_BUTTON = 10,
-
-  // Insert new values before this line.
-  COUNT,
-
-  kMaxValue = COUNT,
+  kMaxValue = CLOSE_BUTTON,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:MessageDismissReason)
 

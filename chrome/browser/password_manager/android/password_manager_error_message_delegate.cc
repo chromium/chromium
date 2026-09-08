@@ -52,7 +52,7 @@ void RecordDismissalReasonMetrics(PasswordStoreBackendErrorType error_type,
                                   messages::DismissReason dismiss_reason) {
   base::UmaHistogramEnumeration("PasswordManager.ErrorMessageDismissalReason." +
                                     GetErrorMessageName(error_type),
-                                dismiss_reason, messages::DismissReason::COUNT);
+                                dismiss_reason);
 }
 
 void RecordErrorTypeMetrics(PasswordStoreBackendErrorType error_type) {
@@ -107,7 +107,6 @@ bool ShouldSaveMessageTimeStamp(PasswordStoreBackendErrorType error_type,
     case messages::DismissReason::ACTIVITY_DESTROYED:
     case messages::DismissReason::SCOPE_DESTROYED:
     case messages::DismissReason::UNKNOWN:
-    case messages::DismissReason::COUNT:
       return false;
   }
 }
