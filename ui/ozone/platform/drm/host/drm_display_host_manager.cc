@@ -52,6 +52,10 @@ const int kAuthFailSleepMs = 100;
 // Log a warning after failing to authenticate for this many milliseconds.
 const int kLogAuthFailDelayMs = 1000;
 
+// Maximum number of attempts to authenticate the DRM device before giving up.
+// With kAuthFailSleepMs = 100, 30 attempts corresponds to ~3 seconds.
+constexpr int kMaxAuthAttempts = 30;
+
 constexpr const char* kDisplayActionString[] = {
     "ADD",
     "REMOVE",
@@ -110,8 +114,9 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
 
   base::ScopedFD scoped_fd;
   int num_auth_attempts = 0;
+  bool is_authenticated = false;
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (true) {
+  while (num_auth_attempts < kMaxAuthAttempts) {
     scoped_fd.reset();
     int fd = HANDLE_EINTR(open(dev_path.value().c_str(), O_RDWR | O_CLOEXEC));
     if (fd < 0) {
@@ -141,6 +146,13 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
     }
     drm_errno = drmAuthMagic(fd, magic);
     if (drm_errno) {
+      // If authenticating fails (e.g. because the previously crashing process
+      // held DRM master and is being torn down), try explicitly acquiring DRM
+      // master on this file descriptor.
+      if (drmSetMaster(fd) == 0 && drmAuthMagic(fd, magic) == 0) {
+        is_authenticated = true;
+        break;
+      }
       LOG_IF(ERROR, should_log_error)
           << "Failed to authenticate: " << dev_path.value()
           << " with errno: " << drm_errno << " after " << num_auth_attempts
@@ -148,7 +160,14 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
       usleep(kAuthFailSleepMs * 1000);
       continue;
     }
+    is_authenticated = true;
     break;
+  }
+
+  if (!is_authenticated) {
+    LOG(ERROR) << "Failed to authenticate " << dev_path.value() << " after "
+               << num_auth_attempts << " attempt(s)";
+    return nullptr;
   }
 
   VLOG(1) << "Succeeded authenticating " << dev_path.value() << " in "
