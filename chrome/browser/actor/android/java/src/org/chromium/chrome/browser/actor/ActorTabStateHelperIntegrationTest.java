@@ -21,6 +21,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -55,6 +56,7 @@ public class ActorTabStateHelperIntegrationTest {
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(BackgroundTabPoolManager::resetForTesting);
         ActorKeyedServiceFactory.setForTesting(null);
     }
 
@@ -267,15 +269,25 @@ public class ActorTabStateHelperIntegrationTest {
                     List<BackgroundSession> backgroundSessions = new ArrayList<>();
                     backgroundSessions.add(session);
 
-                    // Execute restoration
-                    List<BackgroundSession> sessionsToRemove =
-                            ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
-                                    selector,
-                                    activeWindowId,
-                                    window,
-                                    backgroundSessions,
-                                    delegateFactory);
-                    backgroundSessions.removeAll(sessionsToRemove);
+                    Profile profile = selector.getModel(false).getProfile();
+                    BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
+                    try {
+                        LiveBackgroundTab liveTab =
+                                new LiveBackgroundTab(pool, mTab, placeholder.getId(), 100);
+                        pool.addLiveTab(liveTab);
+
+                        // Execute restoration
+                        List<BackgroundSession> sessionsToRemove =
+                                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                                        selector,
+                                        activeWindowId,
+                                        window,
+                                        backgroundSessions,
+                                        delegateFactory);
+                        backgroundSessions.removeAll(sessionsToRemove);
+                    } finally {
+                        BackgroundTabPoolManager.release(pool);
+                    }
 
                     // Because the placeholder was active, the restored original tab should now be
                     // active
@@ -324,15 +336,25 @@ public class ActorTabStateHelperIntegrationTest {
                     List<BackgroundSession> backgroundSessions = new ArrayList<>();
                     backgroundSessions.add(session);
 
-                    // Execute restoration
-                    List<BackgroundSession> sessionsToRemove =
-                            ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
-                                    selector,
-                                    windowId,
-                                    window,
-                                    backgroundSessions,
-                                    delegateFactory);
-                    backgroundSessions.removeAll(sessionsToRemove);
+                    Profile profile = selector.getModel(false).getProfile();
+                    BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
+                    try {
+                        LiveBackgroundTab liveTab =
+                                new LiveBackgroundTab(pool, mTab, placeholder.getId(), 100);
+                        pool.addLiveTab(liveTab);
+
+                        // Execute restoration
+                        List<BackgroundSession> sessionsToRemove =
+                                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                                        selector,
+                                        windowId,
+                                        window,
+                                        backgroundSessions,
+                                        delegateFactory);
+                        backgroundSessions.removeAll(sessionsToRemove);
+                    } finally {
+                        BackgroundTabPoolManager.release(pool);
+                    }
 
                     // Verify model state after restoration:
                     // - Original tab is restored back at index 0

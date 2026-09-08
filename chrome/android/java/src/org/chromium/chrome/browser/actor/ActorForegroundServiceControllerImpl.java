@@ -154,7 +154,7 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         if (activeWindowId == TabWindowManager.INVALID_WINDOW_ID) return;
 
         List<BackgroundSession> sessionsToRemove =
-                ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
                         selector,
                         activeWindowId,
                         window,

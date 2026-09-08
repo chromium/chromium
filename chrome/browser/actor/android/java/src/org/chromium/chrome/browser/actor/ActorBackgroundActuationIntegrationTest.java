@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -132,6 +133,7 @@ public class ActorBackgroundActuationIntegrationTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BackgroundTabPoolManager.resetForTesting();
                     if (mBackgroundManager != null) {
                         mBackgroundManager.destroy();
                     }
@@ -324,6 +326,8 @@ public class ActorBackgroundActuationIntegrationTest {
                             .thenReturn(windowId);
                     TabWindowManagerSingleton.setTabWindowManagerForTesting(mockWindowManager);
 
+                    Profile profile = activity.getCurrentTabModel().getProfile();
+                    when(mockNewModel.getProfile()).thenReturn(profile);
                     when(mockNewSelector.getModel(false)).thenReturn(mockNewModel);
                     when(mockNewSelector.getTabCreatorManager()).thenReturn(mockCreatorManager);
                     when(mockCreatorManager.getTabCreator(false)).thenReturn(mockTabCreator);
@@ -340,6 +344,94 @@ public class ActorBackgroundActuationIntegrationTest {
                     assertFalse(mTab.getIsOffscreenRenderingSupplier().get());
                     assertTrue(mBackgroundManager.getBackgroundSessions().isEmpty());
                     assertEquals(TASK_ID, (int) mActorService.getActiveTaskIdOnTab(mTab.getId()));
+                });
+    }
+
+    /**
+     * Verifies Case 4: When Chrome activity is destroyed and an Actor task completes while no
+     * activity is alive, offscreen rendering is stopped immediately, tab state is marked dirty in
+     * the cache, the session persists in RAM, and opening a new activity restores the tab cleanly.
+     */
+    @Test
+    @MediumTest
+    public void testChromeToBackground_CtaDestroyed_TaskCompleted_IdlePersistenceInRam()
+            throws Exception {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        TabModelSelector selector = activity.getTabModelSelector();
+        TabModel model = selector.getModel(/* incognito= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> verifyTabInForegroundModel(model, mTab));
+
+        // Transition active tasks to background session.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController.transitionActiveTasksToBackground(selector);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, mBackgroundManager.getBackgroundSessions().size());
+                    assertTrue(mTab.getIsOffscreenRenderingSupplier().get());
+                });
+
+        // Destroy previous activity while background actuation keeps the task alive.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.finish();
+                });
+
+        // Complete the task while no activity is alive.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mActorTask.getState()).thenReturn(ActorTaskState.FINISHED);
+                    when(mActorTask.isCompleted()).thenReturn(true);
+                    when(mActorTask.isUnderActorControl()).thenReturn(false);
+
+                    mController.onTaskCompleted(TASK_ID);
+                });
+
+        // Verify offscreen rendering is stopped, but session is preserved in RAM.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mTab.getIsOffscreenRenderingSupplier().get());
+                    assertEquals(1, mBackgroundManager.getBackgroundSessions().size());
+                });
+
+        // When a new activity is launched/restored, restore the session into the new window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int windowId =
+                            TabWindowManagerSingleton.getInstance()
+                                    .getWindowIdForSelector(selector);
+                    TabModel mockNewModel = mock(TabModel.class);
+                    TabModelSelector mockNewSelector = mock(TabModelSelector.class);
+                    TabCreatorManager mockCreatorManager = mock(TabCreatorManager.class);
+                    TabCreator mockTabCreator = mock(TabCreator.class);
+                    TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(mTab);
+                    WindowAndroid newWindow = activity.getWindowAndroid();
+
+                    TabWindowManager mockWindowManager = mock(TabWindowManager.class);
+                    when(mockWindowManager.getWindowIdForSelector(mockNewSelector))
+                            .thenReturn(windowId);
+                    TabWindowManagerSingleton.setTabWindowManagerForTesting(mockWindowManager);
+
+                    Profile profile = activity.getCurrentTabModel().getProfile();
+                    when(mockNewModel.getProfile()).thenReturn(profile);
+                    when(mockNewSelector.getModel(false)).thenReturn(mockNewModel);
+                    when(mockNewSelector.getTabCreatorManager()).thenReturn(mockCreatorManager);
+                    when(mockCreatorManager.getTabCreator(false)).thenReturn(mockTabCreator);
+                    when(mockTabCreator.createDefaultTabDelegateFactory())
+                            .thenReturn(delegateFactory);
+                    when(mockNewModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+
+                    mController.restoreActiveWindowBackgroundTabs(
+                            mockNewSelector, newWindow, delegateFactory);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mTab.getIsOffscreenRenderingSupplier().get());
+                    assertTrue(mBackgroundManager.getBackgroundSessions().isEmpty());
                 });
     }
 

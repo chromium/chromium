@@ -60,7 +60,7 @@ public class BackgroundSession {
         }
 
         /** Sets the ID of the placeholder tab associated with this tab. */
-        public void setPlaceholderTabId(@TabId int placeholderTabId) {
+        public void setPlaceholderTabId(@Nullable @TabId Integer placeholderTabId) {
             mPlaceholderTabId = placeholderTabId;
         }
 
@@ -126,9 +126,18 @@ public class BackgroundSession {
         mGlicTriggerMessageId = glicTriggerMessageId;
     }
 
-    /** Adds an additional tab associated with this session. */
+    /** Adds an additional tab associated with this session, inheriting window ID if present. */
     public void addTab(Tab tab) {
-        mTabDataList.add(new BackgroundTabData(tab));
+        int windowId = TabWindowManager.INVALID_WINDOW_ID;
+        for (BackgroundTabData existingData : mTabDataList) {
+            if (existingData.getTabWindowId() != TabWindowManager.INVALID_WINDOW_ID) {
+                windowId = existingData.getTabWindowId();
+                break;
+            }
+        }
+        mTabDataList.add(
+                new BackgroundTabData(
+                        tab, /* placeholderTabId= */ null, TabModel.INVALID_TAB_INDEX, windowId));
     }
 
     /**
@@ -160,7 +169,7 @@ public class BackgroundSession {
     }
 
     /** Returns the last active offscreen tab owned by this session. */
-    public Tab getLastActiveTab() {
+    public @Nullable Tab getLastActiveTab() {
         return ActorTaskHelper.getLastActiveTabForTask(getTabs(), mTaskId);
     }
 

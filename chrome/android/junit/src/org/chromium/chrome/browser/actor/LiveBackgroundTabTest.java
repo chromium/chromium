@@ -9,6 +9,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,15 +24,19 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Collections;
 
 /** Unit tests for {@link LiveBackgroundTab}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -191,5 +196,46 @@ public class LiveBackgroundTabTest {
         mLiveBackgroundTab.attachToForeground(mTabModel, mWindowAndroid, mTabDelegateFactory);
 
         verify(mTab).removeObserver(observer);
+    }
+
+    @Test
+    public void testAttachToForeground_withPlaceholder_pinnedTab_transfersPinnedState() {
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID, /* originalTabIndex= */ 1);
+
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
+        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(1);
+        when(mPlaceholderTab.getIsPinned()).thenReturn(true);
+
+        mLiveBackgroundTab.attachToForeground(mTabModel, mWindowAndroid, mTabDelegateFactory);
+
+        verify(mTabModel).pinTab(TAB_ID, false);
+        verify(mTabModel).moveTab(TAB_ID, 2);
+    }
+
+    @Test
+    public void testAttachToForeground_withPlaceholder_tabGroup_transfersTabGroup() {
+        mLiveBackgroundTab =
+                new LiveBackgroundTab(
+                        mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID, /* originalTabIndex= */ 1);
+
+        Token groupId = Token.createRandom();
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
+        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(1);
+        when(mPlaceholderTab.getTabGroupId()).thenReturn(groupId);
+        when(mTabModel.getRelatedTabList(PLACEHOLDER_TAB_ID))
+                .thenReturn(Collections.singletonList(mPlaceholderTab));
+
+        mLiveBackgroundTab.attachToForeground(mTabModel, mWindowAndroid, mTabDelegateFactory);
+
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        eq(Collections.singletonList(mTab)),
+                        eq(mPlaceholderTab),
+                        eq(1),
+                        eq(TabGroupMergeNotificationType.DONT_NOTIFY));
     }
 }
