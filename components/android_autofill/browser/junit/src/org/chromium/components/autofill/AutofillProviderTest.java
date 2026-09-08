@@ -635,6 +635,133 @@ public class AutofillProviderTest {
         verify(mNativeMock, never()).hasPasskeyRequest(anyLong());
     }
 
+    @Test
+    @Features.EnableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME
+    })
+    public void testOnFormFieldDidChange_unfocusedFieldChanged_featureEnabled() {
+        int sessionId = 123;
+        FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
+        FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        sessionId,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Arrays.asList(field1Builder.build(), field2Builder.build()));
+
+        int field0VirtualId = FormData.toFieldVirtualId(sessionId, (short) 0);
+        int field1VirtualId = FormData.toFieldVirtualId(sessionId, (short) 1);
+
+        // Start session focused on field 0.
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(field0VirtualId, mFocusVirtualId);
+
+        // Mutate unfocused field 1.
+        mAutofillProvider.onFormFieldDidChange(
+                /* index= */ 1, /* x= */ 0, /* y= */ 0, /* width= */ 50, /* height= */ 20);
+
+        // Focus should remain on field 0 and not shift to field 1.
+        assertEquals(field0VirtualId, mFocusVirtualId);
+        verify(mAutofillManager, never()).notifyViewExited(eq(mContainerView), eq(field0VirtualId));
+        verify(mAutofillManager, never())
+                .notifyViewEntered(eq(mContainerView), eq(field1VirtualId), any());
+    }
+
+    @Test
+    @Features.DisableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME
+    })
+    public void testOnFormFieldDidChange_unfocusedFieldChanged_featureDisabled() {
+        int sessionId = 123;
+        FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
+        FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        sessionId,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Arrays.asList(field1Builder.build(), field2Builder.build()));
+
+        int field0VirtualId = FormData.toFieldVirtualId(sessionId, (short) 0);
+        int field1VirtualId = FormData.toFieldVirtualId(sessionId, (short) 1);
+
+        // Start session focused on field 0.
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(field0VirtualId, mFocusVirtualId);
+
+        // Mutate unfocused field 1.
+        mAutofillProvider.onFormFieldDidChange(
+                /* index= */ 1, /* x= */ 0, /* y= */ 0, /* width= */ 50, /* height= */ 20);
+
+        // With the feature disabled (killswitch), focus shifts to field 1.
+        assertEquals(field1VirtualId, mFocusVirtualId);
+        verify(mAutofillManager).notifyViewExited(eq(mContainerView), eq(field0VirtualId));
+        verify(mAutofillManager).notifyViewEntered(eq(mContainerView), eq(field1VirtualId), any());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME
+    })
+    public void testOnFormFieldDidChange_noFocusedField_featureEnabled() {
+        int sessionId = 123;
+        FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
+        FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        sessionId,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Arrays.asList(field1Builder.build(), field2Builder.build()));
+
+        int field0VirtualId = FormData.toFieldVirtualId(sessionId, (short) 0);
+
+        // Start session focused on field 0.
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        // Clear focus.
+        mAutofillProvider.onFocusChanged(
+                /* focusOnForm= */ false,
+                /* focusField= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 0,
+                /* height= */ 0);
+
+        // Value changes on field 0 when no field is currently focused.
+        mAutofillProvider.onFormFieldDidChange(
+                /* index= */ 0, /* x= */ 0, /* y= */ 0, /* width= */ 50, /* height= */ 20);
+
+        // Focus should be gained on field 0.
+        assertEquals(field0VirtualId, mFocusVirtualId);
+        verify(mAutofillManager, Mockito.atLeastOnce())
+                .notifyViewEntered(eq(mContainerView), eq(field0VirtualId), any());
+    }
+
     FormData setupPrefillRequest(int sessionId) {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
         field1Builder.mBounds =

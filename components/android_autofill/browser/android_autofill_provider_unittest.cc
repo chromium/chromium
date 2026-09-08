@@ -802,24 +802,121 @@ TEST_F(AndroidAutofillProviderTest,
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
                                          AutofillManagerTestApi::pass_key());
 
-  // Start an Autofill session.
+  FormFieldData field = form.fields()[0];
+  url::Origin select_origin = url::Origin::Create(GURL("https://bar.com"));
+  field.set_origin(select_origin);
+
+  // Simulate OnSelectControlSelectionChanged on an unlinked form.
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), form, field);
+
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            select_origin);
+}
+
+// Tests that OnSelectControlSelectionChanged updates the origin when the
+// selection change occurs on the currently focused field.
+TEST_F(AndroidAutofillProviderTest,
+       OnSelectControlSelectionChangedUpdatesOriginForFocusedField) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillFieldsUpdatedOnSelect};
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Start an Autofill session on field 0.
   android_autofill_manager().OnAskForValuesToFillTest(
       form, form.fields()[0].global_id());
 
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             form.fields()[0].origin());
 
-  // Create a new field with a different origin.
-  FormFieldData field = form.fields()[1];
+  // Update selection on the same focused field.
+  FormFieldData field = form.fields()[0];
   url::Origin new_origin = url::Origin::Create(GURL("https://bar.com"));
   field.set_origin(new_origin);
 
-  // Simulate OnSelectControlSelectionChanged.
   autofill_provider().OnSelectControlSelectionChanged(
       &android_autofill_manager(), form, field);
 
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             new_origin);
+}
+
+// Tests that an unfocused select control's value change in a multi-origin form
+// does not overwrite the active session's focused field origin (b/552440317).
+TEST_F(AndroidAutofillProviderTest,
+       UnfocusedSelectDoesNotOverwriteFocusedFieldOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillFieldsUpdatedOnSelect};
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  url::Origin iframe_origin =
+      url::Origin::Create(GURL("https://iframe-payment.example"));
+  url::Origin parent_origin =
+      url::Origin::Create(GURL("https://parent-attacker.example"));
+
+  test_api(form).field(0).set_origin(iframe_origin);
+  test_api(form).field(1).set_origin(parent_origin);
+
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // 1. User taps and focuses field 0 inside the iframe.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            iframe_origin);
+
+  // 2. Parent page mutates unfocused select field 1.
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), form, form.fields()[1]);
+
+  // The active session origin must remain iframe_origin.
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            iframe_origin);
+}
+
+// Tests that when kAndroidAutofillFieldsUpdatedOnSelect is disabled
+// (killswitch), an unfocused select control does NOT overwrite the active
+// session origin.
+TEST_F(AndroidAutofillProviderTest,
+       UnfocusedSelectWithFeatureDisabledPreservesFocusedFieldOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAndroidAutofillFieldsUpdatedOnSelect);
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  url::Origin iframe_origin =
+      url::Origin::Create(GURL("https://iframe-payment.example"));
+  url::Origin parent_origin =
+      url::Origin::Create(GURL("https://parent-attacker.example"));
+
+  test_api(form).field(0).set_origin(iframe_origin);
+  test_api(form).field(1).set_origin(parent_origin);
+
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // 1. User taps and focuses field 0 inside the iframe.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            iframe_origin);
+
+  // 2. Parent page mutates unfocused select field 1.
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), form, form.fields()[1]);
+
+  // With the feature disabled, the active session origin is preserved.
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            iframe_origin);
 }
 
 class AndroidAutofillProviderWithCredManTest

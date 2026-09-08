@@ -398,7 +398,11 @@ public class AutofillProvider {
         short shortIndex = (short) index;
         FocusField focusField = mRequest.getFocusField();
         if (focusField == null || shortIndex != focusField.fieldIndex) {
-            onFocusChangedImpl(true, index, x, y, width, height, /* causedByValueChange= */ true);
+            if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT.isEnabled()
+                    || focusField == null) {
+                onFocusChangedImpl(
+                        true, index, x, y, width, height, /* causedByValueChange= */ true);
+            }
         } else {
             // Currently there is no api to notify both value and position
             // change, before the API is available, we still need to call

@@ -42,7 +42,7 @@ BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, fields are updated whenever a user interacts with a <select>.
-// TODO(crbug.com/502346855): Remove in M152 or later.
+// TODO(crbug.com/502346855): Remove in M157 or later.
 BASE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -531,7 +531,11 @@ void AndroidAutofillProvider::OnSelectControlSelectionChanged(
   }
   if (base::FeatureList::IsEnabled(
           features::kAndroidAutofillFieldsUpdatedOnSelect)) {
-    UpdateCurrentField(manager, form, field);
+    if (!IsLinkedForm(form) ||
+        (session_state_ &&
+         session_state_->current_field.id == field.global_id())) {
+      UpdateCurrentField(manager, form, field);
+    }
   }
   if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field);
