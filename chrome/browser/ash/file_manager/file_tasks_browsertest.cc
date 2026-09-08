@@ -16,6 +16,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -90,6 +91,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -713,8 +715,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
           ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1));
   ASSERT_TRUE(GetUserFallbackChoice(
-      profile, task, file_url, ash::office_fallback::FallbackReason::kOffline,
-      std::move(callback)));
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)), task, file_url,
+      ash::office_fallback::FallbackReason::kOffline, std::move(callback)));
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
@@ -741,8 +743,9 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
       &OnDialogChoiceReceived, profile, task, file_url, fallback_reason,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
           ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1));
-  ASSERT_FALSE(GetUserFallbackChoice(profile, task, file_url, fallback_reason,
-                                     std::move(callback)));
+  ASSERT_FALSE(GetUserFallbackChoice(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)), task, file_url,
+      fallback_reason, std::move(callback)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

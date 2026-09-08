@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 
+class AccountId;
 class Profile;
 
 namespace ash::cloud_upload {
@@ -148,7 +149,7 @@ void OnDialogChoiceReceived(
 
 // Shows a new dialog for users to choose what to do next. Returns True
 // if a new dialog has been effectively created.
-bool GetUserFallbackChoice(Profile* profile,
+bool GetUserFallbackChoice(const AccountId& account_id,
                            const TaskDescriptor& task,
                            const std::vector<storage::FileSystemURL>& file_urls,
                            ash::office_fallback::FallbackReason failure_reason,
@@ -158,7 +159,7 @@ bool IsWebDriveOfficeTask(const TaskDescriptor& task);
 
 bool IsOpenInOfficeTask(const TaskDescriptor& task);
 
-bool IsQuickOfficeInstalled(Profile* profile);
+bool IsQuickOfficeInstalled(const AccountId& account_id);
 
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);

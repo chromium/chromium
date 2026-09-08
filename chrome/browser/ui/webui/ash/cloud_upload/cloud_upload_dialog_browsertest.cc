@@ -16,6 +16,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -57,6 +58,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -529,7 +531,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
 
 // Check QuickOffice was observed by the dialog as it should always be shown.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ASSERT_TRUE(file_manager::file_tasks::IsQuickOfficeInstalled(profile()));
+  ASSERT_TRUE(file_manager::file_tasks::IsQuickOfficeInstalled(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile()))));
   ASSERT_GE(PositionInList(observed_app_ids,
                            extension_misc::kQuickOfficeComponentExtensionId),
             0);
