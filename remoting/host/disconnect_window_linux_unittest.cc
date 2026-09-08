@@ -97,6 +97,65 @@ bool InitializeGtk() {
 #endif
 }
 
+GtkWidget* FindLabel(GtkWidget* widget) {
+  if (GTK_IS_BUTTON(widget)) {
+    return nullptr;
+  }
+  if (GTK_IS_LABEL(widget)) {
+    return widget;
+  }
+#if GTK_CHECK_VERSION(3, 90, 0)
+  for (GtkWidget* child = gtk_widget_get_first_child(widget); child != nullptr;
+       child = gtk_widget_get_next_sibling(child)) {
+    GtkWidget* found = FindLabel(child);
+    if (found) {
+      return found;
+    }
+  }
+#else
+  if (GTK_IS_CONTAINER(widget)) {
+    GList* children = gtk_container_get_children(GTK_CONTAINER(widget));
+    GtkWidget* found = nullptr;
+    for (GList* iter = children; iter != nullptr; iter = g_list_next(iter)) {
+      found = FindLabel(GTK_WIDGET(iter->data));
+      if (found) {
+        break;
+      }
+    }
+    g_list_free(children);
+    return found;
+  }
+#endif
+  return nullptr;
+}
+
+GtkWidget* FindDisconnectWindowLabel() {
+#if GTK_CHECK_VERSION(3, 90, 0)
+  GListModel* toplevels = gtk_window_get_toplevels();
+  guint n_items = g_list_model_get_n_items(toplevels);
+  for (guint i = 0; i < n_items; ++i) {
+    gpointer item = g_list_model_get_item(toplevels, i);
+    GtkWidget* label = FindLabel(GTK_WIDGET(item));
+    g_object_unref(item);
+    if (label) {
+      return label;
+    }
+  }
+  return nullptr;
+#else
+  GList* toplevels = gtk_window_list_toplevels();
+  GtkWidget* label = nullptr;
+  for (GList* iter = toplevels; iter != nullptr; iter = g_list_next(iter)) {
+    label = FindLabel(GTK_WIDGET(iter->data));
+    if (label) {
+      break;
+    }
+  }
+  g_list_free(toplevels);
+  return label;
+#endif
+}
+
 }  // namespace
 
 class DisconnectWindowLinuxTest : public testing::Test {
@@ -175,6 +234,33 @@ TEST_F(DisconnectWindowLinuxTest, WhitespaceAndUnicodeEmailDoesNotCrash) {
 
   window.reset();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(DisconnectWindowLinuxTest, LongEmailPreservesDomainSuffix) {
+  if (!InitializeGtk()) {
+    GTEST_SKIP() << "No display available for GTK.";
+  }
+
+  // An email exceeding kDefaultMaxEmailLength (36 characters) where the
+  // authentic domain suffix would have been truncated under naive
+  // end-truncation.
+  const std::string kAttackEmail =
+      "it.remote.assist.operator.session.9143a@example.com.fake.tld/"
+      "chromoting_ftl";
+
+  FakeClientSessionControl session_control(kAttackEmail);
+  std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
+  ASSERT_TRUE(window);
+  window->Start(session_control.GetWeakPtr());
+  EXPECT_TRUE(session_control.GetWeakPtr());
+
+  GtkWidget* label = FindDisconnectWindowLabel();
+  ASSERT_NE(label, nullptr);
+  const gchar* label_text = gtk_label_get_text(GTK_LABEL(label));
+  ASSERT_NE(label_text, nullptr);
+  EXPECT_THAT(label_text, testing::HasSubstr("fake.tld"));
+
+  window.reset();
 }
 
 }  // namespace remoting
