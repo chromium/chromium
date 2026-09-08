@@ -32,7 +32,10 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
 
   void Reset();
   void ReceiveFromChild(const std::vector<TransferableResource>& resources);
-  void RefResources(const std::vector<TransferableResource>& resources);
+  // Returns unhandled reserved resources (with IDs >=
+  // kVizReservedRangeStartId).
+  std::vector<TransferableResource> RefResources(
+      const std::vector<TransferableResource>& resources);
   // Returns unhandled reserved resources (with IDs >=
   // kVizReservedRangeStartId).
   std::vector<ReturnedResourceViz> UnrefResources(

@@ -278,13 +278,16 @@ void SurfaceAnimationManager::ReceiveFromChild(
 }
 
 void SurfaceAnimationManager::RefResources(
-    const std::vector<TransferableResource>& resources) {
-  if (transferable_resource_tracker_.is_empty())
+    std::vector<TransferableResource>& resources) {
+  if (transferable_resource_tracker_.is_empty()) {
     return;
-  for (const auto& resource : resources) {
-    if (resource.id >= kVizReservedRangeStartId)
-      transferable_resource_tracker_.RefResource(resource.id);
   }
+  std::erase_if(resources, [this](const TransferableResource& resource) {
+    if (resource.id >= kVizReservedRangeStartId) {
+      return transferable_resource_tracker_.RefResource(resource.id);
+    }
+    return false;
+  });
 }
 
 void SurfaceAnimationManager::UnrefResources(
@@ -352,7 +355,9 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
       }
 
       resource_list->push_back(positioned_resource.resource);
-      manager_it->second->RefResources({positioned_resource.resource});
+      std::vector<TransferableResource> resources_to_ref = {
+          positioned_resource.resource};
+      manager_it->second->RefResources(resources_to_ref);
 
       ReplaceSharedElementWithTexture(
           &copy_pass, shared_element_quad, resource_list->back().id,
