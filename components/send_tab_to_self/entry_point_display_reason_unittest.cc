@@ -25,11 +25,12 @@ namespace send_tab_to_self {
 namespace {
 
 using internal::GetEntryPointDisplayReason;
+using ::testing::Test;
 
 const char kHttpsUrl[] = "https://www.foo.com";
 const char kHttpUrl[] = "http://www.foo.com";
 
-class EntryPointDisplayReasonTest : public ::testing::Test {
+class EntryPointDisplayReasonTest : public Test {
  public:
   EntryPointDisplayReasonTest() {
     pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
@@ -92,6 +93,21 @@ TEST_F(EntryPointDisplayReasonTest, ShouldHidePromoIfSyncDisabledByPolicy) {
                                           pref_service()));
 }
 
+// Tests that the entry point is hidden if `SyncService` is null.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfSyncServiceNull) {
+  EXPECT_FALSE(
+      GetEntryPointDisplayReason(GURL(kHttpsUrl), /*sync_service=*/nullptr,
+                                 send_tab_to_self_model(), pref_service()));
+}
+
+// Tests that the entry point is hidden if `SendTabToSelfModel` is null.
+TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfModelNull) {
+  EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
+                                          /*send_tab_to_self_model=*/nullptr,
+                                          pref_service()));
+}
+
+// Tests that the entry point is hidden when the model is not ready.
 TEST_F(EntryPointDisplayReasonTest, ShouldHideEntryPointIfModelNotReady) {
   SignIn();
   send_tab_to_self_model()->SetIsReady(false);
