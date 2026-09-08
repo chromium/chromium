@@ -3192,6 +3192,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "FontationsPrinting",
+      status: "experimental",
+    },
+    {
       name: "FontDataServiceForCSSLocalFonts",
       base_feature: "none",
       // No status, as the web platform runtime enabled feature is controlled by
