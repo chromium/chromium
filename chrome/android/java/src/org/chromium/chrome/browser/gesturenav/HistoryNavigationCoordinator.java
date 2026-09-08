@@ -275,6 +275,9 @@ public class HistoryNavigationCoordinator
 
     /** Sets the {@link SideUiStateProvider} to observe side UI width changes. */
     public void setSideUiStateProvider(SideUiStateProvider provider) {
+        if (mSideUiStateProvider == provider) {
+            return;
+        }
         if (mSideUiStateProvider != null) {
             mSideUiStateProvider.removeObserver(mSideUiObserver);
         }

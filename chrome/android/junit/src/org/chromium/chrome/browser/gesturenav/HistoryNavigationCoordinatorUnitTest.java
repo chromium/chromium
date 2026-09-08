@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.gesturenav;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +34,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
@@ -59,6 +64,7 @@ public class HistoryNavigationCoordinatorUnitTest {
     @Mock private BackActionDelegate mBackActionDelegate;
     @Mock private Tab mTab;
     @Mock private GestureNavigationUtils.Natives mGestureNavigationUtilsJni;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
 
     @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
 
@@ -187,5 +193,24 @@ public class HistoryNavigationCoordinatorUnitTest {
             assertFalse(navigationHandler.isActive());
             verify(mBackActionDelegate).onGestureUnhandled();
         }
+    }
+
+    @Test
+    public void testSetSideUiStateProvider() {
+        initializeHistoryNavigationCoordinator();
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(new SideUiSpecs(50, 100));
+
+        mHistoryNavigationCoordinator.setSideUiStateProvider(mSideUiStateProvider);
+        verify(mSideUiStateProvider).addObserver(any());
+
+        // Calling with the same provider again should be a no-op.
+        mHistoryNavigationCoordinator.setSideUiStateProvider(mSideUiStateProvider);
+        verify(mSideUiStateProvider, times(1)).addObserver(any());
+
+        // Setting a different provider should remove the observer from the old one.
+        SideUiStateProvider newProvider = mock(SideUiStateProvider.class);
+        mHistoryNavigationCoordinator.setSideUiStateProvider(newProvider);
+        verify(mSideUiStateProvider).removeObserver(any());
+        verify(newProvider).addObserver(any());
     }
 }

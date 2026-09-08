@@ -1343,6 +1343,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         },
                         compositorViewHolder,
                         mFullscreenManager);
+        SideUiStateProvider sideUiStateProvider = mSideUiStateProviderSupplier.get();
+        if (sideUiStateProvider != null) {
+            mHistoryNavigationCoordinator.setSideUiStateProvider(sideUiStateProvider);
+        }
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         // TODO(crbug.com/40946488): Consider register this drag listener to other views besides
@@ -2469,9 +2473,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSideUiStateProviderSupplier.onAvailable(
                 provider -> maybeInitializeVerticalTabs(currentlySelectedProfile));
         mSideUiStateProviderSupplier.onAvailable(
-                provider ->
-                        assumeNonNull(mHistoryNavigationCoordinator)
-                                .setSideUiStateProvider(provider));
+                mCallbackController.makeCancelable(
+                        provider -> {
+                            if (mHistoryNavigationCoordinator != null) {
+                                mHistoryNavigationCoordinator.setSideUiStateProvider(provider);
+                            }
+                        }));
         mSideUiStateProviderSupplier.onAvailable(
                 provider -> assumeNonNull(mFindToolbarManager).setSideUiStateProvider(provider));
         mSideUiStateProviderSupplier.onAvailable(
