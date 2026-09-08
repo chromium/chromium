@@ -295,7 +295,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
 
   scoped_refptr<CanvasResource> frame =
       RenderingContext()->PaintRenderingResultsToResource(kBackBuffer, reason);
-  if (!frame || !frame->IsValid()) {
+  if (!frame) {
     return false;
   }
 

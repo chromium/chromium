@@ -66,11 +66,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
 
-  // Returns true if the resource is still usable. It maybe not be valid in the
-  // case of a context loss or if we fail to initialize the memory backing for
-  // the resource.
-  virtual bool IsValid() const = 0;
-
   // The bounds for this resource.
   gfx::Size Size() const { return GetSharedImage()->size(); }
   base::ByteSize EstimatedSizeInBytes() const {
@@ -196,7 +191,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     return !GetSharedImage()->is_software();
   }
   void OnRefReturned(scoped_refptr<CanvasResource>&& resource) final;
-  bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   const gfx::HDRMetadata& GetHdrMetadata() const final { return hdr_metadata_; }
   void Transfer() final;
@@ -274,7 +268,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
-  bool IsValid() const override;
+  bool IsValid() const;
   bool CreatesAcceleratedTransferableResources() const override { return true; }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
   void WaitSyncToken(const gpu::SyncToken&) override;

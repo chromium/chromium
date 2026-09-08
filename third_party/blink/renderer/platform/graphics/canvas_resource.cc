@@ -134,8 +134,6 @@ void CanvasResource::DropRefOnOwningThread(
 bool CanvasResource::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     bool needs_verified_synctoken) {
-  DCHECK(IsValid());
-
   if (!out_resource)
     return true;
 
@@ -282,10 +280,6 @@ void CanvasResourceSharedImage::OnRefReturned(
   if (client_) {
     client_->OnResourceRefReturned(std::move(downcast_ref));
   }
-}
-
-bool CanvasResourceSharedImage::IsValid() const {
-  return true;
 }
 
 SkImageInfo CanvasResourceSharedImage::CreateSkImageInfo() const {
