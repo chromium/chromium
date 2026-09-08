@@ -196,8 +196,8 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_MaxServerIban) {
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_NewIban) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  EXPECT_EQ(IbanSaveManager::TypeOfOfferToSave::kOfferServerSave,
-            test_api(GetIbanSaveManager()).DetermineHowToSaveIban(iban));
+  EXPECT_EQ(test_api(GetIbanSaveManager()).DetermineHowToSaveIban(iban),
+            IbanSaveManager::TypeOfOfferToSave::kOfferServerSave);
 }
 
 // Test that an existing local IBAN should still be offered upload save to
@@ -209,8 +209,8 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalIban) {
 
   Iban another_iban;
   another_iban.set_value(iban.value());
-  EXPECT_EQ(IbanSaveManager::TypeOfOfferToSave::kOfferServerSave,
-            test_api(GetIbanSaveManager()).DetermineHowToSaveIban(iban));
+  EXPECT_EQ(test_api(GetIbanSaveManager()).DetermineHowToSaveIban(iban),
+            IbanSaveManager::TypeOfOfferToSave::kOfferServerSave);
 }
 
 // Test that an existing local and server IBAN should not be offered save at
@@ -242,8 +242,8 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_ServerIban) {
   // above server IBAN.
   Iban another_iban;
   another_iban.set_value(u"DE91100000000123456789");
-  EXPECT_EQ(IbanSaveManager::TypeOfOfferToSave::kDoNotOfferToSave,
-            test_api(GetIbanSaveManager()).DetermineHowToSaveIban(iban));
+  EXPECT_EQ(test_api(GetIbanSaveManager()).DetermineHowToSaveIban(iban),
+            IbanSaveManager::TypeOfOfferToSave::kDoNotOfferToSave);
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
@@ -302,7 +302,7 @@ TEST_F(IbanSaveManagerTest, LocallySaveIban_NotEnoughStrikesShouldOfferToSave) {
   iban_save_strike_database.AddStrike(partial_iban_hash);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
   EXPECT_TRUE(test_api(GetIbanSaveManager()).AttemptToOfferLocalSave(iban));
 }
 
@@ -335,14 +335,14 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
 
   // Verify partial hashed value of `partial_iban_hash` has been
   // successfully added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
   test_api(GetIbanSaveManager())
       .OnUserDidDecideOnLocalSave(iban, SaveIbanOfferUserDecision::kAccepted,
                                   u"My teacher's IBAN");
 
   // Verify partial hashed value of `partial_iban_hash` has been
   // cleared in the strike database.
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 0);
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
@@ -356,7 +356,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
 
   IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 0);
 
   test_api(GetIbanSaveManager())
       .OnUserDidDecideOnLocalSave(iban, SaveIbanOfferUserDecision::kDeclined,
@@ -364,7 +364,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
 
   // Verify partial hashed value of `partial_iban_hash` has been
   // added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
@@ -378,7 +378,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
 
   IbanSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 0);
 
   test_api(GetIbanSaveManager())
       .OnUserDidDecideOnLocalSave(iban, SaveIbanOfferUserDecision::kDeclined,
@@ -386,7 +386,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
 
   // Verify partial hashed value of `partial_iban_hash` has been
   // added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
 }
 
 TEST_F(IbanSaveManagerTest, LocallySaveIban_OfferIbanSave) {
@@ -662,7 +662,7 @@ TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_SuccessShouldClearStrikes) {
   iban_save_strike_database.AddStrike(partial_iban_hash);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
   EXPECT_TRUE(test_api(GetIbanSaveManager()).AttemptToOfferUploadSave(iban));
 
   std::move(autofill_client_.GetPaymentsAutofillClient()
@@ -671,7 +671,7 @@ TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_SuccessShouldClearStrikes) {
       .Run(SaveIbanOfferUserDecision::kAccepted, u"My teacher's IBAN");
 
   // Verify the IBAN's strikes have been cleared.
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved.Upload",
       /*sample=*/1, /*expected_count=*/1);
@@ -696,7 +696,7 @@ TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_FailureShouldAddStrike) {
       .Run(SaveIbanOfferUserDecision::kAccepted, u"My teacher's IBAN");
 
   // Verify the IBAN's strikes have been added by 1.
-  EXPECT_EQ(2, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 2);
 }
 
 TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Decline_AddsStrike) {
@@ -712,7 +712,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Decline_AddsStrike) {
       .OnUserDidDecideOnUploadSave(iban, SaveIbanOfferUserDecision::kDeclined);
 
   // Verify the IBAN's strikes have been added by 1.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
   // Verify that `UploadIban` handler is not triggered.
   EXPECT_CALL(*payments_network_interface(), UploadIban).Times(0);
 }
@@ -730,7 +730,7 @@ TEST_F(IbanSaveManagerTest, OnUserDidDecideOnUploadSave_Ignore_AddsStrike) {
       .OnUserDidDecideOnUploadSave(iban, SaveIbanOfferUserDecision::kIgnored);
 
   // Verify the IBAN's strikes have been added by 1.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  EXPECT_EQ(iban_save_strike_database.GetStrikes(partial_iban_hash), 1);
   // Verify that `UploadIban` handler is not triggered.
   EXPECT_CALL(*payments_network_interface(), UploadIban).Times(0);
 }
