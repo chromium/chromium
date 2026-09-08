@@ -8,9 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace ash {
 
@@ -67,7 +71,10 @@ class WelcomeScreenHandler final : public WelcomeView,
  public:
   using TView = WelcomeView;
 
-  WelcomeScreenHandler();
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  WelcomeScreenHandler(PrefService* local_state,
+                       ApplicationLocaleStorage* application_locale_storage);
 
   WelcomeScreenHandler(const WelcomeScreenHandler&) = delete;
   WelcomeScreenHandler& operator=(const WelcomeScreenHandler&) = delete;
@@ -98,6 +105,9 @@ class WelcomeScreenHandler final : public WelcomeView,
 
   // Returns available timezones.
   static base::ListValue GetTimezoneList();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   base::ListValue language_list_;
 

@@ -29,8 +29,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
@@ -59,7 +57,12 @@ namespace ash {
 
 // WelcomeScreenHandler, public: -----------------------------------------------
 
-WelcomeScreenHandler::WelcomeScreenHandler() : BaseScreenHandler(kScreenId) {}
+WelcomeScreenHandler::WelcomeScreenHandler(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage)
+    : BaseScreenHandler(kScreenId),
+      local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 WelcomeScreenHandler::~WelcomeScreenHandler() = default;
 
@@ -67,8 +70,7 @@ WelcomeScreenHandler::~WelcomeScreenHandler() = default;
 
 void WelcomeScreenHandler::Show() {
   // TODO(crbug.com/1105387): Part of initial screen logic.
-  PrefService* prefs = g_browser_process->local_state();
-  if (prefs->GetBoolean(ash::prefs::kFactoryResetRequested)) {
+  if (local_state_->GetBoolean(ash::prefs::kFactoryResetRequested)) {
     DCHECK(LoginDisplayHost::default_host());
     LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
     return;
@@ -111,10 +113,8 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   if (fjord_util::ShouldShowFjordOobe()) {
     builder->Add("welcomeScreenGreeting", IDS_FJORD_WELCOME_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
-  } else if (
-      // TODO(crbug.com/489929275): Avoid using g_browser_process.
-      policy::EnrollmentRequisitionManager::IsMeetDevice(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+                 local_state_.get())) {
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
   } else if (switches::IsRevenBranding()) {
@@ -259,11 +259,6 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
     return;
   }
 
-  // TODO(crbug.com/489929275): Avoid using g_bowser_process.
-  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
-  const ApplicationLocaleStorage& application_locale_storage = CHECK_DEREF(
-      g_browser_process->GetFeatures()->application_locale_storage());
-
   input_method::InputMethodManager* input_method_manager =
       input_method::InputMethodManager::Get();
   const std::string selected_input_method =
@@ -277,13 +272,13 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
 
   dict->Set("languageList", std::move(language_list));
   dict->Set("inputMethodsList",
-            GetAndActivateOobeInputMethods(application_locale_storage.Get(),
+            GetAndActivateOobeInputMethods(application_locale_storage_->Get(),
                                            selected_input_method,
                                            input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
   dict->Set("demoModeCountryList",
-            DemoSession::GetCountryList(local_state,
-                                        application_locale_storage.Get()));
+            DemoSession::GetCountryList(local_state_.get(),
+                                        application_locale_storage_->Get()));
 
   // If this switch is set allow to open advanced options and configure device
   // requisition.

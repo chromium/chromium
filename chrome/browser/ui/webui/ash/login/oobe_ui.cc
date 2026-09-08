@@ -430,7 +430,8 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<UpdateScreenHandler>());
 
   if (display_type_ == kOobeDisplay) {
-    AddScreenHandler(std::make_unique<WelcomeScreenHandler>());
+    AddScreenHandler(std::make_unique<WelcomeScreenHandler>(
+        local_state, application_locale_storage));
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
   }
