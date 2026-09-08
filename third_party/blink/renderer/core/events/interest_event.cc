@@ -48,12 +48,7 @@ Element* InterestEvent::source() const {
                           : nullptr;
   }
 
-  if (auto* current = currentTarget()) {
-    CHECK(current->ToNode());
-    return &current->ToNode()->GetTreeScope().Retarget(*source_);
-  }
-  DCHECK_EQ(eventPhase(), Event::PhaseType::kNone);
-  return source_;
+  return DynamicTo<Element>(Retarget(source_));
 }
 
 DispatchEventResult InterestEvent::DispatchEvent(EventDispatcher& dispatcher) {
