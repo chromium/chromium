@@ -2311,7 +2311,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/emoji-segmenter.git' + '@' + Var('emoji_segmenter_revision'),
 
   'src/third_party/oak/src':
-    Var('chromium_git') + '/external/github.com/project-oak/oak.git' + '@' + '590f1df2c7528b39366a1a72533b6f9e9bf47d1e',
+    Var('chromium_git') + '/external/github.com/project-oak/oak.git' + '@' + 'd3e0f13998b13628fa8b55be52c9ddf31244668d',
 
   'src/third_party/ots/src':
     Var('chromium_git') + '/external/github.com/khaledhosny/ots.git' + '@' + Var('ots_revision'),
