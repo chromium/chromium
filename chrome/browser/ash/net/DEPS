@@ -1,6 +1,4 @@
 include_rules = [
-  "+chromeos/ash/components/kcer",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -9,10 +7,8 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_list/arc",
-  "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/notifications",
-  "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
