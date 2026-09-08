@@ -555,7 +555,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.inputDelegate_.handleFocusChange(this, {
         hasFocus: true,
         selection: this.getMojoSelection(),
-        requestClearKeyword: wasAlreadyFocused && !activateDefaultSearch,
+        // We shouldn't clear search keyword on auto-focus, since it may
+        // result in us overwriting a restored one on tab switch.
+        requestClearKeyword:
+            wasAlreadyFocused && !activateDefaultSearch && isUserInitiated,
         startZeroSuggest: isUserInitiated,
         activateDefaultSearch: activateDefaultSearch,
       });

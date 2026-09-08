@@ -363,17 +363,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void WaitForTabOpenOrClose(int expected_tab_count) {
-    int tab_count = browser()->GetTabStripModel()->count();
-    if (tab_count == expected_tab_count) {
-      return;
-    }
-
-    while (!HasFailure() &&
-           browser()->GetTabStripModel()->count() != expected_tab_count) {
-      content::RunMessageLoop();
-    }
-
-    ASSERT_EQ(expected_tab_count, browser()->GetTabStripModel()->count());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return browser()->GetTabStripModel()->count() == expected_tab_count;
+    }));
   }
 
   void WaitForAutocompleteControllerDone() {
@@ -649,21 +641,26 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Trigger keyword mode.
+  WaitTillPopupOpen();
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Backspace without search text should bring back keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Trigger keyword mode again.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
@@ -693,7 +690,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
   // A keyword 'hint'/button will persist as long as the entry begins with a
   // keyword.
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 }
 
@@ -842,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
   // Input something to trigger inline autocomplete.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kInlineAutocompleteTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
   std::u16string old_text = omnibox_view->GetText();
 
@@ -923,7 +921,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
 
   std::u16string old_text = omnibox_view->GetText();
   EXPECT_EQ(url::kAboutBlankURL16, old_text);
-  EXPECT_TRUE(omnibox_view->IsSelectAll());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->IsSelectAll(); }));
 
   gfx::Range selection = omnibox_view->GetSelectionBounds();
 #if defined(TOOLKIT_VIEWS)
@@ -940,7 +939,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
 #else
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_END, 0));
 #endif
-  EXPECT_FALSE(omnibox_view->IsSelectAll());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return omnibox_view->IsSelectAll() == false; }));
 
   // Make sure the cursor is placed correctly.
   selection = omnibox_view->GetSelectionBounds();
@@ -1031,16 +1031,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AcceptKeywordByTypingQuestionMark) {
   // keyword mode for their default search provider.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN));
   ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
+  WaitTillKeywordMode();
   ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_selected());
   ASSERT_EQ(search_keyword, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(std::u16string(), omnibox_view->GetText());
 
   // If the user press backspace, they should be left with '?' in the omnibox.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_selected() == false; }));
   EXPECT_EQ(u"?", omnibox_view->GetText());
   EXPECT_EQ(std::u16string(), GetOmniboxEditModel()->keyword());
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
-  EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_selected());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, SearchDisabledDontCrashOnQuestionMark) {
@@ -1086,7 +1088,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonDefaultSubstitutingKeywordTest) {
   // Non-default substituting keyword shouldn't be matched by default.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
   // Check if the default match result is Search Primary Provider.
   auto* default_match = GetOmniboxController()
@@ -1098,7 +1100,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonDefaultSubstitutingKeywordTest) {
 
   omnibox_view->SetUserText(std::u16string());
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_FALSE(GetOmniboxController()->IsPopupOpen());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxController()->IsPopupOpen() == false; }));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
@@ -1122,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
   // We always allow exact matches for non-substituting keywords.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
   auto* default_match = GetOmniboxController()
                             ->autocomplete_controller()
@@ -1133,7 +1136,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
 
   omnibox_view->SetUserText(std::u16string());
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_FALSE(GetOmniboxController()->IsPopupOpen());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxController()->IsPopupOpen() == false; }));
 }
 
 // Flaky. See https://crbug.com/41337043.
@@ -1241,18 +1245,23 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  WaitTillPopupOpen();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(text, omnibox_view->GetText());
 
   // Trigger keyword mode by tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_TRUE(omnibox_view->GetText().empty());
 
   // Revert to keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(text, omnibox_view->GetText());
@@ -1262,12 +1271,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
 
   // Trigger keyword mode by tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_TRUE(omnibox_view->GetText().empty());
 
   // Revert to keyword hint mode with SHIFT+TAB.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(text, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(text, omnibox_view->GetText());
@@ -1280,11 +1292,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
-  ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  WaitTillPopupOpen();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   ASSERT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
@@ -1297,12 +1312,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
              TabStripUserGestureDetails::GestureType::kOther));
 
   // Make sure we're still in keyword mode.
+  WaitTillKeywordMode();
   ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_selected());
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(omnibox_view->GetText(), std::u16string());
 
   // Input something as search text.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  WaitTillPopupOpen();
 
   // Switch to the second tab and back to the first.
   browser()->GetTabStripModel()->ActivateTabAt(
@@ -1313,6 +1330,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
              TabStripUserGestureDetails::GestureType::kOther));
 
   // Make sure we're still in keyword mode.
+  WaitTillKeywordMode();
   ASSERT_TRUE(GetOmniboxEditModel()->is_keyword_selected());
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
   ASSERT_EQ(omnibox_view->GetText(), kSearchText);
@@ -1326,12 +1344,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   // Input something to trigger inline autocomplete.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kInlineAutocompleteTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
-  std::u16string old_text = omnibox_view->GetText();
+  std::u16string old_text;
 
   // Make sure inline autocomplete is triggered.
-  EXPECT_GT(old_text.length(), std::size(kInlineAutocompleteText) - 1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    old_text = omnibox_view->GetText();
+    return old_text.length() > (std::size(kInlineAutocompleteText) - 1);
+  }));
 
   // Press ctrl key.
   GetOmniboxEditModel()->OnControlKeyChanged(true);
@@ -1354,18 +1375,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
 
   // Delete the text, then undo.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  EXPECT_TRUE(omnibox_view->GetText().empty());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->GetText().empty(); }));
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_Z, kCtrlOrCmdMask));
-  EXPECT_EQ(old_text, omnibox_view->GetText());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return old_text == omnibox_view->GetText(); }));
 
   // Redo should delete the text again.
   ASSERT_NO_FATAL_FAILURE(
       SendKey(ui::VKEY_Z, kCtrlOrCmdMask | ui::EF_SHIFT_DOWN));
-  EXPECT_TRUE(omnibox_view->GetText().empty());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->GetText().empty(); }));
 
   // Perform an undo.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_Z, kCtrlOrCmdMask));
-  EXPECT_TRUE(omnibox_view->IsSelectAll());
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->IsSelectAll(); }));
 
   // The text should be selected.
   gfx::Range selection = omnibox_view->GetSelectionBounds();
@@ -1377,16 +1402,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  EXPECT_EQ(old_text.substr(0, old_text.size() - 3), omnibox_view->GetText());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return old_text.substr(0, old_text.size() - 3) == omnibox_view->GetText();
+  }));
 
   // Undo delete.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_Z, kCtrlOrCmdMask));
-  EXPECT_EQ(old_text, omnibox_view->GetText());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return old_text == omnibox_view->GetText(); }));
 
   // Redo delete.
   ASSERT_NO_FATAL_FAILURE(
       SendKey(ui::VKEY_Z, kCtrlOrCmdMask | ui::EF_SHIFT_DOWN));
-  EXPECT_EQ(old_text.substr(0, old_text.size() - 3), omnibox_view->GetText());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return old_text.substr(0, old_text.size() - 3) == omnibox_view->GetText();
+  }));
 
   // Delete everything.
   omnibox_view->SelectAll(true);
@@ -1411,6 +1441,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
   omnibox_view->SetUserText(u"\uFF80\uFF9E");
   EXPECT_FALSE(omnibox_view->GetText().empty());
 
+  // This test doesn't actually care about the popup, but this ensures that
+  // with a WebUI impl, the text got handled there before an attempt to
+  // delete is made.
+  WaitTillPopupOpen();
+
   // Move the cursor to the end.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_END, 0));
 
@@ -1421,10 +1456,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
   // Cocoa text fields attach the sound mark and delete the whole thing. This
   // behavior should remain on Mac even when using a toolkit-views browser
   // window.
-  EXPECT_TRUE(omnibox_view->GetText().empty());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->GetText().empty(); }));
 #else
   // Toolkit-views text fields delete just the sound mark.
-  EXPECT_EQ(u"\uFF80", omnibox_view->GetText());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return omnibox_view->GetText() == u"\uFF80"; }));
 #endif
 }
 
@@ -1435,7 +1472,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur) {
   // Input something to trigger inline autocomplete.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kInlineAutocompleteTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
   gfx::Range selection = omnibox_view->GetSelectionBounds();
   EXPECT_FALSE(selection.is_empty());
   std::u16string old_autocomplete_text =
@@ -1444,7 +1481,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur) {
   // Unfocus the omnibox. This should close the popup but should not run
   // autocomplete.
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
-  ASSERT_FALSE(GetOmniboxController()->IsPopupOpen());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxController()->IsPopupOpen() == false; }));
   EXPECT_EQ(old_autocomplete_text,
             GetOmniboxController()->autocomplete_controller()->input_.text());
 }
@@ -1539,7 +1577,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return omnibox_view->GetText() == kSearchText; }));
-  EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
   // Close the popup and select all.
   GetOmniboxPopupCloser()->CloseWithReason(omnibox::PopupCloseReason::kOther);
@@ -1550,8 +1588,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_V, kCtrlOrCmdMask));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_EQ(kSearchText, omnibox_view->GetText());
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return GetOmniboxController()->IsPopupOpen(); }));
+  WaitTillPopupOpen();
   GetOmniboxPopupCloser()->CloseWithReason(omnibox::PopupCloseReason::kOther);
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
 
@@ -1561,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_V, kCtrlOrCmdMask));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return omnibox_view->GetText() == u"ab123cd"; }));
-  EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
+  WaitTillPopupOpen();
 
   // Ctrl/Cmd+Alt+V should not paste.
   ASSERT_NO_FATAL_FAILURE(
@@ -1996,11 +2033,14 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, NonFeatured) {
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchAggregatorPolicyKeywordKeys));
-  EXPECT_TRUE(GetOmniboxEditModel()->is_keyword_hint());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetOmniboxEditModel()->is_keyword_hint(); }));
   EXPECT_EQ(GetOmniboxEditModel()->keyword(), kSearchAggregatorPolicyKeyword);
 
   // Trigger keyword mode.
+  WaitTillPopupOpen();
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   EXPECT_EQ(GetOmniboxEditModel()->keyword(), kSearchAggregatorPolicyKeyword);
 
@@ -2008,13 +2048,13 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, NonFeatured) {
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
-
-  EXPECT_EQ(GetOmniboxController()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->destination_url.spec(),
-            kSearchAggregatorPolicyTextURL);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOmniboxController()
+               ->autocomplete_controller()
+               ->result()
+               .default_match()
+               ->destination_url.spec() == kSearchAggregatorPolicyTextURL;
+  }));
 }
 
 // Verifies that featured search engine is shown when
@@ -2054,7 +2094,9 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, Featured) {
   EXPECT_EQ(GetOmniboxEditModel()->keyword(), u"");
 
   // Trigger keyword mode.
+  WaitTillPopupOpen();
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   EXPECT_EQ(GetOmniboxEditModel()->keyword(),
             kSearchAggregatorPolicyKeywordWithAtPrefix);
@@ -2064,12 +2106,13 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, Featured) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
 
-  EXPECT_EQ(GetOmniboxController()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->destination_url.spec(),
-            kSearchAggregatorPolicyTextURL);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOmniboxController()
+               ->autocomplete_controller()
+               ->result()
+               .default_match()
+               ->destination_url.spec() == kSearchAggregatorPolicyTextURL;
+  }));
 }
 
 // Verifies that featured search engine is shown with starter pack on "@"
@@ -2106,7 +2149,9 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest,
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  WaitTillPopupOpen();
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  WaitTillKeywordMode();
   EXPECT_FALSE(GetOmniboxEditModel()->is_keyword_hint());
   EXPECT_EQ(GetOmniboxEditModel()->keyword(),
             kSearchAggregatorPolicyKeywordWithAtPrefix);
@@ -2116,10 +2161,11 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest,
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
 
-  EXPECT_EQ(GetOmniboxController()
-                ->autocomplete_controller()
-                ->result()
-                .default_match()
-                ->destination_url.spec(),
-            kSearchAggregatorPolicyTextURL);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOmniboxController()
+               ->autocomplete_controller()
+               ->result()
+               .default_match()
+               ->destination_url.spec() == kSearchAggregatorPolicyTextURL;
+  }));
 }
