@@ -63,12 +63,6 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
         std::make_unique<QuickDeletePromo>(profile_prefs_));
   }
 
-  // TODO(crbug.com/509972652): Clean up the prefs in M153+.
-  profile_prefs_->ClearPref(
-      "ephemeral_pref_counter.tips_notifications_promo_counter");
-  profile_prefs_->ClearPref(
-      "ephemeral_pref_interacted.tips_notifications_promo_interacted");
-
   InitializeAfterAddingCards();
 }
 
@@ -90,12 +84,6 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
   NtpThemePromo::RegisterProfilePrefs(registry);
   AuxiliarySearchPromo::RegisterProfilePrefs(registry);
   HistorySyncPromo::RegisterProfilePrefs(registry);
-
-  // TODO(crbug.com/509972652): Clean up the prefs in M153+.
-  registry->RegisterIntegerPref(
-      "ephemeral_pref_counter.tips_notifications_promo_counter", 0);
-  registry->RegisterBooleanPref(
-      "ephemeral_pref_interacted.tips_notifications_promo_interacted", false);
 }
 
 void HomeModulesCardRegistryAndroid::NotifyCardShown(
