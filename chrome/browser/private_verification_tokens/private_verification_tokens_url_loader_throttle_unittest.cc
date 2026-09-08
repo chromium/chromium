@@ -250,7 +250,7 @@ class PrivateVerificationTokensURLLoaderThrottleTest : public testing::Test {
 TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
        Create_NullService_ReturnsNull) {
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      /*pvt_service=*/nullptr, /*is_off_the_record=*/false,
+      /*pvt_service=*/nullptr, profile()->GetWeakPtr(),
       shared_url_loader_factory());
   EXPECT_EQ(throttle, nullptr);
 }
@@ -258,7 +258,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
 TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
        Create_ValidService_ReturnsThrottle) {
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   EXPECT_NE(throttle, nullptr);
 }
 
@@ -273,7 +273,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -292,7 +292,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   DestroyService();
@@ -312,7 +312,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://c.net/index"));
@@ -331,7 +331,9 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/true, shared_url_loader_factory());
+      service(),
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetWeakPtr(),
+      shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://c.net/index"));
@@ -348,7 +350,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://c.net/index"));
@@ -367,7 +369,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -388,7 +390,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -407,7 +409,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -428,7 +430,7 @@ TEST_F(
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -448,7 +450,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -468,7 +470,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -491,7 +493,7 @@ TEST_F(
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -507,7 +509,7 @@ TEST_F(
 TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
        WillRedirectRequest_AddsTokenHeaderToRemovedHeaders) {
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   net::RedirectInfo redirect_info;
@@ -531,7 +533,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -562,7 +564,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -592,7 +594,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -625,7 +627,7 @@ TEST_F(PrivateVerificationTokensURLLoaderThrottleTest,
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   auto request = CreateTopLevelNavigationRequest(GURL("https://r1.a.com/page"));
@@ -660,7 +662,7 @@ TEST_F(
   SetTestIssuerConfig(service());
 
   auto throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(throttle);
 
   // 1. Initial request starts for top-level navigation to a.com.
@@ -705,7 +707,7 @@ TEST_F(
           url::Origin::Create(request.url));
 
   auto restart_throttle = PrivateVerificationTokensURLLoaderThrottle::Create(
-      service(), /*is_off_the_record=*/false, shared_url_loader_factory());
+      service(), profile()->GetWeakPtr(), shared_url_loader_factory());
   ASSERT_TRUE(restart_throttle);
 
   restart_throttle->WillStartRequest(&request, &defer);

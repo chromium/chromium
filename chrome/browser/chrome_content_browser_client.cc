@@ -6073,7 +6073,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
                                     ->GetURLLoaderFactoryForBrowserProcess();
       if (auto pvt_throttle =
               PrivateVerificationTokensURLLoaderThrottle::Create(
-                  pvt_service, profile->IsOffTheRecord(),
+                  pvt_service, profile->GetWeakPtr(),
                   std::move(url_loader_factory))) {
         result.push_back(std::move(pvt_throttle));
       }

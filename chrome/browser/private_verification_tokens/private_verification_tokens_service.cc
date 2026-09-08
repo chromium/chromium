@@ -5,6 +5,7 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 
 #include <map>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,8 +19,11 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
@@ -71,6 +75,12 @@ const char* TryGetTokensErrorToString(
       return "kNullResponse";
   }
 }
+const char kOtrIssuerTrackerKey[] = "PrivateVerificationTokensOtrTracker";
+
+class OtrIssuerTracker : public base::SupportsUserData::Data {
+ public:
+  std::set<url::Origin> issuers;
+};
 
 }  // namespace
 
@@ -406,7 +416,8 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
 
 std::optional<std::pair<int64_t, std::string>>
 PrivateVerificationTokensService::GetTokenForRedemption(
-    const url::Origin& redeemer_origin) {
+    const url::Origin& redeemer_origin,
+    Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_ || !is_initialized() || !issuer_config_) {
     return std::nullopt;
@@ -432,11 +443,34 @@ PrivateVerificationTokensService::GetTokenForRedemption(
     return std::nullopt;
   }
 
+  OtrIssuerTracker* tracker = nullptr;
+  if (profile && profile->IsOffTheRecord()) {
+    tracker = static_cast<OtrIssuerTracker*>(
+        profile->GetUserData(kOtrIssuerTrackerKey));
+    if (!tracker) {
+      auto new_tracker = std::make_unique<OtrIssuerTracker>();
+      tracker = new_tracker.get();
+      profile->SetUserData(kOtrIssuerTrackerKey, std::move(new_tracker));
+    }
+    auto params = private_verification_tokens::GetParametersForVersion(
+        config_it->second.public_key.version());
+    if (params.has_value() && !tracker->issuers.contains(matching_issuer) &&
+        tracker->issuers.size() >= params->max_distinct_issuers_per_session) {
+      base::UmaHistogramBoolean("PrivateVerificationTokens.RedemptionLimitHit",
+                                true);
+      return std::nullopt;
+    }
+  }
+
   CHECK(store_);
   const auto& tokens = store_->tokens();
   auto it = tokens.find(matching_issuer);
   if (it == tokens.end()) {
     return std::nullopt;
+  }
+
+  if (tracker) {
+    tracker->issuers.insert(matching_issuer);
   }
 
   std::string base64_token = base::Base64Encode(it->second.token.token());

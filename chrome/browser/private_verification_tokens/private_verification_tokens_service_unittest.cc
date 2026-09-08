@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -1121,3 +1122,60 @@ TEST_F(PrivateVerificationTokensServiceTest,
 }
 
 }  // namespace
+
+TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
+       OtrProfileRedemptionLimit) {
+  base::HistogramTester histogram_tester;
+  auto* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  SetTestIssuerConfig(service());
+
+  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+      tokens;
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  tokens.emplace_back(url::Origin::Create(GURL("https://a.com")),
+                      std::vector<uint8_t>{1}, 1, expiration, 1);
+  tokens.emplace_back(url::Origin::Create(GURL("https://b.org")),
+                      std::vector<uint8_t>{1}, 1, expiration, 1);
+  tokens.emplace_back(url::Origin::Create(GURL("https://c.net")),
+                      std::vector<uint8_t>{1}, 1, expiration, 1);
+  tokens.emplace_back(url::Origin::Create(GURL("https://d.com")),
+                      std::vector<uint8_t>{1}, 1, expiration, 1);
+  StoreInDatabase(db_path(), tokens);
+
+  WaitForInitialization(service());
+
+  // 1st issuer redemption (a.com via r1.a.com)
+  EXPECT_TRUE(
+      service()
+          ->GetTokenForRedemption(url::Origin::Create(GURL("https://r1.a.com")),
+                                  otr_profile)
+          .has_value());
+  histogram_tester.ExpectTotalCount(
+      "PrivateVerificationTokens.RedemptionLimitHit", 0);
+
+  // 2nd issuer redemption (b.org via r2.b.org)
+  EXPECT_TRUE(
+      service()
+          ->GetTokenForRedemption(url::Origin::Create(GURL("https://r2.b.org")),
+                                  otr_profile)
+          .has_value());
+  histogram_tester.ExpectTotalCount(
+      "PrivateVerificationTokens.RedemptionLimitHit", 0);
+
+  // 1st issuer redemption AGAIN (should not increment limit)
+  EXPECT_TRUE(
+      service()
+          ->GetTokenForRedemption(url::Origin::Create(GURL("https://r1.a.com")),
+                                  otr_profile)
+          .has_value());
+
+  // 3rd issuer redemption (c.net) -> fails limit!
+  EXPECT_FALSE(service()
+                   ->GetTokenForRedemption(
+                       url::Origin::Create(GURL("https://c.net")), otr_profile)
+                   .has_value());
+  histogram_tester.ExpectBucketCount(
+      "PrivateVerificationTokens.RedemptionLimitHit", true, 1);
+}

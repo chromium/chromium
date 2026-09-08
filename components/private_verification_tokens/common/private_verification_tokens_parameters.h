@@ -41,6 +41,7 @@ struct PrivateVerificationTokensParameters {
   // Total response is 355 bytes for a single token.
   // For batch size of 20, response size is 7100 < 7 * 1024
   size_t max_response_body_size = 0;
+  size_t max_distinct_issuers_per_session = 0;
 };
 
 // Returns the parameters for a given version, or nullopt if the version is not

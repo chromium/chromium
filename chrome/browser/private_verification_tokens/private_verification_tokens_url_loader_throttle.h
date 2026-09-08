@@ -17,6 +17,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+class Profile;
 class PrivateVerificationTokensService;
 
 // Trigger PVT issuance and add PVT header when needed.
@@ -25,7 +26,7 @@ class PrivateVerificationTokensURLLoaderThrottle
  public:
   static std::unique_ptr<PrivateVerificationTokensURLLoaderThrottle> Create(
       PrivateVerificationTokensService* pvt_service,
-      bool is_off_the_record,
+      base::WeakPtr<Profile> profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~PrivateVerificationTokensURLLoaderThrottle() override;
@@ -45,11 +46,11 @@ class PrivateVerificationTokensURLLoaderThrottle
  private:
   PrivateVerificationTokensURLLoaderThrottle(
       base::WeakPtr<PrivateVerificationTokensService> pvt_service,
-      bool is_off_the_record,
+      base::WeakPtr<Profile> profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   base::WeakPtr<PrivateVerificationTokensService> pvt_service_;
-  bool is_off_the_record_;
+  base::WeakPtr<Profile> profile_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::optional<int64_t> token_id_;
 };

@@ -37,6 +37,7 @@ class SharedURLLoaderFactory;
 
 class GURL;
 class HostContentSettingsMap;
+class Profile;
 
 class PrivateVerificationTokensService : public KeyedService {
  public:
@@ -95,7 +96,8 @@ class PrivateVerificationTokensService : public KeyedService {
   // (token_id, base64_encoded_token) if available. Does not delete or remove
   // the token from storage.
   std::optional<std::pair<int64_t, std::string>> GetTokenForRedemption(
-      const url::Origin& redeemer_origin);
+      const url::Origin& redeemer_origin,
+      Profile* profile = nullptr);
 
   // Deletes the token with `token_id` from the cache and database.
   void DeleteToken(int64_t token_id, base::OnceClosure callback);
