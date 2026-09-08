@@ -22,6 +22,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import androidx.annotation.Nullable;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -34,6 +35,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
@@ -80,6 +83,7 @@ import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -205,6 +209,29 @@ public class TabbedRootUiCoordinatorTest {
         // The fullscreen prompt should be displayed upon signout.
         mSigninTestRule.signOut();
         ViewUtils.waitForVisibleView(withText(R.string.signin_fre_title_signin_forced_by_policy));
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
+    public void testForcedSigninWhenSigninNotAllowed() {
+        mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+
+        // The user is already signed in at first, so the fullscreen signin prompt is not displayed.
+        mPage = mActivityTestRule.startOnBlankPage();
+        ViewFinder.waitForNoView(withText(R.string.signin_fre_title_signin_forced_by_policy));
+
+        // Mock ExternalAuthUtils to simulate Google Play Services missing, making signin not
+        // allowed.
+        ExternalAuthUtils externalAuthUtils = mock(ExternalAuthUtils.class);
+        doReturn(true).when(externalAuthUtils).isGooglePlayServicesMissing(any());
+        ExternalAuthUtils.setInstanceForTesting(externalAuthUtils);
+
+        // The fullscreen prompt should not be displayed upon signout because signin is not allowed.
+        mSigninTestRule.signOut();
+        assertEquals(
+                ActivityState.RESUMED, ApplicationStatus.getStateForActivity(mPage.getActivity()));
     }
 
     private void testTopControlsHeightWithBookmarkBar(boolean expectBookmarkBar) {
