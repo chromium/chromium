@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
@@ -36,7 +35,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link DownloadDialogBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

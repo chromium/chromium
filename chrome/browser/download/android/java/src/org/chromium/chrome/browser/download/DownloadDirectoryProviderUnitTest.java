@@ -22,7 +22,6 @@ import java.nio.file.Path;
 
 /** Unit tests for DownloadDirectoryProvider. It mocks Android API behaviors. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressLint("NewApi")
 public class DownloadDirectoryProviderUnitTest {
     private static final String PRIVATE_DIR_PRIMARY = "private_dir_primary";

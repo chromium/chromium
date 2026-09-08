@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -16,7 +15,6 @@ import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.Downlo
 
 /** Unit test for {@link DownloadLocationDialogMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DownloadLocationDialogMetricsUnitTest {
     private static final String EVENT_METRIC_NAME =
             "MobileDownload.Location.Dialog.Suggestion.Events";

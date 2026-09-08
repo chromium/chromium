@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.download.home.filter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 
 /** Unit tests for the Filters class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class FiltersTest {
     @Test
     public void testFilterConversions() {

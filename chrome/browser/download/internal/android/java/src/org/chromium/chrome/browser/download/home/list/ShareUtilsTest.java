@@ -12,7 +12,6 @@ import androidx.core.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -25,7 +24,6 @@ import java.util.Collections;
 
 /** Unit tests for the ShareUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ShareUtilsTest {
     @Test
     public void testNoContent() {

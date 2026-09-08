@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download.home.list;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -16,7 +15,6 @@ import java.util.Set;
 
 /** Unit tests for the ItemUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class ItemUtilsTest {
     /**
      * Test scenarios with which we might call {@link

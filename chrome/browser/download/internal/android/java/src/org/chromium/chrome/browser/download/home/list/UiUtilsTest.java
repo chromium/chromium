@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
@@ -25,7 +24,6 @@ import org.chromium.components.offline_items_collection.OfflineItemState;
 
 /** Unit tests for the UiUtils class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class UiUtilsTest {
     private ShadowPackageManager mShadowPackageManager;
 
