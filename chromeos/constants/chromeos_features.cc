@@ -48,9 +48,6 @@ BASE_FEATURE(kCrosIsolatedWebAppSetShapeAllowlist,
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Essential Search in Omnibox for both launcher and browser.
-BASE_FEATURE(kEssentialSearch, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature flag used to enable external display event telemetry.
 BASE_FEATURE(kExternalDisplayEventTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -296,10 +293,6 @@ bool IsCrosIsolatedWebAppSetShapeAllowlistEnabled() {
 
 bool IsDataControlsFileAccessDefaultDenyEnabled() {
   return base::FeatureList::IsEnabled(kDataControlsFileAccessDefaultDeny);
-}
-
-bool IsEssentialSearchEnabled() {
-  return base::FeatureList::IsEnabled(kEssentialSearch);
 }
 
 bool IsFileSystemProviderCloudFileSystemEnabled() {
