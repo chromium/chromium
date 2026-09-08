@@ -10,6 +10,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
@@ -18,6 +19,9 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -72,6 +76,7 @@ SkillsPageHandlerV2::SkillsPageHandlerV2(
     base::WeakPtr<SkillsDialogDelegate> delegate)
     : receiver_(this, std::move(receiver)),
       profile_(CHECK_DEREF(profile)),
+      identity_manager_(identity_manager),
       web_contents_(CHECK_DEREF(web_contents)),
       cookie_synchronizer_(std::make_unique<glic::GlicCookieSynchronizer>(
           &profile_.get(),
@@ -268,6 +273,29 @@ void SkillsPageHandlerV2::GetPendingEditorData(
                   ->RetrieveData();
   // Note: Data is cleared when this callback runs.
   std::move(callback).Run(std::move(data));
+}
+
+void SkillsPageHandlerV2::SignIn() {
+  if (!identity_manager_) {
+    return;
+  }
+
+  CoreAccountInfo primary_account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (!primary_account_info.IsEmpty()) {
+    signin_ui_util::ShowReauthForAccount(&profile_.get(),
+                                         primary_account_info.email,
+                                         signin_metrics::AccessPoint::kSkills);
+  } else {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    signin_ui_util::SignInFromSingleAccountPromo(
+        &profile_.get(), CoreAccountInfo(),
+        signin_metrics::AccessPoint::kSkills);
+#endif
+  }
+#endif
 }
 
 BrowserWindowInterface* SkillsPageHandlerV2::GetBrowserWindow() {

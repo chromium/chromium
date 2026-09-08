@@ -369,10 +369,13 @@ enum class AccessPoint : int {
   kSignoutUndoSnackbar = 108,
   // Sign-in promo shown for the Composebox Drive context menu option.
   kComposeboxDriveContextMenuOptionBubble = 109,
+  // Triggered when the user clicks sign-in on the Skills dialog error state
+  // (e.g. opened from Gemini in Chrome while signed out). Desktop only.
+  kSkills = 110,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kComposeboxDriveContextMenuOptionBubble,  // This must be last.
+  kMaxValue = kSkills,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

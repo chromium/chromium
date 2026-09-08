@@ -193,6 +193,9 @@ interface SkillsPageHandler {
 
   // Retrieves pending editor data.
   GetPendingEditorData() => (PendingEditorData? data);
+
+  // Starts the sign-in or re-authentication flow for the primary account.
+  SignIn();
 };
 
 

@@ -10,7 +10,7 @@ import {SkillsDialogType} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
 import type {SkillsWebviewBridge} from 'chrome://skills/v2/skills_webview_bridge.js';
 import {IS_SAVING_GEMINI_QUERY_PARAMETER, SkillSource, SOURCE_QUERY_PARAMETER} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 class TestSkillsWebview extends SkillsWebview {
   getRemoteUrlForTesting(): string {
@@ -213,4 +213,47 @@ suite('SkillsWebviewTest', () => {
     webviewApp.onUserSkillsUpdated();
     assertTrue(webviewApp.sentSkillsUpdated);
   });
+
+  test('ErrorPage_DoesNotRenderCancelButtonByDefault', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const errorPage = document.createElement('error-page');
+    document.body.appendChild(errorPage);
+    await errorPage.updateComplete;
+
+    assertNull(errorPage.shadowRoot?.querySelector('#cancelButton'));
+  });
+
+  test('ErrorPage_RendersCancelButtonWhenDialogIsTrue', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const errorPage = document.createElement('error-page');
+    errorPage.dialog = true;
+    document.body.appendChild(errorPage);
+    await errorPage.updateComplete;
+
+    assertTrue(!!errorPage.shadowRoot?.querySelector('#cancelButton'));
+  });
+
+  test('ErrorPage_RendersSignInButtonWhenDialogAndGlicNotEnabled', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const errorPage = document.createElement('error-page');
+    errorPage.dialog = true;
+    errorPage.errorType = ErrorType.GLIC_NOT_ENABLED;
+    document.body.appendChild(errorPage);
+    await errorPage.updateComplete;
+
+    assertTrue(!!errorPage.shadowRoot?.querySelector('#signInButton'));
+  });
+
+  test(
+      'ErrorPage_DoesNotRenderSignInButtonWhenDialogAndSkillsDisabled',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        const errorPage = document.createElement('error-page');
+        errorPage.dialog = true;
+        errorPage.errorType = ErrorType.SKILLS_DISABLED;
+        document.body.appendChild(errorPage);
+        await errorPage.updateComplete;
+
+        assertNull(errorPage.shadowRoot?.querySelector('#signInButton'));
+      });
 });

@@ -153,6 +153,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kLevelUp:
     case AccessPoint::kSignoutUndoSnackbar:
     case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
+    case AccessPoint::kSkills:
       return access_point;
   }
 
@@ -771,6 +772,9 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromComposeboxDriveContextMenuOptionBubble"));
       break;
+    case AccessPoint::kSkills:
+      base::RecordAction(base::UserMetricsAction("Signin_Signin_FromSkills"));
+      break;
   }
 }
 
@@ -971,6 +975,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAgeMismatchSignout:
     case AccessPoint::kLevelUp:
     case AccessPoint::kSignoutUndoSnackbar:
+    case AccessPoint::kSkills:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

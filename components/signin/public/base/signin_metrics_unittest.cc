@@ -54,6 +54,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kIosGeminiButtonToolbar,
     AccessPoint::kSettingsAutofillAndPasswords,
     AccessPoint::kIndigo,
+    AccessPoint::kSkills,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -266,6 +267,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SignoutUndoSnackbar";
       case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
         return "ComposeboxDriveContextMenuOptionBubble";
+      case AccessPoint::kSkills:
+        return "Skills";
     }
   }
 };

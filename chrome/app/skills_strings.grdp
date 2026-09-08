@@ -52,6 +52,9 @@
   <message name="IDS_SKILLS_GO_TO_SETTINGS" desc="Label of the button that navigates the user to Chrome Settings page for Skills.">
     Go to Settings
   </message>
+  <message name="IDS_SKILLS_SIGN_IN_TO_CHROME" desc="Label of the button that prompts the user to sign in to Chrome on the Skills error page.">
+    Sign in to Chrome
+  </message>
   <message name="IDS_SKILLS_NO_SEARCH_RESULT_TITLE" desc="Title of the page that occurs when chrome://skills has no search results">
     No search results
   </message>

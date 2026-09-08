@@ -35577,6 +35577,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromSkills">
+  <owner>aashnas@google.com</owner>
+  <description>
+    Recorded when a user clicks the sign-in button on the Skills error page.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromStartPage">
   <owner>gogerald@chromium.org</owner>
   <description>
