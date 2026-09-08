@@ -8167,6 +8167,11 @@ def CheckDanglingUntriaged(input_api, output_api):
     count = 0
     try:
         for f in input_api.AffectedFiles(file_filter=FilterFile):
+            # Avoid fetching full old/new file contents from disk/git
+            # if DanglingUntriaged was not touched in the diff.
+            diff = f.GenerateScmDiff()
+            if not diff or 'DanglingUntriaged' not in diff:
+                continue
             count -= sum(
                 [l.count('DanglingUntriaged') for l in f.OldContents()])
             count += sum(
@@ -8339,6 +8344,9 @@ def CheckBaseFeatureMacro(input_api, output_api):
 
         lines = list(f.NewContents())
         contents = '\n'.join(lines)
+        if ('BASE_FEATURE' not in contents
+                and 'BASE_RUNTIME_MUTABLE_FEATURE' not in contents):
+            continue
         for match in pattern.finditer(contents):
             # Determine the line numbers that the match spans.
             start_line = contents.count('\n', 0, match.start()) + 1
@@ -8463,6 +8471,9 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
 
         lines = list(f.NewContents())
         contents = '\n'.join(lines)
+        if ('BASE_FEATURE_PARAM' not in contents
+                and 'BASE_FEATURE_ENUM_PARAM' not in contents):
+            continue
 
         _check_matches(
             f, contents, lines, changed_line_numbers, param_5_args_re,

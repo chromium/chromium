@@ -278,8 +278,17 @@ class MockFile(object):
         self._changed_contents = [(i + 1, l)
                                   for i, l in enumerate(new_contents)]
         self._action = action
+        import difflib
         if scm_diff:
             self._scm_diff = scm_diff
+        elif old_contents:
+            self._scm_diff = "\n".join(
+                difflib.unified_diff(
+                    old_contents,
+                    new_contents,
+                    fromfile=local_path,
+                    tofile=local_path,
+                    lineterm="")) + "\n"
         else:
             self._scm_diff = ("--- /dev/null\n+++ %s\n@@ -0,0 +1,%d @@\n" %
                               (local_path, len(new_contents)))

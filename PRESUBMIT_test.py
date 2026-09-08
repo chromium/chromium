@@ -15,6 +15,7 @@ import os.path
 import subprocess
 import textwrap
 import unittest
+from unittest import mock
 
 import PRESUBMIT
 
@@ -6034,6 +6035,47 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
                                                 mock_output_api)
         self.assertEqual(len(msgs), 0)
 
+    def testUnmodifiedDiffSkipped(self):
+        """Test files without DanglingUntriaged in diff are skipped without reading full contents."""
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+
+        mock_file = MockAffectedFile(
+            local_path='foo/foo.cc',
+            old_contents=['int a = 1;'],
+            new_contents=['int a = 2;'],
+        )
+        mock_file.OldContents = mock.Mock(side_effect=AssertionError(
+            'OldContents should not be called when diff lacks DanglingUntriaged'))
+        mock_file.NewContents = mock.Mock(side_effect=AssertionError(
+            'NewContents should not be called when diff lacks DanglingUntriaged'))
+
+        mock_input_api.files = [mock_file]
+        mock_input_api.change.DescriptionText = lambda: 'description'
+        msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(len(msgs), 0)
+        mock_file.OldContents.assert_not_called()
+        mock_file.NewContents.assert_not_called()
+
+    def testModifiedDiffCallsContents(self):
+        """Test files with DanglingUntriaged in diff do read contents and report violations."""
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+
+        mock_file = MockAffectedFile(
+            local_path='foo/foo.cc',
+            old_contents=['raw_ptr<T>'],
+            new_contents=['raw_ptr<T, DanglingUntriaged>'],
+        )
+        mock_input_api.files = [mock_file]
+        mock_input_api.change.DescriptionText = lambda: 'description'
+        msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
+                                                mock_output_api)
+        self.assertEqual(len(msgs), 1)
+        self.assertTrue(any('Unexpected new occurrences of `DanglingUntriaged`' in m.message
+                            for m in msgs))
+
 
 class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
 
@@ -6443,6 +6485,30 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
         self.assertEqual(len(expected_warnings), len(warnings))
         self.assertCountEqual(expected_warnings, warnings)
 
+    def testNoBaseFeatureInContents(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('valid_no_macro.cc',
+                             ['int x = 42;', 'void helper() {}']),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
+                                                  MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testBaseRuntimeMutableFeatureWarning(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('warning_3param_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "MyToggle", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
+                                                  MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertIn('Use of the 3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE',
+                      results[0].items[0])
+
 
 class CheckBaseFeatureParamMacroTest(unittest.TestCase):
 
@@ -6573,6 +6639,30 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
 
         self.assertEqual(len(expected_warnings), len(warnings))
         self.assertCountEqual(expected_warnings, warnings)
+
+    def testNoBaseFeatureParamInContents(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('valid_no_param.cc',
+                             ['int x = 42;', 'void helper() {}']),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureParamMacro(mock_input_api,
+                                                       MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testEnumParamWarning(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('warning_6arg_enum.cc', [
+                'BASE_FEATURE_ENUM_PARAM(MyEnum, kMyEnumParam, &kMyFeature,',
+                '    "my_enum_param", MyEnum::kFirst, &kOptions);',
+            ]),
+        ]
+        results = PRESUBMIT.CheckBaseFeatureParamMacro(mock_input_api,
+                                                       MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertIn('The 6-argument BASE_FEATURE_ENUM_PARAM macro',
+                      results[0].items[0])
 
 
 class CheckNoMojomDataViewIncludesTest(unittest.TestCase):
