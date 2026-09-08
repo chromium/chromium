@@ -1382,22 +1382,262 @@ chrome.test.runTests([
     chrome.test.assertTrue(initEvent.detail.isPaste === true);
     chrome.test.assertEq('Pasted Text', initEvent.detail.annotation.text);
     chrome.test.assertEq(5, initEvent.detail.annotation.id);
-    // Position offset from original annotation:
+    // Cut annotation is restored to original position on first paste:
     chrome.test.assertEq(
-        165, initEvent.detail.annotation.textBoxRect.locationX);
-    chrome.test.assertEq(63, initEvent.detail.annotation.textBoxRect.locationY);
+        155, initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(53, initEvent.detail.annotation.textBoxRect.locationY);
     assertDeepEquals(originalAnnotation.textAttributes, attrEvent.detail);
 
     // Subsequent paste after cut annotation gets next ID (6) and cascading
-    // offset.
+    // offset (+10px).
     whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
         'initialize-text-box', manager);
     chrome.test.assertTrue(manager.pasteAnnotation());
     initEvent = await whenInitEvent;
     chrome.test.assertEq(6, initEvent.detail.annotation.id);
     chrome.test.assertEq(
-        175, initEvent.detail.annotation.textBoxRect.locationX);
-    chrome.test.assertEq(73, initEvent.detail.annotation.textBoxRect.locationY);
+        165, initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(63, initEvent.detail.annotation.textBoxRect.locationY);
+
+    chrome.test.succeed();
+  },
+
+  async function testPasteAnnotationAcrossPages() {
+    const manager = await setUpTextMode();
+
+    // Set up a multi-page document with non-uniform page sizes.
+    const dimensions = new MockDocumentDimensions(0, 0);
+    dimensions.addPage(400, 500);  // Page 0: 400x500
+    dimensions.addPage(300, 400);  // Page 1: 300x400 (smaller)
+    dimensions.addPage(500, 600);  // Page 2: 500x600 (larger)
+    viewport.setDocumentDimensions(dimensions);
+
+    // Create and copy an annotation on page 0 with width 100, height 40 at
+    // (250, 350).
+    const originalAnnotation: TextAnnotation = {
+      ...getTestAnnotation(10),
+      pageIndex: 0,
+      text: 'Cross Page Text',
+      textBoxRect: {height: 40, locationX: 250, locationY: 350, width: 100},
+    };
+    manager.saveAnnotationToClipboard(originalAnnotation, /*isCut=*/ false);
+
+    // Scroll to page 1.
+    viewport.goToPage(1);
+    chrome.test.assertEq(1, viewport.getMostVisiblePage());
+
+    // Paste onto page 1. The annotation should be pasted on page 1 with 0
+    // offset (since it's a different page), and clamped to page 1's dimensions
+    // (width 300, height 400).
+    let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    let initEvent = await whenInitEvent;
+
+    const pageDimensions1 = viewport.getPageScreenRect(1);
+    chrome.test.assertTrue(pageDimensions1 !== null);
+    chrome.test.assertEq(1, initEvent.detail.annotation.pageIndex);
+    // Annotation width is 100, so max X relative to page is
+    // pageDimensions1.width - 100. Original X (250) is clamped to maxX.
+    const expectedX1 = pageDimensions1.x + pageDimensions1.width -
+        originalAnnotation.textBoxRect.width;
+    chrome.test.assertEq(
+        expectedX1, initEvent.detail.annotation.textBoxRect.locationX);
+    // Original Y (350) fits within page 1 height.
+    chrome.test.assertEq(
+        pageDimensions1.y + 350,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Consecutive paste on the same page (page 1) should now have a +10px
+    // offset, further clamped to page 1 boundaries.
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    chrome.test.assertEq(1, initEvent.detail.annotation.pageIndex);
+    // X was already at max, so X + 10 remains clamped to expectedX1.
+    chrome.test.assertEq(
+        expectedX1, initEvent.detail.annotation.textBoxRect.locationX);
+    // Y is clamped to maxY (pageDimensions1.height - 40).
+    const expectedY1 = pageDimensions1.y + pageDimensions1.height -
+        originalAnnotation.textBoxRect.height;
+    chrome.test.assertEq(
+        expectedY1, initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Scroll to page 2 and paste. First paste on a new page should be at the
+    // original location (250, 350) with 0 offset.
+    viewport.goToPage(2);
+    chrome.test.assertEq(2, viewport.getMostVisiblePage());
+
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    const pageDimensions2 = viewport.getPageScreenRect(2);
+    chrome.test.assertTrue(pageDimensions2 !== null);
+    chrome.test.assertEq(2, initEvent.detail.annotation.pageIndex);
+    // Page 2 width is 500, height is 600. Annotation fits at the original
+    // position without clamping.
+    chrome.test.assertEq(
+        pageDimensions2.x + originalAnnotation.textBoxRect.locationX,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions2.y + originalAnnotation.textBoxRect.locationY,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Scroll back to page 0 (original page). Pasting onto the original page
+    // should offset by +10px from the original location so it does not paste
+    // directly on top of the original annotation.
+    viewport.goToPage(0);
+    chrome.test.assertEq(0, viewport.getMostVisiblePage());
+
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    const pageDimensions0 = viewport.getPageScreenRect(0);
+    chrome.test.assertTrue(pageDimensions0 !== null);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageIndex);
+    chrome.test.assertEq(
+        pageDimensions0.x + originalAnnotation.textBoxRect.locationX + 10,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions0.y + originalAnnotation.textBoxRect.locationY + 10,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Subsequent paste on page 0 offsets by an additional +10px (+20px total).
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageIndex);
+    chrome.test.assertEq(
+        pageDimensions0.x + originalAnnotation.textBoxRect.locationX + 20,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions0.y + originalAnnotation.textBoxRect.locationY + 20,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    chrome.test.succeed();
+  },
+
+  async function testPasteAnnotationFallbackToOriginalPageWhenTooLarge() {
+    const manager = await setUpTextMode();
+
+    // Set up a multi-page document:
+    // Page 0: large page (400x500).
+    // Page 1: tiny page where both width and height are too small (50x50).
+    // Page 2: narrow page where width does not fit (50x500).
+    // Page 3: short page where height does not fit (400x30).
+    const dimensions = new MockDocumentDimensions(0, 0);
+    dimensions.addPage(400, 500);  // Page 0: 400x500
+    dimensions.addPage(50, 50);    // Page 1: 50x50
+    dimensions.addPage(50, 500);   // Page 2: 50x500
+    dimensions.addPage(400, 30);   // Page 3: 400x30
+    viewport.setDocumentDimensions(dimensions);
+
+    // Create and copy an annotation on page 0 with width 100, height 40 at
+    // (50, 50).
+    const originalAnnotation: TextAnnotation = {
+      ...getTestAnnotation(20),
+      pageIndex: 0,
+      text: 'Big Annotation',
+      textBoxRect: {height: 40, locationX: 50, locationY: 50, width: 100},
+    };
+    manager.saveAnnotationToClipboard(originalAnnotation, /*isCut=*/ false);
+
+    // Case 1: Scroll to page 1 (50x50). Neither width (100) nor height (40)
+    // fits (width 100 > page width 50).
+    viewport.goToPage(1);
+    chrome.test.assertEq(1, viewport.getMostVisiblePage());
+
+    let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    let initEvent = await whenInitEvent;
+
+    // Pasting falls back to page 0. Since it is a copy onto page 0, it is
+    // offset by +10px from the original location.
+    const pageDimensions0 = viewport.getPageScreenRect(0);
+    chrome.test.assertTrue(pageDimensions0 !== null);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageIndex);
+    chrome.test.assertEq(
+        pageDimensions0.x + originalAnnotation.textBoxRect.locationX + 10,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions0.y + originalAnnotation.textBoxRect.locationY + 10,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Case 2: Scroll to page 2 (50x500). Height (40) fits, but width (100) does
+    // not fit (width 100 > page width 50).
+    viewport.goToPage(2);
+    chrome.test.assertEq(2, viewport.getMostVisiblePage());
+
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    // Pasting falls back to page 0. Consecutive paste on page 0 cascades by
+    // another +10px (+20px total).
+    const pageDimensions0Case2 = viewport.getPageScreenRect(0);
+    chrome.test.assertTrue(pageDimensions0Case2 !== null);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageIndex);
+    chrome.test.assertEq(
+        pageDimensions0Case2.x + originalAnnotation.textBoxRect.locationX + 20,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions0Case2.y + originalAnnotation.textBoxRect.locationY + 20,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Case 3: Scroll to page 3 (400x30). Width (100) fits, but height (40) does
+    // not fit (height 40 > page height 30).
+    viewport.goToPage(3);
+    chrome.test.assertEq(3, viewport.getMostVisiblePage());
+
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    // Pasting falls back to page 0. Consecutive paste on page 0 cascades by
+    // another +10px (+30px total).
+    const pageDimensions0Case3 = viewport.getPageScreenRect(0);
+    chrome.test.assertTrue(pageDimensions0Case3 !== null);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageIndex);
+    chrome.test.assertEq(
+        pageDimensions0Case3.x + originalAnnotation.textBoxRect.locationX + 30,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions0Case3.y + originalAnnotation.textBoxRect.locationY + 30,
+        initEvent.detail.annotation.textBoxRect.locationY);
+
+    // Case 4: Cut annotation on page 0, paste while on page 1 (tiny page).
+    manager.saveAnnotationToClipboard(originalAnnotation, /*isCut=*/ true);
+    viewport.goToPage(1);
+    chrome.test.assertEq(1, viewport.getMostVisiblePage());
+
+    whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.pasteAnnotation());
+    initEvent = await whenInitEvent;
+
+    // Cut annotation is restored to its original position on page 0 (0 offset)
+    // and reuses the original ID.
+    const pageDimensions0Case4 = viewport.getPageScreenRect(0);
+    chrome.test.assertTrue(pageDimensions0Case4 !== null);
+    chrome.test.assertEq(0, initEvent.detail.annotation.pageIndex);
+    chrome.test.assertEq(20, initEvent.detail.annotation.id);
+    chrome.test.assertEq(
+        pageDimensions0Case4.x + originalAnnotation.textBoxRect.locationX,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        pageDimensions0Case4.y + originalAnnotation.textBoxRect.locationY,
+        initEvent.detail.annotation.textBoxRect.locationY);
 
     chrome.test.succeed();
   },

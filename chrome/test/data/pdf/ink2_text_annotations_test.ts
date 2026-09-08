@@ -1027,12 +1027,13 @@ chrome.test.runTests([
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertEq('Cut Me', textbox.$.textbox.value);
 
-    // Cut/pasted annotation reuses the same ID and is offset by +10px.
+    // Cut/pasted annotation reuses the same ID and is restored at the
+    // original position.
     const activeAnnotation = textbox.annotation;
     chrome.test.assertTrue(activeAnnotation !== null);
     chrome.test.assertEq(1, activeAnnotation.id);
-    chrome.test.assertEq(115, activeAnnotation.textBoxRect.locationX);
-    chrome.test.assertEq(63, activeAnnotation.textBoxRect.locationY);
+    chrome.test.assertEq(105, activeAnnotation.textBoxRect.locationX);
+    chrome.test.assertEq(53, activeAnnotation.textBoxRect.locationY);
 
     // Cut the newly pasted annotation without committing it first.
     keyDownOn(annotationsElement.$.textBox, 0, getCtrlModifier(), 'x');
