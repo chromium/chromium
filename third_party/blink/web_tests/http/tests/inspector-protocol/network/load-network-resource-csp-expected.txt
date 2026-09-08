@@ -11,4 +11,21 @@ Response for fetch with same-origin resource (should be allowed by CSP): {
         success : true
     }
 }
+Response for fetch with redirect to same-origin resource (should be allowed by CSP): {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : 2
+        success : true
+    }
+}
+Response for fetch with redirect to cross-origin resource (should be blocked by CSP): {
+    resource : {
+        headers : <object>
+        httpStatusCode : 302
+        netError : -30
+        netErrorName : net::ERR_BLOCKED_BY_CSP
+        success : false
+    }
+}
 

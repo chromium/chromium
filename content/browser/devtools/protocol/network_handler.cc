@@ -4197,6 +4197,12 @@ void NetworkHandler::LoadNetworkResource(
       return;
     }
 
+    if (!frame->policy_container_host()) {
+      callback->sendFailure(
+          Response::ServerError("Frame does not have a policy container"));
+      return;
+    }
+
     RenderFrameHostCSPContext csp_context(frame);
 
     network::CSPCheckResult result = csp_context.IsAllowedByCsp(
@@ -4230,12 +4236,34 @@ void NetworkHandler::LoadNetworkResource(
       return;
     }
 
+    auto redirect_check = base::BindRepeating(
+        [](scoped_refptr<PolicyContainerHost> policy_container_host,
+           base::WeakPtr<RenderFrameHostImpl> frame, const GURL& initial_url,
+           const net::RedirectInfo& redirect_info) -> bool {
+          if (!frame || !policy_container_host ||
+              frame->policy_container_host() != policy_container_host.get()) {
+            return false;
+          }
+          RenderFrameHostCSPContext csp_context(frame.get());
+          network::CSPCheckResult result = csp_context.IsAllowedByCsp(
+              policy_container_host->policies().content_security_policies,
+              network::mojom::CSPDirectiveName::ConnectSrc,
+              redirect_info.new_url, initial_url,
+              /*has_followed_redirect=*/true,
+              /*source_location=*/nullptr,
+              network::CSPContext::CHECK_ENFORCED_CSP,
+              /*is_opaque_fenced_frame=*/false);
+          return result.IsAllowed();
+        },
+        base::WrapRefCounted(frame->policy_container_host()),
+        frame->GetWeakPtr(), gurl);
+
     url_loader_factory.Bind(std::move(factory));
     auto loader = DevToolsNetworkResourceLoader::Create(
         std::move(url_loader_factory), std::move(gurl),
         frame->GetLastCommittedOrigin(), frame->ComputeSiteForCookies(),
         caching, include_credentials, std::move(complete_callback),
-        frame->IsOutermostMainFrame());
+        frame->IsOutermostMainFrame(), std::move(redirect_check));
     loaders_.emplace(std::move(loader), std::move(callback));
     return;
   }

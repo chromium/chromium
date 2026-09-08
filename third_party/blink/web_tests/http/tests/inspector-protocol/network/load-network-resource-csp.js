@@ -27,5 +27,17 @@
       sameOriginUrl,
       `Response for fetch with same-origin resource (should be allowed by CSP):`);
 
+  const redirectSameOriginUrl =
+      `http://127.0.0.1:8000/resources/redirect.php?url=http://127.0.0.1:8000/inspector-protocol/network/resources/source.map`;
+  await loadResource(
+      redirectSameOriginUrl,
+      `Response for fetch with redirect to same-origin resource (should be allowed by CSP):`);
+
+  const redirectCrossOriginUrl =
+      `http://127.0.0.1:8000/resources/redirect.php?url=https://localhost:8443/inspector-protocol/network/resources/source.map`;
+  await loadResource(
+      redirectCrossOriginUrl,
+      `Response for fetch with redirect to cross-origin resource (should be blocked by CSP):`);
+
   testRunner.completeTest();
 })

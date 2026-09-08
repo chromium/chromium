@@ -8,8 +8,10 @@
 #include <memory>
 #include <string_view>
 
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -33,6 +35,8 @@ class CONTENT_EXPORT DevToolsNetworkResourceLoader
                               bool success,
                               int net_error,
                               std::string content)>;
+  using RedirectCheckCallback =
+      base::RepeatingCallback<bool(const net::RedirectInfo& redirect_info)>;
   enum class Caching { kBypass, kDefault };
   enum class Credentials { kInclude, kSameSite };
 
@@ -48,7 +52,8 @@ class CONTENT_EXPORT DevToolsNetworkResourceLoader
       Caching caching,
       Credentials include_credentials,
       CompletionCallback complete_callback,
-      bool is_outermost_main_frame = false);
+      bool is_outermost_main_frame = false,
+      RedirectCheckCallback redirect_check_callback = {});
 
   ~DevToolsNetworkResourceLoader() override;
 
@@ -62,7 +67,8 @@ class CONTENT_EXPORT DevToolsNetworkResourceLoader
       network::ResourceRequest resource_request,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory,
-      CompletionCallback complete_callback);
+      CompletionCallback complete_callback,
+      RedirectCheckCallback redirect_check_callback);
   void DownloadAsStream();
 
   void OnDataReceived(std::string_view chunk,
@@ -72,11 +78,17 @@ class CONTENT_EXPORT DevToolsNetworkResourceLoader
 
   void OnRetry(base::OnceClosure start_retry) override;
 
+  void OnRedirect(const GURL& url_before_redirect,
+                  const net::RedirectInfo& redirect_info,
+                  const network::mojom::URLResponseHead& response_head,
+                  std::vector<std::string>* removed_headers);
+
   const network::ResourceRequest resource_request_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   CompletionCallback completion_callback_;
+  RedirectCheckCallback redirect_check_callback_;
   std::string content_;
 };
 

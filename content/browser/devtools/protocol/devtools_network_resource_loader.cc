@@ -11,7 +11,9 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -22,11 +24,13 @@ DevToolsNetworkResourceLoader::DevToolsNetworkResourceLoader(
     network::ResourceRequest resource_request,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory,
-    CompletionCallback completion_callback)
+    CompletionCallback completion_callback,
+    RedirectCheckCallback redirect_check_callback)
     : resource_request_(std::move(resource_request)),
       traffic_annotation_(traffic_annotation),
       url_loader_factory_(std::move(url_loader_factory)),
-      completion_callback_(std::move(completion_callback)) {
+      completion_callback_(std::move(completion_callback)),
+      redirect_check_callback_(std::move(redirect_check_callback)) {
   DownloadAsStream();
 }
 
@@ -47,7 +51,8 @@ DevToolsNetworkResourceLoader::Create(
     Caching caching,
     Credentials include_credentials,
     CompletionCallback completion_callback,
-    bool is_outermost_main_frame) {
+    bool is_outermost_main_frame,
+    RedirectCheckCallback redirect_check_callback) {
   network::ResourceRequest resource_request;
   resource_request.url = std::move(gurl);
   resource_request.request_initiator = origin;
@@ -90,7 +95,8 @@ DevToolsNetworkResourceLoader::Create(
 
   return base::WrapUnique(new DevToolsNetworkResourceLoader(
       std::move(resource_request), traffic_annotation,
-      std::move(url_loader_factory), std::move(completion_callback)));
+      std::move(url_loader_factory), std::move(completion_callback),
+      std::move(redirect_check_callback)));
 }
 
 void DevToolsNetworkResourceLoader::OnRetry(base::OnceClosure start_retry) {
@@ -102,7 +108,25 @@ void DevToolsNetworkResourceLoader::DownloadAsStream() {
   loader_ = network::SimpleURLLoader::Create(
       std::make_unique<network::ResourceRequest>(resource_request_),
       traffic_annotation_);
+  loader_->SetOnRedirectCallback(base::BindRepeating(
+      &DevToolsNetworkResourceLoader::OnRedirect, base::Unretained(this)));
   loader_->DownloadAsStream(url_loader_factory_.get(), this);
+}
+
+void DevToolsNetworkResourceLoader::OnRedirect(
+    const GURL& /*url_before_redirect*/,
+    const net::RedirectInfo& redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    std::vector<std::string>* /*removed_headers*/) {
+  if (redirect_check_callback_ &&
+      !redirect_check_callback_.Run(redirect_info)) {
+    const net::HttpResponseHeaders* response_headers =
+        response_head.headers.get();
+    loader_.reset();
+    std::move(completion_callback_)
+        .Run(this, response_headers, /*success=*/false, net::ERR_BLOCKED_BY_CSP,
+             "");
+  }
 }
 
 void DevToolsNetworkResourceLoader::OnDataReceived(std::string_view chunk,

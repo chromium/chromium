@@ -136,13 +136,16 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
   std::unique_ptr<protocol::DevToolsNetworkResourceLoader> CreateLoader(
       GURL url,
       protocol::DevToolsNetworkResourceLoader::Caching caching,
-      protocol::DevToolsNetworkResourceLoader::CompletionCallback callback) {
+      protocol::DevToolsNetworkResourceLoader::CompletionCallback callback,
+      protocol::DevToolsNetworkResourceLoader::RedirectCheckCallback
+          redirect_check_callback = {}) {
     return protocol::DevToolsNetworkResourceLoader::Create(
         CreateURLLoaderFactory(), std::move(url),
         current_frame_host()->GetLastCommittedOrigin(),
         current_frame_host()->ComputeSiteForCookies(), caching,
         protocol::DevToolsNetworkResourceLoader::Credentials::kInclude,
-        std::move(callback), current_frame_host()->IsOutermostMainFrame());
+        std::move(callback), current_frame_host()->IsOutermostMainFrame(),
+        std::move(redirect_check_callback));
   }
 
  protected:
@@ -300,6 +303,49 @@ IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
       frame->ComputeSiteForCookies().IsEquivalent(request->site_for_cookies));
   EXPECT_EQ(frame->GetLastCommittedOrigin(), request->request_initiator);
   EXPECT_FALSE(request->load_flags & net::LOAD_BYPASS_CACHE);
+}
+
+IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest, RedirectAllowed) {
+  base::RunLoop run_loop;
+  const GURL source_map_url(
+      embedded_test_server()->GetURL("a.com", "/devtools/source.map"));
+  const GURL redirect_url(embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + source_map_url.spec()));
+
+  auto loader = CreateLoader(
+      redirect_url, protocol::DevToolsNetworkResourceLoader::Caching::kDefault,
+      base::BindOnce(CheckSuccess, this, &run_loop),
+      base::BindRepeating([](const net::RedirectInfo&) { return true; }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
+                       RedirectBlockedByCallback) {
+  base::RunLoop run_loop;
+  const GURL source_map_url(
+      embedded_test_server()->GetURL("a.com", "/devtools/source.map"));
+  const GURL redirect_url(embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + source_map_url.spec()));
+
+  auto complete_callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         protocol::DevToolsNetworkResourceLoader* loader,
+         const net::HttpResponseHeaders* rh, bool success, int net_error,
+         std::string content) {
+        EXPECT_FALSE(success);
+        EXPECT_EQ(net_error, net::ERR_BLOCKED_BY_CSP);
+        EXPECT_EQ(content, "");
+        EXPECT_TRUE(rh);
+        EXPECT_EQ(rh->response_code(), 301);
+        run_loop->Quit();
+      },
+      &run_loop);
+
+  auto loader = CreateLoader(
+      redirect_url, protocol::DevToolsNetworkResourceLoader::Caching::kDefault,
+      std::move(complete_callback),
+      base::BindRepeating([](const net::RedirectInfo&) { return false; }));
+  run_loop.Run();
 }
 
 }  // namespace content
