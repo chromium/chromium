@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/url_data_source.h"
 
 class AccountId;
+class PrefService;
 
 namespace base {
 class RefCountedMemory;
@@ -23,7 +25,8 @@ namespace ash {
 // have it.
 class UserImageSource : public content::URLDataSource {
  public:
-  UserImageSource();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit UserImageSource(PrefService* local_state);
 
   UserImageSource(const UserImageSource&) = delete;
   UserImageSource& operator=(const UserImageSource&) = delete;
@@ -43,6 +46,9 @@ class UserImageSource : public content::URLDataSource {
   // the 100%-scale asset.
   static scoped_refptr<base::RefCountedMemory> GetUserImage(
       const AccountId& account_id);
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 }  // namespace ash

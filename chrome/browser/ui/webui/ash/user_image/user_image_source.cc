@@ -6,13 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -33,7 +33,10 @@ const char kFrameIndex[] = "frame";
 // Parses the user image URL, which looks like
 // "chrome://userimage/serialized-user-id?key1=value1&...&key_n=value_n",
 // to user email and frame.
-void ParseRequest(const GURL& url, std::string* email, int* frame) {
+void ParseRequest(PrefService& local_state,
+                  const GURL& url,
+                  std::string* email,
+                  int* frame) {
   DCHECK(url.is_valid());
   const std::string serialized_account_id = base::UnescapeURLComponent(
       url.GetPath().substr(1),
@@ -47,7 +50,7 @@ void ParseRequest(const GURL& url, std::string* email, int* frame) {
     account_id = *deserialized;
   } else {
     LOG(WARNING) << "Failed to deserialize account_id.";
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(&local_state);
     account_id = known_user.GetAccountId(
         serialized_account_id, std::string() /* id */, AccountType::UNKNOWN);
   }
@@ -172,7 +175,8 @@ scoped_refptr<base::RefCountedMemory> UserImageSource::GetUserImage(
   return GetUserImageInternal(account_id, -1);
 }
 
-UserImageSource::UserImageSource() = default;
+UserImageSource::UserImageSource(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
 UserImageSource::~UserImageSource() = default;
 
@@ -189,7 +193,7 @@ void UserImageSource::StartDataRequest(
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string email;
   int frame = -1;
-  ParseRequest(url, &email, &frame);
+  ParseRequest(local_state_.get(), url, &email, &frame);
   const AccountId account_id(AccountId::FromUserEmail(email));
   std::move(callback).Run(GetUserImageInternal(account_id, frame));
 }

@@ -186,8 +186,9 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
                               std::make_unique<SanitizedImageSource>(profile));
 
   // Set up the chrome://userimage/ source for <settings-user-list>.
-  content::URLDataSource::Add(profile,
-                              std::make_unique<ash::UserImageSource>());
+  // TODO(crbug.com/489929293): Avoid using g_browser_process.
+  content::URLDataSource::Add(profile, std::make_unique<ash::UserImageSource>(
+                                           g_browser_process->local_state()));
 
   OsSettingsManager* manager = OsSettingsManagerFactory::GetForProfile(profile);
   manager->AddHandlers(web_ui);

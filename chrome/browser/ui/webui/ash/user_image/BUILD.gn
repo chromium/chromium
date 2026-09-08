@@ -13,7 +13,6 @@ static_library("user_image") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/users/default_user_image",
     "//components/account_id",
     "//components/user_manager",
