@@ -163,17 +163,17 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "android/android_parental_controls_bridge.cc",
       "android/extension_parent_approval.cc",
       "android/favicon_fetcher.cc",
-      "android/supervised_user_service_bridge.cc",
       "android/supervised_user_service_platform_delegate.cc",
       "android/supervised_user_web_content_handler_impl.cc",
       "android/website_parent_approval.cc",
       "child_accounts/child_account_service_android.cc",
     ]
     deps += [
+      ":android_parental_controls_bridge_jni_headers",
       ":extension_parent_approval_jni_headers",
-      ":supervised_user_service_bridge_jni_headers",
       ":supervised_user_service_platform_delegate_jni_headers",
       ":website_parent_approval_jni_headers",
       "//chrome/android:chrome_jni_headers",
@@ -636,13 +636,13 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServicePlatformDelegate.java" ]
   }
 
-  generate_jni("supervised_user_service_bridge_jni_headers") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServiceBridge.java" ]
+  generate_jni("android_parental_controls_bridge_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/AndroidParentalControlsBridge.java" ]
   }
 
-  android_library("supervised_user_service_bridge_java") {
-    srcjar_deps = [ ":supervised_user_service_bridge_jni_headers" ]
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServiceBridge.java" ]
+  android_library("android_parental_controls_bridge_java") {
+    srcjar_deps = [ ":android_parental_controls_bridge_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/AndroidParentalControlsBridge.java" ]
     deps = [
       "//base:base_java",
       "//build/android:build_java",

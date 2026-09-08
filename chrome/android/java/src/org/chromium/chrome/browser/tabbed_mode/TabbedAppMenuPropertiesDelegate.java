@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
-import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
+import org.chromium.chrome.browser.supervised_user.AndroidParentalControlsBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -560,10 +560,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
             modelList.add(buildManagedByItem(currentTab));
         }
-        if (shouldShowContentFilterHelpCenterMenuItem(currentTab)) {
+        if (shouldShowContentFilterHelpCenterMenuItem()) {
             AppMenuItemUtils.maybeAddDividerLine(
                     modelList, R.id.menu_item_content_filter_divider_line_id);
-            modelList.add(buildContentFilterHelpCenterMenuItem(currentTab));
+            modelList.add(buildContentFilterHelpCenterMenuItem());
         }
 
         // Default browser promo
@@ -746,10 +746,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             AppMenuItemUtils.maybeAddDividerLine(modelList, R.id.managed_by_divider_line_id);
             modelList.add(buildManagedByItem(currentTab));
         }
-        if (shouldShowContentFilterHelpCenterMenuItem(currentTab)) {
+        if (shouldShowContentFilterHelpCenterMenuItem()) {
             AppMenuItemUtils.maybeAddDividerLine(
                     modelList, R.id.menu_item_content_filter_divider_line_id);
-            modelList.add(buildContentFilterHelpCenterMenuItem(currentTab));
+            modelList.add(buildContentFilterHelpCenterMenuItem());
         }
 
         // Default browser promo menu item (entry point).
@@ -1651,10 +1651,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return currentTab != null && ManagedBrowserUtils.isBrowserManaged(currentTab.getProfile());
     }
 
-    @Contract("null -> false")
-    protected boolean shouldShowContentFilterHelpCenterMenuItem(@Nullable Tab currentTab) {
-        return currentTab != null
-                && SupervisedUserServiceBridge.isSupervisedLocally(currentTab.getProfile());
+    protected boolean shouldShowContentFilterHelpCenterMenuItem() {
+        return AndroidParentalControlsBridge.isSupervisedLocally();
     }
 
     private ListItem buildManagedByItem(Tab currentTab) {
@@ -1670,8 +1668,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         isMenuIconAtStart()));
     }
 
-    private ListItem buildContentFilterHelpCenterMenuItem(Tab currentTab) {
-        assert shouldShowContentFilterHelpCenterMenuItem(currentTab);
+    private ListItem buildContentFilterHelpCenterMenuItem() {
+        assert shouldShowContentFilterHelpCenterMenuItem();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 AppMenuItemUtils.buildModelForStandardMenuItem(

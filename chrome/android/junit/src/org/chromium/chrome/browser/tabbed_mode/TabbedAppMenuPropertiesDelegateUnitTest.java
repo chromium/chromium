@@ -2434,7 +2434,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         doReturn(true)
                 .when(mTabbedAppMenuPropertiesDelegate)
-                .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
+                .shouldShowContentFilterHelpCenterMenuItem();
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowManagedByMenuItem(any(Tab.class));
@@ -2593,7 +2593,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setMenuOptions(new MenuOptions().withShowAddToHomeScreen());
         doReturn(true)
                 .when(mTabbedAppMenuPropertiesDelegate)
-                .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
+                .shouldShowContentFilterHelpCenterMenuItem();
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
@@ -3658,7 +3658,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowManagedByMenuItem(any(Tab.class));
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
-                .shouldShowContentFilterHelpCenterMenuItem(any(Tab.class));
+                .shouldShowContentFilterHelpCenterMenuItem();
         doReturn(true)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowAutoDarkItem(any(Tab.class), eq(false));
