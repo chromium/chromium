@@ -38,7 +38,7 @@ String::~String() {
 Buffer::Buffer() = default;
 
 Buffer::Buffer(const uint8_t* data, size_t size) : size_(size) {
-  UNSAFE_TODO(data_ = static_cast<uint8_t*>(malloc(size)));
+  data_ = static_cast<uint8_t*>(malloc(size));
   UNSAFE_TODO(memcpy(data_, data, size));
 }
 
