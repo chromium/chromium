@@ -651,14 +651,23 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
     base::WeakPtr<password_manager::PasswordManagerDriver> weak_driver,
     const autofill::PasswordSuggestionRequest& request,
     password_manager::CredManController::PasskeyDelayCallback delay_callback) {
+  if (!weak_driver || !weak_driver->CanShowAutofillUi()) {
+    return;
+  }
+
+  // The visibility controller is lazily created when showing a surface. If
+  // already created, intentionally re-check whether the surface can still be
+  // shown to prevent outdated sheets or overwriting an active surface.
+  if (keyboard_replacing_surface_visibility_controller_ &&
+      !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
+    return;
+  }
+
   // The delay callback gets split because one instance has to be passed to the
   // CredMan controller. If CredMan will not be used, that instance is destroyed
   // without being called.
   auto split_delay_callback =
       base::SplitOnceCallback(std::move(delay_callback));
-  if (!weak_driver || !weak_driver->CanShowAutofillUi()) {
-    return;
-  }
   password_manager::ContentPasswordManagerDriver* driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(
           weak_driver.get());

@@ -58,6 +58,7 @@
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_controller.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
 #endif
@@ -401,6 +402,12 @@ class ChromePasswordManagerClient
     touch_to_fill_controller_ = std::move(controller);
   }
 
+  void SetKeyboardReplacingSurfaceVisibilityControllerForTesting(
+      std::unique_ptr<
+          password_manager::KeyboardReplacingSurfaceVisibilityController>
+          controller) {
+    keyboard_replacing_surface_visibility_controller_ = std::move(controller);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // defined(UNIT_TEST)
 
