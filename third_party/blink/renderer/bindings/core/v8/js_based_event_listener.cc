@@ -85,7 +85,12 @@ void JSBasedEventListener::Invoke(
   if (!event->CanBeDispatchedInWorld(GetWorld()))
     return;
 
-  {
+  // Standard JSEventListeners (registered via addEventListener) always hold an
+  // already-compiled callback object (a function or an object with
+  // handleEvent). Only JSEventHandlers (such as inline onclick="..." content
+  // attributes) require lazy compilation of their script bodies via
+  // GetListenerObject().
+  if (!IsJSEventListener()) {
     v8::HandleScope handle_scope(isolate);
 
     // Calling |GetListenerObject()| here may cause compilation of the
@@ -109,6 +114,10 @@ void JSBasedEventListener::Invoke(
   probe::InvokeEventHandler probe_scope(*script_state_of_listener, event, this);
   ScriptState::Scope listener_script_state_scope(script_state_of_listener);
 
+  // Step 6: Let |global| be listener callback’s associated Realm’s global
+  // object.
+  LocalDOMWindow* window = ToLocalDOMWindow(script_state_of_listener);
+
   // https://dom.spec.whatwg.org/#firing-events
   // Step 2. of firing events: Let event be the result of creating an event
   // given eventConstructor, in the relevant Realm of target.
@@ -116,31 +125,41 @@ void JSBasedEventListener::Invoke(
   // |js_event|, a V8 wrapper object for |event|, must be created in the
   // relevant realm of the event target. The world must match the event
   // listener's world.
-  ScriptState* script_state_of_event_target =
-      ToScriptState(execution_context_of_event_target, GetWorld());
-  if (!script_state_of_event_target) {
-    return;
-  }
-  DCHECK_EQ(script_state_of_event_target->World().GetWorldId(),
-            GetWorld().GetWorldId());
-
-  // Step 6: Let |global| be listener callback’s associated Realm’s global
-  // object.
-  LocalDOMWindow* window = ToLocalDOMWindow(script_state_of_listener);
-
-  // Check if the current context, which is set to the listener's relevant
-  // context by creating |listener_script_state_scope|, has access to the
-  // event target's relevant context before creating |js_event|. SecurityError
-  // is thrown if it doesn't have access.
-  if (!BindingSecurity::ShouldAllowAccessToV8Context(
-          script_state_of_listener, script_state_of_event_target)) {
-    LocalDOMWindow* target_window =
-        DynamicTo<LocalDOMWindow>(execution_context_of_event_target);
-    if (window && target_window) {
-      window->PrintErrorMessage(target_window->CrossDomainAccessErrorMessage(
-          window, DOMWindow::CrossDocumentAccessPolicy::kDisallowed));
+  //
+  // In the common case where the event target and listener share the same
+  // ExecutionContext, bypass the expensive ToScriptState() context map lookup
+  // and redundant BindingSecurity checks (same-context access is trivially
+  // safe). This also directly provides the ScriptState needed to wrap the Event
+  // in the target's realm.
+  ScriptState* script_state_of_event_target = nullptr;
+  if (execution_context_of_event_target ==
+      ToExecutionContext(script_state_of_listener)) {
+    CHECK_EQ(script_state_of_listener->World().GetWorldId(),
+             GetWorld().GetWorldId());
+    script_state_of_event_target = script_state_of_listener;
+  } else {
+    script_state_of_event_target =
+        ToScriptState(execution_context_of_event_target, GetWorld());
+    if (!script_state_of_event_target) {
+      return;
     }
-    return;
+    CHECK_EQ(script_state_of_event_target->World().GetWorldId(),
+             GetWorld().GetWorldId());
+
+    // Check if the current context, which is set to the listener's relevant
+    // context by creating |listener_script_state_scope|, has access to the
+    // event target's relevant context before creating |js_event|. SecurityError
+    // is thrown if it doesn't have access.
+    if (!BindingSecurity::ShouldAllowAccessToV8Context(
+            script_state_of_listener, script_state_of_event_target)) {
+      LocalDOMWindow* target_window =
+          DynamicTo<LocalDOMWindow>(execution_context_of_event_target);
+      if (window && target_window) {
+        window->PrintErrorMessage(target_window->CrossDomainAccessErrorMessage(
+            window, DOMWindow::CrossDocumentAccessPolicy::kDisallowed));
+      }
+      return;
+    }
   }
 
   v8::Local<v8::Value> js_event =
