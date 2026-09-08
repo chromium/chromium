@@ -59,10 +59,12 @@ const Document& LinkResource::GetDocument() const {
 }
 
 TextEncoding LinkResource::GetCharset() const {
-  AtomicString charset = owner_->FastGetAttribute(html_names::kCharsetAttr);
-  if (charset.empty() && GetDocument().GetFrame())
+  TextEncoding charset(
+      owner_->FastGetAttribute(html_names::kCharsetAttr).GetString());
+  if (!charset.IsValid() && GetDocument().GetFrame()) {
     return GetDocument().Encoding();
-  return TextEncoding(charset);
+  }
+  return charset;
 }
 
 ExecutionContext* LinkResource::GetExecutionContext() {

@@ -147,8 +147,8 @@ Resource* PreloadRequest::Start(Document* document) {
     params.SetDecoderOptions(TextResourceDecoderOptions::CreateUTF8Decode());
   } else if (resource_type_ == ResourceType::kScript ||
              resource_type_ == ResourceType::kCSSStyleSheet) {
-    params.SetCharset(charset_.empty() ? document->Encoding()
-                                       : TextEncoding(charset_));
+    TextEncoding charset(charset_);
+    params.SetCharset(charset.IsValid() ? charset : document->Encoding());
   }
   FetchParameters::SpeculativePreloadType speculative_preload_type =
       FetchParameters::SpeculativePreloadType::kInDocument;
