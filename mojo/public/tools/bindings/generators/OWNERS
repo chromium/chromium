@@ -2,3 +2,4 @@
 per-file mojom_ts_generator.py=rbpotter@chromium.org
 
 per-file mojom_rust_generator.py=file://mojo/public/rust/OWNERS
+per-file mojom_mojolpm_generator.py=file://mojo/public/tools/fuzzers/OWNERS

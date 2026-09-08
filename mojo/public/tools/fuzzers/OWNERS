@@ -1,2 +1,8 @@
+ortuno@chromium.org
+
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# fuzzer owners are primary OWNERS here, but the list of names is duplicated,
+# because OWNERS files cannot be self-referencing
+per-file *.mojom=ortuno@chromium.org
