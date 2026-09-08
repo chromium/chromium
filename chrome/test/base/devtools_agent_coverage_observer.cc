@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/threading/thread_restrictions.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace {

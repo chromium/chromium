@@ -27,6 +27,7 @@
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/renderer/extension_localization_throttle.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/resource_request.h"

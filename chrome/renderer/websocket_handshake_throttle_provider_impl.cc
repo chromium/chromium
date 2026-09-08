@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)

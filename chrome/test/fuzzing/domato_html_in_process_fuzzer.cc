@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/strings/escape.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/domato_html_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/domato_html_fuzzer_grammar.pb.h"

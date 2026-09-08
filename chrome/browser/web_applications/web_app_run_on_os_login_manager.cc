@@ -22,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 

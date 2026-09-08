@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/public/browser/navigation_controller.h"
 
 namespace web_app {
 

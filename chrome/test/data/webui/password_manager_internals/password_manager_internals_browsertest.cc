@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/window_open_disposition.h"
 
 class PasswordManagerInternalsBrowserTest : public WebUIMochaBrowserTest {
  protected:

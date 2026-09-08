@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"

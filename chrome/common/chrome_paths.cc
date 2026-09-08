@@ -17,6 +17,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)

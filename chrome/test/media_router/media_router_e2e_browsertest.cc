@@ -18,6 +18,7 @@
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/test_data_util.h"

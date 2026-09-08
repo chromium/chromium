@@ -35,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;

@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen_base.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

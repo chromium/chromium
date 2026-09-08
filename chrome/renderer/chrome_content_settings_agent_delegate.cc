@@ -5,7 +5,9 @@
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
+#include "ui/base/page_transition_types.h"
 
 // TODO(b/197163596): Remove File Manager constants
 #if BUILDFLAG(IS_CHROMEOS)

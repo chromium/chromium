@@ -44,7 +44,9 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {

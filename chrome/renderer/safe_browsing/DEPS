@@ -1,13 +1,13 @@
 include_rules = [
-  "+components/paint_preview/common",
-  "+components/safe_browsing/content/renderer",
-  "+components/safe_browsing/content/password_protection/visual_utils.h",
-  "+components/safe_browsing/core/common",
-  "+components/safe_browsing/core/fbs/client_model_generated.h",
-  "+components/safe_browsing/core/common/proto/csd.pb.h",
-  "+components/safe_browsing/core/common/proto/client_model.pb.h",
-  "+components/safe_browsing/core/common/features.h",
   "+cc/paint",
+  "+components/paint_preview/common",
+  "+components/safe_browsing/content/password_protection/visual_utils.h",
+  "+components/safe_browsing/content/renderer",
+  "+components/safe_browsing/core/common",
+  "+components/safe_browsing/core/common/features.h",
+  "+components/safe_browsing/core/common/proto/client_model.pb.h",
+  "+components/safe_browsing/core/common/proto/csd.pb.h",
+  "+components/safe_browsing/core/fbs/client_model_generated.h",
   "+third_party/smhasher",
 ]
 
@@ -15,13 +15,13 @@ include_rules = [
 # code from the browser and the renderer.
 specific_include_rules = {
   "phishing_classifier_browsertest\\.cc": [
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+content/public/browser",
   ],
   "phishing_classifier_delegate_browsertest\\.cc": [
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+content/public/browser",
   ],

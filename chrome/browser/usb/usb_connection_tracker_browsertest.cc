@@ -7,6 +7,7 @@
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/usb/usb_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class UsbConnectionTrackerTest : public DeviceConnectionTrackerTestBase {

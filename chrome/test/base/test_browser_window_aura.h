@@ -5,10 +5,10 @@
 #ifndef CHROME_TEST_BASE_TEST_BROWSER_WINDOW_AURA_H_
 #define CHROME_TEST_BASE_TEST_BROWSER_WINDOW_AURA_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/test_browser_window.h"
-
-#include <memory>
 
 namespace aura {
 class Window;

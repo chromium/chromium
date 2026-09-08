@@ -15,10 +15,12 @@
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/page_transition_types.h"
 
 namespace visited_url_ranking {
 

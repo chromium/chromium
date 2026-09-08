@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/geolocation_element_css_fuzzer_grammar.h"
 #include "chrome/test/fuzzing/geolocation_element_css_fuzzer_grammar.pb.h"

@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"

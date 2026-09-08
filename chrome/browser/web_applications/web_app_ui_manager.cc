@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/common/chrome_switches.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 

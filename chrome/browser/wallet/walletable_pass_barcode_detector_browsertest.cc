@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"

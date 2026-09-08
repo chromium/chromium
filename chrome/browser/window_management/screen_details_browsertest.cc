@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"

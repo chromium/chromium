@@ -16,6 +16,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/google/core/common/google_util.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"

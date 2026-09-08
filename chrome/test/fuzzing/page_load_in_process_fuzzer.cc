@@ -19,6 +19,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "ui/base/window_open_disposition.h"
 
 // A fuzzer which can test the interaction of HTTP response parameters
 // and HTML content. This is a large search space and it's unlikely that

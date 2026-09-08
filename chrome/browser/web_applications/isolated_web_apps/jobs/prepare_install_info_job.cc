@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "ui/base/page_transition_types.h"
 
 namespace web_app {
 
