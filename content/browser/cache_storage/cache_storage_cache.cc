@@ -1760,8 +1760,9 @@ void CacheStorageCache::WriteSideDataComplete(
 void CacheStorageCache::Put(blink::mojom::BatchOperationPtr operation,
                             int64_t trace_id,
                             ErrorCallback callback) {
-  CHECK(BACKEND_OPEN == backend_state_ || initializing_,
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/558089492): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(BACKEND_OPEN == backend_state_ || initializing_);
   CHECK_EQ(blink::mojom::OperationType::kPut, operation->operation_type,
            base::NotFatalUntil::M158);
   Put(std::move(operation->request), std::move(operation->response), trace_id,
