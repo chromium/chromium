@@ -67,6 +67,7 @@ class SendTabToSelfContextMenuDelegate;
 }
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -241,13 +242,16 @@ class RenderViewContextMenu
   // The |initiator| parameter is the origin that supplied the URL being
   // navigated to; it may be an opaque origin with no precursor if the URL came
   // from the browser itself or the user.
-  void OpenURLWithExtraHeaders(const GURL& url,
-                               const GURL& referring_url,
-                               const url::Origin& initiator,
-                               WindowOpenDisposition disposition,
-                               ui::PageTransition transition,
-                               const std::string& extra_headers,
-                               bool started_from_context_menu) override;
+  void OpenURLWithExtraHeaders(
+      const GURL& url,
+      const GURL& referring_url,
+      const url::Origin& initiator,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      const std::string& extra_headers,
+      bool started_from_context_menu,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 
  private:
   std::u16string GetElidedSelectionText(size_t max_length,

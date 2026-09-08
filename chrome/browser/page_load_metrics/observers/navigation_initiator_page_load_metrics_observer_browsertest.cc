@@ -673,9 +673,9 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
       1);
 }
 
-// Tests that opening a link in a new tab via the context menu records kOther
-// (and not kContextMenuSearch) in Navigation.InitiatorType.All, and does not
-// record it in Navigation.InitiatorType.SRP for a non-Google URL.
+// Tests that opening a link in a new tab via the context menu records
+// kContextMenuOpenLink in Navigation.InitiatorType.All, and does not record it
+// in Navigation.InitiatorType.SRP for a non-Google URL.
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
                        ContextMenuOpenLinkInNewTab) {
   base::HistogramTester histogram_tester;
@@ -709,7 +709,17 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.All",
-      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.SRP",
       MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
@@ -721,8 +731,8 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 }
 
 // Tests that opening a link to Google Search in a new tab via the context menu
-// records kOther (and not kContextMenuSearch) in both
-// Navigation.InitiatorType.All and Navigation.InitiatorType.SRP.
+// records kContextMenuOpenLink in both Navigation.InitiatorType.All and
+// Navigation.InitiatorType.SRP.
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
                        ContextMenuOpenLinkInNewTabSRP) {
   base::HistogramTester histogram_tester;
@@ -758,14 +768,141 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.All",
-      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      1);
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.SRP",
-      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 1);
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kOther)), 0);
   histogram_tester.ExpectBucketCount(
       "Navigation.InitiatorType.All",
       MetricValue(
           GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch)),
+      0);
+}
+
+// Tests that opening a link in a new window via the context menu records
+// kContextMenuOpenLink in Navigation.InitiatorType.All.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuOpenLinkInNewWindow) {
+  base::HistogramTester histogram_tester;
+
+  GURL link_url =
+      embedded_test_server()->GetURL("www.example.com", "/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL("data:text/html,<a id='link' href='" +
+                                          link_url.spec() + "'>ClickMe</a>")));
+
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  gfx::Point center =
+      gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+          GetActiveWebContents(), "link"));
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight, center);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), link_url);
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      0);
+}
+
+// Tests that opening a link in an incognito window via the context menu records
+// kContextMenuOpenLink in Navigation.InitiatorType.All.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuOpenLinkInIncognito) {
+  base::HistogramTester histogram_tester;
+
+  GURL link_url =
+      embedded_test_server()->GetURL("www.example.com", "/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL("data:text/html,<a id='link' href='" +
+                                          link_url.spec() + "'>ClickMe</a>")));
+
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  gfx::Point center =
+      gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+          GetActiveWebContents(), "link"));
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight, center);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), link_url);
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      0);
+}
+
+// Tests that opening a link in split view via the context menu records
+// kContextMenuOpenLink in Navigation.InitiatorType.All.
+IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
+                       ContextMenuOpenLinkInSplitView) {
+  base::HistogramTester histogram_tester;
+
+  GURL link_url =
+      embedded_test_server()->GetURL("www.example.com", "/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                     GURL("data:text/html,<a id='link' href='" +
+                                          link_url.spec() + "'>ClickMe</a>")));
+
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  gfx::Point center =
+      gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+          GetActiveWebContents(), "link"));
+  content::SimulateMouseClickAt(GetActiveWebContents(), 0,
+                                blink::WebMouseEvent::Button::kRight, center);
+
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), link_url);
+
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.All",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Navigation.InitiatorType.SRP",
+      MetricValue(
+          GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink)),
       0);
 }
 

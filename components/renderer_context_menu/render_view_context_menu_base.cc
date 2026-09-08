@@ -486,9 +486,10 @@ void RenderViewContextMenuBase::OpenURL(const GURL& url,
                                         const url::Origin& initiator,
                                         WindowOpenDisposition disposition,
                                         ui::PageTransition transition) {
-  OpenURLWithExtraHeaders(url, referring_url, initiator, disposition,
-                          transition, "" /* extra_headers */,
-                          true /* started_from_context_menu */);
+  OpenURLWithExtraHeaders(
+      url, referring_url, initiator, disposition, transition,
+      /*extra_headers=*/"", /*started_from_context_menu=*/true,
+      /*navigation_handle_callback=*/{});
 }
 
 void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
@@ -498,13 +499,15 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     const std::string& extra_headers,
-    bool started_from_context_menu) {
+    bool started_from_context_menu,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   content::OpenURLParams open_url_params = GetOpenURLParamsWithExtraHeaders(
       url, referring_url, initiator, disposition, transition, extra_headers,
       started_from_context_menu);
 
   source_web_contents_->OpenURL(open_url_params,
-                                /*navigation_handle_callback=*/{});
+                                std::move(navigation_handle_callback));
 }
 
 content::OpenURLParams

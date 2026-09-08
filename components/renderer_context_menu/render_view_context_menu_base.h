@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
@@ -27,6 +28,7 @@
 #include "ui/menus/simple_menu_model.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }
@@ -174,13 +176,16 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                ui::PageTransition transition);
 
   // Opens the specified URL with extra headers.
-  virtual void OpenURLWithExtraHeaders(const GURL& url,
-                                       const GURL& referrer,
-                                       const url::Origin& initiator,
-                                       WindowOpenDisposition disposition,
-                                       ui::PageTransition transition,
-                                       const std::string& extra_headers,
-                                       bool started_from_context_menu);
+  virtual void OpenURLWithExtraHeaders(
+      const GURL& url,
+      const GURL& referrer,
+      const url::Origin& initiator,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      const std::string& extra_headers,
+      bool started_from_context_menu,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback);
 
   virtual ui::IsNewFeatureAtValue GetIsNewFeatureAtValue(
       const std::string& feature_name) const;

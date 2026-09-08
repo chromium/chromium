@@ -28,6 +28,8 @@ std::string StringifyChromeInitiatorLocation(
       return "Reload";
     case ChromeInitiatorLocation::kContextMenuSearch:
       return "ContextMenuSearch";
+    case ChromeInitiatorLocation::kContextMenuOpenLink:
+      return "ContextMenuOpenLink";
     case ChromeInitiatorLocation::kOther:
       return "Other";
   }
@@ -76,6 +78,15 @@ void AttachContextMenuSearchNavigationHandleUserData(
       GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch),
       StringifyChromeInitiatorLocation(
           ChromeInitiatorLocation::kContextMenuSearch));
+}
+
+void AttachContextMenuOpenLinkNavigationHandleUserData(
+    content::NavigationHandle& navigation_handle) {
+  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+      navigation_handle,
+      GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuOpenLink),
+      StringifyChromeInitiatorLocation(
+          ChromeInitiatorLocation::kContextMenuOpenLink));
 }
 
 void MarkNavigationServedBySearchPrefetch(
