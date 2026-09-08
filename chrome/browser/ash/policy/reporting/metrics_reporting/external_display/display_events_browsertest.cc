@@ -10,17 +10,12 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/external_display/display_events_observer.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -45,20 +40,12 @@ static constexpr char kTestUserEmail[] = "test@example.com";
 static constexpr char kTestAffiliationId[] = "test_affiliation_id";
 static constexpr char kDMToken[] = "token";
 
-class DisplayEventsBrowserTest : public policy::DevicePolicyCrosBrowserTest,
-                                 public ::testing::WithParamInterface<bool> {
+class DisplayEventsBrowserTest : public policy::DevicePolicyCrosBrowserTest {
  protected:
   DisplayEventsBrowserTest()
       : test_account_id_(AccountId::FromUserEmailGaiaId(
             kTestUserEmail,
             signin::GetTestGaiaIdForEmail(kTestUserEmail))) {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::features::kExternalDisplayEventTelemetry);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::features::kExternalDisplayEventTelemetry);
-    }
     // Add unaffiliated user for testing purposes.
     login_manager_mixin_.AppendRegularUsers(1);
     policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDMToken));
@@ -150,42 +137,33 @@ class DisplayEventsBrowserTest : public policy::DevicePolicyCrosBrowserTest,
     EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
   }
 
-  bool IsExternalDisplayEventTelemetryEnabled() { return GetParam(); }
-
  private:
   const AccountId test_account_id_;
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, test_account_id_};
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     DisplayEventsBrowserTest,
     DisplayConnectedEventCollectedWhenPolicyEnabledWithAffiliatedUser) {
-  RunExternalDisplayEventCommon(
-      ExternalDisplayEventInfo::State::kAdd,
-      /*enable_graphics_status_policy=*/true,
-      /*is_affiliated=*/true,
-      IsExternalDisplayEventTelemetryEnabled()
-          ? std::make_optional(MetricEventType::EXTERNAL_DISPLAY_CONNECTED)
-          : std::nullopt);
+  RunExternalDisplayEventCommon(ExternalDisplayEventInfo::State::kAdd,
+                                /*enable_graphics_status_policy=*/true,
+                                /*is_affiliated=*/true,
+                                MetricEventType::EXTERNAL_DISPLAY_CONNECTED);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     DisplayEventsBrowserTest,
     DisplayDisconnectedEventCollectedWhenPolicyEnabledWithAffiliatedUser) {
-  RunExternalDisplayEventCommon(
-      ExternalDisplayEventInfo::State::kRemove,
-      /*enable_graphics_status_policy=*/true,
-      /*is_affiliated=*/true,
-      IsExternalDisplayEventTelemetryEnabled()
-          ? std::make_optional(MetricEventType::EXTERNAL_DISPLAY_DISCONNECTED)
-          : std::nullopt);
+  RunExternalDisplayEventCommon(ExternalDisplayEventInfo::State::kRemove,
+                                /*enable_graphics_status_policy=*/true,
+                                /*is_affiliated=*/true,
+                                MetricEventType::EXTERNAL_DISPLAY_DISCONNECTED);
 }
 
-IN_PROC_BROWSER_TEST_P(DisplayEventsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DisplayEventsBrowserTest,
                        NoDisplayEventsWhenPolicyEnabledWithUnaffiliatedUser) {
   RunExternalDisplayEventCommon(ExternalDisplayEventInfo::State::kAdd,
                                 /*enable_graphics_status_policy=*/true,
@@ -193,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(DisplayEventsBrowserTest,
                                 /*expected_metric_event_type=*/std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_P(DisplayEventsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DisplayEventsBrowserTest,
                        NoDisplayEventsWhenPolicyDisabledWithAffiliatedUser) {
   RunExternalDisplayEventCommon(ExternalDisplayEventInfo::State::kAdd,
                                 /*enable_graphics_status_policy=*/false,
@@ -201,19 +179,13 @@ IN_PROC_BROWSER_TEST_P(DisplayEventsBrowserTest,
                                 /*expected_metric_event_type=*/std::nullopt);
 }
 
-IN_PROC_BROWSER_TEST_P(DisplayEventsBrowserTest,
+IN_PROC_BROWSER_TEST_F(DisplayEventsBrowserTest,
                        NoDisplayEventsWhenPolicyDisabledWithUnaffiliatedUser) {
   RunExternalDisplayEventCommon(ExternalDisplayEventInfo::State::kRemove,
                                 /*enable_graphics_status_policy=*/false,
                                 /*is_affiliated=*/false,
                                 /*expected_metric_event_type=*/std::nullopt);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    DisplayEventsBrowserTest,
-    DisplayEventsBrowserTest,
-    ::testing::Values(/*enable_external_display_event_telemetry=*/true,
-                      /*enable_external_display_event_telemetry=*/false));
 
 }  // namespace
 }  // namespace reporting
