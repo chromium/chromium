@@ -63,9 +63,12 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 

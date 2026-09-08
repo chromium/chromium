@@ -20,34 +20,36 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/menus/simple_menu_model.h"
-#include "ui/views/controls/menu/menu_model_adapter.h"
-#include "ui/views/controls/menu/menu_runner.h"
-#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom-forward.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 
-namespace user_education {
-class HelpBubbleHandler;
+class ComposeboxEverywhereHandler;
+class MostVisitedHandler;
+class MostVisitedPrefObserver;
+class OmniboxContextMenu;
+class OmniboxEverywhereHandler;
+class OmniboxEverywherePageHandler;
+class OmniboxEverywhereUI;
+class OmniboxPopupFileSelector;
+class Profile;
+
+namespace contextual_search {
+class ContextualSearchSessionHandle;
 }
 
 namespace omnibox_everywhere_debug {
 class OmniboxEverywhereDebugPageHandler;
 }
 
-class ComposeboxEverywhereHandler;
-class MostVisitedHandler;
-class MostVisitedPrefObserver;
-class OmniboxEverywhereHandler;
-class OmniboxEverywherePageHandler;
-class Profile;
-class OmniboxPopupFileSelector;
-class OmniboxContextMenu;
-
-namespace contextual_search {
-class ContextualSearchSessionHandle;
+namespace user_education {
+class HelpBubbleHandler;
 }
 
-class OmniboxEverywhereUI;
+namespace views {
+class MenuModelAdapter;
+class MenuRunner;
+}  // namespace views
 
 class OmniboxEverywhereUIConfig
     : public DefaultTopChromeWebUIConfig<OmniboxEverywhereUI> {
@@ -201,7 +203,7 @@ class OmniboxEverywhereUI
     std::optional<contextual_search::ContextUploadErrorType> error_type;
   };
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
   bool is_composebox_mode_ = false;
 
   std::vector<PendingUploadStatus> pending_upload_statuses_;
