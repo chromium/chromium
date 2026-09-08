@@ -42,8 +42,7 @@ export function getHtml(this: SettingsAccountPageElement) {
         <!-- Manage your Google Account -->
         <cr-link-row id="manage-google-account" class="hr"
             label="$i18n{manageGoogleAccount}"
-            @click="${this.onManageGoogleAccountClick_}"
-            ?hidden="${!!this.syncStatus_?.hasError}" external>
+            @click="${this.onManageGoogleAccountClick_}" external>
         </cr-link-row>
 
         <if expr="is_chromeos">
