@@ -37,7 +37,12 @@ graph TD
         Imp2["Implementer & Local Tester #2"]
     end
 
-    subgraph RemoteEval["Phase 3: Async Remote Evaluation"]
+    subgraph Review["Phase 3: Pre-Upload Review & Refinement (Workspace: 'share')"]
+        Rev1["Code Reviewer & Refiner #1"]
+        Rev2["Code Reviewer & Refiner #2"]
+    end
+
+    subgraph RemoteEval["Phase 4: Async Remote Evaluation"]
         PP1["Pinpoint & Gerrit Lifecycle Worker #1"]
         PP2["Pinpoint & Gerrit Lifecycle Worker #2"]
     end
@@ -46,10 +51,13 @@ graph TD
     Discovery -->|2. Propose Macro-Hypotheses| Main
     Main -->|3. Dispatch Candidate| Execution
     Execution -->|4. Verified Patch & Smoke Test| Main
-    Main -->|5. Upload CL & Launch Pinpoint on M1| RemoteEval
-    Main -.->|6. Pipeline Next Candidate (Do not wait idle)| Execution
-    RemoteEval -->|7. Stat-Significant Win / Regressed| Main
-    Main -->|8. Accept (Keep CL) or Reject (Abandon CL)| Main
+    Main -->|5. Pre-Upload Code Review & Quality Gate| Review
+    Review -->|6a. Conceptually Flawed: Veto & Discard| Main
+    Review -->|6b. Approved & Refined Patch| Main
+    Main -->|7. Upload WIP CL & Launch Pinpoint on M1| RemoteEval
+    Main -.->|8. Pipeline Next Candidate (Do not wait idle)| Execution
+    RemoteEval -->|9. Stat-Significant Win / Regressed| Main
+    Main -->|10. Accept (Keep CL) or Reject (Abandon CL)| Main
 ```
 
 ______________________________________________________________________
@@ -204,7 +212,71 @@ Verify correctness locally in the worktree before uploading to Gerrit:
 
 ______________________________________________________________________
 
-## Step 4: Submit CL to Gerrit (Work In Progress)
+## Step 4: Pre-Upload Code Review & Autonomous Refinement
+
+Before committing and uploading any candidate CL to Gerrit (even as WIP),
+dispatch a dedicated **Pre-Upload Code Reviewer & Refiner Subagent**
+(`Workspace: 'share'`) to perform an adversarial code audit and refinement pass
+on the candidate branch:
+
+1. **Conceptual Correctness Gate (Veto Decision)**:
+
+   - Determine if the candidate optimization is **conceptually sound**:
+     - Does it preserve spec compliance (DOM/CSS/HTML/JS) and engine invariants?
+     - Does it take prohibited architectural shortcuts (e.g. bypassing security
+       checks, skipping required style updates, or breaking lifecycle
+       guarantees) that only create an illusory speedup?
+   - **Veto Rule**: If the change is fundamentally flawed or unviable, the
+     subagent issues a `VETO` decision and aborts immediately. The candidate is
+     **discarded without uploading to Gerrit or triggering Pinpoint**, saving
+     hours of expensive Apple Silicon bot time.
+
+2. **Chromium & V8 Code Quality Audit Checklist**: If conceptually sound, the
+   subagent audits the diff against core engine standards:
+
+   - **Oilpan GC & Memory Safety**: Verify correct GC tracing (`Trace()`),
+     absence of forbidden raw pointers to GC objects, proper `Member<T>` /
+     `WeakMember<T>` usage, and lack of leaks/UAF hazards.
+   - **Thread & Sequence Safety**: Ensure operations run on valid task runners
+     (`DCHECK_CALLED_ON_VALID_SEQUENCE`) without lock contention or thread
+     races.
+   - **Boundary & Edge Cases**: Verify handling of null pointers, empty
+     collections, zero-length inputs, integer overflow, and fallback logic for
+     unhandled types.
+   - **Chromium Style & Conventions**: Ensure const-correctness, include
+     hygiene, proper use of `base::span` / `WTF::Vector`, and clean formatting.
+   - **Performance Preservation**: Ensure cleanup fixes do NOT introduce hidden
+     allocations, virtual calls, or extra copies on the hot path.
+
+3. **Autonomous Problem Resolution & Refinement**:
+
+   - Address the review findings directly on the branch: modify code to fix
+     bugs, edge cases, and style issues.
+
+4. **Local Re-Verification Gate**:
+
+   - Format and lint:
+     ```bash
+     git cl format
+     git cl lint
+     ```
+   - Re-compile and re-run unit tests:
+     ```bash
+     # For Blink changes:
+     autoninja -C out/release blink_unittests
+     ./out/release/blink_unittests --gtest_filter="<RelevantTestPattern>"
+
+     # For V8 changes:
+     autoninja -C out/release v8:d8
+     ./out/release/d8 v8/test/mjsunit/mjsunit.js <path_to_test.js>
+     ```
+   - Re-run web tests / Crossbench smoke tests if applicable.
+   - Amend or commit the polished changes on the branch (`perf_<feature_name>`).
+   - Output `APPROVED` with a summary of resolved comments for the Orchestrator.
+
+______________________________________________________________________
+
+## Step 5: Submit CL to Gerrit (Work In Progress)
 
 1. **Verify Candidate Novelty (Mandatory Gate)**: Run the automated novelty
    verifier against authoritative Gerrit performance records:
@@ -243,7 +315,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-## Step 5: Launch Pinpoint Try Job & Asynchronous Pipelining
+## Step 6: Launch Pinpoint Try Job & Asynchronous Pipelining
 
 Launch a 150-iteration try job on Apple Silicon M1 bots:
 
@@ -266,7 +338,7 @@ pp c -c m1 -t sp3 -r 150
 
 ______________________________________________________________________
 
-## Step 6: Evaluate Results & Autonomous Decision
+## Step 7: Evaluate Results & Autonomous Decision
 
 1. Check comparison results once the job completes:
 

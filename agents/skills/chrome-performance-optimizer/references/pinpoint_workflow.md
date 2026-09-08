@@ -7,8 +7,9 @@ ______________________________________________________________________
 
 ## 1. Uploading CL to Gerrit (Work In Progress)
 
-Ensure the change is committed with clean descriptions and tags, and upload as
-**WIP** to prevent notifying reviewers:
+Ensure the candidate has passed the Pre-Upload Code Review gate and is committed
+with clean descriptions and tags, and upload as **WIP** to prevent notifying
+reviewers:
 
 ```bash
 git cl upload -o wip --no-autocc -m "Optimization summary"

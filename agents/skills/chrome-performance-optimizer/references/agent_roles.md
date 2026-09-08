@@ -26,7 +26,12 @@ graph TD
         I2["Implementer & Local Tester #2"]
     end
 
-    subgraph Lifecycle["Phase 3: Asynchronous Remote Evaluation"]
+    subgraph Review["Phase 3: Pre-Upload Review & Refinement (Workspace: 'share')"]
+        R1["Code Reviewer & Refiner #1"]
+        R2["Code Reviewer & Refiner #2"]
+    end
+
+    subgraph Lifecycle["Phase 4: Asynchronous Remote Evaluation"]
         P1["Pinpoint & Gerrit Manager #1"]
         P2["Pinpoint & Gerrit Manager #2"]
     end
@@ -35,9 +40,12 @@ graph TD
     Discovery -->|2. Propose macro-hypotheses| Main
     Main -->|3. Dispatch candidate| Implementation
     Implementation -->|4. Verified patch & branch| Main
-    Main -->|5. Upload & launch Pinpoint| Lifecycle
-    Lifecycle -->|6. Statistical outcome| Main
-    Main -.->|7. Pipeline next candidate while Pinpoint runs| Implementation
+    Main -->|5. Dispatch for Pre-Upload Review| Review
+    Review -->|6a. Conceptually Flawed: Veto & Discard| Main
+    Review -->|6b. Approved & Refined branch| Main
+    Main -->|7. Upload & launch Pinpoint| Lifecycle
+    Lifecycle -->|8. Statistical outcome| Main
+    Main -.->|9. Pipeline next candidate while Pinpoint runs| Implementation
 ```
 
 ______________________________________________________________________
@@ -109,7 +117,77 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-### C. Pinpoint & Gerrit Lifecycle Manager Subagent / Background Worker
+### C. Pre-Upload Code Reviewer & Refiner Subagent
+
+- **Purpose**: Acts as an adversarial Chromium / V8 code reviewer and quality
+  gatekeeper. Inspects the candidate branch before it is committed or uploaded
+  to Gerrit. First evaluates conceptual correctness (vetoing flawed, invalid, or
+  spec-violating proposals immediately to save scarce 90-minute Pinpoint bot
+  resources). If conceptually sound, identifies code health issues (Oilpan GC
+  safety, memory/thread safety, edge cases, Chromium style), addresses them
+  directly by refining the code, and re-verifies using `git cl format`,
+  `git cl lint`, and local unit tests.
+- **Invocation Config**:
+  - `TypeName`: `self`
+  - `Workspace`: `share` (operates in an isolated worktree checking out the
+    branch)
+- **Prompt Template**:
+  ````markdown
+  You are an expert Chromium / V8 Code Reviewer and Quality Gatekeeper.
+  You are reviewing candidate branch `[BranchName]` before it is uploaded to Gerrit.
+
+  Your mission:
+  1. Inspect the Candidate Diff:
+     `git checkout [BranchName]`
+     `git diff origin/main`
+     Review the architectural proposal and modified files.
+
+  2. Conceptual Correctness Gate (Veto Decision):
+     Assess whether this optimization is architecturally sound and spec-compliant:
+     - Does it maintain DOM, CSS, HTML, or JavaScript language specification fidelity?
+     - Does it bypass necessary security, sanitization, or lifecycle checks just to appear faster?
+     - If the change is fundamentally flawed, unviable, or introduces irreparable correctness bugs:
+       Output:
+       ```
+       VERDICT: VETO
+       REASON: [Detailed technical rationale why the design is conceptually flawed]
+       ```
+       Stop immediately. Do NOT attempt to patch conceptually broken ideas.
+
+  3. Code Quality & Safety Audit Checklist (if conceptually sound):
+     Audit the diff against strict Chromium & V8 engineering standards:
+     - Oilpan GC & Memory Safety: Check that GarbageCollected objects are managed via `Member<T>`/`WeakMember<T>`, `Trace()` methods correctly visit all members, and no raw pointers to GC objects are retained across safepoints.
+     - Thread & Sequence Safety: Verify sequence checks (`DCHECK_CALLED_ON_VALID_SEQUENCE`) and task runner boundaries.
+     - Edge Cases & Boundaries: Check empty containers, null checks, negative/zero values, unicode/ASCII conversions, and overflow hazards.
+     - Chromium Style & Conventions: Check const-correctness, include hygiene, appropriate use of `base::span` and `WTF::Vector`, and readability.
+     - Performance Preservation: Ensure that style/safety fixes do NOT add heap allocations or virtual method indirection to the hot path!
+
+  4. Autonomous Refinement & Problem Fixing:
+     Directly fix any identified bugs, safety hazards, missing boundary checks, or style issues in the worktree.
+
+  5. Re-Verification Gate:
+     Run formatting and linting:
+     `git cl format`
+     `git cl lint`
+
+     Re-compile and re-run unit tests:
+     - Blink: `autoninja -C out/release blink_unittests && ./out/release/blink_unittests --gtest_filter="[Filter]"`
+     - V8: `autoninja -C out/release v8:d8 && ./out/release/d8 v8/test/mjsunit/mjsunit.js [Test]`
+     Run web tests or Crossbench smoke tests if relevant.
+
+  6. Commit Polish & Hand-off:
+     Amend or commit your refinements:
+     `git commit --amend --no-edit` (or commit fixes cleanly).
+     Output:
+  ````
+  VERDICT: APPROVED BRANCH: [BranchName] COMMENTS_ADDRESSED: \[List of comments
+  identified and fixes applied\] VERIFICATION: [Test results confirmation]
+  ```
+  ```
+
+______________________________________________________________________
+
+### D. Pinpoint & Gerrit Lifecycle Manager Subagent / Background Worker
 
 - **Purpose**: Handles CL uploading, triggers 150-iteration Pinpoint try jobs on
   Apple Silicon M1 hardware, monitors job completion asynchronously, evaluates
@@ -144,7 +222,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-### D. Profiler & Microarchitecture Subagent
+### E. Profiler & Microarchitecture Subagent
 
 - **Purpose**: Conducts deep dive profiling on pprof traces, Sagacity profiles,
   or Crossbench logs using performance tools.
@@ -173,14 +251,16 @@ bots. Do **not** block execution waiting for a single Pinpoint job.
 ### Pipelining Schedule:
 
 ```
-Time  | Orchestrator Task                        | Background Task / Subagent
-------+------------------------------------------+--------------------------------------
-T0    | Dispatch Opportunity Explorers (parallel)| Explorers searching codebase & past data
-T1    | Select Candidate A; Dispatch Implementer | Implementer builds & tests in worktree
-T2    | Upload Candidate A & Launch Pinpoint #1  | Pinpoint Job #1 running on M1 bot (async)
-T3    | Select Candidate B; Dispatch Implementer | Pinpoint Job #1 continues in bg
-T4    | Upload Candidate B & Launch Pinpoint #2  | Pinpoint Job #1 finishes -> Evaluated!
-T5    | Process Candidate A result; pipeline C   | Pinpoint Job #2 continues in bg
+Time  | Orchestrator Task                           | Background Task / Subagent
+------+---------------------------------------------+--------------------------------------
+T0    | Dispatch Opportunity Explorers (parallel)   | Explorers searching codebase & past data
+T1    | Select Candidate A; Dispatch Implementer    | Implementer builds & tests in worktree
+T2    | Dispatch Pre-Upload Reviewer for Cand. A    | Reviewer audits, fixes, & re-tests Cand. A
+T3    | Upload Candidate A & Launch Pinpoint #1     | Pinpoint Job #1 running on M1 bot (async)
+T4    | Select Candidate B; Dispatch Implementer    | Pinpoint Job #1 continues in bg
+T5    | Dispatch Pre-Upload Reviewer for Cand. B    | Reviewer audits, fixes, & re-tests Cand. B
+T6    | Upload Candidate B & Launch Pinpoint #2     | Pinpoint Job #1 finishes -> Evaluated!
+T7    | Process Candidate A result; pipeline C      | Pinpoint Job #2 continues in bg
 ```
 
 ### Concurrency Guardrails:
