@@ -1285,7 +1285,7 @@ class BottomSheet extends BottomSheetView
     }
 
     private void updateCloseButton(boolean isPopup, @Nullable BottomSheetContent content) {
-        boolean showCloseButton = isPopup && content != null && content.hasCustomScrimLifecycle();
+        boolean showCloseButton = isPopup && BottomSheetUtils.isSheetNonModal(content);
         mModel.set(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY, showCloseButton);
         if (showCloseButton) {
             mModel.set(
@@ -1992,7 +1992,8 @@ class BottomSheet extends BottomSheetView
 
         boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
         if (!isResizableSheet || maxOffset <= minOffset || colorModal == colorNonModal) {
-            int newColor = mSheetContent.hasCustomScrimLifecycle() ? colorNonModal : colorModal;
+            int newColor =
+                    BottomSheetUtils.isSheetNonModal(mSheetContent) ? colorNonModal : colorModal;
             updateSheetBgColorTint(newColor);
             return;
         }

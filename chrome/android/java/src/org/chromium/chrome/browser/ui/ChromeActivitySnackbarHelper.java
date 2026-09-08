@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetUtils;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 
 import java.util.function.Supplier;
@@ -72,7 +73,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
                             content != null && content.allowInSheetContentSnackbars();
                     assert content == null
                                     || content.allowInSheetContentSnackbars()
-                                    || content.hasCustomScrimLifecycle()
+                                    || BottomSheetUtils.isSheetNonModal(content)
                             : "BottomSheetContent can only prevent out-of-sheet snackbars if it has"
                                     + " a custom scrim lifecycle.";
 

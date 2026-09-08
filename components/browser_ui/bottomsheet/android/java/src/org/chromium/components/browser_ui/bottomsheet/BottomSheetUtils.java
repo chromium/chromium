@@ -29,4 +29,18 @@ public final class BottomSheetUtils {
         BottomSheetContent content = controller.getCurrentSheetContent();
         return content != null && content.actsAsBrowserControls() && controller.isFullWidth();
     }
+
+    /**
+     * Returns whether the given {@link BottomSheetContent} is non-modal.
+     *
+     * @param content The {@link BottomSheetContent} to check.
+     * @return True if the content is non-modal, false otherwise.
+     */
+    public static boolean isSheetNonModal(@Nullable BottomSheetContent content) {
+        if (content == null) return false;
+        if (BottomSheetFeatureMap.sBottomSheetTypes.isEnabled()) {
+            return !content.getSheetType().isModal();
+        }
+        return content.hasCustomScrimLifecycle();
+    }
 }

@@ -270,10 +270,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         ScrimManager scrimManager = mScrimManagerSupplier.get();
                         assumeNonNull(scrimManager);
                         adjustBottomSheetZAxis(mScrimVisible);
-                        if (mBottomSheet.getCurrentSheetContent() != null
-                                && mBottomSheet
-                                        .getCurrentSheetContent()
-                                        .hasCustomScrimLifecycle()) {
+                        if (!shouldShowScrim(mBottomSheet.getCurrentSheetContent())) {
                             updateBackPressStateChangedSupplier();
                             return;
                         }
@@ -947,5 +944,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             return type.isPersistent();
         }
         return nextContent.getPriority() == BottomSheetContent.ContentPriority.COBROWSE;
+    }
+
+    private boolean shouldShowScrim(@Nullable BottomSheetContent content) {
+        return !BottomSheetUtils.isSheetNonModal(content);
     }
 }

@@ -50,6 +50,7 @@ robolectric_library("junit_tests") {
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetectorTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetTypeUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetUtilsUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetViewBinderUnitTest.java",
   ]
   deps = [
