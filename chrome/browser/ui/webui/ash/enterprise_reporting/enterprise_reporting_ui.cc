@@ -6,12 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
@@ -31,20 +30,20 @@
 namespace {
 // Returns the device information to be displayed on the
 // chrome://enterprise-reporting page.
-base::DictValue GetDeviceInfo(content::WebUI* web_ui) {
+base::DictValue GetDeviceInfo(
+    const policy::BrowserPolicyConnectorAsh& connector,
+    content::WebUI* web_ui) {
   base::DictValue device_info;
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
 
   device_info.Set("revision", version_info::GetLastChange());
   device_info.Set("version", version_info::GetVersionNumber());
   device_info.Set(
       "clientId",
       reporting::GetUserClientId(Profile::FromWebUI(web_ui)).value_or(""));
-  device_info.Set("directoryId", connector->GetDirectoryApiID());
+  device_info.Set("directoryId", connector.GetDirectoryApiID());
   device_info.Set("enrollmentDomain",
-                  connector->GetEnterpriseEnrollmentDomain());
-  device_info.Set("obfuscatedCustomerId", connector->GetObfuscatedCustomerID());
+                  connector.GetEnterpriseEnrollmentDomain());
+  device_info.Set("obfuscatedCustomerId", connector.GetObfuscatedCustomerID());
 
   return device_info;
 }
@@ -52,8 +51,29 @@ base::DictValue GetDeviceInfo(content::WebUI* web_ui) {
 
 namespace ash::reporting {
 
-EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+EnterpriseReportingUIConfig::EnterpriseReportingUIConfig(
+    const policy::BrowserPolicyConnectorAsh* connector)
+    : WebUIConfig(content::kChromeUIScheme,
+                  ash::kChromeUIEnterpriseReportingHost),
+      connector_(CHECK_DEREF(connector)) {}
+
+EnterpriseReportingUIConfig::~EnterpriseReportingUIConfig() = default;
+
+bool EnterpriseReportingUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI);
+}
+
+std::unique_ptr<content::WebUIController>
+EnterpriseReportingUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                   const GURL& url) {
+  return std::make_unique<EnterpriseReportingUI>(&connector_.get(), web_ui);
+}
+
+EnterpriseReportingUI::EnterpriseReportingUI(
+    const policy::BrowserPolicyConnectorAsh* connector,
+    content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui), connector_(CHECK_DEREF(connector)) {
   DCHECK(base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI));
   // Set up the chrome://enterprise-reporting source.
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -63,8 +83,9 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   // Populate device info.
-  html_source->AddString("deviceInfo",
-                         base::WriteJson(GetDeviceInfo(web_ui)).value_or(""));
+  html_source->AddString(
+      "deviceInfo",
+      base::WriteJson(GetDeviceInfo(connector_.get(), web_ui)).value_or(""));
 
   // Add required resources.
   webui::SetupWebUIDataSource(
@@ -73,11 +94,6 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
 }
 
 EnterpriseReportingUI::~EnterpriseReportingUI() = default;
-
-bool EnterpriseReportingUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI);
-}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseReportingUI)
 

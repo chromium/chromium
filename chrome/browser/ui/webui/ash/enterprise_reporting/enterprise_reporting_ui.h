@@ -6,25 +6,39 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_ENTERPRISE_REPORTING_ENTERPRISE_REPORTING_UI_H_
 
 #include "ash/constants/webui_url_constants.h"
-#include "ash/webui/common/chrome_os_webui_config.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_page_handler.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash::reporting {
 
 class EnterpriseReportingUI;
 
 // WebUIConfig for chrome://enterprise-reporting
-class EnterpriseReportingUIConfig
-    : public ChromeOSWebUIConfig<EnterpriseReportingUI> {
+class EnterpriseReportingUIConfig : public content::WebUIConfig {
  public:
-  EnterpriseReportingUIConfig()
-      : ChromeOSWebUIConfig(content::kChromeUIScheme,
-                            ash::kChromeUIEnterpriseReportingHost) {}
+  // `connector` must not be null and must outlive `this`.
+  explicit EnterpriseReportingUIConfig(
+      const policy::BrowserPolicyConnectorAsh* connector);
+  EnterpriseReportingUIConfig(const EnterpriseReportingUIConfig&) = delete;
+  EnterpriseReportingUIConfig& operator=(const EnterpriseReportingUIConfig&) =
+      delete;
+  ~EnterpriseReportingUIConfig() override;
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<const policy::BrowserPolicyConnectorAsh> connector_;
 };
 
 // The WebUI for chrome://enterprise-reporting
@@ -32,7 +46,9 @@ class EnterpriseReportingUI
     : public ui::MojoWebUIController,
       public enterprise_reporting::mojom::PageHandlerFactory {
  public:
-  explicit EnterpriseReportingUI(content::WebUI* web_ui);
+  // `connector` must not be null and must outlive `this`.
+  EnterpriseReportingUI(const policy::BrowserPolicyConnectorAsh* connector,
+                        content::WebUI* web_ui);
   ~EnterpriseReportingUI() override;
 
   void BindInterface(
@@ -45,6 +61,8 @@ class EnterpriseReportingUI
       mojo::PendingRemote<enterprise_reporting::mojom::Page> page,
       mojo::PendingReceiver<enterprise_reporting::mojom::PageHandler> receiver)
       override;
+
+  const raw_ref<const policy::BrowserPolicyConnectorAsh> connector_;
 
   std::unique_ptr<EnterpriseReportingPageHandler, base::OnTaskRunnerDeleter>
       page_handler_{nullptr, base::OnTaskRunnerDeleter(nullptr)};

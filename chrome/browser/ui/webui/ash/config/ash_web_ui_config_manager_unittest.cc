@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -73,7 +72,8 @@ class AshWebUIConfigManagerTest : public testing::Test {
       TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()
           ->GetFeatures()
-          ->application_locale_storage()};
+          ->application_locale_storage(),
+      /*browser_policy_connector_ash=*/nullptr};
 };
 
 TEST_F(AshWebUIConfigManagerTest, SingletonLifecycle) {

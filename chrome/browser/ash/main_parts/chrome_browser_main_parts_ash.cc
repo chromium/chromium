@@ -1237,7 +1237,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   ash_web_ui_config_manager_ = std::make_unique<AshWebUIConfigManager>(
       g_browser_process->local_state(),
-      g_browser_process->GetFeatures()->application_locale_storage());
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->platform_part()->browser_policy_connector_ash());
 }
 
 class GuestLanguageSetCallbackData {
