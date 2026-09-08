@@ -1252,4 +1252,31 @@ TEST(CSSPropertyParserTest, MaskFromMaskNoneRepeatY) {
   TestMaskParsing("none repeat-y", CSSPropertyID::kMask, "repeat-y");
 }
 
+TEST(CSSPropertyParserTest, ScrollMarkerGroupModesParsing) {
+  const CSSParserContext* context =
+      StrictCSSParserContext(SecureContextMode::kSecureContext);
+  {
+    ScopedCSSScrollMarkerGroupModesForTest scoped_feature(false);
+    EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                            "none", context));
+    EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                            "before", context));
+    EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                            "after", context));
+    EXPECT_FALSE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                             "before tabs", context));
+    EXPECT_FALSE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                             "after links", context));
+  }
+  {
+    ScopedCSSScrollMarkerGroupModesForTest scoped_feature(true);
+    EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                            "before tabs", context));
+    EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                            "after links", context));
+    EXPECT_FALSE(CSSParser::ParseSingleValue(CSSPropertyID::kScrollMarkerGroup,
+                                             "none tabs", context));
+  }
+}
+
 }  // namespace blink
