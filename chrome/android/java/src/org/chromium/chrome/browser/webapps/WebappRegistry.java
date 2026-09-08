@@ -27,6 +27,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
@@ -40,6 +41,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.ArrayList;
@@ -396,19 +398,35 @@ public class WebappRegistry {
         return webApkSpecificsList;
     }
 
-    /** Checks whether a TWA is installed for the origin, and no WebAPK. */
-    public boolean isTwaInstalled(String origin) {
-        Set<String> webApkOrigins = getOriginsWithWebApk();
-        Set<String> installedWebappOrigins = mPermissionStore.getStoredOrigins();
-        return installedWebappOrigins.contains(origin) && !webApkOrigins.contains(origin);
-    }
-
     /** Returns all origins that have a WebAPK or TWA installed. */
     public Set<String> getOriginsWithInstalledApp() {
         Set<String> origins = new HashSet<>();
         origins.addAll(getOriginsWithWebApk());
         origins.addAll(mPermissionStore.getStoredOrigins());
         return origins;
+    }
+
+    /**
+     * Checks whether an installed WebAPK or TWA exists for the specified GURL.
+     *
+     * @param url The page GURL to check.
+     * @return True if a WebAPK or TWA is installed for this URL.
+     */
+    public boolean isAppInstalledForUrl(GURL url) {
+        if (GURL.isEmptyOrInvalid(url)) {
+            return false;
+        }
+        // This function is called by the ToolbarManager every time a navigation
+        // happens, which means that there can be internal urls like about:blank
+        // that has a null origin. Handle that here.
+        Origin origin = Origin.create(url.getSpec());
+        if (origin == null) {
+            return false;
+        }
+        if (hasAtLeastOneWebApkForOrigin(origin.toString())) {
+            return true;
+        }
+        return TwaValidator.isTwaInstalledForUrl(url);
     }
 
     /** Returns an array of all origins that have a WebAPK or TWA installed. */

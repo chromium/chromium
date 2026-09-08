@@ -258,7 +258,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -4105,11 +4104,7 @@ public class ToolbarManager
         public @AppInstallState int getAppInstallState(@Nullable Tab tab) {
             if (tab == null) return AppInstallState.NOT_INSTALLED;
 
-            Origin origin = Origin.create(tab.getUrl().getSpec());
-            if (origin != null
-                    && WebappRegistry.getInstance()
-                            .getOriginsWithInstalledApp()
-                            .contains(origin.toString())) {
+            if (WebappRegistry.getInstance().isAppInstalledForUrl(tab.getUrl())) {
                 return AppInstallState.INSTALLED;
             }
 
@@ -4133,6 +4128,11 @@ public class ToolbarManager
 
         @Override
         public void onOriginsWithInstalledAppChanged() {
+            // Note: This observer is notified when WebAPKs are registered or unregistered,
+            // as well as when verified TWAs are uninstalled (via InstalledWebappBroadcastReceiver
+            // and InstalledWebappPermissionStore). However, external TWA installs (and uninstalls
+            // of TWAs not yet verified in Chrome) are not received via broadcast events; their
+            // state is evaluated dynamically on each page navigation in isAppInstalled().
             notifyObservers();
         }
 

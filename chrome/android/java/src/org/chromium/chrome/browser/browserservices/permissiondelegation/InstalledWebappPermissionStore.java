@@ -146,6 +146,12 @@ public class InstalledWebappPermissionStore {
         mPreferences.edit().putStringSet(key, allDelegateApps).apply();
     }
 
+    /** Returns whether the given origin string is registered in the store. */
+    public boolean hasOrigin(String origin) {
+        Set<String> origins = mPreferences.getStringSet(KEY_ALL_ORIGINS, null);
+        return origins != null && origins.contains(origin);
+    }
+
     /** Gets all the origins of registered TWAs. */
     public Set<String> getStoredOrigins() {
         // In case the pre-emptive disk read in initStorage hasn't occurred by the time we actually

@@ -8,17 +8,19 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
+import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.InstallTrigger;
@@ -39,6 +41,7 @@ import org.chromium.webapk.lib.client.WebApkNavigationClient;
  */
 @NullMarked
 public class AppInstallMenuHandler {
+    private static final String TAG = "AppInstallMenu";
 
     /**
      * Shows the Universal Install bottom sheet or falls back to Add To Homescreen.
@@ -75,7 +78,7 @@ public class AppInstallMenuHandler {
         }
 
         if (WebappRegistry.getInstance().wasWebApkRecentlyInstalled(manifestId, 10000)) {
-            return doOpenWebApk(activity, currentTab);
+            return doOpenWebApp(activity, currentTab);
         }
 
         @Nullable BottomSheetController controller =
@@ -94,12 +97,8 @@ public class AppInstallMenuHandler {
                     AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
         }
 
-        Origin currentTabOrigin = Origin.create(currentTab.getUrl().getSpec());
         boolean webAppInstalled =
-                currentTabOrigin != null
-                        && WebappRegistry.getInstance()
-                                .getOriginsWithInstalledApp()
-                                .contains(currentTabOrigin.toString());
+                WebappRegistry.getInstance().isAppInstalledForUrl(currentTab.getUrl());
 
         PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
@@ -122,7 +121,7 @@ public class AppInstallMenuHandler {
                                     AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
                         },
                         () -> {
-                            doOpenWebApk(activity, currentTab);
+                            doOpenWebApp(activity, currentTab);
                         },
                         webAppInstalled,
                         controller,
@@ -171,16 +170,16 @@ public class AppInstallMenuHandler {
     }
 
     /**
-     * Launches an installed WebAPK for the current URL.
+     * Launches an installed web app for the current URL.
      *
-     * <p>Queries the system for a matching WebAPK package and starts it. Displays a toast when no
+     * <p>Queries the system for a matching web app package and starts it. Displays a toast when no
      * handler is available.
      *
      * @param activity The activity used to start the intent.
      * @param currentTab The tab whose URL should be opened.
      * @return True after the launch attempt.
      */
-    public static boolean doOpenWebApk(Activity activity, Tab currentTab) {
+    public static boolean doOpenWebApp(Activity activity, Tab currentTab) {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(currentTab);
         if (delegate != null) {
             OpenInAppDelegate.OpenInAppInfo openInAppInfo = delegate.getCurrentOpenInAppInfo();
@@ -198,24 +197,43 @@ public class AppInstallMenuHandler {
             packageName = WebappRegistry.getInstance().findWebApkWithManifestId(manifestId);
         }
 
+        String currentTabUrl = currentTab.getUrl().getSpec();
         if (packageName == null) {
-            packageName =
-                    WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrl().getSpec());
+            packageName = WebApkValidator.queryFirstWebApkPackage(context, currentTabUrl);
         }
 
-        if (packageName == null) {
-            Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
+        // Try launching a WebAPK first.
+        if (packageName != null) {
+            Intent launchIntent =
+                    WebApkNavigationClient.createLaunchWebApkIntent(
+                            packageName, currentTabUrl, false);
+            try {
+                context.startActivity(launchIntent);
+            } catch (ActivityNotFoundException | SecurityException e) {
+                Log.w(TAG, "Failed to launch WebAPK: " + packageName, e);
+                Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
-        Intent launchIntent =
-                WebApkNavigationClient.createLaunchWebApkIntent(
-                        packageName, currentTab.getUrl().getSpec(), false);
-        try {
-            context.startActivity(launchIntent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
+        // Fallback to launching a TWA instead if a WebApk is not found.
+        String twaPackage = TwaValidator.queryFirstTwaPackage(currentTab.getUrl());
+        if (twaPackage != null) {
+            Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTabUrl));
+            launchIntent.setPackage(twaPackage);
+            launchIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                context.startActivity(launchIntent);
+            } catch (ActivityNotFoundException | SecurityException e) {
+                Log.w(TAG, "Failed to launch TWA: " + twaPackage, e);
+                Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
+            }
+            return true;
         }
+
+        // Neither a WebApk or a TWA was found.
+        Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
         return true;
     }
 }

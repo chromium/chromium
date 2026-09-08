@@ -22,6 +22,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebappsUtils;
 
@@ -320,7 +322,13 @@ public class ShortcutHelper {
     @CalledByNative
     @VisibleForTesting
     public static boolean doesOriginContainAnyInstalledTwa(@JniType("std::string") String origin) {
-        return WebappRegistry.getInstance().isTwaInstalled(origin.toLowerCase(Locale.getDefault()));
+        Origin parsedOrigin = Origin.create(origin.toLowerCase(Locale.getDefault()));
+        if (parsedOrigin == null) {
+            return false;
+        }
+        // Note: We should probably use TwaValidator#isTwaInstalledForOrigin(Origin), but
+        // TwaValidator#hasTwaBeenRunForOrigin(Origin) is used for legacy reasons.
+        return TwaValidator.hasTwaBeenRunForOrigin(parsedOrigin);
     }
 
     @CalledByNative

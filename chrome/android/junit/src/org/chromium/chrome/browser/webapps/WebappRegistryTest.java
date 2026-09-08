@@ -26,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
@@ -38,6 +39,7 @@ import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBui
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -1095,5 +1097,22 @@ public class WebappRegistryTest {
 
         // Clean up
         WebappRegistry.getInstance().unregisterObserver(observer);
+    }
+
+    @Test
+    public void testIsAppInstalledForUrl_handlesGurlAndTwaValidator() {
+        GURL url = new GURL("https://example.com/app/path");
+        assertFalse(WebappRegistry.getInstance().isAppInstalledForUrl(url));
+
+        TwaValidator.setTwaInstalledOverrideForTesting(true);
+        assertTrue(WebappRegistry.getInstance().isAppInstalledForUrl(url));
+
+        // Non-HTTP/invalid URLs should safely return false.
+        assertFalse(
+                WebappRegistry.getInstance().isAppInstalledForUrl(new GURL("chrome://settings")));
+        assertFalse(WebappRegistry.getInstance().isAppInstalledForUrl(new GURL("about:blank")));
+
+        TwaValidator.setTwaInstalledOverrideForTesting(false);
+        assertFalse(WebappRegistry.getInstance().isAppInstalledForUrl(url));
     }
 }

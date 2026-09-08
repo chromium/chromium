@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.Installe
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.url.GURL;
 
@@ -102,5 +104,21 @@ public class TwaValidatorTest {
 
         InstalledWebappPermissionManager.addDelegateApp(TEST_ORIGIN, TEST_SUPPORT_PACKAGE);
         assertTrue(TwaValidator.isTwaForOrigin(mContext, TEST_SUPPORT_PACKAGE, TEST_ORIGIN));
+    }
+
+    @Test
+    @MediumTest
+    public void testHasTwaBeenRunForOrigin() {
+        assertFalse(TwaValidator.hasTwaBeenRunForOrigin(TEST_ORIGIN));
+
+        new InstalledWebappPermissionStore()
+                .setStateForOrigin(
+                        TEST_ORIGIN,
+                        TEST_SUPPORT_PACKAGE,
+                        "Test App",
+                        ContentSettingsType.NOTIFICATIONS,
+                        ContentSetting.ALLOW);
+
+        assertTrue(TwaValidator.hasTwaBeenRunForOrigin(TEST_ORIGIN));
     }
 }

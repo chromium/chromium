@@ -3260,7 +3260,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.open_webapk_id) {
             RecordUserAction.record("MobileMenuOpenWebApk");
-            return AppInstallMenuHandler.doOpenWebApk(this, currentTab);
+            return AppInstallMenuHandler.doOpenWebApp(this, currentTab);
         }
 
         if (id == R.id.request_desktop_site_id || id == R.id.request_desktop_site_check_id) {

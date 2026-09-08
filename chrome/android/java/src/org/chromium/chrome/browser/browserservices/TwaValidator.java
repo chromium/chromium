@@ -27,6 +27,7 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.url.GURL;
 
@@ -47,6 +48,7 @@ public class TwaValidator {
     }
 
     private static @Nullable DomainVerificationDelegate sDomainVerificationDelegateForTesting;
+    private static @Nullable Boolean sTwaInstalledOverrideForTesting;
 
     private TwaValidator() {}
 
@@ -54,6 +56,12 @@ public class TwaValidator {
     static void setDomainVerificationDelegateForTesting(DomainVerificationDelegate delegate) {
         sDomainVerificationDelegateForTesting = delegate;
         ResettersForTesting.register(() -> sDomainVerificationDelegateForTesting = null);
+    }
+
+    /** Sets a test override for whether a TWA is installed for any URL. */
+    public static void setTwaInstalledOverrideForTesting(@Nullable Boolean installed) {
+        sTwaInstalledOverrideForTesting = installed;
+        ResettersForTesting.register(() -> sTwaInstalledOverrideForTesting = null);
     }
 
     /**
@@ -112,13 +120,25 @@ public class TwaValidator {
     }
 
     /**
+     * Checks whether a TWA has previously run for the origin (and thus has verified permissions).
+     *
+     * <p>Note: We should probably use {@link #isTwaInstalledForOrigin(Origin)}, but this method is
+     * kept for legacy callers (such as background sync and notification permissions contexts).
+     *
+     * @param origin The origin to check.
+     * @return True if a TWA has been run for the origin.
+     */
+    public static boolean hasTwaBeenRunForOrigin(Origin origin) {
+        return WebappRegistry.getInstance().getPermissionStore().hasOrigin(origin.toString());
+    }
+
+    /**
      * Checks whether there is an installed TWA for the given origin.
      *
      * @param origin The origin to check.
      * @return True if there is an installed TWA for the origin.
      */
-    @VisibleForTesting
-    static boolean isTwaInstalledForOrigin(Origin origin) {
+    public static boolean isTwaInstalledForOrigin(Origin origin) {
         return isTwaInstalledForUrl(new GURL(origin.toString()));
     }
 
@@ -128,10 +148,12 @@ public class TwaValidator {
      * @param url The GURL to inspect.
      * @return True if there is an installed TWA matching this URL.
      */
-    @VisibleForTesting
-    static boolean isTwaInstalledForUrl(GURL url) {
+    public static boolean isTwaInstalledForUrl(GURL url) {
         if (GURL.isEmptyOrInvalid(url)) {
             return false;
+        }
+        if (sTwaInstalledOverrideForTesting != null) {
+            return sTwaInstalledOverrideForTesting;
         }
         return queryFirstTwaPackage(url) != null;
     }
@@ -142,7 +164,7 @@ public class TwaValidator {
      * @param url The GURL to inspect.
      * @return The package name of the matching TWA, or null if none found.
      */
-    private static @Nullable String queryFirstTwaPackage(GURL url) {
+    public static @Nullable String queryFirstTwaPackage(GURL url) {
         if (GURL.isEmptyOrInvalid(url)) {
             return null;
         }
