@@ -62,6 +62,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate);
 // prerender when a matching prerender speculation rule is added.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerenderUntilScriptUpgrade);
 
+// If enabled, allows prerender-until-script to reuse the initiator's process.
+// Enabled by default; acts as a killswitch.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerenderUntilScriptProcessReuse);
+
 // If enabled, allows a prerender to reuse its initiator's process while
 // remaining in a dedicated BrowsingInstance.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2ReuseInitiatorProcess);
