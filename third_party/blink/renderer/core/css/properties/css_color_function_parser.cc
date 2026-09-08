@@ -748,7 +748,7 @@ CSSValue* ColorFunctionParser::ConsumeRelativeAlphaFunction(
     return nullptr;
   }
 
-  // Optional: / <alpha-value>
+  // An explicit alpha is required, even when it is 1.
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
     // The allowed component keywords is `alpha`.
     color_channel_map_ = {{CSSValueID::kAlpha, std::nullopt}};
@@ -756,6 +756,9 @@ CSSValue* ColorFunctionParser::ConsumeRelativeAlphaFunction(
     if (!ConsumeAlpha(stream, context, local_context, color_parser_context)) {
       return nullptr;
     }
+  } else if (RuntimeEnabledFeatures::
+                 CSSAlphaColorFunctionRequiresAlphaEnabled()) {
+    return nullptr;
   }
 
   if (!stream.AtEnd()) {

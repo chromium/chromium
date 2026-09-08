@@ -41,9 +41,21 @@ TEST_F(CSSAlphaColorValueTest, ParseWithCurrentColor) {
 }
 
 TEST_F(CSSAlphaColorValueTest, ParseNoAlpha) {
+  ScopedCSSAlphaColorFunctionRequiresAlphaForTest require_alpha(true);
+  EXPECT_EQ(nullptr, Parse("alpha(from red)"));
+  EXPECT_EQ(nullptr, Parse("alpha(from currentcolor)"));
+  EXPECT_EQ(nullptr, Parse("alpha(from rgba(255, 0, 0, 0.3))"));
+  EXPECT_EQ(nullptr, Parse("alpha(from alpha(from currentcolor / 0.5))"));
+  EXPECT_EQ(nullptr, Parse("alpha(from alpha(from currentcolor) / 0.5)"));
+}
+
+TEST_F(CSSAlphaColorValueTest, ParseNoAlphaWithRequirementDisabled) {
+  ScopedCSSAlphaColorFunctionRequiresAlphaForTest require_alpha(false);
   const CSSValue* value = Parse("alpha(from currentcolor)");
   ASSERT_TRUE(value);
   EXPECT_TRUE(value->IsAlphaColorValue());
+  EXPECT_EQ(value->CssText(), "alpha(from currentcolor)");
+  EXPECT_EQ(To<cssvalue::CSSAlphaColorValue>(value)->Alpha(), nullptr);
 }
 
 TEST_F(CSSAlphaColorValueTest, ParseAlphaKeyword) {
@@ -87,9 +99,9 @@ TEST_F(CSSAlphaColorValueTest, CustomCSSText) {
   ASSERT_TRUE(value1);
   EXPECT_EQ(value1->CssText(), "alpha(from currentcolor / 0.5)");
 
-  const CSSValue* value2 = Parse("alpha(from currentcolor)");
+  const CSSValue* value2 = Parse("alpha(from currentcolor / 1)");
   ASSERT_TRUE(value2);
-  EXPECT_EQ(value2->CssText(), "alpha(from currentcolor)");
+  EXPECT_EQ(value2->CssText(), "alpha(from currentcolor / 1)");
 
   const CSSValue* value3 = Parse("alpha(from currentcolor / alpha)");
   ASSERT_TRUE(value3);
@@ -128,11 +140,6 @@ TEST_F(CSSAlphaColorValueTest, AlphaAccessor) {
   ASSERT_TRUE(with_alpha);
   const auto* alpha_value = To<cssvalue::CSSAlphaColorValue>(with_alpha);
   EXPECT_NE(nullptr, alpha_value->Alpha());
-
-  const CSSValue* without_alpha = Parse("alpha(from red)");
-  ASSERT_TRUE(without_alpha);
-  const auto* no_alpha_value = To<cssvalue::CSSAlphaColorValue>(without_alpha);
-  EXPECT_EQ(nullptr, no_alpha_value->Alpha());
 }
 
 TEST_F(CSSAlphaColorValueTest, DisabledByDefault) {
