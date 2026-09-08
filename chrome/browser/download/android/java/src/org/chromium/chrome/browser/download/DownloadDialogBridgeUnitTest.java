@@ -19,8 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,7 +29,6 @@ import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordi
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link DownloadDialogBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,8 +55,6 @@ public class DownloadDialogBridgeUnitTest {
     @Mock DownloadLocationDialogCoordinator mLocationDialog;
 
     @Mock Profile mProfile;
-
-    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     @Before
     public void setUp() {
