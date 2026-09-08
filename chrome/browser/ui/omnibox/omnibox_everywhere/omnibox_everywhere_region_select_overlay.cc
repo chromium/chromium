@@ -72,6 +72,8 @@ using RegionCaptureSource =
 constexpr SkColor kChromnientSlateScrim =
     SkColorSetA(SkColorSetRGB(0x18, 0x1C, 0x22), 165);
 
+constexpr float kSelectionRectStrokeWidth = 2.5f;
+
 constexpr float kGlifGradientWashAlpha = 0.18f;
 
 SkColor4f ColorWithAlpha(SkColor color, float alpha) {
@@ -263,6 +265,8 @@ class RegionSelectOverlayView : public views::View {
                           ConfirmCallback on_confirm,
                           base::OnceClosure on_cancel)
       : bitmap_(screenshot),
+        image_(!bitmap_.empty() ? gfx::ImageSkia::CreateFromBitmap(bitmap_, 1.f)
+                                : gfx::ImageSkia()),
         source_(source),
         on_confirm_(std::move(on_confirm)),
         on_cancel_(std::move(on_cancel)) {
@@ -296,10 +300,9 @@ class RegionSelectOverlayView : public views::View {
   }
 
   void DrawScreenshotImage(gfx::Canvas* canvas) {
-    CHECK(!bitmap_.empty());
-    gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap_, 1.f);
-    canvas->DrawImageInt(image, /*src_x=*/0, /*src_y=*/0,
-                         /*src_w=*/image.width(), /*src_h=*/image.height(),
+    CHECK(!image_.isNull());
+    canvas->DrawImageInt(image_, /*src_x=*/0, /*src_y=*/0,
+                         /*src_w=*/image_.width(), /*src_h=*/image_.height(),
                          /*dest_x=*/0, /*dest_y=*/0,
                          /*dest_w=*/width(), /*dest_h=*/height(),
                          /*filter=*/true);
@@ -307,7 +310,7 @@ class RegionSelectOverlayView : public views::View {
 
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
-    if (bitmap_.empty() || width() <= 0 || height() <= 0) {
+    if (bitmap_.empty() || image_.isNull() || width() <= 0 || height() <= 0) {
       canvas->DrawColor(SK_ColorBLACK);
       return;
     }
@@ -360,8 +363,7 @@ class RegionSelectOverlayView : public views::View {
 
   bool OnMouseDragged(const ui::MouseEvent& event) override {
     if (is_dragging_) {
-      selection_rect_ = gfx::BoundingRect(drag_start_, event.location());
-      SchedulePaint();
+      UpdateSelectionRect(gfx::BoundingRect(drag_start_, event.location()));
       return true;
     }
     return views::View::OnMouseDragged(event);
@@ -402,8 +404,8 @@ class RegionSelectOverlayView : public views::View {
         break;
       case ui::EventType::kGestureScrollUpdate:
         if (is_dragging_) {
-          selection_rect_ = gfx::BoundingRect(drag_start_, event->location());
-          SchedulePaint();
+          UpdateSelectionRect(
+              gfx::BoundingRect(drag_start_, event->location()));
           event->SetHandled();
         }
         break;
@@ -604,9 +606,22 @@ class RegionSelectOverlayView : public views::View {
     cc::PaintFlags stroke_flags;
     stroke_flags.setColor(SK_ColorWHITE);
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    stroke_flags.setStrokeWidth(2.5f);
+    stroke_flags.setStrokeWidth(kSelectionRectStrokeWidth);
     stroke_flags.setAntiAlias(true);
     canvas->DrawPath(sel_path, stroke_flags);
+  }
+
+  void UpdateSelectionRect(const gfx::Rect& new_rect) {
+    if (new_rect == selection_rect_) {
+      return;
+    }
+    gfx::Rect damage_rect = gfx::UnionRects(selection_rect_, new_rect);
+    // Expand by stroke width plus anti-aliasing margin so the perimeter
+    // border is completely cleared and redrawn.
+    constexpr float kDamageRectOutset = kSelectionRectStrokeWidth + 0.5f;
+    damage_rect.Outset(base::ClampCeil(kDamageRectOutset));
+    selection_rect_ = new_rect;
+    SchedulePaintInRect(damage_rect);
   }
 
   void Cancel() {
@@ -647,6 +662,7 @@ class RegionSelectOverlayView : public views::View {
   }
 
   SkBitmap bitmap_;
+  gfx::ImageSkia image_;
   RegionCaptureSource source_;
   ConfirmCallback on_confirm_;
   base::OnceClosure on_cancel_;
