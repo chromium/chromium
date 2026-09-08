@@ -611,8 +611,10 @@ wtf_size_t WEBPImageDecoder::DecodeFrameCount() {
 }
 
 void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
+  ImageFrame* buffer = &frame_buffer_cache_[index];
+  CHECK_EQ(buffer->GetStatus(), ImageFrame::kFrameEmpty);
   if (!(format_flags_ & ANIMATION_FLAG)) {
-    DCHECK(!index);
+    DCHECK_EQ(index, 0u);
     return;
   }
   WebPIterator animated_frame;
@@ -621,11 +623,11 @@ void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
     return;
   }
   DCHECK_EQ(animated_frame.complete, 1);
-  ImageFrame* buffer = &frame_buffer_cache_[index];
   gfx::Rect frame_rect(animated_frame.x_offset, animated_frame.y_offset,
                        animated_frame.width, animated_frame.height);
-  buffer->SetOriginalFrameRect(IntersectRects(frame_rect, gfx::Rect(Size())));
-  CHECK(!buffer->OriginalFrameRect().IsEmpty());
+  CHECK(gfx::Rect(Size()).Contains(frame_rect));
+  CHECK(!frame_rect.IsEmpty());
+  buffer->SetOriginalFrameRect(frame_rect);
   buffer->SetDuration(base::Milliseconds(animated_frame.duration));
   buffer->SetDisposalMethod(animated_frame.dispose_method ==
                                     WEBP_MUX_DISPOSE_BACKGROUND
@@ -760,6 +762,11 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
   DCHECK_NE(buffer.GetStatus(), ImageFrame::kFrameComplete);
 
   if (buffer.GetStatus() == ImageFrame::kFrameEmpty) {
+    // For animation, AllocatePixelData(), ZeroFillPixelData(),
+    // SetStatus(ImageFrame::kFramePartial), and SetHasAlpha(true) are called
+    // in InitFrameBuffer(), and SetOriginalFrameRect() is called in
+    // InitializeNewFrame().
+    CHECK(!(format_flags_ & ANIMATION_FLAG));
     if (!buffer.AllocatePixelData(Size().width(), Size().height(),
                                   ColorSpaceForSkImages())) {
       return SetFailed();
