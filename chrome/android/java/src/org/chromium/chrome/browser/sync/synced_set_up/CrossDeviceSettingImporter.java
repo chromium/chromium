@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROS
 import android.content.Context;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -543,6 +544,28 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
     }
 
+    /** Helper to construct and display an action snackbar after active modal dialogs dismiss. */
+    private void showActionSnackbarAfterDialogs(
+            @StringRes int messageResId,
+            @StringRes int actionResId,
+            int umaIdentifier,
+            Runnable onAction,
+            boolean nonNtp) {
+        Snackbar snackbar =
+                Snackbar.make(
+                        mContext.getString(messageResId),
+                        new SnackbarManager.SnackbarController() {
+                            @Override
+                            public void onAction(@Nullable Object actionData) {
+                                onAction.run();
+                            }
+                        },
+                        TYPE_ACTION,
+                        umaIdentifier);
+        snackbar.setAction(mContext.getString(actionResId), Map.of());
+        showSnackbarAfterDialogs(snackbar, nonNtp);
+    }
+
     /**
      * Shows a snackbar asking the user if they want to import settings from another device.
      *
@@ -557,26 +580,24 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     void askToApplySettingImportIfNeeded(
             Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
         if (shouldShowSnackbar(profile, settingsToApply, nonNtp)) {
-            Snackbar offerApplySnackbar =
-                    Snackbar.make(
-                            mContext.getString(R.string.synced_set_up_snackbar_ask_to_apply),
-                            new SnackbarManager.SnackbarController() {
-                                @Override
-                                public void onAction(@Nullable Object actionData) {
-                                    recordAction(nonNtp, "Apply");
-                                    applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
-                                }
-                            },
-                            TYPE_ACTION,
-                            UMA_CROSS_DEVICE_SETTING_IMPORT);
-            offerApplySnackbar.setAction(
-                    /* actionText= */ mContext.getString(R.string.apply),
-                    /* actionData= */ Map.of());
-            showSnackbarAfterDialogs(offerApplySnackbar, nonNtp);
+            showOfferApplySnackbarAfterDialogs(profile, settingsToApply, nonNtp);
         } else {
             markCrossDeviceSettingImportComplete(
                     nonNtp, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
         }
+    }
+
+    private void showOfferApplySnackbarAfterDialogs(
+            Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
+        showActionSnackbarAfterDialogs(
+                R.string.synced_set_up_snackbar_ask_to_apply,
+                R.string.apply,
+                UMA_CROSS_DEVICE_SETTING_IMPORT,
+                () -> {
+                    recordAction(nonNtp, "Apply");
+                    applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
+                },
+                nonNtp);
     }
 
     @VisibleForTesting
@@ -599,71 +620,70 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
         if (shouldShowSnackbar(profile, settingsToApply, nonNtp)) {
             SyncedSetupSettings currentSettings = getCurrentSettings(profile);
-            Snackbar offerUndoSnackbar =
-                    Snackbar.make(
-                            mContext.getString(
-                                    R.string.synced_set_up_snackbar_applied_confirmation),
-                            new SnackbarManager.SnackbarController() {
-                                @Override
-                                public void onAction(@Nullable Object actionData) {
-                                    boolean hadThemeChange =
-                                            importedSettingHasThemeChange(
-                                                    settingsToApply.getTheme(),
-                                                    currentSettings.getTheme());
-                                    Log.i(
-                                            TAG,
-                                            "offerUndoSnackbar onAction: hadThemeChange=%s,"
-                                                    + " currentTheme=%s, settingsToApplyTheme=%s",
-                                            hadThemeChange,
-                                            currentSettings.getTheme(),
-                                            settingsToApply.getTheme());
-                                    if (nonNtp) {
-                                        applyLocalStateSettings(currentSettings.getPrefs());
-                                    } else {
-                                        applyUserPrefSettings(profile, currentSettings.getPrefs());
-                                        applyLocalStateSettings(currentSettings.getPrefs());
-                                    }
-                                    if (hadThemeChange) {
-                                        applyThemeSettings(currentSettings.getTheme());
-                                    }
-
-                                    // If the imported theme was from another Android device (same
-                                    // platform) and actually changed the local theme, Android's
-                                    // continuous theme sync is active for it. Because the user
-                                    // explicitly chose to undo importing this theme, we disable the
-                                    // THEMES sync toggle on SyncService so that continuous sync
-                                    // does not immediately re-apply the remote Android theme and
-                                    // override the user's undo.
-                                    // If no theme change occurred, or if the candidate theme was
-                                    // cross-platform, disabling the sync toggle is unnecessary.
-                                    if (hadThemeChange
-                                            && settingsToApply.getTheme() != null
-                                            && settingsToApply.getTheme().getPlatformType()
-                                                    == PlatformType.ANDROID) {
-                                        @Nullable SyncService syncService =
-                                                SyncServiceFactory.getForProfile(profile);
-                                        if (syncService != null) {
-                                            syncService.setSelectedType(
-                                                    UserSelectableType.THEMES, false);
-                                        }
-                                    }
-
-                                    recordAction(nonNtp, "Undo");
-                                    askToRedoSettingImport(
-                                            profile, settingsToApply, hadThemeChange, nonNtp);
-                                }
-                            },
-                            Snackbar.TYPE_ACTION,
-                            UMA_CROSS_DEVICE_SETTING_UNDO);
-            offerUndoSnackbar.setAction(
-                    /* actionText= */ mContext.getString(R.string.undo),
-                    /* actionData= */ Map.of());
-            showSnackbarAfterDialogs(offerUndoSnackbar, nonNtp);
+            showOfferUndoSnackbarAfterDialogs(profile, currentSettings, settingsToApply, nonNtp);
             applySettings(profile, settingsToApply);
         } else {
             markCrossDeviceSettingImportComplete(
                     nonNtp, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
         }
+    }
+
+    @VisibleForTesting
+    void showOfferUndoSnackbarAfterDialogs(
+            Profile profile,
+            SyncedSetupSettings currentSettings,
+            SyncedSetupSettings settingsToApply,
+            boolean nonNtp) {
+        showActionSnackbarAfterDialogs(
+                R.string.synced_set_up_snackbar_applied_confirmation,
+                R.string.undo,
+                UMA_CROSS_DEVICE_SETTING_UNDO,
+                () -> {
+                    boolean hadThemeChange =
+                            importedSettingHasThemeChange(
+                                    settingsToApply.getTheme(), currentSettings.getTheme());
+                    Log.i(
+                            TAG,
+                            "offerUndoSnackbar onAction: hadThemeChange=%s,"
+                                    + " currentTheme=%s, settingsToApplyTheme=%s",
+                            hadThemeChange,
+                            currentSettings.getTheme(),
+                            settingsToApply.getTheme());
+                    if (nonNtp) {
+                        applyLocalStateSettings(currentSettings.getPrefs());
+                    } else {
+                        applyUserPrefSettings(profile, currentSettings.getPrefs());
+                        applyLocalStateSettings(currentSettings.getPrefs());
+                    }
+                    if (hadThemeChange) {
+                        applyThemeSettings(currentSettings.getTheme());
+                    }
+
+                    // If the imported theme was from another Android device (same
+                    // platform) and actually changed the local theme, Android's
+                    // continuous theme sync is active for it. Because the user
+                    // explicitly chose to undo importing this theme, we disable the
+                    // THEMES sync toggle on SyncService so that continuous sync
+                    // does not immediately re-apply the remote Android theme and
+                    // override the user's undo.
+                    // If no theme change occurred, or if the candidate theme was
+                    // cross-platform, disabling the sync toggle is unnecessary.
+                    if (hadThemeChange
+                            && settingsToApply.getTheme() != null
+                            && settingsToApply.getTheme().getPlatformType()
+                                    == PlatformType.ANDROID) {
+                        @Nullable SyncService syncService =
+                                SyncServiceFactory.getForProfile(profile);
+                        if (syncService != null) {
+                            syncService.setSelectedType(UserSelectableType.THEMES, false);
+                        }
+                    }
+
+                    recordAction(nonNtp, "Undo");
+                    showOfferRedoSnackbarAfterDialogs(
+                            profile, settingsToApply, hadThemeChange, nonNtp);
+                },
+                nonNtp);
     }
 
     /**
@@ -676,43 +696,36 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * @param nonNtp Whether only settings that affect non-NTP pages should be considered (see
      *     askToApplySettingImportIfNeeded documentation above).
      */
-    private void askToRedoSettingImport(
+    private void showOfferRedoSnackbarAfterDialogs(
             Profile profile,
             SyncedSetupSettings settingsToApply,
             boolean hadThemeChange,
             boolean nonNtp) {
-        Snackbar offerRedoSnackbar =
-                Snackbar.make(
-                        mContext.getString(R.string.synced_set_up_snackbar_removed_confirmation),
-                        new SnackbarManager.SnackbarController() {
-                            @Override
-                            public void onAction(@Nullable Object actionData) {
-                                recordAction(nonNtp, "Redo");
-                                // If re-applying an Android candidate theme that had changed the
-                                // theme after undo, re-enable the THEMES sync toggle so that
-                                // continuous theme sync resumes normally.
-                                // It is safe to turn THEMES sync back on because candidate theme
-                                // data is only retrieved if the user initially had THEMES sync
-                                // enabled prior to undoing.
-                                if (hadThemeChange
-                                        && settingsToApply.getTheme() != null
-                                        && settingsToApply.getTheme().getPlatformType()
-                                                == PlatformType.ANDROID) {
-                                    @Nullable SyncService syncService =
-                                            SyncServiceFactory.getForProfile(profile);
-                                    if (syncService != null) {
-                                        syncService.setSelectedType(
-                                                UserSelectableType.THEMES, true);
-                                    }
-                                }
-                                applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
-                            }
-                        },
-                        TYPE_ACTION,
-                        UMA_CROSS_DEVICE_SETTING_REDO);
-        offerRedoSnackbar.setAction(
-                /* actionText= */ mContext.getString(R.string.redo), /* actionData= */ Map.of());
-        showSnackbarAfterDialogs(offerRedoSnackbar, nonNtp);
+        showActionSnackbarAfterDialogs(
+                R.string.synced_set_up_snackbar_removed_confirmation,
+                R.string.redo,
+                UMA_CROSS_DEVICE_SETTING_REDO,
+                () -> {
+                    recordAction(nonNtp, "Redo");
+                    // If re-applying an Android candidate theme that had changed the
+                    // theme after undo, re-enable the THEMES sync toggle so that
+                    // continuous theme sync resumes normally.
+                    // It is safe to turn THEMES sync back on because candidate theme
+                    // data is only retrieved if the user initially had THEMES sync
+                    // enabled prior to undoing.
+                    if (hadThemeChange
+                            && settingsToApply.getTheme() != null
+                            && settingsToApply.getTheme().getPlatformType()
+                                    == PlatformType.ANDROID) {
+                        @Nullable SyncService syncService =
+                                SyncServiceFactory.getForProfile(profile);
+                        if (syncService != null) {
+                            syncService.setSelectedType(UserSelectableType.THEMES, true);
+                        }
+                    }
+                    applyAndNotifySettingImport(profile, settingsToApply, nonNtp);
+                },
+                nonNtp);
     }
 
     /** Returns the user's current settings (including preferences and NTP theme). */
