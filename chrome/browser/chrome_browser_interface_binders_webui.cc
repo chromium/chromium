@@ -5,6 +5,8 @@
 #include "chrome/browser/chrome_browser_interface_binders_webui.h"
 
 #include "build/android_buildflags.h"
+#include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
+#include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -184,6 +186,10 @@ void BindTrackedElementHandlerRestricted(
 void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
+  RegisterWebUIControllerInterfaceBinder<
+      browser_actuator_internals::mojom::BrowserActuatorInternalsUIFactory,
+      browser_actuator::BrowserActuatorInternalsUI>(map);
+
   RegisterWebUIControllerInterfaceBinder<::mojom::BluetoothInternalsHandler,
                                          BluetoothInternalsUI>(map);
 

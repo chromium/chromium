@@ -2,17 +2,64 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "browser_actuator_internals.mojom" ]
+  webui_module_path = "/"
+}
+
 source_set("internals") {
-  sources = [ "browser_actuator_internals_ui.cc" ]
+  sources = [
+    "browser_actuator_internals_ui.cc",
+    "browser_actuator_internals_ui_mojo_impl.cc",
+    "browser_actuator_internals_ui_mojo_impl.h",
+  ]
   public = [ "browser_actuator_internals_ui.h" ]
+  friend = [ ":unit_tests" ]
   public_deps = [
-    "//chrome/browser/resources/browser_actuator_internals:resources",
+    ":mojo_bindings",
     "//content/public/browser",
     "//ui/webui",
   ]
   deps = [
     "//base",
+    "//chrome/browser/resources/browser_actuator_internals:resources",
     "//components/browser_actuator/public",
-    "//content/public/common",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_actuator_internals_ui_mojo_impl_unittest.cc" ]
+  deps = [
+    ":internals",
+    ":mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//components/browser_actuator/public",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "browser_actuator_internals_ui_browsertest.cc" ]
+    deps = [
+      ":internals",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//components/browser_actuator/public",
+      "//components/prefs",
+      "//components/webui/chrome_urls",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }

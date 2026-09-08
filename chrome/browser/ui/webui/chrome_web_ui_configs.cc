@@ -265,7 +265,8 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AccessibilityUIConfig>());
   map.AddWebUIConfig(std::make_unique<AutofillInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<BrowserActuatorInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<browser_actuator::BrowserActuatorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<chrome_urls::ChromeUrlsUIConfig>());
   map.AddWebUIConfig(std::make_unique<chromeos::DeviceLogUIConfig>());
   map.AddWebUIConfig(std::make_unique<CrashesUIConfig>());

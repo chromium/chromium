@@ -4,15 +4,19 @@
 
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
+#include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui_mojo_impl.h"
 #include "chrome/grit/browser_actuator_internals_resources.h"
 #include "chrome/grit/browser_actuator_internals_resources_map.h"
 #include "components/browser_actuator/public/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/url_constants.h"
 #include "ui/webui/webui_util.h"
+
+namespace browser_actuator {
 
 BrowserActuatorInternalsUIConfig::BrowserActuatorInternalsUIConfig()
     : DefaultInternalWebUIConfig(kChromeUIBrowserActuatorInternalsHost) {}
@@ -27,7 +31,7 @@ bool BrowserActuatorInternalsUIConfig::IsWebUIEnabled(
 }
 
 BrowserActuatorInternalsUI::BrowserActuatorInternalsUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIBrowserActuatorInternalsHost);
@@ -39,3 +43,22 @@ BrowserActuatorInternalsUI::BrowserActuatorInternalsUI(content::WebUI* web_ui)
 BrowserActuatorInternalsUI::~BrowserActuatorInternalsUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BrowserActuatorInternalsUI)
+
+void BrowserActuatorInternalsUI::BindInterface(
+    mojo::PendingReceiver<
+        browser_actuator_internals::mojom::BrowserActuatorInternalsUIFactory>
+        receiver) {
+  factory_receiver_.reset();
+  factory_receiver_.Bind(std::move(receiver));
+}
+
+void BrowserActuatorInternalsUI::CreateUI(
+    mojo::PendingRemote<
+        browser_actuator_internals::mojom::BrowserActuatorInternalsPage> page,
+    mojo::PendingReceiver<
+        browser_actuator_internals::mojom::BrowserActuatorInternalsUI> ui) {
+  mojo_impl_ = std::make_unique<BrowserActuatorInternalsUIMojoImpl>(
+      std::move(ui), std::move(page));
+}
+
+}  // namespace browser_actuator

@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module browser_actuator_internals.mojom;
+
+// Renderer-side interface for receiving diagnostic events from the browser.
+interface BrowserActuatorInternalsPage {};
+
+// Browser-side interface for handling requests from
+// chrome://browser-actuator-internals.
+interface BrowserActuatorInternalsUI {};
+
+// Factory interface for binding the BrowserActuatorInternalsUI and
+// BrowserActuatorInternalsPage interfaces.
+interface BrowserActuatorInternalsUIFactory {
+  // Creates the page handler and establishes two-way Mojo communication.
+  CreateUI(pending_remote<BrowserActuatorInternalsPage> page,
+           pending_receiver<BrowserActuatorInternalsUI> ui);
+};
