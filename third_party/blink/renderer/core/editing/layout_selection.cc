@@ -981,9 +981,6 @@ void LayoutSelection::ContextDestroyed() {
 }
 
 static PhysicalRect SelectionRectForLayoutObject(const LayoutObject* object) {
-  if (!object->IsRooted())
-    return PhysicalRect();
-
   if (!object->CanUpdateSelectionOnRootLineBoxes())
     return PhysicalRect();
 
