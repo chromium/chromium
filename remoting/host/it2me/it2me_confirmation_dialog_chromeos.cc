@@ -20,13 +20,16 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/session_manager/session_manager_types.h"
+#include "remoting/base/email_utils.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/message_box.h"
@@ -54,20 +57,31 @@ std::u16string FormatMessage(const std::string& remote_user_email,
                         ? IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED
                         : IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME);
 
+  std::u16string email = base::UTF8ToUTF16(remote_user_email);
+  email = base::CollapseWhitespace(email,
+                                   /*trim_sequences_with_line_breaks=*/true);
+  email = ElideEmail(email);
+  base::i18n::SanitizeUserSuppliedString(&email);
+
   return base::i18n::MessageFormatter::FormatWithNumberedArgs(
-      l10n_util::GetStringUTF16(message_id),
-      base::UTF8ToUTF16(remote_user_email),
+      l10n_util::GetStringUTF16(message_id), email,
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE),
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
 }
 
 std::u16string GetAutoAcceptMessage(const std::string& remote_user_email,
                                     base::TimeDelta time_left) {
+  std::u16string email = base::UTF8ToUTF16(remote_user_email);
+  email = base::CollapseWhitespace(email,
+                                   /*trim_sequences_with_line_breaks=*/true);
+  email = ElideEmail(email);
+  base::i18n::SanitizeUserSuppliedString(&email);
+
   std::u16string auto_accept_message =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED_CRD_UNATTENDED),
-          remote_user_email);
+          email);
   auto_accept_message.append(u"\n\n");
   auto_accept_message.append(l10n_util::GetPluralStringFUTF16(
       IDS_CRD_AUTO_ACCEPT_COUNTDOWN, time_left.InSeconds()));

@@ -13,12 +13,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
+#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "remoting/base/email_utils.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -122,11 +125,17 @@ void It2MeConfirmationDialogLinux::CreateWindow(
   GtkWidget* content_area =
       gtk_dialog_get_content_area(GTK_DIALOG(confirmation_window_.get()));
 
+  std::u16string email = base::UTF8ToUTF16(remote_user_email);
+  email = base::CollapseWhitespace(email,
+                                   /*trim_sequences_with_line_breaks=*/true);
+  email = ElideEmail(email);
+  base::i18n::SanitizeUserSuppliedString(&email);
+
   std::u16string dialog_text =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME),
-          remote_user_email);
+          email);
   GtkWidget* text_label = gtk_label_new(base::UTF16ToUTF8(dialog_text).c_str());
   gtk_label_set_line_wrap(GTK_LABEL(text_label), true);
 #if GTK_CHECK_VERSION(3, 90, 0)

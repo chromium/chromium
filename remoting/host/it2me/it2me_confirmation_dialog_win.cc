@@ -17,10 +17,12 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
+#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "remoting/base/email_utils.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/host/win/simple_task_dialog.h"
 
@@ -90,11 +92,17 @@ void It2MeConfirmationDialogWin::Show(const std::string& remote_user_email,
     std::move(callback).Run(result);
     return;
   }
+  std::u16string email = base::UTF8ToUTF16(remote_user_email);
+  email = base::CollapseWhitespace(email,
+                                   /*trim_sequences_with_line_breaks=*/true);
+  email = ElideEmail(email);
+  base::i18n::SanitizeUserSuppliedString(&email);
+
   std::wstring message_text =
       base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
           base::AsStringPiece16(
               std::wstring_view(message_stringw, string_length)),
-          base::UTF8ToUTF16(remote_user_email)));
+          email));
 
   task_dialog.set_message_text(message_text);
   task_dialog.set_default_button(IDNO);
