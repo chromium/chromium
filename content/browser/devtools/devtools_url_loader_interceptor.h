@@ -75,7 +75,7 @@ class CONTENT_EXPORT DevToolsURLLoaderInterceptor {
                               mojo::ScopedDataPipeConsumerHandle,
                               const std::string& mime_type)>;
 
-  struct AuthChallengeResponse {
+  struct CONTENT_EXPORT AuthChallengeResponse {
     enum ResponseType {
       kDefault,
       kCancelAuth,
@@ -93,7 +93,7 @@ class CONTENT_EXPORT DevToolsURLLoaderInterceptor {
     const net::AuthCredentials credentials;
   };
 
-  struct Modifications {
+  struct CONTENT_EXPORT Modifications {
     using HeadersVector = std::vector<std::pair<std::string, std::string>>;
 
     Modifications();
@@ -177,12 +177,19 @@ class CONTENT_EXPORT DevToolsURLLoaderInterceptor {
     const RequestInterceptedCallback callback;
   };
 
+  // Called with (use_fallback, credentials). If `use_fallback` is true,
+  // DevTools declines to handle the challenge and the network stack should
+  // proceed with default auth handling. If false, `credentials` contains
+  // supplied credentials or std::nullopt if authentication was canceled.
   using HandleAuthRequestCallback =
       base::OnceCallback<void(bool use_fallback,
                               const std::optional<net::AuthCredentials>&)>;
   using CheckCookieAccessCallback =
       base::RepeatingCallback<bool(const net::CanonicalCookie&)>;
-  // Can only be called on the IO thread.
+  // Routes an authentication challenge to the innermost interceptor with auth
+  // handling enabled for the matching request. Falls back to default handling
+  // if no interceptors handle auth or no matching job exists.
+  // Can only be called on the UI thread.
   static void HandleAuthRequest(GlobalRequestID req_id,
                                 const net::AuthChallengeInfo& auth_info,
                                 HandleAuthRequestCallback callback);
@@ -269,6 +276,11 @@ class CONTENT_EXPORT DevToolsURLLoaderInterceptor {
     jobs_.emplace(id, job);
     jobs_by_global_req_id_.emplace(global_req_id, job);
   }
+
+  // Registers/unregisters an InterceptionJob with the process-global in-flight
+  // job stack map used for routing network-originating auth challenges.
+  static void RegisterJob(InterceptionJob* job);
+  static void UnregisterJob(InterceptionJob* job);
 
   const RequestInterceptedCallback request_intercepted_callback_;
   const CheckCookieAccessCallback cookie_access_callback_;

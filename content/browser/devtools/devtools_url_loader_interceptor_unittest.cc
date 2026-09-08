@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/auth.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -74,7 +76,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
 }  // namespace
 
 // Tests DevToolsURLLoaderInterceptor and DevToolsURLLoaderFactoryProxy,
-// verifying request ID uniqueness per process and bad message enforcement.
+// verifying request ID uniqueness per process, bad message enforcement, and
+// auth challenge routing across daisy-chained interceptors.
 class DevToolsURLLoaderInterceptorTest : public testing::Test {
  public:
   struct StartedLoader {
@@ -137,6 +140,7 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
         result.client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     run_loop.Run();
+
     result.interception_id = last_interception_id_;
     return result;
   }
@@ -149,6 +153,17 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   std::string last_interception_id_;
   base::OnceClosure on_intercepted_;
+};
+
+class TestContinueRequestCallback
+    : public DevToolsURLLoaderInterceptor::ContinueInterceptedRequestCallback {
+ public:
+  void sendSuccess() override {}
+  void sendFailure(const protocol::Response& response) override {
+    ADD_FAILURE() << "ContinueInterceptedRequest failed: "
+                  << response.Message();
+  }
+  void fallThrough() override {}
 };
 
 // Verifies that a renderer process attempting to reuse an in-flight request ID
@@ -308,6 +323,426 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
   EXPECT_EQ(1, target_factory_.NumPending());
+}
+
+// Verifies that in a daisy-chained interceptor setup, an auth challenge is
+// routed to the interceptor configured to handle auth (handle_auth = true),
+// bypassing any interceptor that does not handle auth.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       AuthChallengeRoutesToInterceptorHandlingAuth) {
+  constexpr int kRendererProcessId = 42;
+  const base::UnguessableToken frame_token = base::UnguessableToken::Create();
+
+  std::unique_ptr<InterceptedRequestInfo> info1;
+  base::RunLoop loop1;
+  auto interceptor1 =
+      std::make_unique<DevToolsURLLoaderInterceptor>(base::BindLambdaForTesting(
+          [&](std::unique_ptr<InterceptedRequestInfo> info) {
+            info1 = std::move(info);
+            loop1.Quit();
+          }));
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns1;
+  patterns1.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                         DevToolsURLLoaderInterceptor::kRequest);
+  interceptor1->SetPatterns(std::move(patterns1), /*handle_auth=*/false);
+
+  std::unique_ptr<InterceptedRequestInfo> info2;
+  std::unique_ptr<InterceptedRequestInfo> auth_info2;
+  base::RunLoop loop2;
+  base::RunLoop auth_loop;
+  auto interceptor2 =
+      std::make_unique<DevToolsURLLoaderInterceptor>(base::BindLambdaForTesting(
+          [&](std::unique_ptr<InterceptedRequestInfo> info) {
+            if (info->auth_challenge) {
+              auth_info2 = std::move(info);
+              auth_loop.Quit();
+            } else {
+              info2 = std::move(info);
+              loop2.Quit();
+            }
+          }));
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns2;
+  patterns2.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                         DevToolsURLLoaderInterceptor::kRequest);
+  interceptor2->SetPatterns(std::move(patterns2), /*handle_auth=*/true);
+
+  // Chain interceptor1 then interceptor2. Because each proxy wraps the
+  // previous override's target receiver, interceptor1 becomes the outermost
+  // proxy (client-facing) and interceptor2 becomes the innermost proxy
+  // (network-facing).
+  network::mojom::URLLoaderFactoryOverride devtools_override;
+  bool created1 = interceptor1->CreateProxyForInterception(
+      kRendererProcessId, &storage_partition_, frame_token,
+      /*is_navigation=*/false, /*is_download=*/false, &devtools_override,
+      /*header_client=*/nullptr);
+  ASSERT_TRUE(created1);
+
+  bool created2 = interceptor2->CreateProxyForInterception(
+      kRendererProcessId, &storage_partition_, frame_token,
+      /*is_navigation=*/false, /*is_download=*/false, &devtools_override,
+      /*header_client=*/nullptr);
+  ASSERT_TRUE(created2);
+
+  target_factory_.Clone(
+      std::move(devtools_override.overridden_factory_receiver));
+  mojo::Remote<network::mojom::URLLoaderFactory> client_factory(
+      std::move(devtools_override.overriding_factory));
+
+  // Start request.
+  network::ResourceRequest request;
+  request.url = GURL("http://example.com/auth");
+  request.method = "GET";
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient client;
+
+  client_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/1,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Interceptor 1 intercepts request first.
+  loop1.Run();
+  ASSERT_TRUE(info1);
+  interceptor1->ContinueInterceptedRequest(
+      info1->interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  // Interceptor 2 intercepts request next.
+  loop2.Run();
+  ASSERT_TRUE(info2);
+  interceptor2->ContinueInterceptedRequest(
+      info2->interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  // Both jobs forwarded the request to the network. Simulate auth challenge.
+  net::AuthChallengeInfo challenge;
+  challenge.scheme = "basic";
+  challenge.realm = "realm";
+
+  bool handle_auth_completed = false;
+  bool fallback_result = false;
+  std::optional<net::AuthCredentials> creds_result;
+  base::RunLoop finish_loop;
+
+  DevToolsURLLoaderInterceptor::HandleAuthRequest(
+      GlobalRequestID(ToOriginatingProcessIdUnsafe(kRendererProcessId),
+                      /*request_id=*/1),
+      challenge,
+      base::BindLambdaForTesting(
+          [&](bool use_fallback,
+              const std::optional<net::AuthCredentials>& creds) {
+            handle_auth_completed = true;
+            fallback_result = use_fallback;
+            creds_result = creds;
+            finish_loop.Quit();
+          }));
+
+  // Interceptor 2 handles auth, so it receives the auth challenge.
+  auth_loop.Run();
+  ASSERT_TRUE(auth_info2);
+  ASSERT_TRUE(auth_info2->auth_challenge);
+  EXPECT_EQ(auth_info2->auth_challenge->realm, "realm");
+  EXPECT_FALSE(handle_auth_completed);
+
+  // Provide credentials from Interceptor 2.
+  auto mods = std::make_unique<DevToolsURLLoaderInterceptor::Modifications>();
+  mods->auth_challenge_response =
+      std::make_unique<DevToolsURLLoaderInterceptor::AuthChallengeResponse>(
+          u"test_user", u"test_pass");
+  interceptor2->ContinueInterceptedRequest(
+      auth_info2->interception_id, std::move(mods),
+      std::make_unique<TestContinueRequestCallback>());
+
+  finish_loop.Run();
+  EXPECT_TRUE(handle_auth_completed);
+  EXPECT_FALSE(fallback_result);
+  ASSERT_TRUE(creds_result.has_value());
+  EXPECT_EQ(creds_result->username(), u"test_user");
+  EXPECT_EQ(creds_result->password(), u"test_pass");
+
+  loader.reset();
+  client.RunUntilDisconnect();
+}
+
+// Verifies that when no interceptor handles auth, HandleAuthRequest falls back
+// to default authentication handling without error.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       AuthChallengeFallsBackWhenNoInterceptorHandlesAuth) {
+  constexpr int kRendererProcessId = 42;
+  const base::UnguessableToken frame_token = base::UnguessableToken::Create();
+
+  std::unique_ptr<InterceptedRequestInfo> info1;
+  base::RunLoop loop1;
+  auto interceptor1 =
+      std::make_unique<DevToolsURLLoaderInterceptor>(base::BindLambdaForTesting(
+          [&](std::unique_ptr<InterceptedRequestInfo> info) {
+            info1 = std::move(info);
+            loop1.Quit();
+          }));
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns1;
+  patterns1.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                         DevToolsURLLoaderInterceptor::kRequest);
+  interceptor1->SetPatterns(std::move(patterns1), /*handle_auth=*/false);
+
+  std::unique_ptr<InterceptedRequestInfo> info2;
+  base::RunLoop loop2;
+  auto interceptor2 =
+      std::make_unique<DevToolsURLLoaderInterceptor>(base::BindLambdaForTesting(
+          [&](std::unique_ptr<InterceptedRequestInfo> info) {
+            info2 = std::move(info);
+            loop2.Quit();
+          }));
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns2;
+  patterns2.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                         DevToolsURLLoaderInterceptor::kRequest);
+  interceptor2->SetPatterns(std::move(patterns2), /*handle_auth=*/false);
+
+  // Chain interceptor1 then interceptor2.
+  network::mojom::URLLoaderFactoryOverride devtools_override;
+  bool created1 = interceptor1->CreateProxyForInterception(
+      kRendererProcessId, &storage_partition_, frame_token,
+      /*is_navigation=*/false, /*is_download=*/false, &devtools_override,
+      /*header_client=*/nullptr);
+  ASSERT_TRUE(created1);
+
+  bool created2 = interceptor2->CreateProxyForInterception(
+      kRendererProcessId, &storage_partition_, frame_token,
+      /*is_navigation=*/false, /*is_download=*/false, &devtools_override,
+      /*header_client=*/nullptr);
+  ASSERT_TRUE(created2);
+
+  target_factory_.Clone(
+      std::move(devtools_override.overridden_factory_receiver));
+  mojo::Remote<network::mojom::URLLoaderFactory> client_factory(
+      std::move(devtools_override.overriding_factory));
+
+  network::ResourceRequest request;
+  request.url = GURL("http://example.com/noauth");
+  request.method = "GET";
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient client;
+
+  client_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/1,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  loop1.Run();
+  ASSERT_TRUE(info1);
+  interceptor1->ContinueInterceptedRequest(
+      info1->interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  loop2.Run();
+  ASSERT_TRUE(info2);
+  interceptor2->ContinueInterceptedRequest(
+      info2->interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  net::AuthChallengeInfo challenge;
+  challenge.scheme = "basic";
+  challenge.realm = "realm";
+
+  bool handle_auth_completed = false;
+  bool fallback_result = false;
+  std::optional<net::AuthCredentials> creds_result;
+
+  DevToolsURLLoaderInterceptor::HandleAuthRequest(
+      GlobalRequestID(ToOriginatingProcessIdUnsafe(kRendererProcessId),
+                      /*request_id=*/1),
+      challenge,
+      base::BindLambdaForTesting(
+          [&](bool use_fallback,
+              const std::optional<net::AuthCredentials>& creds) {
+            handle_auth_completed = true;
+            fallback_result = use_fallback;
+            creds_result = creds;
+          }));
+
+  EXPECT_TRUE(handle_auth_completed);
+  EXPECT_TRUE(fallback_result);
+  EXPECT_FALSE(creds_result.has_value());
+  EXPECT_FALSE(info1->auth_challenge);
+  EXPECT_FALSE(info2->auth_challenge);
+
+  loader.reset();
+  client.RunUntilDisconnect();
+}
+
+// Verifies that HandleAuthRequest falls back to default handling when no
+// in-flight job exists for the given GlobalRequestID.
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       AuthChallengeFallsBackWhenNoInFlightJob) {
+  constexpr int kUnknownProcessId = 99;
+  net::AuthChallengeInfo challenge;
+  challenge.scheme = "basic";
+  challenge.realm = "realm";
+
+  bool handle_auth_completed = false;
+  bool fallback_result = false;
+  std::optional<net::AuthCredentials> creds_result;
+
+  DevToolsURLLoaderInterceptor::HandleAuthRequest(
+      GlobalRequestID(ToOriginatingProcessIdUnsafe(kUnknownProcessId),
+                      /*request_id=*/1),
+      challenge,
+      base::BindLambdaForTesting(
+          [&](bool use_fallback,
+              const std::optional<net::AuthCredentials>& creds) {
+            handle_auth_completed = true;
+            fallback_result = use_fallback;
+            creds_result = creds;
+          }));
+
+  EXPECT_TRUE(handle_auth_completed);
+  EXPECT_TRUE(fallback_result);
+  EXPECT_FALSE(creds_result.has_value());
+}
+
+// Verifies that when multiple interceptors handle auth, the challenge routes to
+// the innermost interceptor (closest to the network, top of stack).
+TEST_F(DevToolsURLLoaderInterceptorTest,
+       AuthChallengeRoutesToInnermostInterceptorHandlingAuth) {
+  constexpr int kRendererProcessId = 42;
+  const base::UnguessableToken frame_token = base::UnguessableToken::Create();
+
+  std::unique_ptr<InterceptedRequestInfo> info1;
+  std::unique_ptr<InterceptedRequestInfo> auth_info1;
+  base::RunLoop loop1;
+  auto interceptor1 =
+      std::make_unique<DevToolsURLLoaderInterceptor>(base::BindLambdaForTesting(
+          [&](std::unique_ptr<InterceptedRequestInfo> info) {
+            if (info->auth_challenge) {
+              auth_info1 = std::move(info);
+            } else {
+              info1 = std::move(info);
+              loop1.Quit();
+            }
+          }));
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns1;
+  patterns1.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                         DevToolsURLLoaderInterceptor::kRequest);
+  interceptor1->SetPatterns(std::move(patterns1), /*handle_auth=*/true);
+
+  std::unique_ptr<InterceptedRequestInfo> info2;
+  std::unique_ptr<InterceptedRequestInfo> auth_info2;
+  base::RunLoop loop2;
+  base::RunLoop auth_loop;
+  auto interceptor2 =
+      std::make_unique<DevToolsURLLoaderInterceptor>(base::BindLambdaForTesting(
+          [&](std::unique_ptr<InterceptedRequestInfo> info) {
+            if (info->auth_challenge) {
+              auth_info2 = std::move(info);
+              auth_loop.Quit();
+            } else {
+              info2 = std::move(info);
+              loop2.Quit();
+            }
+          }));
+  std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns2;
+  patterns2.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+                         DevToolsURLLoaderInterceptor::kRequest);
+  interceptor2->SetPatterns(std::move(patterns2), /*handle_auth=*/true);
+
+  // Chain interceptor1 then interceptor2. Because each proxy wraps the
+  // previous override's target receiver, interceptor1 becomes the outermost
+  // proxy (client-facing) and interceptor2 becomes the innermost proxy
+  // (network-facing).
+  network::mojom::URLLoaderFactoryOverride devtools_override;
+  bool created1 = interceptor1->CreateProxyForInterception(
+      kRendererProcessId, &storage_partition_, frame_token,
+      /*is_navigation=*/false, /*is_download=*/false, &devtools_override,
+      /*header_client=*/nullptr);
+  ASSERT_TRUE(created1);
+
+  bool created2 = interceptor2->CreateProxyForInterception(
+      kRendererProcessId, &storage_partition_, frame_token,
+      /*is_navigation=*/false, /*is_download=*/false, &devtools_override,
+      /*header_client=*/nullptr);
+  ASSERT_TRUE(created2);
+
+  target_factory_.Clone(
+      std::move(devtools_override.overridden_factory_receiver));
+  mojo::Remote<network::mojom::URLLoaderFactory> client_factory(
+      std::move(devtools_override.overriding_factory));
+
+  network::ResourceRequest request;
+  request.url = GURL("http://example.com/bothauth");
+  request.method = "GET";
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient client;
+
+  client_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), /*request_id=*/1,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  loop1.Run();
+  ASSERT_TRUE(info1);
+  interceptor1->ContinueInterceptedRequest(
+      info1->interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  loop2.Run();
+  ASSERT_TRUE(info2);
+  interceptor2->ContinueInterceptedRequest(
+      info2->interception_id,
+      std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+      std::make_unique<TestContinueRequestCallback>());
+
+  net::AuthChallengeInfo challenge;
+  challenge.scheme = "basic";
+  challenge.realm = "realm";
+
+  bool handle_auth_completed = false;
+  bool fallback_result = false;
+  std::optional<net::AuthCredentials> creds_result;
+  base::RunLoop finish_loop;
+
+  DevToolsURLLoaderInterceptor::HandleAuthRequest(
+      GlobalRequestID(ToOriginatingProcessIdUnsafe(kRendererProcessId),
+                      /*request_id=*/1),
+      challenge,
+      base::BindLambdaForTesting(
+          [&](bool use_fallback,
+              const std::optional<net::AuthCredentials>& creds) {
+            handle_auth_completed = true;
+            fallback_result = use_fallback;
+            creds_result = creds;
+            finish_loop.Quit();
+          }));
+
+  // Interceptor 2 (innermost, top of stack) handles the challenge.
+  auth_loop.Run();
+  ASSERT_TRUE(auth_info2);
+  ASSERT_TRUE(auth_info2->auth_challenge);
+  EXPECT_EQ(auth_info2->auth_challenge->realm, "realm");
+  EXPECT_EQ(auth_info1, nullptr);
+  EXPECT_FALSE(handle_auth_completed);
+
+  // Provide credentials from Interceptor 2.
+  auto mods = std::make_unique<DevToolsURLLoaderInterceptor::Modifications>();
+  mods->auth_challenge_response =
+      std::make_unique<DevToolsURLLoaderInterceptor::AuthChallengeResponse>(
+          u"inner_user", u"inner_pass");
+  interceptor2->ContinueInterceptedRequest(
+      auth_info2->interception_id, std::move(mods),
+      std::make_unique<TestContinueRequestCallback>());
+
+  finish_loop.Run();
+  EXPECT_TRUE(handle_auth_completed);
+  EXPECT_FALSE(fallback_result);
+  ASSERT_TRUE(creds_result.has_value());
+  EXPECT_EQ(creds_result->username(), u"inner_user");
+  EXPECT_EQ(creds_result->password(), u"inner_pass");
+
+  loader.reset();
+  client.RunUntilDisconnect();
 }
 
 }  // namespace content
