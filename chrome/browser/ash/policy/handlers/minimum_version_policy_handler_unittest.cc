@@ -23,7 +23,11 @@
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,10 +47,36 @@ const char kNewVersion[] = "13305.25.0";
 const char kNewerVersion[] = "13310.0.0";
 const char kNewestVersion[] = "13320.10.0";
 const char kOldVersion[] = "13301.0.0";
+const char kEthernetServicePath[] = "/service/eth";
 
 const int kLongWarning = 10;
 const int kShortWarning = 2;
 const int kNoWarning = 0;
+
+class DefaultEthernetWaiter : public ash::NetworkStateHandlerObserver {
+ public:
+  DefaultEthernetWaiter() {
+    observation_.Observe(ash::NetworkHandler::Get()->network_state_handler());
+  }
+
+  DefaultEthernetWaiter(const DefaultEthernetWaiter&) = delete;
+  DefaultEthernetWaiter& operator=(const DefaultEthernetWaiter&) = delete;
+
+  ~DefaultEthernetWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void DefaultNetworkChanged(const ash::NetworkState* network) override {
+    if (network && network->path() == kEthernetServicePath &&
+        network->IsConnectedState()) {
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  ash::NetworkStateHandlerScopedObservation observation_{this};
+};
 
 }  // namespace
 
@@ -109,10 +139,11 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
   ash::ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();
   service_test->ClearServices();
-  service_test->AddService("/service/eth", "eth" /* guid */, "eth",
+  DefaultEthernetWaiter default_ethernet_waiter;
+  service_test->AddService(kEthernetServicePath, "eth" /* guid */, "eth",
                            shill::kTypeEthernet, shill::kStateOnline,
                            true /* visible */);
-  base::RunLoop().RunUntilIdle();
+  default_ethernet_waiter.Wait();
 
   scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                          "device_id");
