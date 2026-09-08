@@ -294,6 +294,21 @@ BOOL DisconnectWindowWin::OnDialogMessage(HWND hwnd,
       SetDialogPosition();
       return TRUE;
 
+    // Ensure the dialog stays visible if the taskbar is moved or resized.
+    // Windows broadcasts WM_SETTINGCHANGE with SPI_SETWORKAREA when the desktop
+    // work area changes (e.g. when the taskbar is moved to another edge,
+    // resized, or toggled to auto-hide). Without handling this, moving the
+    // taskbar to the edge where the dialog is docked (such as the top after
+    // clicking the alignment toggle) would allow the taskbar to overlay and
+    // obscure the disconnect indicator and "Stop Sharing" button.
+    // See crbug.com/556249179.
+    case WM_SETTINGCHANGE:
+      if (wparam == SPI_SETWORKAREA) {
+        SetDialogPosition();
+        return TRUE;
+      }
+      return FALSE;
+
     // Handle the disconnect hot-key.
     case WM_HOTKEY:
       EndDialog();
@@ -572,7 +587,10 @@ void DisconnectWindowWin::SetDialogPosition() {
   int left =
       (monitor_info.rcWork.right + monitor_info.rcWork.left - window_width) / 2;
 
-  SetWindowPos(hwnd_, nullptr, left, top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+  // Use HWND_TOPMOST to ensure the dialog stays above shell surfaces (such as
+  // a relocated taskbar) without stealing keyboard focus (SWP_NOACTIVATE).
+  SetWindowPos(hwnd_, HWND_TOPMOST, left, top, 0, 0,
+               SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 bool DisconnectWindowWin::SetStrings() {
