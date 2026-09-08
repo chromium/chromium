@@ -13,13 +13,13 @@ export function getHtml(this: MemoryBanksElement) {
         <section>
             <div class="header-container">
               <h1>Memory banks</h1>
-              ${this.entries.length === 0 ? '' : html`
+              ${this.entries.length > 0 ? html`
                 <cr-search-field
                     id="search-field"
                     label="Search memory"
                     @search-changed="${this.onSearchChanged_}">
                 </cr-search-field>
-              `}
+              ` : ''}
             </div>
 
             ${

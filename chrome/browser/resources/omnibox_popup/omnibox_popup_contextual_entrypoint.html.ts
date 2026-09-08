@@ -12,8 +12,8 @@ export function getHtml(this: OmniboxPopupContextualEntrypointElement) {
   return html`<!--_html_template_start_-->
 ${this.showContextEntrypoint_ ? html`
   <div class="context-menu-container">
-    ${this.shouldHideEntrypointButton_() ||
-        !hasAllowedInputs(this.inputState, this.usePecApi_) ? '' : html`
+    ${!this.shouldHideEntrypointButton_() &&
+        hasAllowedInputs(this.inputState, this.usePecApi_) ? html`
       <omnibox-popup-contextual-entrypoint-button id="context"
           class="upload-button"
           exportparts="entrypoint-button, context-menu-entrypoint-icon"
@@ -22,7 +22,7 @@ ${this.showContextEntrypoint_ ? html`
           .isOblongShape="${this.isOblongShape_}"
           ?show-suggestion-label="${this.showContextButtonSuggestionLabel_}">
       </omnibox-popup-contextual-entrypoint-button>
-    `}
+    ` : ''}
     ${this.isCurrentTabChipShown_ ? html`
       <composebox-current-tab-chip id="currentTabChip"
           class="upload-button contextual-chip"

@@ -31,7 +31,7 @@ ${!this.devModeEnabled_ ? html`
   </div>
 ` : html`
   <div id="content">
-    ${!this.hasFetchedApps_ ? '' : html`
+    ${this.hasFetchedApps_ ? html`
       <div class="header-row">
         <div>
           <h2 class="title">
@@ -92,7 +92,7 @@ ${!this.devModeEnabled_ ? html`
       <cr-toast id="toast" duration="3000">
         <div>${this.toastMessage_}</div>
       </cr-toast>
-    `}
+    ` : ''}
   </div>
 `}
 `;

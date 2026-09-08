@@ -14,7 +14,7 @@ export function getHtml(this: ContextualTasksAppElement) {
 <if expr="not is_android">
   <link rel="stylesheet" href="layout_constants.css">
 </if>
-  ${this.isShownInTab_ ? '' : html`
+  ${!this.isShownInTab_ ? html`
     <div id="toolbarOverlay">
       <top-toolbar id="toolbar"
           .title="${this.threadTitle_}"
@@ -28,7 +28,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
     </div>
-  `}
+  ` : ''}
   <webview id="threadFrame" allowtransparency="on"
       partition="persist:contextual-tasks"
       style="${this.getThreadFrameStyles()}">
@@ -40,14 +40,14 @@ export function getHtml(this: ContextualTasksAppElement) {
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.isComposeboxHeaderWrapperHidden_()}">
       <h1 class="thread-header" id="composeboxHeader">
-        ${this.userName_
-            ? [
-              html`<span>${this.friendlyZeroStateTitleBeforeName_}</span>`,
-              html`<span id="nameShimmer" class="name-shimmer">${this.userName_}</span>`,
-              html`<span>${this.friendlyZeroStateTitleAfterName_}</span>`,
-            ]
-            : html`<span>${this.friendlyZeroStateTitle}</span>`
-        }
+        ${this.userName_ ? html`
+          <!-- Comments between spans to eliminate whitespace -->
+          <span>${this.friendlyZeroStateTitleBeforeName_}</span><!--
+          --><span id="nameShimmer" class="name-shimmer">${this.userName_}</span><!--
+          --><span>${this.friendlyZeroStateTitleAfterName_}</span>
+        ` : html`
+          <span>${this.friendlyZeroStateTitle}</span>
+        `}
         ${this.friendlyZeroStateSubtitle.length > 0 ?
             html`<br>
             ${this.friendlyZeroStateSubtitle}` : ''}

@@ -10,7 +10,7 @@ export function getHtml(this: PolicyTableHeaderCellElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     ${this.headerTitle}
-    ${this.noSort ? '' : html`
+    ${!this.noSort ? html`
       <div class="sort-arrows">
         <button
           class="sort-up-arrow"
@@ -33,7 +33,7 @@ export function getHtml(this: PolicyTableHeaderCellElement) {
           @click="${this.onSortDownClick}">
         </button>
       </div>
-    `}
+    ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }
