@@ -31,8 +31,3 @@ include_rules = [
   "+ui/ozone/public",
 ]
 
-specific_include_rules = {
-  "renderer_settings_creation\\.cc": [
-    "+components/viz/common/switches.h",
-  ],
-}

@@ -64,7 +64,6 @@ specific_include_rules = {
   ],
   "software_output_device_ozone_unittest.cc": [
     "+ui/compositor",
-    "+ui/gl",
     "+ui/platform_window",
   ],
   "software_output_device_win_swapchain_unittest.cc": [

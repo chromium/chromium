@@ -11,7 +11,4 @@ specific_include_rules = {
     "+gpu/command_buffer/common/shared_image_usage.h",
 
   ],
-  ".*_unittest\\.cc": [
-    "+components/viz/service/frame_sinks",
-  ],
 }
