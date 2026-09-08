@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -285,6 +286,30 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabRemover, never()).forceCloseTabs(any());
         verify(mTabCreationDelegate, times(1))
                 .navigateToUrl(any(), eq(TAB_URL_2), eq(TAB_TITLE_1), eq(false));
+    }
+
+    @Test
+    public void testUpdateTabGroup_UpdateExistingTab_SkipNavigateSuppressed() {
+        // One local group with one tab syncing.
+        addOneTab();
+        UserDataHost userDataHost = new UserDataHost();
+        when(mTab1.getUserDataHost()).thenReturn(userDataHost);
+        TabGroupSyncNavigationSuppression.suppress(mTab1);
+
+        // One saved group with one tab mapped to the local tab.
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = TAB_URL_2;
+        savedTab.title = TAB_TITLE_1;
+
+        when(mTabGroupSyncUtilsJni.isUrlInTabRedirectChain(
+                        any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), eq(TAB_URL_2)))
+                .thenReturn(false);
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+
+        verify(mTabCreationDelegate, never())
+                .navigateToUrl(any(), any(), anyString(), anyBoolean());
     }
 
     @Test

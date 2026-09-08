@@ -305,6 +305,8 @@ public class LocalTabGroupMutationHelper {
         // If the tab is already at the correct URL, don't do anything.
         if (localUrl.equals(syncUrl)) return;
 
+        if (TabGroupSyncNavigationSuppression.isSuppressed(tab)) return;
+
         // If the tab has a non-syncable URL, don't override it if sync is trying to override it
         // with a default override. We allow local state to differ from sync in this case,
         // especially since we want to honor the local URL after restarts.
