@@ -5,15 +5,11 @@
 #include "chrome/browser/task_manager/providers/spare_render_process_host_task_provider.h"
 
 #include "base/functional/bind.h"
-#include "base/process/process.h"
 #include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_data.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
-#include "content/public/common/process_type.h"
 
 using content::BrowserThread;
-using content::ChildProcessData;
 using content::RenderProcessHost;
 
 namespace task_manager {
@@ -55,11 +51,8 @@ void SpareRenderProcessHostTaskProvider::StopUpdating() {
 
 void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
     RenderProcessHost* host) {
-  ChildProcessData data(content::PROCESS_TYPE_RENDERER, host->GetID());
-  data.SetProcess(host->GetProcess().Duplicate());
-
   auto task = std::make_unique<ChildProcessTask>(
-      data, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
+      *host, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
 
   auto [it, inserted] =
       tasks_by_rph_id_.emplace(host->GetDeprecatedID(), std::move(task));

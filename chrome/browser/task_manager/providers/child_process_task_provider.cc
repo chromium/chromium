@@ -96,8 +96,7 @@ void ChildProcessTaskProvider::CreateTask(
   }
 
   // Create the task and notify the observer.
-  task = std::make_unique<ChildProcessTask>(
-      data, ChildProcessTask::ProcessSubtype::kNoSubtype);
+  task = std::make_unique<ChildProcessTask>(data);
   tasks_by_child_id_[task->GetChildProcessUniqueID()] = task.get();
   NotifyObserverTaskAdded(task.get());
 }

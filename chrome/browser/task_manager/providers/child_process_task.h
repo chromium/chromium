@@ -11,12 +11,12 @@
 
 #include "base/byte_size.h"
 #include "chrome/browser/task_manager/providers/task.h"
-#include "chrome/common/buildflags.h"
 
 class ProcessResourceUsage;
 
 namespace content {
 struct ChildProcessData;
+class RenderProcessHost;
 }  // namespace content
 
 namespace task_manager {
@@ -47,8 +47,11 @@ class ChildProcessTask : public Task {
 
   // Creates a child process task given its |data| which is
   // received from observing |content::BrowserChildProcessObserver|.
-  ChildProcessTask(const content::ChildProcessData& data,
-                   ProcessSubtype subtype);
+  explicit ChildProcessTask(const content::ChildProcessData& data);
+
+  // Creates a child process task for a render process (such as a spare,
+  // Glic, or unknown render process host).
+  ChildProcessTask(content::RenderProcessHost& host, ProcessSubtype subtype);
 
   ChildProcessTask(const ChildProcessTask&) = delete;
   ChildProcessTask& operator=(const ChildProcessTask&) = delete;

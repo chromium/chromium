@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/byte_size.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -97,7 +99,7 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
 // Creates the Mojo service wrapper that will be used to sample the V8 memory
 // usage of the browser child process whose unique ID is
 // |unique_child_process_id|.
-ProcessResourceUsage* CreateProcessResourcesSampler(
+std::unique_ptr<ProcessResourceUsage> CreateProcessResourcesSampler(
     int unique_child_process_id) {
   mojo::PendingRemote<content::mojom::ResourceUsageReporter> usage_reporter;
   content::BrowserChildProcessHost* host =
@@ -107,7 +109,17 @@ ProcessResourceUsage* CreateProcessResourcesSampler(
     host->GetHost()->BindReceiver(std::move(receiver));
   }
 
-  return new ProcessResourceUsage(std::move(usage_reporter));
+  return std::make_unique<ProcessResourceUsage>(std::move(usage_reporter));
+}
+
+// Creates the Mojo service wrapper that will be used to sample the V8 memory
+// usage of the render process.
+std::unique_ptr<ProcessResourceUsage> CreateProcessResourcesSampler(
+    content::RenderProcessHost& host) {
+  mojo::PendingRemote<content::mojom::ResourceUsageReporter> usage_reporter;
+  host.BindReceiver(usage_reporter.InitWithNewPipeAndPassReceiver());
+
+  return std::make_unique<ProcessResourceUsage>(std::move(usage_reporter));
 }
 
 bool UsesV8Memory(int process_type) {
@@ -126,16 +138,32 @@ bool UsesV8Memory(int process_type) {
 
 gfx::ImageSkia* ChildProcessTask::s_icon_ = nullptr;
 
-ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
-                                   ProcessSubtype subtype)
-    : Task(GetLocalizedTitle(data.name, data.process_type, subtype),
+ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data)
+    : Task(GetLocalizedTitle(data.name,
+                             data.process_type,
+                             ProcessSubtype::kNoSubtype),
            FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
            data.GetProcess().Handle()),
       process_resources_sampler_(CreateProcessResourcesSampler(data.id)),
       unique_child_process_id_(data.id),
       process_type_(data.process_type),
-      process_subtype_(subtype),
+      process_subtype_(ProcessSubtype::kNoSubtype),
       uses_v8_memory_(UsesV8Memory(process_type_)) {}
+
+ChildProcessTask::ChildProcessTask(content::RenderProcessHost& host,
+                                   ProcessSubtype subtype)
+    : Task(GetLocalizedTitle(std::u16string(),
+                             content::PROCESS_TYPE_RENDERER,
+                             subtype),
+           FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
+           host.GetProcess().Handle()),
+      process_resources_sampler_(CreateProcessResourcesSampler(host)),
+      unique_child_process_id_(host.GetID().value()),
+      process_type_(content::PROCESS_TYPE_RENDERER),
+      process_subtype_(subtype),
+      uses_v8_memory_(true) {
+  CHECK_NE(subtype, ProcessSubtype::kNoSubtype);
+}
 
 ChildProcessTask::~ChildProcessTask() = default;
 
