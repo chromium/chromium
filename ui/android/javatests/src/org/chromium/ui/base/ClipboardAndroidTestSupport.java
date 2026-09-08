@@ -30,11 +30,6 @@ public class ClipboardAndroidTestSupport {
         return ClipboardAndroidTestSupportJni.get().nativeTestClipboardNotifications();
     }
 
-    /** Returns the current native clipboard sequence number as a string. */
-    public static String getSequenceNumber() {
-        return ClipboardAndroidTestSupportJni.get().nativeGetSequenceNumber();
-    }
-
     @NativeMethods
     interface Natives {
         boolean nativeWriteHtml(String htmlText);
@@ -42,7 +37,5 @@ public class ClipboardAndroidTestSupport {
         boolean nativeClipboardContains(String text);
 
         boolean nativeTestClipboardNotifications();
-
-        String nativeGetSequenceNumber();
     }
 }

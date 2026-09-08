@@ -399,7 +399,8 @@ public class Clipboard {
     protected void clear() {}
 
     @CalledByNative
-    private void setNativePtr(long nativeClipboard) {
+    @VisibleForTesting
+    void setNativePtr(long nativeClipboard) {
         mNativeClipboard = nativeClipboard;
     }
 
