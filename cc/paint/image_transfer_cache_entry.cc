@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <type_traits>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -434,6 +436,13 @@ sk_sp<SkImage> ReadImage(
   }
 }
 
+uint32_t GetNextCacheEntryId() {
+  static base::AtomicSequenceNumberT<uint32_t> id_sequence;
+  uint32_t id = id_sequence.GetNext();
+  CHECK_NE(id, std::numeric_limits<uint32_t>::max());
+  return id;
+}
+
 }  // namespace
 
 size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format) {
@@ -496,7 +505,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     sk_sp<SkColorSpace> target_color_space)
     : needs_mips_(needs_mips),
       target_color_space_(target_color_space),
-      id_(GetNextId()),
+      id_(GetNextCacheEntryId()),
       image_(image) {
   ComputeSize();
 }
@@ -507,7 +516,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const SkGainmapInfo& gainmap_info,
     bool needs_mips)
     : needs_mips_(needs_mips),
-      id_(GetNextId()),
+      id_(GetNextCacheEntryId()),
       image_(image),
       gainmap_image_(gainmap_image),
       gainmap_info_(gainmap_info) {
@@ -515,9 +524,6 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
 }
 
 ClientImageTransferCacheEntry::~ClientImageTransferCacheEntry() = default;
-
-// static
-base::AtomicSequenceNumber ClientImageTransferCacheEntry::s_next_id_;
 
 uint32_t ClientImageTransferCacheEntry::SerializedSize() const {
   return size_;
