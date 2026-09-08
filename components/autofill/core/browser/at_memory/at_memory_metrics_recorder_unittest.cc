@@ -276,17 +276,14 @@ TEST_F(AtMemoryMetricsRecorderTest,
 // Tests that AcceptedSuggestionDataType logs the correct memory data type when
 // a suggestion is accepted.
 TEST_F(AtMemoryMetricsRecorderTest, AcceptedSuggestionDataType) {
-  {
-    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
-                                    GURL(), std::u16string(), FieldGlobalId(),
-                                    FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
-    metrics.OnQuerySubmitted(u"query");
-    SendResponse(metrics);
-    metrics.OnSuggestionAccepted(MemoryDataType::kPassportNumber);
-  }
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                       /*metadata=*/{});
+  metrics.OnQuerySubmitted(u"query");
+  SendResponse(metrics);
+  metrics.OnSuggestionAccepted(MemoryDataType::kPassportNumber);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.AcceptedSuggestionDataType",
@@ -296,17 +293,14 @@ TEST_F(AtMemoryMetricsRecorderTest, AcceptedSuggestionDataType) {
 // Tests that QueryCountBeforeAcceptance logs 1 if only one query was submitted
 // before acceptance.
 TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_OneQuery) {
-  {
-    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
-                                    GURL(), std::u16string(), FieldGlobalId(),
-                                    FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
-    metrics.OnQuerySubmitted(u"query 1");
-    SendResponse(metrics);
-    metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
-  }
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                       /*metadata=*/{});
+  metrics.OnQuerySubmitted(u"query 1");
+  SendResponse(metrics);
+  metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.QueryCountBeforeAcceptance", 1, 1);

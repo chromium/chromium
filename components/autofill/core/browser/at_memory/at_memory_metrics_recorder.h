@@ -158,8 +158,8 @@ class AtMemoryMetricsRecorder {
   // Emits the record in `ukm_search_query_builder_` if it exists.
   void MaybeFlushSearchQueryUkm();
 
-  // Emits the `SuggestionAccepted` metric if `suggestion_accepted_` is not
-  // `std::nullopt`.
+  // Emits the `SuggestionAccepted` metric if non-empty query results were
+  // received for the query.
   void MaybeLogSuggestionAccepted();
 
   // The unique identifier of the session. A session begins when the popup is
@@ -206,9 +206,8 @@ class AtMemoryMetricsRecorder {
     // Whether a non-empty query response has been received.
     bool suggestions_received = false;
 
-    std::optional<MemoryDataType> accepted_data_type;
-
-    std::optional<MemorySourcesBitmask> accepted_sources_bitmask;
+    // Whether a suggestion was accepted in response to the last user query.
+    bool suggestion_accepted = false;
   } suggestion_acceptance_;
 
   // Information about the asynchronous fetch/unmask process of PII.
