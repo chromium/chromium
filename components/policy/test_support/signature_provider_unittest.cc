@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,8 +49,7 @@ TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha256Rsa) {
   EXPECT_FALSE(signature.empty());
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-      base::as_byte_span(signature),
+      crypto::sign::RSA_PKCS1_SHA256, base::as_byte_span(signature),
       base::as_byte_span(signing_key->public_key())));
   signature_verifier.VerifyUpdate(base::as_byte_span(some_string));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
@@ -77,7 +77,7 @@ TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha1Rsa) {
   EXPECT_FALSE(signature.empty());
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::SignatureVerifier::RSA_PKCS1_SHA1, base::as_byte_span(signature),
+      crypto::sign::RSA_PKCS1_SHA1, base::as_byte_span(signature),
       base::as_byte_span(signing_key->public_key())));
   signature_verifier.VerifyUpdate(base::as_byte_span(some_string));
   EXPECT_TRUE(signature_verifier.VerifyFinal());

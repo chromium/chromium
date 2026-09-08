@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "crypto/hash.h"
 #include "crypto/random.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -225,7 +226,7 @@ bool InstallSigner::VerifySignature(const InstallSignature& signature) {
     return false;
 
   crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
+  if (!verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1,
                            base::as_byte_span(signature.signature),
                            base::as_byte_span(public_key))) {
     return false;

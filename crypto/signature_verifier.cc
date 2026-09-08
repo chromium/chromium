@@ -24,10 +24,12 @@ SignatureVerifier::SignatureVerifier() = default;
 
 SignatureVerifier::~SignatureVerifier() = default;
 
-bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
+bool SignatureVerifier::VerifyInit(sign::SignatureKind signature_algorithm,
                                    base::span<const uint8_t> signature,
                                    base::span<const uint8_t> public_key_info) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  using enum sign::SignatureKind;
 
   int pkey_type = EVP_PKEY_NONE;
   const EVP_MD* digest = nullptr;

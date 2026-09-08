@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -686,47 +687,47 @@ TEST(X509UtilTest, SignatureVerifierInitWithCertificate) {
 
   struct Test {
     const char* cert;
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+    crypto::sign::SignatureKind algorithm;
     base::raw_span<const uint8_t> signature;
     bool ok;
   } kTests[] = {
       // The certificate must support the digitalSignature key usage.
-      {"key_usage_p256_digitalsignature.pem",
-       crypto::SignatureVerifier::ECDSA_SHA256, p256Signature, true},
-      {"key_usage_p256_both.pem", crypto::SignatureVerifier::ECDSA_SHA256,
+      {"key_usage_p256_digitalsignature.pem", crypto::sign::ECDSA_SHA256,
        p256Signature, true},
-      {"key_usage_rsa_digitalsignature.pem",
-       crypto::SignatureVerifier::RSA_PKCS1_SHA256, rsaSignaturePKCS1, true},
-      {"key_usage_rsa_digitalsignature.pem",
-       crypto::SignatureVerifier::RSA_PSS_SHA256, rsaSignaturePSS, true},
-      {"key_usage_rsa_both.pem", crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+      {"key_usage_p256_both.pem", crypto::sign::ECDSA_SHA256, p256Signature,
+       true},
+      {"key_usage_rsa_digitalsignature.pem", crypto::sign::RSA_PKCS1_SHA256,
        rsaSignaturePKCS1, true},
-      {"key_usage_rsa_both.pem", crypto::SignatureVerifier::RSA_PSS_SHA256,
+      {"key_usage_rsa_digitalsignature.pem", crypto::sign::RSA_PSS_SHA256,
        rsaSignaturePSS, true},
+      {"key_usage_rsa_both.pem", crypto::sign::RSA_PKCS1_SHA256,
+       rsaSignaturePKCS1, true},
+      {"key_usage_rsa_both.pem", crypto::sign::RSA_PSS_SHA256, rsaSignaturePSS,
+       true},
 
       // Omitting the extension entirely is also accepted.
-      {"key_usage_p256_no_extension.pem",
-       crypto::SignatureVerifier::ECDSA_SHA256, p256Signature, true},
-      {"key_usage_rsa_no_extension.pem",
-       crypto::SignatureVerifier::RSA_PKCS1_SHA256, rsaSignaturePKCS1, true},
-      {"key_usage_rsa_no_extension.pem",
-       crypto::SignatureVerifier::RSA_PSS_SHA256, rsaSignaturePSS, true},
+      {"key_usage_p256_no_extension.pem", crypto::sign::ECDSA_SHA256,
+       p256Signature, true},
+      {"key_usage_rsa_no_extension.pem", crypto::sign::RSA_PKCS1_SHA256,
+       rsaSignaturePKCS1, true},
+      {"key_usage_rsa_no_extension.pem", crypto::sign::RSA_PSS_SHA256,
+       rsaSignaturePSS, true},
 
       // If the extension is present but digitalSignature is missing, the
       // signature is rejected.
-      {"key_usage_p256_keyagreement.pem",
-       crypto::SignatureVerifier::ECDSA_SHA256, p256Signature, false},
-      {"key_usage_rsa_keyencipherment.pem",
-       crypto::SignatureVerifier::RSA_PKCS1_SHA256, rsaSignaturePKCS1, false},
-      {"key_usage_rsa_keyencipherment.pem",
-       crypto::SignatureVerifier::RSA_PSS_SHA256, rsaSignaturePSS, false},
+      {"key_usage_p256_keyagreement.pem", crypto::sign::ECDSA_SHA256,
+       p256Signature, false},
+      {"key_usage_rsa_keyencipherment.pem", crypto::sign::RSA_PKCS1_SHA256,
+       rsaSignaturePKCS1, false},
+      {"key_usage_rsa_keyencipherment.pem", crypto::sign::RSA_PSS_SHA256,
+       rsaSignaturePSS, false},
 
       // The key and signature must match, rather than only extracting the hash
       // function.
-      {"key_usage_p256_digitalsignature.pem",
-       crypto::SignatureVerifier::RSA_PKCS1_SHA256, p256Signature, false},
-      {"key_usage_rsa_digitalsignature.pem",
-       crypto::SignatureVerifier::ECDSA_SHA256, rsaSignaturePKCS1, false},
+      {"key_usage_p256_digitalsignature.pem", crypto::sign::RSA_PKCS1_SHA256,
+       p256Signature, false},
+      {"key_usage_rsa_digitalsignature.pem", crypto::sign::ECDSA_SHA256,
+       rsaSignaturePKCS1, false},
   };
 
   for (const auto& test : kTests) {

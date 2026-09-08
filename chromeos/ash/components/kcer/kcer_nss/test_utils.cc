@@ -17,13 +17,12 @@
 #include "chromeos/ash/components/kcer/kcer_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/pem.h"
-
-using SignatureAlgorithm = crypto::SignatureVerifier::SignatureAlgorithm;
 
 namespace kcer {
 namespace {
@@ -161,19 +160,19 @@ bool VerifySignature(SigningScheme signing_scheme,
                      DataToSign data_to_sign,
                      Signature signature,
                      bool strict) {
-  SignatureAlgorithm signature_algo = SignatureAlgorithm::RSA_PKCS1_SHA1;
+  crypto::sign::SignatureKind signature_algo = crypto::sign::RSA_PKCS1_SHA1;
   switch (signing_scheme) {
     case SigningScheme::kRsaPkcs1Sha1:
-      signature_algo = SignatureAlgorithm::RSA_PKCS1_SHA1;
+      signature_algo = crypto::sign::RSA_PKCS1_SHA1;
       break;
     case SigningScheme::kRsaPkcs1Sha256:
-      signature_algo = SignatureAlgorithm::RSA_PKCS1_SHA256;
+      signature_algo = crypto::sign::RSA_PKCS1_SHA256;
       break;
     case SigningScheme::kRsaPssRsaeSha256:
-      signature_algo = SignatureAlgorithm::RSA_PSS_SHA256;
+      signature_algo = crypto::sign::RSA_PSS_SHA256;
       break;
     case SigningScheme::kEcdsaSecp256r1Sha256:
-      signature_algo = SignatureAlgorithm::ECDSA_SHA256;
+      signature_algo = crypto::sign::ECDSA_SHA256;
       break;
     default:
       return !strict;

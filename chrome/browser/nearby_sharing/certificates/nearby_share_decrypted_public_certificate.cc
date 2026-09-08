@@ -14,6 +14,7 @@
 #include "crypto/aead.h"
 #include "crypto/aes_ctr.h"
 #include "crypto/hmac.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 
 namespace {
@@ -205,7 +206,7 @@ bool NearbyShareDecryptedPublicCertificate::VerifySignature(
     base::span<const uint8_t> payload,
     base::span<const uint8_t> signature) const {
   crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256, signature,
+  if (!verifier.VerifyInit(crypto::sign::ECDSA_SHA256, signature,
                            public_key_)) {
     CD_LOG(ERROR, Feature::NS)
         << "Verification failed: Initialization unsuccessful.";

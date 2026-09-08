@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -456,13 +457,13 @@ bool ProofVerifierChromium::Job::VerifySignature(
   size_t size_bits;
   X509Certificate::PublicKeyType type;
   X509Certificate::GetPublicKeyInfo(cert_->cert_buffer(), &size_bits, &type);
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+  crypto::sign::SignatureKind algorithm;
   switch (type) {
     case X509Certificate::kPublicKeyTypeRSA:
-      algorithm = crypto::SignatureVerifier::RSA_PSS_SHA256;
+      algorithm = crypto::sign::RSA_PSS_SHA256;
       break;
     case X509Certificate::kPublicKeyTypeECDSA:
-      algorithm = crypto::SignatureVerifier::ECDSA_SHA256;
+      algorithm = crypto::sign::ECDSA_SHA256;
       break;
     default:
       LOG(ERROR) << "Unsupported public key type " << type;

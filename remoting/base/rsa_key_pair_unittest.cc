@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "remoting/base/test_rsa_key_pair.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,7 +32,7 @@ bool VerifySignature(const std::string& host_public_key_base64,
     return false;
   }
   crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256, signature,
+  if (!verifier.VerifyInit(crypto::sign::RSA_PSS_SHA256, signature,
                            *host_public_key)) {
     LOG(ERROR) << "Failed to initialize SignatureVerifier";
     return false;

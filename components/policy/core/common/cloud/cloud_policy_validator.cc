@@ -26,6 +26,7 @@
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -265,13 +266,13 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
                                                const std::string& signature,
                                                SignatureType signature_type) {
   crypto::SignatureVerifier verifier;
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+  crypto::sign::SignatureKind algorithm;
   switch (signature_type) {
     case em::PolicyFetchRequest::SHA1_RSA:
-      algorithm = crypto::SignatureVerifier::RSA_PKCS1_SHA1;
+      algorithm = crypto::sign::RSA_PKCS1_SHA1;
       break;
     case em::PolicyFetchRequest::SHA256_RSA:
-      algorithm = crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+      algorithm = crypto::sign::RSA_PKCS1_SHA256;
       break;
     default:
       // Treat `em::PolicyFetchRequest::NONE` as unsigned blobs, which is

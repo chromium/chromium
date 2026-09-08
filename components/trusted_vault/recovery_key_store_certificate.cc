@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_view_util.h"
 #include "components/trusted_vault/securebox.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -357,13 +358,13 @@ bool VerifySignature(std::shared_ptr<const bssl::ParsedCertificate> certificate,
   net::X509Certificate::PublicKeyType type;
   net::X509Certificate::GetPublicKeyInfo(certificate->cert_buffer(), &size_bits,
                                          &type);
-  crypto::SignatureVerifier::SignatureAlgorithm algo;
+  crypto::sign::SignatureKind algo;
   switch (type) {
     case net::X509Certificate::PublicKeyType::kPublicKeyTypeECDSA:
-      algo = crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+      algo = crypto::sign::ECDSA_SHA256;
       break;
     case net::X509Certificate::PublicKeyType::kPublicKeyTypeRSA:
-      algo = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+      algo = crypto::sign::RSA_PKCS1_SHA256;
       break;
     case net::X509Certificate::PublicKeyType::kPublicKeyTypeUnknown:
       return false;

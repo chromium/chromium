@@ -50,6 +50,7 @@
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/sha2.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_certificate.h"
@@ -445,8 +446,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::vector<uint8_t> kDataToSign({1, 2, 3, 4, 5});
   const unsigned int kKeySize = 2048;
   const HashAlgorithm kHashAlgorithm = HashAlgorithm::HASH_ALGORITHM_SHA256;
-  const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+  const crypto::sign::SignatureKind kSignatureAlgorithm =
+      crypto::sign::RSA_PKCS1_SHA256;
 
   const TokenId token_id = GetParam().token_id;
   base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
@@ -534,8 +535,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::vector<uint8_t> kDigestInfoAndDataToSignHash =
       PrependSHA256DigestInfo(kDataToSignHash);
 
-  const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+  const crypto::sign::SignatureKind kSignatureAlgorithm =
+      crypto::sign::RSA_PKCS1_SHA256;
 
   const std::vector<uint8_t> public_key_spki_der =
       GenerateKeyPair(token_id, kKeySize);

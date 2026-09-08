@@ -24,6 +24,7 @@
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "crypto/evp.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
@@ -54,9 +55,9 @@ constexpr uint8_t kMessageHeader[] =
 constexpr base::TimeDelta kOneWeek = base::Days(7);
 constexpr base::TimeDelta kFourWeeks = base::Days(4 * 7);
 
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
-GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
-                      SignedExchangeDevToolsProxy* devtools_proxy) {
+std::optional<crypto::sign::SignatureKind> GetSignatureAlgorithm(
+    scoped_refptr<net::X509Certificate> cert,
+    SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "GetSignatureAlgorithm");
   std::string_view spki;
   if (!net::asn1::ExtractSPKIFromDERCert(
@@ -88,7 +89,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
   const EC_GROUP* group = EC_KEY_get0_group(EVP_PKEY_get0_EC_KEY(pkey.get()));
   int curve_name = EC_GROUP_get_curve_name(group);
   if (curve_name == NID_X9_62_prime256v1)
-    return crypto::SignatureVerifier::ECDSA_SHA256;
+    return crypto::sign::ECDSA_SHA256;
   signed_exchange_utils::ReportErrorAndTraceEvent(
       devtools_proxy,
       base::StringPrintf("Unsupported EC group: %d. Only ECDSA keys on the "
@@ -100,7 +101,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
 bool VerifySignature(base::span<const uint8_t> sig,
                      base::span<const uint8_t> msg,
                      scoped_refptr<net::X509Certificate> cert,
-                     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+                     crypto::sign::SignatureKind algorithm,
                      SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "VerifySignature");
   crypto::SignatureVerifier verifier;
@@ -290,7 +291,7 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
 
   auto message = GenerateSignedMessage(version, envelope);
 
-  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+  std::optional<crypto::sign::SignatureKind> algorithm =
       GetSignatureAlgorithm(certificate, devtools_proxy);
   if (!algorithm)
     return Result::kErrUnsupportedCertType;

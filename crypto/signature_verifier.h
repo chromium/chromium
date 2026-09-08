@@ -25,12 +25,6 @@ namespace crypto {
 // TODO(https://crbug.com/406190025): Delete this.
 class CRYPTO_EXPORT SignatureVerifier {
  public:
-  // Many of the values representable by SignatureKind are not usable with
-  // SignatureVerifier; callers requiring newer signature algorithms should
-  // use crypto::sign::Verifier instead.
-  using SignatureAlgorithm = sign::SignatureKind;
-  using enum sign::SignatureKind;
-
   SignatureVerifier();
   ~SignatureVerifier();
 
@@ -47,7 +41,7 @@ class CRYPTO_EXPORT SignatureVerifier {
   //   SubjectPublicKeyInfo  ::=  SEQUENCE  {
   //       algorithm            AlgorithmIdentifier,
   //       subjectPublicKey     BIT STRING  }
-  bool VerifyInit(SignatureAlgorithm signature_algorithm,
+  bool VerifyInit(sign::SignatureKind signature_algorithm,
                   base::span<const uint8_t> signature,
                   base::span<const uint8_t> public_key_info);
 

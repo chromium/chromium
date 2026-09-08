@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/owner_settings_service.h"
 #include "crypto/nss_key_util.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -411,7 +412,7 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA1) {
 
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
+      crypto::sign::RSA_PKCS1_SHA1,
       base::as_byte_span(signed_policy->policy_data_signature()),
       pub_key->data()));
   signature_verifier.VerifyUpdate(
@@ -444,7 +445,7 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
 
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+      crypto::sign::RSA_PKCS1_SHA256,
       base::as_byte_span(signed_policy->policy_data_signature()),
       pub_key->data()));
   signature_verifier.VerifyUpdate(

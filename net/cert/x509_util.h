@@ -16,6 +16,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -180,7 +181,7 @@ NET_EXPORT SHA256HashValue CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer);
 // on success or false on error.
 NET_EXPORT bool SignatureVerifierInitWithCertificate(
     crypto::SignatureVerifier* verifier,
-    crypto::SignatureVerifier::SignatureAlgorithm signature_algorithm,
+    crypto::sign::SignatureKind signature_algorithm,
     base::span<const uint8_t> signature,
     const CRYPTO_BUFFER* certificate);
 

@@ -77,8 +77,8 @@ void VerifyEs256(const std::vector<uint8_t>& public_key,
   auto der_signature = base::ToVector(signature_span);
 
   crypto::SignatureVerifier verifier;
-  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256,
-                                  der_signature, public_key));
+  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::ECDSA_SHA256, der_signature,
+                                  public_key));
 
   verifier.VerifyUpdate(base::as_byte_span(message));
   EXPECT_TRUE(verifier.VerifyFinal());
@@ -88,8 +88,8 @@ void VerifyRs256(const std::vector<uint8_t>& public_key,
                  base::span<const uint8_t> signature,
                  const std::string& message) {
   crypto::SignatureVerifier verifier;
-  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-                                  signature, public_key));
+  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA256, signature,
+                                  public_key));
 
   verifier.VerifyUpdate(base::as_byte_span(message));
   EXPECT_TRUE(verifier.VerifyFinal());

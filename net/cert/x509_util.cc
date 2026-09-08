@@ -26,6 +26,7 @@
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
+#include "crypto/sign.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -551,7 +552,7 @@ SHA256HashValue CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer) {
 
 bool SignatureVerifierInitWithCertificate(
     crypto::SignatureVerifier* verifier,
-    crypto::SignatureVerifier::SignatureAlgorithm signature_algorithm,
+    crypto::sign::SignatureKind signature_algorithm,
     base::span<const uint8_t> signature,
     const CRYPTO_BUFFER* certificate) {
   std::string_view cert_der = x509_util::CryptoBufferAsStringPiece(certificate);

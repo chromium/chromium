@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "crypto/sign.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(SignatureVerifierTest, BasicTest) {
@@ -195,15 +196,15 @@ TEST(SignatureVerifierTest, BasicTest) {
 
   // Test  1: feed all of the data to the verifier at once (a single
   // VerifyUpdate call).
-  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                                  signature, public_key_info));
+  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1, signature,
+                                  public_key_info));
   verifier.VerifyUpdate(tbs_certificate);
   EXPECT_TRUE(verifier.VerifyFinal());
 
   // Test 2: feed the data to the verifier in three parts (three VerifyUpdate
   // calls).
-  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                                  signature, public_key_info));
+  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1, signature,
+                                  public_key_info));
   auto tbs_certificate_span = base::span(tbs_certificate);
 
   verifier.VerifyUpdate(tbs_certificate_span.first<256>());
@@ -214,30 +215,30 @@ TEST(SignatureVerifierTest, BasicTest) {
   // Test 3: verify the signature with incorrect data.
   auto bad_tbs_certificate = tbs_certificate;
   bad_tbs_certificate[10] += 1;  // Corrupt one byte of the data.
-  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                                  signature, public_key_info));
+  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1, signature,
+                                  public_key_info));
   verifier.VerifyUpdate(bad_tbs_certificate);
   EXPECT_FALSE(verifier.VerifyFinal());
 
   // Test 4: verify a bad signature.
   auto bad_signature = signature;
   bad_signature[10] += 1;  // Corrupt one byte of the signature.
-  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                                  bad_signature, public_key_info));
+  EXPECT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1, bad_signature,
+                                  public_key_info));
   verifier.VerifyUpdate(tbs_certificate);
   EXPECT_FALSE(verifier.VerifyFinal());
 
   // Test 5: import an invalid key.
   auto bad_public_key_info = public_key_info;
   bad_public_key_info[0] += 1;  // Corrupt part of the SPKI syntax.
-  EXPECT_FALSE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                                   signature, bad_public_key_info));
+  EXPECT_FALSE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1, signature,
+                                   bad_public_key_info));
 
   // Test 6: import a key with extra data.
   uint8_t long_public_key_info[public_key_info.size() + 5] = {};
   base::span(long_public_key_info).copy_prefix_from(public_key_info);
-  EXPECT_FALSE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-                                   signature, long_public_key_info));
+  EXPECT_FALSE(verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA1, signature,
+                                   long_public_key_info));
 }
 
 // The following RSA-PSS tests were generated via the following OpenSSL
@@ -374,13 +375,13 @@ const uint8_t kPSSSignatureBadSaltLength[] = {
 TEST(SignatureVerifierTest, VerifyRSAPSS) {
   // Verify the test vector.
   crypto::SignatureVerifier verifier;
-  ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
+  ASSERT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PSS_SHA256,
                                   kPSSSignatureGood, kPSSPublicKey));
   verifier.VerifyUpdate(kPSSMessage);
   EXPECT_TRUE(verifier.VerifyFinal());
 
   // Verify the test vector byte-by-byte.
-  ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
+  ASSERT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PSS_SHA256,
                                   kPSSSignatureGood, kPSSPublicKey));
   for (uint8_t b : kPSSMessage) {
     verifier.VerifyUpdate(base::span_from_ref(b));
@@ -388,7 +389,7 @@ TEST(SignatureVerifierTest, VerifyRSAPSS) {
   EXPECT_TRUE(verifier.VerifyFinal());
 
   // The bad salt length does not verify.
-  ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
+  ASSERT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PSS_SHA256,
                                   kPSSSignatureBadSaltLength, kPSSPublicKey));
   verifier.VerifyUpdate(kPSSMessage);
   EXPECT_FALSE(verifier.VerifyFinal());
@@ -396,7 +397,7 @@ TEST(SignatureVerifierTest, VerifyRSAPSS) {
   // Corrupt the message.
   std::vector<uint8_t> message(std::begin(kPSSMessage), std::end(kPSSMessage));
   message[0] ^= 1;
-  ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
+  ASSERT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PSS_SHA256,
                                   kPSSSignatureGood, kPSSPublicKey));
   verifier.VerifyUpdate(message);
   EXPECT_FALSE(verifier.VerifyFinal());
@@ -405,8 +406,8 @@ TEST(SignatureVerifierTest, VerifyRSAPSS) {
   std::vector<uint8_t> signature(std::begin(kPSSSignatureGood),
                                  std::end(kPSSSignatureGood));
   signature[0] ^= 1;
-  ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
-                                  signature, kPSSPublicKey));
+  ASSERT_TRUE(verifier.VerifyInit(crypto::sign::RSA_PSS_SHA256, signature,
+                                  kPSSPublicKey));
   verifier.VerifyUpdate(kPSSMessage);
   EXPECT_FALSE(verifier.VerifyFinal());
 }

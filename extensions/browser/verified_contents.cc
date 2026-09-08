@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/extension.h"
@@ -318,9 +319,9 @@ bool VerifiedContents::VerifySignature(const std::string& protected_value,
                                        const std::string& payload,
                                        const std::string& signature_bytes) {
   crypto::SignatureVerifier signature_verifier;
-  if (!signature_verifier.VerifyInit(
-          crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-          base::as_byte_span(signature_bytes), public_key_)) {
+  if (!signature_verifier.VerifyInit(crypto::sign::RSA_PKCS1_SHA256,
+                                     base::as_byte_span(signature_bytes),
+                                     public_key_)) {
     VLOG(1) << "Could not verify signature - VerifyInit failure";
     return false;
   }
