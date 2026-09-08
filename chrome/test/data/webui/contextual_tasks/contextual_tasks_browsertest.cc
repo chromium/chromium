@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
@@ -213,8 +214,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "ChipCreationAndMismatch')");
 }
 
+// TODO(crbug.com/556296442): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Composebox_AutoTab_ForkTrue_DeletionSemantics \
+  DISABLED_Composebox_AutoTab_ForkTrue_DeletionSemantics
+#else
+#define MAYBE_Composebox_AutoTab_ForkTrue_DeletionSemantics \
+  Composebox_AutoTab_ForkTrue_DeletionSemantics
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       Composebox_AutoTab_ForkTrue_DeletionSemantics) {
+                       MAYBE_Composebox_AutoTab_ForkTrue_DeletionSemantics) {
   RunTest("contextual_tasks/composebox_files_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
           "\\\\(useContextualTasksComposeboxFork = true\\\\) "
@@ -489,9 +498,17 @@ IN_PROC_BROWSER_TEST_F(
           "coherence = true\\\\) CoherenceControlsFilesAndLifecycle')");
 }
 
+// TODO(crbug.com/556296442): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Composebox_Voice_CoherenceControlsFilesAndLifecycle_ForkFalse \
+  DISABLED_Composebox_Voice_CoherenceControlsFilesAndLifecycle_ForkFalse
+#else
+#define MAYBE_Composebox_Voice_CoherenceControlsFilesAndLifecycle_ForkFalse \
+  Composebox_Voice_CoherenceControlsFilesAndLifecycle_ForkFalse
+#endif
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksBrowserTest,
-    Composebox_Voice_CoherenceControlsFilesAndLifecycle_ForkFalse) {
+    MAYBE_Composebox_Voice_CoherenceControlsFilesAndLifecycle_ForkFalse) {
   RunTest("contextual_tasks/composebox_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkVoiceTest "
           "\\\\(useContextualTasksComposeboxFork = false, "
