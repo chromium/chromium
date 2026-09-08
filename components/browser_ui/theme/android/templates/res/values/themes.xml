@@ -186,6 +186,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="webAppHeaderButtonSize">
             @dimen/header_button_size
         </item>
+        <item name="webAppHeaderHeight">@dimen/web_app_header_height</item>
 
         <!-- Location bar action button dimensions(e.g. bookmark, downloads). -->
         <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width</item>
@@ -395,6 +396,9 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="webAppHeaderButtonSize">
             @dimen/header_button_size_desktop
         </item>
+        <item name="webAppHeaderHeight">
+           @dimen/web_app_header_height_desktop
+       </item>
 
         <!-- Search box attributes -->
         <item name="searchBoxActionButtonMargin">@dimen/ntp_search_box_action_button_margin</item>

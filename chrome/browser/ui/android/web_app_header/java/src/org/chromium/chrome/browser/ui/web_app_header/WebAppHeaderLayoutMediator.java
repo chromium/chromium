@@ -291,7 +291,7 @@ class WebAppHeaderLayoutMediator
 
         mAppHeaderUnoccludedWidthSupplier.set(mCurrentHeaderState.getUnoccludedRectWidth());
         mModel.set(
-                WebAppHeaderLayoutProperties.MIN_HEIGHT,
+                WebAppHeaderLayoutProperties.HEADER_HEIGHT,
                 Math.max(mCurrentHeaderState.getAppHeaderHeight(), getDefaultMinHeight()));
         mModel.set(
                 WebAppHeaderLayoutProperties.IS_VISIBLE, mCurrentHeaderState.isInDesktopWindow());

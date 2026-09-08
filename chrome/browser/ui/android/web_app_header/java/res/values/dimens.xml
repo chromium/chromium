@@ -10,4 +10,6 @@ found in the LICENSE file.
     <dimen name="header_button_size">48dp</dimen>
     <dimen name="header_button_padding">4dp</dimen>
     <dimen name="header_button_size_desktop">40dp</dimen>
+    <dimen name="web_app_header_height">48dp</dimen>
+    <dimen name="web_app_header_height_desktop">40dp</dimen>
 </resources>

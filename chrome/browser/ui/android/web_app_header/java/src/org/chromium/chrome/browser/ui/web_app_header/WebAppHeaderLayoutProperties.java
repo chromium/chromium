@@ -23,8 +23,8 @@ class WebAppHeaderLayoutProperties {
     /** The paddings rect that indicates how much to offset children. */
     static final WritableObjectPropertyKey<Rect> PADDINGS = new WritableObjectPropertyKey<>();
 
-    /** Header's minimum height */
-    static final WritableIntPropertyKey MIN_HEIGHT = new WritableIntPropertyKey();
+    /** Header's height */
+    static final WritableIntPropertyKey HEADER_HEIGHT = new WritableIntPropertyKey();
 
     /** The visibility of the webapp header. */
     static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
@@ -49,7 +49,7 @@ class WebAppHeaderLayoutProperties {
             new PropertyKey[] {
                 PADDINGS,
                 IS_VISIBLE,
-                MIN_HEIGHT,
+                HEADER_HEIGHT,
                 NON_DRAGGABLE_AREAS,
                 WIDTH_CHANGED_CALLBACK,
                 BACKGROUND_COLOR,

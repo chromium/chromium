@@ -30,6 +30,7 @@ found in the LICENSE file.
   <attr name="searchBoxActionButtonMargin" format="dimension" />
 
   <attr name="webAppHeaderButtonSize" format="dimension" />
+  <attr name="webAppHeaderHeight" format="dimension" />
 
   <attr name="fuseboxPlusButtonStartMargin" format="dimension" />
   <attr name="fuseboxPlusButtonBottomMargin" format="dimension" />

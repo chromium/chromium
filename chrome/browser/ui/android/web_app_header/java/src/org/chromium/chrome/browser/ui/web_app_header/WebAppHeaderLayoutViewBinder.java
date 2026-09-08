@@ -35,8 +35,8 @@ class WebAppHeaderLayoutViewBinder {
         } else if (key == WebAppHeaderLayoutProperties.IS_VISIBLE) {
             view.setVisibility(
                     model.get(WebAppHeaderLayoutProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (key == WebAppHeaderLayoutProperties.MIN_HEIGHT) {
-            view.setMinimumHeight(model.get(WebAppHeaderLayoutProperties.MIN_HEIGHT));
+        } else if (key == WebAppHeaderLayoutProperties.HEADER_HEIGHT) {
+            view.setHeaderHeight(model.get(WebAppHeaderLayoutProperties.HEADER_HEIGHT));
         } else if (key == WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS) {
             view.setSystemGestureExclusionRects(
                     model.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS));
