@@ -224,7 +224,7 @@ void PageContentAnnotationsService::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
+void PageContentAnnotationsService::Annotate(HistoryVisit visit) {
   if (last_annotated_history_visits_.Peek(visit) !=
       last_annotated_history_visits_.end()) {
     // We have already been requested to annotate this visit, so don't submit
@@ -252,7 +252,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
     //
     // TODO(crbug.com/40212690): If the model was updated, the cached value
     // could be stale so we should invalidate the cache on model updates.
-    OnPageContentAnnotated(visit, it->second);
+    OnPageContentAnnotated(std::move(visit), it->second);
     base::UmaHistogramBoolean(
         "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
         true);
@@ -263,7 +263,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
                << "URL: " << visit.url << "\n"
                << "Text: " << visit.text_to_annotate.value_or(std::string());
   }
-  visits_to_annotate_.insert(visit);
+  visits_to_annotate_.insert(std::move(visit));
 
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
@@ -427,7 +427,7 @@ void PageContentAnnotationsService::OnBatchVisitsAnnotated(
   DCHECK_EQ(merged_annotation_outputs->size(),
             current_visit_annotation_batch_.size());
   for (size_t i = 0; i < merged_annotation_outputs->size(); i++) {
-    OnPageContentAnnotated(current_visit_annotation_batch_[i],
+    OnPageContentAnnotated(std::move(current_visit_annotation_batch_[i]),
                            merged_annotation_outputs->at(i));
   }
 
@@ -484,7 +484,7 @@ void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
 }
 
 void PageContentAnnotationsService::OnPageContentAnnotated(
-    const HistoryVisit& visit,
+    HistoryVisit visit,
     const std::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
   base::UmaHistogramBoolean(
@@ -778,7 +778,7 @@ void PageContentAnnotationsService::OnWaitForTitleDone(const GURL& url) {
   auto it = missing_title_visits_by_url_.Peek(url);
   if (it != missing_title_visits_by_url_.end()) {
     for (auto& history_visit : it->second) {
-      Annotate(history_visit);
+      Annotate(std::move(history_visit));
     }
     missing_title_visits_by_url_.Erase(it);
   }
@@ -925,7 +925,9 @@ HistoryVisit::HistoryVisit(history::VisitID visit_id) {
   this->visit_id = visit_id;
 }
 
-HistoryVisit::~HistoryVisit() = default;
 HistoryVisit::HistoryVisit(const HistoryVisit&) = default;
+HistoryVisit::HistoryVisit(HistoryVisit&&) = default;
+
+HistoryVisit::~HistoryVisit() = default;
 
 }  // namespace page_content_annotations

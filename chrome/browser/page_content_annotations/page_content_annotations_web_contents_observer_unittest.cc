@@ -113,14 +113,14 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
                                       nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
-  void Annotate(const HistoryVisit& visit) override {
-    last_annotation_request_.emplace(visit);
+  void Annotate(HistoryVisit visit) override {
+    last_annotation_request_.emplace(std::move(visit));
   }
 
   void AddRelatedSearchesForVisit(
       const HistoryVisit& visit,
       const std::vector<std::string>& related_searches) override {
-    last_related_searches_extraction_request_ = visit;
+    last_related_searches_extraction_request_.emplace(visit);
     last_related_searches_extraction_results_.emplace(related_searches);
   }
 
@@ -256,38 +256,42 @@ class PageContentAnnotationsWebContentsObserverTest
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        RequestsRelatedSearchesForMainFrameSRPUrl) {
   // Navigate to non-Google SRP and commit.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.foo.com/search?q=a"));
+  {
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("http://www.foo.com/search?q=a"));
 
-  histogram_tester()->ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
-      "RelatedSearchesExtractRequest",
-      0);
-  auto last_request = service()->last_related_searches_extraction_request();
-  EXPECT_FALSE(last_request.has_value());
+    histogram_tester()->ExpectTotalCount(
+        "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
+        "RelatedSearchesExtractRequest",
+        0);
+    auto last_request = service()->last_related_searches_extraction_request();
+    EXPECT_FALSE(last_request.has_value());
+  }
 
   // Navigate to Google SRP and commit.
   // Expect a request to be sent since extracting related searches is enabled.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://default-engine.com/search?q=a"));
+  {
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("http://default-engine.com/search?q=a"));
 
-  OnRelatedSearchesExtracted(GURL("http://default-engine.com/search?q=a"),
-                             {"mountain view"});
+    OnRelatedSearchesExtracted(GURL("http://default-engine.com/search?q=a"),
+                               {"mountain view"});
 
-  histogram_tester()->ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
-      "RelatedSearchesExtractRequest",
-      1);
-  last_request = service()->last_related_searches_extraction_request();
-  EXPECT_TRUE(last_request.has_value());
-  EXPECT_EQ(last_request->url, GURL("http://default-engine.com/search?q=a"));
+    histogram_tester()->ExpectTotalCount(
+        "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
+        "RelatedSearchesExtractRequest",
+        1);
+    auto last_request = service()->last_related_searches_extraction_request();
+    EXPECT_TRUE(last_request.has_value());
+    EXPECT_EQ(last_request->url, GURL("http://default-engine.com/search?q=a"));
 
-  auto last_results = service()->last_related_searches_extraction_results();
-  EXPECT_TRUE(last_results.has_value());
+    auto last_results = service()->last_related_searches_extraction_results();
+    EXPECT_TRUE(last_results.has_value());
 
-  auto related_searches = last_results.value();
-  EXPECT_FALSE(related_searches.empty());
-  EXPECT_EQ(related_searches[0], "mountain view");
+    auto related_searches = last_results.value();
+    EXPECT_FALSE(related_searches.empty());
+    EXPECT_EQ(related_searches[0], "mountain view");
+  }
 }
 
 class PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest

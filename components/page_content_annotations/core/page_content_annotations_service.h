@@ -74,8 +74,11 @@ struct HistoryVisit {
   HistoryVisit();
   HistoryVisit(base::Time nav_entry_timestamp, GURL url);
   explicit HistoryVisit(history::VisitID visit_id);
-  ~HistoryVisit();
+
   HistoryVisit(const HistoryVisit&);
+  HistoryVisit(HistoryVisit&&);
+
+  ~HistoryVisit();
 
   base::Time nav_entry_timestamp;
   GURL url;
@@ -239,7 +242,7 @@ class PageContentAnnotationsService
  private:
   // Callback invoked when a single |visit| has been annotated.
   void OnPageContentAnnotated(
-      const HistoryVisit& visit,
+      HistoryVisit visit,
       const std::optional<history::VisitContentModelAnnotations>&
           content_annotations);
 
@@ -296,7 +299,7 @@ class PageContentAnnotationsService
   friend class PageContentAnnotationsWebContentsObserver;
   friend class PageContentAnnotationsServiceBrowserTest;
   // Virtualized for testing.
-  virtual void Annotate(const HistoryVisit& visit);
+  virtual void Annotate(HistoryVisit visit);
 
   // Annotates the provided `visit` in the history DB with the given list of
   // `related_searches`.
