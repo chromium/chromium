@@ -775,13 +775,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GPU.DirectComposition.DCLayerResult.Video.{GPUProtectedVideoType}"
-    enum="DCLayerResult" expires_after="2026-02-01">
+    enum="DCLayerResult" expires_after="2027-02-07">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Recorded for each quad (on overlay processing) with protected video type the
-    reason it was or wasn't put in an overlay.
+    reason it was or wasn't put in an overlay. Warning: this histogram was
+    expired from 2026-02-01 to 2026-09-08; data may be missing.
   </summary>
 </histogram>
 
