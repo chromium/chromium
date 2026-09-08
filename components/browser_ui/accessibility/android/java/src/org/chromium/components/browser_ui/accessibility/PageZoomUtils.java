@@ -8,6 +8,8 @@ import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FAC
 import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
 import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
 
+import android.content.Context;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
@@ -238,7 +240,20 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowZoomMenuItem() {
-        return shouldShowZoomMenuItem(null);
+        return shouldShowZoomMenuItem(null, null);
+    }
+
+    /**
+     * Returns true if the Zoom AppMenu item should be shown, false otherwise.
+     *
+     * <p>If there is a current user choice set in Accessibility Settings, respect and return the
+     * user setting. Otherwise, return true if there is an OS level font size set.
+     *
+     * @param context Context to check form factor.
+     * @return boolean
+     */
+    public static boolean shouldShowZoomMenuItem(@Nullable Context context) {
+        return shouldShowZoomMenuItem(context, null);
     }
 
     /**
@@ -248,10 +263,12 @@ public class PageZoomUtils {
      * user setting. Otherwise, return true if there is an OS level font size set or if the user has
      * ever set a custom zoom level for any site.
      *
-     * @param context BrowserContextHandle to check for custom zoom levels.
+     * @param context Context to check form factor.
+     * @param browserContextHandle BrowserContextHandle to check for custom zoom levels.
      * @return boolean
      */
-    public static boolean shouldShowZoomMenuItem(@Nullable BrowserContextHandle context) {
+    public static boolean shouldShowZoomMenuItem(
+            @Nullable Context context, @Nullable BrowserContextHandle browserContextHandle) {
         if (sShouldShowMenuItemForTesting != TriState.NOT_SET) {
             return sShouldShowMenuItemForTesting == TriState.TRUE;
         }
@@ -280,9 +297,10 @@ public class PageZoomUtils {
 
         // If the user has ever set a custom zoom level, show the menu item.
         // This is restricted to LFF (Tablets) as UX has not approved this for mobile/phones.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(ContextUtils.getApplicationContext())
-                && context != null
-                && !HostZoomMap.getAllHostZoomLevels(context).isEmpty()) {
+        Context displayContext = context != null ? context : ContextUtils.getApplicationContext();
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(displayContext)
+                && browserContextHandle != null
+                && !HostZoomMap.getAllHostZoomLevels(browserContextHandle).isEmpty()) {
             PageZoomUma.logAppMenuEnabledStateHistogram(
                     PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.USER_HAS_CUSTOM_ZOOM);
             return true;

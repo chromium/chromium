@@ -1260,7 +1260,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
 
         return shouldShowWebContentsDependentMenuItem(currentTab)
-                && PageZoomUtils.shouldShowZoomMenuItem();
+                && PageZoomUtils.shouldShowZoomMenuItem(mContext);
     }
 
     protected boolean shouldShowLffPageZoomItem() {
