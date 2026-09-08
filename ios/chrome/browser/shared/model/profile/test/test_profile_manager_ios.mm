@@ -58,6 +58,11 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     observer.OnProfileManagerDestroyed(this);
   }
 
+  // Notify observers before unregistering from ApplicationContext.
+  for (auto& observer : observers_) {
+    observer.OnProfileManagerDestroyed(this);
+  }
+
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
   app_context->SetProfileManagerAndAccountProfileMapper(nullptr, nullptr);
