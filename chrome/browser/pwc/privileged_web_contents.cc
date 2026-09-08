@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -18,11 +19,13 @@
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
@@ -44,6 +47,43 @@ void PostMediaAccessRejection(content::MediaResponseCallback callback) {
           std::move(callback)));
 }
 
+// Wraps a FileSelectListener to ensure FileSelectionCanceled() is invoked if
+// the embedder delegate drops the listener without calling either
+// FileSelected() or FileSelectionCanceled(), preventing renderer-side IPC
+// hangs.
+class ScopedFileSelectListener : public content::FileSelectListener {
+ public:
+  explicit ScopedFileSelectListener(
+      scoped_refptr<content::FileSelectListener> listener)
+      : listener_(std::move(listener)) {}
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    if (!called_ && listener_) {
+      called_ = true;
+      listener_->FileSelected(std::move(files), base_dir, mode);
+    }
+  }
+
+  void FileSelectionCanceled() override {
+    if (!called_ && listener_) {
+      called_ = true;
+      listener_->FileSelectionCanceled();
+    }
+  }
+
+ protected:
+  ~ScopedFileSelectListener() override {
+    if (!called_ && listener_) {
+      listener_->FileSelectionCanceled();
+    }
+  }
+
+ private:
+  scoped_refptr<content::FileSelectListener> listener_;
+  bool called_ = false;
+};
 // Marks a WebContents as owned by a PrivilegedWebContents and links back to
 // its owner. Attached for the whole lifetime of the WebContents; the owner
 // strictly outlives the WebContents, so the back-pointer never dangles.
@@ -145,6 +185,15 @@ bool PrivilegedWebContents::EmbedderDelegate::CheckMediaAccessPermission(
   return false;
 }
 
+void PrivilegedWebContents::EmbedderDelegate::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  if (listener) {
+    listener->FileSelectionCanceled();
+  }
+}
+
 content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
@@ -219,6 +268,32 @@ bool PrivilegedWebContents::CheckMediaAccessPermission(
         render_frame_host, security_origin, type);
   }
   return false;
+}
+
+void PrivilegedWebContents::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  if (!IsPrimaryMainFrame(render_frame_host)) {
+    if (listener) {
+      listener->FileSelectionCanceled();
+    }
+    return;
+  }
+
+  if (!embedder_delegate_) {
+    if (listener) {
+      listener->FileSelectionCanceled();
+    }
+    return;
+  }
+
+  // Wrap the listener to ensure FileSelectionCanceled() is always invoked if an
+  // embedder delegate drops it, preventing renderer-side IPC hangs.
+  scoped_refptr<content::FileSelectListener> scoped_listener =
+      base::MakeRefCounted<ScopedFileSelectListener>(std::move(listener));
+  embedder_delegate_->RunFileChooser(render_frame_host,
+                                     std::move(scoped_listener), params);
 }
 
 bool PrivilegedWebContents::IsPrimaryMainFrame(

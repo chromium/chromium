@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -22,6 +23,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -366,6 +368,82 @@ TEST_F(GlicViewTest, RequestMediaAccessPermission_NoWebview_ForwardsFromPwc) {
       pwc->web_contents(), request, BindResultToFuture(future));
   EXPECT_EQ(future.Get(),
             blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN);
+}
+
+class TestFileSelectListener : public content::FileSelectListener {
+ public:
+  TestFileSelectListener() = default;
+
+  bool file_selected() const { return file_selected_; }
+  bool canceled() const { return canceled_; }
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    file_selected_ = true;
+  }
+
+  void FileSelectionCanceled() override { canceled_ = true; }
+
+ protected:
+  ~TestFileSelectListener() override = default;
+
+ private:
+  bool file_selected_ = false;
+  bool canceled_ = false;
+};
+
+class TestGlicViewForFileChooser : public GlicView {
+ public:
+  using GlicView::GlicView;
+
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override {
+    last_rfh_ = render_frame_host;
+    file_chooser_called_ = true;
+    if (listener) {
+      listener->FileSelectionCanceled();
+    }
+  }
+
+  raw_ptr<content::RenderFrameHost> last_rfh_ = nullptr;
+  bool file_chooser_called_ = false;
+};
+
+TEST_F(GlicViewTest, RunFileChooser_NoWebview_ForwardsFromPwc) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
+      {});
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))},
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))});
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
+      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
+                                         profile(), std::move(policy_delegate));
+  ASSERT_TRUE(pwc);
+
+  auto test_view = std::make_unique<TestGlicViewForFileChooser>(
+      profile(), gfx::Size(800, 600), nullptr);
+
+  test_view->SetWebContents(pwc->web_contents());
+  ASSERT_EQ(pwc->embedder_delegate(), test_view.get());
+
+  content::RenderFrameHost* rfh = pwc->web_contents()->GetPrimaryMainFrame();
+  auto listener = base::MakeRefCounted<TestFileSelectListener>();
+  blink::mojom::FileChooserParams params;
+  params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
+
+  pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+  EXPECT_TRUE(test_view->file_chooser_called_);
+  EXPECT_EQ(test_view->last_rfh_, rfh);
+  EXPECT_TRUE(listener->canceled());
 }
 
 }  // namespace glic

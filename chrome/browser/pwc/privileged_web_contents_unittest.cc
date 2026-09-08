@@ -14,6 +14,7 @@
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -106,6 +108,29 @@ TEST_F(PrivilegedWebContentsTest, DestructionIsClean) {
   EXPECT_EQ(PrivilegedWebContents::FromWebContents(web_contents()), nullptr);
 }
 
+class TestFileSelectListener : public content::FileSelectListener {
+ public:
+  TestFileSelectListener() = default;
+
+  bool file_selected() const { return file_selected_; }
+  bool canceled() const { return canceled_; }
+
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    file_selected_ = true;
+  }
+
+  void FileSelectionCanceled() override { canceled_ = true; }
+
+ protected:
+  ~TestFileSelectListener() override = default;
+
+ private:
+  bool file_selected_ = false;
+  bool canceled_ = false;
+};
+
 class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
  public:
   bool HandleKeyboardEvent(
@@ -147,28 +172,47 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
     return check_media_access_return_value_;
   }
 
-  raw_ptr<content::WebContents, DisableDanglingPtrDetection>
-      last_keyboard_source_ = nullptr;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override {
+    last_file_chooser_rfh_ = render_frame_host;
+    last_file_chooser_mode_ = params.mode;
+    file_chooser_count_++;
+    if (should_drop_file_chooser_listener_) {
+      return;
+    }
+    if (should_select_file_) {
+      listener->FileSelected({}, base::FilePath(), params.mode);
+    } else {
+      listener->FileSelectionCanceled();
+    }
+  }
+
+  raw_ptr<content::WebContents> last_keyboard_source_ = nullptr;
   std::optional<blink::WebInputEvent::Type> last_event_type_;
   int keyboard_event_count_ = 0;
   bool handle_keyboard_return_value_ = true;
   std::optional<bool> last_zoom_in_;
   int zoom_change_count_ = 0;
 
-  raw_ptr<content::WebContents, DisableDanglingPtrDetection>
-      last_media_request_source_ = nullptr;
+  raw_ptr<content::WebContents> last_media_request_source_ = nullptr;
   std::optional<content::MediaStreamRequest> last_media_request_;
   int media_request_count_ = 0;
   bool should_drop_media_callback_ = false;
   blink::mojom::MediaStreamRequestResult media_request_result_ =
       blink::mojom::MediaStreamRequestResult::OK;
 
-  raw_ptr<content::RenderFrameHost, DisableDanglingPtrDetection>
-      last_media_check_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> last_media_check_rfh_ = nullptr;
   std::optional<url::Origin> last_media_check_origin_;
   std::optional<blink::mojom::MediaStreamType> last_media_check_type_;
   int media_check_count_ = 0;
   bool check_media_access_return_value_ = true;
+
+  raw_ptr<content::RenderFrameHost> last_file_chooser_rfh_ = nullptr;
+  std::optional<blink::mojom::FileChooserParams::Mode> last_file_chooser_mode_;
+  int file_chooser_count_ = 0;
+  bool should_drop_file_chooser_listener_ = false;
+  bool should_select_file_ = false;
 };
 
 content::MediaResponseCallback BindResultToFuture(
@@ -202,9 +246,9 @@ TEST_F(PrivilegedWebContentsTest, SetEmbedderDelegateUpdatesDelegate) {
 }
 
 TEST_F(PrivilegedWebContentsTest, ForwardsKeyboardEventToEmbedderDelegate) {
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
   content::WebContents* web_contents = pwc->web_contents();
   input::NativeWebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
                                       blink::WebInputEvent::kNoModifiers,
@@ -233,14 +277,13 @@ TEST_F(PrivilegedWebContentsTest, ForwardsKeyboardEventToEmbedderDelegate) {
   EXPECT_FALSE(pwc->web_contents()->GetDelegate()->HandleKeyboardEvent(
       web_contents, event));
   EXPECT_EQ(delegate.keyboard_event_count_, 2);
-  delegate.last_keyboard_source_ = nullptr;
 }
 
 TEST_F(PrivilegedWebContentsTest,
        ForwardsContentsZoomChangeToEmbedderDelegate) {
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
 
   // Does not crash when no embedder delegate is set.
   pwc->web_contents()->GetDelegate()->ContentsZoomChange(/*zoom_in=*/true);
@@ -263,9 +306,9 @@ TEST_F(PrivilegedWebContentsTest,
 
 TEST_F(PrivilegedWebContentsTest,
        ForwardsRequestMediaAccessPermissionToEmbedderDelegate) {
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
   content::WebContents* web_contents = pwc->web_contents();
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   content::MediaStreamRequest request(
@@ -334,9 +377,9 @@ TEST_F(PrivilegedWebContentsTest,
 TEST_F(PrivilegedWebContentsTest,
        RequestMediaAccessPermission_RejectsNonPrimaryMainFrame) {
   NavigateAndCommit(GURL("https://example.com"));
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
   pwc->SetEmbedderDelegate(&delegate);
   content::WebContents* pwc_contents = pwc->web_contents();
 
@@ -412,9 +455,9 @@ TEST_F(PrivilegedWebContentsTest,
 
 TEST_F(PrivilegedWebContentsTest,
        RequestMediaAccessPermission_RejectionIsAsynchronous) {
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
   content::WebContents* pwc_contents = pwc->web_contents();
 
   content::MediaStreamRequest invalid_request(
@@ -444,9 +487,9 @@ TEST_F(PrivilegedWebContentsTest,
 
 TEST_F(PrivilegedWebContentsTest,
        ForwardsCheckMediaAccessPermissionToEmbedderDelegate) {
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
   content::RenderFrameHost* rfh = pwc->web_contents()->GetPrimaryMainFrame();
   url::Origin origin = url::Origin::Create(GURL("https://pwc.example.com"));
 
@@ -483,9 +526,9 @@ TEST_F(PrivilegedWebContentsTest,
 TEST_F(PrivilegedWebContentsTest,
        CheckMediaAccessPermission_RejectsNonPrimaryMainFrame) {
   NavigateAndCommit(GURL("https://example.com"));
-  TestEmbedderDelegate delegate;
   std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
       PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
   pwc->SetEmbedderDelegate(&delegate);
   url::Origin origin = url::Origin::Create(GURL("https://pwc.example.com"));
 
@@ -503,6 +546,115 @@ TEST_F(PrivilegedWebContentsTest,
       unrelated_rfh, origin,
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
   EXPECT_EQ(delegate.media_check_count_, 0);
+}
+
+TEST_F(PrivilegedWebContentsTest, ForwardsRunFileChooserToEmbedderDelegate) {
+  // Declare pwc before delegate so that delegate (and its
+  // last_file_chooser_rfh_ pointer) is destroyed first, preventing a dangling
+  // pointer.
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+  content::RenderFrameHost* rfh = pwc->web_contents()->GetPrimaryMainFrame();
+  blink::mojom::FileChooserParams params;
+  params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
+
+  // 1. When no embedder delegate is set, cancels file selection.
+  {
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+  }
+
+  pwc->SetEmbedderDelegate(&delegate);
+
+  // 2. Embedder delegate handles and cancels file selection.
+  {
+    delegate.should_select_file_ = false;
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+    EXPECT_EQ(delegate.file_chooser_count_, 1);
+    EXPECT_EQ(delegate.last_file_chooser_rfh_, rfh);
+    EXPECT_EQ(delegate.last_file_chooser_mode_,
+              blink::mojom::FileChooserParams::Mode::kOpen);
+  }
+
+  // 3. Embedder delegate handles and selects files.
+  {
+    delegate.should_select_file_ = true;
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+    EXPECT_TRUE(listener->file_selected());
+    EXPECT_FALSE(listener->canceled());
+    EXPECT_EQ(delegate.file_chooser_count_, 2);
+  }
+
+  // 4. Embedder delegate drops listener without running;
+  // ScopedFileSelectListener ensures FileSelectionCanceled is still invoked.
+  {
+    delegate.should_drop_file_chooser_listener_ = true;
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+    EXPECT_EQ(delegate.file_chooser_count_, 3);
+  }
+
+  // 5. Clearing the delegate stops forwarding and cancels selection.
+  pwc->SetEmbedderDelegate(nullptr);
+  {
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+    EXPECT_EQ(delegate.file_chooser_count_, 3);
+  }
+}
+
+TEST_F(PrivilegedWebContentsTest, RunFileChooser_RejectsNonPrimaryMainFrame) {
+  NavigateAndCommit(GURL("https://example.com"));
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+  pwc->SetEmbedderDelegate(&delegate);
+  blink::mojom::FileChooserParams params;
+
+  // 1. Subframe is rejected and cancelled.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  ASSERT_TRUE(subframe);
+  {
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(subframe, listener,
+                                                       params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+    EXPECT_EQ(delegate.file_chooser_count_, 0);
+  }
+
+  // 2. Unrelated WebContents RFH is rejected and cancelled.
+  content::RenderFrameHost* unrelated_rfh = main_rfh();
+  {
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(unrelated_rfh, listener,
+                                                       params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+    EXPECT_EQ(delegate.file_chooser_count_, 0);
+  }
+
+  // 3. Null RFH is rejected and cancelled.
+  {
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    pwc->web_contents()->GetDelegate()->RunFileChooser(nullptr, listener,
+                                                       params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+    EXPECT_EQ(delegate.file_chooser_count_, 0);
+  }
 }
 
 TEST_F(PrivilegedWebContentsTest, DefaultEmbedderDelegateMethods) {
@@ -539,6 +691,15 @@ TEST_F(PrivilegedWebContentsTest, DefaultEmbedderDelegateMethods) {
   EXPECT_FALSE(default_delegate.CheckMediaAccessPermission(
       main_rfh(), url::Origin::Create(GURL("https://pwc.example.com")),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
+
+  // Default RunFileChooser invokes FileSelectionCanceled.
+  {
+    auto listener = base::MakeRefCounted<TestFileSelectListener>();
+    blink::mojom::FileChooserParams file_params;
+    default_delegate.RunFileChooser(main_rfh(), listener, file_params);
+    EXPECT_TRUE(listener->canceled());
+    EXPECT_FALSE(listener->file_selected());
+  }
 }
 
 }  // namespace

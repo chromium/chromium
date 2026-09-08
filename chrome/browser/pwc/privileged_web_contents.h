@@ -13,11 +13,13 @@
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace content {
 class BrowserContext;
+class FileSelectListener;
 class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
@@ -111,6 +113,10 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
         content::RenderFrameHost* render_frame_host,
         const url::Origin& security_origin,
         blink::mojom::MediaStreamType type);
+    virtual void RunFileChooser(
+        content::RenderFrameHost* render_frame_host,
+        scoped_refptr<content::FileSelectListener> listener,
+        const blink::mojom::FileChooserParams& params);
   };
 
   void SetEmbedderDelegate(EmbedderDelegate* delegate) {
@@ -148,6 +154,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
 
   // content::WebContentsObserver:
   // Disables the back-forward cache for every committed document, so a
