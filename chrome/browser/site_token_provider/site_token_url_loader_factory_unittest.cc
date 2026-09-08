@@ -19,6 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/site_token_provider/features.h"
+#include "components/site_token_provider/site_token_constants.h"
 #include "components/site_token_provider/site_token_provider.h"
 #include "components/site_token_provider/site_token_provider_service.h"
 #include "content/public/browser/browser_context.h"
@@ -381,6 +382,84 @@ TEST_F(SiteTokenURLLoaderFactoryTest, RejectsDisallowedDomain) {
   EXPECT_EQ(result.error_code, net::ERR_ACCESS_DENIED);
   EXPECT_TRUE(result.response_body.empty());
   EXPECT_FALSE(result.response_head);
+}
+
+TEST_F(SiteTokenURLLoaderFactoryTest, ReturnsEmptyBodyWhenServiceNull) {
+  mock_service_ = nullptr;
+  SiteTokenProviderServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  network::ResourceRequest request;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = ValidTokenUrl();
+  request.request_initiator = url::Origin::Create(GURL("https://example.com"));
+
+  LoadResult result = IssueRequest(request);
+
+  EXPECT_EQ(result.error_code, net::OK);
+  ASSERT_TRUE(result.response_head);
+  ASSERT_TRUE(result.response_head->headers);
+  EXPECT_EQ(result.response_head->headers->response_code(), net::HTTP_OK);
+  EXPECT_EQ(result.response_body, "");
+}
+
+TEST_F(SiteTokenURLLoaderFactoryTest,
+       RejectsUnallowlistedDomainWhenServiceNull) {
+  mock_service_ = nullptr;
+  SiteTokenProviderServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+
+  NavigateAndCommit(GURL("https://disallowed.com"));
+
+  network::ResourceRequest request;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = ValidTokenUrl();
+  request.request_initiator =
+      url::Origin::Create(GURL("https://disallowed.com"));
+
+  LoadResult result = IssueRequest(request);
+
+  EXPECT_EQ(result.error_code, net::ERR_ACCESS_DENIED);
+  EXPECT_TRUE(result.response_body.empty());
+  EXPECT_FALSE(result.response_head);
+}
+
+TEST_F(SiteTokenURLLoaderFactoryTest, EnforcesPayloadSizeBoundaries) {
+  NavigateAndCommit(GURL("https://example.com"));
+
+  // 1. Exact boundary pass: exactly kMaxTokenPayloadSize (64 KB) succeeds.
+  std::string max_valid_token(kMaxTokenPayloadSize, 'a');
+  EXPECT_CALL(*mock_service_, GetTokenForDomain("example.com"))
+      .WillOnce(Return(max_valid_token));
+
+  network::ResourceRequest request_valid;
+  request_valid.method = net::HttpRequestHeaders::kGetMethod;
+  request_valid.url = ValidTokenUrl();
+  request_valid.request_initiator =
+      url::Origin::Create(GURL("https://example.com"));
+
+  LoadResult result_valid = IssueRequest(request_valid);
+  EXPECT_EQ(result_valid.error_code, net::OK);
+  EXPECT_EQ(result_valid.response_body, max_valid_token);
+
+  // 2. Boundary fail: kMaxTokenPayloadSize + 1 is rejected with
+  // ERR_FILE_TOO_BIG.
+  std::string oversized_token(kMaxTokenPayloadSize + 1, 'a');
+  EXPECT_CALL(*mock_service_, GetTokenForDomain("example.com"))
+      .WillOnce(Return(oversized_token));
+
+  network::ResourceRequest request_invalid;
+  request_invalid.method = net::HttpRequestHeaders::kGetMethod;
+  request_invalid.url = ValidTokenUrl();
+  request_invalid.request_initiator =
+      url::Origin::Create(GURL("https://example.com"));
+
+  LoadResult result_invalid = IssueRequest(request_invalid);
+  EXPECT_EQ(result_invalid.error_code, net::ERR_FILE_TOO_BIG);
+  EXPECT_TRUE(result_invalid.response_body.empty());
+  EXPECT_FALSE(result_invalid.response_head);
 }
 
 TEST_F(SiteTokenURLLoaderFactoryTest, ClonesFactorySuccessfully) {

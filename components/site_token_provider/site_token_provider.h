@@ -32,6 +32,9 @@ std::string NormalizeDomain(std::string_view domain);
 // Parses and normalizes a comma-separated allowlist of domains into a set.
 base::flat_set<std::string> ParseAllowlistedDomains(std::string_view allowlist);
 
+// Returns true if `domain` is present in the comma-separated `allowlist`.
+bool IsDomainInAllowlist(std::string_view domain, std::string_view allowlist);
+
 // Interface for the core logic of managing site-specific tokens.
 class SiteTokenProvider {
  public:

@@ -40,6 +40,10 @@ base::flat_set<std::string> ParseAllowlistedDomains(
   return base::flat_set<std::string>(std::move(normalized_domains));
 }
 
+bool IsDomainInAllowlist(std::string_view domain, std::string_view allowlist) {
+  return ParseAllowlistedDomains(allowlist).contains(NormalizeDomain(domain));
+}
+
 namespace {
 
 constexpr char kUsersMeResourceName[] = "users/me";
