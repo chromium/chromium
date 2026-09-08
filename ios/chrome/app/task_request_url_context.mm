@@ -209,7 +209,7 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 }
 
 - (void)execute {
-  SceneState* sceneState = [self sceneStateFromSessionID];
+  SceneState* sceneState = self.sceneState;
   CHECK(sceneState);
 
   const BOOL isFirstRun =

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/task_orchestrator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/ios/block_types.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -12,7 +14,24 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+namespace {
+// Creates a new SceneState with the given `persistentIdentifier`.
+SceneState* CreateFakeSceneState(NSString* persistent_identifier) {
+  id fake_scene = OCMClassMock([UIWindowScene class]);
+  id fake_scene_session = OCMClassMock([UISceneSession class]);
+  OCMStub([fake_scene_session persistentIdentifier])
+      .andReturn(persistent_identifier);
+  OCMStub([fake_scene session]).andReturn(fake_scene_session);
+  SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.scene = fake_scene;
+  return scene_state;
+}
+}  // namespace
 
 class TaskOrchestratorTest : public PlatformTest {
  protected:
@@ -39,13 +58,14 @@ class TaskOrchestratorTest : public PlatformTest {
 
 // Tests that a task with minimum stage None is executed immediately.
 TEST_F(TaskOrchestratorTest, TestAddTaskRequestExecuteImmediately) {
-  std::string scene_id = "scene1";
+  NSString* scene_id = @"scene1";
+  SceneState* scene_state = CreateFakeSceneState(scene_id);
   __block BOOL taskWasExecuted = NO;
 
-  TaskRequest* task = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                executeBlock:^{
-                                                  taskWasExecuted = YES;
-                                                }];
+  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                              executeBlock:^{
+                                                taskWasExecuted = YES;
+                                              }];
   task.minimumStage = TaskExecutionStage::TaskExecutionStageNone;
 
   [orchestrator_ addTaskRequest:task];
@@ -55,45 +75,48 @@ TEST_F(TaskOrchestratorTest, TestAddTaskRequestExecuteImmediately) {
 
 // Tests that a task is queued if the stage is not met, and executed when it is.
 TEST_F(TaskOrchestratorTest, TestAddTaskRequestQueueAndExecuteLater) {
-  std::string scene_id = "scene1";
+  NSString* scene_id = @"scene1";
+  SceneState* scene_state = CreateFakeSceneState(scene_id);
   __block BOOL taskWasExecuted = NO;
 
-  TaskRequest* task = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                executeBlock:^{
-                                                  taskWasExecuted = YES;
-                                                }];
+  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                              executeBlock:^{
+                                                taskWasExecuted = YES;
+                                              }];
   task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
 
   [orchestrator_ addTaskRequest:task];
 
   // Make sure that block is not run.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
-                      forScene:scene_id];
+                      forScene:scene_state];
   EXPECT_FALSE(taskWasExecuted);
 
   // Update executionBlock to check that it's correctly called when updating to
   // the correct stage.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_id];
+                      forScene:scene_state];
   EXPECT_TRUE(taskWasExecuted);
 }
 
 // Tests that tasks for different scenes are handled independently.
 TEST_F(TaskOrchestratorTest, TestMultipleScenes) {
-  std::string scene_id1 = "scene1";
+  NSString* scene_id1 = @"scene1";
+  SceneState* scene_state1 = CreateFakeSceneState(scene_id1);
   __block BOOL task1WasExecuted = NO;
-  TaskRequest* task1 = [TaskRequest taskForTestingWithSceneID:scene_id1
-                                                 executeBlock:^{
-                                                   task1WasExecuted = YES;
-                                                 }];
+  TaskRequest* task1 = [TaskRequest taskForTestingWithScene:scene_state1.scene
+                                               executeBlock:^{
+                                                 task1WasExecuted = YES;
+                                               }];
   task1.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
 
-  std::string scene_id2 = "scene2";
+  NSString* scene_id2 = @"scene2";
+  SceneState* scene_state2 = CreateFakeSceneState(scene_id2);
   __block BOOL task2WasExecuted = NO;
-  TaskRequest* task2 = [TaskRequest taskForTestingWithSceneID:scene_id2
-                                                 executeBlock:^{
-                                                   task2WasExecuted = YES;
-                                                 }];
+  TaskRequest* task2 = [TaskRequest taskForTestingWithScene:scene_state2.scene
+                                               executeBlock:^{
+                                                 task2WasExecuted = YES;
+                                               }];
   task2.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
 
   [orchestrator_ addTaskRequest:task1];
@@ -101,33 +124,34 @@ TEST_F(TaskOrchestratorTest, TestMultipleScenes) {
 
   // Check that only task1 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_id1];
+                      forScene:scene_state1];
   EXPECT_TRUE(task1WasExecuted);
   EXPECT_FALSE(task2WasExecuted);
 
   // Check that only task2 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_id2];
+                      forScene:scene_state2];
   EXPECT_TRUE(task2WasExecuted);
 }
 
 // Tests that multiple tasks for the same scene with different stages are
 // executed at the correct time.
 TEST_F(TaskOrchestratorTest, TestMultipleStagesSameScene) {
-  std::string scene_id = "scene1";
+  NSString* scene_id = @"scene1";
+  SceneState* scene_state = CreateFakeSceneState(scene_id);
 
   __block BOOL task1WasExecuted = NO;
-  TaskRequest* task1 = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                 executeBlock:^{
-                                                   task1WasExecuted = YES;
-                                                 }];
+  TaskRequest* task1 = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                               executeBlock:^{
+                                                 task1WasExecuted = YES;
+                                               }];
   task1.minimumStage = TaskExecutionStage::TaskExecutionProfileLoaded;
 
   __block BOOL task2WasExecuted = NO;
-  TaskRequest* task2 = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                 executeBlock:^{
-                                                   task2WasExecuted = YES;
-                                                 }];
+  TaskRequest* task2 = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                               executeBlock:^{
+                                                 task2WasExecuted = YES;
+                                               }];
   task2.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
 
   [orchestrator_ addTaskRequest:task1];
@@ -135,36 +159,37 @@ TEST_F(TaskOrchestratorTest, TestMultipleStagesSameScene) {
 
   // Transition to ProfileLoaded. Check that only task1 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
-                      forScene:scene_id];
+                      forScene:scene_state];
   EXPECT_TRUE(task1WasExecuted);
   EXPECT_FALSE(task2WasExecuted);
 
   // Transition to UIReady. Check that task2 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_id];
+                      forScene:scene_state];
   EXPECT_TRUE(task2WasExecuted);
 }
 
 // Tests that a task is dropped if there is already a pending task for the same
 // scene with a different Gaia ID.
 TEST_F(TaskOrchestratorTest, TestDropTaskRequestWithDifferentGaiaID) {
-  std::string scene_id = "scene1";
+  NSString* scene_id = @"scene1";
+  SceneState* scene_state = CreateFakeSceneState(scene_id);
   NSString* gaia_id1 = @"gaia1";
   NSString* gaia_id2 = @"gaia2";
 
   __block BOOL task1WasExecuted = NO;
-  TaskRequest* task1 = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                 executeBlock:^{
-                                                   task1WasExecuted = YES;
-                                                 }];
+  TaskRequest* task1 = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                               executeBlock:^{
+                                                 task1WasExecuted = YES;
+                                               }];
   task1.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
   task1.gaiaID = gaia_id1;
 
   __block BOOL task2WasExecuted = NO;
-  TaskRequest* task2 = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                 executeBlock:^{
-                                                   task2WasExecuted = YES;
-                                                 }];
+  TaskRequest* task2 = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                               executeBlock:^{
+                                                 task2WasExecuted = YES;
+                                               }];
   task2.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
   task2.gaiaID = gaia_id2;
 
@@ -172,7 +197,7 @@ TEST_F(TaskOrchestratorTest, TestDropTaskRequestWithDifferentGaiaID) {
   [orchestrator_ addTaskRequest:task2];
 
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_id];
+                      forScene:scene_state];
 
   // task1 should be executed, task2 should be dropped.
   EXPECT_TRUE(task1WasExecuted);
@@ -190,22 +215,23 @@ TEST_F(TaskOrchestratorTest, TestDropTaskRequestWithDifferentGaiaID) {
 // Tests that a task is not dropped if it has the same Gaia ID as already
 // pending tasks for the same scene.
 TEST_F(TaskOrchestratorTest, TestNotDropTaskRequestWithSameGaiaID) {
-  std::string scene_id = "scene1";
+  NSString* scene_id = @"scene1";
+  SceneState* scene_state = CreateFakeSceneState(scene_id);
   NSString* gaia_id = @"gaia";
 
   __block BOOL task1WasExecuted = NO;
-  TaskRequest* task1 = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                 executeBlock:^{
-                                                   task1WasExecuted = YES;
-                                                 }];
+  TaskRequest* task1 = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                               executeBlock:^{
+                                                 task1WasExecuted = YES;
+                                               }];
   task1.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
   task1.gaiaID = gaia_id;
 
   __block BOOL task2WasExecuted = NO;
-  TaskRequest* task2 = [TaskRequest taskForTestingWithSceneID:scene_id
-                                                 executeBlock:^{
-                                                   task2WasExecuted = YES;
-                                                 }];
+  TaskRequest* task2 = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                               executeBlock:^{
+                                                 task2WasExecuted = YES;
+                                               }];
   task2.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
   task2.gaiaID = gaia_id;
 
@@ -213,7 +239,7 @@ TEST_F(TaskOrchestratorTest, TestNotDropTaskRequestWithSameGaiaID) {
   [orchestrator_ addTaskRequest:task2];
 
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
-                      forScene:scene_id];
+                      forScene:scene_state];
 
   // Both tasks should be executed.
   EXPECT_TRUE(task1WasExecuted);
@@ -223,4 +249,33 @@ TEST_F(TaskOrchestratorTest, TestNotDropTaskRequestWithSameGaiaID) {
   histogram_tester_.ExpectUniqueSample(
       "IOS.TaskOrchestrator.TaskSchedulingOutcome",
       TaskSchedulingOutcome::kScheduled, 2);
+}
+
+// Tests that gaiaIDForScene returns the Gaia ID of the first pending task for
+// that scene, or nil if no tasks are pending.
+TEST_F(TaskOrchestratorTest, TestGaiaIDForScene) {
+  NSString* scene_id = @"scene1";
+  SceneState* scene_state = CreateFakeSceneState(scene_id);
+
+  // When no tasks are pending, gaiaIDForScene returns nil.
+  EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state]);
+
+  NSString* gaia_id = @"test_gaia_id";
+  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                              executeBlock:^{
+                                              }];
+  task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task.gaiaID = gaia_id;
+
+  [orchestrator_ addTaskRequest:task];
+
+  // While task is pending, gaiaIDForScene returns the task's Gaia ID.
+  EXPECT_NSEQ(gaia_id, [orchestrator_ gaiaIDForScene:scene_state]);
+
+  // When updating to UIReady, the task executes and is removed from pending.
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:scene_state];
+
+  // Now no tasks are pending, returns nil.
+  EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state]);
 }

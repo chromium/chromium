@@ -4,11 +4,15 @@
 
 #import "ios/chrome/app/task_orchestrator.h"
 
+#import <UIKit/UIKit.h>
+
 #import <map>
 #import <string>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/task_scheduling_outcome.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -27,10 +31,21 @@ struct SceneInfo {
     [pending_tasks addObject:task];
   }
 };
+
+// Returns an identifier for `scene` that will be stable for the current
+// execution of the application and is valid even during the early stage of the
+// application startup (i.e. before -sceneSessionID is assigned to the
+// SceneState). This uses the -persistentIdentifier of the UISceneSession.
+std::string GetSceneIdentifier(UIScene* scene) {
+  return base::SysNSStringToUTF8(scene.session.persistentIdentifier);
+}
+
 }  // namespace
 
 @interface TaskOrchestrator () {
   // SceneInfo needed to execute tasks per scene.
+  // It's okay to use persistentIdentifier here because we don't care if the ID
+  // changes when the app is closed.
   // TODO(crbug.com/462018636): Add implementation to handle the case where a
   // task can be executed on any scene.
   absl::flat_hash_map<std::string, SceneInfo> _tasksPerScene;
@@ -54,23 +69,35 @@ struct SceneInfo {
     return;
   }
 
-  SceneInfo& sceneInfo = _tasksPerScene[task.sceneSessionID];
+  const std::string sceneKey = GetSceneIdentifier(task.scene);
+  CHECK(!sceneKey.empty());
+
+  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
   sceneInfo.AddTask(task);
-  [self executeTasksForScene:task.sceneSessionID];
+  [self executeTasksForScene:sceneKey];
 }
 
 - (void)updateToStage:(TaskExecutionStage)stage
-             forScene:(std::string_view)sceneSessionID {
-  TaskExecutionStage previousStage =
-      _tasksPerScene[sceneSessionID].current_stage;
-  _tasksPerScene[sceneSessionID].current_stage = stage;
+             forScene:(SceneState*)sceneState {
+  const std::string sceneKey = GetSceneIdentifier(sceneState.scene);
+  if (sceneKey.empty()) {
+    return;
+  }
+
+  TaskExecutionStage previousStage = _tasksPerScene[sceneKey].current_stage;
+  _tasksPerScene[sceneKey].current_stage = stage;
   if (previousStage < stage) {
-    [self executeTasksForScene:sceneSessionID];
+    [self executeTasksForScene:sceneKey];
   }
 }
 
-- (NSString*)gaiaIDForScene:(std::string_view)sceneSessionID {
-  auto it = _tasksPerScene.find(sceneSessionID);
+- (NSString*)gaiaIDForScene:(SceneState*)sceneState {
+  const std::string sceneKey = GetSceneIdentifier(sceneState.scene);
+  if (sceneKey.empty()) {
+    return nil;
+  }
+
+  auto it = _tasksPerScene.find(sceneKey);
   if (it == _tasksPerScene.end()) {
     return nil;
   }
@@ -95,7 +122,8 @@ struct SceneInfo {
     return NO;
   }
 
-  SceneInfo& sceneInfo = _tasksPerScene[task.sceneSessionID];
+  const std::string sceneKey = GetSceneIdentifier(task.scene);
+  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
   for (TaskRequest* pendingTask in sceneInfo.pending_tasks) {
     NSString* pendingGaiaID = pendingTask.gaiaID;
     if (pendingGaiaID && ![pendingGaiaID isEqualToString:taskGaiaID]) {
@@ -111,8 +139,8 @@ struct SceneInfo {
 }
 
 // Internal logic to filter and execute tasks based on the current stage.
-- (void)executeTasksForScene:(std::string_view)sceneSessionID {
-  SceneInfo& sceneInfo = _tasksPerScene[sceneSessionID];
+- (void)executeTasksForScene:(std::string_view)sceneKey {
+  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
   NSMutableArray<TaskRequest*>* pendingTasks =
       std::exchange(sceneInfo.pending_tasks, [NSMutableArray new]);
   for (TaskRequest* task in pendingTasks) {

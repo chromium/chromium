@@ -110,14 +110,14 @@
 - (void)updateToStageNone {
   [self.sceneState.profileState.appState.taskOrchestrator
       updateToStage:TaskExecutionStage::TaskExecutionStageNone
-           forScene:self.sceneState.sceneSessionID];
+           forScene:self.sceneState];
 }
 
 // Updates the scene to TaskExecutionProfileLoaded.
 - (void)updateToProfileLoaded {
   [self.sceneState.profileState.appState.taskOrchestrator
       updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
-           forScene:self.sceneState.sceneSessionID];
+           forScene:self.sceneState];
 }
 
 // Updates the scene to TaskExecutionUIReady if conditions are met.
@@ -132,7 +132,7 @@
 
   [self.sceneState.profileState.appState.taskOrchestrator
       updateToStage:TaskExecutionStage::TaskExecutionUIReady
-           forScene:self.sceneState.sceneSessionID];
+           forScene:self.sceneState];
   _didUpdateToUIReady = YES;
 }
 

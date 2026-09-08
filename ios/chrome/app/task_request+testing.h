@@ -7,14 +7,16 @@
 
 #import "ios/chrome/app/task_request.h"
 
+@class UIScene;
+
 @interface TaskRequest (Testing)
 
 @property(nonatomic, strong, readwrite) NSString* gaiaID;
 
-- (instancetype)initWithSceneID:(std::string_view)sceneID;
+- (instancetype)initWithScene:(UIScene*)scene;
 
-+ (instancetype)taskForTestingWithSceneID:(std::string_view)sceneID
-                             executeBlock:(ProceduralBlock)block;
++ (instancetype)taskForTestingWithScene:(UIScene*)scene
+                           executeBlock:(ProceduralBlock)block;
 
 @end
 

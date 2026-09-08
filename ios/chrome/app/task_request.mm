@@ -26,9 +26,9 @@
   ProceduralBlock _executeBlock;
 }
 
-- (instancetype)initWithSceneID:(std::string_view)sceneID
-                   executeBlock:(ProceduralBlock)executeBlock {
-  if ((self = [super initWithSceneID:sceneID])) {
+- (instancetype)initWithScene:(UIScene*)scene
+                 executeBlock:(ProceduralBlock)executeBlock {
+  if ((self = [super initWithScene:scene])) {
     CHECK(executeBlock);
     _executeBlock = [executeBlock copy];
   }
@@ -42,7 +42,7 @@
 @end
 
 @interface TaskRequest () {
-  std::string _sceneSessionID;
+  __weak UIScene* _scene;
   BOOL _isColdStart;
   __weak SceneState* _sceneState;
 }
@@ -53,8 +53,8 @@
 @synthesize minimumStage = _minimumStage;
 @synthesize gaiaID = _gaiaID;
 
-- (std::string_view)sceneSessionID {
-  return _sceneSessionID;
+- (UIScene*)scene {
+  return _scene;
 }
 
 + (instancetype)taskForURLContext:(UIOpenURLContext*)URLContext
@@ -84,10 +84,9 @@
 }
 
 // Factory used for tests.
-+ (instancetype)taskForTestingWithSceneID:(std::string_view)sceneID
-                             executeBlock:(ProceduralBlock)block {
-  return [[TaskRequestForTesting alloc] initWithSceneID:sceneID
-                                           executeBlock:block];
++ (instancetype)taskForTestingWithScene:(UIScene*)scene
+                           executeBlock:(ProceduralBlock)block {
+  return [[TaskRequestForTesting alloc] initWithScene:scene executeBlock:block];
 }
 
 - (instancetype)initWithSceneState:(SceneState*)sceneState
@@ -96,7 +95,7 @@
   if (self) {
     CHECK(IsEnableNewStartupFlowEnabled());
     _sceneState = sceneState;
-    _sceneSessionID = sceneState.sceneSessionID;
+    _scene = sceneState.scene;
     _isColdStart = isColdStart;
     // TODO(crbug.com/462018636): Minimum stage can be different in some cases,
     // handle all scenarios based on the received options (check bookmarks
@@ -107,9 +106,9 @@
 }
 
 // Initializer used for tests.
-- (instancetype)initWithSceneID:(std::string_view)sceneID {
+- (instancetype)initWithScene:(UIScene*)scene {
   if ((self = [super init])) {
-    _sceneSessionID = sceneID;
+    _scene = scene;
   }
   return self;
 }
@@ -120,21 +119,13 @@
 
 #pragma mark - Protected
 
-- (SceneState*)sceneStateFromSessionID {
-  if (_sceneState && _sceneState.sceneSessionID == _sceneSessionID) {
-    return _sceneState;
+- (SceneState*)sceneState {
+  if (!_sceneState) {
+    _sceneState =
+        base::apple::ObjCCast<SceneDelegate>(_scene.delegate).sceneState;
   }
-
-  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-    SceneDelegate* sceneDelegate =
-        base::apple::ObjCCast<SceneDelegate>(scene.delegate);
-    if (sceneDelegate &&
-        sceneDelegate.sceneState.sceneSessionID == _sceneSessionID) {
-      _sceneState = sceneDelegate.sceneState;
-      return _sceneState;
-    }
-  }
-  NOTREACHED();
+  CHECK(_sceneState);
+  return _sceneState;
 }
 
 @end

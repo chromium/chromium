@@ -15,10 +15,11 @@
 
 @property(nonatomic, strong, readwrite) NSString* gaiaID;
 
+// Scene state on which the task should be executed.
+@property(nonatomic, readonly) SceneState* sceneState;
+
 - (instancetype)initWithSceneState:(SceneState*)sceneState
                        isColdStart:(BOOL)isColdStart;
-
-- (SceneState*)sceneStateFromSessionID;
 
 @end
 

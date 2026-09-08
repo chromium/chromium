@@ -283,14 +283,14 @@ base::span<const ProfileChoice> GetProfileChoices() {
   return kProfileChoices;
 }
 
-// Returns the profile name associated with a pending task for `scene_state` in
-// `orchestrator`, if any.
-std::string GetProfileNameFromTask(std::string_view scene_state_id,
+// Returns the profile name associated with a pending task for
+// `scene_state` in `orchestrator`, if any.
+std::string GetProfileNameFromTask(SceneState* scene_state,
                                    TaskOrchestrator* orchestrator) {
   if (!orchestrator) {
     return std::string();
   }
-  NSString* gaia_id = [orchestrator gaiaIDForScene:scene_state_id];
+  NSString* gaia_id = [orchestrator gaiaIDForScene:scene_state];
   if (!gaia_id) {
     return std::string();
   }
@@ -311,8 +311,10 @@ std::string GetProfileNameFromTask(std::string_view scene_state_id,
 
 // Returns the name of the profile for `choice`. May be empty in some cases,
 // e.g. when a corresponding pref isn't set yet.
+// TODO(crbug.com/558220430): Refactor this method.
 std::string GetProfileNameForChoice(ProfileChoice choice,
                                     std::string_view scene_state_id,
+                                    SceneState* scene_state,
                                     UISceneConnectionOptions* options,
                                     TaskOrchestrator* orchestrator,
                                     ProfileManagerIOS* manager,
@@ -320,7 +322,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
                                     PrefService* local_state) {
   switch (choice) {
     case ProfileChoice::kProfileFromTask:
-      return GetProfileNameFromTask(scene_state_id, orchestrator);
+      return GetProfileNameFromTask(scene_state, orchestrator);
     case ProfileChoice::kProfileFromActivity: {
       for (NSUserActivity* activity in options.userActivities) {
         std::string profile_name = GetProfileNameFromActivity(activity);
@@ -1797,7 +1799,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   std::string profileName;
   for (ProfileChoice choice : GetProfileChoices()) {
     profileName = GetProfileNameForChoice(
-        choice, sceneStateID, sceneState.connectionOptions,
+        choice, sceneStateID, sceneState, sceneState.connectionOptions,
         self.appState.taskOrchestrator, manager, storage, localState);
 
     // Pick the first valid profile name found.

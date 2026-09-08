@@ -160,7 +160,7 @@ bool IsValidShortcutItem(ShortcutItemType shortcut_item_type) {
     return;
   }
 
-  SceneState* sceneState = [self sceneStateFromSessionID];
+  SceneState* sceneState = self.sceneState;
   CHECK(sceneState);
   Browser* browser =
       sceneState.browserProviderInterface.currentBrowserProvider.browser;

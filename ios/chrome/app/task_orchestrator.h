@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <string_view>
-
 #import "ios/chrome/app/task_request.h"
+
+@class SceneState;
 
 // Orchestrates the execution of TaskRequests by managing a queue of pending
 // tasks and ensuring they only run when their required application lifecycle
@@ -23,13 +23,13 @@
 // for later execution.
 - (void)addTaskRequest:(TaskRequest*)request;
 
-// Called when the app progresses through lifecycle.
+// Called when the app progresses through lifecycle for `sceneState`.
 - (void)updateToStage:(TaskExecutionStage)stage
-             forScene:(std::string_view)sceneSessionID;
+             forScene:(SceneState*)sceneState;
 
 // Returns the Gaia ID associated with the first pending task for
-// `sceneSessionID`, if any.
-- (NSString*)gaiaIDForScene:(std::string_view)sceneSessionID;
+// `sceneState`, if any.
+- (NSString*)gaiaIDForScene:(SceneState*)sceneState;
 
 @end
 

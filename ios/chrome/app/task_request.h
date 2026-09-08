@@ -7,12 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import <string_view>
-
 @class UIOpenURLContext;
 @class NSUserActivity;
 @class UIApplicationShortcutItem;
 @class SceneState;
+@class UIScene;
 
 // Defines the point at which a task can be executed. These stages should be
 // specific to a scene.
@@ -41,8 +40,8 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // Minimum execution stage for a task.
 @property(nonatomic, assign) TaskExecutionStage minimumStage;
 
-// Scene session ID on which the task should be executed.
-@property(nonatomic, readonly) std::string_view sceneSessionID;
+// Scene on which the task should be executed.
+@property(nonatomic, weak, readonly) UIScene* scene;
 
 // True if the task was created during a cold start.
 @property(nonatomic, readonly) BOOL isColdStart;

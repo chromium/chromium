@@ -738,7 +738,7 @@ void OpenSpotlightURL(NSURL* webpage_url,
   if (_userActivityType == UserActivityType::kInvalid) {
     return;
   }
-  SceneState* sceneState = [self sceneStateFromSessionID];
+  SceneState* sceneState = self.sceneState;
   CHECK(sceneState);
   Browser* browser =
       sceneState.browserProviderInterface.currentBrowserProvider.browser;

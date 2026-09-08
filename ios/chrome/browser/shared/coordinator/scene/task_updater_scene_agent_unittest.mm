@@ -47,7 +47,7 @@
 @implementation FakeTaskOrchestrator
 
 - (void)updateToStage:(TaskExecutionStage)stage
-             forScene:(std::string_view)sceneSessionID {
+             forScene:(SceneState*)sceneState {
   self.stage = stage;
 }
 
@@ -87,9 +87,14 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
 
+    id fake_scene = OCMClassMock([UIWindowScene class]);
+    id fake_session = OCMClassMock([UISceneSession class]);
+    OCMStub([fake_session persistentIdentifier]).andReturn(@"scene-1");
+    OCMStub([fake_scene session]).andReturn(fake_session);
+
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
-    scene_state_.sceneSessionID = "scene-1";
+    scene_state_.scene = fake_scene;
 
     agent_ = [[TaskUpdaterSceneAgent alloc] init];
     [scene_state_ addAgent:agent_];
