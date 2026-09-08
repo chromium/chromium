@@ -66,27 +66,36 @@ base::TimeDelta ServerBackedStateKeysBroker::GetRetryIntervalForTesting() {
 void ServerBackedStateKeysBroker::FetchStateKeys() {
   if (!requested_) {
     requested_ = true;
-    session_manager_client_->GetServerBackedStateKeys(
+    session_manager_client_->GetStateKeysWithTimeQuantumIndex(
         base::BindOnce(&ServerBackedStateKeysBroker::StoreStateKeys,
                        weak_factory_.GetWeakPtr()));
   }
 }
 
 void ServerBackedStateKeysBroker::StoreStateKeys(
-    const base::expected<std::vector<std::string>, ErrorType>& state_keys) {
+    base::expected<ash::SessionManagerClient::StateKeysData, ErrorType>
+        state_keys_data) {
   bool send_notification = !available();
 
   requested_ = false;
   auto wait_interval = kPollInterval;
-  if (!state_keys.has_value()) {
+  error_type_ = state_keys_data.error_or(ErrorType::kNoError);
+  if (!state_keys_data.has_value()) {
     LOG(WARNING) << "Failed to obtain server-backed state keys. Error: "
-                 << static_cast<int>(state_keys.error());
+                 << static_cast<int>(state_keys_data.error());
     wait_interval = kRetryInterval;
+    state_keys_.clear();
+    current_time_quantum_index_ = 0;
   } else {
-    send_notification |= state_keys_ != state_keys.value();
+    send_notification |=
+        (state_keys_ != state_keys_data.value().state_keys ||
+         current_time_quantum_index_ !=
+             state_keys_data.value().current_time_quantum_index);
+    // Do not access state_keys_data.value().state_keys after this!
+    state_keys_ = std::move(state_keys_data.value().state_keys);
+    current_time_quantum_index_ =
+        state_keys_data.value().current_time_quantum_index;
   }
-  state_keys_ = state_keys.value_or(std::vector<std::string>());
-  error_type_ = state_keys.error_or(ErrorType::kNoError);
 
   if (send_notification)
     update_callbacks_.Notify();

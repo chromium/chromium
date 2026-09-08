@@ -3097,6 +3097,11 @@ message DeviceStateKeyUpdateRequest {
   // key as the output, possibly by running the identifiers through a
   // cryptographic hash function such as SHA-256.
   repeated bytes server_backed_state_keys = 1;
+
+  // The discrete time quantum index (time in 2^23-second units since Unix
+  // epoch) corresponding to the active (first) state key in
+  // server_backed_state_keys.
+  optional int64 current_time_quantum_index = 2;
 }
 
 // Server to client message carrying the device state response. Because the

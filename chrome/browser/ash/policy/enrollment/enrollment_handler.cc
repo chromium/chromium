@@ -422,7 +422,8 @@ void EnrollmentHandler::HandleStateKeys(
   if (opt_state_keys.has_value()) {
     auto state_keys = opt_state_keys.value();
 
-    client_->SetStateKeysToUpload(state_keys);
+    client_->SetStateKeysToUpload(
+        state_keys, state_keys_broker_->current_time_quantum_index());
     register_params_->current_state_key =
         state_keys_broker_->current_state_key();
     if (state_keys.empty() || register_params_->current_state_key.empty()) {

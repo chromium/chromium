@@ -28,10 +28,13 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
 
   ~ServerBackedStateKeysBrokerTest() override = default;
 
-  void ExpectGoodBroker() {
+  void ExpectGoodBroker(
+      int64_t expected_quantum_index =
+          ash::FakeSessionManagerClient::kDefaultCurrentTimeQuantumIndex) {
     EXPECT_TRUE(broker_.available());
     EXPECT_EQ(state_keys_, broker_.state_keys());
     EXPECT_EQ(state_keys_.front(), broker_.current_state_key());
+    EXPECT_EQ(expected_quantum_index, broker_.current_time_quantum_index());
   }
 
  protected:
@@ -134,13 +137,26 @@ TEST_F(ServerBackedStateKeysBrokerTest, Refresh) {
   EXPECT_TRUE(run_loop->AnyQuitCalled());
   ExpectGoodBroker();
 
-  // No update callback if the keys are unchanged.
+  // No update callback if the keys and quantum index are unchanged.
   run_loop = std::make_unique<base::RunLoop>();
   ASSERT_FALSE(run_loop->AnyQuitCalled());
   task_environment_.FastForwardBy(
       ServerBackedStateKeysBroker::GetPollIntervalForTesting());
   EXPECT_FALSE(run_loop->AnyQuitCalled());
   ExpectGoodBroker();
+
+  // Update callbacks get fired if only the quantum index changes.
+  run_loop = std::make_unique<base::RunLoop>();
+  ASSERT_FALSE(run_loop->AnyQuitCalled());
+  fake_session_manager_client_.set_current_time_quantum_index(
+      ash::FakeSessionManagerClient::kDefaultCurrentTimeQuantumIndex + 1);
+  task_environment_.FastForwardBy(
+      ServerBackedStateKeysBroker::GetPollIntervalForTesting());
+  EXPECT_TRUE(run_loop->AnyQuitCalled());
+  ExpectGoodBroker(/*expected_quantum_index=*/
+                   ash::FakeSessionManagerClient::
+                       kDefaultCurrentTimeQuantumIndex +
+                   1);
 }
 
 TEST_F(ServerBackedStateKeysBrokerTest, Request) {

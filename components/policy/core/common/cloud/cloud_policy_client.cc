@@ -956,11 +956,11 @@ void CloudPolicyClient::FetchPolicyInternal(
   if (!state_keys_to_upload_.empty()) {
     em::DeviceStateKeyUpdateRequest* key_update_request =
         request->mutable_device_state_key_update_request();
-    for (std::vector<std::string>::const_iterator key(
-             state_keys_to_upload_.begin());
-         key != state_keys_to_upload_.end(); ++key) {
-      key_update_request->add_server_backed_state_keys(*key);
+    for (const auto& key : state_keys_to_upload_) {
+      key_update_request->add_server_backed_state_keys(key);
     }
+    key_update_request->set_current_time_quantum_index(
+        current_time_quantum_index_to_upload_);
   }
 
   policy_request->set_reason(TranslateFetchReason(reason));
@@ -1589,10 +1589,12 @@ void CloudPolicyClient::RemovePolicyTypeToFetch(
 }
 
 void CloudPolicyClient::SetStateKeysToUpload(
-    const std::vector<std::string>& keys) {
+    const std::vector<std::string>& keys,
+    int64_t current_time_quantum_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   state_keys_to_upload_ = keys;
+  current_time_quantum_index_to_upload_ = current_time_quantum_index;
 }
 
 const em::PolicyFetchResponse* CloudPolicyClient::GetPolicyFor(
@@ -1860,6 +1862,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
       last_policy_fetch_responses_[key] = fetch_response;
     }
     state_keys_to_upload_.clear();
+    current_time_quantum_index_to_upload_ = 0;
     NotifyPolicyFetched();
 
     VLOG_POLICY(2, CBCM_ENROLLMENT) << "Policy fetch succeeded";

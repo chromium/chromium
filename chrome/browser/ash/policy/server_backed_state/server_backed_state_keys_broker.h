@@ -74,6 +74,13 @@ class ServerBackedStateKeysBroker {
     return state_keys_.empty() ? std::string() : state_keys_.front();
   }
 
+  // Returns the discrete time quantum index corresponding to the first state
+  // key in state_keys(). Returns 0 if state keys are unavailable or pending
+  // retrieval.
+  int64_t current_time_quantum_index() const {
+    return current_time_quantum_index_;
+  }
+
   // Whether state keys are available. Returns false if state keys are
   // unavailable or pending retrieval.
   bool available() const { return !state_keys_.empty(); }
@@ -83,13 +90,14 @@ class ServerBackedStateKeysBroker {
   void FetchStateKeys();
 
   // Stores newly-received state keys and notifies consumers.
-  void StoreStateKeys(
-      const base::expected<std::vector<std::string>, ErrorType>& state_keys);
+  void StoreStateKeys(base::expected<ash::SessionManagerClient::StateKeysData,
+                                     ErrorType> state_keys_data);
 
   raw_ptr<ash::SessionManagerClient, DanglingUntriaged> session_manager_client_;
 
   // The current set of state keys.
   std::vector<std::string> state_keys_;
+  int64_t current_time_quantum_index_ = 0;
   ErrorType error_type_ = ErrorType::kNoError;
 
   // Whether a request for state keys is pending.

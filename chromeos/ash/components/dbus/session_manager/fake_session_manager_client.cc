@@ -115,7 +115,8 @@ bool IsChromeDevicePolicy(const login_manager::PolicyDescriptor& descriptor) {
 }
 
 // Helper to asynchronously read (or if missing create) state key stubs.
-std::vector<std::string> ReadCreateStateKeysStub(const base::FilePath& path) {
+SessionManagerClient::StateKeysData ReadCreateStateKeysStub(
+    const base::FilePath& path) {
   std::string contents;
   if (base::PathExists(path)) {
     contents = GetFileContent(path);
@@ -131,9 +132,15 @@ std::vector<std::string> ReadCreateStateKeysStub(const base::FilePath& path) {
   }
 
   std::vector<std::string> state_keys;
-  for (size_t i = 0; i < contents.size() / 32; ++i)
+  for (size_t i = 0; i < contents.size() / 32; ++i) {
     state_keys.push_back(contents.substr(i * 32, 32));
-  return state_keys;
+  }
+  int64_t current_time_quantum_index =
+      state_keys.empty()
+          ? 0
+          : FakeSessionManagerClient::kDefaultCurrentTimeQuantumIndex;
+  return SessionManagerClient::StateKeysData{std::move(state_keys),
+                                             current_time_quantum_index};
 }
 
 // Gets the postfix of the stub policy filename, which is based the
@@ -632,14 +639,15 @@ void FakeSessionManagerClient::SetFeatureFlagsForUser(
   state.origin_list_flags = origin_list_flags;
 }
 
-void FakeSessionManagerClient::GetServerBackedStateKeys(
+void FakeSessionManagerClient::GetStateKeysWithTimeQuantumIndex(
     StateKeysCallback callback) {
   if (state_keys_handling_ == ServerBackedStateKeysHandling::kNoResponse) {
     return;
   }
   if (state_keys_handling_ ==
       ServerBackedStateKeysHandling::kForceNotAvailable) {
-    PostReply(FROM_HERE, std::move(callback), std::vector<std::string>());
+    PostReply(FROM_HERE, std::move(callback),
+              SessionManagerClient::StateKeysData());
     return;
   }
   DCHECK_EQ(state_keys_handling_, ServerBackedStateKeysHandling::kRegular);
@@ -656,7 +664,16 @@ void FakeSessionManagerClient::GetServerBackedStateKeys(
         base::BindOnce(&ReadCreateStateKeysStub, state_keys_path),
         std::move(callback));
   } else {
-    PostReply(FROM_HERE, std::move(callback), server_backed_state_keys_);
+    if (server_backed_state_keys_.has_value()) {
+      PostReply(
+          FROM_HERE, std::move(callback),
+          SessionManagerClient::StateKeysData{
+              server_backed_state_keys_.value().state_keys,
+              server_backed_state_keys_.value().current_time_quantum_index});
+    } else {
+      PostReply(FROM_HERE, std::move(callback),
+                base::unexpected{server_backed_state_keys_.error()});
+    }
   }
 }
 

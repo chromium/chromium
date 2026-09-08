@@ -205,7 +205,9 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // If supported, set state keys here so the first policy fetch submits them to
   // the server.
   if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
-    client_to_connect->SetStateKeysToUpload(state_keys_broker_->state_keys());
+    client_to_connect->SetStateKeysToUpload(
+        state_keys_broker_->state_keys(),
+        state_keys_broker_->current_time_quantum_index());
   }
 
   // Create the component cloud policy service for fetching, caching and
@@ -361,7 +363,9 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
   if (client()) {
-    client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
+    client()->SetStateKeysToUpload(
+        state_keys_broker_->state_keys(),
+        state_keys_broker_->current_time_quantum_index());
   }
 }
 

@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::vector<std::string>& feature_flags,
       const std::map<std::string, std::string>& origin_list_flags) override;
-  void GetServerBackedStateKeys(StateKeysCallback callback) override;
+  void GetStateKeysWithTimeQuantumIndex(StateKeysCallback callback) override;
   void GetPsmDeviceActiveSecret(
       PsmDeviceActiveSecretCallback callback) override;
 
@@ -243,13 +243,35 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // Notify observers about a property change completion.
   void OnPropertyChangeComplete(bool success);
 
+  // Default realistic time quantum index (representing year ~2026, where
+  // 1.78e9 seconds / 2^23 ~= 213).
+  static constexpr int64_t kDefaultCurrentTimeQuantumIndex = 213;
+
   // Configures the list of state keys used to satisfy
-  // GetServerBackedStateKeys() requests. Only available for
+  // GetStateKeysWithTimeQuantumIndex() requests. Only available for
   // PolicyStorageType::kInMemory.
   void set_server_backed_state_keys(
       const std::vector<std::string>& state_keys) {
     DCHECK_EQ(policy_storage_, PolicyStorageType::kInMemory);
-    server_backed_state_keys_ = state_keys;
+    server_backed_state_keys_ = SessionManagerClient::StateKeysData{
+        state_keys, state_keys.empty() ? 0 : kDefaultCurrentTimeQuantumIndex};
+  }
+
+  void set_current_time_quantum_index(int64_t current_time_quantum_index) {
+    DCHECK_EQ(policy_storage_, PolicyStorageType::kInMemory);
+    if (server_backed_state_keys_.has_value()) {
+      server_backed_state_keys_->current_time_quantum_index =
+          current_time_quantum_index;
+    } else {
+      server_backed_state_keys_ = SessionManagerClient::StateKeysData{
+          /*state_keys=*/{}, current_time_quantum_index};
+    }
+  }
+
+  void set_server_backed_state_keys_data(
+      SessionManagerClient::StateKeysData state_keys_data) {
+    DCHECK_EQ(policy_storage_, PolicyStorageType::kInMemory);
+    server_backed_state_keys_ = std::move(state_keys_data);
   }
 
   void set_psm_device_active_secret(
@@ -366,7 +388,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   base::ObserverList<Observer> observers_{
       SessionManagerClient::kObserverListPolicy};
   SessionManagerClient::ActiveSessionsMap user_sessions_;
-  base::expected<std::vector<std::string>, StateKeyErrorType>
+  base::expected<SessionManagerClient::StateKeysData, StateKeyErrorType>
       server_backed_state_keys_;
 
   std::string psm_device_active_secret_;

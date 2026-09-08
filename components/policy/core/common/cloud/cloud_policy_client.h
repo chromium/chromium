@@ -680,10 +680,12 @@ class POLICY_EXPORT CloudPolicyClient {
 
   void RemovePolicyTypeToFetch(const PolicyTypeToFetch& params);
 
-  // Configures a set of device state keys to transfer to the server in the next
-  // policy fetch. If the fetch is successful, the keys will be cleared so they
-  // are only uploaded once.
-  void SetStateKeysToUpload(const std::vector<std::string>& keys);
+  // Configures a set of device state keys and the time quantum index for the
+  // current (first) key to transfer to the server in the next policy fetch. If
+  // the fetch is successful, the keys will be cleared so they are only
+  // uploaded once.
+  void SetStateKeysToUpload(const std::vector<std::string>& keys,
+                            int64_t current_time_quantum_index);
 
   // Whether the client is registered with the device management service.
   bool is_registered() const {
@@ -899,6 +901,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   PolicyTypeToFetchSet types_to_fetch_;
   std::vector<std::string> state_keys_to_upload_;
+  int64_t current_time_quantum_index_to_upload_ = 0;
 
   // OAuth token that if set is used as an additional form of authentication
   // (next to |dm_token_|) in policy fetch requests.

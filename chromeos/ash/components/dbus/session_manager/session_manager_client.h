@@ -370,19 +370,35 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const std::vector<std::string>& feature_flags,
       const std::map<std::string, std::string>& origin_list_flags) = 0;
 
-  using StateKeysCallback = base::OnceCallback<void(
-      const base::expected<std::vector<std::string>, StateKeyErrorType>&
-          state_keys)>;
+  // Container for computed state keys and the corresponding time quantum index.
+  struct StateKeysData {
+    StateKeysData();
+    StateKeysData(std::vector<std::string> keys, int64_t index);
+    StateKeysData(StateKeysData&& other);
+    StateKeysData& operator=(StateKeysData&& other);
+    StateKeysData(const StateKeysData&) = delete;
+    StateKeysData& operator=(const StateKeysData&) = delete;
+    ~StateKeysData();
 
-  // Get the currently valid server-backed state keys for the device.
-  // Server-backed state keys are opaque, device-unique, time-dependent,
-  // client-determined identifiers that are used for keying state in the cloud
-  // for the device to retrieve after a device factory reset.
+    bool operator==(const StateKeysData& other) const = default;
+
+    std::vector<std::string> state_keys;
+    int64_t current_time_quantum_index = 0;
+  };
+
+  using StateKeysCallback = base::OnceCallback<void(
+      base::expected<StateKeysData, StateKeyErrorType> state_keys)>;
+
+  // Get the currently valid state keys for the device along with the current
+  // time quantum index (seconds since epoch / 2^23).
+  // State keys are opaque, device-unique, time-dependent, client-determined
+  // identifiers that are used for keying state in the cloud for the device to
+  // retrieve after a device factory reset.
   //
-  // The state keys are returned asynchronously via |callback|. The callback
-  // is invoked with an empty state key vector in case of errors. If the time
-  // sync fails or there's no network, the callback is never invoked.
-  virtual void GetServerBackedStateKeys(StateKeysCallback callback) = 0;
+  // The state keys and time quantum index are returned asynchronously via
+  // |callback|. If the time sync fails or there's no network, the callback is
+  // never invoked.
+  virtual void GetStateKeysWithTimeQuantumIndex(StateKeysCallback callback) = 0;
 
   using PsmDeviceActiveSecretCallback =
       base::OnceCallback<void(const std::string& psm_device_active_secret)>;

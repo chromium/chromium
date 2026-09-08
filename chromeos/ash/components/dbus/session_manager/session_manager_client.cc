@@ -165,6 +165,18 @@ bool ReadSecretFromSharedMemory(base::ScopedFD fd,
 
 }  // namespace
 
+SessionManagerClient::StateKeysData::StateKeysData() = default;
+SessionManagerClient::StateKeysData::StateKeysData(
+    std::vector<std::string> keys,
+    int64_t index)
+    : state_keys{std::move(keys)}, current_time_quantum_index{index} {}
+
+SessionManagerClient::StateKeysData::StateKeysData(StateKeysData&& other) =
+    default;
+SessionManagerClient::StateKeysData&
+SessionManagerClient::StateKeysData::operator=(StateKeysData&& other) = default;
+SessionManagerClient::StateKeysData::~StateKeysData() = default;
+
 // The SessionManagerClient implementation used in production.
 class SessionManagerClientImpl : public SessionManagerClient {
  public:
@@ -533,17 +545,18 @@ class SessionManagerClientImpl : public SessionManagerClient {
                                        base::DoNothing());
   }
 
-  void GetServerBackedStateKeys(StateKeysCallback callback) override {
+  void GetStateKeysWithTimeQuantumIndex(StateKeysCallback callback) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
-        login_manager::kSessionManagerGetServerBackedStateKeys);
+        login_manager::kSessionManagerGetStateKeysWithTimeQuantumIndex);
 
     // Long timeout needed because the state keys are not generated as long
     // as the time sync hasn't been done (which requires network).
     session_manager_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_MAX,
-        base::BindOnce(&SessionManagerClientImpl::OnGetServerBackedStateKeys,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+        base::BindOnce(
+            &SessionManagerClientImpl::OnGetStateKeysWithTimeQuantumIndex,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetPsmDeviceActiveSecret(
@@ -1003,10 +1016,11 @@ class SessionManagerClientImpl : public SessionManagerClient {
     LOG_IF(ERROR, !success) << "Failed to connect to " << signal_name;
   }
 
-  // Called when kSessionManagerGetServerBackedStateKeys method is complete.
-  void OnGetServerBackedStateKeys(StateKeysCallback callback,
-                                  dbus::Response* response,
-                                  dbus::ErrorResponse* error_response) {
+  // Called when kSessionManagerGetStateKeysWithTimeQuantumIndex method is
+  // complete.
+  void OnGetStateKeysWithTimeQuantumIndex(StateKeysCallback callback,
+                                          dbus::Response* response,
+                                          dbus::ErrorResponse* error_response) {
     if (error_response &&
         error_response->GetErrorName() ==
             login_manager::dbus_error::kStateKeysRequestFail) {
@@ -1052,6 +1066,16 @@ class SessionManagerClientImpl : public SessionManagerClient {
       state_keys.emplace_back(base::as_string_view(data));
     }
 
+    int64_t current_time_quantum_index = 0;
+    if (!reader.PopInt64(&current_time_quantum_index)) {
+      LOG(ERROR)
+          << "Bad response (not an int64 for current_time_quantum_index): "
+          << response->ToString();
+      std::move(callback).Run(
+          base::unexpected(StateKeyErrorType::kInvalidResponse));
+      return;
+    }
+
     if (state_keys.empty()) {
       // TODO(b/318708647): Session manager did not report an error but still
       // responded with empty state keys. Report something else than missing
@@ -1060,7 +1084,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
           base::unexpected(StateKeyErrorType::kMissingIdentifiers));
       return;
     }
-    std::move(callback).Run(base::ok(std::move(state_keys)));
+    std::move(callback).Run(
+        StateKeysData{std::move(state_keys), current_time_quantum_index});
   }
 
   // Called when kSessionManagerGetPsmDeviceActiveSecret method is complete.
