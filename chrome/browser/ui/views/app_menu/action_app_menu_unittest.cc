@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -116,6 +117,12 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   ASSERT_TRUE(root);
 
   // Check if the menu contains section menu items.
+#if !BUILDFLAG(IS_CHROMEOS)
+  views::MenuItemView* profile_item =
+      root->GetMenuItemByID(kActionProfileSubmenu);
+  ASSERT_TRUE(profile_item);
+#endif
+
   views::MenuItemView* password_item =
       root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
   ASSERT_TRUE(password_item);
@@ -135,6 +142,9 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   ASSERT_TRUE(zoom_item);
 
   // Check if the styling is applied to the menu items.
+#if !BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(profile_item->GetMenuItemBackground().has_value());
+#endif
   ASSERT_TRUE(password_item->GetMenuItemBackground().has_value());
   ASSERT_TRUE(print_item->GetMenuItemBackground().has_value());
   ASSERT_TRUE(downloads_item->GetMenuItemBackground().has_value());
@@ -142,6 +152,9 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   ASSERT_TRUE(zoom_item->GetMenuItemBackground().has_value());
 
   // Check horizontal margins on card backgrounds are explicitly 0.
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->horizontal_margin, 0);
+#endif
   EXPECT_EQ(password_item->GetMenuItemBackground()->horizontal_margin, 0);
   EXPECT_EQ(print_item->GetMenuItemBackground()->horizontal_margin, 0);
   EXPECT_EQ(downloads_item->GetMenuItemBackground()->horizontal_margin, 0);
@@ -150,8 +163,15 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
 
   // Check corner radiuses for section cards (first item has top radius, last
   // has bottom radius, middle items have neither).
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 8);
   EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
+#else
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->bottom_radius, 0);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 0);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
+#endif
   EXPECT_EQ(downloads_item->GetMenuItemBackground()->top_radius, 0);
   EXPECT_EQ(downloads_item->GetMenuItemBackground()->bottom_radius, 0);
   EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->top_radius, 0);
@@ -159,6 +179,9 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
 
   // Check vertical padding:
   // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(profile_item->GetTopMargin(), 8);
+#endif
   EXPECT_EQ(password_item->GetTopMargin(), 8);
   EXPECT_EQ(print_item->GetTopMargin(), 8);
   EXPECT_EQ(downloads_item->GetTopMargin(), 8);
@@ -168,6 +191,10 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   EXPECT_EQ(zoom_item->GetTopMargin(), 16);
 
   // Check hover selection color matching subtle state.
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(profile_item->GetSelectedColorId(),
+            ui::kColorSysStateHoverOnSubtle);
+#endif
   EXPECT_EQ(password_item->GetSelectedColorId(),
             ui::kColorSysStateHoverOnSubtle);
   EXPECT_EQ(print_item->GetSelectedColorId(), ui::kColorSysStateHoverOnSubtle);

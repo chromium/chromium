@@ -3925,8 +3925,17 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionShowManagementPage)
           .Build());
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const gfx::VectorIcon& manage_account_icon =
+      vector_icons::kGoogleGLogoMonochromeIcon;
+#else
+  const gfx::VectorIcon& manage_account_icon =
+      features::IsRoundedIconsEnabled() ? kManageAccountsIcon
+                                        : kAccountManageChromeRefreshOldIcon;
+#endif
+
   root_action_item_->AddChild(
-      actions::ActionItem::Builder(
+      ChromeMenuAction(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
@@ -3949,8 +3958,10 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   ::ShowSingletonTab(bwi, url);
                 }
               },
-              bwi))
-          .SetActionId(kActionManageGoogleAccount)
+              bwi),
+          kActionManageGoogleAccount, IDS_MANAGE_GOOGLE_ACCOUNT,
+          IDS_MANAGE_GOOGLE_ACCOUNT, manage_account_icon,
+          /*is_pinnable=*/false)
           .Build());
 
   root_action_item_->AddChild(

@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -140,6 +142,24 @@ bool CanBookmarkCurrentTab(BrowserWindowInterface* browser) {
          model && model->loaded() &&
          browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+std::u16string GetProfileName(Profile* profile) {
+  if (profile->IsIncognitoProfile() ||
+      profile->IsEnterpriseIsolatedModeProfile()) {
+    return l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
+  } else if (profile->IsGuestSession()) {
+    return l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+  } else if (g_browser_process && g_browser_process->profile_manager()) {
+    ProfileAttributesEntry* profile_attributes =
+        GetProfileAttributesFromProfile(profile);
+    if (profile_attributes) {
+      return GetProfileMenuDisplayName(profile_attributes);
+    }
+  }
+  return std::u16string();
+}
+#endif
 
 // Builder helper to simplify declaring the action item structure for the app
 // menu.
@@ -416,6 +436,23 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
   builder.AddSectionHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
 
   Profile* profile = browser_window_interface_->GetProfile();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::u16string profile_name = GetProfileName(profile);
+  builder.AddSubmenu(
+      kActionProfileSubmenu,
+      [profile](AppMenuBuilder& sub) {
+        if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
+            !profile->IsIncognitoProfile() &&
+            !profile->IsEnterpriseIsolatedModeProfile()) {
+          sub.AddAction(kActionManageGoogleAccount);
+        }
+      },
+      DisplayType::kRow,
+      /*text_override=*/profile_name.empty()
+          ? std::nullopt
+          : std::make_optional(std::move(profile_name)));
+#endif
 
   if (!profile->IsGuestSession()) {
     builder.AddSubmenu(kActionPasswordsAndAutofillSubmenu,
