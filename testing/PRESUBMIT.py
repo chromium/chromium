@@ -67,8 +67,36 @@ def _GetTestingEnv(input_api):
   return testing_env
 
 
+def _ShouldRunCommonUnittests(input_api, directories):
+  """Returns True if affected files match directories or this PRESUBMIT.py."""
+  if isinstance(directories, str):
+    directories = [directories]
+  this_presubmit = input_api.os_path.normcase(
+    input_api.os_path.join(input_api.PresubmitLocalPath(), 'PRESUBMIT.py')
+  )
+  # Ensure trailing separator to avoid prefix-matching unrelated directories.
+  prefixes = tuple(
+    input_api.os_path.normcase(
+      input_api.os_path.join(input_api.PresubmitLocalPath(), d, '')
+    )
+    for d in directories
+  )
+  affected_paths = (
+    input_api.os_path.normcase(f.AbsoluteLocalPath())
+    for f in input_api.AffectedFiles()
+  )
+  return any(
+    p.startswith(prefixes) or p == this_presubmit for p in affected_paths
+  )
+
+
 def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
   """Runs unittests in the testing/flake_suppressor_common/ directory."""
+  # Note: flake_suppressor_common depends on unexpected_passes_common.
+  if not _ShouldRunCommonUnittests(
+    input_api, ['flake_suppressor_common', 'unexpected_passes_common']
+  ):
+    return []
   return input_api.canned_checks.RunUnitTestsInDirectory(
     input_api,
     output_api,
@@ -82,6 +110,8 @@ def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
 
 def CheckUnexpectedPassesCommonUnittests(input_api, output_api):
   """Runs unittests in the testing/unexpected_passes_common/ directory."""
+  if not _ShouldRunCommonUnittests(input_api, ['unexpected_passes_common']):
+    return []
   return input_api.canned_checks.RunUnitTestsInDirectory(
     input_api,
     output_api,
