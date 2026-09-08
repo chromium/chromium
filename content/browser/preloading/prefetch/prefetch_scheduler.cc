@@ -48,9 +48,12 @@ size_t GetActiveSetSizeLimitForBurst() {
   // queue so that prerendering is not blocked by queued prefetch requests.
   //
   // Note that prerenders are run sequentially. So, +1 is enough.
-  if (features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() ==
-      features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst) {
-    return GetActiveSetSizeLimitForBase() + 1;
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2FallbackPrefetchSpecRules)) {
+    if (features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() ==
+        features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst) {
+      return GetActiveSetSizeLimitForBase() + 1;
+    }
   }
 
   if (base::FeatureList::IsEnabled(
