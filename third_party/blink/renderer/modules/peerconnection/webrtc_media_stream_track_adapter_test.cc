@@ -184,7 +184,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteAudioTrack) {
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
-  EXPECT_NE(track_adapter_->webrtc_track()->id(),
+  EXPECT_EQ(track_adapter_->webrtc_track()->id(),
             track_adapter_->track()->Id().Utf8());
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
@@ -226,7 +226,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteVideoTrack) {
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kVideoKind);
-  EXPECT_NE(track_adapter_->webrtc_track()->id(),
+  EXPECT_EQ(track_adapter_->webrtc_track()->id(),
             track_adapter_->track()->Id().Utf8());
   EXPECT_TRUE(track_adapter_->GetRemoteVideoTrackAdapterForTesting());
   EXPECT_TRUE(
@@ -255,7 +255,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, RemoteTrackExplicitlyInitialized) {
   EXPECT_TRUE(track_adapter_->webrtc_track());
   EXPECT_EQ(track_adapter_->webrtc_track()->kind(),
             webrtc::MediaStreamTrackInterface::kAudioKind);
-  EXPECT_NE(track_adapter_->webrtc_track()->id(),
+  EXPECT_EQ(track_adapter_->webrtc_track()->id(),
             track_adapter_->track()->Id().Utf8());
   EXPECT_TRUE(track_adapter_->GetRemoteAudioTrackAdapterForTesting());
   EXPECT_TRUE(
