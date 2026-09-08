@@ -41,7 +41,7 @@ WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
     : shared_image_wrapper_(std::move(shared_image_wrapper)),
       cache_(cache),
       recorder_for_external_draws_(std::make_unique<MemoryManagedPaintRecorder>(
-          shared_image_wrapper_->Size(),
+          shared_image_wrapper_->shared_image_->size(),
           /*client=*/nullptr)) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
@@ -87,8 +87,8 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
     uint32_t src_y) {
-  const int dest_width = shared_image_wrapper_->Size().width();
-  const int dest_height = shared_image_wrapper_->Size().height();
+  const int dest_width = shared_image_wrapper_->shared_image_->size().width();
+  const int dest_height = shared_image_wrapper_->shared_image_->size().height();
 
   SkPixmap subset;
   if (!pixmap.extractSubset(
@@ -142,30 +142,29 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
 
     gpu::raster::RasterInterface* ri = RasterInterface();
     SkColor4f background_color =
-        shared_image_wrapper_->GetAlphaType() == kOpaque_SkAlphaType
+        shared_image_wrapper_->shared_image_->alpha_type() ==
+                kOpaque_SkAlphaType
             ? SkColors::kBlack
             : SkColors::kTransparent;
 
     auto list = base::MakeRefCounted<cc::DisplayItemList>();
     list->StartPaint();
     list->push<cc::DrawRecordOp>(std::move(last_recording));
-    list->EndPaintOfUnpaired(gfx::Rect(shared_image_wrapper_->Size().width(),
-                                       shared_image_wrapper_->Size().height()));
+    list->EndPaintOfUnpaired(
+        gfx::Rect(shared_image_wrapper_->shared_image_->size()));
     list->Finalize();
 
-    gfx::Size size(shared_image_wrapper_->Size().width(),
-                   shared_image_wrapper_->Size().height());
+    gfx::Size size = shared_image_wrapper_->shared_image_->size();
     size_t max_op_size_hint =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-    gfx::Rect full_raster_rect(shared_image_wrapper_->Size().width(),
-                               shared_image_wrapper_->Size().height());
-    gfx::Rect playback_rect(shared_image_wrapper_->Size().width(),
-                            shared_image_wrapper_->Size().height());
+    gfx::Rect full_raster_rect(shared_image_wrapper_->shared_image_->size());
+    gfx::Rect playback_rect(shared_image_wrapper_->shared_image_->size());
     gfx::Vector2dF post_translate(0.f, 0.f);
     gfx::Vector2dF post_scale(1.f, 1.f);
 
     const bool can_use_lcd_text =
-        shared_image_wrapper_->GetAlphaType() == kOpaque_SkAlphaType;
+        shared_image_wrapper_->shared_image_->alpha_type() ==
+        kOpaque_SkAlphaType;
     const auto& caps =
         shared_image_wrapper_->context_provider_wrapper_->ContextProvider()
             .GetCapabilities();
@@ -176,7 +175,7 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
         use_msaa ? gpu::raster::MsaaMode::kDMSAA
                  : gpu::raster::MsaaMode::kNoMSAA,
         can_use_lcd_text, /*visible=*/true,
-        shared_image_wrapper_->GetColorSpace(),
+        shared_image_wrapper_->shared_image_->color_space(),
         /*hdr_headroom=*/0.f,
         shared_image_wrapper_->shared_image_->mailbox().name);
 
@@ -184,12 +183,12 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
         shared_image_wrapper_->context_provider_wrapper_->ContextProvider();
     CanvasImageProvider image_provider(
         context_provider.ImageDecodeCache(kN32_SkColorType),
-        shared_image_wrapper_->GetSharedImageFormat() ==
+        shared_image_wrapper_->shared_image_->format() ==
                 viz::SinglePlaneFormat::kRGBA_F16
             ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
             : nullptr,
-        shared_image_wrapper_->GetColorSpace(),
-        shared_image_wrapper_->GetSharedImageFormat(),
+        shared_image_wrapper_->shared_image_->color_space(),
+        shared_image_wrapper_->shared_image_->format(),
         cc::PlaybackImageProvider::RasterMode::kGpu,
         shared_image_wrapper_->context_provider_wrapper_);
 
@@ -243,8 +242,9 @@ bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
     return false;
   }
 
-  gfx::Rect copy_rect(src_x, src_y, shared_image_wrapper_->Size().width(),
-                      shared_image_wrapper_->Size().height());
+  gfx::Rect copy_rect(src_x, src_y,
+                      shared_image_wrapper_->shared_image_->size().width(),
+                      shared_image_wrapper_->shared_image_->size().height());
 
   auto dst_access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
       raster, shared_image_wrapper_->sync_token_,
@@ -416,8 +416,8 @@ void WebGpuSharedImageWrapperCache::ReturnWebGpuSharedImageWrapper(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     const gpu::SyncToken& completion_sync_token) {
   size_t resource_size =
-      shared_image_wrapper->GetSharedImageFormat().EstimatedSizeInBytes(
-          shared_image_wrapper->Size());
+      shared_image_wrapper->shared_image_->format().EstimatedSizeInBytes(
+          shared_image_wrapper->shared_image_->size());
 
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;
@@ -461,9 +461,10 @@ WebGpuSharedImageWrapperCache::AcquireCachedWrapper(
   DequeSharedImageWrapper::iterator it;
   for (it = unused_wrappers_.begin(); it != unused_wrappers_.end(); ++it) {
     WebGpuSharedImageWrapper* wrapper = it->shared_image_wrapper_.get();
-    if (wrapper->Size() == size && wrapper->GetSharedImageFormat() == format &&
-        wrapper->GetAlphaType() == alpha_type &&
-        wrapper->GetColorSpace() == color_space) {
+    if (wrapper->shared_image_->size() == size &&
+        wrapper->shared_image_->format() == format &&
+        wrapper->shared_image_->alpha_type() == alpha_type &&
+        wrapper->shared_image_->color_space() == color_space) {
       break;
     }
   }
