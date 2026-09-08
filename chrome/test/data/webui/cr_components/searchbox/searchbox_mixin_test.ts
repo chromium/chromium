@@ -2530,6 +2530,32 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   });
 
   test(
+      'Enter on focused context entrypoint button calls openContextMenu',
+      async () => {
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'context query');
+
+        let openContextMenuCalled = false;
+        element.openContextMenu = () => {
+          openContextMenuCalled = true;
+        };
+
+        element.setSelection({
+          line: -1,
+          state: SelectionLineState.kFocusedButtonContextEntrypoint,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+
+        const enterEvent = createKeyboardEvent('Enter');
+        mockInput.inputElement.dispatchEvent(enterEvent);
+        await microtasksFinished();
+
+        assertTrue(enterEvent.defaultPrevented);
+        assertTrue(openContextMenuCalled);
+      });
+
+  test(
       'Enter on remove suggestion button deletes match and unfreezes query ID',
       async () => {
         const mockInput = element.getInputElement();

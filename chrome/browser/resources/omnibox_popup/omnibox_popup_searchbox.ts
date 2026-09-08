@@ -14,7 +14,7 @@ import type {SearchboxInputElement} from '//resources/cr_components/searchbox/se
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
-import {selectionIsNativelySupported} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
+import {selectionIsNativelySupported, selectionsEqual} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -513,6 +513,10 @@ export class OmniboxPopupSearchboxElement extends
 
   override pageHandler(): SearchboxPageHandlerInterface {
     return this.searchboxPageHandler_;
+  }
+
+  override openContextMenu(): void {
+    this.getContextualEntrypointButton()?.showContextMenu();
   }
 
   /**
@@ -1238,6 +1242,19 @@ export class OmniboxPopupSearchboxElement extends
         this.textfieldModel_.canUndo(), this.textfieldModel_.canRedo());
   }
 
+  /**
+   * Returns true if any popup element or match row is currently selected,
+   * bridging the legacy DOM focus model and the Virtual Focus model (gated by
+   * `realboxVirtualFocusNavigation`). When legacy focus is eventually
+   * deprecated and removed along with `selectedMatchIndex`, this can be
+   * simplified to just `!selectionsEqual(this.selection, kDefaultSelection)`.
+   */
+  private get hasSelection_(): boolean {
+    return this.virtualFocusEnabled ?
+        !selectionsEqual(this.selection, kDefaultSelection) :
+        this.selectedMatchIndex !== -1;
+  }
+
   override handleKeyNavigation(e: KeyboardEvent) {
     // Ignore key navigation (including ESC) during active IME text composition
     // (e.g. Japanese/Chinese/Korean) so the OS IME engine handles the key
@@ -1252,7 +1269,7 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
-    if (e.key === 'Enter' && this.selectedMatchIndex === -1) {
+    if (e.key === 'Enter' && !this.hasSelection_) {
       // On an open page where no suggestion match is highlighted, submit the
       // verbatim input text (or reload the permanent URL).
       e.preventDefault();
