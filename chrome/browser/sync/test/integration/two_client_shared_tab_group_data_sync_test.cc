@@ -18,6 +18,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/collaboration_id.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -25,6 +25,7 @@
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 #include "chrome/browser/tab/tab_storage_util.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_data.h"

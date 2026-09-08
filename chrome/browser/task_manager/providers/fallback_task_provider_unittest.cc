@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"

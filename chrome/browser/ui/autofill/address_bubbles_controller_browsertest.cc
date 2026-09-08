@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/page_transition_types.h"
 
 namespace autofill {
 

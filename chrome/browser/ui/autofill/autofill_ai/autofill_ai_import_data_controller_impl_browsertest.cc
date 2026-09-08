@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"

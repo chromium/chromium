@@ -58,6 +58,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/blob/scoped_file.h"
 #include "storage/common/file_system/file_system_util.h"
 

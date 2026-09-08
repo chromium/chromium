@@ -23,6 +23,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_login_pref_names.h"

@@ -26,6 +26,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTestPropertyKey, -1)

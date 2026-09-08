@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/common/result_codes.h"
 #include "ui/base/resource/resource_bundle.h"
 

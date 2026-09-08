@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/content/common/translate.mojom.h"

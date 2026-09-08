@@ -13,6 +13,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"

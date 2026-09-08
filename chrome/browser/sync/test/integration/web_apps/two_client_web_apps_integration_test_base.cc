@@ -17,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/multi_user/multi_user_window_manager.h"

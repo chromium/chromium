@@ -7,6 +7,8 @@
 #include "base/check_op.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 

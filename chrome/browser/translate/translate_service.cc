@@ -24,6 +24,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/url_constants.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 

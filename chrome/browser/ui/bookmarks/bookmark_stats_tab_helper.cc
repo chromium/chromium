@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "ui/base/window_open_disposition.h"
 
 BookmarkStatsTabHelper::~BookmarkStatsTabHelper() = default;
 

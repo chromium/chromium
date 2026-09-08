@@ -13,6 +13,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 using content::OpenURLParams;
 using sessions_helper::GetLocalSession;

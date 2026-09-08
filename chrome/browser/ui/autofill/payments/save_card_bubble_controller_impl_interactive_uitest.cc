@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
@@ -9,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/widget_test.h"
 
 namespace autofill {

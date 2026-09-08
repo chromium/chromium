@@ -18,6 +18,8 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 

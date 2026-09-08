@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "components/tab_groups/tab_group_id.h"
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,

@@ -9,7 +9,6 @@
 #include "base/test/run_until.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/confirm_quit.h"
 #include "chrome/test/base/in_process_browser_test.h"

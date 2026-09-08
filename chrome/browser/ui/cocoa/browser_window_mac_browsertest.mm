@@ -27,6 +27,7 @@
 #include "testing/gtest_mac.h"
 #include "ui/accessibility/accessibility_switches.h"
 #import "ui/base/cocoa/window_size_constants.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/test/ns_ax_tree_validator.h"
 
 // Test harness for Mac-specific behaviors of BrowserWindow.

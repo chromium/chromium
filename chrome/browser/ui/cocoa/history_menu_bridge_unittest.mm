@@ -30,6 +30,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"

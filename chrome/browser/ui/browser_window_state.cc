@@ -24,6 +24,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sessions/core/session_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace chrome {

@@ -30,8 +30,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/url_constants.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 @interface WindowAppleScript ()
 

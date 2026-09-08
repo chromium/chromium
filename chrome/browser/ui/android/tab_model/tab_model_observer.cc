@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
+#include "components/tab_groups/tab_group_id.h"
 
 TabModelObserver::TabModelObserver() = default;
 

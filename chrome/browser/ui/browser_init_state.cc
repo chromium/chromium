@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 DEFINE_USER_DATA(BrowserInitState);

@@ -17,6 +17,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace sync_sessions {

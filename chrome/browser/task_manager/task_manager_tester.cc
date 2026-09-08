@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sessions/core/session_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/table_model_observer.h"
 

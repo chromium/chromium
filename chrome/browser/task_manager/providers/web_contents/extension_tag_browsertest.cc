@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/test_image_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skia_util.h"

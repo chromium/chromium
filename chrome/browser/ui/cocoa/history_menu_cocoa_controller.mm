@@ -21,6 +21,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
 using content::OpenURLParams;

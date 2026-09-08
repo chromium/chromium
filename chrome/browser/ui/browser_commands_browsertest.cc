@@ -13,7 +13,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -49,6 +48,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 
 namespace chrome {

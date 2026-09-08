@@ -21,11 +21,13 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 

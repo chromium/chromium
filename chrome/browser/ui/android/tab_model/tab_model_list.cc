@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/window_open_disposition.h"
 
 AndroidLiveTabContext::AndroidLiveTabContext(TabModel* tab_model)
     : tab_model_(tab_model) {}

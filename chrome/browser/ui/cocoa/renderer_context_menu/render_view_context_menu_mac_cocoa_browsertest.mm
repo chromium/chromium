@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/apple/foundation_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
 #include "chrome/browser/ui/extensions/application_launch.h"

@@ -18,6 +18,8 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 #include "ui/base/base_window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 

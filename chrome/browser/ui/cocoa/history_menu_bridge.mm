@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"

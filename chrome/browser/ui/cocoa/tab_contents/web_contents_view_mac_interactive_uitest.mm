@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #import "testing/gtest_mac.h"
+#include "ui/base/page_transition_types.h"
 
 using WebContentsViewMacInteractiveTest = InProcessBrowserTest;
 

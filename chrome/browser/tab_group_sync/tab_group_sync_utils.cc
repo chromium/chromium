@@ -11,6 +11,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/common/constants.h"
 #include "net/http/http_request_headers.h"
+#include "ui/base/page_transition_types.h"
 
 namespace tab_groups {
 

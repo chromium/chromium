@@ -53,6 +53,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/window_open_disposition.h"
 
 using base::Bucket;
 using testing::ElementsAre;

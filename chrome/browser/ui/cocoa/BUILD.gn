@@ -264,6 +264,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill:test_support",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/cocoa/test:test_support",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/tab_contents",

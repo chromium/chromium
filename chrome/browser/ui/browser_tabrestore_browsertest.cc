@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/window_open_disposition.h"
 
 typedef InProcessBrowserTest BrowserTabRestoreTest;
 

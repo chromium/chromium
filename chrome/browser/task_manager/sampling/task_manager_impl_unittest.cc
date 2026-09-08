@@ -13,6 +13,7 @@
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

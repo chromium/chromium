@@ -6,13 +6,13 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 // The URL for when the user clicks "Learn more" on the mixed scripting page

@@ -7,10 +7,8 @@
 #import "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -18,6 +16,7 @@
 #include "net/base/apple/url_conversions.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 
 // Mock sharing service for sensing shared items.

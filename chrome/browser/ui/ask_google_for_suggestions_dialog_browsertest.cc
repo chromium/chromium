@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "chrome/browser/renderer_context_menu/spelling_bubble_model.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/confirm_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

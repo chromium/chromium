@@ -37,6 +37,7 @@
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/search/ntp_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/navigation_controller.h"

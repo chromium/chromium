@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "ui/base/page_transition_types.h"
 
 namespace sync_pb {
 

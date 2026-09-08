@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/timer/mock_timer.h"
+#include "components/sessions/core/session_id.h"
 
 namespace task_manager {
 

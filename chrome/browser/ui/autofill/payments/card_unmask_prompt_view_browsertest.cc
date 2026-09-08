@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"

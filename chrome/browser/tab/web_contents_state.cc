@@ -34,6 +34,7 @@
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/jni_zero/common_apis.h"
+#include "ui/base/page_transition_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/WebContentsState_jni.h"

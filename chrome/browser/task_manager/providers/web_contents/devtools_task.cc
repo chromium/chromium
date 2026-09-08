@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/devtools_task.h"
 
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
 namespace task_manager {

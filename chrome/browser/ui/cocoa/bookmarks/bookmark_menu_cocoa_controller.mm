@@ -30,6 +30,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #import "ui/menus/cocoa/menu_controller.h"
 

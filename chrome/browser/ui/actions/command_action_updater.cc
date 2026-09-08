@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "ui/actions/actions.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace chrome {
 namespace {
