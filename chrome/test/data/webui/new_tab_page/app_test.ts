@@ -29,7 +29,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertCenterAligned, assertEffectiveBorderRadiiCloseTo, assertNotStyle, assertStyle, createBackgroundImage, createFuseboxAction, createTheme, getCenter, getEffectiveBorderRadii, getTextCenter, installMock, queryShadowPath} from './test_support.js';
+import {assertCenterAligned, assertEffectiveBorderRadiiCloseTo, assertNotStyle, assertStyle, createBackgroundImage, createTheme, getCenter, getEffectiveBorderRadii, getTextCenter, installMock, queryShadowPath} from './test_support.js';
 
 const VOICE_ACTIONS_METRIC = 'NewTabPage.VoiceActions';
 
@@ -3080,10 +3080,15 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kFavicon,
               primaryText: {text: 'TabContext', a11yText: null},
               secondaryText: {text: 'tab-subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
+              fuseboxAction: {
                 preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
-              }),
+                queryActionOverride: null,
+                preselectedInputSource: null,
+                searchboxOverride: null,
+                searchboxTutorial: null,
+              },
             },
             tab: fakeTab,
           },
@@ -3093,10 +3098,15 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kBanana,
               primaryText: {text: 'Nano Banana', a11yText: null},
               secondaryText: {text: 'image-subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
+              fuseboxAction: {
                 preselectedTool: ToolMode.kImageGen,
+                preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
-              }),
+                queryActionOverride: null,
+                preselectedInputSource: null,
+                searchboxOverride: null,
+                searchboxTutorial: null,
+              },
             },
             tab: null,
           },
@@ -3106,10 +3116,15 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kGlobeWithSearchLoop,
               primaryText: {text: 'DeepSearch', a11yText: null},
               secondaryText: {text: 'ds-subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
+              fuseboxAction: {
                 preselectedTool: ToolMode.kDeepSearch,
+                preferredInventory: null,
                 preselectedModel: ModelMode.kUnspecified,
-              }),
+                queryActionOverride: null,
+                preselectedInputSource: null,
+                searchboxOverride: null,
+                searchboxTutorial: null,
+              },
             },
             tab: null,
           },
@@ -3175,14 +3190,15 @@ suite('NewTabPageAppTest', () => {
             let setInputTextCallCount = 0;
             searchbox.setInputText = () => setInputTextCallCount++;
 
-            const action: FuseboxAction = createFuseboxAction({
+            const action: FuseboxAction = {
               preselectedTool: ToolMode.kDeepSearch,
               preferredInventory: SuggestInventory.kBrainstorm,
               preselectedModel: ModelMode.kGeminiPro,
               queryActionOverride: QueryActionOverride.kPaste,
               preselectedInputSource: InputSource.kInputSourceGallery,
               searchboxOverride: SearchboxOverride.kComposebox,
-            });
+              searchboxTutorial: null,
+            };
             const firstRequest: ActionChipClickDetail = {
               suggestion: 'paste suggestion',
               files: [{
@@ -3233,10 +3249,15 @@ suite('NewTabPageAppTest', () => {
             const secondRequest: ActionChipClickDetail = {
               suggestion: 'second suggestion',
               files: [],
-              fuseboxAction: createFuseboxAction({
+              fuseboxAction: {
+                preselectedTool: null,
+                preferredInventory: null,
+                preselectedModel: null,
                 queryActionOverride: QueryActionOverride.kPaste,
+                preselectedInputSource: null,
                 searchboxOverride: SearchboxOverride.kComposebox,
-              }),
+                searchboxTutorial: null,
+              },
             };
             actionChips.dispatchEvent(new CustomEvent('action-chip-click', {
               detail: secondRequest,
@@ -3261,10 +3282,15 @@ suite('NewTabPageAppTest', () => {
         detail: {
           suggestion: 'initial suggestion',
           files: [],
-          fuseboxAction: createFuseboxAction({
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
             queryActionOverride: QueryActionOverride.kPaste,
+            preselectedInputSource: null,
             searchboxOverride: SearchboxOverride.kComposebox,
-          }),
+            searchboxTutorial: null,
+          },
         },
       }));
       await microtasksFinished();
@@ -3280,10 +3306,15 @@ suite('NewTabPageAppTest', () => {
         detail: {
           suggestion: 'hint suggestion',
           files: [],
-          fuseboxAction: createFuseboxAction({
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
             queryActionOverride: QueryActionOverride.kHint,
+            preselectedInputSource: null,
             searchboxOverride: SearchboxOverride.kComposebox,
-          }),
+            searchboxTutorial: null,
+          },
         },
       }));
       await microtasksFinished();
@@ -3327,10 +3358,15 @@ suite('NewTabPageAppTest', () => {
             detail: {
               suggestion: 'hint suggestion',
               files: [],
-              fuseboxAction: createFuseboxAction({
+              fuseboxAction: {
+                preselectedTool: null,
+                preferredInventory: null,
+                preselectedModel: null,
                 queryActionOverride: QueryActionOverride.kHint,
+                preselectedInputSource: null,
                 searchboxOverride: SearchboxOverride.kComposebox,
-              }),
+                searchboxTutorial: null,
+              },
             },
           }));
           await microtasksFinished();
@@ -3356,10 +3392,15 @@ suite('NewTabPageAppTest', () => {
         return Promise.resolve();
       };
 
-      const fuseboxAction: FuseboxAction = createFuseboxAction({
+      const fuseboxAction: FuseboxAction = {
+        preselectedTool: null,
+        preferredInventory: null,
+        preselectedModel: null,
+        queryActionOverride: null,
         preselectedInputSource: InputSource.kInputSourceTabPicker,
         searchboxOverride: SearchboxOverride.kRealbox,
-      });
+        searchboxTutorial: null,
+      };
 
       actionChips.dispatchEvent(new CustomEvent('action-chip-click', {
         detail: {
@@ -3485,10 +3526,15 @@ suite('NewTabPageAppTest', () => {
               typeIcon: IconType.kSubArrowRight,
               primaryText: {text: 'Model test', a11yText: null},
               secondaryText: {text: 'subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
+              fuseboxAction: {
                 preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
                 preselectedModel: ModelMode.kGeminiPro,
-              }),
+                queryActionOverride: null,
+                preselectedInputSource: null,
+                searchboxOverride: null,
+                searchboxTutorial: null,
+              },
             },
             tab: null,
           }]);
@@ -3529,13 +3575,15 @@ suite('NewTabPageAppTest', () => {
             const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
             let setInputTextCallCount = 0;
             searchbox.setInputText = () => setInputTextCallCount++;
-            const action: FuseboxAction = createFuseboxAction({
+            const action: FuseboxAction = {
               preselectedTool: ToolMode.kDeepSearch,
               preferredInventory: SuggestInventory.kBrainstorm,
               preselectedModel: ModelMode.kGeminiPro,
               queryActionOverride: QueryActionOverride.kHint,
+              preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kComposebox,
-            });
+              searchboxTutorial: null,
+            };
 
             // Act.
             const actionChips = $$(app, 'ntp-action-chips')!;
@@ -3586,15 +3634,27 @@ suite('NewTabPageAppTest', () => {
           {caseName: 'action missing', fuseboxAction: undefined},
           {
             caseName: 'query action override missing',
-            fuseboxAction: createFuseboxAction({
+            fuseboxAction: {
+              preselectedTool: null,
+              preferredInventory: null,
+              preselectedModel: null,
+              queryActionOverride: null,
+              preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kComposebox,
-            }),
+              searchboxTutorial: null,
+            },
           },
           {
             caseName: 'searchbox override missing',
-            fuseboxAction: createFuseboxAction({
+            fuseboxAction: {
+              preselectedTool: null,
+              preferredInventory: null,
+              preselectedModel: null,
               queryActionOverride: QueryActionOverride.kPaste,
-            }),
+              preselectedInputSource: null,
+              searchboxOverride: null,
+              searchboxTutorial: null,
+            },
           },
         ];
     missingOverrideCases.forEach(
@@ -3667,10 +3727,15 @@ suite('NewTabPageAppTest', () => {
           detail: {
             suggestion: 'unsupported suggestion',
             files: [],
-            fuseboxAction: createFuseboxAction({
+            fuseboxAction: {
+              preselectedTool: null,
+              preferredInventory: null,
+              preselectedModel: null,
               queryActionOverride: QueryActionOverride.kPaste,
+              preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kUnspecified,
-            }),
+              searchboxTutorial: null,
+            },
           },
         }));
         await microtasksFinished();
@@ -3714,10 +3779,15 @@ suite('NewTabPageAppTest', () => {
               detail: {
                 suggestion: 'stale suggestion',
                 files: [],
-                fuseboxAction: createFuseboxAction({
+                fuseboxAction: {
+                  preselectedTool: null,
+                  preferredInventory: null,
+                  preselectedModel: null,
                   queryActionOverride: QueryActionOverride.kPaste,
+                  preselectedInputSource: null,
                   searchboxOverride: SearchboxOverride.kComposebox,
-                }),
+                  searchboxTutorial: null,
+                },
               },
             }));
             await microtasksFinished();

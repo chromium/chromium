@@ -18,8 +18,6 @@ import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searc
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createFuseboxAction} from './test_support.js';
-
 enum Attributes {
   SELECTED = 'selected',
 }
@@ -1350,10 +1348,15 @@ suite('SearchboxTest', () => {
 
         assertFalse(realbox.shareTabsFlyoutOpen);
 
-        await realbox.handleFuseboxAction(createFuseboxAction({
+        await realbox.handleFuseboxAction({
+          preselectedTool: null,
+          preferredInventory: null,
+          preselectedModel: null,
+          queryActionOverride: null,
           preselectedInputSource: InputSource.kInputSourceTabPicker,
           searchboxOverride: SearchboxOverride.kRealbox,
-        }));
+          searchboxTutorial: null,
+        });
         await microtasksFinished();
 
         assertTrue(realbox.shareTabsFlyoutOpen);
