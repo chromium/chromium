@@ -100,6 +100,71 @@ class ProfileMetrics {
     NUM_PROFILE_AUTH_METRICS
   };
 
+  // This enum is used for histograms. Do not change existing values. Append new
+  // values at the end.
+  enum ProfileAvatar {
+    AVATAR_GENERIC = 0,  // The names for avatar icons
+    AVATAR_GENERIC_AQUA = 1,
+    AVATAR_GENERIC_BLUE = 2,
+    AVATAR_GENERIC_GREEN = 3,
+    AVATAR_GENERIC_ORANGE = 4,
+    AVATAR_GENERIC_PURPLE = 5,
+    AVATAR_GENERIC_RED = 6,
+    AVATAR_GENERIC_YELLOW = 7,
+    AVATAR_SECRET_AGENT = 8,
+    AVATAR_SUPERHERO = 9,
+    AVATAR_VOLLEYBALL = 10,
+    AVATAR_BUSINESSMAN = 11,
+    AVATAR_NINJA = 12,
+    AVATAR_ALIEN = 13,
+    AVATAR_AWESOME = 14,
+    AVATAR_FLOWER = 15,
+    AVATAR_PIZZA = 16,
+    AVATAR_SOCCER = 17,
+    AVATAR_BURGER = 18,
+    AVATAR_CAT = 19,
+    AVATAR_CUPCAKE = 20,
+    AVATAR_DOG = 21,
+    AVATAR_HORSE = 22,
+    AVATAR_MARGARITA = 23,
+    AVATAR_NOTE = 24,
+    AVATAR_SUN_CLOUD = 25,
+    AVATAR_PLACEHOLDER = 26,
+    AVATAR_UNKNOWN = 27,
+    AVATAR_GAIA = 28,
+    // Modern avatars:
+    AVATAR_ORIGAMI_CAT = 29,
+    AVATAR_ORIGAMI_CORGI = 30,
+    AVATAR_ORIGAMI_DRAGON = 31,
+    AVATAR_ORIGAMI_ELEPHANT = 32,
+    AVATAR_ORIGAMI_FOX = 33,
+    AVATAR_ORIGAMI_MONKEY = 34,
+    AVATAR_ORIGAMI_PANDA = 35,
+    AVATAR_ORIGAMI_PENGUIN = 36,
+    AVATAR_ORIGAMI_PINKBUTTERFLY = 37,
+    AVATAR_ORIGAMI_RABBIT = 38,
+    AVATAR_ORIGAMI_UNICORN = 39,
+    AVATAR_ILLUSTRATION_BASKETBALL = 40,
+    AVATAR_ILLUSTRATION_BIKE = 41,
+    AVATAR_ILLUSTRATION_BIRD = 42,
+    AVATAR_ILLUSTRATION_CHEESE = 43,
+    AVATAR_ILLUSTRATION_FOOTBALL = 44,
+    AVATAR_ILLUSTRATION_RAMEN = 45,
+    AVATAR_ILLUSTRATION_SUNGLASSES = 46,
+    AVATAR_ILLUSTRATION_SUSHI = 47,
+    AVATAR_ILLUSTRATION_TAMAGOTCHI = 48,
+    AVATAR_ILLUSTRATION_VINYL = 49,
+    AVATAR_ABSTRACT_AVOCADO = 50,
+    AVATAR_ABSTRACT_CAPPUCCINO = 51,
+    AVATAR_ABSTRACT_ICECREAM = 52,
+    AVATAR_ABSTRACT_ICEWATER = 53,
+    AVATAR_ABSTRACT_MELON = 54,
+    AVATAR_ABSTRACT_ONIGIRI = 55,
+    AVATAR_ABSTRACT_PIZZA = 56,
+    AVATAR_ABSTRACT_SANDWICH = 57,
+    NUM_PROFILE_AVATAR_METRICS
+  };
+
   // Returns whether profile `entry` is considered active for metrics. "Active"
   // is dependent on the `activity_threshold` duration, defaulted to 28 days.
   static bool IsProfileActive(
@@ -111,6 +176,7 @@ class ProfileMetrics {
   static void LogProfileAddNewUser(ProfileAdd metric);
   static void LogProfileAddSignInFlowOutcome(
       ProfileSignedInFlowOutcome outcome);
+  static void LogProfileAvatarOnLoad(size_t icon_index);
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileLaunch(Profile* profile);

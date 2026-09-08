@@ -318,3 +318,22 @@ TEST(ProfileMetrics, ThresholdTest) {
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST(ProfileMetricsTest, LogProfileAvatar) {
+  base::HistogramTester histogram_tester;
+
+  ProfileMetrics::LogProfileAvatarOnLoad(
+      /*icon_index=*/ProfileMetrics::AVATAR_GENERIC);
+  histogram_tester.ExpectUniqueSample("Profile.AvatarOnLoad",
+                                      ProfileMetrics::AVATAR_GENERIC, 1);
+
+  ProfileMetrics::LogProfileAvatarOnLoad(/*icon_index=*/SIZE_MAX);
+  histogram_tester.ExpectBucketCount("Profile.AvatarOnLoad",
+                                     ProfileMetrics::AVATAR_GAIA, 1);
+  histogram_tester.ExpectTotalCount("Profile.AvatarOnLoad", 2);
+
+  ProfileMetrics::LogProfileAvatarSelection(
+      /*icon_index=*/ProfileMetrics::AVATAR_GENERIC_AQUA);
+  histogram_tester.ExpectUniqueSample("Profile.Avatar",
+                                      ProfileMetrics::AVATAR_GENERIC_AQUA, 1);
+}

@@ -62,6 +62,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -1651,6 +1652,17 @@ void ProfileManager::DoFinalInitLogging(Profile* profile) {
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInitLogging");
   base::UmaHistogramCounts100("Profile.NumberOfProfilesAtProfileInit",
                               GetNumberOfProfiles());
+
+  if (profile->IsRegularProfile()) {
+    ProfileAttributesEntry* entry =
+        GetProfileAttributesStorage().GetProfileAttributesWithPath(
+            profile->GetPath());
+    if (entry) {
+      size_t icon_index =
+          entry->IsUsingGAIAPicture() ? SIZE_MAX : entry->GetAvatarIconIndex();
+      ProfileMetrics::LogProfileAvatarOnLoad(icon_index);
+    }
+  }
 
   // Skip the rest of this function in tests as the extension service might be
   // uninitialized.
