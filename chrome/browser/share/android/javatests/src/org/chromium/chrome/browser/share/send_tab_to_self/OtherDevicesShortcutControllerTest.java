@@ -160,6 +160,89 @@ public class OtherDevicesShortcutControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_MULTI_TAB_SHARE)
+    public void handleShareTargetIntent_MultipleUrls() {
+        List<TargetDeviceInfo> devices = new ArrayList<>();
+        devices.add(
+                new TargetDeviceInfo(
+                        "Device 1", DEVICE_GUID_1, FormFactor.PHONE, OsType.ANDROID, "Just now"));
+        when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
+
+        // Instantiate controller to populate shortcuts in ShortcutManager.
+        OtherDevicesShortcutController controller = new OtherDevicesShortcutController(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        String url1 = "https://example1.com";
+        String url2 = "https://example2.com";
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, url1 + " " + url2, TITLE);
+
+        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(DEVICE_GUID_1),
+                        eq(url1),
+                        eq(""),
+                        any(),
+                        eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(DEVICE_GUID_1),
+                        eq(url2),
+                        eq(""),
+                        any(),
+                        eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_MULTI_TAB_SHARE)
+    public void handleShareTargetIntent_MultipleUrls_FeatureDisabled() {
+        List<TargetDeviceInfo> devices = new ArrayList<>();
+        devices.add(
+                new TargetDeviceInfo(
+                        "Device 1", DEVICE_GUID_1, FormFactor.PHONE, OsType.ANDROID, "Just now"));
+        when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
+
+        // Instantiate controller to populate shortcuts in ShortcutManager.
+        OtherDevicesShortcutController controller = new OtherDevicesShortcutController(mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        String url1 = "https://example1.com";
+        String url2 = "https://example2.com";
+        Intent intent = createShareTargetIntent(SHORTCUT_ID_1, url1 + " " + url2, TITLE);
+
+        OtherDevicesShortcutController.handleShareTargetIntent(activity, intent, mProfile);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // When the feature is disabled, only a single URL is extracted via getUrlFromIntent.
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(null),
+                        eq(DEVICE_GUID_1),
+                        eq(url2),
+                        eq(TITLE),
+                        any(),
+                        eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
+        verify(mNativeMock, never())
+                .sendTabToDevice(
+                        any(),
+                        any(),
+                        any(),
+                        eq(url1),
+                        any(),
+                        any(),
+                        anyInt());
+    }
+
+    @Test
     public void handleShareTargetIntent_RejectUnknownDevice() {
         List<TargetDeviceInfo> devices = new ArrayList<>();
         // No devices synced.

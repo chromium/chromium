@@ -162,11 +162,20 @@ public class OtherDevicesShortcutController implements Destroyable {
 
         Context appContext = activity.getApplicationContext();
 
-        String url = IntentHandler.getUrlFromIntent(intent);
-        if (TextUtils.isEmpty(url)) return;
+        List<String> urls;
+        if (ChromeFeatureList.sSendTabToSelfMultiTabShare.isEnabled()) {
+            urls = IntentHandler.getAllUrlsFromShareIntent(intent);
+        } else {
+            String url = IntentHandler.getUrlFromIntent(intent);
+            urls =
+                    TextUtils.isEmpty(url)
+                            ? Collections.emptyList()
+                            : Collections.singletonList(url);
+        }
+        if (urls.isEmpty()) return;
 
-        String title = intent.getStringExtra(Intent.EXTRA_SUBJECT);
-        // Title is allowed to be empty!
+        // Title is allowed to be empty, and only makes sense if there's a single URL.
+        String title = urls.size() == 1 ? intent.getStringExtra(Intent.EXTRA_SUBJECT) : null;
 
         // Accessing the shortcut from ShortcutManager should be done on a background thread.
         sTaskRunner.execute(
@@ -196,14 +205,16 @@ public class OtherDevicesShortcutController implements Destroyable {
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
-                                SendTabToSelfAndroidBridge.sendTabToDevice(
-                                        profile,
-                                        null,
-                                        targetDeviceSyncCacheGuid,
-                                        targetDeviceName,
-                                        url,
-                                        title != null ? title : "",
-                                        ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE);
+                                for (String url : urls) {
+                                    SendTabToSelfAndroidBridge.sendTabToDevice(
+                                            profile,
+                                            null,
+                                            targetDeviceSyncCacheGuid,
+                                            targetDeviceName,
+                                            url,
+                                            title != null ? title : "",
+                                            ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE);
+                                }
                             });
                 });
     }

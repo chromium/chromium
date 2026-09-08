@@ -614,6 +614,22 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAllUrlsFromShareIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        Assert.assertTrue(IntentHandler.getAllUrlsFromShareIntent(intent).isEmpty());
+        for (Object[] shareCase : SHARE_INTENT_CASES) {
+            intent.putExtra(Intent.EXTRA_TEXT, (String) shareCase[0]);
+            List<String> urls = IntentHandler.getAllUrlsFromShareIntent(intent);
+            Assert.assertEquals((int) shareCase[2], urls.size());
+            if ((int) shareCase[2] > 0) {
+                Assert.assertEquals((String) shareCase[1], urls.get(urls.size() - 1));
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
     public void testNewIntentInitiatorFromNewTabUrl() {
         int tabId = 1;
         Intent intent = new Intent(Intent.ACTION_VIEW);

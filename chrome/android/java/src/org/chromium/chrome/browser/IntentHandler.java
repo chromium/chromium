@@ -1337,44 +1337,64 @@ public class IntentHandler {
     }
 
     /**
-     * Extract a raw URL from the Share intent text.
+     * Extract all raw URLs from the Share intent text.
      *
-     * <p>This first try to extract raw http/https URLs. In the case of multiple URLs being present,
-     * picks the last one. If no explicit URLs are found, try using autocomplete to resembles the
-     * URL. If not, it will construct a search query with the default search engine.
+     * <p>This first tries to extract raw http/https URLs. If no explicit URLs are found, tries
+     * using autocomplete to convert the text to a URL. If that still fails, constructs a search
+     * query with the default search engine.
      *
      * @param intent Intent to examine.
-     * @return URL from the intent, or null if no URL could be found.
+     * @return List of URLs from the intent, or an empty list if no URL could be found.
      */
-    public static @Nullable String getUrlFromShareIntent(Intent intent) {
+    public static List<String> getAllUrlsFromShareIntent(Intent intent) {
+        List<String> urls = new ArrayList<>();
         if (!Intent.ACTION_SEND.equals(intent.getAction())
                 || !"text/plain".equals(intent.getType())) {
-            return null;
+            return urls;
         }
 
         String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
-        List<String> urls = new ArrayList<>();
         if (!TextUtils.isEmpty(text)) {
             extractStringsWithPrefix(text, UrlConstants.HTTP_URL_PREFIX, urls);
             extractStringsWithPrefix(text, UrlConstants.HTTPS_URL_PREFIX, urls);
         }
 
         if (!urls.isEmpty()) {
-            // If multiple URLs are present, somewhat arbitrarily pick the last one (preferring
-            // https) - share actions seem to usually put the URL at the end.
-            return urls.get(urls.size() - 1);
+            return urls;
         }
 
         if (TextUtils.isEmpty(text)
                 || !BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            return null;
+            return urls;
         }
 
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         AutocompleteMatch match = AutocompleteCoordinator.classify(profile, text);
-        if (match != null) return match.getUrl().getSpec();
+        if (match != null) {
+            urls.add(match.getUrl().getSpec());
+            return urls;
+        }
 
-        return TemplateUrlServiceFactory.getForProfile(profile).getUrlForSearchQuery(text);
+        urls.add(TemplateUrlServiceFactory.getForProfile(profile).getUrlForSearchQuery(text));
+        return urls;
+    }
+
+    /**
+     * Extract a raw URL from the Share intent text.
+     *
+     * <p>Like {@link #getAllUrlsFromShareIntent(Intent)}, but returns a single URL.
+     *
+     * @param intent Intent to examine.
+     * @return URL from the intent, or null if no URL could be found.
+     */
+    public static @Nullable String getUrlFromShareIntent(Intent intent) {
+        List<String> urls = getAllUrlsFromShareIntent(intent);
+        if (urls.isEmpty()) {
+            return null;
+        }
+        // If multiple URLs are present, somewhat arbitrarily pick the last one (preferring
+        // https) - share actions seem to usually put the URL at the end.
+        return urls.get(urls.size() - 1);
     }
 
     private static @Nullable String getUrlForWebapp(@Nullable Intent intent) {
