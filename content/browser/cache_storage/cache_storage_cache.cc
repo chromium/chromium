@@ -2172,9 +2172,10 @@ void CacheStorageCache::PaddingDidQueryCache(
   int64_t cache_padding = 0;
   if (error == CacheStorageError::kSuccess) {
     for (const auto& result : *query_cache_results) {
-      CHECK(!ShouldPadResourceSize(*result.response) ||
-                (result.padding + result.side_data_padding),
-            base::NotFatalUntil::M158);
+      // TODO(crbug.com/558067535): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!ShouldPadResourceSize(*result.response) ||
+             (result.padding + result.side_data_padding));
       cache_padding += result.padding + result.side_data_padding;
     }
   }
