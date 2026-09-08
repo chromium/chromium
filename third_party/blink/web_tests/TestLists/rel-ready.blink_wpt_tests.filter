@@ -197,7 +197,6 @@ external/wpt/subapps
 external/wpt/subresource-integrity
 external/wpt/svg
 external/wpt/timing-entrytypes-registry
-external/wpt/top-level-storage-access-api
 external/wpt/touch-events
 external/wpt/trust-tokens
 external/wpt/trusted-types
