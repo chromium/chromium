@@ -532,6 +532,10 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   auto sent_object_request = query_controller.sent_full_image_objects_request();
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
+  ASSERT_TRUE(
+      sent_object_request.request_context().request_id().has_chrome_tab_data());
+  ASSERT_TRUE(
+      sent_object_request.request_context().request_id().is_implicit_upload());
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_EQ(sent_object_request.request_context()
@@ -2245,11 +2249,23 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // The full image and page content requests should have the same request id.
   ASSERT_EQ(query_controller.sent_full_image_request_id().sequence_id(), 1);
+  ASSERT_TRUE(
+      query_controller.sent_full_image_request_id().has_chrome_tab_data());
+  ASSERT_TRUE(
+      query_controller.sent_full_image_request_id().is_implicit_upload());
   ASSERT_EQ(query_controller.sent_page_content_objects_request()
                 .request_context()
                 .request_id()
                 .sequence_id(),
             1);
+  ASSERT_TRUE(query_controller.sent_page_content_objects_request()
+                  .request_context()
+                  .request_id()
+                  .has_chrome_tab_data());
+  ASSERT_TRUE(query_controller.sent_page_content_objects_request()
+                  .request_context()
+                  .request_id()
+                  .is_implicit_upload());
 
   // Send a new page content update request.
   query_controller.SendUpdatedPageContent(
@@ -3127,6 +3143,12 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(
       initial_sent_object_request.request_context().request_id().sequence_id(),
       1);
+  ASSERT_TRUE(initial_sent_object_request.request_context()
+                  .request_id()
+                  .has_chrome_tab_data());
+  ASSERT_TRUE(initial_sent_object_request.request_context()
+                  .request_id()
+                  .is_implicit_upload());
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kFullPageObjectsRequestFetchLatency),
             1);
@@ -3147,6 +3169,12 @@ TEST_F(LensOverlayQueryControllerTest,
                 .request_id()
                 .sequence_id(),
             2);
+  ASSERT_TRUE(initial_sent_interaction_request.request_context()
+                  .request_id()
+                  .has_chrome_tab_data());
+  ASSERT_TRUE(initial_sent_interaction_request.request_context()
+                  .request_id()
+                  .is_implicit_upload());
   std::string interaction_analytics_id =
       GetAnalyticsIdFromUrl(url_response_future.Get().url());
   ASSERT_NE(interaction_analytics_id,
@@ -3301,6 +3329,10 @@ TEST_F(LensOverlayQueryControllerTest, GetVsridForNewTab) {
   ASSERT_EQ(request_id.image_sequence_id(),
             new_tab_request_id.image_sequence_id());
   ASSERT_NE(request_id.analytics_id(), new_tab_request_id.analytics_id());
+  ASSERT_TRUE(request_id.has_chrome_tab_data());
+  ASSERT_TRUE(request_id.is_implicit_upload());
+  ASSERT_TRUE(new_tab_request_id.has_chrome_tab_data());
+  ASSERT_TRUE(new_tab_request_id.is_implicit_upload());
 
   // Check that sending a new task completion event still has the original
   // analytics id.
