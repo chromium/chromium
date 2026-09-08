@@ -633,6 +633,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
       features::kLazyKeyedServiceInstantiationExtensions.Get()) {
     guest_otr_active_services.erase("SafeBrowsingPrivateEventRouter");
   }
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+    guest_otr_active_services.erase("ReadAnythingServiceFactory");
+  }
   TestKeyedProfileServicesActives(guest_otr_profile, guest_otr_active_services);
 }
 
@@ -1060,6 +1064,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationSafeBrowsing.Get()) {
     guest_active_services.erase("SafeBrowsingTailoredSecurityService");
+  }
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+    guest_active_services.erase("LoginUIServiceFactory");
   }
   TestKeyedProfileServicesActives(guest_parent_profile, guest_active_services);
 }

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
+#include "chrome/common/chrome_features.h"
 
 // static
 ReadAnythingService* ReadAnythingServiceFactory::GetForBrowserContext(
@@ -33,6 +34,11 @@ ReadAnythingServiceFactory::ReadAnythingServiceFactory()
 }
 
 bool ReadAnythingServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+    return false;
+  }
   return true;
 }
 

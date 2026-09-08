@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/common/chrome_features.h"
 
 LoginUIServiceFactory::LoginUIServiceFactory()
     : ProfileKeyedServiceFactory(
@@ -41,5 +42,10 @@ LoginUIServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool LoginUIServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+    return false;
+  }
   return true;
 }

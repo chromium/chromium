@@ -1444,6 +1444,12 @@ BASE_FEATURE_PARAM(bool,
                    &kLazyKeyedServiceInstantiation,
                    true);
 
+// When enabled, commerce and browser UI keyed services are instantiated lazily.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationCommerceAndUI,
+                   &kLazyKeyedServiceInstantiation,
+                   true);
+
 // When enabled, Optimization Guide and related keyed services are instantiated
 // lazily.
 BASE_FEATURE_PARAM(bool,

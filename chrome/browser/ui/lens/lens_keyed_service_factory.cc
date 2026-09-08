@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_keyed_service_factory.h"
 
+#include "chrome/common/chrome_features.h"
+
 // static
 LensKeyedService* LensKeyedServiceFactory::GetForProfile(
     Profile* profile,
@@ -34,5 +36,10 @@ LensKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
 LensKeyedServiceFactory::~LensKeyedServiceFactory() = default;
 
 bool LensKeyedServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationCommerceAndUI.Get()) {
+    return false;
+  }
   return true;
 }
