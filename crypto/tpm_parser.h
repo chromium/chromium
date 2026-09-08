@@ -30,6 +30,7 @@ using enum TpmAlgPublic;
 using enum TpmAlgSigScheme;
 using enum TpmCc;
 using enum TpmConstant;
+using enum TpmEccCurve;
 using enum TpmRh;
 using enum TpmSt;
 

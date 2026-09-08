@@ -40,7 +40,7 @@ void WriteTpm2b(base::SpanWriter<uint8_t>& writer,
 // See TCG TPM 2.0 Library Specification, Part 2: Structures
 // (https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf).
 std::vector<uint8_t> CreateTpm2bAttestationStatement(
-    const UnexportableSigningKey& signing_key,
+    base::span<const uint8_t> subject_key,
     base::span<const uint8_t> challenge) {
   // TPM_ALG_SHA256 + hash
   static constexpr size_t kNameBufSize = 2 + hash::kSha256Size;
@@ -83,7 +83,7 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
   std::array<uint8_t, kNameBufSize> name_buf;
   base::SpanWriter<uint8_t> name_writer(name_buf);
   name_writer.WriteEnumBigEndian(tpm::TPM_ALG_SHA256);
-  name_writer.Write(hash::Sha256(signing_key.GetSubjectPublicKeyInfo()));
+  name_writer.Write(hash::Sha256(subject_key));
   CHECK_EQ(name_writer.remaining(), 0u);
 
   WriteTpm2b(attest_writer, name_buf);
@@ -93,6 +93,67 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
 
   CHECK_EQ(attest_writer.remaining(), 0u);
   return attestation_statement;
+}
+
+// Constructs a TPM 2.0 TPMT_PUBLIC structure for the given public key.
+// See TCG TPM 2.0 Library Specification, Part 2: Structures, Section 12.2.4
+// (https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=197).
+std::vector<uint8_t> CreateTpmtPublic(const keypair::PublicKey& public_key) {
+  static constexpr uint32_t kObjectAttributes = 0x00040072;
+
+  if (public_key.IsEcP256()) {
+    std::vector<uint8_t> ec_point = public_key.ToUncompressedX962Point();
+    CHECK_EQ(ec_point.size(), 65u);
+    auto [x, y] = base::span(ec_point).subspan<1, 64>().split_at<32>();
+
+    constexpr size_t kEccTpmtPublicSize =
+        2 + 2 + 4 + 2 + 2 + 2 + 2 + 2 + (2 + 32) + (2 + 32);
+    std::vector<uint8_t> tpmt_public(kEccTpmtPublicSize);
+    base::SpanWriter<uint8_t> writer(tpmt_public);
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_ECC);
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_SHA256);
+    writer.WriteU32BigEndian(kObjectAttributes);
+    writer.WriteU16BigEndian(0u);  // authPolicy size (empty)
+
+    // TPMS_ECC_PARMS
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_NULL);  // symmetric
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_NULL);  // scheme
+    writer.WriteEnumBigEndian(tpm::TPM_ECC_NIST_P256);
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_NULL);  // kdf
+
+    // TPMS_ECC_POINT (unique)
+    WriteTpm2b(writer, x);
+    WriteTpm2b(writer, y);
+    CHECK_EQ(writer.remaining(), 0u);
+    return tpmt_public;
+  }
+
+  if (public_key.IsRsa()) {
+    std::vector<uint8_t> modulus = public_key.GetRsaModulus();
+    CHECK_EQ(modulus.size(), 256u);
+
+    constexpr size_t kRsaTpmtPublicSize =
+        2 + 2 + 4 + 2 + 2 + 2 + 2 + 4 + (2 + 256);
+    std::vector<uint8_t> tpmt_public(kRsaTpmtPublicSize);
+    base::SpanWriter<uint8_t> writer(tpmt_public);
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_RSA);
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_SHA256);
+    writer.WriteU32BigEndian(kObjectAttributes);
+    writer.WriteU16BigEndian(0u);  // authPolicy size (empty)
+
+    // TPMS_RSA_PARMS
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_NULL);  // symmetric
+    writer.WriteEnumBigEndian(tpm::TPM_ALG_NULL);  // scheme
+    writer.WriteU16BigEndian(2048u);               // keyBits
+    writer.WriteU32BigEndian(0u);                  // exponent (default 65537)
+
+    // TPM2B_PUBLIC_KEY_RSA (unique)
+    WriteTpm2b(writer, modulus);
+    CHECK_EQ(writer.remaining(), 0u);
+    return tpmt_public;
+  }
+
+  NOTREACHED();
 }
 
 // Converts a DER-encoded ECDSA signature to a TPM-compatible signature
@@ -252,40 +313,34 @@ class SoftwareAttestationKey
   std::optional<AttestationStatement> CertifySlowly(
       const UnexportableSigningKey& signing_key,
       base::span<const uint8_t> challenge) override {
+    ASSIGN_OR_RETURN(auto public_key,
+                     keypair::PublicKey::FromSubjectPublicKeyInfo(
+                         signing_key.GetSubjectPublicKeyInfo()));
+
+    std::vector<uint8_t> tpmt_public = CreateTpmtPublic(public_key);
     std::vector<uint8_t> attestation_statement =
-        CreateTpm2bAttestationStatement(signing_key, challenge);
+        CreateTpm2bAttestationStatement(tpmt_public, challenge);
 
     const std::vector<uint8_t> der_signature =
         sign::Sign(GetSignatureKind(), key(), attestation_statement);
 
-    switch (GetSignatureKind()) {
-      case sign::ECDSA_SHA256:
-        return AttestationStatement{
-            .format = AttestationStatement::kTpm,
-            .statement = std::move(attestation_statement),
-            .signature = CreateTpmEcdsaSignature(key(), der_signature),
-        };
-      case sign::RSA_PKCS1_SHA256:
-        return AttestationStatement{
-            .format = AttestationStatement::kTpm,
-            .statement = std::move(attestation_statement),
-            .signature = CreateTpmRsaSignature(der_signature),
-        };
-      case sign::RSA_PKCS1_SHA1:
-      case sign::RSA_PKCS1_SHA384:
-      case sign::RSA_PKCS1_SHA512:
-      case sign::RSA_PSS_SHA256:
-      case sign::RSA_PSS_SHA384:
-      case sign::RSA_PSS_SHA512:
-      case sign::ECDSA_SHA1:
-      case sign::ECDSA_SHA384:
-      case sign::ECDSA_SHA512:
-      case sign::ED25519:
-      case sign::MLDSA_44:
-      case sign::MLDSA_65:
-      case sign::MLDSA_87:
-        NOTREACHED();
-    }
+    std::vector<uint8_t> tpm_signature = [&]() {
+      switch (GetSignatureKind()) {
+        case sign::ECDSA_SHA256:
+          return CreateTpmEcdsaSignature(key(), der_signature);
+        case sign::RSA_PKCS1_SHA256:
+          return CreateTpmRsaSignature(der_signature);
+        default:
+          NOTREACHED();
+      }
+    }();
+
+    return AttestationStatement{
+        .format = AttestationStatement::kTpm,
+        .statement = std::move(attestation_statement),
+        .signature = std::move(tpm_signature),
+        .subject_key = std::move(tpmt_public),
+    };
   }
 };
 
