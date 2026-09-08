@@ -26,20 +26,27 @@ message SummarizeLoggingData {
 }
 
 message SummarizeRequest {
+  // The primary text or document content to be summarized.
   string article = 1 [features = { field_presence: EXPLICIT }];
 
+  // Dynamic contextual text provided per execution call.
   string context = 2 [features = { field_presence: EXPLICIT }];
 
+  // Configuration options for the summarization (e.g. type, format, length).
   SummarizeOptions options = 3 [features = { field_presence: EXPLICIT }];
 
+  // Static context provided during session creation, cached across requests.
   string shared_context = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message SummarizeOptions {
+  // Desired type/style of the summary (e.g. key points, teaser, headline).
   SummarizerOutputType output_type = 1 [features = { field_presence: EXPLICIT }];
 
+  // Desired output format (e.g. plain text or markdown).
   SummarizerOutputFormat output_format = 2 [features = { field_presence: EXPLICIT }];
 
+  // Target length of the summary (e.g. short, medium, long).
   SummarizerOutputLength output_length = 3 [features = { field_presence: EXPLICIT }];
 
   // Language to use for the prompt. Caller should only provide a value
@@ -48,6 +55,7 @@ message SummarizeOptions {
 }
 
 message SummarizeResponse {
+  // The generated summary text.
   string output = 1 [features = { field_presence: EXPLICIT }];
 }
 

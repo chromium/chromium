@@ -26,18 +26,24 @@ message ProofreaderApiLoggingData {
 }
 
 message ProofreaderApiRequest {
+  // The primary text to be proofread.
   string text = 1 [features = { field_presence: EXPLICIT }];
 
+  // The fully corrected version of the input text.
   string corrected_text = 3 [features = { field_presence: EXPLICIT }];
 
+  // The specific replacement or correction text.
   string correction = 4 [features = { field_presence: EXPLICIT }];
 
+  // Configuration options for the proofreading request.
   ProofreadOptions options = 2 [features = { field_presence: EXPLICIT }];
 }
 
 message ProofreadOptions {
+  // Whether to include categories/types for each suggested correction.
   bool include_correction_types = 1 [features = { field_presence: EXPLICIT }];
 
+  // Whether to include explanatory text for why a correction is suggested.
   bool include_correction_explanation = 2 [features = { field_presence: EXPLICIT }];
 }
 

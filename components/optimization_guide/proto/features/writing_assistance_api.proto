@@ -28,28 +28,42 @@ message WritingAssistanceApiLoggingData {
 }
 
 message WritingAssistanceApiRequest {
+  // Dynamic contextual text provided per execution call.
   string context = 1 [features = { field_presence: EXPLICIT }];
 
+  // Configuration options for the writing assistance (e.g. tone, format,
+  // length).
   WritingAssistanceApiOptions options = 2 [features = { field_presence: EXPLICIT }];
 
+  // The original text to be rewritten (used by Rewriter API).
   string rewrite_text = 3 [features = { field_presence: EXPLICIT }];
 
+  // Static context provided during session creation, cached across requests.
   string shared_context = 4 [features = { field_presence: EXPLICIT }];
 
+  // Instructions/prompt directing the model on what to write (used by Writer
+  // API).
   string instructions = 5 [features = { field_presence: EXPLICIT }];
 }
 
 message WritingAssistanceApiOptions {
+  // Desired tone of the generated writing (e.g. formal, neutral, casual).
   WritingAssistanceApiOutputTone output_tone = 1 [features = { field_presence: EXPLICIT }];
 
+  // Desired output format (e.g. plain text or markdown).
   WritingAssistanceApiOutputFormat output_format = 2 [features = { field_presence: EXPLICIT }];
 
+  // Target length of the generated output (e.g. short, medium, long).
   WritingAssistanceApiOutputLength output_length = 3 [features = { field_presence: EXPLICIT }];
 
+  // Language to use for the prompt. Caller should only provide a value
+  // configured in the configured
+  // WritingAssistanceApiMetadata::available_prompt_languages.
   string output_language = 4 [features = { field_presence: EXPLICIT }]; // TODO(crbug.com/372099809): Should this be an enum?
 }
 
 message WritingAssistanceApiResponse {
+  // The generated writing or rewritten text.
   string output = 1 [features = { field_presence: EXPLICIT }];
 }
 
