@@ -20,6 +20,9 @@ BeginFrameSourceExtension::~BeginFrameSourceExtension() = default;
 void BeginFrameSourceExtension::SetBeginFrameSourceExtension(
     PlatformWindow* window,
     BeginFrameSourceExtension* source) {
+  // A window has at most one begin frame source; a second registration would
+  // silently orphan the first.
+  DCHECK(!source || !window->GetProperty(kBeginFrameSourceExtensionKey));
   window->SetProperty(kBeginFrameSourceExtensionKey, source);
 }
 

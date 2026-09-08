@@ -145,15 +145,16 @@ class WaylandFrameManager {
 
   static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
 
-  // Requests a bare wl_frame_callback with no buffer commit to maintain
-  // pacing. Returns false if no frame callback can be obtained.
-  [[nodiscard]] bool RequestFrameCallback();
+  // Whether a frame is waiting to be committed, typically for the previous
+  // frame's wl_frame_callback.
+  bool HasFrameWaitingToCommit() const;
 
   // Root surface identifier, used for tracing in the begin frame source.
   uint32_t GetRootSurfaceId() const;
 
  private:
   friend class WaylandFrameManagerTest;
+  friend class BeginFrameSourceWaylandTest;
 
   void CreateBeginFrameSource();
 
@@ -299,16 +300,6 @@ class WaylandFrameManager {
   // suspended state which may be sent a few seconds after the window gets
   // occluded, as is the case in mutter.
   bool should_ack_swap_without_commit_ = false;
-
-  // Frame callback without a buffer commit, used to maintain frame pacing
-  // for the begin frame source when viz has no damage.
-  //
-  // TODO(crbug.com/537421794): Unify with submitted_frames_ so there is a
-  // single source of truth for real and synthetic frame callbacks, and so the
-  // begin frame source can request the next callback unconditionally
-  // after processing the previous frame. (NB: playback should never
-  // be gated on synthetic callbacks.)
-  wl::Object<wl_callback> no_damage_frame_callback_;
 
   std::unique_ptr<BeginFrameSourceWayland> begin_frame_source_;
 

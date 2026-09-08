@@ -44,8 +44,12 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension {
       base::TimeDelta vsync_interval);
 
  private:
+  friend class BeginFrameSourceWaylandTest;
+
   void MaybeIssueBeginFrame();
   void OnBeginFrameAck(bool has_damage);
+  // Starts/stops begin frame production.
+  void UpdateBeginFrameProduction();
   // Starts/stops the frame callback recovery timer based on
   // the current state. Called after every state transition.
   void UpdateFrameCallbackRecoveryTimer();

@@ -12,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
-#include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace ui {
 
@@ -34,8 +33,7 @@ void BeginFrameSourceWayland::Reset() {
   ready_to_issue_begin_frame_ = false;
   last_frame_deadline_time_ = base::TimeTicks();
   last_sent_vsync_interval_ = base::TimeDelta();
-  UpdateFrameCallbackRecoveryTimer();
-  deferred_issue_begin_frame_timer_.Stop();
+  UpdateBeginFrameProduction();
 }
 
 void BeginFrameSourceWayland::SetDelegate(Delegate* delegate) {
@@ -49,20 +47,8 @@ void BeginFrameSourceWayland::SetNeedsBeginFrame(bool needs) {
   if (needs_begin_frame_ == needs) {
     return;
   }
-
   needs_begin_frame_ = needs;
-
-  if (needs_begin_frame_) {
-    // Wayland is usually responsible for setting ready_to_issue_begin_frame_
-    // but a frame callback may not be scheduled when viz first asks for frames.
-    if (!frame_in_flight_) {
-      ready_to_issue_begin_frame_ = true;
-    }
-    MaybeIssueBeginFrame();
-  } else {
-    deferred_issue_begin_frame_timer_.Stop();
-  }
-  UpdateFrameCallbackRecoveryTimer();
+  UpdateBeginFrameProduction();
 }
 
 void BeginFrameSourceWayland::SetPreferredInterval(base::TimeDelta interval) {
@@ -155,18 +141,27 @@ void BeginFrameSourceWayland::OnPresentationFeedback(
     last_sent_vsync_interval_ = vsync_interval_;
     delegate_->OnVSyncIntervalChanged(last_presentation_time_, vsync_interval_);
   }
+
+  // Presentation is authoritative proof that the compositor is ready for a
+  // frame.
+  ready_to_issue_begin_frame_ = true;
+  UpdateFrameCallbackRecoveryTimer();
+  if (!frame_in_flight_) {
+    MaybeIssueBeginFrame();
+  }
 }
 
 void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
   TRACE_EVENT("wayland", "BeginFrameSourceWayland::MaybeIssueBeginFrame",
               "effective_interval_us", GetEffectiveInterval().InMicroseconds(),
               "surface_id", frame_manager_->GetRootSurfaceId());
-  if (!needs_begin_frame_ || !ready_to_issue_begin_frame_ || frame_in_flight_ ||
-      !delegate_) {
+  if (!needs_begin_frame_ || suspended_ || !ready_to_issue_begin_frame_ ||
+      frame_in_flight_ || !delegate_) {
     return;
   }
 
   base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta effective_interval = GetEffectiveInterval();
 
   if (!last_frame_deadline_time_.is_null()) {
     // Wayland sometimes fires multiple frame callbacks within one refresh
@@ -190,7 +185,6 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
     }
   }
 
-  const base::TimeDelta effective_interval = GetEffectiveInterval();
   base::TimeTicks deadline = now + effective_interval;
   // The naive deadline of one interval from now is too far in the
   // future because "now" is some meaningful amount of time after the previous
@@ -198,8 +192,11 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
   // presentation time, we can calculate a deadline aligned to the
   // display's actual vsync/refresh cycle.
   if (!last_presentation_time_.is_null()) {
+    // If an issue lands exactly on a tick, snap forward so it gets the
+    // full interval rather than a deadline of now.
     deadline =
-        now.SnappedToNextTick(last_presentation_time_, effective_interval);
+        (now + base::Microseconds(1))
+            .SnappedToNextTick(last_presentation_time_, effective_interval);
   }
   // Likewise, we can determine the true frame time, which was immediately after
   // the previous frame was shown. This keeps the difference between frame time
@@ -239,35 +236,23 @@ void BeginFrameSourceWayland::OnBeginFrameAck(bool has_damage) {
   }
 
   if (ready_to_issue_begin_frame_) {
-    DVLOG(1) << "OnBeginFrameAck: next frame callback arrived early, "
-                "attempting to issue immediately";
+    TRACE_EVENT_INSTANT("wayland",
+                        "OnBeginFrameAck: callback arrived early, issuing");
     MaybeIssueBeginFrame();
   } else if (has_damage) {
-    DVLOG(2) << "OnBeginFrameAck: has damage, waiting for frame callback";
-  } else if (!ui::UseTestConfigForPlatformWindows()) {
-    // No damage means no buffer commit, so no frame callback will arrive.
-    // Request a bare frame callback from the compositor to maintain pacing.
-    DVLOG(2) << "OnBeginFrameAck: no damage, requesting empty frame callback";
-    if (!frame_manager_->RequestFrameCallback()) {
-      // No frame callback will arrive (e.g. the surface is not mapped)
-      // so drive the next frame synthetically.
-      ready_to_issue_begin_frame_ = true;
-      MaybeIssueBeginFrame();
-    }
-  } else if (!suspended_) {
-    // In test environments (e.g. running under Weston), older compositors
-    // do not complete bare frame callbacks without damage, causing stalls.
-    // In test mode, schedule the next frame at vsync interval instead.
-    // TODO(https://crbug.com/544919883): Uprev weston to a later version
-    // so this workaround is not needed.
-    DVLOG(2) << "OnBeginFrameAck: no damage (test mode), scheduling next frame "
-                "at vsync interval";
-    frame_callback_recovery_timer_.Start(
-        FROM_HERE, GetEffectiveInterval(),
-        base::BindOnce(
-            &BeginFrameSourceWayland::OnFrameCallbackRecoveryTimerFired,
-            weak_factory_.GetWeakPtr()));
-    return;
+    TRACE_EVENT_INSTANT("wayland",
+                        "OnBeginFrameAck: damage, awaiting callback");
+  } else if (frame_manager_->HasFrameWaitingToCommit()) {
+    TRACE_EVENT_INSTANT(
+        "wayland", "OnBeginFrameAck: frame waiting to commit, not issuing");
+  } else {
+    // No damage means no buffer commit, so no frame callback or presentation
+    // feedback will arrive. Issue a frame for the next vsync to maintain
+    // pacing.
+    TRACE_EVENT_INSTANT("wayland",
+                        "OnBeginFrameAck: no damage, scheduling next frame");
+    ready_to_issue_begin_frame_ = true;
+    MaybeIssueBeginFrame();
   }
   UpdateFrameCallbackRecoveryTimer();
 }
@@ -301,6 +286,20 @@ void BeginFrameSourceWayland::OnWindowSuspensionChanged(bool suspended) {
     return;
   }
   suspended_ = suspended;
+  UpdateBeginFrameProduction();
+}
+
+void BeginFrameSourceWayland::UpdateBeginFrameProduction() {
+  if (needs_begin_frame_ && !suspended_) {
+    if (!frame_in_flight_ && !frame_manager_->HasFrameWaitingToCommit()) {
+      // Force the first frame after starting/resuming production since
+      // we won't have any readiness signals yet.
+      ready_to_issue_begin_frame_ = true;
+      MaybeIssueBeginFrame();
+    }
+  } else {
+    deferred_issue_begin_frame_timer_.Stop();
+  }
   UpdateFrameCallbackRecoveryTimer();
 }
 

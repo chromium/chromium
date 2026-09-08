@@ -111,7 +111,13 @@ WaylandFrame::~WaylandFrame() = default;
 WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
                                          WaylandConnection* connection)
     : window_(window), connection_(connection), weak_factory_(this) {
-  if (base::FeatureList::IsEnabled(
+  // The begin frame source paces off wp_presentation feedback, so
+  // older compositors fall back to the delay-based timer.
+  auto* presentation = connection_->presentation();
+  const bool has_presentation_timing =
+      presentation && wp_presentation_get_version(presentation) >= 2;
+  if (has_presentation_timing &&
+      base::FeatureList::IsEnabled(
           features::kWaylandExternalBeginFrameSource)) {
     CreateBeginFrameSource();
   }
@@ -594,19 +600,6 @@ void WaylandFrameManager::OnFrameDone(void* data,
 }
 
 void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
-  if (no_damage_frame_callback_.get() == callback) {
-    // "Empty" frame callbacks are issued for no damage if the begin
-    // frame source driver is enabled. These do not need to be processed,
-    // only relayed to the frame source to trigger the next frame.
-    no_damage_frame_callback_.reset();
-    TRACE_EVENT("wayland", "HandleFrameCallback (no damage)");
-    auto time = base::TimeTicks::Now();
-    if (begin_frame_source_) {
-      begin_frame_source_->OnFrameCallback(time);
-    }
-    return;
-  }
-
   if (frame_callback_freeze_detected_ &&
       submitted_frames_.back()->wl_frame_callback.get() != callback) {
     // If there is a frame callback freeze, frames are still submitted without
@@ -1036,27 +1029,8 @@ uint32_t WaylandFrameManager::GetRootSurfaceId() const {
   return surface ? surface->get_surface_id() : 0u;
 }
 
-bool WaylandFrameManager::RequestFrameCallback() {
-  if (no_damage_frame_callback_ ||
-      (!submitted_frames_.empty() &&
-       submitted_frames_.back()->wl_frame_callback)) {
-    // A frame callback is already pending.
-    return true;
-  }
-
-  auto* surface = window_->root_surface();
-  // Compositors do not send frame callbacks for unmapped surfaces.
-  if (!surface->has_buffer()) {
-    return false;
-  }
-
-  static constexpr wl_callback_listener kFrameCallbackListener = {
-      .done = &OnFrameDone};
-  no_damage_frame_callback_.reset(wl_surface_frame(surface->surface()));
-  wl_callback_add_listener(no_damage_frame_callback_.get(),
-                           &kFrameCallbackListener, this);
-  surface->Commit();
-  return true;
+bool WaylandFrameManager::HasFrameWaitingToCommit() const {
+  return !pending_frames_.empty();
 }
 
 void WaylandFrameManager::FreezeTimeout() {
@@ -1094,7 +1068,10 @@ void WaylandFrameManager::Hide() {
     submitted_frames_.push_back(std::move(frame));
   }
   pending_frames_.clear();
-  no_damage_frame_callback_.reset();
+
+  if (begin_frame_source_) {
+    begin_frame_source_->OnFrameCallbackUnavailable();
+  }
 
   MaybeProcessSubmittedFrames();
 }
@@ -1217,7 +1194,6 @@ void WaylandFrameManager::ClearStates() {
         << "Can't perform OnChannelDestroyed() during a frame playback.";
   }
   pending_frames_.clear();
-  no_damage_frame_callback_.reset();
 
   presentation_flush_timer_.Stop();
 }
