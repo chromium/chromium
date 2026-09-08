@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Elementet blev opdateret</translation>
 <translation id="1018804590490383958">Scan og udfyld automatisk</translation>
 <translation id="1019990162050689579">Gemini-appaktivitet</translation>
+<translation id="102645702181682900">Opgaven er startet</translation>
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1030376737535466765">Åbn Adgangskodeadministrator</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Slet adgangsnøgle</translation>
 <translation id="1715515772563243997">Hvis du har tillid til <ph name="SITE" />, kan du bruge en gemt adgangskode til at logge ind.</translation>
 <translation id="1718835860248848330">Seneste time</translation>
+<translation id="1726013039921383235">Tillad altid</translation>
 <translation id="1728549374069268714">Indsæt og fortsæt</translation>
 <translation id="1732468323901456775">Aktivér notifikationer for <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Opdater Known Traveler-nummer</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. okt. 2023</translation>
 <translation id="3419787211763835342">Hjælp med at forbedre forbedret autofyld</translation>
+<translation id="3430407169377889553">Brug Gemini med omtanke, og overtag styringen, hvis det er nødvendigt. Du er ansvarlig for de handlinger, Gemini foretager under opgaver.</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3441673211568148613">Hold din browsing privat</translation>
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Opdater din browser</translation>
 <translation id="4021931095789478915">Føj ${url} til læselisten</translation>
 <translation id="4028871427853484857">Gem på kontoen…</translation>
+<translation id="4034354558246368274">Tillad denne gang</translation>
 <translation id="4038354071007134711">Ingen apps på denne enhed, der kan åbne filen.</translation>
 <translation id="4042870976416480368">Find på siden</translation>
 <translation id="4045441967987592849">Genåbn</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Siden blev føjet til din læseliste}one{{count} side blev føjet til din læseliste}other{{count} sider blev føjet til din læseliste}}</translation>
 <translation id="459644946100970322">Vil du aktivere prisunderretninger?</translation>
 <translation id="4597892826846980979">Få notifikationer om faner</translation>
+<translation id="459792494991530234">Skriver</translation>
 <translation id="4601095002996233687">Grundige scanninger efter mistænkelige downloads.</translation>
 <translation id="4606247758155004938">Din browser administreres af din organisation.</translation>
 <translation id="4607887340472970274">Prissporing</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Virksomhedsnavn</translation>
 <translation id="479628432297359449">Vil du stoppe downloaden?</translation>
 <translation id="4796496140132859135">Fanegruppe. Skjult.</translation>
+<translation id="4800912004582762296">Klikker</translation>
 <translation id="4802185666270672526">Skjul Anmod om computerwebsite</translation>
 <translation id="4802678077012980341">Adgangskodetjek er fuldført.</translation>
 <translation id="4803185665210547709">Administreret af din organisation.
@@ -1625,6 +1631,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6259928806013786178">Læsetilstand mislykkedes</translation>
 <translation id="626335165106398104">Gemini fungerer sammen med andre tjenester</translation>
 <translation id="6268773951964630964">Søg efter kopieret billede</translation>
+<translation id="6270944267518310103">Venter</translation>
 <translation id="6271462272606946663">Skjul Anmod om mobilwebsite</translation>
 <translation id="6271824294945464304">Deler adgangskode</translation>
 <translation id="628251768213143684">Du kan til altid administrere, hvad der gemmes på din Google-konto</translation>
@@ -1658,6 +1665,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6350745006329795504">Administrer dine enheder</translation>
 <translation id="6351147166808964033">Åbn Faneskift</translation>
 <translation id="63519665078626091">Hvis du vil bruge Web Inspector, skal du oprette forbindelse til Safari på din computer ved hjælp af et kabel og tilgå din iPad via udviklermenuen. Du kan aktivere udviklermenuen i sektionen Avanceret i Safari-indstillingerne på din computer.</translation>
+<translation id="6354695695659930684">Udfylder adgangskode</translation>
 <translation id="6355820183143562453">Skjul kortet Prissporing</translation>
 <translation id="6355820205320395730">Svage adgangskoder er nemme at gætte. Sørg for, at du opretter stærke adgangskoder. <ph name="BEGIN_LINK" />Se flere sikkerhedstips<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Log ind for at få adgang til alle dine ting, f.eks. adgangskoder, bogmærker og meget mere.</translation>
@@ -2250,6 +2258,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8233237502828137700">Luk bannerpromovering</translation>
 <translation id="823339794112333264">Aktivér mikrofon</translation>
 <translation id="8240217649914883113">Føj dette til min kalender</translation>
+<translation id="824379025871762038">Tillad aldrig</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8252980988000695656">Google Lens er fuldført.</translation>
 <translation id="8258734532103758067">Jeg har eksporteret mine data</translation>

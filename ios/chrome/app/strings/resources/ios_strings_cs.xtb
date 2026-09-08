@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
 <translation id="1018804590490383958">Naskenovat a vyplnit automaticky</translation>
 <translation id="1019990162050689579">Aktivita v aplikacích s Gemini</translation>
+<translation id="102645702181682900">Úkol byl zahájen</translation>
 <translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1030376737535466765">Otevřít Správce hesel</translation>
 <translation id="1035980983510608210">Zavřením všech karet zavřete i připnuté karty.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Smazat přístupový klíč</translation>
 <translation id="1715515772563243997">Pokud webu <ph name="SITE" /> důvěřujete, můžete k přihlášení použít uložené heslo.</translation>
 <translation id="1718835860248848330">Poslední hodina</translation>
+<translation id="1726013039921383235">Povolit vždy</translation>
 <translation id="1728549374069268714">Vložit a přejít</translation>
 <translation id="1732468323901456775">Zapnout oznámení pro: <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Aktualizace čísla prověřeného cestujícího</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. října 2023</translation>
 <translation id="3419787211763835342">Pomozte vylepšené automatické vyplňování zlepšovat</translation>
+<translation id="3430407169377889553">Používejte Gemini opatrně a v případě potřeby převezměte kontrolu. Za akce Gemini během plnění úkolů nesete odpovědnost.</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3441673211568148613">Chraňte při prohlížení své soukromí</translation>
 <translation id="3443810440409579745">Byla přijata karta.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Aktualizujte prohlížeč</translation>
 <translation id="4021931095789478915">Přidat ${url} do seznamu četby</translation>
 <translation id="4028871427853484857">Uložit do účtu…</translation>
+<translation id="4034354558246368274">Tentokrát povolit</translation>
 <translation id="4038354071007134711">Soubor nelze otevřít pomocí žádné aplikace v tomto zařízení.</translation>
 <translation id="4042870976416480368">Najít na stránce</translation>
 <translation id="4045441967987592849">Znovu otevřít</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Stránka byla přidána do vašeho seznamu četby}few{Do vašeho seznamu četby byly přidány {count} stránky}many{Do vašeho seznamu četby bylo přidáno {count} stránky}other{Do vašeho seznamu četby bylo přidáno {count} stránek}}</translation>
 <translation id="459644946100970322">Zapnout upozornění na ceny?</translation>
 <translation id="4597892826846980979">Aktivujte si oznámení o kartách</translation>
+<translation id="459792494991530234">Psaní</translation>
 <translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4606247758155004938">Váš prohlížeč je spravován vaší organizací.</translation>
 <translation id="4607887340472970274">Sledování cen</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Název společnosti</translation>
 <translation id="479628432297359449">Zastavit stahování?</translation>
 <translation id="4796496140132859135">Skupina karet. Sbaleno.</translation>
+<translation id="4800912004582762296">Klikání</translation>
 <translation id="4802185666270672526">Skrýt možnost Verze webu pro počítače</translation>
 <translation id="4802678077012980341">Kontrola hesel – dokončeno!</translation>
 <translation id="4803185665210547709">Spravováno vaší organizací.
@@ -1625,6 +1631,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6259928806013786178">Režim čtení selhal</translation>
 <translation id="626335165106398104">Gemini spolupracuje s jinými službami</translation>
 <translation id="6268773951964630964">Vyhledat zkopírovaný obrázek</translation>
+<translation id="6270944267518310103">Čekání</translation>
 <translation id="6271462272606946663">Skrýt možnost Vyžádat web pro mobily</translation>
 <translation id="6271824294945464304">Sdílení hesla</translation>
 <translation id="628251768213143684">Vždy můžete spravovat, co je ve vašem účtu Google uloženo</translation>
@@ -1658,6 +1665,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6350745006329795504">Spravovat zařízení</translation>
 <translation id="6351147166808964033">Přejít do přepínače karet</translation>
 <translation id="63519665078626091">Pokud chcete použít nástroj Web Inspector, připojte se kabelem k Safari na počítači a otevřete svůj iPad z nabídky Vývojář. Nabídku Vývojář můžete povolit v části Pokročilé v nastavení prohlížeče Safari na počítači.</translation>
+<translation id="6354695695659930684">Vyplňování hesla</translation>
 <translation id="6355820183143562453">Skrýt kartu Sledování cen</translation>
 <translation id="6355820205320395730">Slabá hesla lze snadno uhodnout. Vždy se snažte vytvářet silná hesla. <ph name="BEGIN_LINK" />Další tipy k zabezpečení<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Když se přihlásíte, budete mít k dispozici svá data, jako jsou hesla, záložky a další.</translation>
@@ -2250,6 +2258,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8233237502828137700">Zavřít propagační banner</translation>
 <translation id="823339794112333264">Zapnout mikrofon</translation>
 <translation id="8240217649914883113">Přidej mi tohle do kalendáře</translation>
+<translation id="824379025871762038">Nepovolit nikdy</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8252980988000695656">Google Lens – dokončeno!</translation>
 <translation id="8258734532103758067">Svá data jsem exportoval(a)</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">ທ່ານສາມາດກົດ Enter ເພື່ອເປີດນຳໃຊ້ລາຍການຕ່າງໆ. ຕົວຢ່າງ: ສາມາດໃຊ້ Enter ເພື່ອສົ່ງຂໍ້ຄວາມໃນແບບຟອມ. ເພື່ອສືບຕໍ່, ກະລຸນາກົດ Enter.</translation>
 <translation id="2371402123699727805">ການປ້ອນຂໍ້ມູນດ້ວຍສຽງເປີດໃຊ້ຢູ່. <ph name="GESTURE" /> ເພື່ອຢຸດ. ທ່າທາງອື່ນບໍ່ມີໃຫ້ຊົ່ວຄາວ.</translation>
 <translation id="2381733276052567791">ເປີດ ຫຼື ປິດສຽງເວົ້າ</translation>
+<translation id="2386248289416625097">ຕົວເລືອກ</translation>
 <translation id="2390264819538553347">ເພື່ອສືບຕໍ່, ກົດ enter; ເພື່ອກັບຄືນ, ກົດ backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">ພິມເພື່ອຊອກຫາໜ້າ. ກົດ Enter ເພື່ອຂ້າມໄປຫາຜົນການຊອກຫາ, ກົດລູກສອນຂຶ້ນ ຫຼື ລົງເພື່ອເລື່ອນເບິ່ງຜົນຊອກຫາ, ສືບຕໍ່ພິມເພື່ອປ່ຽນການຊອກຫາຂອງທ່ານ ຫຼື Escape ເພື່ອຍົກເລີກ.</translation>

@@ -6093,6 +6093,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5678955352098267522">Leer los datos en <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">¿Quieres quitar "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">El archivo ya se está abriendo</translation>
+<translation id="5682120590308014005">Accede a tu cuenta para agregar fácilmente archivos de Drive a tus conversaciones del Modo IA. También obtendrás tus contraseñas y más en todos tus dispositivos.</translation>
 <translation id="5684110242705861346">La extensión "<ph name="NAME" />" se agregó a través de la política de tu organización y controla este parámetro de configuración. <ph name="BEGIN_LINK" />Ver detalles<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Detalles de la red Wi-Fi</translation>
 <translation id="5687340364605915800">Los sitios usan su criterio cuando responden esta solicitud</translation>
@@ -8171,6 +8172,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animado</translation>
 <translation id="7301812050652048720">Se borró la llave de acceso</translation>
+<translation id="7303246449496241344">Para agregar fácilmente archivos de Drive a tus conversaciones del Modo IA, verifica tu identidad. También obtendrás tus contraseñas y más en todos tus dispositivos.</translation>
 <translation id="7303485269821975179">Establece una contraseña para <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">No se permite que este sitio vea el texto ni las imágenes que se copiaron en el portapapeles</translation>
 <translation id="7304030187361489308">Alto</translation>

@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1018804590490383958">المسح ضوئيًا وملء البيانات تلقائيًا</translation>
 <translation id="1019990162050689579">‏نشاطك على تطبيقات Gemini</translation>
+<translation id="102645702181682900">بدأت المَهمة</translation>
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1030376737535466765">فتح "مدير كلمات المرور"</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">حذف مفتاح المرور</translation>
 <translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
 <translation id="1718835860248848330">آخر ساعة</translation>
+<translation id="1726013039921383235">السماح دومًا</translation>
 <translation id="1728549374069268714">‏لصق عنوان URL والانتقال إليه</translation>
 <translation id="1732468323901456775">تفعيل إشعارات "<ph name="MODULE_NAME" />"</translation>
 <translation id="1739364174357629566">تعديل رقم المسافر المعروف</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">‏خرائط Google</translation>
 <translation id="3416023309465857378">‫25 تشرين الأول (أكتوبر) 2023</translation>
 <translation id="3419787211763835342">بانتظار مساهمتك في تحسين "الملء التلقائي المحسّن"</translation>
+<translation id="3430407169377889553">‏ننصحك باستخدام Gemini بحذر والتحكّم فيه عند الضرورة، لأنّ مسؤولية إجراءاته أثناء تنفيذ المهام تقع على عاتقك.</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3441673211568148613">تحافظ هذه الميزة على خصوصية بيانات التصفح المتخفي</translation>
 <translation id="3443810440409579745">تم استلام علامة تبويب.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">تحديث المتصفِّح</translation>
 <translation id="4021931095789478915">‏إضافة ${url} إلى "قائمة القراءة"</translation>
 <translation id="4028871427853484857">الحفظ في الحساب…</translation>
+<translation id="4034354558246368274">السماح هذه المرة</translation>
 <translation id="4038354071007134711">لا يمكن فتح هذا الملف بأي تطبيق موجود على هذا الجهاز.</translation>
 <translation id="4042870976416480368">البحث في الصفحة</translation>
 <translation id="4045441967987592849">إعادة فتح</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{تمّت إضافة صفحة واحدة إلى "قائمة القراءة"}zero{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}two{تمّت إضافة صفحتَين ({count}) إلى "قائمة القراءة"}few{تمّت إضافة {count} صفحات إلى "قائمة القراءة"}many{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}other{تمّت إضافة {count} صفحة إلى "قائمة القراءة"}}</translation>
 <translation id="459644946100970322">هل تريد تلقِّي تنبيهات عن تغيير الأسعار؟</translation>
 <translation id="4597892826846980979">تلقّي إشعارات علامات التبويب</translation>
+<translation id="459792494991530234">جارٍ الكتابة</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
 <translation id="4607887340472970274">تتبُّع الأسعار</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">اسم الشركة</translation>
 <translation id="479628432297359449">هل تريد إيقاف عملية التنزيل؟</translation>
 <translation id="4796496140132859135">مجموعة علامات تبويب مصغَّرة</translation>
+<translation id="4800912004582762296">جارٍ النقر</translation>
 <translation id="4802185666270672526">إخفاء خيار "طلب موقع إلكتروني متوافق مع أجهزة الكمبيوتر المكتبي"</translation>
 <translation id="4802678077012980341">اكتملت مهمة ميزة "التحقّق من كلمات المرور".</translation>
 <translation id="4803185665210547709">تتم إدارة المتصفِّح من خلال مؤسستك.
@@ -1623,6 +1629,7 @@
 <translation id="6259928806013786178">تعذَّر تفعيل "وضع القراءة"</translation>
 <translation id="626335165106398104">‏‫Gemini يعمل مع خدمات أخرى</translation>
 <translation id="6268773951964630964">البحث عن الصورة التي نسختها</translation>
+<translation id="6270944267518310103">جارٍ الانتظار</translation>
 <translation id="6271462272606946663">إخفاء خيار "طلب موقع جهاز جوّال"</translation>
 <translation id="6271824294945464304">مشاركة كلمة المرور</translation>
 <translation id="628251768213143684">‏يمكنك في أي وقت إدارة البيانات التي يتم حفظها في حسابك على Google.</translation>
@@ -1656,6 +1663,7 @@
 <translation id="6350745006329795504">إدارة الأجهزة</translation>
 <translation id="6351147166808964033">فتح "أداة التبديل بين علامات التبويب"</translation>
 <translation id="63519665078626091">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPad من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
+<translation id="6354695695659930684">جارٍ ملء كلمة المرور</translation>
 <translation id="6355820183143562453">إخفاء بطاقة "تتبُّع الأسعار"</translation>
 <translation id="6355820205320395730">يمكن تخمين كلمات المرور الضعيفة بسهولة، ولذلك ننصحك بإنشاء كلمات مرور قوية. <ph name="BEGIN_LINK" />الاطّلاع على مزيد من نصائح الأمان<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">عند تسجيل الدخول، يمكنك الوصول إلى جميع بياناتك، مثل كلمات المرور والإشارات المرجعية وغيرها.</translation>
@@ -2249,6 +2257,7 @@
 <translation id="8233237502828137700">إغلاق البانر الترويجي</translation>
 <translation id="823339794112333264">تفعيل الميكروفون</translation>
 <translation id="8240217649914883113">إضافة هذا الموعد إلى تقويمي</translation>
+<translation id="824379025871762038">عدم السماح مطلقًا</translation>
 <translation id="8250920743982581267">المستندات</translation>
 <translation id="8252980988000695656">‏اكتملت مهمة استخدام "عدسة Google".</translation>
 <translation id="8258734532103758067">صدّرت بياناتي</translation>

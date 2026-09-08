@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Be to, galite paspausti „Enter“, kad suaktyvintumėte elementus. Pvz., klavišu „Enter“ galima pateikti teksto formoje. Jei norite tęsti, paspauskite „Enter“.</translation>
 <translation id="2371402123699727805">Diktavimas įjungtas. <ph name="GESTURE" />, kad sustabdytumėte. Kiti gestai laikinai nepasiekiami.</translation>
 <translation id="2381733276052567791">Įjungti arba išjungti kalbėjimą</translation>
+<translation id="2386248289416625097">Kandidatai</translation>
 <translation id="2390264819538553347">Jei norite eiti pirmyn, paspauskite „Enter“; jei norite grįžti, paspauskite naikinimo klavišą.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">Įveskite, jei norite ieškoti puslapio. Paspaudę klavišą „Enter“ pereisite prie rezultatų, rodyklėmis aukštyn ir žemyn juos naršysite, vesdami tekstą toliau pakeisite paiešką, o paspaudę klavišą „Escape“ atšauksite.</translation>

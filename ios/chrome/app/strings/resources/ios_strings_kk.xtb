@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Элемент жаңартылды</translation>
 <translation id="1018804590490383958">Сканерлеу және автоматты түрде толтыру</translation>
 <translation id="1019990162050689579">Gemini қолданбаларын пайдалану тарихы</translation>
+<translation id="102645702181682900">Тапсырма басталды</translation>
 <translation id="102916930470544692">Кіру кілті</translation>
 <translation id="1030376737535466765">Password Manager қызметін ашу</translation>
 <translation id="1035980983510608210">Барлық қойындыны жабу бекітілген қойындыларды да жабады.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Кіру кілтін жою</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> сайты сенімді болса, сақталған құпия сөз арқылы кіре аласыз.</translation>
 <translation id="1718835860248848330">Соңғы бір сағат</translation>
+<translation id="1726013039921383235">Әрқашан рұқсат беру</translation>
 <translation id="1728549374069268714">Қою және өту</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> хабарландыруларын қосу</translation>
 <translation id="1739364174357629566">Белгілі жолаушы нөмірін (KTN) жаңартыңыз</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 қазан, 2023</translation>
 <translation id="3419787211763835342">Дұрысталған автотолтыру функциясын жақсартуға көмектесіңіз</translation>
+<translation id="3430407169377889553">Gemini-ды мұқият пайдаланыңыз және қажет болғанда, басқаруды өз қолыңызға алыңыз. Тапсырмаларды орындау кезінде Gemini-дың әрекеттеріне өзіңіз жауаптысыз.</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3441673211568148613">Шолуды құпия сақтаңыз.</translation>
 <translation id="3443810440409579745">Қойынды қабылданды.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Браузерді жаңартыңыз</translation>
 <translation id="4021931095789478915">Оқу тізіміне ${url} қосу</translation>
 <translation id="4028871427853484857">Аккаунтта сақтау…</translation>
+<translation id="4034354558246368274">Осы жолы рұқсат ету</translation>
 <translation id="4038354071007134711">Бұл құрылғыдағы қолданбалардың осы файлды ашуы мүмкін емес.</translation>
 <translation id="4042870976416480368">Беттен табу</translation>
 <translation id="4045441967987592849">Қайта ашу</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Бет оқу тізіміне қосылды.}other{{count} бет оқу тізіміне қосылды.}}</translation>
 <translation id="459644946100970322">Баға туралы хабарландыруларды қосу керек пе?</translation>
 <translation id="4597892826846980979">Қойындылар хабарландыруларын алу</translation>
+<translation id="459792494991530234">Теріп жатыр</translation>
 <translation id="4601095002996233687">Күдікті жүктеп алынғандарға арналған тереңінен сканерлеулер.</translation>
 <translation id="4606247758155004938">Браузеріңізді ұйым басқарады.</translation>
 <translation id="4607887340472970274">Баға бақылау</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Компания атауы</translation>
 <translation id="479628432297359449">Жүктеп алу процесін тоқтату керек пе?</translation>
 <translation id="4796496140132859135">Қойындылар тобы. Жиылды.</translation>
+<translation id="4800912004582762296">Басып жатыр</translation>
 <translation id="4802185666270672526">"Компьютерге арналған сайтты сұрау" опциясын жасыру</translation>
 <translation id="4802678077012980341">Құпия сөздерді тексеру аяқталды!</translation>
 <translation id="4803185665210547709">Ұйымыңыз басқарады.
@@ -1625,6 +1631,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6259928806013786178">Оқу режимі іске қосылмады.</translation>
 <translation id="626335165106398104">Gemini басқа қызметтермен істейді</translation>
 <translation id="6268773951964630964">Көшірілген кескінді іздеу</translation>
+<translation id="6270944267518310103">Күту режимінде</translation>
 <translation id="6271462272606946663">"Мобильдік сайтты сұрау" опциясын жасыру</translation>
 <translation id="6271824294945464304">Құпия сөзді бөлісу</translation>
 <translation id="628251768213143684">Google аккаунтына не сақталатынын реттеуге болады.</translation>
@@ -1658,6 +1665,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6350745006329795504">Құрылғыларыңызды басқару</translation>
 <translation id="6351147166808964033">Tab Switcher енгізу</translation>
 <translation id="63519665078626091">Веб-инспекторды пайдалану үшін кабель арқылы компьютерде Safari браузеріне қосылып, "Әзірлеу" мәзірінен iPad құрылғыңызға кіріңіз. Компьютердегі Safari параметрлерінің "Қосымша" бөлімінде "Әзірлеу" мәзірін қосуға болады.</translation>
+<translation id="6354695695659930684">Құпия сөз енгізіліп жатыр</translation>
 <translation id="6355820183143562453">Бағаны бақылау картасын жасыру</translation>
 <translation id="6355820205320395730">Құпия сөзіңіз оңай болса, оны табу оңай болады. Күрделі құпия сөз орнатыңыз. <ph name="BEGIN_LINK" />Қауіпсіздікке қатысты басқа кеңестерді де көріңіз.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Құпия сөздер, бетбелгілер және т.б. сияқты барлық дерегіңізді алу үшін аккаунтқа кіріңіз.</translation>
@@ -2250,6 +2258,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8233237502828137700">Баннер промокеңесін жабу</translation>
 <translation id="823339794112333264">Микрофонды қосу</translation>
 <translation id="8240217649914883113">Мұны күнтізбеме қос</translation>
+<translation id="824379025871762038">Ешқашан рұқсат бермеу</translation>
 <translation id="8250920743982581267">Құжаттар</translation>
 <translation id="8252980988000695656">Google Lens тапсырмасы аяқталды!</translation>
 <translation id="8258734532103758067">Деректерді экспорттадым</translation>

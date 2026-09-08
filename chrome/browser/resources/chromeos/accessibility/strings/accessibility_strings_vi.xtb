@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Bạn cũng có thể nhấn phím Enter để kích hoạt các mục. Chẳng hạn, bạn có thể dùng phím Enter để gửi văn bản trong một biểu mẫu. Để tiếp tục, hãy nhấn phím Enter.</translation>
 <translation id="2371402123699727805">Tính năng nhập bằng giọng nói đang hoạt động. <ph name="GESTURE" /> để dừng. Các cử chỉ khác tạm thời không hoạt động.</translation>
 <translation id="2381733276052567791">Bật hoặc tắt giọng nói</translation>
+<translation id="2386248289416625097">Đề xuất</translation>
 <translation id="2390264819538553347">Để chuyển tới trang tiếp theo, nhấn enter; để quay lại trang trước, nhấn phím xóa lùi.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{dấu hoa thị}} *{{{$$COUNT} dấu hoa thị}}</translation>
 <translation id="2398579267367951220">Nhập để tìm kiếm trang. Nhấn phím Enter để xem kết quả, phím mũi tên lên hoặc xuống để duyệt qua kết quả, tiếp tục nhập để thay đổi nội dung tìm kiếm hoặc nhấn phím Escape để hủy.</translation>

@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">1 つのドキュメント</translation>
 <translation id="254524874071906077">Chrome を既定のブラウザに設定する</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
+<translation id="254672217349157196">メールアドレスを自動的に確認する</translation>
 <translation id="254947805923345898">ポリシーの値が無効です。</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> から無効な応答が送信されました。</translation>
 <translation id="2551608178605132291">住所: <ph name="ADDRESS" />。</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Gmail などから情報を探して入力できるようになりました。</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キーを押して操作オプションを参照し、Enter キーを押すと、選択した操作を実行できます。</translation>
 <translation id="3010991137650052245">このサイトで <ph name="PERMISSION" /> を使用するには、<ph name="SHORT_PRODUCT_NAME" /> にアクセスを許可してください</translation>
+<translation id="3013536714390403689">メールの確認</translation>
 <translation id="3014726756341138577">高度なプリンタ機能</translation>
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3016780570757425217">ユーザーの現在地の認識</translation>

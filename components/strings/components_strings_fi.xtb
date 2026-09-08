@@ -934,6 +934,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2544644783021658368">Yksittäinen dokumentti</translation>
 <translation id="254524874071906077">Aseta Chrome oletusselaimeksi</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
+<translation id="254672217349157196">Vahvista sähköpostiosoite automaattisesti</translation>
 <translation id="254947805923345898">Käytännön arvo ei kelpaa.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> lähetti virheellisen vastauksen.</translation>
 <translation id="2551608178605132291">Osoite: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3008410317623852235">Voit nyt hakea ja täyttää tietoja esimerkiksi Gmailista.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, selaa käytettävissä olevia toimintoja painamalla sarkainta ja suorita valittu toiminto painamalla Enter.</translation>
 <translation id="3010991137650052245"><ph name="SHORT_PRODUCT_NAME" /> tarvitsee pääsyoikeuden, jotta <ph name="PERMISSION" /> on käytettävissä tällä sivustolla</translation>
+<translation id="3013536714390403689">Vahvistettu sähköposti</translation>
 <translation id="3014726756341138577">Tulostimen lisäominaisuudet</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
 <translation id="3016780570757425217">Saada sijaintisi selville.</translation>

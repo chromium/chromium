@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">Ένα έγγραφο</translation>
 <translation id="254524874071906077">Ορισμός του Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
+<translation id="254672217349157196">Αυτόματη επαλήθευση της διεύθυνσης ηλεκτρονικού ταχυδρομείου σας</translation>
 <translation id="254947805923345898">Η τιμή πολιτικής δεν είναι έγκυρη.</translation>
 <translation id="255002559098805027">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> έστειλε μια μη έγκυρη απόκριση.</translation>
 <translation id="2551608178605132291">Διεύθυνση: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Μπορείτε πλέον να βρίσκετε και να συμπληρώνετε πληροφορίες από το Gmail και άλλα.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab για να περιηγηθείτε στις διαθέσιμες ενέργειες και έπειτα πατήστε Enter για να εκτελέσετε την επιλεγμένη ενέργεια.</translation>
 <translation id="3010991137650052245">Για να χρησιμοποιήσετε την άδεια <ph name="PERMISSION" /> σε αυτόν τον ιστότοπο, παραχωρήστε πρόσβαση στο <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Επαληθευμένη διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="3014726756341138577">Σύνθετες λειτουργίες εκτυπωτή</translation>
 <translation id="301521992641321250">Αποκλείστηκε αυτόματα</translation>
 <translation id="3016780570757425217">Πρόσβαση στην τοποθεσία σας</translation>

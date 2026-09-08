@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">单一文档</translation>
 <translation id="254524874071906077">将 Chrome 浏览器设为默认浏览器</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
+<translation id="254672217349157196">自动验证您的邮箱</translation>
 <translation id="254947805923345898">政策值无效。</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> 发送的响应无效。</translation>
 <translation id="2551608178605132291">地址：<ph name="ADDRESS" />。</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">现在，您可以查找和填充 Gmail 等来源的信息。</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
 <translation id="3010991137650052245">如要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
+<translation id="3013536714390403689">已验证的邮箱</translation>
 <translation id="3014726756341138577">高级打印机功能</translation>
 <translation id="301521992641321250">已被自动禁止</translation>
 <translation id="3016780570757425217">获取您的位置</translation>

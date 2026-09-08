@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Atriði uppfært</translation>
 <translation id="1018804590490383958">Skanna og fylla sjálfkrafa út</translation>
 <translation id="1019990162050689579">Gemini-forritavirkni</translation>
+<translation id="102645702181682900">Verkefni hafið</translation>
 <translation id="102916930470544692">Aðgangslykill</translation>
 <translation id="1030376737535466765">Opna aðgangsorðastjórnun</translation>
 <translation id="1035980983510608210">Ef öllum flipum er lokað verður festum flipum einnig lokað.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Eyða aðgangslykli</translation>
 <translation id="1715515772563243997">Ef þú treystir <ph name="SITE" /> geturðu notað vistað aðgangsorð til að skrá þig inn.</translation>
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
+<translation id="1726013039921383235">Leyfa alltaf</translation>
 <translation id="1728549374069268714">Líma og opna</translation>
 <translation id="1732468323901456775">Kveikja á tilkynningum um <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Uppfæra þekkt ferðalangsnúmer</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Kort</translation>
 <translation id="3416023309465857378">25. okt. 2023</translation>
 <translation id="3419787211763835342">Hjálpaðu til við að bæta ítarlega sjálfvirka útfyllingu</translation>
+<translation id="3430407169377889553">Notaðu Gemini varlega og taktu stjórnina ef þörf krefur. Þú berð ábyrgð á aðgerðum Gemini í verkefnum.</translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3441673211568148613">Haltu þinni vefskoðun leyndri</translation>
 <translation id="3443810440409579745">Flipi móttekinn.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Uppfærðu vafrann þinn</translation>
 <translation id="4021931095789478915">Bæta ${url} við leslista</translation>
 <translation id="4028871427853484857">Vista á reikningi…</translation>
+<translation id="4034354558246368274">Leyfa í þetta skipti</translation>
 <translation id="4038354071007134711">Ekkert forrit í þessu tæki getur opnað skrána.</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
 <translation id="4045441967987592849">Opna aftur</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Síðu bætt við leslistann þinn}one{{count} síðu bætt við leslistann þinn}other{{count} síðum bætt við leslistann þinn}}</translation>
 <translation id="459644946100970322">Kveikja á verðtilkynningum?</translation>
 <translation id="4597892826846980979">Fá tilkynningar um flipa</translation>
+<translation id="459792494991530234">Skrifar</translation>
 <translation id="4601095002996233687">Ítarleg leit að grunsamlegu niðurhali.</translation>
 <translation id="4606247758155004938">Vafranum er stjórnað af fyrirtækinu þínu.</translation>
 <translation id="4607887340472970274">Verðrakning</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Heiti fyrirtækis</translation>
 <translation id="479628432297359449">Stöðva niðurhal?</translation>
 <translation id="4796496140132859135">Flipahópur. Minnkaður.</translation>
+<translation id="4800912004582762296">Smellir á</translation>
 <translation id="4802185666270672526">Fela „Biðja um tölvuvefsvæði“</translation>
 <translation id="4802678077012980341">Aðgangsorðatékk lokið!</translation>
 <translation id="4803185665210547709">Stjórnað af fyrirtækinu þínu.
@@ -1625,6 +1631,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6259928806013786178">Lesstilling virkjaðist ekki</translation>
 <translation id="626335165106398104">Gemini virkar með öðrum þjónustum</translation>
 <translation id="6268773951964630964">Finna afritaða mynd</translation>
+<translation id="6270944267518310103">Bíður</translation>
 <translation id="6271462272606946663">Fela „Biðja um snjallvef“</translation>
 <translation id="6271824294945464304">Aðgangsorði deilt</translation>
 <translation id="628251768213143684">Þú getur alltaf stjórnað því sem er vistað á Google-reikningnum þínum</translation>
@@ -1658,6 +1665,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6350745006329795504">Hafa umsjón með tækjum</translation>
 <translation id="6351147166808964033">Opna flipaval</translation>
 <translation id="63519665078626091">Til að nota Web Inspector skaltu tengjast Safari í tölvunni með snúru og fá aðgang að iPad frá valmyndinni „Develop“. Þú getur virkjað valmyndina „Develop“ í hlutanum „Advanced“ í stillingum Safari í tölvunni.</translation>
+<translation id="6354695695659930684">Fyllir út aðgangsorð</translation>
 <translation id="6355820183143562453">Fela spjaldið „Verðvöktun“</translation>
 <translation id="6355820205320395730">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Gakktu úr skugga um að þú búir til traust aðgangsorð. <ph name="BEGIN_LINK" />Sjá fleiri öryggisábendingar.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Skráðu þig inn til að fá aðgang að öllu þínu, s.s. aðgangsorðum, bókamerkjum og fleiru.</translation>
@@ -2250,6 +2258,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8233237502828137700">Loka borðakynningu</translation>
 <translation id="823339794112333264">Kveikja á hljóðnema</translation>
 <translation id="8240217649914883113">Bæta þessu við dagatalið mitt</translation>
+<translation id="824379025871762038">Leyfa aldrei</translation>
 <translation id="8250920743982581267">Skjöl</translation>
 <translation id="8252980988000695656">Google-linsu lokið!</translation>
 <translation id="8258734532103758067">Ég hef flutt gögnin mín út</translation>

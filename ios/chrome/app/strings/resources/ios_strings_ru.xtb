@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Обновлено</translation>
 <translation id="1018804590490383958">Сканировать и заполнять автоматически</translation>
 <translation id="1019990162050689579">История действий в приложениях Gemini</translation>
+<translation id="102645702181682900">Задача запущена</translation>
 <translation id="102916930470544692">Ключ доступа</translation>
 <translation id="1030376737535466765">Открыть Менеджер паролей</translation>
 <translation id="1035980983510608210">Будут также закрыты закрепленные вкладки.</translation>
@@ -63,6 +64,7 @@
 <translation id="1179890706672152411">Хранилище заполнено</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
+<translation id="1195433173321863960">Генерация изображений снова станет доступна после сброса лимита <ph name="RESET_TIME" />.</translation>
 <translation id="1196534270480620381">Составь краткий пересказ этой страницы</translation>
 <translation id="1199631150313925648">Ввести вручную</translation>
 <translation id="1199963004393929848">Зеленая тема</translation>
@@ -239,6 +241,7 @@
 <translation id="1709916727352927457">Удаление ключа доступа</translation>
 <translation id="1715515772563243997">Если вы доверяете сайту <ph name="SITE" />, то можете использовать для входа сохраненный пароль.</translation>
 <translation id="1718835860248848330">Последний час</translation>
+<translation id="1726013039921383235">Разрешать всегда</translation>
 <translation id="1728549374069268714">Вставить и перейти</translation>
 <translation id="1732468323901456775">Включить уведомления "<ph name="MODULE_NAME" />"</translation>
 <translation id="1739364174357629566">Обновить номер известного пассажира (Known Traveler Number)?</translation>
@@ -740,6 +743,7 @@
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3416023309465857378">25 октября 2023 г.</translation>
 <translation id="3419787211763835342">Помогайте развивать функцию улучшенного автозаполнения</translation>
+<translation id="3430407169377889553">Используйте Gemini с осторожностью и при необходимости контролируйте его работу. Вы несете ответственность за действия Gemini во время выполнения задач.</translation>
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="3441673211568148613">Защищайте свою конфиденциальность.</translation>
 <translation id="3443810440409579745">Вкладка получена.</translation>
@@ -927,6 +931,7 @@
 <translation id="4021447724486050609">Обновите браузер</translation>
 <translation id="4021931095789478915">Добавить ${url} в список для чтения</translation>
 <translation id="4028871427853484857">Сохранить в аккаунте</translation>
+<translation id="4034354558246368274">Разрешить в этот раз</translation>
 <translation id="4038354071007134711">Нет приложения, чтобы открыть этот файл.</translation>
 <translation id="4042870976416480368">Найти на странице</translation>
 <translation id="4045441967987592849">Открыть</translation>
@@ -1088,6 +1093,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Страница добавлена в список для чтения.}one{{count} страница добавлена в список для чтения.}few{{count} страницы добавлено в список для чтения.}many{{count} страниц добавлено в список для чтения.}other{{count} страницы добавлено в список для чтения.}}</translation>
 <translation id="459644946100970322">Включить оповещения об изменении цен?</translation>
 <translation id="4597892826846980979">Получайте уведомления с вкладок</translation>
+<translation id="459792494991530234">Ввод текста</translation>
 <translation id="4601095002996233687">Выполняет тщательную проверку подозрительных файлов, которые вы скачали.</translation>
 <translation id="4606247758155004938">Этим браузером управляет ваша организация.</translation>
 <translation id="4607887340472970274">Отслеживание цен</translation>
@@ -1153,6 +1159,7 @@
 <translation id="4792385443586519711">Название организации</translation>
 <translation id="479628432297359449">Остановить скачивание?</translation>
 <translation id="4796496140132859135">Группа вкладок. Свернута.</translation>
+<translation id="4800912004582762296">Нажатие</translation>
 <translation id="4802185666270672526">Скрыть пункт "Версия для ПК"</translation>
 <translation id="4802678077012980341">Вы прочитали совет о Проверке паролей.</translation>
 <translation id="4803185665210547709">Браузером управляет ваша организация.
@@ -1625,6 +1632,7 @@
 <translation id="6259928806013786178">Не удалось запустить Режим чтения.</translation>
 <translation id="626335165106398104">Gemini работает с другими сервисами</translation>
 <translation id="6268773951964630964">Поиск по скопированному изображению</translation>
+<translation id="6270944267518310103">Ожидание</translation>
 <translation id="6271462272606946663">Скрыть пункт "Мобильная версия"</translation>
 <translation id="6271824294945464304">Общий доступ к паролю</translation>
 <translation id="628251768213143684">Вы можете в любое время изменить настройки сохранения данных в аккаунте Google</translation>
@@ -1658,6 +1666,7 @@
 <translation id="6350745006329795504">Управление устройствами</translation>
 <translation id="6351147166808964033">Открыть переключатель вкладок</translation>
 <translation id="63519665078626091">Чтобы воспользоваться веб-инспектором, подключитесь к Safari на компьютере с помощью кабеля и откройте iPad в меню "Разработка". Включить меню "Разработка" можно в разделе "Дополнения" в настройках Safari на компьютере.</translation>
+<translation id="6354695695659930684">Ввод пароля</translation>
 <translation id="6355820183143562453">Скрыть карточку с отслеживанием цен</translation>
 <translation id="6355820205320395730">Простые пароли легко подобрать. Старайтесь придумывать надежные пароли. <ph name="BEGIN_LINK" />Получить больше советов по безопасности.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Войдите, чтобы получить доступ к своим паролям, закладкам и другим данным.</translation>
@@ -2250,6 +2259,7 @@
 <translation id="8233237502828137700">Закрыть баннер</translation>
 <translation id="823339794112333264">Включить микрофон</translation>
 <translation id="8240217649914883113">Добавь это в мой календарь</translation>
+<translation id="824379025871762038">Не разрешать</translation>
 <translation id="8250920743982581267">Документы</translation>
 <translation id="8252980988000695656">Вы прочитали совет о Google Объективе.</translation>
 <translation id="8258734532103758067">Данные экспортированы</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Możesz też aktywować elementy, naciskając Enter. Naciskając ten klawisz, możesz na przykład przesłać tekst w formularzu. Aby przejść dalej, naciśnij Enter.</translation>
 <translation id="2371402123699727805">Dyktowanie jest aktywne. Aby je zatrzymać, <ph name="GESTURE" />. Inne gesty są tymczasowo niedostępne.</translation>
 <translation id="2381733276052567791">Włącz lub wyłącz mowę</translation>
+<translation id="2386248289416625097">Kandydaci</translation>
 <translation id="2390264819538553347">Aby kontynuować, naciśnij Enter. Aby się cofnąć, naciśnij Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{gwiazdka}} *{{gwiazdki: {$$COUNT}}}</translation>
 <translation id="2398579267367951220">Wpisz, by przeszukać stronę. Naciśnij Enter, by przejść do wyniku. Naciskaj strzałki w górę i w dół, by przeglądać wyniki. Pisz dalej, by zmienić wyszukiwane hasło. Aby anulować, naciśnij Escape.</translation>

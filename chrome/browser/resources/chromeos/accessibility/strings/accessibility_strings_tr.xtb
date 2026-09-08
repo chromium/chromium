@@ -218,6 +218,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2365384324219615024">Öğeleri etkinleştirmek için de Enter tuşuna basabilirsiniz. Örneğin, Enter tuşu bir formdaki metni göndermek için kullanılabilir. Devam etmek için Enter'a basın.</translation>
 <translation id="2371402123699727805">Dikte özelliği etkin. Durdurmak için <ph name="GESTURE" />. Diğer hareketler geçici olarak kullanılamıyor.</translation>
 <translation id="2381733276052567791">Konuşmayı açın veya kapatın</translation>
+<translation id="2386248289416625097">Adaylar</translation>
 <translation id="2390264819538553347">İlerlemek için enter tuşuna, geri gitmek için geri tuşuna basın.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :sayı} .match $$COUNT 1{{yıldız işareti}} *{{{$$COUNT} yıldız işareti}}</translation>
 <translation id="2398579267367951220">Sayfada aramak için yazmaya başlayın. Sonuca atlamak için enter tuşuna, sonuçlara göz atmak için yukarı veya aşağı oka basın. Aramanızı değiştirmek için yazmaya devam edin veya iptal etmek için escape tuşuna basın.</translation>

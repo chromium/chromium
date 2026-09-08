@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">номер телефону</translation>
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="1986685561493779662">Ця назва вже існує</translation>
+<translation id="1992244793717364584">Додаток видалено</translation>
 <translation id="200114059308480249">Враховувати контекст у пошуку Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка, на якій вимкнено звук)</translation>
 <translation id="2021896219286479412">Керування повноекранним режимом</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="395377504920307820">Використовувати без облікового запису</translation>
 <translation id="3955353672249727801">Сторінки додано в список читання</translation>
+<translation id="3958283758104508528">Додаток <ph name="APP_NAME" /> видалено</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Коли все буде готово, Chrome завантажить сторінку}one{Коли все буде готово, Chrome завантажить сторінки}few{Коли все буде готово, Chrome завантажить сторінки}many{Коли все буде готово, Chrome завантажить сторінки}other{Коли все буде готово, Chrome завантажить сторінки}}</translation>
 <translation id="3969142555815019568">Chrome не може перевірити паролі</translation>
 <translation id="3969863827134279083">Перемістити курсор угору</translation>
@@ -1955,6 +1957,7 @@
 <translation id="8580435650274205305">Термін дії, обов’язкове поле</translation>
 <translation id="8582529315803410153">Тут відображатимуться вкладки, які ви відкрили на інших пристроях</translation>
 <translation id="8585103689515290060">Сервіси автозаповнення</translation>
+<translation id="8586116786993312006">Натисніть, щоб видалити дані вебперегляду в Chrome</translation>
 <translation id="859046281437143747">Відстежувати ціну через кнопку "Більше опцій"</translation>
 <translation id="859064343657890103">Групу вкладок "<ph name="TAB_GROUP_TITLE" />" видалено</translation>
 <translation id="860043288473659153">Ім’я і прізвище власника картки</translation>

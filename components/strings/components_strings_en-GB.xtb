@@ -934,6 +934,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2544644783021658368">Single document</translation>
 <translation id="254524874071906077">Set Chrome as Default Browser</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
+<translation id="254672217349157196">Automatically verify your email</translation>
 <translation id="254947805923345898">Policy value is not valid.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> sent an invalid response.</translation>
 <translation id="2551608178605132291">Address: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3008410317623852235">Now you can find and fill info from Gmail and more.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab to browse available actions, then Enter to execute selected action.</translation>
 <translation id="3010991137650052245">To use your <ph name="PERMISSION" /> on this site, give <ph name="SHORT_PRODUCT_NAME" /> access</translation>
+<translation id="3013536714390403689">Verified email</translation>
 <translation id="3014726756341138577">Advanced printer features</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
 <translation id="3016780570757425217">Know your location</translation>

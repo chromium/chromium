@@ -6105,6 +6105,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />에서 데이터 읽기</translation>
 <translation id="5680050361008726776">'<ph name="ESIM_PROFILE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="5681586175480958839">파일을 이미 여는 중</translation>
+<translation id="5682120590308014005">Drive의 파일을 AI 모드 대화목록에 쉽게 추가하려면 로그인하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="5684110242705861346">조직의 정책에 따라 "<ph name="NAME" />" 확장 프로그램이 추가되었으며, 이 프로그램이 이 설정을 제어합니다. <ph name="BEGIN_LINK" />세부정보 보기<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi 세부정보</translation>
 <translation id="5687340364605915800">사이트에서 재량에 따라 이 요청에 응답합니다.</translation>
@@ -8183,6 +8184,7 @@
 <translation id="7299588179200441056"><ph name="URL" />~<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">애니메이션</translation>
 <translation id="7301812050652048720">패스키 삭제됨</translation>
+<translation id="7303246449496241344">Drive의 파일을 AI 모드 대화목록에 쉽게 추가하려면 본인 인증을 진행하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> 기기의 비밀번호 설정</translation>
 <translation id="7303900363563182677">이 사이트는 클립보드에 복사된 텍스트 및 이미지에 액세스할 수 없습니다.</translation>
 <translation id="7304030187361489308">높음</translation>

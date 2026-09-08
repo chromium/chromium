@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">ஒற்றை ஆவணம்</translation>
 <translation id="254524874071906077">Chrome ஐ இயல்புநிலை உலாவியாக அமை</translation>
 <translation id="2546283357679194313">குக்கீகளும் தள தரவும்</translation>
+<translation id="254672217349157196">ஈமெயில் முகவரியைத் தானாகவே சரிபார்</translation>
 <translation id="254947805923345898">கொள்கையின் மதிப்பு சரியானதில்லை.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> தவறான பதிலை அனுப்பியது.</translation>
 <translation id="2551608178605132291">முகவரி: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">இப்போது Gmail மற்றும் பலவற்றில் இருந்து தகவல்களைக் கண்டறிந்து நிரப்பலாம்.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, கிடைக்கக்கூடிய செயல்களைப் பார்க்க Tab பட்டனை அழுத்தியபிறகு, தேர்ந்தெடுத்த செயலைச் செயல்படுத்த Enter பட்டனை அழுத்துங்கள்.</translation>
 <translation id="3010991137650052245">இந்தத் தளத்தில் <ph name="PERMISSION" /> ஐப் பயன்படுத்த <ph name="SHORT_PRODUCT_NAME" />மிற்கு அணுகல் வழங்கவும்</translation>
+<translation id="3013536714390403689">சரிபார்க்கப்பட்ட ஈமெயில் முகவரி</translation>
 <translation id="3014726756341138577">பிரிண்ட்டருக்கான மேம்பட்ட அம்சங்கள்</translation>
 <translation id="301521992641321250">தானாகத் தடுக்கப்பட்டது</translation>
 <translation id="3016780570757425217">உங்கள் இருப்பிடத்தை அறியும்</translation>

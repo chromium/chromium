@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Também pode premir Enter para ativar itens. Por exemplo, pode utilizar a tecla Enter para enviar texto num formulário. Para continuar, prima Enter.</translation>
 <translation id="2371402123699727805">Ditado ativo. <ph name="GESTURE" /> para parar. Outros gestos estão temporariamente indisponíveis.</translation>
 <translation id="2381733276052567791">Ativar ou desativar a conversão de texto em voz</translation>
+<translation id="2386248289416625097">Candidatos</translation>
 <translation id="2390264819538553347">Para avançar, prima Enter. Para retroceder, prima a tecla de retrocesso.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisco}} *{{{$$COUNT} asteriscos}}</translation>
 <translation id="2398579267367951220">Escreva para pesquisar a página. Prima Enter para avançar para o resultado, as setas para cima ou para baixo para procurar resultados, continue a escrever para alterar a sua pesquisa ou prima Escape para cancelar.</translation>

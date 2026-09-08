@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">දුරකථන අංකය</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="1986685561493779662">නම දැනටමත් පවතී</translation>
+<translation id="1992244793717364584">යෙදුම අස්ථාපනය කරන ලදි</translation>
 <translation id="200114059308480249">Google සෙවීම් තුළ අවට පෙළ ඇතුළත් කරන්නද?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, අමුණන ලද නිහඬ කළ අප්‍රකට පටිත්ත</translation>
 <translation id="2021896219286479412">පූර්ණ තිර අඩවි පාලන</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="395377504920307820">ගිණුමක් නොමැතිව භාවිත කරන්න</translation>
 <translation id="3955353672249727801">පිටු කියවීමේ ලැයිස්තුවට එක් කරන ලදි</translation>
+<translation id="3958283758104508528"><ph name="APP_NAME" /> අස්ථාපනය කරන ලදි</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{සූදානම් වූ විට Chrome ඔබේ පිටුව පූරණ කරයි}one{සූදානම් වූ විට Chrome ඔබේ පිටු පූරණ කරයි}other{සූදානම් වූ විට Chrome ඔබේ පිටු පූරණ කරයි}}</translation>
 <translation id="3969142555815019568">Chrome හට ඔබේ මුරපද පරීක්ෂා කළ නොහැකිය</translation>
 <translation id="3969863827134279083">ඉහලට යන්න</translation>
@@ -1955,6 +1957,7 @@
 <translation id="8580435650274205305">කල් ඉකුත් වීමේ දිනය, අවශ්‍යයි</translation>
 <translation id="8582529315803410153">ඔබ අනෙකුත් උපාංගවලින් ඔබේ පටිති මෙහි සොයා ගනියි</translation>
 <translation id="8585103689515290060">ස්වයං පිරවුම් සේවා</translation>
+<translation id="8586116786993312006">Chrome හි බ්‍රවුස් කිරීමේ දත්ත මැකීමට ටැප් කරන්න</translation>
 <translation id="859046281437143747">තවත් විකල්ප බොත්තමෙන් මිල ගණන් හඹා යන්න</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> පටිති සමූහය මකන ලදි</translation>
 <translation id="860043288473659153">කාඩ්පත් හිමිකරුගේ නම</translation>

@@ -6104,6 +6104,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> पर अपना डेटा पढ़ें</translation>
 <translation id="5680050361008726776">क्या आप "<ph name="ESIM_PROFILE_NAME" />" को हटाना चाहते हैं?</translation>
 <translation id="5681586175480958839">फ़ाइल पहले ही खोली जा चुकी है</translation>
+<translation id="5682120590308014005">Drive से फ़ाइलें एआई मोड की थ्रेड में आसानी से जोड़ने के लिए, साइन इन करें. इससे आपको अपने सभी डिवाइसों पर पासवर्ड वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="5684110242705861346">"<ph name="NAME" />" एक्सटेंशन को आपके संगठन की नीति के तहत जोड़ा गया था. यह एक्सटेंशन इस सेटिंग को कंट्रोल कर रहा है. <ph name="BEGIN_LINK" />जानकारी देखें<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">वाई-फ़ाई की जानकारी</translation>
 <translation id="5687340364605915800">यह साइटों पर निर्भर करता है कि वे इस अनुरोध को स्वीकार करेंगी या नहीं</translation>
@@ -8185,6 +8186,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">ऐनिमेशन</translation>
 <translation id="7301812050652048720">पासकी मिटाई गई</translation>
+<translation id="7303246449496241344">Drive से फ़ाइलें एआई मोड की थ्रेड में आसानी से जोड़ने के लिए, अपनी पहचान की पुष्टि करें. इससे आपको अपने सभी डिवाइसों पर पासवर्ड वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> का कोई पासवर्ड सेट अप करें</translation>
 <translation id="7303900363563182677">इस साइट को क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखने से ब्लॉक कर दिया गया है</translation>
 <translation id="7304030187361489308">ज़्यादा</translation>

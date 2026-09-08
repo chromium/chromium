@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">คุณกดแป้น Enter เพื่อเปิดใช้งานรายการต่างๆ ได้ด้วย ตัวอย่างเช่น สามารถใช้แป้น Enter เพื่อส่งข้อความในแบบฟอร์มได้ กด Enter เพื่อดำเนินการต่อ</translation>
 <translation id="2371402123699727805">การพิมพ์ตามคำบอกทำงานอยู่ <ph name="GESTURE" />เพื่อหยุด ท่าทางสัมผัสอื่นๆ ไม่พร้อมใช้งานชั่วคราว</translation>
 <translation id="2381733276052567791">เปิดหรือปิดสวิตช์เสียงพูด</translation>
+<translation id="2386248289416625097">ตัวเลือก</translation>
 <translation id="2390264819538553347">กด Enter เพื่อดำเนินการต่อ หรือกด Backspace เพื่อกลับ</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">พิมพ์เพื่อค้นหาในหน้า กด Enter เพื่อข้ามไปยังผลลัพธ์ กดลูกศรขึ้นหรือลงเพื่อเรียกดูผลลัพธ์ พิมพ์ต่อเพื่อเปลี่ยนคำค้นหา หรือกด Escape เพื่อยกเลิก</translation>

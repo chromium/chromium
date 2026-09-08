@@ -1313,6 +1313,7 @@
 <translation id="2006638907958895361">Открыть ссылку в приложении "<ph name="APP" />"</translation>
 <translation id="2007404777272201486">Сообщить о проблеме...</translation>
 <translation id="200781997903833896">Чтобы использовать чтение вслух, освободите место на устройстве.</translation>
+<translation id="2009047848105043829">Управление устройствами</translation>
 <translation id="2010501376126504057">Совместимые устройства</translation>
 <translation id="2010636492623189611">Выбрано.</translation>
 <translation id="2012935757369720523">Удалить файл</translation>
@@ -6092,6 +6093,7 @@
 <translation id="5678955352098267522">Просмотр данных на сайте <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Удалить профиль "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">Файл уже открывается</translation>
+<translation id="5682120590308014005">Это позволит вам без труда добавлять файлы с Диска в чаты режима ИИ. Вы также сможете использовать свои пароли и другие данные на всех устройствах.</translation>
 <translation id="5684110242705861346">Этим параметром управляет расширение "<ph name="NAME" />", добавленное в соответствии с правилами вашей организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Сведения о сети Wi-Fi</translation>
 <translation id="5687340364605915800">Некоторые сайты могут не реагировать на этот запрос</translation>
@@ -6647,6 +6649,7 @@
 <translation id="6126601353087978360">Оставьте отзыв в поле ниже.</translation>
 <translation id="6127292407256937949">Сейчас звук включен. Отключить звук.</translation>
 <translation id="6127598727646973981">Защищенные подключения</translation>
+<translation id="6129686474468159207">Просмотр информации о том, с каких сайтов вы звоните и когда используется ваша камера или микрофон.</translation>
 <translation id="6129691635767514872">Выбранные данные удалены из Chrome и с синхронизированных устройств. История также может храниться в вашем аккаунте Google, например в виде поисковых запросов и сведений из сервисов Google. Их можно найти на сайте <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Комментарий к сертификату Netscape</translation>
 <translation id="6129953537138746214">Пробел</translation>
@@ -8176,6 +8179,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Анимация</translation>
 <translation id="7301812050652048720">Ключ доступа удален.</translation>
+<translation id="7303246449496241344">Это позволит вам без труда добавлять файлы с Диска в чаты режима ИИ. Вы также сможете использовать свои пароли и другие данные на всех устройствах.</translation>
 <translation id="7303485269821975179">Создать пароль <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">У этого сайта нет доступа к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="7304030187361489308">Высокий</translation>

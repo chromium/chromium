@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">ফোন নম্বর</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="1986685561493779662">নামটি আগে থেকেই আছে</translation>
+<translation id="1992244793717364584">অ্যাপ আনইনস্টল করা হয়েছে</translation>
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, পিন করা মিউট করা ছদ্মবেশী ট্যাব</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="395377504920307820">কোনও অ্যাকাউন্টে লগ-ইন না করেই ব্যবহার করুন</translation>
 <translation id="3955353672249727801">পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে</translation>
+<translation id="3958283758104508528"><ph name="APP_NAME" /> আনইনস্টল করা হয়েছে</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}one{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}other{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}}</translation>
 <translation id="3969142555815019568">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না</translation>
 <translation id="3969863827134279083">উপরে যান</translation>
@@ -1955,6 +1957,7 @@
 <translation id="8580435650274205305">মেয়াদ সমাপ্তির তারিখ, প্রয়োজন</translation>
 <translation id="8582529315803410153">অন্যান্য ডিভাইস থেকে আপনার ট্যাবগুলি এখানে দেখতে পাবেন</translation>
 <translation id="8585103689515290060">অটোফিল পরিষেবা</translation>
+<translation id="8586116786993312006">Chrome-এ ব্রাউজ করা ডেটা মুছতে ট্যাপ করুন</translation>
 <translation id="859046281437143747">'আরও বিকল্প' বোতাম থেকে দাম ট্র্যাক করুন</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> ট্যাব গ্রুপ মুছে দেওয়া হয়েছে</translation>
 <translation id="860043288473659153">কার্ডধারকের নাম</translation>

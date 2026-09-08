@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">телефонен номер</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
+<translation id="1992244793717364584">Приложението бе деинсталирано</translation>
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, чийто звук е спрян</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">Вход</translation>
 <translation id="395377504920307820">Използване без профил</translation>
 <translation id="3955353672249727801">Страниците са добавени към списъка за четене</translation>
+<translation id="3958283758104508528">Приложението <ph name="APP_NAME" /> бе деинсталирано</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ще зареди страницата при готовност}other{Chrome ще зареди страниците при готовност}}</translation>
 <translation id="3969142555815019568">Chrome не може да провери паролите ви</translation>
 <translation id="3969863827134279083">Преместване нагоре</translation>
@@ -1955,6 +1957,7 @@
 <translation id="8580435650274205305">Дата на валидност, задължителна</translation>
 <translation id="8582529315803410153">Тук ще се показват разделите ви от други устройства</translation>
 <translation id="8585103689515290060">Услуги за автоматично попълване</translation>
+<translation id="8586116786993312006">Докоснете, за да изтриете данните за сърфирането в Chrome</translation>
 <translation id="859046281437143747">Проследявайте цени от бутона „Още опции“</translation>
 <translation id="859064343657890103">Групата раздели „<ph name="TAB_GROUP_TITLE" />“ бе изтрита</translation>
 <translation id="860043288473659153">Име на титуляря на картата</translation>

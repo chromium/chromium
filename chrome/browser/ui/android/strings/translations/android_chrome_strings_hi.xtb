@@ -252,6 +252,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1984087999855033707">फ़ोन नंबर</translation>
 <translation id="1984417487208496350">कोई सुरक्षा नहीं (हम ऐसा करने का सुझाव नहीं देते)</translation>
 <translation id="1986685561493779662">नाम पहले से मौजूद है</translation>
+<translation id="1992244793717364584">ऐप्लिकेशन अनइंस्टॉल किया गया</translation>
 <translation id="200114059308480249">क्या आप Google पर कुछ खोजते समय, खोज से जुड़े मिलते-जुलते शब्द भी शामिल करना चाहते हैं?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, पिन किया गया ऐसा गुप्त टैब जिसे म्यूट किया गया है</translation>
 <translation id="2021896219286479412">पूरी स्क्रीन के साइट नियंत्रण</translation>
@@ -738,6 +739,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="395377504920307820">साइन इन किए बिना जारी रखें</translation>
 <translation id="3955353672249727801">रीडिंग लिस्ट में पेज जोड़े गए</translation>
+<translation id="3958283758104508528"><ph name="APP_NAME" /> अनइंस्टॉल किया गया</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{तैयार होने पर Chrome आपका पेज लोड करेगा}one{तैयार होने पर Chrome आपके पेज लोड करेगा}other{तैयार होने पर Chrome आपके पेज लोड करेगा}}</translation>
 <translation id="3969142555815019568">Chrome आपके पासवर्ड की जांच नहीं कर सकता</translation>
 <translation id="3969863827134279083">ऊपर ले जाएं</translation>
@@ -1957,6 +1959,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8580435650274205305">खत्म होने की तारीख डालना ज़रूरी है</translation>
 <translation id="8582529315803410153">आपको दूसरे डिवाइस पर खोले गए अपने टैब यहां दिखेंगे</translation>
 <translation id="8585103689515290060">जानकारी अपने-आप भरने वाली सेवाएं</translation>
+<translation id="8586116786993312006">Chrome में ब्राउज़िंग डेटा मिटाने के लिए टैप करें</translation>
 <translation id="859046281437143747">'ज़्यादा विकल्प' बटन से कीमत ट्रैक करें</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> टैब ग्रुप मिटाया गया</translation>
 <translation id="860043288473659153">कार्डधारक का नाम</translation>

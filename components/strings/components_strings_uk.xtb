@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">Один документ</translation>
 <translation id="254524874071906077">Установити Chrome веб-переглядачем за умовчанням</translation>
 <translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
+<translation id="254672217349157196">Автоматично підтверджувати електронну адресу</translation>
 <translation id="254947805923345898">Недійсне значення правила.</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> надіслав недійсну відповідь.</translation>
 <translation id="2551608178605132291">Адреса: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Тепер ви можете знаходити й заповнювати інформацію з Gmail тощо.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: натисніть Tab, щоб переглянути доступні дії, а потім – Enter, щоб виконати вибрану дію.</translation>
 <translation id="3010991137650052245">Щоб застосовувати на цьому сайті дозвіл "<ph name="PERMISSION" />", надайте його <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Підтверджена електронна адреса</translation>
 <translation id="3014726756341138577">Розширені функції принтера</translation>
 <translation id="301521992641321250">Блокується автоматично</translation>
 <translation id="3016780570757425217">Бачити ваше місцезнаходження</translation>

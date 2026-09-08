@@ -5914,6 +5914,21 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 <translation id="4725691087141147920">로그인 중 동기화 동의 표시</translation>
 <translation id="4725801978265372736">로컬 사용자의 이름과 원격 액세스 호스트 소유자가 일치해야 함</translation>
 <translation id="4726228171190098009">기기에서 파워워시를 요청하도록 허용 안함</translation>
+<translation id="4726236283425627939">정책을 설정하면 기존 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다.
+
+이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />에 기본 구성을 설정할 수 있으며, 정책에서 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다.
+
+이 정책은 기존 정책의 확장 프로그램별 구성보다 우선될 수 있습니다.
+
+<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 또는 <ph name="EXTENSION_SETTINGS_POLICY_NAME" />의 ID별 확장 프로그램 설정은 <ph name="DEFAULT_SCOPE" /> 기본값에서 'installation_mode' 및 'update_url'만 상속받습니다. 다른 속성은 상속받지 않습니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 url인 경우 'override_update_url' 플래그가 무시됩니다.
+
+<ph name="PRODUCT_NAME" /> 버전 154부터 'debugger' 권한이 있는 확장 프로그램에 'runtime_blocked_hosts'를 적용하면 모든 타겟에서 'chrome.debugger.attach()'가 완전히 사용 중지됩니다.
+
+<ph name="MS_WIN_NAME" /> 인스턴스의 경우 인스턴스가 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
+
+<ph name="MAC_OS_NAME" /> 인스턴스의 경우 인스턴스가 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
+
+참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="4726895359147376813">영구 ID에서 VM 구성에 매핑합니다.</translation>
 <translation id="4732069502693984686">여러 화면에 대한 자동 화면 캡처 사용 설정</translation>
 <translation id="4733471537137819387">통합 HTTP 인증과 관련된 정책입니다.</translation>
@@ -6614,6 +6629,11 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 <translation id="5152787786897382519">Chromium과 Chrome의 일부 정책 그룹은 특정 기능 제어를 위해 서로 종속되는 경우도 있습니다. 이러한 세트는 다음의 정책 그룹으로 대표됩니다. 정책의 출처가 여러 개일 수 있으므로 우선순위가 가장 높은 출처의 값만 적용됩니다. 같은 그룹에서 우선순위가 낮은 출처의 값은 무시됩니다. 우선순위는 <ph name="POLICY_PRIORITY_DOC_URL" />에 정의되어 있습니다.</translation>
 <translation id="5153187201534281749">툴바의 브라우저 실험 아이콘</translation>
 <translation id="5159674159887919923">ChromeOS Flex에서 추가 하드웨어 데이터 전송 안함</translation>
+<translation id="5162562564734598188">정책을 '사용'으로 설정하면 단축키나 확장 프로그램 API를 통해 스크린샷을 캡처할 수 없습니다. 정책을 설정하지 않거나 '사용 안함'으로 설정하면 스크린샷을 캡처할 수 있습니다.
+
+<ph name="PRODUCT_NAME" /> 버전 154부터 이 정책을 사용 설정하면 확장 프로그램이 'chrome.debugger.attach()'를 통해 디버거를 연결할 수 없습니다.
+
+정책 설정과 관계없이 <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="LINUX_OS_NAME" />에서는 운영체제나 서드 파티 애플리케이션으로 찍은 스크린샷이 차단되지 않습니다.</translation>
 <translation id="5162571264806471078">관리 프로필에서 보안 신호의 클라우드 보고 사용 설정</translation>
 <translation id="5162982931329320509">DNS-over-HTTPS를 사용하여 확인할 도메인 목록입니다. 목록에 포함되지 않은 다른 도메인은 DNS-over-HTTPS를 사용하여 확인되지 않습니다. 보안 DNS 모드가 사용 안함으로 설정된 경우(항상 일반 텍스트 DNS 사용) 이 정책은 무시됩니다.
 

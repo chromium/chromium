@@ -934,6 +934,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2544644783021658368">Documento singolo</translation>
 <translation id="254524874071906077">Imposta Chrome come browser predefinito</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
+<translation id="254672217349157196">Verifica automaticamente l'indirizzo email</translation>
 <translation id="254947805923345898">Il valore della norma non è valido.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ha inviato una risposta non valida.</translation>
 <translation id="2551608178605132291">Indirizzo: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3008410317623852235">Ora puoi trovare e inserire informazioni da Gmail e altro.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="3010991137650052245">Per usare <ph name="PERMISSION" /> su questo sito, consenti l'accesso a <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Email verificata</translation>
 <translation id="3014726756341138577">Funzionalità avanzate della stampante</translation>
 <translation id="301521992641321250">Autorizzazione bloccata automaticamente</translation>
 <translation id="3016780570757425217">Conoscere la tua posizione</translation>

@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Item updated</translation>
 <translation id="1018804590490383958">Scan and autofill</translation>
 <translation id="1019990162050689579">Gemini App activity</translation>
+<translation id="102645702181682900">Task started</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Open Password Manager</translation>
 <translation id="1035980983510608210">Closing all tabs will close pinned tabs as well.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Delete passkey</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
 <translation id="1718835860248848330">Last hour</translation>
+<translation id="1726013039921383235">Always allow*</translation>
 <translation id="1728549374069268714">Paste and go</translation>
 <translation id="1732468323901456775">Turn on notifications for <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Update known traveller number</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oct 2023</translation>
 <translation id="3419787211763835342">Help improve enhanced autofill</translation>
+<translation id="3430407169377889553">Use Gemini carefully and take control if needed. You are responsible for Gemini's actions during tasks.</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3441673211568148613">Keep your browsing private</translation>
 <translation id="3443810440409579745">Tab received.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Update your browser</translation>
 <translation id="4021931095789478915">Add ${url} to reading list</translation>
 <translation id="4028871427853484857">Save in account…</translation>
+<translation id="4034354558246368274">Allow this time</translation>
 <translation id="4038354071007134711">No application on this device can open the file.</translation>
 <translation id="4042870976416480368">Find in Page</translation>
 <translation id="4045441967987592849">Re-open</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Page added to your reading list}other{{count} pages added to your reading list}}</translation>
 <translation id="459644946100970322">Turn on price alerts?</translation>
 <translation id="4597892826846980979">Get tabs notifications</translation>
+<translation id="459792494991530234">Typing</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
 <translation id="4607887340472970274">Price tracking</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Company name</translation>
 <translation id="479628432297359449">Stop download?</translation>
 <translation id="4796496140132859135">Tab group. Collapsed.</translation>
+<translation id="4800912004582762296">Clicking</translation>
 <translation id="4802185666270672526">Hide Request desktop site</translation>
 <translation id="4802678077012980341">Password Checkup completed!</translation>
 <translation id="4803185665210547709">Managed by your organisation.
@@ -1625,6 +1631,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6259928806013786178">Reading mode failed</translation>
 <translation id="626335165106398104">Gemini works with other services</translation>
 <translation id="6268773951964630964">Search for copied image</translation>
+<translation id="6270944267518310103">Waiting</translation>
 <translation id="6271462272606946663">Hide Request mobile site</translation>
 <translation id="6271824294945464304">Sharing password</translation>
 <translation id="628251768213143684">You can always manage what's saved in your Google Account</translation>
@@ -1658,6 +1665,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6350745006329795504">Manage your devices</translation>
 <translation id="6351147166808964033">Enter Tab Switcher</translation>
 <translation id="63519665078626091">To use the Web Inspector, connect to Safari on your computer using a cable and access your iPad from the Develop menu. You can enable the Develop menu in the Advanced section of Safari settings on your computer.</translation>
+<translation id="6354695695659930684">Filling password</translation>
 <translation id="6355820183143562453">Hide price tracking card</translation>
 <translation id="6355820205320395730">Weak passwords are easy to guess. Make sure that you’re creating strong passwords. <ph name="BEGIN_LINK" />See more security tips.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Sign in to get all your stuff like passwords, bookmarks and more.</translation>
@@ -2168,7 +2176,7 @@ You can restart at any time.</translation>
 <translation id="797824194429476746">The tabs will remain open on this device but the group will be permanently deleted.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="798299424881500862">Orange theme</translation>
-<translation id="7987685713885608670">For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.</translation>
+<translation id="7987685713885608670">For added safety, encrypt passwords on your device before they're saved to Google Password Manager.</translation>
 <translation id="798991908416757345">Tab groups are unavailable</translation>
 <translation id="7993170188789685695">Double-tap to close this notification.</translation>
 <translation id="7996239959906074962">Set up…</translation>
@@ -2250,6 +2258,7 @@ You can restart at any time.</translation>
 <translation id="8233237502828137700">Close banner promo</translation>
 <translation id="823339794112333264">Turn on microphone</translation>
 <translation id="8240217649914883113">Add this to my calendar</translation>
+<translation id="824379025871762038">Never allow</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8252980988000695656">Google Lens completed!</translation>
 <translation id="8258734532103758067">I've exported my data</translation>

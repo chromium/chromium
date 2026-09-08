@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Ставката е ажурирана</translation>
 <translation id="1018804590490383958">Скенирајте и пополнувајте автоматски</translation>
 <translation id="1019990162050689579">Активност во апликациите Gemini</translation>
+<translation id="102645702181682900">Задачата е започната</translation>
 <translation id="102916930470544692">Криптографски клуч</translation>
 <translation id="1030376737535466765">Отвори Password Manager</translation>
 <translation id="1035980983510608210">Ако ги затворите сите картички, ќе се затворат и сите прикачени картички.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Избришете го криптографскиот клуч</translation>
 <translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
 <translation id="1718835860248848330">Изминатиот час</translation>
+<translation id="1726013039921383235">Секогаш дозволувај</translation>
 <translation id="1728549374069268714">Залепи и продолжи</translation>
 <translation id="1732468323901456775">Вклучете ги известувањата за <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Ажурирајте го бројот на познат патник</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3416023309465857378">25 окт. 2023 г.</translation>
 <translation id="3419787211763835342">Помогнете да се подобри „Подобрено автоматско пополнување“</translation>
+<translation id="3430407169377889553">Користете го Gemini внимателно и преземете ја контролата ако е потребно. Вие сте одговорни за дејствата на Gemini при завршувањето на задачите.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="3441673211568148613">Чувајте го прелистувањето приватно</translation>
 <translation id="3443810440409579745">Примена е картичка.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Ажурирајте го вашиот прелистувач</translation>
 <translation id="4021931095789478915">Додајте ${url} во „Список за читање“</translation>
 <translation id="4028871427853484857">Зачувај во сметката…</translation>
+<translation id="4034354558246368274">Дозволи овој пат</translation>
 <translation id="4038354071007134711">Ниедна апликација на уредот не може да ја отвори датотеката.</translation>
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
 <translation id="4045441967987592849">Отвори повторно</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Додадена е страница во вашиот „Список за читање“}one{Додадени се {count} страница во вашиот „Список за читање“}other{Додадени се {count} страници во вашиот „Список за читање“}}</translation>
 <translation id="459644946100970322">Да се вклучат известувањата за цени?</translation>
 <translation id="4597892826846980979">Добивајте известувања во картичките</translation>
+<translation id="459792494991530234">Пишува</translation>
 <translation id="4601095002996233687">Детални скенирања за сомнителни преземања.</translation>
 <translation id="4606247758155004938">Вашата организација управува со прелистувачот.</translation>
 <translation id="4607887340472970274">Следење цени</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Име на компанијата</translation>
 <translation id="479628432297359449">Да се сопре преземањето?</translation>
 <translation id="4796496140132859135">Група картички. Собрана.</translation>
+<translation id="4800912004582762296">Кликнува</translation>
 <translation id="4802185666270672526">Скриј „Побарај сајт за компјутер“</translation>
 <translation id="4802678077012980341">Задачата „Проверка на лозинки“ е завршена!</translation>
 <translation id="4803185665210547709">Управувано од вашата организација.
@@ -1625,6 +1631,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6259928806013786178">Не можеше да се активира Reading mode</translation>
 <translation id="626335165106398104">Gemini функционира и со други услуги</translation>
 <translation id="6268773951964630964">Пребарајте ја копираната слика</translation>
+<translation id="6270944267518310103">Чека</translation>
 <translation id="6271462272606946663">Скриј „Побарај сајт за мобилен“</translation>
 <translation id="6271824294945464304">Се споделува лозинка</translation>
 <translation id="628251768213143684">Секогаш може да управувате со тоа што се зачувува во вашата сметка на Google</translation>
@@ -1658,6 +1665,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6350745006329795504">Управувајте со уредите</translation>
 <translation id="6351147166808964033">Влезете во „Менувачот на картички“</translation>
 <translation id="63519665078626091">За користење на Web Inspector, поврзете се на Safari на вашиот компјутер со кабел и пристапете до вашиот iPad од менито Develop. Може да го овозможите менито Develop во делот „Напредно“ во поставките за Safari на компјутерот.</translation>
+<translation id="6354695695659930684">Ја пополнува лозинката</translation>
 <translation id="6355820183143562453">Скриј ја картичката „Следење цена“</translation>
 <translation id="6355820205320395730">Слабите лозинки се лесни за погаѓање. Уверете се дека создавате силни лозинки. <ph name="BEGIN_LINK" />Погледнете повеќе совети за безбедност.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Најавете се за да ги добиете сите ваши работи како лозинките, обележувачите и друго.</translation>
@@ -2250,6 +2258,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8233237502828137700">Затвори го промотивниот банер</translation>
 <translation id="823339794112333264">Вклучи го микрофонот</translation>
 <translation id="8240217649914883113">Додај го ова во мојот календар</translation>
+<translation id="824379025871762038">Никогаш не дозволувај</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8252980988000695656">Задачата „Пребарување со Google Lens“ е завршена!</translation>
 <translation id="8258734532103758067">Ги извезов моите податоци</translation>

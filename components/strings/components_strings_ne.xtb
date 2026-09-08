@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">एउटा कागजात</translation>
 <translation id="254524874071906077">Chrome लाई डिफल्ट ब्राउजरको रूपमा सेट गर्नुहोस्</translation>
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
+<translation id="254672217349157196">आफ्नो इमेल ठेगाना स्वतः पुष्टि गर्नुहोस्</translation>
 <translation id="254947805923345898">नीतिको मान मान्य छैन।</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ले अमान्य प्रतिक्रिया पठायो।</translation>
 <translation id="2551608178605132291">ठेगाना: <ph name="ADDRESS" />।</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">तपाईं अब Gmail र अन्य सेवामा भएको जानकारी खोज्न र भर्न सक्नुहुन्छ</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, गर्न सकिने विभिन्न कारबाहीहरू हेर्न Tab थिच्नुहोस् अनि आफूले चयन गरेको कारबाही कार्यान्वयन गर्न Enter थिच्नुहोस्।</translation>
 <translation id="3010991137650052245">यो साइटमा तपाईंको डिभाइसको <ph name="PERMISSION" /> प्रयोग गर्न <ph name="SHORT_PRODUCT_NAME" /> लाई एक्सेस दिनुहोस्</translation>
+<translation id="3013536714390403689">पुष्टि गरिएको इमेल</translation>
 <translation id="3014726756341138577">प्रिन्टरका उन्नत सुविधाहरू</translation>
 <translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
 <translation id="3016780570757425217">तपाईँको स्थान जान्नुहोस्</translation>

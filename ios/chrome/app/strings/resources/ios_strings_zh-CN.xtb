@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">书签已更新</translation>
 <translation id="1018804590490383958">扫描并自动填充</translation>
 <translation id="1019990162050689579">Gemini 应用活动记录</translation>
+<translation id="102645702181682900">任务已开始</translation>
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1030376737535466765">打开密码管理工具</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
 <translation id="1718835860248848330">过去 1 小时</translation>
+<translation id="1726013039921383235">始终允许</translation>
 <translation id="1728549374069268714">粘贴并前往</translation>
 <translation id="1732468323901456775">开启“<ph name="MODULE_NAME" />”的通知</translation>
 <translation id="1739364174357629566">更新已知旅客编号</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">地图</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">帮助改进增强型自动填充功能</translation>
+<translation id="3430407169377889553">请谨慎使用 Gemini，在必要时进行接管。您需要为 Gemini 在执行任务期间的操作负责。</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3441673211568148613">让浏览记录不留痕迹</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">更新浏览器</translation>
 <translation id="4021931095789478915">将 ${url} 添加到阅读清单</translation>
 <translation id="4028871427853484857">保存到账号…</translation>
+<translation id="4034354558246368274">仅允许这一次</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页中查找</translation>
 <translation id="4045441967987592849">重新打开</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{此页面已添加到您的阅读清单中}other{{count} 个页面已添加到您的阅读清单中}}</translation>
 <translation id="459644946100970322">开启票价变更提醒？</translation>
 <translation id="4597892826846980979">接收标签页通知</translation>
+<translation id="459792494991530234">正在输入</translation>
 <translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4606247758155004938">您的浏览器由贵单位管理。</translation>
 <translation id="4607887340472970274">价格跟踪</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">公司名称</translation>
 <translation id="479628432297359449">停止下载？</translation>
 <translation id="4796496140132859135">标签页分组，已收起。</translation>
+<translation id="4800912004582762296">正在点击</translation>
 <translation id="4802185666270672526">隐藏“请求切换到桌面版网站”</translation>
 <translation id="4802678077012980341">“密码安全检查”任务已完成！</translation>
 <translation id="4803185665210547709">由贵单位管理。
@@ -1625,6 +1631,7 @@
 <translation id="6259928806013786178">未能开启阅读模式</translation>
 <translation id="626335165106398104">Gemini 可以与其他服务配合使用</translation>
 <translation id="6268773951964630964">搜索复制的图片</translation>
+<translation id="6270944267518310103">正在等待</translation>
 <translation id="6271462272606946663">隐藏“请求切换到移动版网站”</translation>
 <translation id="6271824294945464304">正在分享密码</translation>
 <translation id="628251768213143684">您随时可管理您 Google 账号中保存的内容</translation>
@@ -1658,6 +1665,7 @@
 <translation id="6350745006329795504">管理设备</translation>
 <translation id="6351147166808964033">进入标签页切换器</translation>
 <translation id="63519665078626091">如需使用网页检查器，请使用数据线连接到计算机上的 Safari，并从“开发”菜单中访问 iPad。您可在计算机上 Safari 设置中的“高级”部分内启用“开发”菜单。</translation>
+<translation id="6354695695659930684">正在填充密码</translation>
 <translation id="6355820183143562453">隐藏“价格跟踪”卡片</translation>
 <translation id="6355820205320395730">安全系数低的密码容易被人猜到。请务必创建安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="6357455205205567365">登录后即可获取您的所有内容，例如密码、书签等。</translation>
@@ -2250,6 +2258,7 @@
 <translation id="8233237502828137700">关闭横幅宣传内容</translation>
 <translation id="823339794112333264">开启麦克风</translation>
 <translation id="8240217649914883113">将此添加到我的日历</translation>
+<translation id="824379025871762038">永不允许</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8252980988000695656">“Google 智能镜头”任务已完成！</translation>
 <translation id="8258734532103758067">数据已导出</translation>

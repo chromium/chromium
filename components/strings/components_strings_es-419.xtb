@@ -934,6 +934,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="254524874071906077">Establecer Chrome como navegador predeterminado</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
+<translation id="254672217349157196">Verifica automáticamente tu correo electrónico</translation>
 <translation id="254947805923345898">El valor de la política no es válido.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> envió una respuesta no válida.</translation>
 <translation id="2551608178605132291">Dirección: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3008410317623852235">Ahora puedes encontrar y completar información de Gmail y mucho más.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab para explorar las acciones disponibles y, luego, presiona Intro para ejecutar la acción seleccionada.</translation>
 <translation id="3010991137650052245">Para usar tu <ph name="PERMISSION" /> en este sitio, otorga acceso a <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Correo electrónico verificado</translation>
 <translation id="3014726756341138577">Funciones avanzadas de la impresora</translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
 <translation id="3016780570757425217">Conocer tu ubicación</translation>

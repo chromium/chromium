@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">номер телефона</translation>
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1986685561493779662">Это имя уже используется.</translation>
+<translation id="1992244793717364584">Приложение удалено</translation>
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2004096469149679223">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">Войти</translation>
 <translation id="395377504920307820">Продолжить без входа в аккаунт</translation>
 <translation id="3955353672249727801">Страницы добавлены в список для чтения.</translation>
+<translation id="3958283758104508528">Приложение "<ph name="APP_NAME" />" удалено</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Страница будет загружена при подключении к сети}one{Страницы будут загружены при подключении к сети}few{Страницы будут загружены при подключении к сети}many{Страницы будут загружены при подключении к сети}other{Страницы будут загружены при подключении к сети}}</translation>
 <translation id="3969142555815019568">Браузеру Chrome не удается проверить пароли.</translation>
 <translation id="3969863827134279083">Перейти вверх</translation>
@@ -908,6 +910,7 @@
 <translation id="4595805675102978678">Ошибка в аккаунте Google</translation>
 <translation id="4599585406846903742">Одностраничный режим</translation>
 <translation id="4601095002996233687">Выполняет тщательную проверку подозрительных файлов, которые вы скачали.</translation>
+<translation id="4604434672720336227">Выйти из Chrome</translation>
 <translation id="4606559747793337066">Когда сайт или приложение запрашивает анонимную предзагрузку страниц по ссылкам, Chrome шифрует и предварительно загружает страницы через серверы Google, не используя файлы cookie. Благодаря этому предзагруженный сайт не получает сведений о вашей личности.</translation>
 <translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4624065194742029982">Режим инкогнито в Chrome</translation>
@@ -1430,6 +1433,7 @@
 <translation id="6669390930482049506">Включить</translation>
 <translation id="6671495933530132209">Скопировать изображение</translation>
 <translation id="6672697278890207089">Введите кодовую фразу</translation>
+<translation id="6675622031235530028">Чтобы выйти, удерживайте Ctrl + Q.</translation>
 <translation id="6676927815633975364">Вы выполните вход на этом сайте и в Chrome</translation>
 <translation id="6684262542644248484">Войдите в аккаунт на нужном сайте.</translation>
 <translation id="6684809838922667136">Сделайте браузер Chrome лучше</translation>
@@ -1955,6 +1959,7 @@
 <translation id="8580435650274205305">Срок действия (обязательно)</translation>
 <translation id="8582529315803410153">Здесь вы найдете свои вкладки с других устройств</translation>
 <translation id="8585103689515290060">Сервисы автозаполнения</translation>
+<translation id="8586116786993312006">Нажмите, чтобы удалить данные о работе в браузере Chrome.</translation>
 <translation id="859046281437143747">Нажмите кнопку "Ещё" и выберите пункт "Отслеживание цен"</translation>
 <translation id="859064343657890103">Группа вкладок "<ph name="TAB_GROUP_TITLE" />" удалена.</translation>
 <translation id="860043288473659153">Имя владельца карты</translation>

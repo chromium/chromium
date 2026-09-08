@@ -935,6 +935,7 @@
 <translation id="2544644783021658368">سند تکی</translation>
 <translation id="254524874071906077">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
+<translation id="254672217349157196">درستی‌سنجی کردن خودکار ایمیل</translation>
 <translation id="254947805923345898">مقدار خط‌مشی معتبر نیست.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> پاسخی نامعتبر ارسال کرد.</translation>
 <translation id="2551608178605132291">آدرس: <ph name="ADDRESS" />.</translation>
@@ -1181,6 +1182,7 @@
 <translation id="3008410317623852235">‏اکنون می‌توانید اطلاعات را از Gmail و غیره پیدا و پر کنید</translation>
 <translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مرور کنش‌های موجود کلید «جهش» را فشار دهید، سپس برای اجرای کنش انتخاب‌شده کلید Enter را فشار دهید.</translation>
 <translation id="3010991137650052245">برای استفاده از <ph name="PERMISSION" /> در این سایت، به <ph name="SHORT_PRODUCT_NAME" /> اجازه دسترسی بدهید</translation>
+<translation id="3013536714390403689">ایمیل درستی‌سنجی‌شده</translation>
 <translation id="3014726756341138577">ویژگی‌های پیشرفته چاپگر</translation>
 <translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3016780570757425217">مکان‌تان را بدانید</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Per attivare gli elementi, puoi anche premere Invio. Ad esempio, il tasto Invio può essere utilizzato per inviare il testo in un modulo. Per continuare, premi Invio.</translation>
 <translation id="2371402123699727805">Dettatura attiva. <ph name="GESTURE" /> per interrompere. Al momento non sono disponibili altri gesti.</translation>
 <translation id="2381733276052567791">Attiva o disattiva la sintesi vocale</translation>
+<translation id="2386248289416625097">Candidati</translation>
 <translation id="2390264819538553347">Per avanzare premi INVIO; per tornare indietro premi BACKSPACE.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisco}} *{{{$$COUNT} asterischi}}</translation>
 <translation id="2398579267367951220">Digita il testo da cercare nella pagina. Premi INVIO per passare al risultato, le FRECCE SU e GIÙ per scorrere i risultati, continua a digitare per modificare la ricerca oppure premi ESC per annullare.</translation>

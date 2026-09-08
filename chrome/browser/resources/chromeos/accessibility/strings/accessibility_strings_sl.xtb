@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Tipko Enter lahko pritisnete tudi za aktiviranje elementov. Z njo lahko na primer pošljete besedilo v obrazcu. Če želite nadaljevati, pritisnite tipko Enter.</translation>
 <translation id="2371402123699727805">Narek je aktiven. <ph name="GESTURE" />, če želite ustaviti. Druge poteze trenutno niso na voljo.</translation>
 <translation id="2381733276052567791">Vklop ali izklop govora</translation>
+<translation id="2386248289416625097">Kandidati</translation>
 <translation id="2390264819538553347">Če želite nadaljevati, pritisnite tipko Enter, če se želite vrniti, pritisnite vračalko.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{zvezdica}} *{{toliko zvezdic: {$$COUNT}}}</translation>
 <translation id="2398579267367951220">Vnesite, če želite iskati na strani. Pritisnite tipko Enter, če želite skočiti na rezultat, puščični tipki gor in dol, če želite brskati po rezultatih, vnašajte naprej, če želite spremeniti iskanje, ali pritisnite tipko Escape, če želite preklicati.</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Voit myös aktivoida kohteita painamalla Enter-näppäintä. Enter-näppäimellä voi esimerkiksi lähettää lomakkeessa olevan tekstin. Jatka painamalla Enter.</translation>
 <translation id="2371402123699727805">Sanelu aktiivinen. Lopeta tällä eleellä: <ph name="GESTURE" />. Muut eleet ovat tilapäisesti poissa käytöstä.</translation>
 <translation id="2381733276052567791">Vaihtaa puheen päälle tai pois päältä.</translation>
+<translation id="2386248289416625097">Muunnelmat</translation>
 <translation id="2390264819538553347">Siirry eteenpäin painamalla Enter ja taaksepäin painamalla askelpalautinta.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asteriski}} *{{{$$COUNT} asteriskia}}</translation>
 <translation id="2398579267367951220">Hae sivulta kirjoittamalla. Siirry tulokseen painamalla Enter, selaa tuloksia ylä- ja alanuolella, muuta hakua jatkamalla kirjoittamista tai peru painamalla Esc.</translation>

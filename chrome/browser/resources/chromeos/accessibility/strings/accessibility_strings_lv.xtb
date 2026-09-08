@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Varat arī nospiest ievadīšanas taustiņu (Enter), lai aktivizētu elementus. Ievadīšanas taustiņu var izmantot, piemēram, lai veidlapā iesniegtu tekstu. Lai turpinātu, nospiediet ievadīšanas taustiņu.</translation>
 <translation id="2371402123699727805">Diktēšana ir aktīva. <ph name="GESTURE" />, ja vēlaties to apturēt. Citi žesti īslaicīgi nav pieejami.</translation>
 <translation id="2381733276052567791">Tiek ieslēgta vai izslēgta runa</translation>
+<translation id="2386248289416625097">Kandidāti</translation>
 <translation id="2390264819538553347">Lai pārietu uz nākamo lapu, nospiediet ievadīšanas taustiņu; lai pārietu uz iepriekšējo lapu, nospiediet atpakaļatkāpes taustiņu.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{zvaigznīte}} *{{{$$COUNT} zvaigznītes}}</translation>
 <translation id="2398579267367951220">Rakstiet, lai meklētu saturu lapā. Nospiediet ievadīšanas taustiņu, lai pārietu uz rezultātu, augšupvērsto vai lejupvērsto bultiņu, lai pārlūkotu rezultātus, turpiniet rakstīt, lai mainītu meklēšanas vaicājumu, vai nospiediet atsoļa taustiņu, lai atceltu meklēšanu.</translation>

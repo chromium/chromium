@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">ერთი დოკუმენტი</translation>
 <translation id="254524874071906077">Chrome-ის დაყენება ნაგულისხმევ ბრაუზერად</translation>
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
+<translation id="254672217349157196">თქვენი ელფოსტის ავტომატურად დადასტურება</translation>
 <translation id="254947805923345898">წესების მნიშვნელობა არასწორია.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />-მა არასწორი პასუხი გამოაგზავნა.</translation>
 <translation id="2551608178605132291">მისამართი: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">ახლა უკვე შეგიძლიათ, მოიძიოთ და შეავსოთ ინფორმაცია Gmail-იდან და სხვა წყაროებიდან</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ხელმისაწვდომი ქმედებების გასაცნობად დააჭირეთ კლავიშს „Tab“, არჩეული ქმედების შესასრულებლად დააჭირეთ Enter-ს.</translation>
 <translation id="3010991137650052245">თქვენი <ph name="PERMISSION" /> რომ გამოიყენოთ ამ ვებსაიტზე, დაუშვით <ph name="SHORT_PRODUCT_NAME" />-ის წვდომა</translation>
+<translation id="3013536714390403689">დადასტურებული ელფოსტა</translation>
 <translation id="3014726756341138577">პრინტერების გაფართოებული ფუნქციები</translation>
 <translation id="301521992641321250">დაბლოკილია ავტომატურად</translation>
 <translation id="3016780570757425217">თქვენი მდებარეობის ცოდნა</translation>

@@ -5707,6 +5707,21 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="4725691087141147920">登入時顯示同步同意聲明</translation>
 <translation id="4725801978265372736">要求比對本機使用者和遠端存取主機擁有者的名稱</translation>
 <translation id="4726228171190098009">不允許裝置要求恢復原廠設定</translation>
+<translation id="4726236283425627939">你可以透過這項政策控管 <ph name="PRODUCT_NAME" /> 的擴充功能管理設定，包括由現有擴充功能相關政策控管的任何設定。
+
+這項政策只能將擴充功能 ID 或更新網址對應到其特定的設定。你可以設定特殊 ID <ph name="DEFAULT_SCOPE" /> 的預設設定。如果有未透過這項政策自訂設定的擴充功能，系統將一律套用預設設定。
+
+這項政策可覆寫舊版政策中針對個別擴充功能所做的設定。
+
+請注意，凡是來自 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 的個別 ID 擴充功能設定，都只會從 <ph name="DEFAULT_SCOPE" /> 的預設值繼承「installation_mode」和「update_url」。不會繼承任何其他屬性。如果指定更新網址，系統會將設定套用到擴充功能資訊清單中載明相同更新網址的擴充功能 (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)。如果「override_update_url」旗標設為 true，系統會使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中指定的「更新」網址，或者這項政策中「update_url」欄位指定的網址，來安裝及更新擴充功能。如果「update_url」是 Chrome 線上應用程式商店網址，系統會忽略「override_update_url」旗標。
+
+自 <ph name="PRODUCT_NAME" /> 154 版起，如果將「runtime_blocked_hosts」套用至具備「debugger」權限的擴充功能，系統會完全停用所有目標的「chrome.debugger.attach()」。
+
+<ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊<ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+<ph name="MAC_OS_NAME" /> 執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="4726895359147376813">從永久 ID 對應至 VM 設定</translation>
 <translation id="4732069502693984686">啟用自動擷取多個螢幕畫面的功能</translation>
 <translation id="4733471537137819387">與整合 HTTP 驗證相關的政策。</translation>
@@ -6380,6 +6395,11 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 <translation id="5152787786897382519">Chromium 和 Google Chrome 有部分政策群組具有相依關係，依此共同管控特定功能。這些組合如下列政策群組所示。由於政策可能具有多個來源，系統只會套用群組中最高優先來源所提供的值，忽略同個群組中優先順序較低的來源所提供的值。請參閱 <ph name="POLICY_PRIORITY_DOC_URL" /> 瞭解來源的優先順序。</translation>
 <translation id="5153187201534281749">工具列中的瀏覽器實驗功能圖示</translation>
 <translation id="5159674159887919923">不要傳送 ChromeOS Flex 上的其他硬體資料</translation>
+<translation id="5162562564734598188">如果將這項政策設為啟用，使用者將無法使用鍵盤快速鍵或擴充功能 API 取得螢幕截圖。如果將這項政策設為停用或不設定，使用者將可取得螢幕截圖。
+
+自 <ph name="PRODUCT_NAME" /> 154 版起，啟用這項政策也會禁止擴充功能透過「chrome.debugger.attach()」附加偵錯工具。
+
+請注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，這項政策無法防止透過作業系統或第三方應用程式取得螢幕截圖。</translation>
 <translation id="5162571264806471078">啟用受管理設定檔的安全信號雲端回報功能</translation>
 <translation id="5162982931329320509">要使用 DNS-over-HTTPS 解析的網域清單。系統不會使用 DNS-over-HTTPS 解析未納入清單的其他網域。如果將安全 DNS 模式設為關閉 (一律使用純文字 DNS)，系統就會忽略這項政策。
 

@@ -6086,6 +6086,7 @@
 <translation id="5678955352098267522">读取您在 <ph name="WEBSITE_1" /> 上的数据</translation>
 <translation id="5680050361008726776">移除“<ph name="ESIM_PROFILE_NAME" />”？</translation>
 <translation id="5681586175480958839">已经正在打开此文件</translation>
+<translation id="5682120590308014005">登录即可轻松将云端硬盘中的文件添加到 AI 模式对话串中。登录后，您还可在自己的所有设备上同步保存的密码等信息。</translation>
 <translation id="5684110242705861346">“<ph name="NAME" />”扩展程序是根据您的组织政策添加的，并正在控制此设置。<ph name="BEGIN_LINK" />查看详情<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi 详细信息</translation>
 <translation id="5687340364605915800">网站可自行决定是否响应此请求</translation>
@@ -8163,6 +8164,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">动画</translation>
 <translation id="7301812050652048720">已删除通行密钥</translation>
+<translation id="7303246449496241344">如需轻松地将云端硬盘中的文件添加到 AI 模式对话串，请验证您的身份。登录后，您还可在自己的所有设备上同步保存的密码等信息。</translation>
 <translation id="7303485269821975179">设置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="7303900363563182677">此网站已被阻止查看复制到剪贴板的文字和图片</translation>
 <translation id="7304030187361489308">高</translation>

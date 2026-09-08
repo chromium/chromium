@@ -6087,6 +6087,7 @@
 <translation id="5678955352098267522">อ่านข้อมูลใน <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">นำ "<ph name="ESIM_PROFILE_NAME" />" ออกใช่ไหม</translation>
 <translation id="5681586175480958839">ไฟล์เปิดอยู่แล้ว</translation>
+<translation id="5682120590308014005">ลงชื่อเข้าใช้เพื่อเพิ่มไฟล์จากไดรฟ์ไปยังชุดข้อความในโหมด AI ได้อย่างง่ายดาย นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="5684110242705861346">มีการเพิ่มส่วนขยาย "<ph name="NAME" />" โดยนโยบายขององค์กรและกำลังควบคุมการตั้งค่านี้ <ph name="BEGIN_LINK" />ดูรายละเอียด<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">รายละเอียด Wi-Fi</translation>
 <translation id="5687340364605915800">เว็บไซต์ใช้การพิจารณาตามที่เห็นสมควรเมื่อตอบคำขอนี้</translation>
@@ -8164,6 +8165,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">แอนิเมชัน</translation>
 <translation id="7301812050652048720">ลบพาสคีย์แล้ว</translation>
+<translation id="7303246449496241344">หากต้องการเพิ่มไฟล์จากไดรฟ์ไปยังชุดข้อความในโหมด AI ได้อย่างง่ายดาย ให้ยืนยันตัวตน นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="7303485269821975179">ตั้งรหัสผ่าน <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">เว็บไซต์นี้ถูกบล็อกไม่ให้ดูข้อความและรูปภาพที่คัดลอกไปยังคลิปบอร์ด</translation>
 <translation id="7304030187361489308">สูง</translation>

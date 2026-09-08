@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Vous pouvez également appuyer sur Entrée pour activer des éléments. Par exemple, vous pouvez utiliser Entrée pour valider le texte saisi dans un formulaire. Pour continuer, appuyez sur Entrée.</translation>
 <translation id="2371402123699727805">Dictée activée. <ph name="GESTURE" /> pour l'arrêter. Les autres gestes sont temporairement indisponibles.</translation>
 <translation id="2381733276052567791">Activer/Désactiver la voix</translation>
+<translation id="2386248289416625097">Candidats</translation>
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée. Pour revenir en arrière, appuyez sur Retour arrière.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{astérisque}} *{{{$$COUNT} astérisques}}</translation>
 <translation id="2398579267367951220">Saisissez le texte à rechercher dans la page. Appuyez sur Entrée pour accéder au résultat. Appuyez sur les flèches vers le haut et vers le bas pour passer d'un résultat à l'autre. Continuez de saisir du texte pour modifier votre recherche, ou appuyez sur Échap pour l'annuler.</translation>

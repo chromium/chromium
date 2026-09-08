@@ -2569,7 +2569,7 @@
 <translation id="2970982365449313350">以這個 Google 帳戶登入 Chrome</translation>
 <translation id="2972557485845626008">韌體</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
-<translation id="2973324205039581528">關閉網站音訊</translation>
+<translation id="2973324205039581528">將網站設為靜音</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
 <translation id="2975845084271617886">加入並開啟</translation>
 <translation id="2976547701881428815">工具與動作</translation>
@@ -6082,6 +6082,7 @@
 <translation id="5678955352098267522">讀取你在 <ph name="WEBSITE_1" /> 上產生的資料</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
 <translation id="5681586175480958839">正在開啟檔案</translation>
+<translation id="5682120590308014005">登入即可輕鬆將雲端硬碟檔案新增至 AI 模式對話串。密碼和其他資料也會同步到所有裝置。</translation>
 <translation id="5684110242705861346">「<ph name="NAME" />」擴充功能是根據貴機構的政策新增，目前正在控制這項設定。<ph name="BEGIN_LINK" />查看詳細資料<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi 詳細資料</translation>
 <translation id="5687340364605915800">網站會自行判斷是否回應這項要求</translation>
@@ -8158,6 +8159,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">動畫</translation>
 <translation id="7301812050652048720">密碼金鑰已刪除</translation>
+<translation id="7303246449496241344">完成身分驗證後，就能輕鬆將雲端硬碟檔案新增至 AI 模式對話串。密碼和其他資料也會同步到所有裝置。</translation>
 <translation id="7303485269821975179">設定 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="7303900363563182677">這個網站無法讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="7304030187361489308">高</translation>
@@ -9381,7 +9383,7 @@
 <translation id="8239932336306009582">不允許傳送通知</translation>
 <translation id="8241040075392580210">晴時多雲</translation>
 <translation id="8241338426526905580">沒有憑證</translation>
-<translation id="8241650983304689286">將分頁加入新的分割畫面</translation>
+<translation id="8241650983304689286">將分頁加入新分割畫面</translation>
 <translation id="8241868517363889229">讀取及變更你的書籤</translation>
 <translation id="8242273718576931540">你的裝置無法連上這個網路。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">啟用 Play 商店</translation>

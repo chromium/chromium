@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">ტელეფონის ნომერი</translation>
 <translation id="1984417487208496350">დაცვის გარეშე (არარეკომენდებული)</translation>
 <translation id="1986685561493779662">სახელი უკვე არსებობს</translation>
+<translation id="1992244793717364584">აპი დეინსტალირებულია</translation>
 <translation id="200114059308480249">გსურთ, დაურთოთ გარშემო ტექსტი Google ძიებებს?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ჩამაგრებული და დადუმებული ინკოგნიტო ჩანართი</translation>
 <translation id="2021896219286479412">სრულეკრანიანი რეჟიმის მართვა</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="395377504920307820">ანგარიშის გარეშე გამოყენება</translation>
 <translation id="3955353672249727801">გვერდები დაემატა საკითხავ სიას</translation>
+<translation id="3958283758104508528"><ph name="APP_NAME" /> დეინსტალირებულია</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ჩატვირთავს თქვენს გვერდს, როცა ის მზად იქნება}other{Chrome ჩატვირთავს თქვენს გვერდებს, როცა ისინი მზად იქნება}}</translation>
 <translation id="3969142555815019568">Chrome ვერ ახერხებს თქვენი პაროლების შემოწმებას</translation>
 <translation id="3969863827134279083">გადაადგილება ზემოთ</translation>
@@ -1957,6 +1959,7 @@
 <translation id="8580435650274205305">მოქმედების ვადა (სავალდებულოა)</translation>
 <translation id="8582529315803410153">აქ იპოვით ჩანართებს თქვენი სხვა მოწყობილობებიდან</translation>
 <translation id="8585103689515290060">ავტომატური შევსების სერვისები</translation>
+<translation id="8586116786993312006">შეეხეთ Chrome-ში დათვალიერების მონაცემების წასაშლელად</translation>
 <translation id="859046281437143747">ადევნეთ თვალი ფასს „სხვა ვარიანტების“ ღილაკით</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> ჩანართების ჯგუფი წაიშალა</translation>
 <translation id="860043288473659153">ბარათის მფლობელის სახელი</translation>

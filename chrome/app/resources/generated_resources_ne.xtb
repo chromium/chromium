@@ -6091,6 +6091,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />मा तपाईंको डेटा पढ्नुहोस्</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" हटाउने हो?</translation>
 <translation id="5681586175480958839">फाइल खोलिसकिएको छ</translation>
+<translation id="5682120590308014005">Drive मा भएका फाइलहरू सजिलैसँग AI मोडका थ्रेडहरूमा हाल्न साइन इन गर्नुहोस्। तपाईं सबै डिभाइसमा रहेका आफ्ना पासवर्डलगायतका थप कुराहरू पनि प्राप्त गर्नु हुने छ।</translation>
 <translation id="5684110242705861346">तपाईंको सङ्गठनको नीतिअनुसार "<ph name="NAME" />" एक्स्टेन्सन हालिएको छ र यो एक्स्टेन्सनले यो सेटिङ नियन्त्रण गरिरहेको छ। <ph name="BEGIN_LINK" />विवरणहरू हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi सम्बन्धी विवरणहरू</translation>
 <translation id="5687340364605915800">यो अनुरोध मान्ने वा नमान्ने कुरा साइटमा भर पर्छ</translation>
@@ -8166,6 +8167,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">एनिमेटेड</translation>
 <translation id="7301812050652048720">पासकी मेटाइएको छ</translation>
+<translation id="7303246449496241344">Drive मा भएका फाइलहरू सजिलैसँग AI मोडका थ्रेडहरूमा हाल्न आफ्नो पहिचान पुष्टि गर्नुहोस्। तपाईं सबै डिभाइसमा रहेका आफ्ना पासवर्डलगायतका थप कुराहरू पनि प्राप्त गर्नु हुने छ।</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> को पासवर्ड सेटअप गर्नुहोस्</translation>
 <translation id="7303900363563182677">यो साइटलाई क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्न रोक लगाइएको छ</translation>
 <translation id="7304030187361489308">उच्च</translation>

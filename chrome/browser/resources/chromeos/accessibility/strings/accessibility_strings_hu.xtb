@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Az elemek aktiválása az Enter lenyomásával is lehetséges. Az Enter gombbal például beküldhet szöveget az űrlapokon. A folytatáshoz nyomja le az Entert.</translation>
 <translation id="2371402123699727805">A diktálás aktív. A leállítás arckifejezése: <ph name="GESTURE" />. A többi arckifejezés átmenetileg nem használható.</translation>
 <translation id="2381733276052567791">Szövegfelolvasás be- és kikapcsolása</translation>
+<translation id="2386248289416625097">Jelöltek</translation>
 <translation id="2390264819538553347">Továbblépéshez nyomja le az Enter, visszalépéshez a Backspace billentyűt.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{csillag}} *{{{$$COUNT} csillag}}</translation>
 <translation id="2398579267367951220">Kezdjen el gépelni az oldalon való kereséshez. Az Enter billentyű megnyomásával a találathoz ugorhat, a felfelé és lefelé mutató nyilakkal váltogathat a találatok között, a keresést módosíthatja további karakterek beírásával, az Esc billentyűvel pedig megszakíthatja a keresést.</translation>

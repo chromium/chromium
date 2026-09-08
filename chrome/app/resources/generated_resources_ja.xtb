@@ -1661,7 +1661,7 @@
 <translation id="2286840900796601828">10 秒巻き戻し</translation>
 <translation id="2287617382468007324">印刷の IPP アドレス</translation>
 <translation id="2287944065963043964">ログイン画面</translation>
-<translation id="2289567621059034186">下の新しいタブ</translation>
+<translation id="2289567621059034186">下に新しいタブを追加</translation>
 <translation id="2290615375132886363">タブレットのナビゲーション ボタン</translation>
 <translation id="2290703778620332549">グループを置き換えるか、新しいグループを作成しますか？</translation>
 <translation id="229182044471402145">一致するフォントは見つかりませんでした。</translation>
@@ -4469,7 +4469,7 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移動…</translation>
-<translation id="4405580203042711503">下の新しいタブ</translation>
+<translation id="4405580203042711503">下に新しいタブを追加</translation>
 <translation id="4405781821077215583">画面上の項目（テキストなど）のサイズを変更する</translation>
 <translation id="4406308048672435032">このタブを無効にできます。または更新すると完全なリストが再び表示されます</translation>
 <translation id="4406881185911439342">グループにフォーカス</translation>
@@ -6086,6 +6086,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> でのユーザーデータの読み取り</translation>
 <translation id="5680050361008726776">「<ph name="ESIM_PROFILE_NAME" />」を削除しますか？</translation>
 <translation id="5681586175480958839">ファイルはすでに開かれています</translation>
+<translation id="5682120590308014005">ログインすると、ドライブのファイルを AI モードのスレッドに簡単に追加できます。これにより、すべてのデバイスでパスワードなどの設定も使用できるようになります。</translation>
 <translation id="5684110242705861346">「<ph name="NAME" />」拡張機能は組織のポリシーによって追加され、この設定を制御しています。<ph name="BEGIN_LINK" />詳細を表示<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5687340364605915800">このリクエストへの対応はサイトが自らの裁量で決定します</translation>
@@ -8164,6 +8165,7 @@
 <translation id="7299588179200441056"><ph name="URL" />～<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">アニメーション</translation>
 <translation id="7301812050652048720">パスキーを削除しました</translation>
+<translation id="7303246449496241344">ドライブのファイルを AI モードのスレッドに簡単に追加するには、本人確認を行ってください。これにより、すべてのデバイスでパスワードなどの設定も使用できるようになります。</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> のパスワードを設定する</translation>
 <translation id="7303900363563182677">このサイトでは、クリップボードにコピーされているテキストや画像へのアクセスがブロックされています</translation>
 <translation id="7304030187361489308">高め</translation>

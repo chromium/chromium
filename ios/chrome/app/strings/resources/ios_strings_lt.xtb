@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Elementas atnaujintas</translation>
 <translation id="1018804590490383958">Nuskaityti ir automatiškai užpildyti</translation>
 <translation id="1019990162050689579">„Gemini Apps“ veikla</translation>
+<translation id="102645702181682900">Užduotis pradėta</translation>
 <translation id="102916930470544692">Prieigos raktas</translation>
 <translation id="1030376737535466765">Atidaryti slaptažodžių tvarkyklę</translation>
 <translation id="1035980983510608210">Uždarius visus skirtukus, taip pat bus uždaryti prisegti skirtukai.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Ištrinti „passkey“</translation>
 <translation id="1715515772563243997">Jei pasitikite <ph name="SITE" />, prisijungdami galite naudoti išsaugotą slaptažodį.</translation>
 <translation id="1718835860248848330">Paskutinė valanda</translation>
+<translation id="1726013039921383235">Visada leisti</translation>
 <translation id="1728549374069268714">Įklijuoti ir eiti</translation>
 <translation id="1732468323901456775">„<ph name="MODULE_NAME" />“ pranešimų įjungimas</translation>
 <translation id="1739364174357629566">Atnaujinkite žinomo keliautojo numerį</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Žemėlapiai</translation>
 <translation id="3416023309465857378">2023 m. spalio 25 d.</translation>
 <translation id="3419787211763835342">Padėkite tobulinti išmanųjį automatinį pildymą</translation>
+<translation id="3430407169377889553">Naudokite „Gemini“ atsargiai ir prireikus perimkite valdymą. Esate atsakingi už „Gemini“ veiksmus atliekant užduotis.</translation>
 <translation id="3435738964857648380">Sauga</translation>
 <translation id="3441673211568148613">Išlaikyti privatų naršymą</translation>
 <translation id="3443810440409579745">Skirtukas gautas.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Naršyklės atnaujinimas</translation>
 <translation id="4021931095789478915">Pridėti ${url} prie skaitymo sąrašo</translation>
 <translation id="4028871427853484857">Išsaugoti paskyroje…</translation>
+<translation id="4034354558246368274">Leisti šį kartą</translation>
 <translation id="4038354071007134711">Šiame įreng. nėra progr., gal. atidaryti failą.</translation>
 <translation id="4042870976416480368">Rasti puslapyje</translation>
 <translation id="4045441967987592849">Atidaryti iš naujo</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Puslapis pridėtas prie skaitymo sąrašo}one{{count} puslapis pridėtas prie skaitymo sąrašo}few{{count} puslapiai pridėti prie skaitymo sąrašo}many{{count} puslapio pridėta prie skaitymo sąrašo}other{{count} puslapių pridėta prie skaitymo sąrašo}}</translation>
 <translation id="459644946100970322">Įjungti įspėjimus apie kainą?</translation>
 <translation id="4597892826846980979">Skirtukų pranešimų gavimas</translation>
+<translation id="459792494991530234">Vedamas tekstas</translation>
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606247758155004938">Jūsų naršyklę tvarko jūsų organizacija.</translation>
 <translation id="4607887340472970274">Kainos stebėjimas</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Įmonės pavadinimas</translation>
 <translation id="479628432297359449">Sustabdyti atsisiuntimą?</translation>
 <translation id="4796496140132859135">Skirtukų grupė. Sutraukta.</translation>
+<translation id="4800912004582762296">Spustelėjimas</translation>
 <translation id="4802185666270672526">Slėpti parinktį „Pateikti užklausą dėl svetainės kompiuteriams“</translation>
 <translation id="4802678077012980341">Slaptažodžio tikrinimas baigtas!</translation>
 <translation id="4803185665210547709">Valdo jūsų organizacija.
@@ -1625,6 +1631,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6259928806013786178">Nepavyko įjungti skaitymo režimo</translation>
 <translation id="626335165106398104">„Gemini“ suderinama su kitomis paslaugomis</translation>
 <translation id="6268773951964630964">Ieškoti nukopijuoto vaizdo</translation>
+<translation id="6270944267518310103">Laukiama</translation>
 <translation id="6271462272606946663">Slėpti parinktį „Pateikti užklausą dėl svetainės mobiliesiems“</translation>
 <translation id="6271824294945464304">Bendrinamas slaptažodis</translation>
 <translation id="628251768213143684">Visada galite valdyti, kas išsaugoma jūsų „Google“ paskyroje</translation>
@@ -1658,6 +1665,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6350745006329795504">Įrenginių tvarkymas</translation>
 <translation id="6351147166808964033">Įjungti skirtukų perjungiklį</translation>
 <translation id="63519665078626091">Jei norite naudoti Žiniatinklio tikrintuvą, kompiuteriu prisijunkite prie „Safari“ naudodami laidą ir pasiekite „iPad“ naudodami meniu „Develop“. Meniu „Develop“ galite įgalinti kompiuterio „Safari“ nustatymų skiltyje „Advanced“.</translation>
+<translation id="6354695695659930684">Užpildomas slaptažodis</translation>
 <translation id="6355820183143562453">Slėpti kainų stebėjimo kortelę</translation>
 <translation id="6355820205320395730">Nesudėtingus slaptažodžius lengva atspėti. Įsitikinkite, kad kuriate sudėtingus slaptažodžius. <ph name="BEGIN_LINK" />Žr. daugiau saugos patarimų.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Prisijunkite, kad gautumėte visus savo duomenis, pvz., slaptažodžius, žymes ir kt.</translation>
@@ -2250,6 +2258,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8233237502828137700">Uždaryti reklamjuostės reklamą</translation>
 <translation id="823339794112333264">Įjungti mikrofoną</translation>
 <translation id="8240217649914883113">Pridėk prie mano kalendoriaus</translation>
+<translation id="824379025871762038">Niekada neleisti</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
 <translation id="8252980988000695656">„Google Lens“ užduotis baigta!</translation>
 <translation id="8258734532103758067">Eksportavau duomenis</translation>

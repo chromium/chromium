@@ -252,6 +252,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="1984087999855033707">телефон нөмірі</translation>
 <translation id="1984417487208496350">Қорғау режимін өшіру (ұсынылмайды)</translation>
 <translation id="1986685561493779662">Атау бұрыннан бар.</translation>
+<translation id="1992244793717364584">Қолданба жойылды</translation>
 <translation id="200114059308480249">Google іздеу сұрауларында көбірек мәтін қамтылсын ба?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, бекітілген, дыбысы өшірілген инкогнито қойындысы</translation>
 <translation id="2021896219286479412">Толық экран режимін басқару</translation>
@@ -738,6 +739,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="395377504920307820">Аккаунтсыз пайдалану</translation>
 <translation id="3955353672249727801">Беттер оқу тізіміне қосылды.</translation>
+<translation id="3958283758104508528"><ph name="APP_NAME" /> жойылды</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Дайын болған кезде, Chrome бетті жүктейді.}other{Дайын болған кезде, Chrome беттерді жүктейді.}}</translation>
 <translation id="3969142555815019568">Chrome сіздің құпия сөздеріңізді тексере алмайды.</translation>
 <translation id="3969863827134279083">Жоғарыға жылжыту</translation>
@@ -1955,6 +1957,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8580435650274205305">Жарамдылық мерзімін көрсету қажет</translation>
 <translation id="8582529315803410153">Басқа құрылғылардағы қойындыларды осы жерден табасыз</translation>
 <translation id="8585103689515290060">Автотолтыру қызметтері</translation>
+<translation id="8586116786993312006">Chrome-дағы браузерді пайдалану деректерін жою үшін түртіңіз.</translation>
 <translation id="859046281437143747">"Қосымша опциялар" түймесін басып, бағаларды бақылаңыз.</translation>
 <translation id="859064343657890103"><ph name="TAB_GROUP_TITLE" /> қойындылар тобы жойылды.</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>

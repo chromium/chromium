@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">您还可按 Enter 键以启用所需项。例如，Enter 键可用于提交表单中的文字。请按 Enter 键以继续。</translation>
 <translation id="2371402123699727805">语音输入已启用，<ph name="GESTURE" />即可停止。暂时无法使用其他动作。</translation>
 <translation id="2381733276052567791">开启或关闭语音</translation>
+<translation id="2386248289416625097">候选词</translation>
 <translation id="2390264819538553347">要前进，请按 Enter 键；要后退，请按退格键。</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">输入文字即可在页面中搜索。按 Enter 键可跳至搜索结果，按向上箭头或向下箭头可浏览搜索结果，继续输入文字可更改搜索内容，按 Esc 键可取消搜索。</translation>

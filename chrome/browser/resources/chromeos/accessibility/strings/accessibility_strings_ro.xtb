@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Poți să apeși și tasta Enter pentru a activa elemente. De exemplu, poți folosi tasta Enter pentru a trimite text într-un formular. Pentru a continua, apasă Enter.</translation>
 <translation id="2371402123699727805">Dictarea este activă. <ph name="GESTURE" /> pentru a opri. Alte gesturi sunt indisponibile temporar.</translation>
 <translation id="2381733276052567791">Activează sau dezactivează vorbirea</translation>
+<translation id="2386248289416625097">Candidați</translation>
 <translation id="2390264819538553347">Pentru a avansa, apasă tasta Enter; pentru a reveni, apasă tasta Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">Tastează pentru a căuta pagina. Apasă pe Enter pentru a accesa rezultatul, apasă tastele săgeată în sus sau în jos pentru a răsfoi rezultatele, continuă să tastezi pentru a căuta altceva și apasă pe Escape pentru a anula.</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">你也可以按下 Enter 鍵以啟用項目。例如，Enter 鍵可用來提交表單中的文字。如要繼續，請按下 Enter 鍵。</translation>
 <translation id="2371402123699727805">「語音輸入」已啟用，<ph name="GESTURE" />即可停止。目前暫時無法使用其他表情。</translation>
 <translation id="2381733276052567791">將語音功能切換為開啟或關閉</translation>
+<translation id="2386248289416625097">候選字</translation>
 <translation id="2390264819538553347">如要前往下一頁，請按下 Enter 鍵；如要返回上一頁，請按下 Backspace 鍵。</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{星號}} *{{{$$COUNT} 個星號}}</translation>
 <translation id="2398579267367951220">輸入要在頁面中搜尋的字詞。按下 Enter 鍵可跳至搜尋結果；按向上或向下箭頭可瀏覽搜尋結果；繼續輸入可變更搜尋字詞；按下 Escape 鍵可取消搜尋。</translation>

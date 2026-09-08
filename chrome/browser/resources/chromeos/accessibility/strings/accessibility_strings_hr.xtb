@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Možete pritisnuti i Enter da biste aktivirali stavke. Na primjer, Enter se može upotrijebiti za slanje teksta u obrascu. Da biste nastavili, pritisnite Enter.</translation>
 <translation id="2371402123699727805">Diktiranje je aktivno. <ph name="GESTURE" /> da biste ga zaustavili. Drugi pokreti privremeno nisu dostupni.</translation>
 <translation id="2381733276052567791">Uključivanje ili isključivanje govora</translation>
+<translation id="2386248289416625097">Kandidati</translation>
 <translation id="2390264819538553347">Za prelazak na sljedeću stranicu pritisnite Enter, a za povratak pritisnite Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{zvjezdica}} *{{zvjezdice ({$$COUNT})}}</translation>
 <translation id="2398579267367951220">Unesite za pretraživanje stranice. Pritisnite tipku Enter za prelazak na rezultat, strelice prema gore ili dolje za pretraživanje rezultata, nastavite upisivati kako biste izmijenili pretraživanje ili pritisnite tipku Escape za poništavanje.</translation>

@@ -218,6 +218,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2365384324219615024">Du kan også trykke på Enter for å aktivere elementer. Enter kan for eksempel brukes til å sende inn tekst i skjemaer. For å fortsette, trykk på Enter.</translation>
 <translation id="2371402123699727805">Dikteringsfunksjonen er aktiv. <ph name="GESTURE" /> for å stoppe. Andre bevegelser er midlertidig utilgjengelige.</translation>
 <translation id="2381733276052567791">Slå tale på eller av</translation>
+<translation id="2386248289416625097">Kandidater</translation>
 <translation id="2390264819538553347">Trykk på Enter for å gå videre eller på tilbaketasten for å gå tilbake.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{stjernetegn}} *{{{$$COUNT} stjernetegn}}</translation>
 <translation id="2398579267367951220">Skriv for å søke på siden. Trykk på Enter for å hoppe til resultatet, oppover- eller nedoverpilen for å bla gjennom resultatene eller Escape for å avbryte. Fortsett å skrive for å endre søket.</translation>

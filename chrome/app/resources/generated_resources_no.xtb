@@ -6098,6 +6098,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5678955352098267522">Les dataene dine på <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Vil du fjerne «<ph name="ESIM_PROFILE_NAME" />»?</translation>
 <translation id="5681586175480958839">Filen holder allerede på å bli åpnet</translation>
+<translation id="5682120590308014005">Logg på for å legge til filer fra Disk i AI-modus-trådene dine på en enkel måte. Du får også passordene dine med mer på alle enhetene dine.</translation>
 <translation id="5684110242705861346">«<ph name="NAME" />»-utvidelsen ble lagt til av organisasjonens retningslinjer og kontrollerer denne innstillingen. <ph name="BEGIN_LINK" />Se detaljer<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wifi-detaljer</translation>
 <translation id="5687340364605915800">Nettsteder er ikke pålagt å respektere denne forespørselen</translation>
@@ -8176,6 +8177,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animert</translation>
 <translation id="7301812050652048720">Passnøkkelen er slettet</translation>
+<translation id="7303246449496241344">For å legge til filer fra Disk i AI-modus-trådene dine på en enkel måte, bekreft at det er deg. Du får også passordene dine med mer på alle enhetene dine.</translation>
 <translation id="7303485269821975179">Opprett et <ph name="DEVICE_TYPE" />-passord</translation>
 <translation id="7303900363563182677">Dette nettstedet er blokkert fra å se tekst og bilder som er kopiert til utklippstavlen</translation>
 <translation id="7304030187361489308">Høyt</translation>

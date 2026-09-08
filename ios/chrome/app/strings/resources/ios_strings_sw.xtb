@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Umesasisha kipengee</translation>
 <translation id="1018804590490383958">Changanua na ujaze kiotomatiki</translation>
 <translation id="1019990162050689579">Shughuli kwenye Programu ya Gemini</translation>
+<translation id="102645702181682900">Jukumu limeanza</translation>
 <translation id="102916930470544692">Ufunguo wa siri</translation>
 <translation id="1030376737535466765">Fungua Kidhibiti cha Manenosiri</translation>
 <translation id="1035980983510608210">Kufunga vichupo vyote kutafunga vichupo vilivyobandikwa pia.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Futa ufunguo wa siri</translation>
 <translation id="1715515772563243997">Ikiwa unaiamini tovuti ya <ph name="SITE" />, unaweza kutumia nenosiri ulilohifadhi ili uingie katika akaunti.</translation>
 <translation id="1718835860248848330">Saa iliyopita</translation>
+<translation id="1726013039921383235">Ruhusu Kila Wakati</translation>
 <translation id="1728549374069268714">Bandika na utafute</translation>
 <translation id="1732468323901456775">Washa arifa za <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Sasisha Namba ya Msafiri Inayojulikana</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Ramani</translation>
 <translation id="3416023309465857378">Tarehe 25 Oktoba, 2023</translation>
 <translation id="3419787211763835342">Saidia kuboresha kipengele cha kujaza kiotomatiki kulikoboreshwa</translation>
+<translation id="3430407169377889553">Tumia Gemini kwa makini na uidhibiti ikihitajika. Unawajibikia vitendo vya Gemini wakati inatekeleza majukumu.</translation>
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3441673211568148613">Weka hali yako ya kuvinjari iwe ya faragha</translation>
 <translation id="3443810440409579745">Umepokea kichupo.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Sasisha Kivinjari chako</translation>
 <translation id="4021931095789478915">Weka ${url} kwenye orodha ya kusoma</translation>
 <translation id="4028871427853484857">Kuhifadhi kwenye akaunti…</translation>
+<translation id="4034354558246368274">Ruhusu Wakati Huu</translation>
 <translation id="4038354071007134711">Hakuna programu kwenye kifaa hiki inayoweza kufungua faili.</translation>
 <translation id="4042870976416480368">Pata katika Ukurasa</translation>
 <translation id="4045441967987592849">Fungua upya</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Ukurasa umewekwa kwenye orodha yako ya kusoma}other{Kurasa {count} zimewekwa kwenye orodha yako ya kusoma}}</translation>
 <translation id="459644946100970322">Ungependa kuwasha arifa kuhusu bei?</translation>
 <translation id="4597892826846980979">Kupata Arifa za Vichupo</translation>
+<translation id="459792494991530234">Inaandika</translation>
 <translation id="4601095002996233687">Ukaguzi wa kina wa vipakuliwa vinavyoshukiwa.</translation>
 <translation id="4606247758155004938">Kivinjari chako kinadhibitiwa na shirika lako.</translation>
 <translation id="4607887340472970274">Ufuatiliaji wa Bei</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Jina la kampuni</translation>
 <translation id="479628432297359449">Ungependa kuacha kupakua?</translation>
 <translation id="4796496140132859135">Kikundi cha vichupo. Kimekunjwa.</translation>
+<translation id="4800912004582762296">Inabofya</translation>
 <translation id="4802185666270672526">Ficha Chaguo la Omba Tovuti ya Kompyuta ya Mezani</translation>
 <translation id="4802678077012980341">Umekamilisha hatua ya Kikagua manenosiri!</translation>
 <translation id="4803185665210547709">Inadhibitiwa na shirika lako.
@@ -1625,6 +1631,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6259928806013786178">Imeshindwa kuwasha kipengele cha hali ya kusoma</translation>
 <translation id="626335165106398104">Gemini hufanya kazi na huduma nyingine</translation>
 <translation id="6268773951964630964">Tafuta picha uliyonakili</translation>
+<translation id="6270944267518310103">Inasubiri</translation>
 <translation id="6271462272606946663">Ficha Chaguo la Omba Tovuti ya Kifaa cha Mkononi</translation>
 <translation id="6271824294945464304">Kushiriki nenosiri</translation>
 <translation id="628251768213143684">Kila wakati, unaweza kudhibiti kilichohifadhiwa kwenye Akaunti yako ya Google</translation>
@@ -1658,6 +1665,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6350745006329795504">Dhibiti vifaa vyako</translation>
 <translation id="6351147166808964033">Weka kibadilishaji cha vichupo</translation>
 <translation id="63519665078626091">Ili utumie Kikaguzi cha Wavuti, unganisha kwenye kivinjari cha Safari katika kompyuta yako ukitumia kebo na ufikie iPad yako kupitia menyu ya Kuendeleza. Unaweza kuwasha menyu ya kuendeleza katika sehemu ya Kina ya mipangilio ya kivinjari cha Safari kwenye kompyuta yako.</translation>
+<translation id="6354695695659930684">Inajaza nenosiri</translation>
 <translation id="6355820183143562453">Ficha kadi ya kufuatilia bei</translation>
 <translation id="6355820205320395730">Manenosiri dhaifu ni rahisi kukisia. Hakikisha kwamba unatunga manenosiri thabiti. <ph name="BEGIN_LINK" />Angalia vidokezo zaidi vya usalama.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Ingia katika akaunti ili upate vipengee vyako vyote kama vile manenosiri, alamisho na zaidi.</translation>
@@ -2250,6 +2258,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8233237502828137700">Funga bango la tangazo</translation>
 <translation id="823339794112333264">Washa maikrofoni</translation>
 <translation id="8240217649914883113">Weka tukio hili kwenye kalenda yangu</translation>
+<translation id="824379025871762038">Usiruhusu Kamwe</translation>
 <translation id="8250920743982581267">Hati</translation>
 <translation id="8252980988000695656">Umekamilisha hatua ya Lenzi ya Google!</translation>
 <translation id="8258734532103758067">Nimehamisha data yangu</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Enter キーを押して項目を有効にすることもできます。たとえば、フォームでテキストを送信する際に Enter キーを使用できます。次へ進むには Enter キーを押してください。</translation>
 <translation id="2371402123699727805">音声入力が有効になっています。停止するには、<ph name="GESTURE" />。他のジェスチャーは一時的に使用できなくなっています。</translation>
 <translation id="2381733276052567791">読み上げの有効と無効を切り替えます</translation>
+<translation id="2386248289416625097">候補</translation>
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{個のアスタリスク}} *{{{$$COUNT} 個のアスタリスク}}</translation>
 <translation id="2398579267367951220">ページ内を検索するには入力してください。見つかった結果に移動するには、Enter キーを押します。結果を 1 つずつ確認するには、上矢印または下矢印キーを押します。違う語句を検索する場合は、その語句を入力します。キャンセルする場合は、Esc キーを押します。</translation>

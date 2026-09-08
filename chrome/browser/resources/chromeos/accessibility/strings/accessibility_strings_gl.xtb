@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Se queres activar elementos (por exemplo, enviar texto nun formulario), tamén podes premer Introducir. Para continuar, preme Introducir.</translation>
 <translation id="2371402123699727805">Ditado en activo. <ph name="GESTURE" /> para detelo. Outros xestos non están dispoñibles temporalmente.</translation>
 <translation id="2381733276052567791">Activa ou desactiva a fala</translation>
+<translation id="2386248289416625097">Candidatos</translation>
 <translation id="2390264819538553347">Para avanzar, preme Intro; para ir cara atrás, preme Retroceso.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisco}} *{{{$$COUNT} asteriscos}}</translation>
 <translation id="2398579267367951220">Escribe para realizar buscas na páxina. Preme Intro para saltar ata o resultado, utiliza as frechas de dirección cara arriba ou abaixo para explorar os resultados, continúa escribindo para cambiar a busca ou preme Esc para cancelar.</translation>

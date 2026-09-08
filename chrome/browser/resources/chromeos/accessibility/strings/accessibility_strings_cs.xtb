@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Položky také můžete aktivovat stisknutím klávesy Enter. Klávesou Enter lze například odeslat text ve formuláři. Pokračujte stisknutím klávesy Enter.</translation>
 <translation id="2371402123699727805">Je aktivní diktování. Až ho budete chtít ukončit, proveďte tohle gesto: <ph name="GESTURE" />. Ostatní gesta dočasně nejsou dostupná.</translation>
 <translation id="2381733276052567791">Zapnout či vypnout hlasovou odezvu</translation>
+<translation id="2386248289416625097">Kandidáti</translation>
 <translation id="2390264819538553347">Na další stránku přejdete stisknutím klávesy Enter. Na předchozí stránku přejdete stisknutím klávesy Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{hvězdička}} few{{{$$COUNT} hvězdičky}} *{{{$$COUNT} hvězdiček}}</translation>
 <translation id="2398579267367951220">Zadejte stránku, kterou chcete vyhledat. Stisknutím klávesy Enter přejdete na výsledek, pomocí šipek nahoru a dolů lze procházet výsledky, pokračováním v zadávání můžete vyhledávání upravit a pomocí klávesy Escape jej zrušíte.</translation>

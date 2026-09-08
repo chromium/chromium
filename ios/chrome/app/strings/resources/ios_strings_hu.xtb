@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Elem frissítve</translation>
 <translation id="1018804590490383958">Beolvasás és automatikus kitöltés</translation>
 <translation id="1019990162050689579">Gemini-appokban végzett tevékenységek</translation>
+<translation id="102645702181682900">Feladat elindítva</translation>
 <translation id="102916930470544692">Azonosítókulcs</translation>
 <translation id="1030376737535466765">Jelszókezelő megnyitása</translation>
 <translation id="1035980983510608210">Az összes lap bezárásával a rögzített lapok is bezáródnak.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Azonosítókulcs törlése</translation>
 <translation id="1715515772563243997">Ha megbízik a(z) <ph name="SITE" /> webhelyben, a bejelentkezéshez használhatja mentett jelszavát.</translation>
 <translation id="1718835860248848330">Az elmúlt órából</translation>
+<translation id="1726013039921383235">Engedélyezés mindig</translation>
 <translation id="1728549374069268714">Beillesztés és ugrás</translation>
 <translation id="1732468323901456775">A következő értesítéseinek bekapcsolása: <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Ismert utazói szám (known traveler number, KTN) frissítése</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Térkép</translation>
 <translation id="3416023309465857378">2023. október 25.</translation>
 <translation id="3419787211763835342">Segítsen a továbbfejlesztett automatikus kitöltés javításában</translation>
+<translation id="3430407169377889553">Körültekintően használja a Geminit, és szükség esetén vegye át az irányítást. Ön felelős a Gemini által a feladatok során végzett műveletekért.</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3441673211568148613">A böngészés privát jellegének megőrzése</translation>
 <translation id="3443810440409579745">Sikerült a lap fogadása.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">A böngésző frissítése</translation>
 <translation id="4021931095789478915">${url} felvétele az olvasólistára</translation>
 <translation id="4028871427853484857">Mentés fiókba…</translation>
+<translation id="4034354558246368274">Egyszeri engedélyezés</translation>
 <translation id="4038354071007134711">Nincs alkalmazás, amellyel megnyitható ez a fájl.</translation>
 <translation id="4042870976416480368">Keresés az oldalon</translation>
 <translation id="4045441967987592849">Újbóli megnyitás</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Oldal hozzáadva az olvasólistához}other{{count} oldal hozzáadva az olvasólistához}}</translation>
 <translation id="459644946100970322">Bekapcsolja az árértesítéseket?</translation>
 <translation id="4597892826846980979">Lapok értesítéseinek kérése</translation>
+<translation id="459792494991530234">Gépelés…</translation>
 <translation id="4601095002996233687">Mélyreható vizsgálatok a gyanús letöltött tartalmak ellenőrzéséhez.</translation>
 <translation id="4606247758155004938">Böngészőjét a szervezete kezeli.</translation>
 <translation id="4607887340472970274">Árfigyelés</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Cégnév</translation>
 <translation id="479628432297359449">Leállítja a letöltést?</translation>
 <translation id="4796496140132859135">Lapcsoport. Összecsukva.</translation>
+<translation id="4800912004582762296">Kattintás…</translation>
 <translation id="4802185666270672526">Az „Asztali webhely kérése” művelet elrejtése</translation>
 <translation id="4802678077012980341">A jelszóellenőrzés befejeződött.</translation>
 <translation id="4803185665210547709">Az Ön szervezete kezeli.
@@ -1625,6 +1631,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6259928806013786178">Az Olvasási mód aktiválása sikertelen volt</translation>
 <translation id="626335165106398104">A Gemini együttműködik más szolgáltatásokkal</translation>
 <translation id="6268773951964630964">Másolt kép keresése</translation>
+<translation id="6270944267518310103">Várakozás…</translation>
 <translation id="6271462272606946663">A „Mobilwebhely kérése” művelet elrejtése</translation>
 <translation id="6271824294945464304">A jelszó megosztása folyamatban van</translation>
 <translation id="628251768213143684">Bármikor kezelheti, hogy mit mentsen a rendszer a Google-fiókjába</translation>
@@ -1658,6 +1665,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6350745006329795504">Saját eszközök kezelése</translation>
 <translation id="6351147166808964033">Lapváltó megnyitása</translation>
 <translation id="63519665078626091">A Web Inspector használatához kábel használatával csatlakozzon a Safarihoz számítógépén, és a nyissa meg a Fejlesztés menüt iPad eszközén. A Fejlesztés menüt a Safari beállításainak Haladó szakaszában engedélyezheti számítógépén.</translation>
+<translation id="6354695695659930684">Jelszó kitöltése…</translation>
 <translation id="6355820183143562453">Az árfigyelési kártya elrejtése</translation>
 <translation id="6355820205320395730">A gyenge jelszavakat könnyű kitalálni. Figyeljen arra, hogy erős jelszavakat hozzon létre. <ph name="BEGIN_LINK" />Itt további biztonsági tippeket talál.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Jelentkezzen be, hogy hozzáférhessen a jelszavaihoz, a könyvjelzőihez és egyebekhez.</translation>
@@ -2250,6 +2258,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8233237502828137700">Üzenetszalagos promóció bezárása</translation>
 <translation id="823339794112333264">Mikrofon bekapcsolása</translation>
 <translation id="8240217649914883113">Add hozzá ezt a naptáramhoz</translation>
+<translation id="824379025871762038">Soha nem engedélyezem</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
 <translation id="8252980988000695656">A Google Lens befejezte a műveletet.</translation>
 <translation id="8258734532103758067">Exportáltam az adataimat</translation>

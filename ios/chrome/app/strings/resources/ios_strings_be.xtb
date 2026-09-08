@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Элемент абноўлены</translation>
 <translation id="1018804590490383958">Сканіраваць і запоўніць аўтаматычна</translation>
 <translation id="1019990162050689579">Гісторыя дзеянняў у праграмах Gemini</translation>
+<translation id="102645702181682900">Задача пачата</translation>
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030376737535466765">Адкрыць Менеджар пароляў</translation>
 <translation id="1035980983510608210">Пры закрыцці ўсіх укладак закрыюцца і замацаваныя ўкладкі.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Выдаленне ключа доступу</translation>
 <translation id="1715515772563243997">Калі вы давяраеце сайту <ph name="SITE" />, можаце выкарыстаць для ўваходу захаваны пароль.</translation>
 <translation id="1718835860248848330">За апошнюю гадзіну</translation>
+<translation id="1726013039921383235">Заўсёды дазваляць</translation>
 <translation id="1728549374069268714">Уставіць і перайсці</translation>
 <translation id="1732468323901456775">Уключыць апавяшчэнні: <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Змяніце нумар вядомага падарожніка</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3416023309465857378">25 кастрычніка 2023 года</translation>
 <translation id="3419787211763835342">Удасканаленне палепшанага аўтазапаўнення</translation>
+<translation id="3430407169377889553">Будзьце ўважлівыя пры выкарыстанні Gemini і пры неабходнасці бярыце кіраванне на сябе. За дзеянні Gemini ў ходзе выканання задач адказваеце вы.</translation>
 <translation id="3435738964857648380">Бяспека</translation>
 <translation id="3441673211568148613">Захоўвайце прыватнасць пры праглядзе інтэрнэту</translation>
 <translation id="3443810440409579745">Атрымана ўкладка.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Абнавіце браўзер</translation>
 <translation id="4021931095789478915">Дадаць ${url} у Спіс на прагляд</translation>
 <translation id="4028871427853484857">Захаваць ва ўліковым запісе…</translation>
+<translation id="4034354558246368274">Дазволіць толькі ў гэты раз</translation>
 <translation id="4038354071007134711">На прыладзе няма праграм, у якіх можна адкрыць гэты файл.</translation>
 <translation id="4042870976416480368">Знайсці на старонцы</translation>
 <translation id="4045441967987592849">Зноў адкрыць</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Старонка дададзена ў спіс на прагляд}one{{count} старонка дададзена ў спіс на прагляд}few{{count} старонкі дададзены ў спіс на прагляд}many{{count} старонак дададзены ў спіс на прагляд}other{{count} старонкі дададзены ў спіс на прагляд}}</translation>
 <translation id="459644946100970322">Уключыць абвесткі аб змяненні цэн?</translation>
 <translation id="4597892826846980979">Атрымліваць апавяшчэнні пра ўкладкі</translation>
+<translation id="459792494991530234">Увод тэксту</translation>
 <translation id="4601095002996233687">Выконвае дэталёвую праверку падазроных спамповак.</translation>
 <translation id="4606247758155004938">Браўзерам кіруе ваша арганізацыя.</translation>
 <translation id="4607887340472970274">Адсочванне цэн</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Назва кампаніі</translation>
 <translation id="479628432297359449">Спыніць спампоўванне?</translation>
 <translation id="4796496140132859135">Група ўкладак. Згорнута.</translation>
+<translation id="4800912004582762296">Націсканне</translation>
 <translation id="4802185666270672526">Схаваць пункт "Запытаць сайт для ПК"</translation>
 <translation id="4802678077012980341">Праверка пароляў: завершана</translation>
 <translation id="4803185665210547709">Пад кіраваннем вашай арганізацыі.
@@ -1625,6 +1631,7 @@
 <translation id="6259928806013786178">Не ўдалося ўключыць рэжым чытання</translation>
 <translation id="626335165106398104">Gemini працуе з іншымі сэрвісамі</translation>
 <translation id="6268773951964630964">Пошук скапіраванага відарыса</translation>
+<translation id="6270944267518310103">Чаканне</translation>
 <translation id="6271462272606946663">Схаваць пункт "Запытаць мабільны сайт"</translation>
 <translation id="6271824294945464304">Ідзе абагульванне пароля</translation>
 <translation id="628251768213143684">Вы можаце кантраляваць, якія даныя захоўваюцца ў вашым Уліковым запісе Google</translation>
@@ -1658,6 +1665,7 @@
 <translation id="6350745006329795504">Кіраванне прыладамі</translation>
 <translation id="6351147166808964033">Перайсці да пераключальніка ўкладак</translation>
 <translation id="63519665078626091">Каб выкарыстоўваць Web Inspector, падключыцеся да Safari на вашым камп’ютары з дапамогай кабелю і адкрыйце свой iPad з меню Develop. Вы можаце знайсці меню Develop у Пашыраных наладах Safari на вашым камп’ютары.</translation>
+<translation id="6354695695659930684">Запаўненне пароля</translation>
 <translation id="6355820183143562453">Схаваць картку "Адсочванне цэн"</translation>
 <translation id="6355820205320395730">Ненадзейныя паролі лёгка падабраць. Выкарыстоўвайце толькі надзейныя паролі. <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Увайдзіце, каб атрымаць доступ да сваіх пароляў, закладак і іншых даных.</translation>
@@ -2250,6 +2258,7 @@
 <translation id="8233237502828137700">Закрыць рэкламны банер</translation>
 <translation id="823339794112333264">Уключыць мікрафон</translation>
 <translation id="8240217649914883113">Дадаць у мой каляндар</translation>
+<translation id="824379025871762038">Ніколі не дазваляць</translation>
 <translation id="8250920743982581267">Дакументы</translation>
 <translation id="8252980988000695656">Пошук праз Google Аб’ектыў: завершана</translation>
 <translation id="8258734532103758067">Даныя экспартаваны</translation>

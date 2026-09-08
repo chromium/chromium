@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">També pots prémer la tecla d'introducció per activar elements. Per exemple, es pot utilitzar per enviar el text d'un formulari. Per continuar, prem la tecla d'introducció.</translation>
 <translation id="2371402123699727805">El dictat està actiu. <ph name="GESTURE" /> per aturar-lo. La resta de gestos no estan disponibles temporalment.</translation>
 <translation id="2381733276052567791">Activa o desactiva la veu</translation>
+<translation id="2386248289416625097">Candidats</translation>
 <translation id="2390264819538553347">Prem Retorn per avançar i Retrocés per tornar enrere.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisc}} *{{{$$COUNT} asteriscs}}</translation>
 <translation id="2398579267367951220">Escriu per cercar a la pàgina. Prem Retorn per anar directament al resultat, prem les fletxes amunt i avall per moure't pels resultats, continua escrivint per modificar la cerca o prem Esc per cancel·lar.</translation>

@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Item geüpdatet</translation>
 <translation id="1018804590490383958">Scannen en automatisch invullen</translation>
 <translation id="1019990162050689579">Gemini Apps-activiteit</translation>
+<translation id="102645702181682900">Taak gestart</translation>
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030376737535466765">Wachtwoordmanager openen</translation>
 <translation id="1035980983510608210">Als je alle tabbladen sluit, worden ook vastgezette tabbladen gesloten.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Toegangscode verwijderen</translation>
 <translation id="1715515772563243997">Als je <ph name="SITE" /> vertrouwt, kun je een opgeslagen wachtwoord gebruiken om in te loggen.</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
+<translation id="1726013039921383235">Altijd toestaan</translation>
 <translation id="1728549374069268714">Plakken en zoeken</translation>
 <translation id="1732468323901456775">Meldingen voor <ph name="MODULE_NAME" /> aanzetten</translation>
 <translation id="1739364174357629566">Known Traveler Number updaten</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 okt 2023</translation>
 <translation id="3419787211763835342">Help ons verbeterd automatisch invullen te verbeteren</translation>
+<translation id="3430407169377889553">Gebruik Gemini zorgvuldig en neem waar nodig de controle over. Jij bent verantwoordelijk voor de acties van Gemini tijdens taken.</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3441673211568148613">Houd je browsen privé</translation>
 <translation id="3443810440409579745">Tabblad ontvangen.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Je browser updaten</translation>
 <translation id="4021931095789478915">${url} toevoegen aan leeslijst</translation>
 <translation id="4028871427853484857">Opslaan in account…</translation>
+<translation id="4034354558246368274">Deze keer toestaan</translation>
 <translation id="4038354071007134711">Geen app op dit apparaat kan het bestand openen.</translation>
 <translation id="4042870976416480368">Zoeken op pagina</translation>
 <translation id="4045441967987592849">Opnieuw openen</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Pagina toegevoegd aan je leeslijst}other{{count} pagina's toegevoegd aan je leeslijst}}</translation>
 <translation id="459644946100970322">Prijsmeldingen aanzetten?</translation>
 <translation id="4597892826846980979">Meldingen voor tabbladen krijgen</translation>
+<translation id="459792494991530234">Typen</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
 <translation id="4606247758155004938">Je browser wordt beheerd door je organisatie.</translation>
 <translation id="4607887340472970274">Prijzen volgen</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Bedrijfsnaam</translation>
 <translation id="479628432297359449">Download stoppen?</translation>
 <translation id="4796496140132859135">Tabbladgroep. Samengevouwen.</translation>
+<translation id="4800912004582762296">Klikken</translation>
 <translation id="4802185666270672526">Desktopsite opvragen verbergen</translation>
 <translation id="4802678077012980341">Wachtwoordcheck is afgerond.</translation>
 <translation id="4803185665210547709">Beheerd door je organisatie.
@@ -1625,6 +1631,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6259928806013786178">Leesmodus mislukt</translation>
 <translation id="626335165106398104">Gemini werkt met andere services</translation>
 <translation id="6268773951964630964">Zoeken naar gekopieerde afbeelding</translation>
+<translation id="6270944267518310103">Wachten</translation>
 <translation id="6271462272606946663">Mobiele site opvragen verbergen</translation>
 <translation id="6271824294945464304">Wachtwoord delen</translation>
 <translation id="628251768213143684">Je kunt altijd bepalen wat wordt opgeslagen in je Google-account</translation>
@@ -1658,6 +1665,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6350745006329795504">Je apparaten beheren</translation>
 <translation id="6351147166808964033">Tabbladschakelaar openen</translation>
 <translation id="63519665078626091">Als je Webcontrole wilt gebruiken, maak je via een kabel verbinding met Safari op je computer en open je je iPad via het menu Ontwikkelen. Je kunt het menu Ontwikkelen aanzetten in het gedeelte Geavanceerd van de Safari-instellingen op je computer.</translation>
+<translation id="6354695695659930684">Wachtwoord invullen</translation>
 <translation id="6355820183143562453">Kaart Prijzen volgen verbergen</translation>
 <translation id="6355820205320395730">Zwakke wachtwoorden zijn makkelijk te raden. Zorg dat je sterke wachtwoorden maakt. <ph name="BEGIN_LINK" />Meer beveiligingstips bekijken<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Log in om onder andere je wachtwoorden en bookmarks te gebruiken.</translation>
@@ -2250,6 +2258,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8233237502828137700">Bannerpromotie sluiten</translation>
 <translation id="823339794112333264">Microfoon aanzetten</translation>
 <translation id="8240217649914883113">Dit toevoegen aan mijn agenda</translation>
+<translation id="824379025871762038">Nooit toestaan</translation>
 <translation id="8250920743982581267">Documenten</translation>
 <translation id="8252980988000695656">Google Lens is afgerond.</translation>
 <translation id="8258734532103758067">Ik heb mijn gegevens geëxporteerd</translation>

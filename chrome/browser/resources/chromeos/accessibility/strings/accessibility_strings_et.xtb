@@ -218,6 +218,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2365384324219615024">Üksuste aktiveerimiseks võite ka vajutada sisestusklahvi. Näiteks saab sisestusklahviga saata vormile sisestatud teksti. Jätkamiseks vajutage sisestusklahvi.</translation>
 <translation id="2371402123699727805">Dikteerimine on aktiivne. <ph name="GESTURE" />, et peatada. Muud liigutused pole ajutiselt saadaval.</translation>
 <translation id="2381733276052567791">Kõne sisse- või väljalülitamine</translation>
+<translation id="2386248289416625097">Kandidaadid</translation>
 <translation id="2390264819538553347">Edasiliikumiseks vajutage sisestusklahvi, tagasiliikumiseks tagasilükkeklahvi.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{tärn}} *{{{$$COUNT} tärni}}</translation>
 <translation id="2398579267367951220">Sisestage lehelt otsimiseks. Vajutage sisestusklahvi tulemuse juurde liikumiseks, üles- või allanoolt tulemuste sirvimiseks, jätkake sisestamist otsingu muutmiseks või vajutage paoklahvi tühistamiseks.</translation>

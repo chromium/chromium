@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">또한 Enter 키를 눌러 항목을 활성화할 수 있습니다. 예를 들어 양식에 텍스트를 제출하기 위해 Enter 키를 사용할 수 있습니다. 계속하려면 Enter 키를 누르세요.</translation>
 <translation id="2371402123699727805">음성기록을 사용하고 있습니다. 중지하려면 <ph name="GESTURE" /> 동작을 수행하세요. 다른 동작은 일시적으로 사용할 수 없습니다.</translation>
 <translation id="2381733276052567791">음성을 사용 또는 사용 중지로 전환</translation>
+<translation id="2386248289416625097">후보 단어</translation>
 <translation id="2390264819538553347">계속하려면 Enter를 누릅니다. 뒤로 돌아가려면 Backspace를 누릅니다.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">페이지를 검색하려면 입력하세요. Enter를 눌러 결과로 바로 이동하거나 위쪽 또는 아래쪽 화살표를 사용하여 결과를 탐색할 수 있습니다. 검색어를 변경하려면 계속 입력하세요. 취소하려면 Esc를 누릅니다.</translation>

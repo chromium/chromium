@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">북마크가 업데이트되었습니다.</translation>
 <translation id="1018804590490383958">스캔 및 자동 완성</translation>
 <translation id="1019990162050689579">Gemini 앱 활동</translation>
+<translation id="102645702181682900">작업 시작됨</translation>
 <translation id="102916930470544692">패스키</translation>
 <translation id="1030376737535466765">비밀번호 관리자 열기</translation>
 <translation id="1035980983510608210">모든 탭을 닫으면 고정된 탭도 닫힙니다.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">패스키 삭제</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> 사이트를 신뢰하는 경우 저장된 비밀번호를 사용하여 로그인할 수 있습니다.</translation>
 <translation id="1718835860248848330">지난 1시간</translation>
+<translation id="1726013039921383235">항상 허용</translation>
 <translation id="1728549374069268714">붙여넣어 바로가기</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> 알림 사용</translation>
 <translation id="1739364174357629566">KTN(Known Traveler Number) 업데이트</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">지도</translation>
 <translation id="3416023309465857378">2023년 10월 25일</translation>
 <translation id="3419787211763835342">향상된 자동 완성 개선에 참여하기</translation>
+<translation id="3430407169377889553">Gemini는 신중하게 사용하고, 필요하다면 주도적으로 제어하세요. 작업을 수행하는 동안 Gemini가 하는 모든 활동에 대한 책임은 사용자에게 있습니다</translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3441673211568148613">인터넷 사용 기록을 비공개로 유지하세요.</translation>
 <translation id="3443810440409579745">탭을 수신했습니다.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">브라우저 업데이트</translation>
 <translation id="4021931095789478915">읽기 목록에 ${url} 추가</translation>
 <translation id="4028871427853484857">계정에 저장…</translation>
+<translation id="4034354558246368274">이번에만 허용</translation>
 <translation id="4038354071007134711">파일을 열 수 있는 애플리케이션이 기기에 없습니다.</translation>
 <translation id="4042870976416480368">페이지에서 찾기</translation>
 <translation id="4045441967987592849">다시 열기</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{페이지가 읽기 목록에 추가됨}other{페이지 {count}장이 읽기 목록에 추가됨}}</translation>
 <translation id="459644946100970322">가격 알림을 사용하시겠습니까?</translation>
 <translation id="4597892826846980979">탭 알림 받기</translation>
+<translation id="459792494991530234">입력 중</translation>
 <translation id="4601095002996233687">의심스러운 다운로드 항목을 심층 스캔합니다.</translation>
 <translation id="4606247758155004938">조직에서 관리하는 브라우저입니다.</translation>
 <translation id="4607887340472970274">가격 추적</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">회사명</translation>
 <translation id="479628432297359449">다운로드를 중지하시겠습니까?</translation>
 <translation id="4796496140132859135">탭 그룹. 접혀 있습니다.</translation>
+<translation id="4800912004582762296">클릭 중</translation>
 <translation id="4802185666270672526">데스크톱 사이트 요청 숨기기</translation>
 <translation id="4802678077012980341">비밀번호 진단이 완료되었습니다.</translation>
 <translation id="4803185665210547709">조직에서 관리합니다.
@@ -1625,6 +1631,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6259928806013786178">읽기 모드를 활성화할 수 없음</translation>
 <translation id="626335165106398104">Gemini는 다른 서비스와 연동됩니다</translation>
 <translation id="6268773951964630964">복사한 이미지 검색</translation>
+<translation id="6270944267518310103">대기 중</translation>
 <translation id="6271462272606946663">모바일 사이트 요청 숨기기</translation>
 <translation id="6271824294945464304">비밀번호 공유</translation>
 <translation id="628251768213143684">언제든지 Google 계정에 저장된 항목을 관리할 수 있습니다.</translation>
@@ -1658,6 +1665,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6350745006329795504">기기 관리</translation>
 <translation id="6351147166808964033">탭 전환 도구 실행</translation>
 <translation id="63519665078626091">웹 인스펙터를 사용하려면 케이블을 사용해 컴퓨터에서 Safari에 연결한 다음 개발자용 메뉴에서 iPad에 액세스하세요. 컴퓨터에서 Safari 설정의 고급 섹션으로 가서 개발자용 메뉴를 사용 설정할 수 있습니다</translation>
+<translation id="6354695695659930684">비밀번호 입력 중</translation>
 <translation id="6355820183143562453">가격 추적 카드 숨기기</translation>
 <translation id="6355820205320395730">취약한 비밀번호는 추측하기 쉽습니다. 안전한 비밀번호를 만들어야 합니다. <ph name="BEGIN_LINK" />보안 도움말 더보기<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">비밀번호, 북마크 등 모든 콘텐츠를 사용하려면 로그인하세요.</translation>
@@ -2250,6 +2258,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8233237502828137700">배너 프로모션 닫기</translation>
 <translation id="823339794112333264">마이크 켜기</translation>
 <translation id="8240217649914883113">캘린더에 추가해 줘</translation>
+<translation id="824379025871762038">허용 안함</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8252980988000695656">Google 렌즈가 완료되었습니다.</translation>
 <translation id="8258734532103758067">데이터를 내보냈습니다</translation>

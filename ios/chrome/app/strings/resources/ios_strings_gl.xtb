@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
 <translation id="1018804590490383958">Escanear e autocompletar</translation>
 <translation id="1019990162050689579">Actividade na aplicación Gemini</translation>
+<translation id="102645702181682900">Iniciouse a tarefa</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030376737535466765">Abrir xestor de contrasinais</translation>
 <translation id="1035980983510608210">Ao pechar todas as pestanas, tamén se cerrarán as fixadas.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Eliminar a clave de acceso</translation>
 <translation id="1715515772563243997">Se confías en <ph name="SITE" />, podes usar un contrasinal gardado para iniciar sesión.</translation>
 <translation id="1718835860248848330">Última hora</translation>
+<translation id="1726013039921383235">Permitir sempre</translation>
 <translation id="1728549374069268714">Pegar e acceder</translation>
 <translation id="1732468323901456775">Activa as notificacións de <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Actualiza o número de viaxeiro coñecido (KTN)</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3419787211763835342">Axuda a mellorar a función de autocompletar mellorada</translation>
+<translation id="3430407169377889553">Usa Gemini con coidado e asume o control se é necesario. Es responsable das accións de Gemini durante as tarefas.</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3441673211568148613">Mantén a túa navegación privada</translation>
 <translation id="3443810440409579745">Recibiuse unha pestana.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Actualizar o navegador</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
 <translation id="4028871427853484857">Gardar na conta…</translation>
+<translation id="4034354558246368274">Permitir esta vez</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
 <translation id="4045441967987592849">Volver abrir</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Engadiuse a páxina á túa lista de lectura}other{Engadíronse {count} páxinas á túa lista de lectura}}</translation>
 <translation id="459644946100970322">Queres activar as alertas de prezos?</translation>
 <translation id="4597892826846980979">Recibe notificacións de pestanas</translation>
+<translation id="459792494991530234">Escribindo</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606247758155004938">A túa organización xestiona o teu navegador.</translation>
 <translation id="4607887340472970274">Seguimento de prezos</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Nome da empresa</translation>
 <translation id="479628432297359449">Queres deter a descarga?</translation>
 <translation id="4796496140132859135">Grupo de pestanas. Contraído.</translation>
+<translation id="4800912004582762296">Facendo clic</translation>
 <translation id="4802185666270672526">Ocultar Solicitar sitio para ordenadores</translation>
 <translation id="4802678077012980341">Completouse a revisión de contrasinais</translation>
 <translation id="4803185665210547709">Xestionado pola túa organización.
@@ -1625,6 +1631,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6259928806013786178">Produciuse un erro ao activar o modo de lectura</translation>
 <translation id="626335165106398104">Gemini funciona con outros servizos</translation>
 <translation id="6268773951964630964">Buscar imaxe copiada</translation>
+<translation id="6270944267518310103">Agardando</translation>
 <translation id="6271462272606946663">Ocultar Solicitar sitio para móbiles</translation>
 <translation id="6271824294945464304">Vaise compartir o contrasinal</translation>
 <translation id="628251768213143684">Sempre podes xestionar o que está gardado na túa Conta de Google</translation>
@@ -1658,6 +1665,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6350745006329795504">Xestionar os teus dispositivos</translation>
 <translation id="6351147166808964033">Entrar no selector de pestanas</translation>
 <translation id="63519665078626091">Para usar a ferramenta Web Inspector, conéctate a Safari desde o ordenador mediante un cable e accede ao teu iPad desde o menú Develop (Programación). Podes activar ese menú desde a sección Advanced (Configuración avanzada) dos axustes de Safari no teu ordenador.</translation>
+<translation id="6354695695659930684">Completando contrasinal</translation>
 <translation id="6355820183143562453">Ocultar a tarxeta Seguimento de prezos</translation>
 <translation id="6355820205320395730">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Inicia sesión para acceder a todo o teu contido (por exemplo, os contrasinais e os marcadores).</translation>
@@ -2250,6 +2258,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8233237502828137700">Pechar o báner de promoción</translation>
 <translation id="823339794112333264">Activar o micrófono</translation>
 <translation id="8240217649914883113">Engadir isto ao meu calendario</translation>
+<translation id="824379025871762038">Non permitir nunca</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8252980988000695656">Completouse Google Lens</translation>
 <translation id="8258734532103758067">Exportei os meus datos</translation>

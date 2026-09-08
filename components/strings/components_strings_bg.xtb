@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">Един документ</translation>
 <translation id="254524874071906077">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
+<translation id="254672217349157196">Автоматично потвърждаване на имейл адреса ви</translation>
 <translation id="254947805923345898">Стойността на правилото не е валидна.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> изпрати невалиден отговор.</translation>
 <translation id="2551608178605132291">Адрес: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Вече можете да намирате и попълвате информация от Gmail и др.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab, за да видите наличните действия, и след това Enter, за да изпълните избраното.</translation>
 <translation id="3010991137650052245">За да използвате <ph name="PERMISSION" /> на този сайт, дайте достъп на <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Потвърден имейл адрес</translation>
 <translation id="3014726756341138577">Разширени функции на принтера</translation>
 <translation id="301521992641321250">Автоматично блокирано</translation>
 <translation id="3016780570757425217">Достъп до местоположението ви.</translation>

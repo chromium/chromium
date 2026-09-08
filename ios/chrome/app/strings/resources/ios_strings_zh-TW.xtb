@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">項目已更新</translation>
 <translation id="1018804590490383958">掃描並自動填入</translation>
 <translation id="1019990162050689579">Gemini 應用程式活動記錄</translation>
+<translation id="102645702181682900">工作已開始</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030376737535466765">開啟密碼管理工具</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統也會一併關閉固定分頁。</translation>
@@ -26,7 +27,7 @@
 <translation id="1063300264396686489">自動開啟其他裝置建立的分頁群組</translation>
 <translation id="1072476005125066234">依興趣喜好顯示的評論</translation>
 <translation id="1072679792409426431">已由管理員停用</translation>
-<translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
+<translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會刪除。</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1081948304372277788">關閉「升級」功能</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">刪除密碼金鑰</translation>
 <translation id="1715515772563243997">如果你信任 <ph name="SITE" />，可以使用已儲存的密碼登入。</translation>
 <translation id="1718835860248848330">過去 1 小時</translation>
+<translation id="1726013039921383235">一律允許</translation>
 <translation id="1728549374069268714">貼上並前往</translation>
 <translation id="1732468323901456775">開啟 <ph name="MODULE_NAME" />的通知</translation>
 <translation id="1739364174357629566">更新已知旅客號碼</translation>
@@ -525,7 +527,7 @@
 <translation id="264215785133931186">剛剛檢查</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2648812801228676606">目前登入的帳戶已經是「<ph name="NAME_OR_EMAIL" />」</translation>
-<translation id="2649592894792404568">Google 密碼管理工具資料即將刪除</translation>
+<translation id="2649592894792404568">即將刪除 Google 密碼管理工具資料</translation>
 <translation id="2652129567809778422">選取密碼</translation>
 <translation id="2658056020748144467">無法開啟檔案</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />，<ph name="STATE" />，僅在這部裝置上，<ph name="URL" /></translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">協助改善強化版自動填入功能</translation>
+<translation id="3430407169377889553">請謹慎使用 Gemini，並視情況接手操作。你必須為 Gemini 執行工作時採取的行動負責。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3441673211568148613">保護瀏覽隱私</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">更新瀏覽器</translation>
 <translation id="4021931095789478915">將 ${url} 加入閱讀清單</translation>
 <translation id="4028871427853484857">儲存到帳戶…</translation>
+<translation id="4034354558246368274">這次允許</translation>
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4045441967987592849">重新開啟</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{已將網頁加入閱讀清單}other{已將 {count} 個網頁加入閱讀清單}}</translation>
 <translation id="459644946100970322">要開啟價格通知嗎？</translation>
 <translation id="4597892826846980979">接收分頁通知</translation>
+<translation id="459792494991530234">輸入中</translation>
 <translation id="4601095002996233687">提供深入掃描功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606247758155004938">你的瀏覽器是由貴機構管理。</translation>
 <translation id="4607887340472970274">價格追蹤</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">公司名稱</translation>
 <translation id="479628432297359449">要停止下載嗎？</translation>
 <translation id="4796496140132859135">分頁群組已收合。</translation>
+<translation id="4800912004582762296">點選中</translation>
 <translation id="4802185666270672526">隱藏「切換為電腦版網站」</translation>
 <translation id="4802678077012980341">「密碼安全檢查」完成！</translation>
 <translation id="4803185665210547709">由貴機構管理。
@@ -1625,6 +1631,7 @@
 <translation id="6259928806013786178">無法使用閱讀模式</translation>
 <translation id="626335165106398104">Gemini 可搭配其他服務</translation>
 <translation id="6268773951964630964">搜尋複製的圖片</translation>
+<translation id="6270944267518310103">等待中</translation>
 <translation id="6271462272606946663">隱藏「切換為行動版網站」</translation>
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="628251768213143684">你隨時可以管理儲存在 Google 帳戶中的內容</translation>
@@ -1658,6 +1665,7 @@
 <translation id="6350745006329795504">管理你的裝置</translation>
 <translation id="6351147166808964033">進入分頁切換工具</translation>
 <translation id="63519665078626091">如要使用網頁檢閱器，請利用傳輸線連上電腦的 Safari，從「開發」選單存取 iPad。你可以透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
+<translation id="6354695695659930684">正在填入密碼</translation>
 <translation id="6355820183143562453">隱藏「價格追蹤」資訊卡</translation>
 <translation id="6355820205320395730">低強度密碼容易讓人猜中，請務必設定高強度密碼。<ph name="BEGIN_LINK" />查看更多安全性提示<ph name="END_LINK" />。</translation>
 <translation id="6357455205205567365">登入帳戶即可存取所有資料，例如密碼、書籤等。</translation>
@@ -2250,6 +2258,7 @@
 <translation id="8233237502828137700">關閉橫幅宣傳內容</translation>
 <translation id="823339794112333264">開啟麥克風</translation>
 <translation id="8240217649914883113">將這項活動新增到我的日曆</translation>
+<translation id="824379025871762038">一律不允許</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8252980988000695656">「Google 智慧鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>

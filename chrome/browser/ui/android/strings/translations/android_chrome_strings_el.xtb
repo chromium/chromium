@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">αριθμός τηλεφώνου</translation>
 <translation id="1984417487208496350">Χωρίς προστασία (δεν συνιστάται)</translation>
 <translation id="1986685561493779662">Το όνομα υπάρχει ήδη</translation>
+<translation id="1992244793717364584">Η εφαρμογή απεγκαταστάθηκε</translation>
 <translation id="200114059308480249">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google;</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης που είναι σε σίγαση</translation>
 <translation id="2021896219286479412">Στοιχ. ελέγ. σε πλήρη οθόνη</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="395377504920307820">Χρήση χωρίς λογαριασμό</translation>
 <translation id="3955353672249727801">Οι σελίδες προστέθηκαν στη λίστα ανάγνωσης</translation>
+<translation id="3958283758104508528">Η εφαρμογή <ph name="APP_NAME" /> απεγκαταστάθηκε</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Το Chrome θα φορτώσει τη σελίδα σας όταν είναι έτοιμη}other{Το Chrome θα φορτώσει τις σελίδες σας όταν είναι έτοιμες}}</translation>
 <translation id="3969142555815019568">Το Chrome δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας.</translation>
 <translation id="3969863827134279083">Μετακίνηση επάνω</translation>
@@ -1955,6 +1957,7 @@
 <translation id="8580435650274205305">Απαιτείται η ημερομηνία λήξης</translation>
 <translation id="8582529315803410153">Εδώ θα βρείτε τις καρτέλες σας από τις άλλες συσκευές</translation>
 <translation id="8585103689515290060">Υπηρεσίες αυτόματης συμπλήρωσης</translation>
+<translation id="8586116786993312006">Πατήστε για να διαγράψετε τα δεδομένα περιήγησης στο Chrome</translation>
 <translation id="859046281437143747">Παρακολούθηση τιμής από το κουμπί Περισσότερες επιλογές</translation>
 <translation id="859064343657890103">Η ομάδα καρτελών <ph name="TAB_GROUP_TITLE" /> διαγράφηκε</translation>
 <translation id="860043288473659153">Όνομα κατόχου κάρτας</translation>

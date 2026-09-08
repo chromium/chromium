@@ -6107,6 +6107,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />এ আপনার ডেটা পড়ে</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" সরাবেন?</translation>
 <translation id="5681586175480958839">ফাইল আগে থেকেই খোলা হয়েছে</translation>
+<translation id="5682120590308014005">Drive থেকে আপনার AI মোড থ্রেডে সহজে ফাইল যোগ করতে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে পাসওয়ার্ড এবং আরও অনেক কিছু পাবেন।</translation>
 <translation id="5684110242705861346">আপনার সংস্থার নীতি অনুযায়ী "<ph name="NAME" />" এক্সটেনশন যোগ করা হয়েছে এবং এটি এই সেটিং নিয়ন্ত্রণ করছে। <ph name="BEGIN_LINK" />বিবরণ দেখুন<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">ওয়াই-ফাইয়ের বিবরণ</translation>
 <translation id="5687340364605915800">কোনও সাইট এই অনুরোধ অনুযায়ী কাজ করবে কিনা, তা সাইটই নির্ধারণ করে</translation>
@@ -8187,6 +8188,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">অ্যানিমেটেড</translation>
 <translation id="7301812050652048720">পাসকী মোছা হয়েছে</translation>
+<translation id="7303246449496241344">Drive থেকে আপনার AI মোড থ্রেডে সহজে ফাইল যোগ করতে, নিজের পরিচয় যাচাই করুন। এছাড়াও, আপনার সব ডিভাইসে পাসওয়ার্ড এবং আরও অনেক কিছু পাবেন।</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" />-এর পাসওয়ার্ড সেট-আপ করুন</translation>
 <translation id="7303900363563182677">ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখা থেকে এই সাইটটিকে ব্লক করা হয়েছে</translation>
 <translation id="7304030187361489308">বেশি</translation>

@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Položky aktivujete stlačením klávesa Enter. Môžete pomocou neho napríklad odoslať text vo formulári. Pokračujte stlačením klávesa Enter.</translation>
 <translation id="2371402123699727805">Diktovanie je aktívne. Deaktivovať ho môžete gestom <ph name="GESTURE" />. Iné gestá sú dočasne nedostupné.</translation>
 <translation id="2381733276052567791">Zapnúť alebo vypnúť hlasovú odozvu</translation>
+<translation id="2386248289416625097">Kandidáti</translation>
 <translation id="2390264819538553347">Ak chcete pokračovať, stlačte Enter. Vrátite sa pomocou klávesa Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{hviezdička}} *{{{$$COUNT} hviezdičky}}</translation>
 <translation id="2398579267367951220">Zadaním výrazu vyhľadajte požadovanú stránku. Stlačením klávesa Enter prejdete na výsledok, šípkou nahor alebo nadol prehľadáte výsledky, klávesom Escape zrušíte zobrazenie a ak chcete vyhľadávanie zmeniť, pokračujte v písaní.</translation>
