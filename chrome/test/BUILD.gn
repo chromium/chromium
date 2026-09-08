@@ -1523,25 +1523,14 @@ if (is_android) {
     }
 
     if (enable_desktop_android_extensions) {
-      sources += [
-        # These API tests can't be part of platform_browser_tests because they
-        # run in interactive_ui_tests on Win/Mac/Linux.
-        "../browser/extensions/api/messaging/native_messaging_apitest_android.cc",
-        "../browser/extensions/api/notifications/notifications_interactive_apitest.cc",
-        "../browser/extensions/api/omnibox/omnibox_api_interactive_uitest.cc",
-        "../browser/extensions/api/tabs/tabs_apitest_android.cc",
-        "../browser/extensions/desktop_android_extensions_browsertest.cc",
-      ]
-
       deps += [
-        "//chrome/browser/extensions",
         "//chrome/browser/extensions:browser_tests",
-        "//chrome/browser/omnibox",
-        "//chrome/browser/ui:view_ids",
+        "//chrome/browser/extensions/api/messaging:android_browsertests",
+        "//chrome/browser/extensions/api/notifications:android_browsertests",
+        "//chrome/browser/extensions/api/omnibox:android_browsertests",
         "//chrome/browser/ui/extensions",
         "//chrome/browser/ui/extensions:android_browser_tests",
         "//chrome/browser/ui/extensions:browser_tests",
-        "//chrome/browser/ui/omnibox",
       ]
 
       data += [

@@ -47,3 +47,30 @@ source_set("notifications") {
     "//url",
   ]
 }
+
+if (enable_desktop_android_extensions) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    # These API tests can't be part of platform_browser_tests because they
+    # run in interactive_ui_tests on Win/Mac/Linux.
+    sources = [ "notifications_interactive_apitest.cc" ]
+
+    deps = [
+      ":notifications",
+      "//base",
+      "//chrome/browser/extensions",
+      "//chrome/browser/notifications",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+}

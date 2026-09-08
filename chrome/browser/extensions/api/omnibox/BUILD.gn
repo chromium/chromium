@@ -38,3 +38,38 @@ source_set("omnibox") {
     "//ui/gfx",
   ]
 }
+
+if (enable_desktop_android_extensions) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "omnibox_api_interactive_uitest.cc" ]
+
+    deps = [
+      ":omnibox",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/android",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/extensions",
+      "//chrome/browser/omnibox",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui:view_ids",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/test:test_support",
+      "//components/omnibox/browser",
+      "//components/omnibox/common",
+      "//components/search_engines",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/metrics_proto",
+      "//ui/gfx",
+    ]
+  }
+}

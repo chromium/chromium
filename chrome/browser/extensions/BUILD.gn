@@ -2617,6 +2617,20 @@ source_set("browser_tests") {
       "//components/feed:feature_list",
       "//components/messages/android:test_support",
     ]
+
+    if (enable_desktop_android_extensions) {
+      sources += [
+        "api/tabs/tabs_apitest_android.cc",
+        "desktop_android_extensions_browsertest.cc",
+      ]
+      deps += [
+        "//chrome/browser/ui/android/tab_model",
+        "//chrome/test/base:android_browser_test",
+        "//content/test:test_support",
+        "//extensions/browser:test_support",
+        "//net",
+      ]
+    }
   } else {
     sources += [
       "api/contextual_tasks_private/contextual_tasks_messaging_browsertest.cc",
