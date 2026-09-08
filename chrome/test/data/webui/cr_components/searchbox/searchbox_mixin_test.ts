@@ -160,11 +160,22 @@ function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
       text);
 }
 
+const FOCUS_EVENTS = ['blur', 'focus', 'focusin', 'focusout'] as const;
+
+function stopTrustedFocusEvents(e: Event) {
+  if (e.isTrusted) {
+    e.stopImmediatePropagation();
+  }
+}
+
 suite('SearchboxMixinTest', () => {
   let element: TestSearchboxMixinElement;
   let testProxy: TestSearchboxBrowserProxy;
 
   setup(() => {
+    for (const eventName of FOCUS_EVENTS) {
+      window.addEventListener(eventName, stopTrustedFocusEvents, true);
+    }
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -173,6 +184,12 @@ suite('SearchboxMixinTest', () => {
     element = document.createElement('test-searchbox-mixin') as
         TestSearchboxMixinElement;
     document.body.appendChild(element);
+  });
+
+  teardown(() => {
+    for (const eventName of FOCUS_EVENTS) {
+      window.removeEventListener(eventName, stopTrustedFocusEvents, true);
+    }
   });
 
   test('autocomplete should not query for empty inputs', async () => {
@@ -2188,6 +2205,9 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   let testProxy: TestSearchboxBrowserProxy;
 
   setup(async () => {
+    for (const eventName of FOCUS_EVENTS) {
+      window.addEventListener(eventName, stopTrustedFocusEvents, true);
+    }
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -2198,6 +2218,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     element.virtualFocusEnabledOverride = true;
     document.body.appendChild(element);
     await microtasksFinished();
+  });
+
+  teardown(() => {
+    for (const eventName of FOCUS_EVENTS) {
+      window.removeEventListener(eventName, stopTrustedFocusEvents, true);
+    }
   });
 
   test('matchIndex returns selection line when virtual focus enabled', () => {
@@ -2901,8 +2927,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertFalse(tabEvent.defaultPrevented);
       });
 
-  // TODO(https://crbug.com/555922132): de-flake and re-enable.
-  test.skip(
+  test(
       'ArrowDown through instant keyword mode matches enters keyword mode',
       async () => {
         loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
