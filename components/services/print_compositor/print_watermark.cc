@@ -13,10 +13,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"
 #include "components/enterprise/watermarking/watermark.h"
 #include "pdf/pdf.h"
 #include "pdf/pdf_watermark_overlayer.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -34,6 +36,11 @@ std::unique_ptr<PrintWatermark> PrintWatermark::Create(
     return nullptr;
   }
 
+  bool success = false;
+  absl::Cleanup record_histogram = [&success] {
+    base::UmaHistogramBoolean("Enterprise.Watermark.CreateSuccess", success);
+  };
+
   base::ReadOnlySharedMemoryMapping mapping =
       watermark_block->serialized_skpicture.Map();
   if (!mapping.IsValid()) {
@@ -50,6 +57,7 @@ std::unique_ptr<PrintWatermark> PrintWatermark::Create(
     return nullptr;
   }
 
+  success = true;
   return base::WrapUnique(
       new PrintWatermark(std::move(watermark_block), std::move(picture)));
 }
@@ -73,8 +81,11 @@ void PrintWatermark::OnDrawPage(SkCanvas* canvas, const SkSize& size) {
 
 base::ReadOnlySharedMemoryRegion PrintWatermark::OnOverlayPdf(
     base::ReadOnlySharedMemoryRegion pdf_region) {
-  // TODO(b/518763216): Add UMA histogram tracking for success/failure.
-  return OnOverlayPdfImpl(std::move(pdf_region));
+  base::ReadOnlySharedMemoryRegion output_region =
+      OnOverlayPdfImpl(std::move(pdf_region));
+  base::UmaHistogramBoolean("Enterprise.Watermark.PdfOverlaySuccess",
+                            output_region.IsValid());
+  return output_region;
 }
 
 base::ReadOnlySharedMemoryRegion PrintWatermark::OnOverlayPdfImpl(

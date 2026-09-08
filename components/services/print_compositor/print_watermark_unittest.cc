@@ -11,6 +11,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -140,6 +141,7 @@ TEST_F(PrintWatermarkTest, EnterpriseWatermarkUnset) {
 }
 
 TEST_F(PrintWatermarkTest, OnOverlayPdfSuccess) {
+  base::HistogramTester histogram_tester;
   auto watermark =
       PrintWatermark::Create(enterprise_watermark::MakeTestWatermarkBlock(
           kWatermarkText, kWatermarkSize));
@@ -155,6 +157,8 @@ TEST_F(PrintWatermarkTest, OnOverlayPdfSuccess) {
   base::ReadOnlySharedMemoryRegion output_region =
       watermark->OnOverlayPdf(std::move(input_region));
   ASSERT_TRUE(output_region.IsValid());
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.PdfOverlaySuccess",
+                                      true, 1);
 
   base::ReadOnlySharedMemoryMapping mapping = output_region.Map();
   ASSERT_TRUE(mapping.IsValid());
@@ -213,7 +217,18 @@ TEST_F(PrintWatermarkTest, OnOverlayPdfSuccess) {
       cc::MatchesPNGFile(output_bitmap, path, cc::ExactPixelComparator()));
 }
 
+TEST_F(PrintWatermarkTest, CreateSuccess) {
+  base::HistogramTester histogram_tester;
+  auto watermark =
+      PrintWatermark::Create(enterprise_watermark::MakeTestWatermarkBlock(
+          kWatermarkText, kWatermarkSize));
+  EXPECT_TRUE(watermark);
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.CreateSuccess",
+                                      true, 1);
+}
+
 TEST_F(PrintWatermarkTest, CreateWithCorruptedWatermarkBlockFails) {
+  base::HistogramTester histogram_tester;
   auto corrupt_pic_data =
       base::byte_span_with_nul_from_cstring("Invalid SkPicture stream");
   base::MappedReadOnlyRegion mapped_pic =
@@ -227,17 +242,23 @@ TEST_F(PrintWatermarkTest, CreateWithCorruptedWatermarkBlockFails) {
   bad_block->serialized_skpicture = std::move(mapped_pic.region);
 
   EXPECT_FALSE(PrintWatermark::Create(std::move(bad_block)));
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.CreateSuccess",
+                                      false, 1);
 }
 
 TEST_F(PrintWatermarkTest, CreateWithInvalidRegionFails) {
+  base::HistogramTester histogram_tester;
   auto bad_block = watermark::mojom::WatermarkBlock::New();
   bad_block->width = kWatermarkSize.width();
   bad_block->height = kWatermarkSize.height();
 
   EXPECT_FALSE(PrintWatermark::Create(std::move(bad_block)));
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.CreateSuccess",
+                                      false, 1);
 }
 
 TEST_F(PrintWatermarkTest, OnOverlayPdfInvalidInputRegion) {
+  base::HistogramTester histogram_tester;
   auto watermark =
       PrintWatermark::Create(enterprise_watermark::MakeTestWatermarkBlock(
           kWatermarkText, kWatermarkSize));
@@ -246,9 +267,12 @@ TEST_F(PrintWatermarkTest, OnOverlayPdfInvalidInputRegion) {
   base::ReadOnlySharedMemoryRegion output_region =
       watermark->OnOverlayPdf(base::ReadOnlySharedMemoryRegion());
   EXPECT_FALSE(output_region.IsValid());
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.PdfOverlaySuccess",
+                                      false, 1);
 }
 
 TEST_F(PrintWatermarkTest, OnOverlayPdfCorruptedPdf) {
+  base::HistogramTester histogram_tester;
   auto watermark =
       PrintWatermark::Create(enterprise_watermark::MakeTestWatermarkBlock(
           kWatermarkText, kWatermarkSize));
@@ -264,6 +288,8 @@ TEST_F(PrintWatermarkTest, OnOverlayPdfCorruptedPdf) {
   base::ReadOnlySharedMemoryRegion output_region =
       watermark->OnOverlayPdf(std::move(mapped_region.region));
   EXPECT_FALSE(output_region.IsValid());
+  histogram_tester.ExpectUniqueSample("Enterprise.Watermark.PdfOverlaySuccess",
+                                      false, 1);
 }
 
 TEST_F(PrintWatermarkTest, EnterpriseWatermarkInitFailureFailsPdfComposition) {

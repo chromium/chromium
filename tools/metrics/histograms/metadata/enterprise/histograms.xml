@@ -5095,6 +5095,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Watermark.CreateSuccess" enum="BooleanSuccess"
+    expires_after="2027-08-01">
+  <owner>akadum@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records whether creating an enterprise DLP PrintWatermark object in the
+    PrintCompositor service succeeded or failed (e.g. due to shared memory
+    mapping failure or corrupted SkPicture data). Logged once per watermark
+    block received.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Watermark.PdfOverlaySuccess" enum="BooleanSuccess"
+    expires_after="2027-08-01">
+  <owner>akadum@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records whether overlaying an enterprise DLP watermark onto a non-modifiable
+    PDF document succeeded or failed in the PrintCompositor service. Logged once
+    per PDF print composition attempt.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Watermark.TimestampTimezoneType"
     enum="WatermarkTimestampTimezoneType" expires_after="2027-08-01">
   <owner>adamkl@google.com</owner>
