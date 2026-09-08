@@ -569,6 +569,15 @@ enum ActionResultCode {
   // No files were provided for the file upload action.
   kFileUploadEmptyFileList = 1801,
 
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1900-1999: Errors for perform search.
+
+  // Template URL service for search was not available.
+  kSearchServiceUnavailable = 1900,
+
+  // Search could not be performed because default search provider was not set.
+  kDefaultSearchProviderNotSet = 1901,
+
   // Please see the comment above about adding new values.
 };
 

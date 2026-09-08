@@ -170,6 +170,8 @@ chromium-metrics-reviews@google.com.
   <int value="1700" label="FindAndHighlightTextNotFound"/>
   <int value="1800" label="FileUploadUnauthorizedFile"/>
   <int value="1801" label="FileUploadEmptyFileList"/>
+  <int value="1900" label="SearchServiceUnavailable"/>
+  <int value="1901" label="DefaultSearchProviderNotSet"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->

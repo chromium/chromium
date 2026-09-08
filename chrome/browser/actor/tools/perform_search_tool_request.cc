@@ -9,12 +9,18 @@
 #include <string_view>
 #include <utility>
 
-#include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/tabs/public/tab_interface.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -46,8 +52,29 @@ ToolRequest::CreateToolResult PerformSearchToolRequest::CreateTool(
                        "Search query is empty.")};
   }
 
-  NOTIMPLEMENTED();
-  return {/*tool=*/nullptr, MakeOkResult()};
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&tool_delegate.GetProfile());
+  if (!template_url_service) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kSearchServiceUnavailable,
+                       /*requires_page_stabilization=*/false,
+                       "TemplateURLService is unavailable.")};
+  }
+
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_provider) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kDefaultSearchProviderNotSet,
+                       /*requires_page_stabilization=*/false,
+                       "Default search provider is not set.")};
+  }
+
+  GURL search_url = default_provider->GenerateSearchURL(
+      template_url_service->search_terms_data(), base::UTF8ToUTF16(query_));
+
+  return NavigateToolRequest(GetTabHandle(), std::move(search_url))
+      .CreateTool(task_id, tool_delegate);
 }
 
 std::string_view PerformSearchToolRequest::Name() const {
