@@ -48,10 +48,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
 
   ~WebGpuSharedImageWrapperLease();
 
-  WebGpuSharedImageWrapper* shared_image_wrapper() {
-    return shared_image_wrapper_.get();
-  }
-
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
