@@ -458,6 +458,285 @@ chromium-metrics-reviews@google.com.
   <variant name="Icon"/>
 </variants>
 
+<variants name="PageLoadBackgrounded">
+  <variant name="" summary="all page loads"/>
+  <variant name=".Background"
+      summary="The page was backgrounded at least once from navigation start
+               to this event."/>
+</variants>
+
+<variants name="PageLoadClientsDocWriteTimingMetric">
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.ParseStartToFirstContentfulPaint"
+      summary="time from parse start to first contentful paint"/>
+</variants>
+
+<variants name="PageLoadClientsEarlyHintsTimingMetric">
+  <variant name="InteractiveTiming.FirstInputDelay4"
+      summary="duration from first user interaction to handler execution"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.NavigationToLargestContentfulPaint2"
+      summary="time from navigation start to largest contentful paint"/>
+</variants>
+
+<variants name="PageLoadClientsFromGoogleSearchTimingMetric">
+  <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+      summary="time from navigation start to DOMContentLoaded event fired"/>
+  <variant name="DocumentTiming.NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+  <variant name="InteractiveTiming.FirstInputDelay4"
+      summary="duration from first user interaction to handler execution"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.NavigationToFirstImagePaint"
+      summary="time from navigation start to first image paint"/>
+  <variant name="PaintTiming.NavigationToFirstPaint"
+      summary="time from navigation start to first paint"/>
+  <variant name="PaintTiming.NavigationToLargestContentfulPaint2"
+      summary="time from navigation start to largest contentful paint"/>
+  <variant name="PaintTiming.ParseStartToFirstContentfulPaint"
+      summary="time from parse start to first contentful paint"/>
+  <variant name="ParseTiming.NavigationToParseStart"
+      summary="time from navigation start to parse start"/>
+</variants>
+
+<variants name="PageLoadClientsLitePagesClient">
+  <variant name="DataReductionProxy"
+      summary="PageLoadMetrics that are a result of a navigation that passed
+               through the Data Reduction Proxy."/>
+  <variant name="Previews.LitePages"
+      summary="PageLoadMetrics that are a result of a navigation where a
+               Server Lite Page was served to the user."/>
+</variants>
+
+<variants name="PageLoadClientsLitePagesTimingMetric">
+  <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+      summary="time from navigation start to DOMContentLoaded event fired"/>
+  <variant name="DocumentTiming.NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.NavigationToFirstImagePaint"
+      summary="time from navigation start to first image paint"/>
+  <variant name="PaintTiming.NavigationToFirstPaint"
+      summary="time from navigation start to first paint"/>
+  <variant name="ParseTiming.NavigationToParseStart"
+      summary="time from navigation start to parse start"/>
+</variants>
+
+<variants name="PageLoadClientsLoadingPredictorPredictionType">
+  <variant name="" summary="all prediction types"/>
+  <variant name=".Preconnectable" summary="Preconnectable"/>
+</variants>
+
+<variants name="PageLoadClientsNoServiceWorkerTimingMetric">
+  <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+      summary="time from navigation start to DOMContentLoaded event fired"/>
+  <variant name="DocumentTiming.NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.NavigationToFirstPaint"
+      summary="time from navigation start to first paint"/>
+  <variant name="PaintTiming.NavigationToLargestContentfulPaint2"
+      summary="time from navigation start to largest contentful paint"/>
+  <variant name="PaintTiming.ParseStartToFirstContentfulPaint"
+      summary="time from parse start to first contentful paint"/>
+  <variant name="ParseTiming.NavigationToParseStart"
+      summary="time from navigation start to parse start"/>
+</variants>
+
+<variants name="PageLoadClientsPreviewTimingMetric">
+  <variant name="DocumentTiming.NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+</variants>
+
+<variants name="PageLoadClientsProtocolClient">
+  <variant name="Protocol.H2"
+      summary="PageLoadMetrics that are a result of a navigation where HTTP/2
+               was used to fetch the main resource."/>
+  <variant name="Protocol.H11"
+      summary="PageLoadMetrics that are a result of a navigation where
+               HTTP/1.1 was used to fetch the main resource."/>
+  <variant name="Protocol.QUIC"
+      summary="PageLoadMetrics that are a result of a navigation where QUIC
+               was used to fetch the main resource."/>
+</variants>
+
+<variants name="PageLoadClientsProtocolTimingMetric">
+  <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+      summary="time from navigation start to DOMContentLoaded event fired"/>
+  <variant name="DocumentTiming.NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.ParseStartToFirstContentfulPaint"
+      summary="time from parse start to first contentful paint"/>
+  <variant name="ParseTiming.NavigationToParseStart"
+      summary="time from navigation start to parse start"/>
+</variants>
+
+<variants name="PageLoadClientsSchemeClient">
+  <variant name="Scheme.HTTP"
+      summary="PageLoadMetrics that are a result of a navigation to a main
+               resource where the committed URL is HTTP."/>
+  <variant name="Scheme.HTTPS"
+      summary="PageLoadMetrics that are a result of a navigation to a main
+               resource where the committed URL is HTTPS."/>
+</variants>
+
+<variants name="PageLoadClientsSchemeTimingMetric">
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.ParseStartToFirstContentfulPaint"
+      summary="time from parse start to first contentful paint"/>
+  <variant name="ParseTiming.NavigationToParseStart"
+      summary="time from navigation start to parse start"/>
+</variants>
+
+<variants name="PageLoadClientsServiceWorkerDocTimingEvent">
+  <variant name="NavigationToDOMContentLoadedEventFired"
+      summary="time from navigation start to DOMContentLoaded event fired"/>
+  <variant name="NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+</variants>
+
+<variants name="PageLoadClientsServiceWorkerParseTimingSuffix">
+  <variant name="" summary="all page loads"/>
+  <variant name=".Background"
+      summary="The page was backgrounded at least once from navigation start
+               to this event."/>
+  <variant name=".docs" summary="Custom histogram for the Google Docs page"/>
+  <variant name=".LoadType.ForwardBackNavigation"
+      summary="Restricted to forward/back navigations."/>
+  <variant name=".LoadType.ForwardBackNavigation.NoStore"
+      summary="Restricted to forward/back navigations that had Cache-Control:
+               no-store."/>
+  <variant name=".LoadType.NewNavigation"
+      summary="Restricted to new navigations (link clicks, URLs typed into
+               the URL box, etc)."/>
+  <variant name=".LoadType.Reload" summary="Restricted to reloaded pages."/>
+  <variant name=".search"
+      summary="Custom histogram for the Google Search results page"/>
+  <variant name=".SyntheticResponse"
+      summary="and the response is returned with the synthetic response"/>
+</variants>
+
+<variants name="PageLoadClientsServiceWorkerSpecialApps">
+  <variant name="" summary="all pages"/>
+  <variant name=".docs" summary="Custom histogram for the Google Docs page"/>
+  <variant name=".search"
+      summary="Custom histogram for the Google Search results page"/>
+</variants>
+
+<variants name="PageLoadClientsServiceWorkerTimingSuffix">
+  <variant name="" summary="all page loads"/>
+  <variant name=".Background"
+      summary="The page was backgrounded at least once from navigation start
+               to this event."/>
+  <variant name=".docs" summary="Custom histogram for the Google Docs page"/>
+  <variant name=".LoadType.ForwardBackNavigation"
+      summary="Restricted to forward/back navigations."/>
+  <variant name=".LoadType.ForwardBackNavigation.NoStore"
+      summary="Restricted to forward/back navigations that had Cache-Control:
+               no-store."/>
+  <variant name=".LoadType.NewNavigation"
+      summary="Restricted to new navigations (link clicks, URLs typed into
+               the URL box, etc)."/>
+  <variant name=".LoadType.Reload" summary="Restricted to reloaded pages."/>
+  <variant name=".search"
+      summary="Custom histogram for the Google Search results page"/>
+</variants>
+
+<variants name="PageLoadClientsSignedExchangeTimingMetric">
+  <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+      summary="time from navigation start to DOMContentLoaded event fired"/>
+  <variant name="DocumentTiming.NavigationToLoadEventFired"
+      summary="time from navigation start to load event fired"/>
+  <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+      summary="time from navigation start to first contentful paint"/>
+  <variant name="PaintTiming.NavigationToFirstPaint"
+      summary="time from navigation start to first paint"/>
+  <variant name="PaintTiming.ParseStartToFirstContentfulPaint"
+      summary="time from parse start to first contentful paint"/>
+  <variant name="ParseTiming.NavigationToParseStart"
+      summary="time from navigation start to parse start"/>
+</variants>
+
+<variants name="PageLoadClientsSignedExchangeType">
+  <variant name=""
+      summary="PageLoadMetrics for page loads for which the document was
+               served through a signed exchange."/>
+  <variant name=".AltSubSXG"
+      summary="PageLoadMetrics for page loads for which the document was
+               served with prefetched alternative subresource signed
+               exchange."/>
+  <variant name=".Cached"
+      summary="PageLoadMetrics for page loads for which the document was
+               served through a cached signed exchange."/>
+  <variant name=".NotCached"
+      summary="PageLoadMetrics for page loads for which the document was
+               served through a signed exchange directly from network."/>
+</variants>
+
+<variants name="PageLoadForegroundDurationSuffix">
+  <variant name="" summary="all foreground page loads"/>
+  <variant name=".AfterPaint"
+      summary="The foreground duration for page loads after first paint."/>
+  <variant name=".NoCommit"
+      summary="Limited to page loads that did not commit."/>
+  <variant name=".WithoutPaint"
+      summary="The foreground duration for page loads did not reach first
+               paint."/>
+  <variant name=".WithPaint"
+      summary="The foreground duration for page loads reached first paint."/>
+</variants>
+
+<variants name="PageLoadPaintTimingFirstContentfulPaintSuffix">
+  <variant name="" summary="all page loads"/>
+  <variant name=".Background"
+      summary="The page was backgrounded at least once from navigation start
+               to this event."/>
+  <variant name=".HiddenWhileFlushing"
+      summary="Tab hidden while flushing FCP value."/>
+  <variant name=".LoadType.ForwardBackNavigation"
+      summary="Restricted to forward/back navigations."/>
+  <variant name=".LoadType.ForwardBackNavigation.NoStore"
+      summary="Restricted to forward/back navigations that had Cache-Control:
+               no-store."/>
+  <variant name=".LoadType.NewNavigation"
+      summary="Restricted to new navigations (link clicks, URLs typed into
+               the URL box, etc)."/>
+  <variant name=".LoadType.Reload" summary="Restricted to reloaded pages."/>
+  <variant name=".LoadType.Reload.UserGesture"
+      summary="Restricted to pages loaded via a user gesture."/>
+  <variant name=".NoStore"
+      summary="Restricted to pages that had Cache-Control: no-store."/>
+  <variant name=".UserInitiated"
+      summary="(experimental) Page load metric that is approximately user
+               initiated."/>
+</variants>
+
+<variants name="PageLoadParseTimingNavigationToParseStartSuffix">
+  <variant name="" summary="all page loads"/>
+  <variant name=".Background"
+      summary="The page was backgrounded at least once from navigation start
+               to this event."/>
+  <variant name=".LoadType.ForwardBackNavigation"
+      summary="Restricted to forward/back navigations."/>
+  <variant name=".LoadType.ForwardBackNavigation.NoStore"
+      summary="Restricted to forward/back navigations that had Cache-Control:
+               no-store."/>
+  <variant name=".LoadType.NewNavigation"
+      summary="Restricted to new navigations (link clicks, URLs typed into
+               the URL box, etc)."/>
+  <variant name=".LoadType.Reload" summary="Restricted to reloaded pages."/>
+</variants>
+
 <variants name="PageLoadType">
   <variant name="" summary="regular"/>
   <variant name=".AfterBackForwardCacheRestore" summary="bfcache restoration"/>
@@ -1612,6 +1891,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.DocWrite.Block.{PageLoadClientsDocWriteTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from page loads where doc.write was blocked:
+    {PageLoadClientsDocWriteTimingMetric}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.EarlyHints2.Preload.{PageLoadClientsEarlyHintsTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that received preload Link headers via Early
+    Hints responses. Recorded only for main frames. Includes samples from
+    prerendered pages. {PageLoadClientsEarlyHintsTimingMetric}
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.FencedFrames.InteractiveTiming.FirstInputDelay4"
     units="ms" expires_after="2026-10-08">
   <owner>lbrady@google.com</owner>
@@ -1709,6 +2011,28 @@ chromium-metrics-reviews@google.com.
     we can reliably record: when the page is navigated away, the browser is
     closed, or on Android when the browser is backgrounded, iff the page loads
     and the event happens in the foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FromGoogleSearch.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"
+    units="scorex10000" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for page loads from Google search:
+    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.FromGoogleSearch.{PageLoadClientsFromGoogleSearchTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for page loads from Google search:
+    {PageLoadClientsFromGoogleSearchTimingMetric}
   </summary>
 </histogram>
 
@@ -3739,6 +4063,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.LoadingPredictor2.PaintTiming.NavigationToFirstContentfulPaint{PageLoadClientsLoadingPredictorPredictionType}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for navigations where LoadingPredictor was used:
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint
+    {PageLoadClientsLoadingPredictorPredictionType}
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.MultiTabLoading{OtherLoadingCount}.{Timing}{Background}"
     units="ms" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
@@ -3834,6 +4170,29 @@ chromium-metrics-reviews@google.com.
     and first contentful paint was not yet reached. In case that navigation is
     started in background, the timeout timer will not be started until the page
     is moved to foreground.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.NoScriptPreview.{PageLoadClientsPreviewTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics that are a result of a navigation where a NoScript Preview
+    was served to the user: {PageLoadClientsPreviewTimingMetric}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.NoServiceWorker2.{PageLoadClientsNoServiceWorkerTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that is either not controlled by a service
+    worker or is controlled by a service worker without a fetch event handler:
+    {PageLoadClientsNoServiceWorkerTimingMetric}
   </summary>
 </histogram>
 
@@ -4028,6 +4387,78 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.ResourceLoadingHintsPreview.{PageLoadClientsPreviewTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics that are a result of a navigation that used
+    ResourceLoadingHints to show a Preview version of the page:
+    {PageLoadClientsPreviewTimingMetric}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ServiceWorker2.DocumentTiming.{PageLoadClientsServiceWorkerDocTimingEvent}{PageLoadClientsServiceWorkerSpecialApps}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that is controlled by a service worker that has
+    a fetch event handler:
+    PageLoad.DocumentTiming.{PageLoadClientsServiceWorkerDocTimingEvent}
+    {PageLoadClientsServiceWorkerSpecialApps}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint{PageLoadClientsServiceWorkerTimingSuffix}"
+    units="ms" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that is controlled by a service worker that has
+    a fetch event handler: PageLoad.PaintTiming.NavigationToFirstContentfulPaint
+    {PageLoadClientsServiceWorkerTimingSuffix}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstPaint"
+    units="ms" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that is controlled by a service worker that has
+    a fetch event handler: PageLoad.PaintTiming.NavigationToFirstPaint
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToLargestContentfulPaint2"
+    units="ms" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that is controlled by a service worker that has
+    a fetch event handler:
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.ParseStartToFirstContentfulPaint{PageLoadClientsServiceWorkerSpecialApps}"
+    units="ms" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics from a page that is controlled by a service worker that has
+    a fetch event handler: PageLoad.PaintTiming.ParseStartToFirstContentfulPaint
+    {PageLoadClientsServiceWorkerSpecialApps}
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.RaceNetworkRequestEligible"
     units="ms" expires_after="2026-10-11">
   <owner>sisidovski@chromium.org</owner>
@@ -4089,19 +4520,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart{SyntheticResponseSuffix}"
+    name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart{PageLoadClientsServiceWorkerParseTimingSuffix}"
     units="ms" expires_after="2027-02-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    parser started, for page controlled by service
-    worker{SyntheticResponseSuffix}. Only recorded for navigations that start in
-    the foreground and stay in the foreground until parse start. This metric is
-    emitted when the parser starts for a navigation.
+    parser started, for page controlled by service worker. Only recorded for
+    navigations that start in the foreground and stay in the foreground until
+    parse start. This metric is emitted when the parser starts for a navigation.
+    {PageLoadClientsServiceWorkerParseTimingSuffix}
   </summary>
-  <token key="SyntheticResponseSuffix" variants="SyntheticResponseSuffix"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.SignedExchange{PageLoadClientsSignedExchangeType}.{PageLoadClientsSignedExchangeTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for page loads for which the document was served through a
+    signed exchange: {PageLoadClientsSignedExchangeType}
+    {PageLoadClientsSignedExchangeTimingMetric}
+  </summary>
 </histogram>
 
 <histogram
@@ -4261,6 +4703,39 @@ chromium-metrics-reviews@google.com.
     <variant name="LayoutInstability.CumulativeShiftScore.MainFrame"
         summary="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"/>
   </token>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.{PageLoadClientsLitePagesClient}.{PageLoadClientsLitePagesTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for {PageLoadClientsLitePagesClient}:
+    {PageLoadClientsLitePagesTimingMetric}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.{PageLoadClientsProtocolClient}.{PageLoadClientsProtocolTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for {PageLoadClientsProtocolClient}:
+    {PageLoadClientsProtocolTimingMetric}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.{PageLoadClientsSchemeClient}.{PageLoadClientsSchemeTimingMetric}"
+    units="ms" expires_after="2027-02-14">
+  <owner>csharrison@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    PageLoadMetrics for {PageLoadClientsSchemeClient}:
+    {PageLoadClientsSchemeTimingMetric}
+  </summary>
 </histogram>
 
 <histogram
@@ -4559,24 +5034,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired"
+    name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired{PageLoadBackgrounded}"
     units="ms" expires_after="2027-01-17">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     DOMContentLoaded event is fired, for main frame documents.
+    {PageLoadBackgrounded}
   </summary>
 </histogram>
 
-<histogram name="PageLoad.DocumentTiming.NavigationToLoadEventFired" units="ms"
-    expires_after="2027-02-14">
+<histogram
+    name="PageLoad.DocumentTiming.NavigationToLoadEventFired{PageLoadBackgrounded}"
+    units="ms" expires_after="2027-02-14">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    load event is fired, for main frame documents.
+    load event is fired, for main frame documents. {PageLoadBackgrounded}
   </summary>
 </histogram>
 
@@ -5470,8 +5947,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
-    expires_after="2027-01-17">
+<histogram
+    name="PageLoad.PageTiming.ForegroundDuration{PageLoadForegroundDurationSuffix}"
+    units="ms" expires_after="2027-01-17">
   <owner>bmcquade@chromium.org</owner>
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -5483,7 +5961,7 @@ chromium-metrics-reviews@google.com.
     commits is initiated in the same tab, or the tab hosting the page is
     backgrounded. This metric has a very long tail, for pages that spend a long
     period of time in the foreground. As such, use of the mean or tail values
-    are not recommended.
+    are not recommended. {PageLoadForegroundDurationSuffix}
   </summary>
 </histogram>
 
@@ -5547,39 +6025,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time from a background tab being switched to the foreground to
     the time the first contentful paint is performed, for main frame documents.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    The time from navigation start to first &quot;contentful&quot; paint. This
-    metric does not include all page loads. Specifically, it excludes:
-
-    - Page loads which have not been in the foreground during the entire loading
-    time. Use
-    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.HttpsOrDataOrFileScheme
-    histogram if you want to include those.
-
-    - Page loads for non http(s) schemes. Use
-    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.{DataScheme,FileScheme}
-    histograms for data for page loads for data:// and file:// schemes.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
-
-    Bucketing for this histogram should be kept in sync with bucketing for
-    PageLoad.PaintTiming.NavigationToFirstPaint.AfterBackForwardCacheRestore.
-    These two histograms will be aggregated on the server to form the
-    authoritative metric.
-
-    Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
   </summary>
 </histogram>
 
@@ -5681,27 +6126,51 @@ chromium-metrics-reviews@google.com.
   <token key="NavigationScenario" variants="NavigationScenario"/>
 </histogram>
 
-<histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint" units="ms"
-    expires_after="2026-09-27">
+<histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint{PageLoadPaintTimingFirstContentfulPaintSuffix}"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from navigation start to first &quot;contentful&quot; paint. This
+    metric does not include all page loads. Specifically, it excludes:
+
+    - Page loads which have not been in the foreground during the entire loading
+    time. Use
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.HttpsOrDataOrFileScheme
+    histogram if you want to include those.
+
+    - Page loads for non http(s) schemes. Use
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.{{DataScheme,FileScheme}}
+    histograms for data for page loads for data:// and file:// schemes.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
+
+    Bucketing for this histogram should be kept in sync with bucketing for
+    PageLoad.PaintTiming.NavigationToFirstPaint.AfterBackForwardCacheRestore.
+    These two histograms will be aggregated on the server to form the
+    authoritative metric.
+
+    Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
+    {PageLoadPaintTimingFirstContentfulPaintSuffix}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToFirstImagePaint{PageLoadBackgrounded}"
+    units="ms" expires_after="2026-09-27">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     first image is painted, for main frame documents. For images that render
     progressively, this is recorded as soon as any image pixels have been drawn.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2027-02-14">
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures the time from navigation timing's navigation start to the time the
-    first paint is performed, for main frame documents.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org.
+    {PageLoadBackgrounded}
   </summary>
 </histogram>
 
@@ -5748,6 +6217,20 @@ chromium-metrics-reviews@google.com.
     <variant name="Second"/>
     <variant name="Third"/>
   </token>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToFirstPaint{PageLoadBackgrounded}"
+    units="ms" expires_after="2027-02-14">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    first paint is performed, for main frame documents.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org. {PageLoadBackgrounded}
+  </summary>
 </histogram>
 
 <histogram
@@ -5965,14 +6448,15 @@ chromium-metrics-reviews@google.com.
   <token key="NavigationScenario" variants="NavigationScenario"/>
 </histogram>
 
-<histogram name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"
+<histogram
+    name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint{PageLoadBackgrounded}"
     units="ms" expires_after="2027-02-07">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures the time from when the HTML parser started, to when the page first
-    paints content.
+    paints content. {PageLoadBackgrounded}
   </summary>
 </histogram>
 
@@ -6002,14 +6486,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.ParseTiming.NavigationToParseStart" units="ms"
-    expires_after="2027-02-14">
+<histogram
+    name="PageLoad.ParseTiming.NavigationToParseStart{PageLoadParseTimingNavigationToParseStartSuffix}"
+    units="ms" expires_after="2027-02-14">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     parser started, for main frame documents.
+    {PageLoadParseTimingNavigationToParseStartSuffix}
   </summary>
 </histogram>
 
