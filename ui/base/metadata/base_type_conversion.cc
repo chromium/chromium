@@ -631,7 +631,8 @@ DEFINE_ENUM_CONVERTERS(
     {ui::MenuSeparatorType::LOWER_SEPARATOR, u"LOWER_SEPARATOR"},
     {ui::MenuSeparatorType::SPACING_SEPARATOR, u"SPACING_SEPARATOR"},
     {ui::MenuSeparatorType::VERTICAL_SEPARATOR, u"VERTICAL_SEPARATOR"},
-    {ui::MenuSeparatorType::PADDED_SEPARATOR, u"PADDED_SEPARATOR"})
+    {ui::MenuSeparatorType::PADDED_SEPARATOR, u"PADDED_SEPARATOR"},
+    {ui::MenuSeparatorType::MENU_ITEM_SEPARATOR, u"MENU_ITEM_SEPARATOR"})
 
 DEFINE_ENUM_CONVERTERS(
     ui::TextInputType,

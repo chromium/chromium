@@ -30,6 +30,10 @@ enum MenuSeparatorType {
   // Separator with left padding - top to bottom: Line only,
   //                               horizontal: Starts after left padding.
   PADDED_SEPARATOR,
+
+  // Separator between menu items - thin line matching the horizontal insets
+  // of menu items, without vertical spacing.
+  MENU_ITEM_SEPARATOR,
 };
 
 }  // namespace ui

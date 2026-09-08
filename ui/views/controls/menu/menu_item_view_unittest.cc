@@ -27,6 +27,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
 #include "ui/views/style/platform_style.h"
@@ -55,6 +56,31 @@ TEST_F(MenuItemViewUnitTest, AddAndRemoveChildren) {
   root_menu.RemoveMenuItem(item);
 
   EXPECT_TRUE(submenu->GetMenuItems().empty());
+}
+
+TEST_F(MenuItemViewUnitTest, AppendMenuItemSeparator) {
+  views::TestMenuItemView root_menu;
+  auto* item1 = root_menu.AppendMenuItem(1, u"Item 1");
+  auto* separator =
+      root_menu.AppendSeparator(ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  separator->SetColorId(ui::kColorMenuBackground);
+  auto* item2 = root_menu.AppendMenuItem(2, u"Item 2");
+
+  ASSERT_NE(separator, nullptr);
+  EXPECT_EQ(separator->GetType(), ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  EXPECT_EQ(separator->GetColorId(), ui::kColorMenuBackground);
+
+  auto* submenu = root_menu.GetSubmenu();
+  ASSERT_NE(submenu, nullptr);
+  EXPECT_EQ(submenu->children().size(), 3u);
+  EXPECT_EQ(submenu->children()[0], item1);
+  EXPECT_EQ(submenu->children()[1], separator);
+  EXPECT_EQ(submenu->children()[2], item2);
+
+  // Separators should not be counted in GetMenuItems().
+  EXPECT_EQ(submenu->GetMenuItems().size(), 2u);
+  EXPECT_EQ(submenu->GetMenuItems()[0], item1);
+  EXPECT_EQ(submenu->GetMenuItems()[1], item2);
 }
 
 namespace {
@@ -574,6 +600,27 @@ TEST_F(MenuItemViewPaintUnitTest, CustomColorAssertionCoverage) {
   AddItem(u"No foreground or selected", background_color, std::nullopt,
           std::nullopt);
   AddItem(u"All colors", background_color, foreground_color, selected_color);
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  SkBitmap bitmap;
+  gfx::Size size = menu_item_view()->GetMirroredBounds().size();
+  ui::CanvasPainter canvas_painter(&bitmap, size, 1.f, SK_ColorTRANSPARENT,
+                                   false);
+  menu_item_view()->GetSubmenu()->Paint(
+      PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
+}
+
+// Makes sure no internal DCHECK assertions or crashes are triggered when
+// painting a menu containing a MENU_ITEM_SEPARATOR.
+TEST_F(MenuItemViewPaintUnitTest, MenuItemSeparatorAssertionCoverage) {
+  menu_item_view()->AppendMenuItem(1, u"Item 1");
+  auto* separator = menu_item_view()->AppendSeparator(
+      ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  separator->SetColorId(ui::kColorMenuBackground);
+  menu_item_view()->AppendMenuItem(2, u"Item 2");
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,

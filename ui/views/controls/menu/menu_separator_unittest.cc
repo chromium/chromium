@@ -48,4 +48,24 @@ TEST_F(MenuSeparatorTest, AccessibleRole) {
             ax::mojom::Role::kMenuItemSeparator);
 }
 
+TEST_F(MenuSeparatorTest, MenuItemSeparatorType) {
+  auto separator = std::make_unique<MenuSeparator>(
+      ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  test::TestViewMetadata(separator.get());
+  EXPECT_EQ(separator->GetType(), ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  separator->SizeToPreferredSize();
+  const MenuConfig& config = MenuConfig::instance();
+  EXPECT_EQ(config.double_separator_thickness, separator->height());
+
+  EXPECT_FALSE(separator->GetColorId().has_value());
+  separator->SetColorId(ui::kColorMenuBackground);
+  EXPECT_EQ(separator->GetColorId(), ui::kColorMenuBackground);
+
+  auto separator_with_color = std::make_unique<MenuSeparator>(
+      ui::MenuSeparatorType::MENU_ITEM_SEPARATOR, ui::kColorMenuBackground);
+  EXPECT_EQ(separator_with_color->GetType(),
+            ui::MenuSeparatorType::MENU_ITEM_SEPARATOR);
+  EXPECT_EQ(separator_with_color->GetColorId(), ui::kColorMenuBackground);
+}
+
 }  // namespace views

@@ -489,18 +489,19 @@ MenuItemView* MenuItemView::AppendSubMenu(int item_id,
   return AppendMenuItemImpl(item_id, label, icon, Type::kSubMenu);
 }
 
-void MenuItemView::AppendSeparator() {
-  AppendMenuItemImpl(0, std::u16string(), ui::ImageModel(), Type::kSeparator);
+MenuSeparator* MenuItemView::AppendSeparator(ui::MenuSeparatorType type) {
+  const size_t index = submenu_ ? submenu_->children().size() : size_t{0};
+  return AddSeparatorAt(index, type);
 }
 
-void MenuItemView::AddSeparatorAt(size_t index) {
-  AddMenuItemAt(index, /*item_id=*/0, /*label=*/std::u16string(),
-                /*secondary_label=*/std::u16string(),
-                /*minor_text=*/std::u16string(),
-                /*minor_icon=*/ui::ImageModel(),
-                /*icon=*/ui::ImageModel(),
-                /*type=*/Type::kSeparator,
-                /*separator_style=*/ui::NORMAL_SEPARATOR);
+MenuSeparator* MenuItemView::AddSeparatorAt(size_t index,
+                                            ui::MenuSeparatorType type) {
+  if (!submenu_) {
+    CreateSubmenu();
+  }
+  DCHECK_LE(index, submenu_->children().size());
+  auto separator = std::make_unique<MenuSeparator>(type);
+  return submenu_->AddChildViewAt(std::move(separator), index);
 }
 
 MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,

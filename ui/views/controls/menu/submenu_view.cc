@@ -228,11 +228,16 @@ void SubmenuView::Layout(PassKey) {
   const int between_item_vertical_padding =
       MenuConfig::instance().between_item_vertical_padding;
   bool previous_child_was_lower_separator = false;
+  bool previous_child_was_menu_item_separator = false;
   for (View* child : children()) {
     if (child->GetVisible()) {
       const auto* separator = AsViewClass<MenuSeparator>(child);
+      const bool is_menu_item_separator =
+          separator && separator->GetType() == ui::MENU_ITEM_SEPARATOR;
       if (y != insets.top() && !previous_child_was_lower_separator &&
-          (!separator || separator->GetType() != ui::UPPER_SEPARATOR)) {
+          !previous_child_was_menu_item_separator &&
+          (!separator || (separator->GetType() != ui::UPPER_SEPARATOR &&
+                          separator->GetType() != ui::MENU_ITEM_SEPARATOR))) {
         y += between_item_vertical_padding;
       }
       child->SetBounds(x, y, menu_item_width,
@@ -240,6 +245,7 @@ void SubmenuView::Layout(PassKey) {
       y = child->bounds().bottom();
       previous_child_was_lower_separator =
           separator && separator->GetType() == ui::LOWER_SEPARATOR;
+      previous_child_was_menu_item_separator = is_menu_item_separator;
     }
   }
 }
@@ -301,17 +307,23 @@ gfx::Size SubmenuView::CalculatePreferredSize(
   // Then, the height for that width.
   const int menu_item_width = width - insets.width();
   bool previous_child_was_lower_separator = false;
+  bool previous_child_was_menu_item_separator = false;
   const auto get_height = [&](int height, const View* child) {
     if (!child->GetVisible()) {
       return height;
     }
     const auto* separator = AsViewClass<MenuSeparator>(child);
+    const bool is_menu_item_separator =
+        separator && separator->GetType() == ui::MENU_ITEM_SEPARATOR;
     if (height && !previous_child_was_lower_separator &&
-        (!separator || separator->GetType() != ui::UPPER_SEPARATOR)) {
+        !previous_child_was_menu_item_separator &&
+        (!separator || (separator->GetType() != ui::UPPER_SEPARATOR &&
+                        separator->GetType() != ui::MENU_ITEM_SEPARATOR))) {
       height += config.between_item_vertical_padding;
     }
     previous_child_was_lower_separator =
         separator && separator->GetType() == ui::LOWER_SEPARATOR;
+    previous_child_was_menu_item_separator = is_menu_item_separator;
     return height + child->GetHeightForWidth(menu_item_width);
   };
   const int height =

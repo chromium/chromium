@@ -52,6 +52,7 @@ class ImageView;
 class MenuController;
 class MenuControllerTest;
 class MenuDelegate;
+class MenuSeparator;
 class Separator;
 class SubmenuView;
 class TestMenuItemView;
@@ -258,11 +259,16 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
                               const std::u16string& label,
                               const ui::ImageModel& icon = ui::ImageModel());
 
-  // Adds a separator to this menu
-  void AppendSeparator();
+  // Adds a separator to this menu.
+  // The returned pointer is owned by this menu.
+  MenuSeparator* AppendSeparator(
+      ui::MenuSeparatorType type = ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   // Adds a separator to this menu at the specified position.
-  void AddSeparatorAt(size_t index);
+  // The returned pointer is owned by this menu.
+  MenuSeparator* AddSeparatorAt(
+      size_t index,
+      ui::MenuSeparatorType type = ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   // All the AppendXXX methods funnel into this.
   MenuItemView* AppendMenuItemImpl(int item_id,
