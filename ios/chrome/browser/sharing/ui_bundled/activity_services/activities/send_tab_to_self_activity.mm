@@ -182,6 +182,14 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 
 #pragma mark - UIActivity Overrides
 
+- (NSString*)activityType {
+  if (_cacheGUID.length > 0) {
+    return [NSString
+        stringWithFormat:@"%@.%@", kSendTabToSelfActivityType, _cacheGUID];
+  }
+  return [super activityType];
+}
+
 - (NSString*)activityTitle {
   return _activityTitleOverride;
 }

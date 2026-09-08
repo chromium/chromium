@@ -14,6 +14,16 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
+namespace {
+
+NSString* const kTestMacGuid = @"9c20a8d6-4e5a-4b92-801b-c1285dbb1a8d";
+NSString* const kTestPhoneGuid = @"e2b3c4d5-6f7a-4b8c-9d0e-1f2a3b4c5d6e";
+NSString* const kTestTabletGuid = @"b8451b6e-41d1-419b-a320-22c67420e7df";
+NSString* const kTestDesktopGuid = @"a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d";
+NSString* const kTestPixel8Guid = @"d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a";
+
+}  // namespace
+
 // Test fixture for covering the SendTabToSelfActivity class.
 class SendTabToSelfActivityTest : public PlatformTest {
  protected:
@@ -93,12 +103,64 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityTitle) {
        initWithData:data
             handler:mocked_handler_
       activityTitle:activity_title
-          cacheGUID:@"guid_mac"
+          cacheGUID:kTestMacGuid
          deviceName:@"My MacBook Pro"
          formFactor:syncer::DeviceInfo::FormFactor::kDesktop
              osType:syncer::DeviceInfo::OsType::kMac];
 
   EXPECT_NSEQ(activity_title, [activity activityTitle]);
+}
+
+// Tests that a device-specific activity returns a unique activity type keyed by
+// the target device's cache GUID.
+TEST_F(SendTabToSelfActivityTest,
+       DeviceSpecific_ActivityTypeReturnsGuidSuffixedIdentifier) {
+  ShareToData* data = CreateData(true);
+  SendTabToSelfShareActivity* activity = [[SendTabToSelfShareActivity alloc]
+       initWithData:data
+            handler:mocked_handler_
+      activityTitle:@"My MacBook Pro"
+          cacheGUID:kTestMacGuid
+         deviceName:@"My MacBook Pro"
+         formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+             osType:syncer::DeviceInfo::OsType::kMac];
+
+  NSString* expected_activity_type =
+      [NSString stringWithFormat:@"com.google.chrome.sendTabToSelfActivity.%@",
+                                 kTestMacGuid];
+  EXPECT_NSEQ(expected_activity_type, [activity activityType]);
+}
+
+// Tests that a device-specific activity falls back to the generic activity type
+// when the cache GUID is empty or nil.
+TEST_F(SendTabToSelfActivityTest,
+       DeviceSpecific_ActivityTypeFallsBackWhenGuidIsEmpty) {
+  ShareToData* data = CreateData(true);
+  SendTabToSelfShareActivity* activity_empty_guid =
+      [[SendTabToSelfShareActivity alloc]
+           initWithData:data
+                handler:mocked_handler_
+          activityTitle:@"My MacBook Pro"
+              cacheGUID:@""
+             deviceName:@"My MacBook Pro"
+             formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+                 osType:syncer::DeviceInfo::OsType::kMac];
+
+  EXPECT_NSEQ(@"com.google.chrome.sendTabToSelfActivity",
+              [activity_empty_guid activityType]);
+
+  SendTabToSelfShareActivity* activity_nil_guid =
+      [[SendTabToSelfShareActivity alloc]
+           initWithData:data
+                handler:mocked_handler_
+          activityTitle:@"My MacBook Pro"
+              cacheGUID:nil
+             deviceName:@"My MacBook Pro"
+             formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+                 osType:syncer::DeviceInfo::OsType::kMac];
+
+  EXPECT_NSEQ(@"com.google.chrome.sendTabToSelfActivity",
+              [activity_nil_guid activityType]);
 }
 
 // Tests that device-specific activities return valid images for each form
@@ -111,7 +173,7 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityImage) {
            initWithData:data
                 handler:mocked_handler_
           activityTitle:@"Phone"
-              cacheGUID:@"guid1"
+              cacheGUID:kTestPhoneGuid
              deviceName:@"Phone"
              formFactor:syncer::DeviceInfo::FormFactor::kPhone
                  osType:syncer::DeviceInfo::OsType::kIOS];
@@ -122,7 +184,7 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityImage) {
            initWithData:data
                 handler:mocked_handler_
           activityTitle:@"Tablet"
-              cacheGUID:@"guid2"
+              cacheGUID:kTestTabletGuid
              deviceName:@"Tablet"
              formFactor:syncer::DeviceInfo::FormFactor::kTablet
                  osType:syncer::DeviceInfo::OsType::kIOS];
@@ -133,7 +195,7 @@ TEST_F(SendTabToSelfActivityTest, DeviceSpecific_ActivityImage) {
            initWithData:data
                 handler:mocked_handler_
           activityTitle:@"Desktop"
-              cacheGUID:@"guid3"
+              cacheGUID:kTestDesktopGuid
              deviceName:@"Desktop"
              formFactor:syncer::DeviceInfo::FormFactor::kDesktop
                  osType:syncer::DeviceInfo::OsType::kMac];
@@ -146,12 +208,11 @@ TEST_F(SendTabToSelfActivityTest,
        ExecuteDeviceSpecificActivity_CallsDirectSendHandler) {
   ShareToData* data = CreateData(true);
   NSString* activity_title = @"Tormund • My Pixel 8";
-  NSString* cache_guid = @"pixel_8_guid";
 
   [[mocked_handler_ expect]
       sendTabToSelfToDeviceWithURL:data.shareURL
                              title:data.title
-                          deviceID:cache_guid
+                          deviceID:kTestPixel8Guid
                         deviceName:@"My Pixel 8"
                         entryPoint:send_tab_to_self::ShareEntryPoint::
                                        kShareSheetDirectShare];
@@ -160,7 +221,7 @@ TEST_F(SendTabToSelfActivityTest,
        initWithData:data
             handler:mocked_handler_
       activityTitle:activity_title
-          cacheGUID:cache_guid
+          cacheGUID:kTestPixel8Guid
          deviceName:@"My Pixel 8"
          formFactor:syncer::DeviceInfo::FormFactor::kPhone
              osType:syncer::DeviceInfo::OsType::kAndroid];
