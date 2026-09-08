@@ -203,4 +203,23 @@ TEST_F(EyeDropperChooserImplTest, InactiveDocumentIsRejected) {
   EXPECT_TRUE(new_rfh->HasTransientUserActivation());
 }
 
+// Inactive documents should be rejected for Choose()
+TEST_F(EyeDropperChooserImplTest, InactiveDocumentChooseFails) {
+  // 1. Start with the initial active document.
+  RenderFrameHostWrapper rfh(main_rfh());
+  // 2. Create a valid EyeDropper.
+  mojo::Remote<blink::mojom::EyeDropperChooser> chooser = CreateChooser();
+  // 3. Navigate away. The old document goes into the Back/Forward Cache
+  //    (or becomes pending-deletion), becoming inactive.
+  NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example2.test"), main_rfh());
+  EXPECT_FALSE(rfh->IsActive());
+
+  // 4. Choose() should fail.
+  ChooseFuture choose_future;
+  chooser->Choose(choose_future.GetCallback());
+  EXPECT_TRUE(choose_future.Wait());
+  EXPECT_FALSE(choose_future.Get<0>());
+}
+
 }  // namespace content
