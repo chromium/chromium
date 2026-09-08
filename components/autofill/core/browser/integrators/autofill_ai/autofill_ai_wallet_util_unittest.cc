@@ -28,6 +28,7 @@ namespace {
 
 using test::GetNationalIdCardEntityInstance;
 using test::GetPassportEntityInstance;
+using test::GetVehicleEntityInstance;
 using test::MaskEntityInstance;
 using ::testing::DoAll;
 using ::testing::InSequence;
@@ -312,6 +313,19 @@ TEST_F(AutofillAiWalletUtilsTest, GetAddEntityTypeStringForI18n_Branded) {
       l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_BRANDED));
 #endif
+}
+
+TEST_F(AutofillAiWalletUtilsTest, IsEligibleForWalletNotice) {
+  EXPECT_TRUE(IsEligibleForWalletNotice(
+      GetVehicleEntityInstance({.record_type = kServerWallet})));
+  EXPECT_FALSE(IsEligibleForWalletNotice(
+      GetPassportEntityInstance({.record_type = kServerWallet})));
+  EXPECT_FALSE(IsEligibleForWalletNotice(
+      GetVehicleEntityInstance({.record_type = kLocal})));
+  EXPECT_FALSE(IsEligibleForWalletNotice(GetVehicleEntityInstance(
+      {.record_type = kServerWallet,
+       .are_attributes_read_only =
+           EntityInstance::AreAttributesReadOnly(true)})));
 }
 
 }  // namespace

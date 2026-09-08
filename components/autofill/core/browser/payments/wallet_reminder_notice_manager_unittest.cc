@@ -177,41 +177,57 @@ TEST_F(WalletReminderNoticeManagerTest,
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(
       autofill::features::kAutofillEnableWalletReminderNoticePublicPass);
-  EXPECT_FALSE(manager_->IsWalletReminderNoticeEligible(
-      test::GetVehicleEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet})));
+  EXPECT_FALSE(
+      manager_->IsWalletReminderNoticeEligible({test::GetVehicleEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})}));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_PublicPass_PrivatePass_NotEligible) {
-  EXPECT_FALSE(manager_->IsWalletReminderNoticeEligible(
-      test::GetPassportEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet})));
+  EXPECT_FALSE(
+      manager_->IsWalletReminderNoticeEligible({test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})}));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_PublicPass_LocalRecord_NotEligible) {
-  EXPECT_FALSE(manager_->IsWalletReminderNoticeEligible(
-      test::GetVehicleEntityInstance(
-          {.record_type = EntityInstance::RecordType::kLocal})));
+  EXPECT_FALSE(
+      manager_->IsWalletReminderNoticeEligible({test::GetVehicleEntityInstance(
+          {.record_type = EntityInstance::RecordType::kLocal})}));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_PublicPass_ReadOnly_NotEligible) {
   EXPECT_FALSE(manager_->IsWalletReminderNoticeEligible(
-      test::GetFlightReservationEntityInstance(
+      {test::GetFlightReservationEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet,
            .are_attributes_read_only =
-               EntityInstance::AreAttributesReadOnly(true)})));
+               EntityInstance::AreAttributesReadOnly(true)})}));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_PublicPass_AlreadyShown_NotEligible) {
   base::HistogramTester histogram_tester;
   prefs::SetHasShownWalletReminderNotice(autofill_client_.GetPrefs());
+  EXPECT_FALSE(
+      manager_->IsWalletReminderNoticeEligible({test::GetVehicleEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})}));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref,
+      1);
+}
+
+TEST_F(WalletReminderNoticeManagerTest,
+       IsWalletReminderNoticeEligible_PublicPass_MultipleEntities_LogsOnce) {
+  base::HistogramTester histogram_tester;
+  prefs::SetHasShownWalletReminderNotice(autofill_client_.GetPrefs());
   EXPECT_FALSE(manager_->IsWalletReminderNoticeEligible(
-      test::GetVehicleEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet})));
+      {test::GetVehicleEntityInstance(
+           {.record_type = EntityInstance::RecordType::kServerWallet}),
+       test::GetVehicleEntityInstance(
+           {.record_type = EntityInstance::RecordType::kServerWallet})}));
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.ShowResult",
       autofill_metrics::WalletReminderNoticeShowResult::
@@ -221,9 +237,9 @@ TEST_F(WalletReminderNoticeManagerTest,
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_PublicPass_Eligible) {
-  EXPECT_TRUE(manager_->IsWalletReminderNoticeEligible(
-      test::GetVehicleEntityInstance(
-          {.record_type = EntityInstance::RecordType::kServerWallet})));
+  EXPECT_TRUE(
+      manager_->IsWalletReminderNoticeEligible({test::GetVehicleEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})}));
 }
 
 TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_CreditCard) {
@@ -239,11 +255,11 @@ TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_CreditCard) {
 }
 
 TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice_PublicPass) {
-  EXPECT_CALL(*payments_network_interface_,
-              GetWalletReminderNotice(
-                  FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            kWalletPassBillableServiceNumber),
-                  _));
+  EXPECT_CALL(
+      *payments_network_interface_,
+      GetWalletReminderNotice(FieldsAre(kAppLocale, kBillingCustomerNumber,
+                                        kWalletPassBillableServiceNumber),
+                              _));
 
   manager_->ShowWalletReminderNotice(
       RecordLegalReminderAcknowledgmentRequestDetails::FlowType::kWalletPass);
@@ -343,16 +359,16 @@ TEST_F(WalletReminderNoticeManagerTest,
   legal_message_lines.push_back(TestLegalMessageLine("Legal message line"));
 
   EXPECT_CALL(*ui_delegate_,
-              ShowWalletReminderNotice(ElementsAre(Property(
-                  &LegalMessageLine::text, u"Legal message line"))));
-  EXPECT_CALL(*payments_network_interface_,
-              RecordLegalReminderAcknowledgment(
-                  FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            kWalletPassBillableServiceNumber,
-                            kAcknowledgementToken,
-                            RecordLegalReminderAcknowledgmentRequestDetails::
-                                FlowType::kWalletPass),
-                  _));
+              ShowWalletReminderNotice(ElementsAre(
+                  Property(&LegalMessageLine::text, u"Legal message line"))));
+  EXPECT_CALL(
+      *payments_network_interface_,
+      RecordLegalReminderAcknowledgment(
+          FieldsAre(kAppLocale, kBillingCustomerNumber,
+                    kWalletPassBillableServiceNumber, kAcknowledgementToken,
+                    RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
+                        kWalletPass),
+          _));
 
   GetWalletReminderNoticeResponseDetails response_details;
   response_details.legal_message_lines = std::move(legal_message_lines);

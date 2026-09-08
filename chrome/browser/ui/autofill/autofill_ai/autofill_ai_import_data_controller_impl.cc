@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -338,17 +339,10 @@ int AutofillAiImportDataControllerImpl::GetNoticeStringId() const {
 
 bool AutofillAiImportDataControllerImpl::IsEligibleForWalletPassDisclosure()
     const {
-  // TODO(crbug.com/553442816): Add a
-  // `IsEligibleForWalletNotice(const EntityInstance& entity_instance)` in
-  // chrome/browser/ui/views/autofill/autofill_bubble_utils.h.
-  const EntityInstance& entity = GetSaveUpdateState().new_entity;
-  if (!IsSavePrompt() || *entity.are_attributes_read_only() ||
-      GetWalletPassType(entity.type(), entity.record_type()) !=
-          EntityInstance::WalletPassType::kPublic) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  return IsSavePrompt() &&
+         IsEligibleForWalletNotice(GetSaveUpdateState().new_entity) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableWalletDisclosureNoticePublicPass);
 }
 
 const LegalMessageLines&

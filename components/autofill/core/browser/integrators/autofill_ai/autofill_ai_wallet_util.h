@@ -49,6 +49,14 @@ consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
     int accept_button_string_id,
     consent_auditor::ConsentAuditor& consent_auditor,
     signin::IdentityManager& identity_manager);
+
+// Returns true if `entity_instance` is eligible for a Google Wallet notice
+// (i.e. it is a public pass stored in Google Wallet and its attributes are not
+// read-only). Note: The entity's `record_type` is determined based on Wallet
+// sync permissions, so checking for `kPublic` here safely encapsulates both the
+// type and permission checks.
+bool IsEligibleForWalletNotice(const EntityInstance& entity_instance);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_WALLET_UTIL_H_

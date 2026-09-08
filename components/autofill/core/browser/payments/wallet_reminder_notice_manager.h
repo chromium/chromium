@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_WALLET_REMINDER_NOTICE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_WALLET_REMINDER_NOTICE_MANAGER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -36,9 +37,12 @@ class WalletReminderNoticeManager {
   // card.
   bool IsWalletReminderNoticeEligible(const CreditCard& extracted_card);
 
-  // Checks if a user is eligible to see the Wallet reminder notice for a public
-  // pass.
-  bool IsWalletReminderNoticeEligible(const EntityInstance& entity_instance);
+  // Checks if a user is eligible to see the Wallet reminder notice for public
+  // passes extracted from a single form submission. Returns true if at least
+  // one entity in `entities` is eligible and the notice has not already been
+  // acknowledged.
+  bool IsWalletReminderNoticeEligible(
+      base::span<const EntityInstance> entities);
 
   // Initiates the asynchronous flow to display the Wallet Reminder Notice by
   // issuing the GetWalletReminderNotice RPC via PaymentsNetworkInterface.

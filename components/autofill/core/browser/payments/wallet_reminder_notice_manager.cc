@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -32,8 +34,7 @@ namespace {
 int GetBillableServiceNumber(
     RecordLegalReminderAcknowledgmentRequestDetails::FlowType flow_type) {
   switch (flow_type) {
-    case RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
-        kWalletPass:
+    case RecordLegalReminderAcknowledgmentRequestDetails::FlowType::kWalletPass:
       return kWalletPassBillableServiceNumber;
     case RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
         kChromeDownstream:
@@ -71,20 +72,14 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
 }
 
 bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
-    const EntityInstance& entity_instance) {
+    base::span<const EntityInstance> entities) {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillEnableWalletReminderNoticePublicPass)) {
+          autofill::features::kAutofillEnableWalletReminderNoticePublicPass)) {
     return false;
   }
   // The notice applies to any entity that is a public pass upstreamed to
-  // wallet (e.g., Vehicles) and is not read-only. Note: The entity's
-  // `record_type` is determined based on Wallet sync permissions, so checking
-  // for `kPublic` here safely encapsulates both the type and permission checks.
-  if (GetWalletPassType(entity_instance.type(),
-                        entity_instance.record_type()) !=
-          EntityInstance::WalletPassType::kPublic ||
-      entity_instance.are_attributes_read_only()) {
+  // wallet (e.g., Vehicles) and is not read-only.
+  if (std::ranges::none_of(entities, &IsEligibleForWalletNotice)) {
     return false;
   }
   if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {
