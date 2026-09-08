@@ -415,6 +415,10 @@ source_set("interactive_ui_tests") {
 
   deps = [ "//chrome/browser/glic/test_support" ]
 
+  if (enable_webui_ntp) {
+    sources += [ "new_tab_page/new_tab_page_focus_interactive_uitest.cc" ]
+  }
+
   if (!is_android) {
     sources += [
       "bookmarks/bookmarks_focus_interactive_uitest.cc",
@@ -423,7 +427,6 @@ source_set("interactive_ui_tests") {
       "downloads/downloads_focus_interactive_uitest.cc",
       "history/history_focus_interactive_uitest.cc",
       "lens/lens_side_panel_pixel_interactive_ui_test.cc",
-      "new_tab_page/new_tab_page_focus_interactive_uitest.cc",
       "password_manager/password_manager_focus_test.cc",
       "settings/settings_focus_interactive_uitest.cc",
       "side_panel/bookmarks/sp_bookmarks_interactive_uitest.cc",
@@ -464,17 +467,23 @@ source_set("interactive_ui_tests") {
 
   deps += [ "//chrome/test:test_support" ]
 
-  if (!is_android) {
+  if (enable_webui_ntp) {
     deps += [
       "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//components/search",
+      "//third_party/omnibox_proto",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [
       "//chrome/browser/contextual_tasks:test_support",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui:ui_features",
       "//components/contextual_tasks/public",
       "//components/history_clusters/core",
       "//components/password_manager/content/common",
-      "//components/search",
-      "//third_party/omnibox_proto",
     ]
   }
 

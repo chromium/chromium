@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -9,13 +11,15 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/search/ntp_features.h"
+#endif
 
 namespace {
 
@@ -51,21 +55,37 @@ class NewTabPageFocusTest : public WebUIMochaFocusTest {
  protected:
   NewTabPageFocusTest() {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_composebox::kNtpComposebox,
-                              ntp_realbox::kNtpRealboxNext},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext};
+#if BUILDFLAG(IS_ANDROID)
+    // Customization buttons on the WebUI NTP are feature-flagged on Android.
+    enabled_features.push_back(ntp_features::kNtpCustomizeWebUiAndroid);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/518916125): Flaky on Android Desktop due to Autofill /
+// keyboard accessory lifecycle issues during test teardown.
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DISABLED_DoodleShareDialogFocus) {
+#else
 IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DoodleShareDialogFocus) {
+#endif
   RunTest("new_tab_page/doodle_share_dialog_focus_test.js", "mocha.run()");
 }
 
+// TODO(crbug.com/518916125): Flaky on Android Desktop due to Autofill /
+// keyboard accessory lifecycle issues during test teardown.
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DISABLED_AppFocus) {
+#else
 IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, AppFocus) {
+#endif
   RunTest("new_tab_page/app_focus_test.js", "mocha.run()");
 }
 
