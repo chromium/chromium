@@ -29,6 +29,14 @@ PROMPT_DIR = None
 UNSAFE_BUFFERS_DOCS = None
 
 
+TARGETS = {
+    "chrome":  "chrome",
+    "partition_alloc": "base/allocator/partition_allocator:partition_alloc",
+    "dawn": "",
+    "skia": "all",
+    "angle": "all",
+}
+
 def initialize_globals(base_dir=None):
     """Initializes global paths and variables."""
     global SCRIPT_DIR, TEMPLATE_PATH, PATCHES_CSV, PROMPT_DIR
@@ -115,9 +123,7 @@ def find_build_root(start_dir, out_name="out/linux"):
 
 def get_target(project):
     """Returns the ninja target to compile for the given project."""
-    if project == "dawn":
-        return ""
-    return project
+    return TARGETS.get(project, project)
 
 
 def fetch_and_filter_patches(start_branch_num):
