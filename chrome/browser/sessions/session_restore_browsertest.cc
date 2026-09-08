@@ -89,8 +89,10 @@
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -124,6 +126,8 @@
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/model_error.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -4778,6 +4782,101 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
         return true;
       });
   EXPECT_TRUE(app_checked);
+}
+
+namespace {
+
+class BadWebAppDatabaseFactory : public web_app::AbstractWebAppDatabaseFactory {
+ public:
+  // web_app::AbstractWebAppDatabaseFactory:
+  syncer::OnceDataTypeStoreFactory GetStoreFactory() override {
+    return base::BindOnce([](syncer::DataType type,
+                             syncer::DataTypeStore::InitCallback callback) {
+      std::move(callback).Run(
+          syncer::ModelError(
+              FROM_HERE,
+              syncer::ModelError::Type::kDataTypeStoreBackendDbOpenFailed),
+          nullptr);
+    });
+  }
+  bool IsSyncingApps() override { return true; }
+};
+
+}  // namespace
+
+class SessionRestoreDatabaseErrorTest : public SessionRestoreTest {
+ public:
+  SessionRestoreDatabaseErrorTest()
+      : fake_provider_creator_(base::BindRepeating(
+            &SessionRestoreDatabaseErrorTest::CreateFakeWebAppProvider)) {}
+
+  static std::unique_ptr<KeyedService> CreateFakeWebAppProvider(
+      Profile* profile) {
+    auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
+    provider->SetDatabaseFactory(std::make_unique<BadWebAppDatabaseFactory>());
+    provider->StartWithSubsystems();
+    return provider;
+  }
+
+ protected:
+  //  SessionRestoreTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SessionRestoreTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoErrorDialogs);
+  }
+
+  void ShutdownServices(Profile* profile) {
+    SessionServiceFactory::ShutdownForProfile(profile);
+    AppSessionServiceFactory::ShutdownForProfile(profile);
+  }
+
+  void StartupServices(Profile* profile) {
+    AppSessionServiceFactory::GetForProfileForSessionRestore(profile);
+    SessionServiceFactory::GetForProfileForSessionRestore(profile);
+  }
+
+ private:
+  web_app::FakeWebAppProviderCreator fake_provider_creator_;
+};
+
+// Validates that synchronous session restore with RESTORE_APPS does not hang
+// when WebAppProvider encounters a database open error.
+IN_PROC_BROWSER_TEST_F(SessionRestoreDatabaseErrorTest,
+                       RestoreSessionWithDatabaseErrorDoesNotHang) {
+  Profile* profile = browser()->GetProfile();
+
+  // Create a session state with a tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
+
+  // Pretend to 'close the browser'. Shutdown session services first so the
+  // session state is saved to disk.
+  ShutdownServices(profile);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  StartupServices(profile);
+
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  // Verify that session restore does not hang, unblocks cleanly, and restores
+  // the browser window.
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile);
+  ASSERT_TRUE(provider);
+  EXPECT_TRUE(provider->on_registry_ready().is_signaled());
+  EXPECT_FALSE(provider->is_registry_ready());
 }
 
 class SessionRestoreStaleSessionCookieDeletionTest : public SessionRestoreTest {
