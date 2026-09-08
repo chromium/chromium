@@ -104,9 +104,7 @@ AuthenticationService::AuthenticationService(
   DCHECK(sync_service_);
 }
 
-AuthenticationService::~AuthenticationService() {
-  DCHECK(!delegate_);
-}
+AuthenticationService::~AuthenticationService() = default;
 
 // static
 void AuthenticationService::RegisterPrefs(
@@ -117,13 +115,15 @@ void AuthenticationService::RegisterPrefs(
 
 void AuthenticationService::Initialize(
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  CHECK(delegate);
+  Initialize();
+}
+
+void AuthenticationService::Initialize() {
   CHECK(!initialized());
   bool has_primary_account_before_initialize =
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   int account_count_before_initialize =
       identity_manager_->GetAccountsWithRefreshTokens().size();
-  delegate_ = std::move(delegate);
   signin::Tribool device_restore_session = IsFirstSessionAfterDeviceRestore();
   initialized_ = true;
 
@@ -237,7 +237,6 @@ void AuthenticationService::Initialize(
 void AuthenticationService::Shutdown() {
   identity_manager_observation_.Reset();
   account_manager_service_observation_.Reset();
-  delegate_.reset();
 }
 
 void AuthenticationService::AddObserver(

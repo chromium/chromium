@@ -233,15 +233,6 @@ class AuthenticationServiceTest : public PlatformTest {
     return GetCachedMDMInfo(identity) != nil;
   }
 
-  int ClearBrowsingDataCount() {
-    return authentication_service()->delegate_->clear_browsing_data_counter_;
-  }
-
-  int ClearBrowsingDataFromSigninCount() {
-    return authentication_service()
-        ->delegate_->clear_browsing_data_from_signin_counter_;
-  }
-
   AuthenticationService* authentication_service() {
     return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }

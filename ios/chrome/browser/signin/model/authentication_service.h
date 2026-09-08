@@ -76,6 +76,8 @@ class AuthenticationService : public KeyedService,
   bool initialized() const { return initialized_; }
 
   // Initializes the AuthenticationService.
+  void Initialize();
+  // TODO(crbug.com/407498240): Remove this overload with the unused `delegate`.
   void Initialize(std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
   // KeyedService implementation.
@@ -274,11 +276,6 @@ class AuthenticationService : public KeyedService,
 
   // Returns the active identities for MDM.
   NSArray<id<SystemIdentity>>* ActiveIdentities();
-
-  // The delegate for this AuthenticationService. It is invalid to call any
-  // method on this object except Initialize() or Shutdown() if this pointer
-  // is null.
-  std::unique_ptr<AuthenticationServiceDelegate> delegate_;
 
   // The profile associated to this service.
   raw_ptr<ProfileIOS> profile_;
