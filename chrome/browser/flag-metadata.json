@@ -3744,8 +3744,8 @@
   },
   {
     "name": "enable-drdc",
-    "owners": [ "vikassoni@chromium.org", "sunnyps@chromium.org" ],
-    "expiry_milestone": 130
+    "owners": [ "magchen@chromium.org", "vikassoni@chromium.org" ],
+    "expiry_milestone": 170
   },
   {
     "name": "enable-dynamic-route-fetching",
