@@ -37,14 +37,6 @@ namespace content {
 
 namespace {
 
-// If enabled, the macOS sandbox for the Network process will allow read and
-// write file access to the user's cache and temp directory
-// (https://crbug.com/527885521).
-// TODO(bryanoltman): remove this feature once we have determined the scope of
-// access needed by the Network process, if any.
-BASE_FEATURE(kMacSandboxNetworkUserDirAccess,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the macOS sandbox for the On-Device Model Execution (ODME)
 // process will allow read and write file access to the user directory, as well
 // as the user's cache and temp directories (https://crbug.com/527915149).
@@ -179,10 +171,6 @@ void SetupNetworkSandboxParameters(sandbox::SandboxSerializer* serializer,
         sandbox::policy::GetCanonicalPath(*GetNetworkTestCertsDirectory())
             .value()));
   }
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamNetworkUserDirAccess,
-      base::FeatureList::IsEnabled(kMacSandboxNetworkUserDirAccess)));
 }
 
 bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,

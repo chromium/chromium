@@ -47,12 +47,6 @@
   (subpath "/private/var/db/mds")
   (subpath (user-homedir-path "/Library/Keychains"))
 )
-(if (param-true? network-user-dir-access)
-  (allow file-read* file-write*
-    (subpath (param darwin-user-cache-dir))
-    (subpath (param darwin-user-temp-dir))
-  )
-)
 (if (param-defined? network-service-test-certs-dir)
   (allow file-read* (subpath (param network-service-test-certs-dir))))
 
