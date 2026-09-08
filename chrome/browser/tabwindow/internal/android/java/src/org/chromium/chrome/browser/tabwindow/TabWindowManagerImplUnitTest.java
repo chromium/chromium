@@ -47,7 +47,10 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -104,6 +107,7 @@ public class TabWindowManagerImplUnitTest {
     @Mock private Destroyable mDestroyable;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabModel mIncognitoTabModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
@@ -1223,11 +1227,43 @@ public class TabWindowManagerImplUnitTest {
         when(mTabModelSelectorFactory.buildHeadlessSelector(anyInt(), any()))
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
         when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
         assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testFindWindowIdForTabGroup_incognito_flagEnabled() {
+        when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+        when(mTabModelSelectorFactory.buildHeadlessSelector(anyInt(), any()))
+                .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel, mIncognitoTabModel));
+        when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(false);
+        when(mIncognitoTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
+
+        TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
+        tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
+        assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testFindWindowIdForTabGroup_incognito_flagDisabled() {
+        when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+        when(mTabModelSelectorFactory.buildHeadlessSelector(anyInt(), any()))
+                .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel, mIncognitoTabModel));
+        when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(false);
+        when(mIncognitoTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
+
+        TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
+        tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
+        assertEquals(INVALID_WINDOW_ID, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
     }
 
     @Test
