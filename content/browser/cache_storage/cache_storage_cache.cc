@@ -1943,9 +1943,10 @@ void CacheStorageCache::PutDidCreateEntry(
   for (const auto& header : put_context->response->cors_exposed_header_names)
     response_metadata->add_cors_exposed_header_names(header);
 
-  CHECK(!ShouldPadResourceSize(*put_context->response) ||
-            put_context->response->padding,
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/558074405): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!ShouldPadResourceSize(*put_context->response) ||
+         put_context->response->padding);
   response_metadata->set_padding(put_context->response->padding);
 
   int64_t side_data_padding = 0;
