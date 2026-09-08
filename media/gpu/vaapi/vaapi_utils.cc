@@ -322,9 +322,9 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        lf_level = UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
+        lf_level = sgmnt_hdr.lf_update_value[i];
       } else {
-        lf_level += UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
+        lf_level += sgmnt_hdr.lf_update_value[i];
       }
     }
 
@@ -343,9 +343,9 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
                 "loop filter deltas arrays size mismatch");
   for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
     UNSAFE_TODO(pic_param->loop_filter_deltas_ref_frame[i]) =
-        UNSAFE_TODO(lf_hdr.ref_frame_delta[i]);
+        lf_hdr.ref_frame_delta[i];
     UNSAFE_TODO(pic_param->loop_filter_deltas_mode[i]) =
-        UNSAFE_TODO(lf_hdr.mb_mode_delta[i]);
+        lf_hdr.mb_mode_delta[i];
   }
 
 #define FHDR_TO_PP(a) pic_param->a = frame_header.a

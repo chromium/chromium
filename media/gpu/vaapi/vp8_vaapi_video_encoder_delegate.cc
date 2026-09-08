@@ -671,9 +671,9 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
     UNSAFE_TODO(pic_param.loop_filter_level[i]) =
         frame_header->loopfilter_hdr.level;
     UNSAFE_TODO(pic_param.ref_lf_delta[i]) =
-        UNSAFE_TODO(frame_header->loopfilter_hdr.ref_frame_delta[i]);
+        frame_header->loopfilter_hdr.ref_frame_delta[i];
     UNSAFE_TODO(pic_param.mode_lf_delta[i]) =
-        UNSAFE_TODO(frame_header->loopfilter_hdr.mb_mode_delta[i]);
+        frame_header->loopfilter_hdr.mb_mode_delta[i];
   }
 
   pic_param.sharpness_level = frame_header->loopfilter_hdr.sharpness_level;
