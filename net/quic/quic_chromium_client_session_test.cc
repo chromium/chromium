@@ -54,7 +54,6 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_http_utils.h"
-#include "net/quic/quic_migration_attempt_context.h"
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
@@ -2023,16 +2022,16 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
+  IPEndPoint local_address;
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
   new_reader->socket()->GetPeerAddress(&peer_address);
   // Migrate session.
   EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
   EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
-  auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
-      session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
-      std::move(new_reader), std::move(new_writer));
-  EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
+  EXPECT_TRUE(session_->MigrateToSocket(
+      ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
+      std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
 
@@ -2122,16 +2121,16 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
         CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
+    IPEndPoint local_address;
+    new_reader->socket()->GetLocalAddress(&local_address);
     IPEndPoint peer_address;
     new_reader->socket()->GetPeerAddress(&peer_address);
     // Migrate session.
     EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
     EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
-    auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-        UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
-        session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
-        std::move(new_reader), std::move(new_writer));
-    EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
+    EXPECT_TRUE(session_->MigrateToSocket(
+        ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
+        std::move(new_reader), std::move(new_writer)));
     // Spin message loop to complete migration.
     base::RunLoop().RunUntilIdle();
     EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
@@ -2167,13 +2166,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
+  IPEndPoint local_address;
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
   new_reader->socket()->GetPeerAddress(&peer_address);
-  auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
-      session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
-      std::move(new_reader), std::move(new_writer));
-  EXPECT_FALSE(session_->CommitMigration(std::move(migration_context)));
+  EXPECT_FALSE(session_->MigrateToSocket(
+      ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
+      std::move(new_reader), std::move(new_writer)));
   EXPECT_TRUE(quic_data2.AllReadDataConsumed());
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
@@ -2238,16 +2237,16 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
 
+  IPEndPoint local_address;
+  new_reader->socket()->GetLocalAddress(&local_address);
   IPEndPoint peer_address;
   new_reader->socket()->GetPeerAddress(&peer_address);
   // Store old socket and migrate session.
   EXPECT_CALL(*session_, UnregisterQuicConnectionClosePayload());
   EXPECT_CALL(*session_, RegisterQuicConnectionClosePayload());
-  auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      UNKNOWN_CAUSE, session_->GetCurrentNetwork(),
-      session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
-      std::move(new_reader), std::move(new_writer));
-  EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
+  EXPECT_TRUE(session_->MigrateToSocket(
+      ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
+      std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(

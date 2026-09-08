@@ -733,12 +733,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnWriteUnblocked() override;
 
   void OnConnectionMigrationProbeSucceeded(
+      const quic::QuicSocketAddress& self_address,
       std::unique_ptr<QuicMigrationAttemptContext> migration_context);
 
   void OnPortMigrationProbeSucceeded(
+      const quic::QuicSocketAddress& self_address,
       std::unique_ptr<QuicMigrationAttemptContext> migration_context);
 
   void OnServerPreferredAddressProbeSucceeded(
+      const quic::QuicSocketAddress& self_address,
       std::unique_ptr<QuicMigrationAttemptContext> migration_context);
 
   void OnProbeFailed(handles::NetworkHandle network,
@@ -911,11 +914,18 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   void DoMigrationCallback(MigrationCallback callback, MigrationResult rv);
 
-  // Commits an in-flight migration attempt, adopting `migration_context`'s
-  // contents. Returns true if the migration was successfully committed, false
-  // otherwise.
-  bool CommitMigration(
-      std::unique_ptr<QuicMigrationAttemptContext> migration_context);
+  // Migrates session onto new socket, i.e., sets |writer| to be the new
+  // default writer and post a task to write to |socket|. |reader| *must*
+  // has been started reading from the socket. Returns true if
+  // socket was successfully added to the session and the session was
+  // successfully migrated to using the new socket. Returns true on
+  // successful migration, or false if number of migrations exceeds
+  // kMaxReadersPerQuicSession. Takes ownership of |socket|, |reader|,
+  // and |writer|.
+  bool MigrateToSocket(const quic::QuicSocketAddress& self_address,
+                       const quic::QuicSocketAddress& peer_address,
+                       std::unique_ptr<QuicChromiumPacketReader> reader,
+                       std::unique_ptr<QuicChromiumPacketWriter> writer);
 
   // Called when NetworkChangeNotifier notifies observers of a newly
   // connected network. Migrates this session to the newly connected
