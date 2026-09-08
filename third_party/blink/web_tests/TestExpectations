@@ -1571,15 +1571,6 @@ crbug.com/1223118 external/wpt/resource-timing/initiator-type/link.html [ Failur
 
 crbug.com/658304 [ Win ] fast/forms/select/input-select-after-resize.html [ Crash Failure Pass Timeout ]
 
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-001.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-002.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-003.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-004.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-005.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-005a.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-006.html [ Failure ]
-crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-006a.html [ Failure ]
-
 crbug.com/1029069 [ Mac ] external/wpt/css/css-fonts/standard-font-family.html [ Failure ]
 crbug.com/1029069 external/wpt/css/css-fonts/standard-font-family-11.html [ Failure ]
 crbug.com/1029069 external/wpt/css/css-fonts/standard-font-family-12.html [ Failure ]
