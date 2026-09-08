@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './taskbox/ai_taskbox.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import '//resources/cr_elements/icons.html.js';
+import './icons.html.js';
+import './memory_bank_chat/memory_bank_chat.js';
 import './memory_banks/memory_banks.js';
 import './tab_groups/tab_groups.js';
-import './memory_bank_chat/memory_bank_chat.js';
-import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/icons.html.js';
+import './taskbox/ai_taskbox.js';
+import './topics/topics_view.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -16,10 +18,10 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
 export type ViewType =
-    'launchpad'|'memory-banks'|'tab-groups'|'memory-bank-chat';
+    'launchpad'|'memory-banks'|'tab-groups'|'memory-bank-chat'|'topics';
 
 const VALID_VIEWS: Set<ViewType> =
-    new Set(['launchpad', 'memory-banks', 'tab-groups']);
+    new Set(['launchpad', 'memory-banks', 'tab-groups', 'topics']);
 const STORAGE_KEY = 'context_hub_current_view';
 
 function normalizeView(view: string|null): ViewType|null {

@@ -53,24 +53,35 @@ export function getHtml(this: ContextHubAppElement) {
             <cr-icon icon="cr:domain"></cr-icon>
             Tab groups
           </a>
+          <a role="menuitem"
+              href="#topics"
+              data-route="topics"
+              class="cr-nav-menu-item">
+            <cr-icon icon="context-hub:topic"></cr-icon>
+            Topics
+          </a>
         </cr-menu-selector>
       </div>
     </aside>
 
     <!-- CONTENT AREA -->
     <div class="content-area">
-      ${this.currentView_ === 'launchpad' ? html`
-        <ai-taskbox></ai-taskbox>
-      ` : ''}
-      ${this.currentView_ === 'memory-banks' ? html`
-        <memory-banks></memory-banks>
-      ` : ''}
-      ${this.currentView_ === 'memory-bank-chat' ? html`
-        <memory-bank-chat></memory-bank-chat>
-      ` : ''}
-      ${this.currentView_ === 'tab-groups' ? html`
-        <tab-groups></tab-groups>
-      ` : ''}
+      ${(() => {
+    switch (this.currentView_) {
+      case 'launchpad':
+        return html`<ai-taskbox></ai-taskbox>`;
+      case 'memory-banks':
+        return html`<memory-banks></memory-banks>`;
+      case 'memory-bank-chat':
+        return html`<memory-bank-chat></memory-bank-chat>`;
+      case 'tab-groups':
+        return html`<tab-groups></tab-groups>`;
+      case 'topics':
+        return html`<topics-view></topics-view>`;
+      default:
+        return '';
+    }
+  })()}
     </div>
   `;
 }
