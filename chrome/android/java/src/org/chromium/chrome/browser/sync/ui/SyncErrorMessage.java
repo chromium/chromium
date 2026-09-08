@@ -28,12 +28,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.SyncSettingsUtils;
+import org.chromium.chrome.browser.sync.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -382,7 +383,8 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         SyncSettingsUtils.openBookmarkLimitHelpPage(
                 mActivity,
                 mSyncService,
-                BookmarksLimitExceededHelpClickedSource.SYNC_ERROR_MESSAGE);
+                BookmarksLimitExceededHelpClickedSource.SYNC_ERROR_MESSAGE,
+                new SettingsCustomTabLauncherImpl());
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {

@@ -28,7 +28,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
+import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -91,7 +92,8 @@ public class PassphraseCreationDialogFragment extends DialogFragment
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
-                                SyncSettingsUtils.openSyncDashboard(getActivity());
+                                SyncSettingsUtils.openSyncDashboard(
+                                        getActivity(), new SettingsCustomTabLauncherImpl());
                             }
                         }));
     }

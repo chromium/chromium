@@ -1397,7 +1397,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Button clicked"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/SyncSettingsUtils.java:SyncErrorUiAction) -->
+<!-- LINT.ThenChange(/chrome/browser/sync/android/java/src/org/chromium/chrome/browser/sync/SyncSettingsUtils.java:SyncErrorUiAction) -->
 
 <!-- LINT.IfChange(SyncFeatureOrTransport) -->
 

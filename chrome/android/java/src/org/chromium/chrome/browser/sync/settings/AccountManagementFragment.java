@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
@@ -333,7 +334,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                             IdentityServicesProvider.get()
                                                     .getIdentityManager(getProfile()))
                                     .hasPrimaryAccount();
-                            SyncSettingsUtils.openGoogleMyAccount(getActivity());
+                            SyncSettingsUtils.openGoogleMyAccount(
+                                    getActivity(), getCustomTabLauncher());
                         }));
 
         return manageYourGoogleAccountPreference;

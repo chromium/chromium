@@ -33,8 +33,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -178,7 +179,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
-                                SyncSettingsUtils.openSyncDashboard(getActivity());
+                                SyncSettingsUtils.openSyncDashboard(
+                                        getActivity(), new SettingsCustomTabLauncherImpl());
                             }
                         }));
     }

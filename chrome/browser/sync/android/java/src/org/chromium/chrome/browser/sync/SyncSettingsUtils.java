@@ -1,41 +1,30 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.chrome.browser.sync.settings;
+package org.chromium.chrome.browser.sync;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
-import android.net.Uri;
-import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
@@ -50,6 +39,9 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class SyncSettingsUtils {
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
+    private static final String LEGACY_SYNC_DASHBOARD_URL =
+            "https://www.google.com/settings/chrome/sync";
+    private static final String NEW_SYNC_DASHBOARD_URL = "https://chrome.google.com/data";
     private static final String TAG = "SyncSettingsUtils";
 
     @IntDef({TitlePreference.FULL_NAME, TitlePreference.EMAIL})
@@ -109,7 +101,7 @@ public class SyncSettingsUtils {
      * @param fragment The fragment that hosts the preference.
      * @param runnable The runnable to call from {@link Preference.OnPreferenceClickListener}.
      */
-    static Preference.OnPreferenceClickListener toOnClickListener(
+    public static Preference.OnPreferenceClickListener toOnClickListener(
             PreferenceFragmentCompat fragment, Runnable runnable) {
         return preference -> {
             if (!fragment.isResumed()) {
@@ -124,37 +116,30 @@ public class SyncSettingsUtils {
 
     /**
      * Opens web dashboard to specified url in a custom tab.
-     * @param activity The activity to use for starting the intent.
+     *
+     * @param context The context to use for starting the intent.
+     * @param customTabLauncher The launcher to use for opening the custom tab.
      * @param url The url link to open in the custom tab.
      */
-    private static void openCustomTabWithURL(Activity activity, String url) {
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(false).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-
-        Intent intent =
-                LaunchIntentDispatcher.createCustomTabActivityIntent(
-                        activity, customTabIntent.intent);
-        intent.setPackage(activity.getPackageName());
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        IntentUtils.safeStartActivity(activity, intent);
+    private static void openCustomTabWithURL(
+            Context context, SettingsCustomTabLauncher customTabLauncher, String url) {
+        customTabLauncher.openUrlInCct(context, url);
     }
 
     /**
      * Opens web dashboard to manage sync in a custom tab.
      *
-     * @param activity The activity to use for starting the intent.
+     * @param context The context to use for starting the intent.
+     * @param customTabLauncher The launcher to use for opening the custom tab.
      */
-    public static void openSyncDashboard(Activity activity) {
-        // TODO(crbug.com/41450409): Create a builder for custom tab intents.
+    public static void openSyncDashboard(
+            Context context, SettingsCustomTabLauncher customTabLauncher) {
         openCustomTabWithURL(
-                activity,
+                context,
+                customTabLauncher,
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL)
-                        ? ChromeStringConstants.NEW_SYNC_DASHBOARD_URL
-                        : ChromeStringConstants.LEGACY_SYNC_DASHBOARD_URL);
+                        ? NEW_SYNC_DASHBOARD_URL
+                        : LEGACY_SYNC_DASHBOARD_URL);
     }
 
     /**
@@ -162,11 +147,13 @@ public class SyncSettingsUtils {
      *
      * <p>Callers should ensure the current account has sync consent prior to calling.
      *
-     * @param activity The activity to use for starting the intent.
+     * @param context The context to use for starting the intent.
+     * @param customTabLauncher The launcher to use for opening the custom tab.
      */
-    public static void openGoogleMyAccount(Activity activity) {
+    public static void openGoogleMyAccount(
+            Context context, SettingsCustomTabLauncher customTabLauncher) {
         RecordUserAction.record("SyncPreferences_ManageGoogleAccountClicked");
-        openCustomTabWithURL(activity, MY_ACCOUNT_URL);
+        openCustomTabWithURL(context, customTabLauncher, MY_ACCOUNT_URL);
     }
 
     // Help center URL for the Bookmarks limit exceeded error.
@@ -176,17 +163,19 @@ public class SyncSettingsUtils {
     /**
      * Opens a help center article for the bookmark sync limit and acknowledges the error.
      *
-     * @param activity The activity to use for starting the intent.
+     * @param context The context to use for starting the intent.
      * @param syncService The sync service to acknowledge the error for.
      * @param source The source UI surface that triggered the click.
+     * @param customTabLauncher The launcher to use for opening the custom tab.
      */
     public static void openBookmarkLimitHelpPage(
-            Activity activity,
+            Context context,
             SyncService syncService,
-            @BookmarksLimitExceededHelpClickedSource int source) {
+            @BookmarksLimitExceededHelpClickedSource int source,
+            SettingsCustomTabLauncher customTabLauncher) {
         assert syncService != null;
         syncService.acknowledgeBookmarksLimitExceededError(source);
-        openCustomTabWithURL(activity, BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
+        openCustomTabWithURL(context, customTabLauncher, BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
     }
 
     /**
@@ -243,7 +232,7 @@ public class SyncSettingsUtils {
      * @param fragment Fragment to use when starting the dialog.
      * @param accountInfo Account representing the user.
      * @param requestCode Arbitrary request code that upon completion will be passed back via
-     *         Fragment.onActivityResult().
+     *     Fragment.onActivityResult().
      */
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
@@ -262,7 +251,7 @@ public class SyncSettingsUtils {
      * @param fragment Fragment to use when starting the dialog.
      * @param accountInfo Account representing the user.
      * @param requestCode Arbitrary request code that upon completion will be passed back via
-     *         Fragment.onActivityResult().
+     *     Fragment.onActivityResult().
      */
     public static void openTrustedVaultRecoverabilityDegradedDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
@@ -373,7 +362,7 @@ public class SyncSettingsUtils {
                         R.string.bookmark_sync_limit_error_description, R.string.learn_more);
             case UserActionableError.NONE:
                 assert false; // NOTREACHED()
-                // fall through
+            // fall through
             default:
                 return null;
         }

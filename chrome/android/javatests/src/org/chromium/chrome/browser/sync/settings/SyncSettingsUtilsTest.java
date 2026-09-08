@@ -18,12 +18,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -39,6 +40,8 @@ public class SyncSettingsUtilsTest {
     @Mock private Profile mProfile;
 
     @Mock private SyncService mSyncService;
+
+    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
     @Before
     public void setUp() {
@@ -74,19 +77,20 @@ public class SyncSettingsUtilsTest {
     @SmallTest
     public void testOpenBookmarkLimitHelpPage() {
         Activity activity = Mockito.mock(Activity.class);
-        Mockito.when(activity.getPackageName())
-                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncSettingsUtils.openBookmarkLimitHelpPage(
                             activity,
                             mSyncService,
-                            BookmarksLimitExceededHelpClickedSource.SETTINGS);
+                            BookmarksLimitExceededHelpClickedSource.SETTINGS,
+                            mCustomTabLauncher);
                 });
 
         Mockito.verify(mSyncService)
                 .acknowledgeBookmarksLimitExceededError(
                         BookmarksLimitExceededHelpClickedSource.SETTINGS);
+        Mockito.verify(mCustomTabLauncher)
+                .openUrlInCct(activity, SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
     }
 }
