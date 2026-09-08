@@ -108,6 +108,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
     return SharedImageExportResult(sync_token);
   }
 
+  static SharedImageExportResult CreateForTesting(
+      std::vector<SyncToken> sync_tokens) {
+    return SharedImageExportResult(std::move(sync_tokens));
+  }
+
   // The two IsEqualForTesting methods allow easy SyncToken comparison without
   // unpacking SharedImageExportResult.
   bool IsEqualForTesting(const SyncToken& sync_token) const {
@@ -298,6 +303,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       std::vector<SyncToken> sync_tokens,
       base::OnceClosure callback,
       SharedImageInterface* sii);
+
+  // When the UseAutomaticSyncTokenManagement feature is enabled, this function
+  // checks if all tracked SyncTokens (excluding the creation SyncToken) have
+  // been signaled according to ContextSupport, ignoring `resource_sync_token`.
+  // When the feature is disabled, this function only checks
+  // `resource_sync_token` instead, ignoring the internal SyncToken map.
+  bool IsSyncTokenSignaled(ContextSupport* context_support,
+                           const SyncToken& resource_sync_token);
 
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
     destruction_sync_token_ = sync_token;

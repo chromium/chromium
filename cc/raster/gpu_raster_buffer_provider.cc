@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -154,14 +155,12 @@ void GpuRasterBufferProvider::Flush() {
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
     const ResourcePool::InUsePoolResource& resource) {
   FlushIfNeeded();
-  const gpu::SyncToken& sync_token = resource.backing()->mailbox_sync_token;
-  // This SyncToken() should have been set by calling OrderingBarrier() before
-  // calling this.
-  DCHECK(sync_token.HasData());
-
-  // IsSyncTokenSignaled is thread-safe, no need for worker context lock.
-  return worker_context_provider_->ContextSupport()->IsSyncTokenSignaled(
-      sync_token);
+  if (auto shared_image = resource.backing()->shared_image()) {
+    return shared_image->IsSyncTokenSignaled(
+        worker_context_provider_->ContextSupport(),
+        resource.backing()->mailbox_sync_token);
+  }
+  return true;
 }
 
 bool GpuRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {

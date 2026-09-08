@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <limits>
 #include <atomic>
+#include <limits>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
@@ -173,14 +174,12 @@ bool OneCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
 bool OneCopyRasterBufferProvider::IsResourceReadyToDraw(
     const ResourcePool::InUsePoolResource& resource) {
   FlushIfNeeded();
-  const gpu::SyncToken& sync_token = resource.backing()->mailbox_sync_token;
-  // This SyncToken() should have been set by calling OrderingBarrier() before
-  // calling this.
-  DCHECK(sync_token.HasData());
-
-  // IsSyncTokenSignaled is thread-safe, no need for worker context lock.
-  return worker_context_provider_->ContextSupport()->IsSyncTokenSignaled(
-      sync_token);
+  if (auto shared_image = resource.backing()->shared_image()) {
+    return shared_image->IsSyncTokenSignaled(
+        worker_context_provider_->ContextSupport(),
+        resource.backing()->mailbox_sync_token);
+  }
+  return true;
 }
 
 uint64_t OneCopyRasterBufferProvider::SetReadyToDrawCallback(

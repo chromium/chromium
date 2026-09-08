@@ -361,6 +361,7 @@ ClientSharedImage::ClientSharedImage(
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
   texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type);
+  StoreSyncTokenInternal(sync_token);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -401,6 +402,7 @@ ClientSharedImage::ClientSharedImage(
 #if !BUILDFLAG(IS_FUCHSIA)
   CHECK(texture_target);
 #endif
+  StoreSyncTokenInternal(sync_token);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -434,9 +436,8 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
   CHECK(texture_target_);
 #endif
 
-  for (auto& sync_token : exported_si.managed_sync_tokens_) {
-    sync_token_map_.emplace(sync_token.GetClientId(), sync_token);
-  }
+  StoreSyncTokenVectorInternal(exported_si.managed_sync_tokens_);
+  StoreSyncTokenInternal(exported_si.creation_sync_token_);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -468,6 +469,7 @@ ClientSharedImage::ClientSharedImage(
   CHECK(mappable_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
       metadata_, mappable_buffer_->GetType());
+  StoreSyncTokenInternal(sync_token);
 }
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
@@ -533,12 +535,20 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
         continue;
       }
       base::AutoLock auto_lock(shared_image->lock_);
-      CHECK_LE(shared_image->sync_token_map_.size(), 1u);
+      unsigned int effective_sync_token_count = 0;
       for (const auto& [_, sync_token] : shared_image->sync_token_map_) {
-        if (sync_token.release_count() > latest_sync_token.release_count()) {
-          latest_sync_token = sync_token;
+        if (sync_token.GetClientId() ==
+            shared_image->creation_sync_token().GetClientId()) {
+          continue;
+        }
+        if (sync_token.HasData()) {
+          if (sync_token.release_count() > latest_sync_token.release_count()) {
+            latest_sync_token = sync_token;
+          }
+          effective_sync_token_count++;
         }
       }
+      CHECK_LE(effective_sync_token_count, 1u);
     }
   } else {
     for (const auto& sync_token : sync_tokens) {
@@ -576,11 +586,19 @@ void ClientSharedImage::SignalLatestSyncToken(
         continue;
       }
       base::AutoLock auto_lock(shared_image->lock_);
+      unsigned int effective_sync_token_count = 0;
       for (const auto& [_, sync_token] : shared_image->sync_token_map_) {
+        if (sync_token.GetClientId() ==
+            shared_image->creation_sync_token().GetClientId()) {
+          continue;
+        }
+
         if (sync_token.HasData()) {
           sync_tokens.push_back(sync_token);
+          effective_sync_token_count++;
         }
       }
+      CHECK_LE(effective_sync_token_count, 1u);
     }
     has_valid_token = !sync_tokens.empty();
   } else {
@@ -597,6 +615,33 @@ void ClientSharedImage::SignalLatestSyncToken(
   } else {
     sii->SignalSyncToken(std::move(sync_tokens), std::move(callback));
   }
+}
+
+bool ClientSharedImage::IsSyncTokenSignaled(
+    ContextSupport* context_support,
+    const SyncToken& resource_sync_token) {
+  CHECK(context_support);
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    base::AutoLock auto_lock(lock_);
+    for (const auto& [_, sync_token] : sync_token_map_) {
+      if (sync_token == creation_sync_token_) {
+        continue;
+      }
+      if (sync_token.HasData() &&
+          !context_support->IsSyncTokenSignaled(sync_token)) {
+        return false;
+      }
+    }
+  } else {
+    // This SyncToken should have been set by calling OrderingBarrier() before
+    // calling this.
+    DCHECK(resource_sync_token.HasData());
+
+    // IsSyncTokenSignaled is thread-safe, no need for worker context lock.
+    return context_support->IsSyncTokenSignaled(resource_sync_token);
+  }
+  return true;
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
@@ -1143,8 +1188,14 @@ SyncToken ClientSharedImage::EndExport(SharedImageExportResult&& result) {
   if (result.sync_tokens_.empty()) {
     return SyncToken();
   }
-  CHECK(result.sync_tokens_.size() == 1);
-  return StoreSyncTokenInternal(result.sync_tokens_[0]);
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    auto tokens = StoreSyncTokenVectorInternal(std::move(result.sync_tokens_));
+    return tokens.empty() ? SyncToken() : tokens.back();
+  } else {
+    CHECK(result.sync_tokens_.size() == 1);
+    return StoreSyncTokenInternal(result.sync_tokens_[0]);
+  }
 }
 
 std::vector<SyncToken> ClientSharedImage::EndExportAsVector(

@@ -505,10 +505,15 @@ TEST(ClientSharedImageTest, AutomaticSyncTokenManagement_SyncTokenUpdate) {
   SharedImageExportResult export_result = client_si->EndImport(SyncToken());
   EXPECT_TRUE(export_result.HasData());
 
-  // The export_result should only contain token2 (verified).
+  // The export_result should contain the creation sync token and token2 (both
+  // verified).
+  SyncToken expected_creation_token = client_si->creation_sync_token();
+  expected_creation_token.SetVerifyFlush();
   SyncToken expected_token = token2;
   expected_token.SetVerifyFlush();
-  EXPECT_TRUE(export_result.IsEqualForTesting(expected_token));
+  EXPECT_TRUE(
+      export_result.IsEqualForTesting(SharedImageExportResult::CreateForTesting(
+          {expected_creation_token, expected_token})));
 }
 
 TEST(ClientSharedImageTest, SignalLatestSyncToken_WithCallbackId) {
