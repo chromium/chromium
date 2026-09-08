@@ -463,7 +463,8 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   title.translatesAutoresizingMaskIntoConstraints = NO;
   title.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_STATUS_PROGRESS_TITLE);
-  title.font = CreateDynamicFont(UIFontTextStyleTitle1, UIFontWeightBold);
+  title.font =
+      PreferredFontForTextStyle(UIFontTextStyleTitle1, UIFontWeightBold);
   title.adjustsFontForContentSizeCategory = YES;
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
   title.textAlignment = NSTextAlignmentCenter;
