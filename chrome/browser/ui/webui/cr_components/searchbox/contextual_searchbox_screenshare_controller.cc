@@ -190,7 +190,8 @@ void ContextualSearchboxScreenshareController::StartScreenshareInternal(
   bool use_native_picker = false;
 #if BUILDFLAG(IS_MAC)
   use_native_picker =
-      base::mac::MacOSVersion() >= 26'04'00 &&
+      base::mac::MacOSMajorVersion() >= 14 &&
+      base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker) &&
       base::FeatureList::IsEnabled(kOmniboxEverywhereNativeScreenPicker);
 #endif
 
