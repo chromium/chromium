@@ -3970,8 +3970,12 @@ bool TabStripModel::CloseWebContentses(
     if (tab_model->IsVisible() && !closing_all_) {
       tab_model->WillBecomeHidden(base::PassKey<TabStripModel>());
     }
-    tab_model->WillDetach(base::PassKey<TabStripModel>(),
-                          tabs::TabInterface::DetachReason::kDelete);
+    // TODO(crbug.com/558720516): Remove this and always call WillDetach after
+    // unload handlers below.
+    if (!ShouldRunUnloadListenerBeforeClosing(contents)) {
+      tab_model->WillDetach(base::PassKey<TabStripModel>(),
+                            tabs::TabInterface::DetachReason::kDelete);
+    }
   }
 
   // We only try the fast shutdown path if the whole browser process is *not*
@@ -4027,6 +4031,12 @@ bool TabStripModel::CloseWebContentses(
       TabCloseTypesData::CreateForWebContents(closing_contents, close_types);
       closed_all = false;
       continue;
+    }
+
+    tabs::TabModel* tab_model = GetTabModelAtIndex(current_index);
+    if (ShouldRunUnloadListenerBeforeClosing(closing_contents)) {
+      tab_model->WillDetach(base::PassKey<TabStripModel>(),
+                            tabs::TabInterface::DetachReason::kDelete);
     }
 
     bool create_historical_tab =
