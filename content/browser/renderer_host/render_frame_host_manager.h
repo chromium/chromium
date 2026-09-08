@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
@@ -53,6 +52,8 @@ class NavigationControllerImpl;
 class NavigationEntry;
 class NavigationRequest;
 class NavigatorTest;
+class PageImpl;
+class RenderFrameHostImpl;
 class RenderFrameHostManagerTest;
 class RenderFrameProxyHost;
 class RenderViewHost;
@@ -656,9 +657,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
   const BrowsingContextState::RenderFrameProxyHostMap&
-  GetAllProxyHostsForTesting() const {
-    return render_frame_host_->browsing_context_state()->proxy_hosts();
-  }
+  GetAllProxyHostsForTesting() const;
 
   // Called when the render process is gone for
   // `speculative_render_frame_host_`. Cancels the navigation and cleans up the
@@ -759,10 +758,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // FrameTree immediately after this call.
   std::unique_ptr<StoredPage> TakePrerenderedPage();
 
-  const blink::mojom::FrameReplicationState& current_replication_state() const {
-    return render_frame_host_->browsing_context_state()
-        ->current_replication_state();
-  }
+  const blink::mojom::FrameReplicationState& current_replication_state() const;
 
   // In certain cases, such as when navigating from a non-live (e.g., crashed
   // or initial) RenderFrameHost, the target speculative RenderFrameHost needs

@@ -1242,6 +1242,12 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::TakePrerenderedPage() {
   return CollectPage(std::move(main_render_frame_host), FrameTreeNodeId());
 }
 
+const blink::mojom::FrameReplicationState&
+RenderFrameHostManager::current_replication_state() const {
+  return render_frame_host_->browsing_context_state()
+      ->current_replication_state();
+}
+
 void RenderFrameHostManager::PrepareForCollectingPage(
     RenderFrameHostImpl* main_render_frame_host,
     StoredPage::RenderViewHostImplSafeRefSet* render_view_hosts,
@@ -6070,6 +6076,11 @@ void RenderFrameHostManager::ExecuteRemoteFramesBroadcastMethod(
   render_frame_host_->browsing_context_state()
       ->ExecuteRemoteFramesBroadcastMethod(callback, group_to_skip,
                                            outer_delegate_proxy);
+}
+
+const BrowsingContextState::RenderFrameProxyHostMap&
+RenderFrameHostManager::GetAllProxyHostsForTesting() const {
+  return render_frame_host_->browsing_context_state()->proxy_hosts();
 }
 
 void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
