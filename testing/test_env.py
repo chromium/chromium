@@ -12,15 +12,6 @@ import subprocess
 import sys
 import time
 
-if sys.platform == 'win32':
-  try:
-    import win32api
-    import win32con
-    import win32job
-  except ImportError:
-    win32job = None
-    print('Warning: Failed to import win32 libraries', file=sys.stderr)
-
 # This is hardcoded to be src/ relative to this script.
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,7 +31,17 @@ def setup_job_object():
     https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects
     https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_extended_limit_information
   """
-  if sys.platform != 'win32' or not win32job:
+  if sys.platform != 'win32':
+    return None
+
+  try:
+    # pylint: disable=import-outside-toplevel
+    import win32api
+    import win32con
+    import win32job
+    # pylint: enable=import-outside-toplevel
+  except ImportError:
+    print('Warning: Failed to import win32 libraries', file=sys.stderr)
     return None
 
   try:
