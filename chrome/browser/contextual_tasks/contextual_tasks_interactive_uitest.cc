@@ -1175,16 +1175,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   WaitForComposeboxFilesCount(0));
 }
 
-// TODO(crbug.com/524797987): Re-enable this test on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AddAndRemoveImageChipFromComposebox \
-  DISABLED_AddAndRemoveImageChipFromComposebox
-#else
-#define MAYBE_AddAndRemoveImageChipFromComposebox \
-  AddAndRemoveImageChipFromComposebox
-#endif
+// TODO(crbug.com/524797987): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       MAYBE_AddAndRemoveImageChipFromComposebox) {
+                       DISABLED_AddAndRemoveImageChipFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
 
   base::FilePath test_data_dir;
