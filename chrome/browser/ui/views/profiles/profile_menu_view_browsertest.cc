@@ -73,7 +73,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
@@ -1628,11 +1627,8 @@ constexpr std::array kActionableItems_ManagedProfile = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kProfileManagementLabel};
 
-PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
-    kActionableItems_ManagedProfile,
-    ProfileMenuClickTest_ManagedProfile,
-    /*enabled_features=*/{features::kEnterpriseProfileBadgingForMenu},
-    /*disabled_features=*/{}) {
+PROFILE_MENU_CLICK_TEST(kActionableItems_ManagedProfile,
+                        ProfileMenuClickTest_ManagedProfile) {
   enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
                                                     true);
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
@@ -2445,8 +2441,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     ProfileMenuClickTest_GuestProfileButtonNotAvailable_SignedInSupervised_ReplaceSyncPromosEnabled,
     /*enabled_features=*/
     std::vector<base::test::FeatureRef>(
-        {features::kEnterpriseProfileBadgingForMenu,
-         syncer::kReplaceSyncPromosWithSignInPromos}),
+        {syncer::kReplaceSyncPromosWithSignInPromos}),
     /*disabled_features=*/{}) {
   AccountInfo account_info = Signin();
   supervised_user::UpdateSupervisionStatusForAccount(
@@ -2481,8 +2476,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised_ReplaceSyncPromosDisabled,
     ProfileMenuClickTest_GuestProfileButtonNotAvailable_SignedInSupervised_ReplaceSyncPromosDisabled,
     /*enabled_features=*/
-    std::vector<base::test::FeatureRef>(
-        {features::kEnterpriseProfileBadgingForMenu}),
+    std::vector<base::test::FeatureRef>(),
     /*disabled_features=*/
     (std::vector<base::test::FeatureRef>{
         syncer::kReplaceSyncPromosWithSignInPromos,

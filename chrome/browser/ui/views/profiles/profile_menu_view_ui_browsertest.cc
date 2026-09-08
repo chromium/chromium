@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -396,7 +395,6 @@ class ProfileMenuViewPixelTest
 
     // 3. Get default-enabled features.
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
-        {features::kEnterpriseProfileBadgingForMenu, {}},
         {syncer::kReplaceSyncPromosWithSignInPromos, {}}};
 
     if (GetParam().with_ai_avatar_ring) {

@@ -306,12 +306,6 @@ BASE_FEATURE(kUseDefaultDeadlineWhenAnimatingBounds,
 #endif
 );
 
-// Enables enterprise profile badging for managed profiles on the toolbar avatar
-// and in the profile menu. On managed profiles, a building icon will be used as
-// a badge in the profile menu.
-BASE_FEATURE(kEnterpriseProfileBadgingForMenu,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the management notice in the NTP footer if the custom policies are
 // set. This acts as a kill switch for "EnterpriseCustomLabelForBrowser" and
 // "EnterpriseLogoUrlForBrowser".
