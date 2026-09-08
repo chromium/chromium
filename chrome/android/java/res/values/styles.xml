@@ -156,6 +156,7 @@ found in the LICENSE file.
     <style name="Theme.Chromium.ClearDataDialogActivity"
         parent="Theme.Chromium.Activity.Fullscreen.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowDisablePreview">true</item>
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>
         <item name="android:windowAnimationStyle">@null</item>
