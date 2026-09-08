@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.tab_group_share_notice;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupShareNoticeBottomSheetProperties.COMPLETION_HANDLER;
+import static org.chromium.chrome.browser.tasks.tab_management.tab_group_share_notice.TabGroupShareNoticeBottomSheetProperties.COMPLETION_HANDLER;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
