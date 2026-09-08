@@ -392,8 +392,14 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
           GURL cluster_info_url{
               lens::features::GetLensOverlayClusterInfoEndpointUrl()};
           GURL upload_url{lens::features::GetLensOverlayEndpointURL()};
-          if (url.host() == cluster_info_url.host() &&
-              url.path() == cluster_info_url.path()) {
+          GURL composebox_cluster_info_url{
+              lens::features::GetLensComposeboxClusterInfoEndpointUrl()};
+          GURL composebox_upload_url{
+              lens::features::GetLensComposeboxEndpointUrl()};
+          if ((url.host() == cluster_info_url.host() &&
+               url.path() == cluster_info_url.path()) ||
+              (url.host() == composebox_cluster_info_url.host() &&
+               url.path() == composebox_cluster_info_url.path())) {
             lens::LensOverlayServerClusterInfoResponse response;
             response.set_search_session_id("test_search_session_id");
             std::string response_string;
@@ -403,8 +409,10 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                 response_string, params->client.get());
             return true;
           }
-          if (url.host() == upload_url.host() &&
-              url.path() == upload_url.path()) {
+          if ((url.host() == upload_url.host() &&
+               url.path() == upload_url.path()) ||
+              (url.host() == composebox_upload_url.host() &&
+               url.path() == composebox_upload_url.path())) {
             lens::LensOverlayServerResponse response;
             std::string response_string;
             CHECK(response.SerializeToString(&response_string));

@@ -12708,6 +12708,26 @@
             ]
         }
     ],
+    "LensComposeboxIdentityDelegation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensComposeboxIdentityDelegation"
+                    ]
+                }
+            ]
+        }
+    ],
     "LensSidePanelUnification": [
         {
             "platforms": [
