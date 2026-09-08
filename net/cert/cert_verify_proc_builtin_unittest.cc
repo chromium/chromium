@@ -672,19 +672,19 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };
 
-TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
+TEST_F(CertVerifyProcBuiltinTest, CertNetFetcherShouldBypassHSTS) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
   InitializeVerifyProc(CreateParams(
       /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
-  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
-  ASSERT_TRUE(test_server.InitializeAndListen());
+  EmbeddedTestServer crl_test_server(EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(crl_test_server.InitializeAndListen());
 
   // CRL that marks leaf as revoked.
-  leaf->SetCrlDistributionPointUrl(
-      CreateAndServeCrl(&test_server, root.get(), {leaf->GetSerialNumber()}));
+  leaf->SetCrlDistributionPointUrl(CreateAndServeCrl(
+      &crl_test_server, root.get(), {leaf->GetSerialNumber()}));
 
-  test_server.StartAcceptingConnections();
+  crl_test_server.StartAcceptingConnections();
 
   {
     scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
@@ -693,18 +693,26 @@ TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
     NetLogSource verify_net_log_source;
     CertVerifyResult verify_result;
     TestCompletionCallback verify_callback;
-    // Ensure HSTS upgrades for the domain which hosts the CRLs.
+    // Add the domain which hosts the CRL to the dynamic HSTS state.
     context()->transport_security_state()->AddHSTS(
-        test_server.base_url().GetHost(), base::Time::Now() + base::Seconds(30),
+        crl_test_server.base_url().GetHost(),
+        base::Time::Now() + base::Seconds(30),
         /*include_subdomains=*/true);
-    // Setting `is_top_level_nav` true prevents the upgrade from being blocked
-    // by kHstsTopLevelNavigationsOnly.
+    // Confirm that the CRL test server URL would have HSTS enforced if loaded
+    // normally. (Setting `is_top_level_nav` true prevents the upgrade from
+    // being blocked by kHstsTopLevelNavigationsOnly.)
     ASSERT_TRUE(context()->transport_security_state()->ShouldUpgradeToSSL(
-        test_server.base_url().GetHost(), /*is_top_level_nav=*/true));
+        crl_test_server.base_url().GetHost(), /*is_top_level_nav=*/true));
+
+    // Verify the certificate with soft-fail revocation checking.
     Verify(chain.get(), "www.example.com",
            CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
            &verify_result, &verify_net_log_source, verify_callback.callback());
 
+    // The CRL fetch should not use HSTS, and thus should succeed, which will
+    // cause the certificate to be marked as revoked. (If the CRL fetch were to
+    // be upgraded by HSTS, the fetch would fail and the soft-fail verification
+    // would allow the certificate to verify successfully.)
     int error = verify_callback.WaitForResult();
     EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
