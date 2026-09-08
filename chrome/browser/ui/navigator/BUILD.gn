@@ -6,15 +6,13 @@ import("//build/config/ui.gni")
 
 source_set("navigator") {
   public = [
+    "browser_navigator.h",
     "browser_navigator_params.h",
     "browser_navigator_params_utils.h",
   ]
 
   if (!is_android) {
-    public += [
-      "browser_navigator.h",
-      "browser_navigator_tab_modal.h",
-    ]
+    public += [ "browser_navigator_tab_modal.h" ]
   }
 
   public_deps = [

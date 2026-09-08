@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -48,9 +47,7 @@ constexpr int kIconSize = 64;
 constexpr char16_t kExtensionRemovedError[] =
     u"Extension was removed before dialog closed.";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
-#endif
 
 float GetScaleFactor(gfx::NativeWindow window) {
   const display::Screen* screen = display::Screen::Get();
@@ -243,7 +240,6 @@ bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
 }
 
 void ExtensionUninstallDialog::HandleReportAbuse() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(profile_);
   NavigateParams params(
       profile_,
@@ -251,11 +247,6 @@ void ExtensionUninstallDialog::HandleReportAbuse() {
       ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-#else   // BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/424011073): Implement this method once we compile `Navigate`
-  // on Desktop Android.
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions
