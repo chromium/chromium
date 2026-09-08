@@ -2058,53 +2058,72 @@ void GeminiBrowserAgent::UpdateAttachedTabsForActiveWebState(
   }
 }
 
-void GeminiBrowserAgent::PropagatePageContextToProvider(
-    GeminiPageContext* active_page_context) {
+void GeminiBrowserAgent::PropagatePageContext(
+    GeminiPageContext* page_context) {
   if (!is_floaty_invoked_) {
     return;
   }
 
+  UpdatePageContextState(page_context);
+  SaveActivePageContextToAttachedTabs(page_context);
+
+  ios::provider::UpdateActivePageContext(page_context, GetSharedTabs());
+}
+
+void GeminiBrowserAgent::UpdatePageContextState(
+    GeminiPageContext* page_context) {
   GeminiTabHelper* tab_helper = GetActiveTabHelper();
   bool is_eligible =
       tab_helper && tab_helper->IsGeminiChatAvailableForWebState();
 
   // Handle programmatic blocking/detachment for ineligible or hidden pages.
   if (!is_eligible) {
-    active_page_context.geminiPageContextComputationState =
+    page_context.geminiPageContextComputationState =
         ios::provider::GeminiPageContextComputationState::kBlocked;
-    active_page_context.geminiPageContextAttachmentState =
+    page_context.geminiPageContextAttachmentState =
         ios::provider::GetCurrentPageContextAttachmentState();
-    active_page_context.uniquePageContext = nullptr;
-  } else {
-    // Apply user settings.
-    ApplyUserPrefsToPageContext(active_page_context);
+    page_context.uniquePageContext = nullptr;
+    return;
+  }
 
-    // Persists manual detachment across navigations. If the user explicitly
-    // detached the context via the paperclip UI, respect that choice over the
-    // default attached state.
-    if (active_page_context.geminiPageContextAttachmentState ==
-            ios::provider::GeminiPageContextAttachmentState::kAttached &&
-        ios::provider::GetCurrentPageContextAttachmentState() ==
-            ios::provider::GeminiPageContextAttachmentState::kDetached) {
-      active_page_context.geminiPageContextAttachmentState =
-          ios::provider::GeminiPageContextAttachmentState::kDetached;
-    }
+  // Apply user settings.
+  ApplyUserPrefsToPageContext(page_context);
+
+  // Persists manual detachment across navigations. If the user explicitly
+  // detached the context via the paperclip UI, respect that choice over the
+  // default attached state.
+  if (page_context.geminiPageContextAttachmentState ==
+          ios::provider::GeminiPageContextAttachmentState::kAttached &&
+      ios::provider::GetCurrentPageContextAttachmentState() ==
+          ios::provider::GeminiPageContextAttachmentState::kDetached) {
+    page_context.geminiPageContextAttachmentState =
+        ios::provider::GeminiPageContextAttachmentState::kDetached;
+  }
+}
+
+void GeminiBrowserAgent::SaveActivePageContextToAttachedTabs(
+    GeminiPageContext* active_page_context) {
+  if (!IsGeminiMultiTabContextEnabled()) {
+    return;
   }
 
   // Save the active page context to `attached_tabs`. If we are on the tab
   // grid, the active page context will be saved as `kBlocked` unless we have
   // other tabs attached. This prevents the current tab from being erroneously
   // showed as `kBlocked` when we open the Floaty on a different attached tab.
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
   bool should_save_active_context = !IsTabGridVisible() || !HasSharedTabs();
-  if (IsGeminiMultiTabContextEnabled() && active_web_state &&
-      should_save_active_context) {
-    SetAttachedPageContext(active_web_state->GetUniqueIdentifier(),
-                           active_page_context);
+  if (!should_save_active_context) {
+    return;
   }
 
-  ios::provider::UpdateActivePageContext(active_page_context, GetSharedTabs());
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  if (!active_web_state) {
+    return;
+  }
+
+  SetAttachedPageContext(active_web_state->GetUniqueIdentifier(),
+                         active_page_context);
 }
 
 NSArray<GeminiPageContext*>* GeminiBrowserAgent::GetSharedTabs() const {
@@ -2132,7 +2151,7 @@ void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
   if (tab_helper) {
     GeminiPageContext* gemini_page_context =
         tab_helper->GetPartialPageContext();
-    PropagatePageContextToProvider(gemini_page_context);
+    PropagatePageContext(gemini_page_context);
   }
 }
 
@@ -2244,7 +2263,7 @@ void GeminiBrowserAgent::SetSessionCommandHandlers() {
 
 void GeminiBrowserAgent::OnPageContextGenerated(
     GeminiPageContext* gemini_page_context) {
-  PropagatePageContextToProvider(gemini_page_context);
+  PropagatePageContext(gemini_page_context);
 }
 
 web::WebStateID GeminiBrowserAgent::GetActiveWebStateID() const {

@@ -213,7 +213,15 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Updates the active page context and passes it to the Gemini provider, along
   // with any shared tabs.
-  void PropagatePageContextToProvider(GeminiPageContext* active_page_context);
+  void PropagatePageContext(GeminiPageContext* page_context);
+
+  // Updates `page_context`'s computation and attachment states based on
+  // active page eligibility and user preferences.
+  void UpdatePageContextState(GeminiPageContext* page_context);
+
+  // Saves `active_page_context` to `attached_tabs_`.
+  void SaveActivePageContextToAttachedTabs(
+      GeminiPageContext* active_page_context);
 
   // Updates the floaty with partial page context synchronously if the tab
   // helper is available.
