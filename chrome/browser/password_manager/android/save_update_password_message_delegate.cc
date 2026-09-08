@@ -546,7 +546,7 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
   GetDisplayUsernames(&usernames);
   password_edit_dialog_->ShowPasswordEditDialog(
       usernames, current_username, password_form.password_value.value(),
-      account_email_);
+      account_email_, IsSavingBlockedByTrustedVaultError());
 
   DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
 }

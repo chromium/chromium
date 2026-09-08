@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
+
 #include <jni.h>
 
 #include "base/android/jni_string.h"
@@ -24,8 +25,9 @@ std::unique_ptr<PasswordEditDialog> PasswordEditDialogBridge::Create(
   CHECK(delegate);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
-  if (!window_android)
+  if (!window_android) {
     return nullptr;
+  }
   return base::WrapUnique(
       new PasswordEditDialogBridge(window_android->GetJavaObject(), delegate));
 }
@@ -49,7 +51,8 @@ void PasswordEditDialogBridge::ShowPasswordEditDialog(
     const std::vector<std::u16string>& saved_usernames,
     const std::u16string& username,
     const std::u16string& password,
-    const std::optional<std::string>& account_email) {
+    const std::optional<std::string>& account_email,
+    bool is_saving_blocked_by_trusted_vault_error) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   base::android::ScopedJavaLocalRef<jobjectArray> j_saved_usernames =
@@ -61,7 +64,7 @@ void PasswordEditDialogBridge::ShowPasswordEditDialog(
 
   Java_PasswordEditDialogBridge_showPasswordEditDialog(
       env, java_password_dialog_, j_saved_usernames, username, password,
-      j_account_email);
+      j_account_email, is_saving_blocked_by_trusted_vault_error);
 }
 
 void PasswordEditDialogBridge::Dismiss() {

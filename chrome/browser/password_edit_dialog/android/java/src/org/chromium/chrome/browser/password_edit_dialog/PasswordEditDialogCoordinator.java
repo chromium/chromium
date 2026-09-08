@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.password_edit_dialog.PasswordEditDialogMediator.getPositiveButtonText;
 import static org.chromium.chrome.browser.password_edit_dialog.PasswordEditDialogMediator.getTitle;
 import static org.chromium.chrome.browser.password_edit_dialog.PasswordEditDialogMediator.isUpdate;
 
@@ -120,7 +121,7 @@ class PasswordEditDialogCoordinator {
 
     /**
      * Shows the dialog asking if user wants to save the password and providing username & password
-     * editing capabilities. Possible user choices: Save, Never for this site, Cancel
+     * editing capabilities. Possible user choices: Save/Continue, Never for this site, Cancel
      *
      * @param savedUsernames The list of usernames that are already saved in password manager for
      *     the current site.
@@ -128,10 +129,15 @@ class PasswordEditDialogCoordinator {
      * @param password Initially typed password that user will be able to edit
      * @param account The account name where the password will be saved. When the user is not signed
      *     in the account is null.
+     * @param isSavingBlockedByTrustedVaultError Whether saving is blocked by trusted vault error.
      */
     @Initializer
     void showPasswordEditDialog(
-            String[] savedUsernames, String username, String password, @Nullable String account) {
+            String[] savedUsernames,
+            String username,
+            String password,
+            @Nullable String account,
+            boolean isSavingBlockedByTrustedVaultError) {
         List<String> savedUsernameList = Arrays.asList(savedUsernames);
         boolean update = isUpdate(savedUsernameList, username);
         // The Save password dialog has only user-entered username in the spinner's list.
@@ -141,13 +147,15 @@ class PasswordEditDialogCoordinator {
         mDialogModel =
                 createModalDialogModel(
                         getTitle(savedUsernameList, displayUsernamesList, username),
-                        update
-                                ? R.string.password_manager_update_button
-                                : R.string.password_manager_save_button);
+                        getPositiveButtonText(update, isSavingBlockedByTrustedVaultError));
         mDialogViewModel = createDialogViewModel(displayUsernamesList, username, password, account);
 
         mMediator.initialize(
-                mDialogViewModel, mDialogModel, Arrays.asList(savedUsernames), account);
+                mDialogViewModel,
+                mDialogModel,
+                Arrays.asList(savedUsernames),
+                account,
+                isSavingBlockedByTrustedVaultError);
         // The mediator needs to be initialized before the model change processor,
         // so that the callbacks handling changes from the view are not null
         // when the view is populated.

@@ -64,9 +64,10 @@ class PasswordEditDialog {
       const std::vector<std::u16string>& usernames,
       const std::u16string& username,
       const std::u16string& password,
-      const std::optional<std::string>& account_email) = 0;
+      const std::optional<std::string>& account_email,
+      bool is_saving_blocked_by_trusted_vault_error) = 0;
 
-  // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
+  // Dismisses displayed dialog. The owner of PasswordEditDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object
   // can be safely destroyed after dismiss callback is executed.
   virtual void Dismiss() = 0;
@@ -92,9 +93,10 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
       const std::vector<std::u16string>& usernames,
       const std::u16string& username,
       const std::u16string& password,
-      const std::optional<std::string>& account_email) override;
+      const std::optional<std::string>& account_email,
+      bool is_saving_blocked_by_trusted_vault_error) override;
 
-  // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
+  // Dismisses displayed dialog. The owner of PasswordEditDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object
   // can be safely destroyed after dismiss callback is executed.
   void Dismiss() override;

@@ -30,6 +30,7 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     private PropertyModel mModalDialogModel;
     private List<String> mSavedUsernames;
     private @Nullable String mAccount;
+    private boolean mIsSavingBlockedByTrustedVaultError;
 
     private final ModalDialogManager mModalDialogManager;
     private final Resources mResources;
@@ -49,11 +50,13 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
             PropertyModel dialogViewModel,
             PropertyModel modalDialogModel,
             List<String> savedUsernames,
-            @Nullable String account) {
+            @Nullable String account,
+            boolean isSavingBlockedByTrustedVaultError) {
         mDialogViewModel = dialogViewModel;
         mModalDialogModel = modalDialogModel;
         mSavedUsernames = savedUsernames;
         mAccount = account;
+        mIsSavingBlockedByTrustedVaultError = isSavingBlockedByTrustedVaultError;
     }
 
     /**
@@ -69,9 +72,17 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
                         mAccount, mDialogInteractions.isUsingAccountStorage(username), mResources));
         mModalDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                isUpdate(mSavedUsernames, username)
-                        ? mResources.getString(R.string.password_manager_update_button)
-                        : mResources.getString(R.string.password_manager_save_button));
+                mResources.getString(
+                        getPositiveButtonText(
+                                isUpdate(mSavedUsernames, username),
+                                mIsSavingBlockedByTrustedVaultError)));
+        mModalDialogModel.set(
+                ModalDialogProperties.TITLE,
+                mResources.getString(
+                        getTitle(
+                                mSavedUsernames,
+                                mDialogViewModel.get(PasswordEditDialogProperties.USERNAMES),
+                                username)));
     }
 
     /**
@@ -155,5 +166,23 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
      */
     public static boolean isUpdate(List<String> savedUsernames, String username) {
         return savedUsernames.contains(username);
+    }
+
+    /**
+     * Chooses which text to show on the positive button: Update/Continue/Save
+     *
+     * @param isUpdate whether the credentials will update an existing saved password
+     * @param isSavingBlockedByTrustedVaultError whether saving password is blocked by trusted vault
+     *     error
+     * @return string resource id of the positive button label
+     */
+    public static @StringRes int getPositiveButtonText(
+            boolean isUpdate, boolean isSavingBlockedByTrustedVaultError) {
+        if (isUpdate) {
+            return R.string.password_manager_update_button;
+        }
+        return isSavingBlockedByTrustedVaultError
+                ? R.string.continue_button
+                : R.string.password_manager_save_button;
     }
 }

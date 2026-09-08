@@ -125,7 +125,8 @@ class MockPasswordEditDialog : public PasswordEditDialog {
               (const std::vector<std::u16string>& usernames,
                const std::u16string& username,
                const std::u16string& password,
-               const std::optional<std::string>& account_email),
+               const std::optional<std::string>& account_email,
+               bool is_saving_blocked_by_trusted_vault_error),
               (override));
   MOCK_METHOD(void, Dismiss, (), (override));
 };
@@ -1294,7 +1295,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_dialog, ShowPasswordEditDialog);
+  EXPECT_CALL(
+      *mock_dialog,
+      ShowPasswordEditDialog(
+          _, _, _, _, /*is_saving_blocked_by_trusted_vault_error=*/true));
   TriggerPasswordEditDialog(/*update_password=*/false);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
@@ -1417,7 +1421,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_dialog, ShowPasswordEditDialog);
+  EXPECT_CALL(
+      *mock_dialog,
+      ShowPasswordEditDialog(
+          _, _, _, _, /*is_saving_blocked_by_trusted_vault_error=*/true));
   TriggerPasswordEditDialog(/*update_password=*/false);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
@@ -1481,7 +1488,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(*mock_dialog, ShowPasswordEditDialog);
+  EXPECT_CALL(*mock_dialog,
+              ShowPasswordEditDialog(
+                  _, _, _, _,
+                  /*is_saving_blocked_by_trusted_vault_error=*/false));
   TriggerPasswordEditDialog(/*update_password=*/true);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
