@@ -82,17 +82,20 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @After
     public void tearDown() throws Exception {
         if (mActivity != null) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        if (mActivity.isInPictureInPictureMode()
-                                || mActivity.getLastPictureInPictureModeForTesting()) {
-                            mActivity.onPictureInPictureModeChanged(
-                                    false, mActivity.getResources().getConfiguration());
-                        }
-                    });
+            boolean wasInPip =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    mActivity.isInPictureInPictureMode()
+                                            || mActivity.getLastPictureInPictureModeForTesting());
+            if (wasInPip) {
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivity.onPictureInPictureModeChanged(
+                                        false, mActivity.getResources().getConfiguration()));
+            }
             int state = ApplicationStatus.getStateForActivity(mActivity);
-            // Restores the PAUSED/STOPPED activity back to RESUMED state.
-            if (state == ActivityState.PAUSED || state == ActivityState.STOPPED) {
+            // Restores the PAUSED/STOPPED activity or PiP window back to RESUMED state.
+            if (wasInPip || state == ActivityState.PAUSED || state == ActivityState.STOPPED) {
                 mActivityTestRule.launchMainActivityFromLauncher();
             }
         }
@@ -263,6 +266,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
 
         enterFullscreen(true);
         triggerAutoPiPAndWait();
+        exitPipAndFullscreenAndWait();
     }
 
     private void exitPipAndFullscreenAndWait() throws Throwable {
