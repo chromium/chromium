@@ -383,7 +383,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
   AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
   AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
-  AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
+  AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>(
+      &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>(
       &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());

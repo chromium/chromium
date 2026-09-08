@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -15,10 +16,10 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -40,7 +41,8 @@ constexpr char kArcTracingUiJsPath[] = "arc_tracing_ui.js";
 constexpr char kArcTracingCssPath[] = "arc_tracing.css";
 constexpr char kJavascriptDomain[] = "cr.ArcOverviewTracing.";
 
-void CreateAndAddOverviewDataSource(Profile* profile) {
+void CreateAndAddOverviewDataSource(Profile* profile,
+                                    const std::string& app_locale) {
   content::WebUIDataSource* const source =
       content::WebUIDataSource::CreateAndAdd(
           profile, ash::kChromeUIArcOverviewTracingHost);
@@ -57,7 +59,6 @@ void CreateAndAddOverviewDataSource(Profile* profile) {
       "script-src chrome://resources 'self';");
 
   base::DictValue localized_strings;
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);
 }
@@ -218,9 +219,13 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
 
 }  // anonymous namespace
 
-ArcOverviewTracingUIConfig::ArcOverviewTracingUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         ash::kChromeUIArcOverviewTracingHost) {}
+ArcOverviewTracingUIConfig::ArcOverviewTracingUIConfig(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : WebUIConfig(content::kChromeUIScheme,
+                  ash::kChromeUIArcOverviewTracingHost),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+
+ArcOverviewTracingUIConfig::~ArcOverviewTracingUIConfig() = default;
 
 bool ArcOverviewTracingUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -228,10 +233,22 @@ bool ArcOverviewTracingUIConfig::IsWebUIEnabled(
       Profile::FromBrowserContext(browser_context));
 }
 
-ArcOverviewTracingUI::ArcOverviewTracingUI(content::WebUI* web_ui)
+std::unique_ptr<content::WebUIController>
+ArcOverviewTracingUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                  const GURL& url) {
+  return std::make_unique<ArcOverviewTracingUI>(
+      web_ui, application_locale_storage_->Get());
+}
+
+ArcOverviewTracingUI::ArcOverviewTracingUI(
+    content::WebUI* web_ui,
+    const std::string& application_locale)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<Handler>());
-  CreateAndAddOverviewDataSource(Profile::FromWebUI(web_ui));
+  CreateAndAddOverviewDataSource(Profile::FromWebUI(web_ui),
+                                 application_locale);
 }
+
+ArcOverviewTracingUI::~ArcOverviewTracingUI() = default;
 
 }  // namespace ash
