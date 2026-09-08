@@ -1067,6 +1067,53 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(0, innerComposebox.attachedContext.size);
   });
 
+  test('DoesNotAutoSuggestTabIfAlreadyInAimThreadRestoredTabs', async () => {
+    const {innerComposebox} = await createCtComposeboxApp(/*useFork=*/ true);
+    innerComposebox.contextManagementInComposeboxEnabled = true;
+
+    const restoredTab = {
+      tabId: 1,
+      title: 'Restored Tab',
+      url: 'https://example.com',
+      lastActive: {internalValue: BigInt(100)},
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+    };
+    innerComposebox.aimThreadRestoredTabs = [restoredTab];
+
+    // Suggesting a tab already present in aimThreadRestoredTabs should be
+    // suppressed.
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+        restoredTab, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    // The tab remains in aimThreadRestoredTabs (the restored tab coin).
+    assertEquals(1, innerComposebox.aimThreadRestoredTabs.length);
+
+    // No duplicate auto-suggested tab chip was staged into attachedContext.
+    assertEquals(0, innerComposebox.attachedContext.size);
+    assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+
+    // Suggesting a different tab that is not in aimThreadRestoredTabs
+    // succeeds.
+    const newTab = {
+      tabId: 2,
+      title: 'New Tab',
+      url: 'https://other.com',
+      lastActive: {internalValue: BigInt(200)},
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(newTab, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(1, innerComposebox.attachedContext.size);
+  });
+
   test('OpeningMultipleNewThreadsPreservesAutoSuggestedTab', async () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
 

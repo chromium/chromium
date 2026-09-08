@@ -381,6 +381,15 @@ export class
       return;
     }
 
+    // Prevent re-suggesting tabs that are already restored in the conversation
+    // thread to avoid displaying duplicate tab coins.
+    if (this.contextManagementInComposeboxEnabled &&
+        this.aimThreadRestoredTabs.some(
+            t => (tab.tabId && t.tabId === tab.tabId) ||
+                (!!tab.url && t.url === tab.url))) {
+      return;
+    }
+
     if (tab) {
       // Ignore the `TabInfo` update if there is a matching
       // `automaticActiveTab`, unless the title has changed.
