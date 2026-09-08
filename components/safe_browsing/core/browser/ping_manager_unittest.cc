@@ -75,6 +75,9 @@ class PingManagerTest : public testing::Test {
       bool expect_access_token,
       std::optional<ChromeUserPopulation> expected_user_population,
       std::optional<std::string> expected_page_load_token_value);
+  void RunReportThreatDetailsExperimentStatusTest(
+      const std::string& field_trial_group,
+      const std::vector<std::string>& expected_finch_active_groups);
   PingManager* ping_manager();
   void SetNewPingManager(
       std::optional<base::RepeatingCallback<bool()>>
@@ -311,6 +314,80 @@ void PingManagerTest::RunReportThreatDetailsTest(
       /*name=*/"SafeBrowsing.ClientSafeBrowsingReport.ResponseSuccessful",
       /*sample=*/ClientSafeBrowsingReportRequest::URL_PHISHING,
       /*expected_bucket_count=*/1);
+}
+
+void PingManagerTest::RunReportThreatDetailsExperimentStatusTest(
+    const std::string& field_trial_group,
+    const std::vector<std::string>& expected_finch_active_groups) {
+  base::FieldTrialList::CreateFieldTrial("SafeBrowsingLocalListsUseSBv5",
+                                         field_trial_group);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "SafeBrowsingLocalListsUseSBv5<SafeBrowsingLocalListsUseSBv5." +
+          field_trial_group,
+      "");
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/std::nullopt,
+      /*get_user_population_callback=*/base::BindRepeating([]() {
+        return ChromeUserPopulation();
+      }),
+      /*get_page_load_token_callback=*/std::nullopt,
+      /*get_should_send_persisted_report=*/std::nullopt);
+
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  bool interceptor_called = false;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        interceptor_called = true;
+        ClientSafeBrowsingReportRequest sent_report;
+        ASSERT_TRUE(sent_report.ParseFromString(GetUploadData(request)));
+        EXPECT_THAT(sent_report.population().finch_active_groups(),
+                    testing::ElementsAreArray(expected_finch_active_groups));
+      }));
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+  test_url_loader_factory.AddResponse(
+      "https://safebrowsing.google.com/safebrowsing/clientreport/"
+      "malware?client=unittest&appver=1.0&pver=4.0" +
+          key_param_,
+      "");
+  EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(1);
+  base::RunLoop run_loop;
+  ping_manager()->SetOnURLLoaderCompleteCallbackForTesting(
+      run_loop.QuitClosure());
+  PingManager::ReportThreatDetailsResult result =
+      ping_manager()->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
+  run_loop.Run();
+  EXPECT_TRUE(interceptor_called);
+}
+
+TEST_F(PingManagerTest,
+       ReportThreatDetails_PopulatesFinchActiveGroups_Enabled) {
+  RunReportThreatDetailsExperimentStatusTest(
+      /*field_trial_group=*/"Enabled",
+      /*expected_finch_active_groups=*/
+      {"SafeBrowsingLocalListsUseSBv5.Enabled"});
+}
+
+TEST_F(PingManagerTest,
+       ReportThreatDetails_PopulatesFinchActiveGroups_Control) {
+  RunReportThreatDetailsExperimentStatusTest(
+      /*field_trial_group=*/"Control",
+      /*expected_finch_active_groups=*/
+      {"SafeBrowsingLocalListsUseSBv5.Control"});
+}
+
+TEST_F(PingManagerTest,
+       ReportThreatDetails_PopulatesFinchActiveGroups_Default) {
+  RunReportThreatDetailsExperimentStatusTest(
+      /*field_trial_group=*/"Default",
+      /*expected_finch_active_groups=*/{});
 }
 
 TEST_F(PingManagerTest, TestThreatDetailsUrl) {

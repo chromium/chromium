@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
+#include "components/safe_browsing/core/browser/user_population.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -609,6 +610,8 @@ PingManager::ReportThreatDetailsResult PingManager::FinalizeAndSerializeReport(
   SanitizeThreatDetailsReport(report);
   if (!get_user_population_callback_.is_null()) {
     *report->mutable_population() = get_user_population_callback_.Run();
+    // TODO(crbug.com/372395685): Remove this post feature launch.
+    GetExperimentStatus({&kLocalListsUseSBv5}, report->mutable_population());
   }
   if (!get_page_load_token_callback_.is_null()) {
     ChromeUserPopulation::PageLoadToken token =
