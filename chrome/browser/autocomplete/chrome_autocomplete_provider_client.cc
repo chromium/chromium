@@ -62,6 +62,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/common/pref_names.h"
@@ -815,8 +816,9 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 bool ChromeAutocompleteProviderClient::ShouldOpenCoBrowsePanel() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return omnibox::kAskGCoBrowse.Get() ||
-         omnibox::kAskGCoBrowseWithVisualSelection.Get();
+  return contextual_tasks::IsContextualTasksUIEnabled() &&
+         (omnibox::kAskGCoBrowse.Get() ||
+          omnibox::kAskGCoBrowseWithVisualSelection.Get());
 #else
   return false;
 #endif

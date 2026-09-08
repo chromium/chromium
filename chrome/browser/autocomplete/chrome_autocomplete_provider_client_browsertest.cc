@@ -289,6 +289,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
   // Ensure the active tab is valid.
   ASSERT_TRUE(browser()->GetActiveTabInterface()->GetContents());
 
+  EXPECT_TRUE(GetAutocompleteProviderClient()->ShouldOpenCoBrowsePanel());
+
   // Lens should NOT be opened.
   EXPECT_CALL(*GetLensSearchController(),
               OpenLensOverlay(testing::_, testing::_))
@@ -362,6 +364,8 @@ IN_PROC_BROWSER_TEST_F(
     OpensSidePanelAndLensOverlaySimultaneously) {
   ASSERT_TRUE(browser()->GetActiveTabInterface()->GetContents());
 
+  EXPECT_TRUE(GetAutocompleteProviderClient()->ShouldOpenCoBrowsePanel());
+
   // Lens overlay should be opened immediately in parallel with side panel.
   EXPECT_CALL(
       *GetLensSearchController(),
@@ -375,6 +379,30 @@ IN_PROC_BROWSER_TEST_F(
   // Assert: Verify that the side panel is open.
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+}
+
+class ChromeAutocompleteProviderClientAskGCoBrowseTasksUiDisabledTest
+    : public ChromeAutocompleteProviderClientTest {
+ protected:
+  ChromeAutocompleteProviderClientAskGCoBrowseTasksUiDisabledTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kWebUIOmniboxAskGAboutThisPage,
+          {{"Omnibox_AskGCoBrowse", "true"}}}},
+        /*disabled_features=*/{
+            contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel,
+            contextual_tasks::kContextualTasksRearchitecture});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeAutocompleteProviderClientAskGCoBrowseTasksUiDisabledTest,
+    ShouldOpenCoBrowsePanel_ReturnsFalseWhenContextualTasksUiDisabled) {
+  EXPECT_FALSE(contextual_tasks::IsContextualTasksUIEnabled());
+  EXPECT_FALSE(GetAutocompleteProviderClient()->ShouldOpenCoBrowsePanel());
 }
 
 class ChromeAutocompleteProviderClientAskGLensChipRouteTest
