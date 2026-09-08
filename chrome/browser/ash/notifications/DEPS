@@ -14,23 +14,18 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app/vector_icons",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/settings",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/test_extension_system.h",
-  "+chrome/browser/media/webrtc",
   "+chrome/browser/notifications/passphrase_textfield.h",
-  "+chrome/browser/profiles",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/screen_capture_notification_ui.h",
   "+chrome/grit",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
-  "+components/webapps/isolated_web_apps",
   "+ui/message_center",
 ]
 

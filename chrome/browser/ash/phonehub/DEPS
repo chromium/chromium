@@ -27,10 +27,4 @@ include_rules = [
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/test/base",
-
-  # Dependencies outside of //chrome:
-  "+components/favicon",
-  "+components/sessions/core",
-  "+components/sync_sessions",
-  "+third_party/skia/include/core",
 ]
