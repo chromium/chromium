@@ -427,9 +427,16 @@ void MediaSession::DidReceiveAction(
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
-  LocalFrame::NotifyUserActivation(
-      window->GetFrame(),
-      mojom::blink::UserActivationNotificationType::kInteraction);
+  // Do not grant user activation for pause or stop actions. Pausing or stopping
+  // media never requires user activation and should not allow websites to
+  // trigger restricted APIs (e.g. popups or clipboard access) via pause events
+  // or system/accessory actions like removing headphones.
+  if (action != media_session::mojom::blink::MediaSessionAction::kPause &&
+      action != media_session::mojom::blink::MediaSessionAction::kStop) {
+    LocalFrame::NotifyUserActivation(
+        window->GetFrame(),
+        mojom::blink::UserActivationNotificationType::kInteraction);
+  }
 
   auto v8_action = MojomActionToActionEnum(action);
 

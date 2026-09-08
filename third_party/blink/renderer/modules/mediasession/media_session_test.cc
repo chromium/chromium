@@ -117,6 +117,11 @@ class MediaSessionTest : public PageTestBase {
 
   base::SimpleTestTickClock& clock() { return test_clock_; }
 
+  void DidReceiveAction(
+      media_session::mojom::blink::MediaSessionAction action) {
+    media_session_->DidReceiveAction(action, nullptr);
+  }
+
  private:
   base::SimpleTestTickClock test_clock_;
 
@@ -387,6 +392,24 @@ TEST_F(MediaSessionTest, PlaybackPositionState_HugeValuesNoCrash) {
 
   clock().Advance(base::Seconds(1));
   SetPlaybackState(V8MediaSessionPlaybackState::Enum::kPaused);
+}
+
+TEST_F(MediaSessionTest, DidReceiveAction_PlayGrantsUserActivation) {
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  DidReceiveAction(media_session::mojom::blink::MediaSessionAction::kPlay);
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+}
+
+TEST_F(MediaSessionTest, DidReceiveAction_PauseDoesNotGrantUserActivation) {
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  DidReceiveAction(media_session::mojom::blink::MediaSessionAction::kPause);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+}
+
+TEST_F(MediaSessionTest, DidReceiveAction_StopDoesNotGrantUserActivation) {
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  DidReceiveAction(media_session::mojom::blink::MediaSessionAction::kStop);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
 }
 
 }  // namespace blink

@@ -67,6 +67,11 @@ void SimulateRequestPlay(HTMLMediaElement* element, bool triggered_by_user) {
       triggered_by_user);
 }
 
+void SimulateRequestPause(HTMLMediaElement* element, bool triggered_by_user) {
+  static_cast<media::mojom::blink::MediaPlayer*>(element)->RequestPause(
+      triggered_by_user);
+}
+
 enum class TestURLScheme {
   kHttp,
   kHttps,
@@ -2295,6 +2300,39 @@ TEST_P(HTMLMediaElementTest, RequestPlay_SystemTriggered) {
   EXPECT_CALL(*MockMediaPlayer(), Paused()).WillRepeatedly(Return(true));
   EXPECT_CALL(*MockMediaPlayer(), Play());
   SimulateRequestPlay(Media(), /*triggered_by_user=*/false);
+
+  // The frame should NOT be granted transient user activation.
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(
+      Media()->GetDocument().GetFrame()));
+}
+
+TEST_P(HTMLMediaElementTest, RequestPause_UserTriggered) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  EXPECT_CALL(*MockMediaPlayer(), Paused()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*MockMediaPlayer(),
+              Pause(WebMediaPlayer::PauseReason::kPauseRequestedByUser));
+  SimulateRequestPause(Media(), /*triggered_by_user=*/true);
+
+  // The frame should NOT be granted transient user activation even when
+  // triggered by the user.
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(
+      Media()->GetDocument().GetFrame()));
+}
+
+TEST_P(HTMLMediaElementTest, RequestPause_SystemTriggered) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  EXPECT_CALL(*MockMediaPlayer(), Paused()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*MockMediaPlayer(),
+              Pause(WebMediaPlayer::PauseReason::kPauseRequestedInternally));
+  SimulateRequestPause(Media(), /*triggered_by_user=*/false);
 
   // The frame should NOT be granted transient user activation.
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(
