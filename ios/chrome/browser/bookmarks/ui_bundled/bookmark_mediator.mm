@@ -117,7 +117,7 @@ using bookmarks::BookmarkNode;
   for (NSURL* NSURL in URLs) {
     GURL URL = net::GURLWithNSURL(NSURL);
 
-    if (!URL.is_valid()) {
+    if (!URL.is_valid() || !URL.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
 

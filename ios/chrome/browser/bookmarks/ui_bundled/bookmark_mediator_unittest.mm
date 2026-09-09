@@ -34,6 +34,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -358,6 +359,52 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
   ASSERT_EQ(3U, bookmarks_dupes.size());
   ASSERT_NSEQ(snackbarMessageDuplicates.title, @"0 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
+  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
+}
+
+// Tests bulkAddBookmarksWithURLs rejects unsupported URL schemes
+// (e.g. javascript:, chrome:, file:, data:).
+TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageUnsupportedSchemes) {
+  NSArray* URLs = @[
+    [[NSURL alloc] initWithString:@"javascript:alert(1)"],
+    [[NSURL alloc] initWithString:@"chrome://version"],
+    [[NSURL alloc] initWithString:@"data:text/html,<html></html>"],
+    [[NSURL alloc] initWithString:@"file:///path/to/file"],
+    [[NSURL alloc] initWithString:@"https://google.com"]
+  ];
+
+  SnackbarMessage* const snackbarMessage =
+      [mediator_ bulkAddBookmarksWithURLs:URLs
+                               viewAction:^{
+                               }];
+
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      bookmark_model_->GetUniqueUrls();
+
+  ASSERT_EQ(1U, bookmarks.size());
+  EXPECT_EQ(GURL("https://google.com"), bookmarks[0].url);
+  ASSERT_NSEQ(snackbarMessage.title, @"Bookmark saved");
+  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 1, 1);
+}
+
+// Tests bulkAddBookmarksWithURLs with only unsupported URL schemes.
+TEST_F(BookmarkMediatorUnitTest,
+       TestBulkSnackbarMessageOnlyUnsupportedSchemes) {
+  NSArray* URLs = @[
+    [[NSURL alloc] initWithString:@"javascript:alert(1)"],
+    [[NSURL alloc] initWithString:@"chrome://version"]
+  ];
+
+  SnackbarMessage* const snackbarMessage =
+      [mediator_ bulkAddBookmarksWithURLs:URLs
+                               viewAction:^{
+                               }];
+
+  std::vector<bookmarks::UrlAndTitle> bookmarks =
+      bookmark_model_->GetUniqueUrls();
+
+  ASSERT_EQ(0U, bookmarks.size());
+  ASSERT_NSEQ(snackbarMessage.title, @"0 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }
 
