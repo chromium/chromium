@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -357,20 +358,25 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
     const GaiaId& gaia_id) {
   refresh_tokens_loaded_waiter_.reset();
 
+  IdentityAPI& identity_api = CHECK_DEREF(
+      CHECK_DEREF(IdentityAPI::GetFactoryInstance()).Get(GetProfile()));
+
   selected_gaia_id_ = gaia_id;
   if (gaia_id.empty()) {
-    selected_gaia_id_ = IdentityAPI::GetFactoryInstance()
-                            ->Get(GetProfile())
-                            ->GetGaiaIdForExtension(token_key_.extension_id)
-                            .value_or(GaiaId());
+    selected_gaia_id_ =
+        identity_api.GetGaiaIdForExtension(token_key_.extension_id)
+            .value_or(GaiaId());
   }
 
   CoreAccountInfo selected_account;
   if (!selected_gaia_id_.empty()) {
-    // TODO(msalama): Check has access to accounts.
-    selected_account = IdentityManagerFactory::GetForProfile(GetProfile())
-                           ->FindExtendedAccountInfoByGaiaId(selected_gaia_id_)
-                           .GetCoreAccountInfo();
+    const std::vector<CoreAccountInfo> accounts =
+        identity_api.GetAccountsWithRefreshTokensForExtensions();
+    auto it =
+        std::ranges::find(accounts, selected_gaia_id_, &CoreAccountInfo::gaia);
+    if (it != accounts.end()) {
+      selected_account = *it;
+    }
   } else {
     selected_account = GetSigninPrimaryAccount(GetProfile());
   }
