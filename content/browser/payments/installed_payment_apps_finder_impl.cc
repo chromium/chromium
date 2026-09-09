@@ -36,7 +36,7 @@ InstalledPaymentAppsFinder::GetInstance(BrowserContext* context) {
 // static
 base::WeakPtr<InstalledPaymentAppsFinderImpl>
 InstalledPaymentAppsFinderImpl::GetInstance(BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   base::WeakPtr<InstalledPaymentAppsFinderImpl> result;
   InstalledPaymentAppsFinderImpl* data =
@@ -56,7 +56,7 @@ InstalledPaymentAppsFinderImpl::GetInstance(BrowserContext* context) {
 
 void InstalledPaymentAppsFinderImpl::GetAllPaymentApps(
     GetAllPaymentAppsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context_->GetDefaultStoragePartition());

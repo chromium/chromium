@@ -123,8 +123,8 @@ SpeechSynthesisImpl::SpeechSynthesisImpl(BrowserContext* browser_context,
     : browser_context_(browser_context),
       web_contents_(WebContents::FromRenderFrameHost((rfh))),
       frame_id_(rfh->GetGlobalId()) {
-  DCHECK(browser_context_);
-  DCHECK(web_contents_);
+  CHECK(browser_context_, base::NotFatalUntil::M159);
+  CHECK(web_contents_, base::NotFatalUntil::M159);
   TtsController::GetInstance()->AddVoicesChangedDelegate(this);
 }
 

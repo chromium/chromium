@@ -27,7 +27,7 @@ void FieldTrialRecorder::Create(
 }
 
 void FieldTrialRecorder::FieldTrialActivated(const std::string& trial_name) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M159);
   // Activate the trial in the browser process to match its state in the
   // renderer. This is done by calling FindFullName which finalizes the group
   // and activates the trial.

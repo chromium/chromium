@@ -58,7 +58,7 @@ const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
 void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
     base::Process process,
     base::Process::Priority priority) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   // TODO(crbug.com/40611633): Fuchsia does not currently support this.
 }
 
@@ -78,7 +78,8 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
-  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(client_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
   sandbox_policy_ = std::make_unique<sandbox::policy::SandboxPolicyFuchsia>(
       delegate_->GetSandboxType());
@@ -86,7 +87,7 @@ void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
 
 std::unique_ptr<FileMappedForLaunch>
 ChildProcessLauncherHelper::GetFilesToMap() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   return nullptr;
 }
 
@@ -97,8 +98,8 @@ bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  DCHECK(sandbox_policy_);
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
+  CHECK(sandbox_policy_, base::NotFatalUntil::M159);
 
   mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_transfer,
                                              command_line());
@@ -119,10 +120,10 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     std::unique_ptr<FileMappedForLaunch> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  DCHECK(mojo_channel_);
-  DCHECK(mojo_channel_->remote_endpoint().is_valid());
-  DCHECK(sandbox_policy_);
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
+  CHECK(mojo_channel_, base::NotFatalUntil::M159);
+  CHECK(mojo_channel_->remote_endpoint().is_valid(), base::NotFatalUntil::M159);
+  CHECK(sandbox_policy_, base::NotFatalUntil::M159);
 
   Process child_process;
   // Move `sandbox_policy_` into the child process object so that it doesn't get
@@ -139,7 +140,7 @@ void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
 // static
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   // Wait for the process to terminate to ensure that `process` and its child
   // `sandbox_policy` aren't destroyed before the process is terminated.
   process.process.Terminate(RESULT_CODE_NORMAL_EXIT, true);

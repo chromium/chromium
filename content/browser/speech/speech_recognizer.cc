@@ -11,7 +11,7 @@ namespace content {
 SpeechRecognizer::SpeechRecognizer(SpeechRecognitionEventListener* listener,
                                    int session_id)
     : listener_(listener), session_id_(session_id) {
-  DCHECK(listener_);
+  CHECK(listener_, base::NotFatalUntil::M159);
 }
 
 }  // namespace content

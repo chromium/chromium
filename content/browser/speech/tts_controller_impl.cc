@@ -967,7 +967,7 @@ void TtsControllerImpl::StopCurrentUtteranceAndRemoveUtterancesMatching(
       std::remove_if(utterance_list_.begin(), utterance_list_.end(), eraser),
       utterance_list_.end());
   const bool stopped = StopCurrentUtteranceIfMatches(GURL());
-  DCHECK(stopped);
+  CHECK(stopped, base::NotFatalUntil::M159);
   SpeakNextUtterance();
 }
 

@@ -35,7 +35,7 @@ int TtsUtteranceImpl::next_utterance_id_ = 0;
 
 // static
 std::unique_ptr<TtsUtterance> TtsUtterance::Create(WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
   return std::make_unique<TtsUtteranceImpl>(web_contents->GetBrowserContext(),
                                             web_contents);
 }
@@ -76,7 +76,7 @@ TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
 TtsUtteranceImpl::~TtsUtteranceImpl() {
   // It's an error if an Utterance is destructed without being finished,
   // unless |browser_context_| is nullptr because it's a unit test.
-  DCHECK(finished_ || !browser_context_);
+  CHECK(finished_ || !browser_context_, base::NotFatalUntil::M159);
 }
 
 void TtsUtteranceImpl::OnTtsEvent(TtsEventType event_type,

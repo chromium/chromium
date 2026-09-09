@@ -106,8 +106,8 @@ void BrowserURLHandlerImpl::AddHandlerPair(URLHandler handler,
 void BrowserURLHandlerImpl::RewriteURLIfNecessary(
     GURL* url,
     BrowserContext* browser_context) {
-  DCHECK(url);
-  DCHECK(browser_context);
+  CHECK(url, base::NotFatalUntil::M159);
+  CHECK(browser_context, base::NotFatalUntil::M159);
   bool ignored_reverse_on_redirect;
   RewriteURLIfNecessary(url, browser_context, &ignored_reverse_on_redirect);
 }
@@ -133,9 +133,9 @@ void BrowserURLHandlerImpl::RewriteURLIfNecessary(
     GURL* url,
     BrowserContext* browser_context,
     bool* reverse_on_redirect) {
-  DCHECK(url);
-  DCHECK(browser_context);
-  DCHECK(reverse_on_redirect);
+  CHECK(url, base::NotFatalUntil::M159);
+  CHECK(browser_context, base::NotFatalUntil::M159);
+  CHECK(reverse_on_redirect, base::NotFatalUntil::M159);
 
   if (!url->is_valid()) {
     *reverse_on_redirect = false;

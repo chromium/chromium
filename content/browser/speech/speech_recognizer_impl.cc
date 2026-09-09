@@ -203,9 +203,9 @@ SpeechRecognizerImpl::SpeechRecognizerImpl(
           audio_forwarder_config.has_value()
               ? std::move(audio_forwarder_config.value().audio_forwarder)
               : mojo::NullReceiver()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(recognition_engine_ != nullptr);
-  DCHECK(audio_system_ != nullptr);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
+  CHECK(recognition_engine_ != nullptr, base::NotFatalUntil::M159);
+  CHECK(audio_system_ != nullptr, base::NotFatalUntil::M159);
 
   if (!continuous) {
     // In single shot (non-continous) recognition,
@@ -236,7 +236,7 @@ SpeechRecognizerImpl::SpeechRecognizerImpl(
 // synchronous callbacks.
 
 void SpeechRecognizerImpl::StartRecognition(const std::string& device_id) {
-  DCHECK(!device_id.empty());
+  CHECK(!device_id.empty(), base::NotFatalUntil::M159);
   device_id_ = device_id;
 
   GetIOThreadTaskRunner({})->PostTask(
@@ -271,12 +271,13 @@ void SpeechRecognizerImpl::StopAudioCapture() {
 bool SpeechRecognizerImpl::IsActive() const {
   // Checking the FSM state from another thread (thus, while the FSM is
   // potentially concurrently evolving) is meaningless.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   return state_ != STATE_IDLE && state_ != STATE_ENDED;
 }
 
 bool SpeechRecognizerImpl::IsCapturingAudio() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);  // See IsActive().
+  CHECK_CURRENTLY_ON(BrowserThread::IO,
+                     base::NotFatalUntil::M159);  // See IsActive().
   const bool is_capturing_audio = state_ >= STATE_STARTING &&
                                   state_ <= STATE_RECOGNIZING;
   return is_capturing_audio;
@@ -288,7 +289,7 @@ SpeechRecognizerImpl::recognition_engine() const {
 }
 
 SpeechRecognizerImpl::~SpeechRecognizerImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   endpointer_.EndSession();
   if (use_audio_capturer_source_ && GetAudioCapturerSource()) {
     GetAudioCapturerSource()->Stop();
@@ -378,7 +379,7 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineResults(
 }
 
 void SpeechRecognizerImpl::OnSpeechRecognitionEngineEndOfUtterance() {
-  DCHECK(!end_of_utterance_);
+  CHECK(!end_of_utterance_, base::NotFatalUntil::M159);
   end_of_utterance_ = true;
 }
 
@@ -410,20 +411,20 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineError(
 // clipper->endpointer->vumeter chain and the sr_engine could be parallelized.
 // We should profile the execution to see if it would be worth or not.
 void SpeechRecognizerImpl::DispatchEvent(const FSMEventArgs& event_args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_LE(event_args.event, EVENT_MAX_VALUE);
-  DCHECK_LE(state_, STATE_MAX_VALUE);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
+  CHECK_LE(event_args.event, EVENT_MAX_VALUE, base::NotFatalUntil::M159);
+  CHECK_LE(state_, STATE_MAX_VALUE, base::NotFatalUntil::M159);
 
   // Event dispatching must be sequential, otherwise it will break all the rules
   // and the assumptions of the finite state automata model.
-  DCHECK(!is_dispatching_event_);
+  CHECK(!is_dispatching_event_, base::NotFatalUntil::M159);
   is_dispatching_event_ = true;
 
   // Guard against the delegate freeing us until we finish processing the event.
   scoped_refptr<SpeechRecognizerImpl> me(this);
 
   if (event_args.event == EVENT_AUDIO_DATA) {
-    DCHECK(event_args.audio_chunk.get() != nullptr);
+    CHECK(event_args.audio_chunk.get() != nullptr, base::NotFatalUntil::M159);
     ProcessAudioPipeline(event_args);
   }
 
@@ -435,7 +436,7 @@ void SpeechRecognizerImpl::DispatchEvent(const FSMEventArgs& event_args) {
 
 void SpeechRecognizerImpl::ProcessAudioPipeline(
     const FSMEventArgs& event_args) {
-  DCHECK(event_args.audio_chunk.get() != nullptr);
+  CHECK(event_args.audio_chunk.get() != nullptr, base::NotFatalUntil::M159);
   const AudioChunk& raw_audio = *event_args.audio_chunk.get();
   const bool route_to_endpointer = state_ >= STATE_ESTIMATING_ENVIRONMENT &&
                                    state_ <= STATE_RECOGNIZING;
@@ -451,18 +452,19 @@ void SpeechRecognizerImpl::ProcessAudioPipeline(
     endpointer_.ProcessAudio(raw_audio, &rms);
 
   if (route_to_vumeter) {
-    DCHECK(route_to_endpointer);  // Depends on endpointer due to |rms|.
+    CHECK(route_to_endpointer,
+          base::NotFatalUntil::M159);  // Depends on endpointer due to |rms|.
     UpdateSignalAndNoiseLevels(rms, clip_detected);
   }
   if (route_to_sr_engine) {
-    DCHECK(recognition_engine_.get() != nullptr);
+    CHECK(recognition_engine_.get() != nullptr, base::NotFatalUntil::M159);
     recognition_engine_->TakeAudioChunk(raw_audio);
   }
 }
 
 void SpeechRecognizerImpl::OnAudioParametersReceived(
     const std::optional<media::AudioParameters>& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   audio_parameters_ = params.value_or(AudioParameters());
   DVLOG(1) << "Audio parameters: " << audio_parameters_.AsHumanReadableString();
   GetIOThreadTaskRunner({})->PostTask(
@@ -473,9 +475,9 @@ void SpeechRecognizerImpl::OnAudioParametersReceived(
 
 SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::PrepareRecognition(
     const FSMEventArgs&) {
-  DCHECK(state_ == STATE_IDLE);
-  DCHECK(recognition_engine_.get() != nullptr);
-  DCHECK(!IsCapturingAudio());
+  CHECK(state_ == STATE_IDLE, base::NotFatalUntil::M159);
+  CHECK(recognition_engine_.get() != nullptr, base::NotFatalUntil::M159);
+  CHECK(!IsCapturingAudio(), base::NotFatalUntil::M159);
   if (!use_audio_capturer_source_) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
@@ -494,9 +496,9 @@ SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::PrepareRecognition(
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
-  DCHECK(state_ == STATE_PREPARING);
-  DCHECK(recognition_engine_.get() != nullptr);
-  DCHECK(!IsCapturingAudio());
+  CHECK(state_ == STATE_PREPARING, base::NotFatalUntil::M159);
+  CHECK(recognition_engine_.get() != nullptr, base::NotFatalUntil::M159);
+  CHECK(!IsCapturingAudio(), base::NotFatalUntil::M159);
 
   DVLOG(1) << "SpeechRecognizerImpl starting audio capture.";
   num_samples_recorded_ = 0;
@@ -576,7 +578,7 @@ SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::StartRecognitionEngine(const FSMEventArgs& event_args) {
   // This is the first audio packet captured, so the recognition engine is
   // started and the delegate notified about the event.
-  DCHECK(recognition_engine_.get() != nullptr);
+  CHECK(recognition_engine_.get() != nullptr, base::NotFatalUntil::M159);
   recognition_engine_->StartRecognition();
   listener()->OnAudioStart(session_id());
 
@@ -589,7 +591,7 @@ SpeechRecognizerImpl::StartRecognitionEngine(const FSMEventArgs& event_args) {
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::WaitEnvironmentEstimationCompletion(const FSMEventArgs&) {
-  DCHECK(endpointer_.IsEstimatingEnvironment());
+  CHECK(endpointer_.IsEstimatingEnvironment(), base::NotFatalUntil::M159);
   if (GetElapsedTimeMs() >= kEndpointerEstimationTimeMs) {
     endpointer_.SetUserInputMode();
     return STATE_WAITING_FOR_SPEECH;
@@ -627,7 +629,8 @@ SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::UpdateRecognitionContext(
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::StopCaptureAndWaitForResult(const FSMEventArgs&) {
-  DCHECK(state_ >= STATE_ESTIMATING_ENVIRONMENT && state_ <= STATE_RECOGNIZING);
+  CHECK(state_ >= STATE_ESTIMATING_ENVIRONMENT && state_ <= STATE_RECOGNIZING,
+        base::NotFatalUntil::M159);
 
   DVLOG(1) << "Concluding recognition";
   CloseAudioCapturerSource();
@@ -642,8 +645,8 @@ SpeechRecognizerImpl::StopCaptureAndWaitForResult(const FSMEventArgs&) {
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::AbortSilently(const FSMEventArgs& event_args) {
-  DCHECK_NE(event_args.event, EVENT_AUDIO_ERROR);
-  DCHECK_NE(event_args.event, EVENT_ENGINE_ERROR);
+  CHECK_NE(event_args.event, EVENT_AUDIO_ERROR, base::NotFatalUntil::M159);
+  CHECK_NE(event_args.event, EVENT_ENGINE_ERROR, base::NotFatalUntil::M159);
   return Abort(media::mojom::SpeechRecognitionError(
       media::mojom::SpeechRecognitionErrorCode::kNone,
       media::mojom::SpeechAudioErrorDetails::kNone));
@@ -665,7 +668,7 @@ SpeechRecognizerImpl::AbortWithError(const FSMEventArgs& event_args) {
 
 SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::Abort(
     const media::mojom::SpeechRecognitionError& error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   if (IsCapturingAudio())
     CloseAudioCapturerSource();
@@ -679,7 +682,7 @@ SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::Abort(
 
   // The recognition engine is initialized only after STATE_STARTING.
   if (state_ > STATE_STARTING) {
-    DCHECK(recognition_engine_.get() != nullptr);
+    CHECK(recognition_engine_.get() != nullptr, base::NotFatalUntil::M159);
     recognition_engine_->EndRecognition();
   }
 
@@ -706,12 +709,12 @@ SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::ProcessIntermediateResult(
   // skip the endpointer and fast-forward to the RECOGNIZING state, with respect
   // of the events triggering order.
   if (state_ == STATE_ESTIMATING_ENVIRONMENT) {
-    DCHECK(endpointer_.IsEstimatingEnvironment());
+    CHECK(endpointer_.IsEstimatingEnvironment(), base::NotFatalUntil::M159);
     endpointer_.SetUserInputMode();
   } else if (state_ == STATE_WAITING_FOR_SPEECH) {
     listener()->OnSoundStart(session_id());
   } else {
-    DCHECK_EQ(STATE_RECOGNIZING, state_);
+    CHECK_EQ(STATE_RECOGNIZING, state_, base::NotFatalUntil::M159);
   }
 
   listener()->OnRecognitionResults(session_id(), event_args.engine_results);
@@ -728,7 +731,7 @@ SpeechRecognizerImpl::ProcessFinalResult(const FSMEventArgs& event_args) {
   for (; i != results.end(); ++i) {
     const media::mojom::WebSpeechRecognitionResultPtr& result = *i;
     if (result->is_provisional) {
-      DCHECK(provisional_results_);
+      CHECK(provisional_results_, base::NotFatalUntil::M159);
       provisional_results_pending = true;
     } else if (results_are_empty) {
       results_are_empty = result->hypotheses.empty();
@@ -774,7 +777,7 @@ SpeechRecognizerImpl::NotFeasible(const FSMEventArgs& event_args) {
 }
 
 void SpeechRecognizerImpl::CloseAudioCapturerSource() {
-  DCHECK(IsCapturingAudio());
+  CHECK(IsCapturingAudio(), base::NotFatalUntil::M159);
   DVLOG(1) << "SpeechRecognizerImpl closing audio capturer source.";
 
   if (use_audio_capturer_source_) {

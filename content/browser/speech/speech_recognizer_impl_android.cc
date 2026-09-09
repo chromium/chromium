@@ -41,7 +41,7 @@ SpeechRecognizerImplAndroid::~SpeechRecognizerImplAndroid() { }
 
 void SpeechRecognizerImplAndroid::StartRecognition(
     const std::string& device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   // TODO(xians): Open the correct device for speech on Android.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -65,7 +65,7 @@ void SpeechRecognizerImplAndroid::UpdateRecognitionContext(
                        this, recognition_context));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   listener()->OnRecognitionError(
       session_id(),
       media::mojom::SpeechRecognitionError(
@@ -77,7 +77,7 @@ void SpeechRecognizerImplAndroid::StartRecognitionOnUIThread(
     const std::string& language,
     bool continuous,
     bool interim_results) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   JNIEnv* env = AttachCurrentThread();
   j_recognition_.Reset(Java_SpeechRecognitionImpl_createSpeechRecognition(
       env, reinterpret_cast<intptr_t>(this)));
@@ -95,7 +95,7 @@ void SpeechRecognizerImplAndroid::AbortRecognition() {
                        this));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   JNIEnv* env = AttachCurrentThread();
   if (!j_recognition_.is_null())
     Java_SpeechRecognitionImpl_abortRecognition(env, j_recognition_);
@@ -109,19 +109,19 @@ void SpeechRecognizerImplAndroid::StopAudioCapture() {
                        this));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   JNIEnv* env = AttachCurrentThread();
   if (!j_recognition_.is_null())
     Java_SpeechRecognitionImpl_stopRecognition(env, j_recognition_);
 }
 
 bool SpeechRecognizerImplAndroid::IsActive() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   return state_ != STATE_IDLE;
 }
 
 bool SpeechRecognizerImplAndroid::IsCapturingAudio() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   return state_ == STATE_CAPTURING_AUDIO;
 }
 
@@ -132,7 +132,7 @@ void SpeechRecognizerImplAndroid::OnAudioStart(JNIEnv* env) {
                                   this, nullptr));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   state_ = STATE_CAPTURING_AUDIO;
   listener()->OnAudioStart(session_id());
 }
@@ -144,7 +144,7 @@ void SpeechRecognizerImplAndroid::OnSoundStart(JNIEnv* env) {
                                   this, nullptr));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   listener()->OnSoundStart(session_id());
 }
 
@@ -155,7 +155,7 @@ void SpeechRecognizerImplAndroid::OnSoundEnd(JNIEnv* env) {
                                   this, nullptr));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   listener()->OnSoundEnd(session_id());
 }
 
@@ -166,7 +166,7 @@ void SpeechRecognizerImplAndroid::OnAudioEnd(JNIEnv* env) {
                                   this, nullptr));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   if (state_ == STATE_CAPTURING_AUDIO)
     state_ = STATE_AWAITING_FINAL_RESULT;
   listener()->OnAudioEnd(session_id());
@@ -177,7 +177,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
     const JavaRef<jobjectArray>& strings,
     const JavaRef<jfloatArray>& floats,
     bool provisional) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::vector<std::u16string> options;
   AppendJavaStringArrayToStringVector(env, strings, &options);
   std::vector<float> scores(options.size(), 0.0);
@@ -202,7 +202,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
 
 void SpeechRecognizerImplAndroid::OnRecognitionResultsOnIOThread(
     std::vector<media::mojom::WebSpeechRecognitionResultPtr> results) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   listener()->OnRecognitionResults(session_id(), results);
 }
 
@@ -215,7 +215,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionError(JNIEnv* env,
                        nullptr, error));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   listener()->OnRecognitionError(
       session_id(),
       media::mojom::SpeechRecognitionError(
@@ -231,7 +231,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionEnd(JNIEnv* env) {
                        nullptr));
     return;
   }
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   state_ = STATE_IDLE;
   listener()->OnRecognitionEnd(session_id());
 }
