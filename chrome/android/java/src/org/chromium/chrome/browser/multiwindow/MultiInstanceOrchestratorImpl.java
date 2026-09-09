@@ -174,13 +174,17 @@ import java.util.Set;
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions,
             @NewWindowAppSource int source) {
-        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return false;
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            webContents.destroy();
+            return false;
+        }
 
         if (!MultiWindowUtils.isWithinInstanceLimit()) {
             var multiInstanceManager = getMultiInstanceManager(sourceActivity);
             if (multiInstanceManager != null) {
                 multiInstanceManager.showInstanceCreationLimitMessage();
             }
+            webContents.destroy();
             return false;
         }
 

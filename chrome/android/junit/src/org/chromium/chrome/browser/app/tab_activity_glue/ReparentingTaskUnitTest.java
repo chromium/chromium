@@ -34,11 +34,13 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -46,10 +48,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /** Unit test for {@link ReparentingTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,6 +77,7 @@ public class ReparentingTaskUnitTest {
     private static final String EXTRA_TEST_EXTRA = "ReparentingTaskUnitTest#EXTRA_TEST_EXTRA";
     private static final int EXTRA_TEST_VALUE = 37;
     private static final int TAB_ID = 56;
+    private static final int TAB_ID_2 = 57;
     private static final String TAB_URL_SPEC = "https://url1.com/";
     private static final GURL TAB_URL = new GURL(TAB_URL_SPEC);
 
@@ -85,6 +94,7 @@ public class ReparentingTaskUnitTest {
     @After
     public void tearDown() {
         AsyncTabParamsManagerSingleton.getInstance().remove(TAB_ID);
+        AsyncTabParamsManagerSingleton.getInstance().remove(TAB_ID_2);
         ReparentingTaskJni.setInstanceForTesting(null);
     }
 
@@ -265,6 +275,182 @@ public class ReparentingTaskUnitTest {
         inOrder.verify(mWebContents).setTopLevelNativeWindow(null);
         inOrder.verify(mTab).updateAttachment(null, null);
         inOrder.verify(mTab).updateAttachment(mWindowAndroid, null);
+    }
+
+    @Test
+    public void testReparentingTabsTaskBegin_finishesAsNoOpIfActivityDoesNotStart() {
+        final Tab tab2 = mock(Tab.class);
+        final WebContents webContents2 = mock(WebContents.class);
+        final WindowAndroid windowAndroid2 = mock(WindowAndroid.class);
+        final UserDataHost userDataHost2 = new UserDataHost();
+        final int tabId2 = 57;
+        when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        when(tab2.getWebContents()).thenReturn(webContents2);
+        when(tab2.getId()).thenReturn(tabId2);
+        when(tab2.getUrl()).thenReturn(TAB_URL);
+        when(tab2.getWindowAndroidChecked()).thenReturn(windowAndroid2);
+        when(mTab.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
+
+        final Intent intent = new Intent();
+        doThrow(new SecurityException()).when(mContext).startActivity(eq(intent), any());
+
+        final ReparentingTabsTask tabsTask = ReparentingTabsTask.from(List.of(mTab, tab2));
+        assertFalse(
+                "#begin(...) should return false if the Activity has not started",
+                tabsTask.begin(mContext, intent, null, null));
+
+        final AsyncTabParamsManager asyncTabParamsManager =
+                AsyncTabParamsManagerSingleton.getInstance();
+        assertFalse(
+                "#begin(...) should not keep TabReparentingParams in AsyncTabParamsManager for"
+                        + " tab1",
+                asyncTabParamsManager.hasParamsForTabId(TAB_ID));
+        assertFalse(
+                "#begin(...) should not keep TabReparentingParams in AsyncTabParamsManager for"
+                        + " tab2",
+                asyncTabParamsManager.hasParamsForTabId(tabId2));
+
+        final InOrder inOrder1 = inOrder(mTab, mWebContents);
+        inOrder1.verify(mWebContents).setTopLevelNativeWindow(null);
+        inOrder1.verify(mTab).updateAttachment(null, null);
+        inOrder1.verify(mTab).updateAttachment(mWindowAndroid, null);
+
+        final InOrder inOrder2 = inOrder(tab2, webContents2);
+        inOrder2.verify(webContents2).setTopLevelNativeWindow(null);
+        inOrder2.verify(tab2).updateAttachment(null, null);
+        inOrder2.verify(tab2).updateAttachment(windowAndroid2, null);
+    }
+
+    private static TabGroupMetadata createTabGroupMetadata(
+            int sourceWindowId, Token tabGroupId, int tabId1, int tabId2) {
+        ArrayList<Map.Entry<Integer, String>> tabIdsToUrls =
+                new ArrayList<>(
+                        List.of(
+                                Map.entry(tabId1, TAB_URL_SPEC),
+                                Map.entry(tabId2, "https://url2.com/")));
+        return new TabGroupMetadata(
+                /* selectedTabId= */ tabId1,
+                sourceWindowId,
+                tabGroupId,
+                tabIdsToUrls,
+                /* tabGroupColor= */ 0,
+                /* tabGroupTitle= */ "Group",
+                /* mhtmlTabTitle= */ null,
+                /* tabGroupCollapsed= */ false,
+                /* isGroupShared= */ false,
+                /* isIncognito= */ false);
+    }
+
+    @Test
+    public void testReparentingTabGroupTaskBegin_finishesAsNoOpIfActivityDoesNotStart() {
+        final Tab tab2 = mock(Tab.class);
+        final WebContents webContents2 = mock(WebContents.class);
+        final UserDataHost userDataHost2 = new UserDataHost();
+        when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        when(tab2.getWebContents()).thenReturn(webContents2);
+        when(tab2.getId()).thenReturn(TAB_ID_2);
+        when(tab2.getUrl()).thenReturn(TAB_URL);
+        when(tab2.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
+        when(mTab.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
+
+        final int sourceWindowId = 1;
+        final Token tabGroupId = new Token(123L, 456L);
+        final TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+        when(tabWindowManager.getGroupedTabsByWindow(sourceWindowId, tabGroupId, false))
+                .thenReturn(List.of(mTab, tab2));
+
+        final TabGroupMetadata metadata =
+                createTabGroupMetadata(sourceWindowId, tabGroupId, TAB_ID, TAB_ID_2);
+        final ReparentingTabGroupTask tabGroupTask = ReparentingTabGroupTask.from(metadata);
+
+        final Intent intent = new Intent();
+        tabGroupTask.setupIntent(intent, null);
+
+        final AsyncTabParamsManager asyncTabParamsManager =
+                AsyncTabParamsManagerSingleton.getInstance();
+        assertTrue(asyncTabParamsManager.hasParamsForTabId(TAB_ID));
+        assertTrue(asyncTabParamsManager.hasParamsForTabId(TAB_ID_2));
+
+        doThrow(new SecurityException()).when(mContext).startActivity(eq(intent), any());
+
+        assertFalse(
+                "#begin(...) should return false if the Activity has not started",
+                tabGroupTask.begin(mContext, intent));
+
+        assertFalse(
+                "#begin(...) should not keep TabReparentingParams in AsyncTabParamsManager for"
+                        + " tab1",
+                asyncTabParamsManager.hasParamsForTabId(TAB_ID));
+        assertFalse(
+                "#begin(...) should not keep TabReparentingParams in AsyncTabParamsManager for"
+                        + " tab2",
+                asyncTabParamsManager.hasParamsForTabId(TAB_ID_2));
+
+        final InOrder inOrder1 = inOrder(mTab, mWebContents);
+        inOrder1.verify(mWebContents).setTopLevelNativeWindow(null);
+        inOrder1.verify(mTab).updateAttachment(null, null);
+        inOrder1.verify(mTab).updateAttachment(mWindowAndroid, null);
+
+        final InOrder inOrder2 = inOrder(tab2, webContents2);
+        inOrder2.verify(webContents2).setTopLevelNativeWindow(null);
+        inOrder2.verify(tab2).updateAttachment(null, null);
+        inOrder2.verify(tab2).updateAttachment(mWindowAndroid, null);
+    }
+
+    @Test
+    public void testReparentingTabGroupTaskBegin_nullContext_finishesAsNoOp() {
+        final Tab tab2 = mock(Tab.class);
+        final WebContents webContents2 = mock(WebContents.class);
+        final UserDataHost userDataHost2 = new UserDataHost();
+        when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        when(tab2.getWebContents()).thenReturn(webContents2);
+        when(tab2.getId()).thenReturn(TAB_ID_2);
+        when(tab2.getUrl()).thenReturn(TAB_URL);
+        when(tab2.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
+        when(mTab.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
+
+        final int sourceWindowId = 1;
+        final Token tabGroupId = new Token(123L, 456L);
+        final TabWindowManager tabWindowManager = mock(TabWindowManager.class);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+        when(tabWindowManager.getGroupedTabsByWindow(sourceWindowId, tabGroupId, false))
+                .thenReturn(List.of(mTab, tab2));
+
+        final TabGroupMetadata metadata =
+                createTabGroupMetadata(sourceWindowId, tabGroupId, TAB_ID, TAB_ID_2);
+        final ReparentingTabGroupTask tabGroupTask = ReparentingTabGroupTask.from(metadata);
+
+        final Intent intent = new Intent();
+        tabGroupTask.setupIntent(intent, null);
+
+        final AsyncTabParamsManager asyncTabParamsManager =
+                AsyncTabParamsManagerSingleton.getInstance();
+        assertTrue(asyncTabParamsManager.hasParamsForTabId(TAB_ID));
+        assertTrue(asyncTabParamsManager.hasParamsForTabId(TAB_ID_2));
+
+        assertFalse(
+                "#begin(...) should return false when context is null",
+                tabGroupTask.begin(null, intent));
+
+        assertFalse(
+                "#begin(...) should not keep TabReparentingParams in AsyncTabParamsManager for"
+                        + " tab1",
+                asyncTabParamsManager.hasParamsForTabId(TAB_ID));
+        assertFalse(
+                "#begin(...) should not keep TabReparentingParams in AsyncTabParamsManager for"
+                        + " tab2",
+                asyncTabParamsManager.hasParamsForTabId(TAB_ID_2));
+
+        final InOrder inOrder1 = inOrder(mTab, mWebContents);
+        inOrder1.verify(mWebContents).setTopLevelNativeWindow(null);
+        inOrder1.verify(mTab).updateAttachment(null, null);
+        inOrder1.verify(mTab).updateAttachment(mWindowAndroid, null);
+
+        final InOrder inOrder2 = inOrder(tab2, webContents2);
+        inOrder2.verify(webContents2).setTopLevelNativeWindow(null);
+        inOrder2.verify(tab2).updateAttachment(null, null);
+        inOrder2.verify(tab2).updateAttachment(mWindowAndroid, null);
     }
 
     @Test

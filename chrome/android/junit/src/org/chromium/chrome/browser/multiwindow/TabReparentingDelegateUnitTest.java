@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -117,7 +116,7 @@ public class TabReparentingDelegateUnitTest {
         ReparentingTabsTask.setReparentingTabsTaskForTesting(mReparentingTabsTask);
         when(mReparentingTabsTask.begin(any(), any(), any(), any())).thenReturn(true);
         ReparentingTabGroupTask.setReparentingTabGroupTaskForTesting(mReparentingTabGroupTask);
-        doNothing().when(mReparentingTabGroupTask).begin(any(), any());
+        when(mReparentingTabGroupTask.begin(any(), any())).thenReturn(true);
 
         MultiWindowUtils.setActivityByWindowIdForTesting(SOURCE_WINDOW_ID, mCurrentActivity);
         when(mTab1.getContext()).thenReturn(mCurrentActivity);
@@ -248,6 +247,7 @@ public class TabReparentingDelegateUnitTest {
         // Verify.
         assertFalse(result);
         verify(mReparentingTabsTask).begin(eq(mCurrentActivity), any(), eq(null), eq(null));
+        verify(mTab1).destroy();
     }
 
     @Test

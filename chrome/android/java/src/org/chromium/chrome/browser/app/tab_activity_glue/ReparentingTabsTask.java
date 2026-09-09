@@ -22,7 +22,9 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Takes care of reparenting a list of Tab objects from one Activity to another. */
@@ -69,16 +71,23 @@ public class ReparentingTabsTask {
             @Nullable Bundle startActivityOptions,
             @Nullable Runnable finalizeCallback) {
         if (context == null) return false;
+        final List<WindowAndroid> originalWindows = new ArrayList<>();
+        for (Tab tab : mTabs) {
+            originalWindows.add(tab.getWindowAndroidChecked());
+        }
         setupIntent(intent, finalizeCallback);
         try {
             context.startActivity(intent, startActivityOptions);
             return true;
         } catch (RuntimeException e) {
             Log.e(TAG, "startActivity() call failed and threw an exception.", e);
+            for (int i = 0; i < mTabs.size(); i++) {
+                ReparentingTask.from(mTabs.get(i)).finishAsNoOp(originalWindows.get(i));
+            }
             Throwable throwable =
                     new Throwable(
                             "This is not a crash. Android OS rejected a request to startActivity()"
-                                    + "in ReparentingTabsTask#begin().",
+                                    + " in ReparentingTabsTask#begin().",
                             e);
             ChromePureJavaExceptionReporter.reportJavaException(throwable);
             return false;

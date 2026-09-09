@@ -215,7 +215,7 @@ public class ReparentingTask implements UserData {
         ReparentingTaskJni.get().attachTab(mTab.getWebContents());
     }
 
-    private void finishAsNoOp(WindowAndroid originalWindow) {
+    void finishAsNoOp(WindowAndroid originalWindow) {
         AsyncTabParamsManagerSingleton.getInstance().remove(mTab.getId());
         finish(
                 new Delegate() {

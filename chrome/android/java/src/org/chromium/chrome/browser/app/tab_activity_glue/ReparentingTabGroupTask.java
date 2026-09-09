@@ -10,23 +10,30 @@ import android.provider.Browser;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
 /** Handles the setup of the Intent to move an entire tab group to a different activity. */
 @NullMarked
 public class ReparentingTabGroupTask {
+    private static final String TAG = "ReparentTabGroupTask";
+
     private final TabGroupMetadata mTabGroupMetadata;
+    private @Nullable List<Tab> mTabs;
+    private @Nullable WindowAndroid mOriginalWindow;
 
     private static @Nullable ReparentingTabGroupTask sReparentingTaskForTesting;
 
@@ -54,9 +61,43 @@ public class ReparentingTabGroupTask {
      *
      * @param context The {@link Context} from which to call {@link Context#startActivity}.
      * @param intent The {@link Intent} with which to start the new Activity.
+     * @return {@code true} if the activity was successfully started; {@code false} otherwise.
      */
-    public void begin(Context context, Intent intent) {
-        context.startActivity(intent, /* bundle= */ null);
+    public boolean begin(@Nullable Context context, Intent intent) {
+        if (context == null) {
+            Log.w(TAG, "Context was null in begin(); aborting reparenting.");
+            finishAsNoOp();
+            return false;
+        }
+        try {
+            context.startActivity(intent, /* bundle= */ null);
+            mTabs = null;
+            mOriginalWindow = null;
+            return true;
+        } catch (RuntimeException e) {
+            Log.e(TAG, "startActivity() call failed and threw an exception.", e);
+            finishAsNoOp();
+            Throwable throwable =
+                    new Throwable(
+                            "This is not a crash. Android OS rejected a request to startActivity()"
+                                    + " in ReparentingTabGroupTask#begin().",
+                            e);
+            ChromePureJavaExceptionReporter.reportJavaException(throwable);
+            return false;
+        }
+    }
+
+    private void finishAsNoOp() {
+        if (mTabs == null) return;
+        for (Tab tab : mTabs) {
+            if (mOriginalWindow != null && !tab.isDestroyed()) {
+                ReparentingTask.from(tab).finishAsNoOp(mOriginalWindow);
+            } else {
+                AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
+            }
+        }
+        mTabs = null;
+        mOriginalWindow = null;
     }
 
     /**
@@ -86,6 +127,8 @@ public class ReparentingTabGroupTask {
                                 mTabGroupMetadata.tabGroupId,
                                 mTabGroupMetadata.isIncognito);
         if (groupedTabs == null || groupedTabs.isEmpty()) return;
+        mTabs = groupedTabs;
+        mOriginalWindow = groupedTabs.get(0).getWindowAndroidChecked();
         for (Tab tab : groupedTabs) {
             AsyncTabParamsManagerSingleton.getInstance()
                     .add(tab.getId(), new TabReparentingParams(tab, finalizeCallback));

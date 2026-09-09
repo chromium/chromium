@@ -48,8 +48,9 @@ public interface PopupCreator {
      * @param additionalIntentExtras Additional extras to add to the intent.
      * @param startActivityOptions Options to pass to startActivity.
      * @return true if the tab was successfully reparented to a new movable Task, false otherwise.
-     *     <p>Note: Do not use the provided WebContents after calling this function. This function
-     *     will take ownership of the provided WebContents, potentially destroying it.
+     *     <p>Note: The caller transfers ownership of {@code webContents} to this method. If popup
+     *     creation fails, {@code webContents} is destroyed. Do not use {@code webContents} after
+     *     calling this method.
      */
     boolean createNewPopupFromWebContents(
             Context context,

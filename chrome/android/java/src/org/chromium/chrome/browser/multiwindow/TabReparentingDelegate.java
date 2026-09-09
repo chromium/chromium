@@ -88,8 +88,17 @@ import java.util.List;
             intent.putExtras(additionalIntentExtras);
         }
 
-        return ReparentingTabsTask.from(List.of(tab))
-                .begin(sourceActivity, intent, startActivityOptions, /* finalizeCallback= */ null);
+        boolean success =
+                ReparentingTabsTask.from(List.of(tab))
+                        .begin(
+                                sourceActivity,
+                                intent,
+                                startActivityOptions,
+                                /* finalizeCallback= */ null);
+        if (!success) {
+            tab.destroy();
+        }
+        return success;
     }
 
     /* package */ void reparentTabsToExistingWindow(

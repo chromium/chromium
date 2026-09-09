@@ -251,7 +251,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
-    public void testCreateNewWindowFromWebContents_instanceLimit_showsMessage() {
+    public void
+            testCreateNewWindowFromWebContents_instanceLimit_showsMessageAndDestroysWebContents() {
         // Setup.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         MultiWindowUtils.setMaxInstancesForTesting(2);
@@ -271,6 +272,29 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         assertFalse(result);
         verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
+        verify(webContents).destroy();
+    }
+
+    @Test
+    public void testCreateNewWindowFromWebContents_api31Disabled_destroysWebContents() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        Profile profile = mock(Profile.class);
+        WebContents webContents = mock(WebContents.class);
+
+        // Act.
+        boolean result =
+                mMultiInstanceOrchestrator.createNewWindowFromWebContents(
+                        mTabbedActivity1,
+                        profile,
+                        webContents,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        // Verify.
+        assertFalse(result);
+        verify(webContents).destroy();
     }
 
     @Test

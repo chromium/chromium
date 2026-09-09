@@ -69,8 +69,9 @@ public interface MultiInstanceOrchestrator {
      * @param startActivityOptions An optional bundle that will be used to start the activity.
      * @param source The new window creation source used for metrics.
      * @return true if the window was successfully created, false otherwise.
-     *     <p>Note: Do not use the provided WebContents after calling this function. This function
-     *     will take ownership of the provided WebContents, potentially destroying it.
+     *     <p>Note: The caller transfers ownership of {@code webContents} to this method. If window
+     *     creation fails, {@code webContents} is destroyed. Do not use {@code webContents} after
+     *     calling this method.
      */
     boolean createNewWindowFromWebContents(
             Activity sourceActivity,
