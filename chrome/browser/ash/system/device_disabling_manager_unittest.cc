@@ -290,7 +290,6 @@ class DeviceDisablingManagerTest : public DeviceDisablingManagerTestBase,
   // DeviceDisablingManager::Observer:
   MOCK_METHOD1(OnDisabledMessageChanged, void(const std::string&));
   MOCK_METHOD1(OnLocationTrackingEnabledChanged, void(bool));
-  MOCK_METHOD0(OnRestrictionScheduleMessageChanged, void());
 
   void MakeCrosSettingsTrusted();
 

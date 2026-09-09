@@ -20,7 +20,6 @@ class PrefService;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
-class DeviceRestrictionScheduleController;
 }
 
 namespace user_manager {
@@ -70,8 +69,6 @@ class DeviceDisablingManager
 
     virtual void OnLocationTrackingEnabledChanged(
         bool location_tracking_enabled) = 0;
-
-    virtual void OnRestrictionScheduleMessageChanged() = 0;
   };
 
   class Delegate {
@@ -154,7 +151,6 @@ class DeviceDisablingManager
 
   // DeviceRestrictionScheduleController::Observer:
   void OnRestrictionScheduleStateChanged(bool enabled) override;
-  void OnRestrictionScheduleMessageChanged() override;
 
   void Update();
 

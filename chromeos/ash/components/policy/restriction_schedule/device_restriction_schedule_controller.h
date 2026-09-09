@@ -43,12 +43,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
   class Observer : public base::CheckedObserver {
    public:
+    ~Observer() override = default;
+
     // Called when the restriction schedule state changes. `enabled` is set to
     // true if restriction schedule is enabled, and false otherwise.
-    virtual void OnRestrictionScheduleStateChanged(bool enabled) = 0;
+    virtual void OnRestrictionScheduleStateChanged(bool enabled) {}
 
     // Called when the restriction schedule message changes.
-    virtual void OnRestrictionScheduleMessageChanged() = 0;
+    virtual void OnRestrictionScheduleMessageChanged() {}
   };
 
   static std::unique_ptr<DeviceRestrictionScheduleController> Create(

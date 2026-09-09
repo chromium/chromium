@@ -56,7 +56,9 @@ void DeviceDisabledScreen::ShowImpl() {
   params.restriction_schedule_end_time =
       device_restriction_schedule_controller_->RestrictionScheduleEndTime();
   view_->Show(params);
-  observation_.Observe(DeviceDisablingManager());
+  device_disabling_manager_observation_.Observe(DeviceDisablingManager());
+  restriction_schedule_observation_.Observe(
+      &device_restriction_schedule_controller_.get());
 }
 
 void DeviceDisabledScreen::HideImpl() {
