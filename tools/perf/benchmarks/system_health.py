@@ -163,9 +163,11 @@ class MobileCommonSystemHealth(_CommonSystemHealthBenchmark):
     super(MobileCommonSystemHealth, self).SetExtraBrowserOptions(options)
     # Force online state for the offline indicator so it doesn't show and affect
     # the benchmarks on bots, which are offline by default.
-    options.AppendExtraBrowserArgs(
-      '--force-online-connection-state-for-indicator'
-    )
+    extra_args = [
+      '--force-online-connection-state-for-indicator',
+      '--disable-ntp-theme-promo-bottom-sheet',
+    ]
+    options.AppendExtraBrowserArgs(extra_args)
 
 
 class _MemorySystemHealthBenchmark(perf_benchmark.PerfBenchmark):
@@ -248,9 +250,11 @@ class MobileMemorySystemHealth(_MemorySystemHealthBenchmark):
     options.flush_os_page_caches_on_start = True
     # Force online state for the offline indicator so it doesn't show and affect
     # the benchmarks on bots, which are offline by default.
-    options.AppendExtraBrowserArgs(
-      '--force-online-connection-state-for-indicator'
-    )
+    extra_args = [
+      '--force-online-connection-state-for-indicator',
+      '--disable-ntp-theme-promo-bottom-sheet',
+    ]
+    options.AppendExtraBrowserArgs(extra_args)
 
   @classmethod
   def Name(cls):
