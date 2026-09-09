@@ -238,6 +238,7 @@ void DirectoryServiceClient::RegisterHost(const std::string& host_id,
   register_host_request->set_host_name(host_name);
   register_host_request->set_public_key(public_key);
   register_host_request->set_host_client_id(host_client_id);
+  register_host_request->set_host_version(STRINGIZE(VERSION));
 
   // RegisterHost is non-idempotent (potentially multiple host records will be
   // created), so retries may not be safe.

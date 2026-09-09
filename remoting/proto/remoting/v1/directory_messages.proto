@@ -113,6 +113,9 @@ message RegisterHostRequest {
 
   // The OAuth client ID for the host.
   optional string host_client_id = 4;
+
+  // Version of the host software installed.
+  optional string host_version = 5;
 }
 
 // Response to a RegisterHostRequest.
