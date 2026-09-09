@@ -54,11 +54,9 @@ const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByManufacturer{
         &kDefaultPassthroughCommandDecoder, "BlockListByManufacturer", ""};
 
-// b/455412928 flickering issue with WebView on the following XR devices
 const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByModel{
-        &kDefaultPassthroughCommandDecoder, "BlockListByModel",
-        "SM-I610|SM-I610H|Robin XR|Android XR Puck|Aura"};
+        &kDefaultPassthroughCommandDecoder, "BlockListByModel", ""};
 
 const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByBoard{
