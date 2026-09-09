@@ -19,16 +19,16 @@ static bool
 JNI_EnterpriseSignalsDisclaimerBridge_HasAccountAcknowledgedSignalsDisclaimer(
     JNIEnv* env,
     const GaiaId& gaia_id) {
-  return enterprise_signals_disclaimer::HasAccountAcknowledgedSignalsDisclaimer(
-      g_browser_process->local_state(), gaia_id);
+  return enterprise_signals_disclaimer::HasAccountAckedSignalsDisclaimer(
+      *g_browser_process->local_state(), gaia_id);
 }
 
 static void
 JNI_EnterpriseSignalsDisclaimerBridge_SetAccountAcknowledgedSignalsDisclaimer(
     JNIEnv* env,
     const GaiaId& gaia_id) {
-  enterprise_signals_disclaimer::SetAccountAcknowledgedSignalsDisclaimer(
-      g_browser_process->local_state(), gaia_id);
+  enterprise_signals_disclaimer::SetAccountAckedSignalsDisclaimer(
+      *g_browser_process->local_state(), gaia_id);
 }
 
 DEFINE_JNI(EnterpriseSignalsDisclaimerBridge)

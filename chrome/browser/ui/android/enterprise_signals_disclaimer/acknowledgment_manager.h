@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_ENTERPRISE_SIGNALS_DISCLAIMER_ACKNOWLEDGMENT_MANAGER_H_
 #define CHROME_BROWSER_UI_ANDROID_ENTERPRISE_SIGNALS_DISCLAIMER_ACKNOWLEDGMENT_MANAGER_H_
 
+#include "base/containers/span.h"
+
 class PrefRegistrySimple;
 class PrefService;
 class GaiaId;
@@ -19,22 +21,27 @@ namespace enterprise_signals_disclaimer {
 // have acknowledged the enterprise signals disclaimer.
 extern const char kAcknowledgmentSetPrefPath[];
 
-// TODO(b/527872237): On startup, sync the ack set with accounts on the
-// device.
-
 // Marks the enterprise signals disclaimer as acknowledged for the account
 // represented by `gaia_id`.
 //
-// `local_state` must not be null. `gaia_id` must not be empty.
-void SetAccountAcknowledgedSignalsDisclaimer(PrefService* local_state,
-                                             const GaiaId& gaia_id);
+// `gaia_id` must not be empty.
+void SetAccountAckedSignalsDisclaimer(PrefService& local_state,
+                                      const GaiaId& gaia_id);
 
 // Returns true if the enterprise signals disclaimer has been already
 // acknowledged by the account represented by `gaia_id`.
 //
-// `local_state` must not be null. `gaia_id` must not be empty.
-bool HasAccountAcknowledgedSignalsDisclaimer(const PrefService* local_state,
-                                             const GaiaId& gaia_id);
+// `gaia_id` must not be empty.
+bool HasAccountAckedSignalsDisclaimer(const PrefService& local_state,
+                                      const GaiaId& gaia_id);
+
+// Syncs the acknowledgment set with the given list of accounts.
+// If the ack set contains any accounts that are not in `accounts_on_device`,
+// they will be removed.
+//
+// `accounts_on_device` must not contain empty GaiaIds.
+void RemoveUnknownAccounts(PrefService& local_state,
+                           const base::span<const GaiaId> accounts_on_device);
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
