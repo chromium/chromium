@@ -36,6 +36,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.MANDATORY_REAUTH_OPT_IN,
     UserCriticalFeature.AUTHENTICATOR_INCOGNITO_CONFIRMATION,
     UserCriticalFeature.PAYMENT_HANDLER,
+    UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -49,4 +50,5 @@ public @interface UserCriticalFeature {
     int MANDATORY_REAUTH_OPT_IN = 7;
     int AUTHENTICATOR_INCOGNITO_CONFIRMATION = 8;
     int PAYMENT_HANDLER = 9;
+    int SECURE_PAYMENT_CONFIRMATION = 10;
 }

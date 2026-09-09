@@ -14,10 +14,17 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 /** Implements the bottom sheet content for the secure payment confirmation bottom sheet. */
 @NullMarked
 /*package*/ public class SecurePaymentConfirmationBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION)
+                    .build();
+
     private final View mContentView;
     private final ScrollView mScrollView;
 
@@ -67,6 +74,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public boolean swipeToDismissEnabled() {
         return true;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
