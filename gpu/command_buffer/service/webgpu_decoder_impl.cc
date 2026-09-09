@@ -1622,6 +1622,14 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     bool force_fallback,
     wgpu::FeatureLevel feature_level,
     bool webgpu_on_vk_gl_interop) const {
+  // The fallback adapter is SwiftShader, which is only allowed with
+  // --enable-unsafe-webgpu. Don't make Dawn load it otherwise.
+  const bool allow_fallback_adapter =
+      safety_level_ == webgpu::SafetyLevel::kUnsafe;
+  if (force_fallback && !allow_fallback_adapter) {
+    return nullptr;
+  }
+
   // Update power_preference based on command-line flag
   // use_webgpu_power_preference_.
   switch (use_webgpu_power_preference_) {
@@ -1839,6 +1847,10 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
 
       return wgpu::Adapter(native_adapter.Get());
     }
+  }
+
+  if (!allow_fallback_adapter) {
+    return nullptr;
   }
 
   // If we still don't have an adapter, now try to find the fallback adapter.
