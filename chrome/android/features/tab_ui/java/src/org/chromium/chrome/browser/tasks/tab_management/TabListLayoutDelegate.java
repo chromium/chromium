@@ -202,7 +202,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
 
         // The URL of the tab and the navigation handle can match without it being a
         // same document navigation if the tab had no renderer and needed to start a
@@ -225,7 +225,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onTitleUpdated(Tab updatedTab) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         // TODO(crbug.com/40136874) The null check for tab here should be redundant once
@@ -241,21 +241,21 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
         if (!toDifferentDocument) return;
         updateLoadingState(tab, true);
     }
 
     @Override
     public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
         if (!toDifferentDocument) return;
         updateLoadingState(tab, false);
     }
 
     @Override
     public void onCrash(Tab tab) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
         updateLoadingState(tab, false);
     }
 
@@ -268,7 +268,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (model == null) return;
@@ -283,7 +283,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onUrlUpdated(Tab updatedTab) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (!TabUtils.isValid(updatedTab) || model == null) return;
@@ -302,7 +302,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
@@ -314,7 +314,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
-        assert mMediator.isShowingTabs();
+        if (!mMediator.isShowingTabs()) return;
 
         int index = mModelList.indexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;

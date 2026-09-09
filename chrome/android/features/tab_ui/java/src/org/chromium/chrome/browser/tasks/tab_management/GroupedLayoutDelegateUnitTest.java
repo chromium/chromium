@@ -482,6 +482,24 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testTabObserverCallbacks_WhenNotShowingTabs_NoOp() {
+        when(mMediator.isShowingTabs()).thenReturn(false);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+
+        mDelegate.onUrlUpdated(mTab1);
+        verify(mMediator, never()).getDomainForTab(any(), any());
+
+        mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
+        verify(mMediator, never()).updateDescriptionString(any());
+    }
+
+    @Test
     public void testOnUiTabStateChanged_InTabGroup() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mMediator.getIndexForTabIdWithRelatedTabs(TAB1_ID)).thenReturn(0);
