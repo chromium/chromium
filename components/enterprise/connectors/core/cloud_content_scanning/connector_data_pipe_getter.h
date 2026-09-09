@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
@@ -22,13 +23,10 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
-namespace network {
-class ResourceRequestBody;
-}  // namespace network
-
 namespace enterprise_connectors {
 
 class ChunkedFileDataPipeProducer;
+class NetworkRequestDataReader;
 
 // This class implements mojom::DataPipeGetter for:
 //
@@ -92,8 +90,8 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
 
   // Each constructor takes either a MemoryMappedFile representing an
   // uploaded/downloaded file, a ReadOnlySharedMemoryMapping representing a
-  // printed page, or a network::ResourceRequestBody representing a network
-  // request. In any case, the memory handle is assumed to be valid.
+  // printed page, or a NetworkRequestDataReader representing a network request.
+  // In any case, the memory handle is assumed to be valid.
   ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           std::unique_ptr<InternalMemoryMappedFile> file,
@@ -104,7 +102,7 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   ConnectorDataPipeGetter(
       const std::string& boundary,
       const std::string& metadata,
-      scoped_refptr<network::ResourceRequestBody> request_body);
+      std::unique_ptr<NetworkRequestDataReader> network_request_data_reader);
 #if BUILDFLAG(IS_CHROMEOS)
   explicit ConnectorDataPipeGetter(
       std::unique_ptr<ChunkedFileDataPipeProducer> chunked_file_producer);
@@ -168,9 +166,9 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   static std::unique_ptr<ConnectorDataPipeGetter> CreateResumablePipeGetter(
       base::ReadOnlySharedMemoryRegion page);
 
-  // Returns nullptr if `request_body` is null or invalid.
+  // Returns nullptr if `network_request_data_reader` is null.
   static std::unique_ptr<ConnectorDataPipeGetter> CreateResumablePipeGetter(
-      scoped_refptr<network::ResourceRequestBody> request_body);
+      std::unique_ptr<NetworkRequestDataReader> network_request_data_reader);
 
   // Resets `pipe_`, `watcher_`, and `write_position_` so future calls to Read
   // can work correctly.
@@ -197,7 +195,7 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
       const std::string& metadata,
       std::unique_ptr<InternalMemoryMappedFile> file,
       base::ReadOnlySharedMemoryMapping page,
-      scoped_refptr<network::ResourceRequestBody> request_body);
+      std::unique_ptr<NetworkRequestDataReader> network_request_data_reader);
 
   // Callback used by `watcher_`.
   void MojoReadyCallback(MojoResult result,
@@ -244,9 +242,9 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   // Printed page data. Only populated for printed page data pipe getters.
   base::ReadOnlySharedMemoryMapping page_;
 
-  // Body of a network request to be be scanned. Only populated for network
+  // Data reader of a network request to be scanned. Only populated for network
   // request data pipe getters.
-  scoped_refptr<network::ResourceRequestBody> request_body_;
+  std::unique_ptr<NetworkRequestDataReader> network_request_data_reader_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Mojo writer helper when in chunked file mode. Only populated for chunked
