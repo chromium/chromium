@@ -1089,7 +1089,8 @@ bool IsFullscreenNextIAEnabled() {
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-  if (IsFullscreenRefactoringEnabled()) {
+  if (IsFullscreenRefactoringEnabled() &&
+      CGRectIsEmpty(self.contentArea.bounds)) {
     [self.view.superview layoutIfNeeded];
   }
   [super viewWillAppear:animated];
@@ -1507,7 +1508,6 @@ bool IsFullscreenNextIAEnabled() {
 - (void)addConstraintsToToolbar {
   [self addConstraintsToPrimaryToolbar];
   [self addConstraintsToSecondaryToolbar];
-  [[self view] layoutIfNeeded];
 }
 
 // Sets the correct frame and hierarchy for subviews and helper views.  Only

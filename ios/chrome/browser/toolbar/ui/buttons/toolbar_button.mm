@@ -66,7 +66,7 @@ UIColor* NormalTintColor() {
           ToolbarElementBackgroundColor(incognito);
       _backgroundView.userInteractionEnabled = NO;
       _backgroundView.clipsToBounds = YES;
-      [self insertSubview:_backgroundView belowSubview:self.imageView];
+      [self insertSubview:_backgroundView atIndex:0];
       AddSameConstraints(self, _backgroundView);
 
       ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
@@ -153,9 +153,9 @@ UIColor* NormalTintColor() {
   }
   [super setEnabled:enabled];
   if (enabled) {
-    self.imageView.tintColor = NormalTintColor();
+    self.tintColor = NormalTintColor();
   } else {
-    self.imageView.tintColor =
+    self.tintColor =
         [NormalTintColor() colorWithAlphaComponent:kDisabledOpacity];
   }
   [self updateAppearance];
@@ -245,7 +245,7 @@ UIColor* NormalTintColor() {
   } else {
     _gradientView.hidden = YES;
     RemoveIPHImageStyleFromImageView(self.imageView);
-    self.imageView.tintColor = NormalTintColor();
+    self.tintColor = NormalTintColor();
   }
 }
 

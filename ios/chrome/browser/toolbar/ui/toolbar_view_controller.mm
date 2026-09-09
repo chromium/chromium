@@ -2101,7 +2101,6 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   if (!_progressBar) {
     return;
   }
-  [self.view layoutIfNeeded];
 
   // Cancel any pending task to hide the progress bar.
   _hideProgressBarClosure.Cancel();

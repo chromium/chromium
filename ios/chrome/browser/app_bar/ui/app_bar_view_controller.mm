@@ -272,9 +272,6 @@ UIColor* AssistantHighlightBackgroundColor() {
                    animations:^{
                      [weakSelf updateHeightConstraintForCurrentOrientation];
                    }];
-
-  [self.view setNeedsLayout];
-  [self.view layoutIfNeeded];
 }
 
 - (void)layoutState:(SceneLayoutState*)layoutState
@@ -304,9 +301,6 @@ UIColor* AssistantHighlightBackgroundColor() {
                    animations:^{
                      [weakSelf updateHeightConstraintForCurrentOrientation];
                    }];
-
-  [self.view setNeedsLayout];
-  [self.view layoutIfNeeded];
 }
 
 #pragma mark - Accessors & Mutators
