@@ -18,13 +18,14 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/sync/sync_service_provider.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -530,11 +531,12 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
     return;
   }
 
-  Profile* const profile = Profile::FromBrowserContext(context_);
-  DCHECK(profile);
-
+  // ARC only runs for regular user sessions, so `context_` is always an
+  // annotated user context here; the null branch below still covers a
+  // context without one.
+  const AccountId* const account_id = ash::AnnotatedAccountId::Get(context_);
   const syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
+      account_id ? ash::SyncServiceProvider::Get().Find(*account_id) : nullptr;
   if (!sync_service) {
     // Possible if sync is disabled by command line flag.
     // TODO(crbug.com/40227318): This should probably handled by

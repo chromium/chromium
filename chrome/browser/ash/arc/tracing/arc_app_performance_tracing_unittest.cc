@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
@@ -24,7 +25,10 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/sync/fake_sync_service_provider.h"
 #include "chromeos/ash/experiences/arc/test/arc_task_window_builder.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -137,6 +141,16 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         kFocusAppPackage, kFocusAppActivity, kFocusCategory);
 
     UmaPerfReporting::SetTracingPeriodForTesting(kTestPeriod);
+
+    // ArcAppPerformanceTracing reads the SyncService through
+    // ash::SyncServiceProvider rather than the Profile-keyed factory.
+    // AshTestHelper already owns the process-wide FakeSyncServiceProvider and
+    // BrowserWithTestWindowTest already annotates the profile with an
+    // AccountId, so just map that account to the TestSyncService that
+    // GetTestingFactories() installed.
+    sync_account_id_ = CHECK_DEREF(ash::AnnotatedAccountId::Get(profile()));
+    ash_test_helper()->sync_service_provider()->SetSyncServiceForAccount(
+        sync_account_id_, SyncServiceFactory::GetForProfile(profile()));
   }
 
   void TearDown() override {
@@ -144,6 +158,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
     tracing_helper_.TearDown();
     arc_app_test_.PreProfileTearDown();
+
+    // Drop the registration before the profile that owns the TestSyncService
+    // is destroyed, so the provider never holds a dangling pointer.
+    ash_test_helper()->sync_service_provider()->SetSyncServiceForAccount(
+        sync_account_id_, nullptr);
 
     BrowserWithTestWindowTest::TearDown();
 
@@ -233,6 +252,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
+  AccountId sync_account_id_;
   ArcAppTest arc_app_test_{ArcAppTest::UserManagerMode::kDoNothing};
 };
 
