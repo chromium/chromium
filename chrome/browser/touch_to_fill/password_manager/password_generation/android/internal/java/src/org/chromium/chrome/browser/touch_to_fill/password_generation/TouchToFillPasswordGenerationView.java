@@ -164,4 +164,9 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
     }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
+    }
 }
