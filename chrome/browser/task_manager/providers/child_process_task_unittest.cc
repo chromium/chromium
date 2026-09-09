@@ -66,8 +66,7 @@ class ChildProcessTaskTest
 
   bool AreProviderContainersEmpty(
       const ChildProcessTaskProvider& provider) const {
-    return provider.tasks_by_processid_.empty() &&
-           provider.tasks_by_child_id_.empty();
+    return provider.tasks_by_child_id_.empty();
   }
 
  protected:
@@ -173,6 +172,34 @@ TEST_F(ChildProcessTaskTest, ProcessTypeToTaskType) {
 
   provider.ClearObserver();
   EXPECT_TRUE(AreProviderContainersEmpty(provider));
+}
+
+// Tests that task deletion succeeds on process disconnect even if the process
+// handle is invalid (e.g. after the process terminates and its handle is
+// closed).
+TEST_F(ChildProcessTaskTest, DisconnectWithInvalidProcess) {
+  ChildProcessTaskProvider provider;
+  EXPECT_TRUE(provided_tasks_.empty());
+  provider.SetObserver(this);
+  content::RunAllPendingInMessageLoop();
+  ASSERT_TRUE(provided_tasks_.empty());
+
+  const content::ChildProcessId unique_id(245);
+  ChildProcessData data(content::PROCESS_TYPE_UTILITY, unique_id);
+  data.SetProcess(base::Process::Current());
+  provider.BrowserChildProcessLaunchedAndConnected(data);
+  ASSERT_EQ(1U, provided_tasks_.size());
+
+  // In production, when a process terminates or crashes, its process handle is
+  // closed and invalid by the time BrowserChildProcessHostDisconnected is
+  // called. Deleting the task must succeed even with an invalid process handle.
+  ChildProcessData disconnected_data(content::PROCESS_TYPE_UTILITY, unique_id);
+  ASSERT_FALSE(disconnected_data.GetProcess().IsValid());
+  provider.BrowserChildProcessHostDisconnected(disconnected_data);
+  EXPECT_TRUE(provided_tasks_.empty());
+  EXPECT_TRUE(AreProviderContainersEmpty(provider));
+
+  provider.ClearObserver();
 }
 
 }  // namespace task_manager

@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_CHILD_PROCESS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_CHILD_PROCESS_TASK_PROVIDER_H_
 
-#include <map>
 #include <memory>
-#include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 struct ChildProcessData;
@@ -53,20 +51,12 @@ class ChildProcessTaskProvider
   // of its addition.
   void CreateTask(const content::ChildProcessData& data);
 
-  // Deletes a ChildProcessTask whose |handle| is provided after notifying the
-  // observer of its deletion.
-  void DeleteTask(base::ProcessHandle handle);
+  // Deletes a ChildProcessTask whose `child_process_id` is provided after
+  // notifying the observer of its deletion.
+  void DeleteTask(content::ChildProcessId child_process_id);
 
-  // A map to track ChildProcessTasks by their handles.
-  //
-  // This uses pids instead of handles because on windows (where pids and
-  // handles differ), there may be multiple different handles to the same
-  // process.
-  std::map<base::ProcessId, std::unique_ptr<ChildProcessTask>>
-      tasks_by_processid_;
-
-  // A map to track ChildProcessTask's by their child process unique ids.
-  base::flat_map<int, raw_ptr<ChildProcessTask, CtnExperimental>>
+  // A map to track ChildProcessTasks by their unique child process id.
+  base::flat_map<content::ChildProcessId, std::unique_ptr<ChildProcessTask>>
       tasks_by_child_id_;
 };
 
