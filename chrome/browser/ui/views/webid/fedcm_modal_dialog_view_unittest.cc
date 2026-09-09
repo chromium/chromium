@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -51,6 +52,10 @@ class TestDelegate : public content::WebContentsDelegate {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override {
+    if (on_open_url_from_tab_) {
+      std::move(on_open_url_from_tab_).Run();
+    }
+
     if (should_return_null_popup_window_) {
       return nullptr;
     }
@@ -65,6 +70,12 @@ class TestDelegate : public content::WebContentsDelegate {
     bounds_ = bounds;
   }
 
+  void ActivateContents(content::WebContents* contents) override {
+    if (on_activate_contents_) {
+      std::move(on_activate_contents_).Run();
+    }
+  }
+
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override {
     return is_fullscreen_ ? blink::mojom::DisplayMode::kFullscreen
@@ -77,6 +88,14 @@ class TestDelegate : public content::WebContentsDelegate {
 
   void SetIsFullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
 
+  void SetOnOpenURLFromTab(base::OnceClosure on_open_url_from_tab) {
+    on_open_url_from_tab_ = std::move(on_open_url_from_tab);
+  }
+
+  void SetOnActivateContents(base::OnceClosure on_activate_contents) {
+    on_activate_contents_ = std::move(on_activate_contents);
+  }
+
   int opened() const { return opened_; }
   gfx::Rect bounds() const { return bounds_; }
   WindowOpenDisposition disposition() const { return disposition_; }
@@ -85,6 +104,8 @@ class TestDelegate : public content::WebContentsDelegate {
   int opened_ = 0;
   bool should_return_null_popup_window_{false};
   bool is_fullscreen_{false};
+  base::OnceClosure on_open_url_from_tab_;
+  base::OnceClosure on_activate_contents_;
   gfx::Rect bounds_;
   WindowOpenDisposition disposition_{WindowOpenDisposition::UNKNOWN};
 };
@@ -103,6 +124,36 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
 
   EXPECT_EQ(1, delegate.opened());
   ASSERT_TRUE(web_contents);
+}
+
+TEST_F(FedCmModalDialogViewTest, ShowPopupWindowDeletesView) {
+  TestDelegate delegate(web_contents());
+
+  std::unique_ptr<FedCmModalDialogView> popup_window_view =
+      std::make_unique<FedCmModalDialogView>(web_contents(),
+                                             /*observer=*/nullptr);
+  delegate.SetOnOpenURLFromTab(
+      base::BindLambdaForTesting([&]() { popup_window_view.reset(); }));
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
+
+  EXPECT_EQ(1, delegate.opened());
+  EXPECT_FALSE(web_contents);
+}
+
+TEST_F(FedCmModalDialogViewTest, ShowPopupWindowDeletesViewDuringResize) {
+  TestDelegate delegate(web_contents());
+
+  std::unique_ptr<FedCmModalDialogView> popup_window_view =
+      std::make_unique<FedCmModalDialogView>(web_contents(),
+                                             /*observer=*/nullptr);
+  delegate.SetOnActivateContents(
+      base::BindLambdaForTesting([&]() { popup_window_view.reset(); }));
+  content::WebContents* web_contents = popup_window_view->ShowPopupWindow(
+      GURL(u"https://example.com"), /*user_close_cancels_flow=*/true);
+
+  EXPECT_EQ(1, delegate.opened());
+  EXPECT_FALSE(web_contents);
 }
 
 TEST_F(FedCmModalDialogViewTest, ShowPopupWindowInFullscreen) {
