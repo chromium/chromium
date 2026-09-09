@@ -246,11 +246,23 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.voiceSearchReceivedSpeech_ = false;
     this.voiceSearchTranscript_ = '';
     await this.updateComplete;
-    const dialog = this.$.voiceSearchDialog;
-    if (dialog && !dialog.open) {
+
+    const dialog =
+        this.shadowRoot?.querySelector<HTMLDialogElement>('#voiceSearchDialog');
+
+    // Ensure the dialog exists, is connected to the Document, and is not
+    // already open; otherwise, do not open and abort.
+    if (dialog && dialog.isConnected && !dialog.open) {
       dialog.showModal();
+    } else if (!dialog || !dialog.isConnected) {
+      return;
     }
-    const voiceSearch = this.$.voiceSearch;
+
+    // Fetch fresh composebox voice search in case it was removed, then added
+    // back. This avoids stale references compared to using `$`.
+    const voiceSearch =
+        this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
+            '#voiceSearch');
     if (voiceSearch) {
       voiceSearch.start();
     }
