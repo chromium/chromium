@@ -563,7 +563,12 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      */
     public boolean selectFirstItem() {
         if (mDropdown == null) return false;
-        return mDropdown.selectFirstItem();
+        mMediator.allowPendingItemSelection();
+        boolean selected = mDropdown.selectFirstItem();
+        if (!selected) {
+            mMediator.ignorePendingItemSelection();
+        }
+        return selected;
     }
 
     /**
@@ -572,7 +577,12 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      */
     public boolean selectLastItem() {
         if (mDropdown == null) return false;
-        return mDropdown.selectLastItem();
+        mMediator.allowPendingItemSelection();
+        boolean selected = mDropdown.selectLastItem();
+        if (!selected) {
+            mMediator.ignorePendingItemSelection();
+        }
+        return selected;
     }
 
     /**

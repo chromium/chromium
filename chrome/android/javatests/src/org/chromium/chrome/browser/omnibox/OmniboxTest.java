@@ -62,7 +62,11 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -84,6 +88,8 @@ import java.util.List;
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class OmniboxTest {
+    private static final String SUGGESTION_TEXT = "suggestion text";
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -171,6 +177,31 @@ public class OmniboxTest {
                 "Tab count should reflect new tab.",
                 tabCount + 1,
                 ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    public void testTabSelectsFirstSuggestionUpdatesUrlBarText() {
+        mActivityTestRule.startOnBlankPage();
+        OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        omnibox.requestFocus();
+
+        AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setDisplayText(SUGGESTION_TEXT)
+                        .setFillIntoEdit(SUGGESTION_TEXT)
+                        .build();
+
+        omnibox.setSuggestions(AutocompleteResult.fromCache(List.of(match), null));
+        omnibox.checkSuggestionsShown();
+
+        // Navigate into the suggestions list.
+        omnibox.sendKey(KeyEvent.KEYCODE_TAB);
+
+        // Verify the first suggestion is selected and reflected in the URL bar.
+        omnibox.checkSuggestionSelected(0);
+        omnibox.checkText(SUGGESTION_TEXT);
     }
 
     /**

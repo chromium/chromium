@@ -262,6 +262,21 @@ public class OmniboxTestUtils {
     }
 
     /**
+     * Check that the suggestion at the specified index is selected.
+     *
+     * @param expectedIndex The expected index of the selected suggestion.
+     */
+    public void checkSuggestionSelected(int expectedIndex) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Selected suggestion index does not match",
+                            mAutocomplete.getSelectedIndex(),
+                            Matchers.equalTo(expectedIndex));
+                });
+    }
+
+    /**
      * Stops any subsequent AutocompleteResults from being generated. Ensures that no subsequent
      * asynchronous AutocompleteResults could tamper with test execution.
      */

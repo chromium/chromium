@@ -470,6 +470,11 @@ class AutocompleteMediator
         mIgnoreOmniboxItemSelection = false;
     }
 
+    /** Notify the mediator that an item selection was cancelled or failed. */
+    void ignorePendingItemSelection() {
+        mIgnoreOmniboxItemSelection = true;
+    }
+
     /** Signals that native initialization has completed. */
     void onNativeInitialized() {
         mDropdownViewInfoListManager.onNativeInitialized();
