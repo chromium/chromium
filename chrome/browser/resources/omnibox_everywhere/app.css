@@ -62,7 +62,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   --cr-composebox-submit-width: 48px;
   background: var(--color-composebox-background, #fff);
   border: none;
-  border-radius: 28px;
+  border-radius: 16px;
   bottom: auto;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
   font-family: inherit;

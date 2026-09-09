@@ -17,7 +17,7 @@
   /* Preserves 2px border width parity with omnibox-everywhere-omnibox to
    * prevent layout shift when toggling between searchbox and composebox. */
   border: 2px solid transparent;
-  border-radius: 28px;
+  border-radius: 16px;
   box-sizing: border-box;
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
   --cr-composebox-background-color: var(--color-searchbox-background);

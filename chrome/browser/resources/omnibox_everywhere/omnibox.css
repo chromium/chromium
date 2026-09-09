@@ -254,7 +254,7 @@ cr-composebox-contextual-entrypoint-and-menu {
 
 #inputContainer {
   background-color: var(--color-searchbox-background);
-  border-radius: 26px;
+  border-radius: 16px;
   box-shadow: var(--cr-searchbox-shadow);
   display: flex;
   flex-direction: column;
