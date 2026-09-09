@@ -27,6 +27,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,6 +72,11 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
         mMediator = mediator;
 
         LinearLayout headerView = taskManagerView.findViewById(R.id.header_linear_layout);
+        headerView.setBackground(null);
+        headerView.setDividerDrawable(
+                AppCompatResources.getDrawable(
+                        headerView.getContext(), R.drawable.task_header_divider));
+        headerView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         mModelChangeProcessors.add(
                 PropertyModelChangeProcessor.create(
                         headerModel,

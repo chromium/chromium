@@ -18,4 +18,6 @@ found in the LICENSE file.
     <dimen name="task_manager_chip_height">48dp</dimen>
     <dimen name="task_manager_activity_padding">16dp</dimen>
     <dimen name="task_manager_kill_button_margin">16dp</dimen>
+    <dimen name="task_header_divider_width">2dp</dimen>
+    <dimen name="task_item_column_padding">16dp</dimen>
 </resources>

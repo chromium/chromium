@@ -179,6 +179,13 @@ public class TaskManagerCoordinatorTest {
 
     @Test
     @SmallTest
+    public void testHeaderDividers() {
+        assertEquals(LinearLayout.SHOW_DIVIDER_MIDDLE, mHeaderView.getShowDividers());
+        assertNotNull(mHeaderView.getDividerDrawable());
+    }
+
+    @Test
+    @SmallTest
     public void testSortIndicator() {
         TextView taskNameHeader = mHeaderView.findViewById(R.id.task_name);
         String defaultText = taskNameHeader.getText().toString();
