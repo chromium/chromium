@@ -17,6 +17,12 @@ assertCSSResponsive({
       {at: 0.25, is: '35px, 50px, 65px'},
       {at: 0.75, is: '65px, 70px, 75px'},
     ],
+  }, {
+    state: {underlying: '40px, 20px'},
+    expect: [
+      {at: 0.25, is: '50px, 35px'},
+      {at: 0.75, is: '70px, 65px'},
+    ],
   }],
 });
 

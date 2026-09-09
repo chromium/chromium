@@ -23,6 +23,27 @@
 
 namespace blink {
 
+namespace {
+
+// SVG 2 defines stroke-dasharray values as non-additive.
+// https://w3c.github.io/svgwg/svg2-draft/painting.html#interpolationDashPattern
+bool IsNonAdditiveLengthListProperty(const CSSProperty& property) {
+  return property.IDEquals(CSSPropertyID::kStrokeDasharray);
+}
+
+// The neutral value of a non-additive property is a copy of the underlying
+// value, so it has to be converted again whenever that value may have changed.
+class AlwaysInvalidateChecker final
+    : public CSSInterpolationType::CSSConversionChecker {
+ public:
+  bool IsValid(const StyleResolverState&,
+               const InterpolationValue&) const final {
+    return false;
+  }
+};
+
+}  // namespace
+
 CSSLengthListInterpolationType::CSSLengthListInterpolationType(
     PropertyHandle property)
     : CSSInterpolationType(property),
@@ -31,6 +52,12 @@ CSSLengthListInterpolationType::CSSLengthListInterpolationType(
 InterpolationValue CSSLengthListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
+  if (IsNonAdditiveLengthListProperty(CssProperty())) {
+    conversion_checkers.push_back(
+        MakeGarbageCollected<AlwaysInvalidateChecker>());
+    return underlying.Clone();
+  }
+
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
@@ -152,6 +179,11 @@ void CSSLengthListInterpolationType::Composite(
     double underlying_fraction,
     const InterpolationValue& value,
     double interpolation_fraction) const {
+  if (IsNonAdditiveLengthListProperty(CssProperty())) {
+    underlying_value_owner.Set(this, value);
+    return;
+  }
+
   ListInterpolationFunctions::Composite(
       underlying_value_owner, underlying_fraction, this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
