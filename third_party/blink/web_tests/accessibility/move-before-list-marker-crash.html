@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>moveBefore() on a list whose items have ::marker does not crash the accessibility tree</title>
+<link rel="help" href="https://crbug.com/500774799">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<ul id="list">
+  <li id="item"></li>
+</ul>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // The getter runs UpdateAXForAllDocuments(), which builds the whole tree,
+  // including the AXObjects for the <li> and its ::marker.
+  accessibilityController.rootElement;
+
+  document.body.moveBefore(document.getElementById('list'), null);
+
+  // Forces style recalc, reattachment of the moved subtree, and the AX commit
+  // to ensure the tree remains valid and properly structured post-move.
+  const axItem = accessibilityController.accessibleElementById('item');
+  assert_true(!!axItem, 'accessibleElementById("item") should return an AXObject');
+  assert_equals(axItem.role, 'AXRole: AXListItem');
+  assert_greater_than_equal(axItem.childrenCount, 1);
+  assert_equals(axItem.childAtIndex(0).role, 'AXRole: AXListMarker');
+}, 'No crash when moving a list with markers via moveBefore()');
+</script>
