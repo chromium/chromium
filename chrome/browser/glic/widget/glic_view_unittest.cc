@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -408,6 +409,23 @@ TEST_F(GlicViewNoWebviewTest, CanDragEnter_ForwardsFromPwc) {
   content::DropData empty_drop_data;
   EXPECT_FALSE(pwc()->web_contents()->GetDelegate()->CanDragEnter(
       pwc()->web_contents(), empty_drop_data, ops));
+}
+
+TEST_F(GlicViewNoWebviewTest, DraggableRegionsChanged_ForwardsFromPwc) {
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto region = blink::mojom::DraggableRegion::New();
+  region->bounds = gfx::Rect(0, 0, 800, 50);
+  region->draggable = true;
+  regions.push_back(std::move(region));
+
+  EXPECT_FALSE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 10)));
+
+  // Forwards through PWC delegate to GlicView::DraggableRegionsChanged.
+  pwc()->web_contents()->GetDelegate()->DraggableRegionsChanged(
+      regions, pwc()->web_contents());
+
+  EXPECT_TRUE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 10)));
+  EXPECT_FALSE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 100)));
 }
 
 }  // namespace glic

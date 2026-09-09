@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
@@ -202,6 +203,10 @@ bool PrivilegedWebContents::EmbedderDelegate::CanDragEnter(
   return false;
 }
 
+void PrivilegedWebContents::EmbedderDelegate::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {}
+
 content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
@@ -317,6 +322,18 @@ bool PrivilegedWebContents::CanDragEnter(
   }
 
   return false;
+}
+
+void PrivilegedWebContents::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  if (contents != web_contents_.get()) {
+    return;
+  }
+
+  if (embedder_delegate_) {
+    embedder_delegate_->DraggableRegionsChanged(regions, contents);
+  }
 }
 
 bool PrivilegedWebContents::IsPrimaryMainFrame(

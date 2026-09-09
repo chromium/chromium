@@ -66,12 +66,12 @@ class GlicView : public views::WebView,
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
-
-  // views::WebView:
-  void SetWebContents(content::WebContents* web_contents) override;
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
+
+  // views::WebView:
+  void SetWebContents(content::WebContents* web_contents) override;
 
   // views::View:
   void OnThemeChanged() override;

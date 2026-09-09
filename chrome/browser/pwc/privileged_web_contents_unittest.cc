@@ -30,6 +30,8 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -199,6 +201,14 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
     return can_drag_enter_return_value_;
   }
 
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override {
+    draggable_regions_count_++;
+    last_draggable_regions_contents_ = contents;
+    last_draggable_regions_size_ = regions.size();
+  }
+
   raw_ptr<content::WebContents> last_keyboard_source_ = nullptr;
   std::optional<blink::WebInputEvent::Type> last_event_type_;
   int keyboard_event_count_ = 0;
@@ -230,6 +240,11 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
   std::optional<blink::DragOperationsMask> last_drag_operations_allowed_;
   int drag_enter_count_ = 0;
   bool can_drag_enter_return_value_ = true;
+
+  raw_ptr<content::WebContents, DisableDanglingPtrDetection>
+      last_draggable_regions_contents_ = nullptr;
+  size_t last_draggable_regions_size_ = 0;
+  int draggable_regions_count_ = 0;
 };
 
 content::MediaResponseCallback BindResultToFuture(
@@ -722,6 +737,10 @@ TEST_F(PrivilegedWebContentsTest, DefaultEmbedderDelegateMethods) {
   content::DropData drop_data;
   EXPECT_FALSE(default_delegate.CanDragEnter(web_contents(), drop_data,
                                              blink::kDragOperationCopy));
+
+  // Default DraggableRegionsChanged is a no-op.
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  default_delegate.DraggableRegionsChanged(regions, web_contents());
 }
 
 TEST_F(PrivilegedWebContentsTest, ForwardsCanDragEnterToEmbedderDelegate) {
@@ -777,6 +796,55 @@ TEST_F(PrivilegedWebContentsTest, CanDragEnter_RejectsNonMatchingWebContents) {
   EXPECT_FALSE(pwc->web_contents()->GetDelegate()->CanDragEnter(
       nullptr, drop_data, ops));
   EXPECT_EQ(delegate.drag_enter_count_, 0);
+}
+
+TEST_F(PrivilegedWebContentsTest,
+       ForwardsDraggableRegionsChangedToEmbedderDelegate) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+  content::WebContents* pwc_contents = pwc->web_contents();
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto region = blink::mojom::DraggableRegion::New();
+  region->bounds = gfx::Rect(0, 0, 100, 50);
+  region->draggable = true;
+  regions.push_back(std::move(region));
+
+  // 1. When no embedder delegate is set, does nothing and does not crash.
+  pwc_contents->GetDelegate()->DraggableRegionsChanged(regions, pwc_contents);
+  EXPECT_EQ(delegate.draggable_regions_count_, 0);
+
+  pwc->SetEmbedderDelegate(&delegate);
+
+  // 2. Embedder delegate handles DraggableRegionsChanged.
+  pwc_contents->GetDelegate()->DraggableRegionsChanged(regions, pwc_contents);
+  EXPECT_EQ(delegate.draggable_regions_count_, 1);
+  EXPECT_EQ(delegate.last_draggable_regions_contents_, pwc_contents);
+  EXPECT_EQ(delegate.last_draggable_regions_size_, 1u);
+
+  // 3. Clearing the delegate stops forwarding.
+  pwc->SetEmbedderDelegate(nullptr);
+  pwc_contents->GetDelegate()->DraggableRegionsChanged(regions, pwc_contents);
+  EXPECT_EQ(delegate.draggable_regions_count_, 1);
+}
+
+TEST_F(PrivilegedWebContentsTest,
+       DraggableRegionsChanged_RejectsNonMatchingWebContents) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+  pwc->SetEmbedderDelegate(&delegate);
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+
+  // 1. Unrelated WebContents is rejected.
+  content::WebContents* unrelated_contents = web_contents();
+  pwc->web_contents()->GetDelegate()->DraggableRegionsChanged(
+      regions, unrelated_contents);
+  EXPECT_EQ(delegate.draggable_regions_count_, 0);
+
+  // 2. Null WebContents is rejected.
+  pwc->web_contents()->GetDelegate()->DraggableRegionsChanged(regions, nullptr);
+  EXPECT_EQ(delegate.draggable_regions_count_, 0);
 }
 
 }  // namespace
