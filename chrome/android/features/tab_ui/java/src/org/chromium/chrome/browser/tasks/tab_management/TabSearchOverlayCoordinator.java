@@ -511,7 +511,6 @@ public class TabSearchOverlayCoordinator
             LinearLayout panelContainer = assumeNonNull(mPanelContainer);
             View closeButton =
                     assumeNonNull(panelContainer.findViewById(R.id.tab_search_close_button));
-            closeButton.setFocusableInTouchMode(true);
 
             var suggestionsVisualState = locationBarCoordinator.getOmniboxSuggestionsVisualState();
             AutocompleteCoordinator autocompleteCoordinator =
@@ -534,6 +533,7 @@ public class TabSearchOverlayCoordinator
 
                         if (isTabBack || isUp) {
                             if (selectedIndex == null) {
+                                closeButton.setFocusableInTouchMode(true);
                                 closeButton.requestFocus();
                                 return true;
                             } else if (selectedIndex <= 0) {
@@ -550,6 +550,12 @@ public class TabSearchOverlayCoordinator
             urlBar.setKeyDownListener(keyListener);
             urlBar.setOnKeyListener(keyListener);
 
+            closeButton.setOnFocusChangeListener(
+                    (v, hasFocus) -> {
+                        if (!hasFocus) {
+                            closeButton.setFocusableInTouchMode(false);
+                        }
+                    });
             closeButton.setOnKeyListener(
                     (v, keyCode, event) -> {
                         if (KeyNavigationUtil.isTabForward(event)
