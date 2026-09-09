@@ -152,7 +152,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
               std::move(scoped_access));
         }
         if (wrapper_lease) {
-          wrapper_lease->SetCompletionSyncToken(sync_token);
+          wrapper_lease->WaitSyncToken(sync_token);
         }
         return sync_token;
       },

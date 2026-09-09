@@ -75,9 +75,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
       const gpu::SyncToken& ready_sync_token,
       gpu::SyncToken& completion_sync_token);
 
-  void SetCompletionSyncToken(const gpu::SyncToken& completion_sync_token) {
-    completion_sync_token_ = completion_sync_token;
-  }
+  void WaitSyncToken(const gpu::SyncToken& sync_token);
 
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
@@ -88,7 +86,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
   bool IsGpuContextLost() const;
   std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
   base::WeakPtr<WebGpuSharedImageWrapperCache> cache_;
-  gpu::SyncToken completion_sync_token_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 };
 
@@ -113,8 +110,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
   // When the lease is destroyed, move the shared image wrapper to
   // |unused_wrappers_| if the cache is not full.
   void ReturnWebGpuSharedImageWrapper(
-      std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
-      const gpu::SyncToken& completion_sync_token);
+      std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper);
 
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
 

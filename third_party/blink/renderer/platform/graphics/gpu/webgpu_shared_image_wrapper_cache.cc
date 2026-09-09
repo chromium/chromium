@@ -49,9 +49,13 @@ WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
 WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   if (cache_ && shared_image_wrapper_) {
-    cache_->ReturnWebGpuSharedImageWrapper(std::move(shared_image_wrapper_),
-                                           completion_sync_token_);
+    cache_->ReturnWebGpuSharedImageWrapper(std::move(shared_image_wrapper_));
   }
+}
+
+void WebGpuSharedImageWrapperLease::WaitSyncToken(
+    const gpu::SyncToken& sync_token) {
+  shared_image_wrapper_->WaitSyncToken(sync_token);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -413,16 +417,13 @@ WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
 }
 
 void WebGpuSharedImageWrapperCache::ReturnWebGpuSharedImageWrapper(
-    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
-    const gpu::SyncToken& completion_sync_token) {
+    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper) {
   size_t resource_size =
       shared_image_wrapper->shared_image_->format().EstimatedSizeInBytes(
           shared_image_wrapper->shared_image_->size());
 
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;
-
-    shared_image_wrapper->WaitSyncToken(completion_sync_token);
 
     unused_wrappers_.push_front(Resource(std::move(shared_image_wrapper),
                                          current_timer_id_, resource_size));
