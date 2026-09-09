@@ -2871,7 +2871,8 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   return {min_max_sizes, /* depends_on_block_constraints */ true};
 }
 
-MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
+MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer(
+    const MinMaxSizesFloatInput& float_input) {
   DCHECK(!is_column_);
   MinMaxSizes container_sizes;
   bool depends_on_block_constraints = false;
@@ -2885,13 +2886,22 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
   // the flex basis is not definite.
   ConstructAndAppendFlexItems(Phase::kRowIntrinsicSize);
 
-  // We only need to run the line-breaker if we have "flex-wrap:balance".
+  // Run the line-breaker if we are in a shrink-to-fit context or if we have
+  // "flex-wrap: balance" to ensure correct wrapping during intrinsic size
+  // calculation.
   base::span<FlexItem> items = base::span(flex_items_);
+  std::optional<LayoutUnit> line_break_size;
+  if (is_multi_line_ && Style().IsInShrinkToFitSubtree() &&
+      float_input.constrained_inline_size != LayoutUnit::Max()) {
+    line_break_size = float_input.constrained_inline_size;
+  } else if (balance_min_line_count_) {
+    line_break_size = LayoutUnit::Max();
+  }
+
   const FlexLineBreakerResult result =
-      balance_min_line_count_
-          ? BreakFlexItemsIntoLines(items, LayoutUnit::Max(),
-                                    gap_between_items_, is_multi_line_,
-                                    balance_min_line_count_)
+      line_break_size
+          ? BreakFlexItemsIntoLines(items, *line_break_size, gap_between_items_,
+                                    is_multi_line_, balance_min_line_count_)
           : FlexLineBreakerResult(
                 {InitialFlexLine(flex_items_.size(), LayoutUnit())},
                 LayoutUnit());
@@ -2998,13 +3008,13 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesFloatInput& float_input) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
 
   if (!is_column_) {
-    return ComputeMinMaxSizeOfRowContainer();
+    return ComputeMinMaxSizeOfRowContainer(float_input);
   }
 
   if (is_multi_line_) {

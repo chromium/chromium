@@ -140,7 +140,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // Set reading flow so they can be accessed by LayoutBox.
   void SetReadingFlowNodes(const FlexLineVector& flex_lines);
 
-  MinMaxSizesResult ComputeMinMaxSizeOfRowContainer();
+  MinMaxSizesResult ComputeMinMaxSizeOfRowContainer(
+      const MinMaxSizesFloatInput&);
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
 
   // Return the amount of block space available in the current fragmentainer

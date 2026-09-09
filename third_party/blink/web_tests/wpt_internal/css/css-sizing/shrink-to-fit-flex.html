@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+#outer {
+  width: 160px;
+}
+
+.target {
+  max-content-sizing: shrink-to-fit;
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  background-color: darkgray;
+  font: 20px/1 Ahem;
+  margin-bottom: 10px;
+}
+
+.dir-rr {
+  flex-direction: row-reverse;
+}
+
+.wrap-wr {
+  flex-wrap: wrap-reverse;
+}
+
+.wrap-b {
+  flex-wrap: balance;
+}
+
+.wrap-b.wrap-wr {
+  flex-wrap: balance wrap-reverse;
+}
+
+.item {
+  width: 50px;
+  height: 1em;
+  background-color: lightgray;
+  box-sizing: border-box;
+  border: 1px inset darkgray;
+}
+
+#outer-c {
+  height: 160px;
+}
+
+#outer-c .target {
+  display: inline-flex;
+  max-height: 160px;
+}
+
+.dir-c {
+  height: fit-content;
+  width: fit-content;
+  flex-direction: column;
+}
+
+.dir-cr {
+  height: fit-content;
+  width: fit-content;
+  flex-direction: column-reverse;
+}
+
+#outer-c .item {
+  height: 50px;
+  width: 1em;
+}
+</style>
+
+<div id="outer">
+<div class="target" data-expected-width="150" title="wrap">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target dir-rr" data-expected-width="150" title="row-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target wrap-wr" data-expected-width="150" title="wrap-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target wrap-wr dir-rr" data-expected-width="150"
+     title="wrap-reverse row-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target wrap-b" data-expected-width="150" title="balance">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target wrap-b dir-rr" data-expected-width="150"
+     title="balance row-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target wrap-b wrap-wr" data-expected-width="150"
+     title="balance wrap-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+</div>
+
+<div style="width: max-content; max-content-sizing: shrink-to-fit"
+     data-expected-width="150"
+     title="Grandparent width should be same as the flex container">
+<div style="max-width: 160px;">
+<div class="target">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+</div>
+</div>
+
+<!-- As for flex-direction:column*, the resultant `height` shrinks to fit
+ regardless of max-content-sizing. -->
+<div id="outer-c">
+<div class="target dir-c" data-expected-height="150"
+     title="flex-direction: column">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target dir-c wrap-wr" data-expected-height="150"
+    title="flex-direction: column; wrap-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target dir-cr" data-expected-height="150"
+    title="flex-direction: column-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+
+<div class="target dir-cr wrap-wr" data-expected-height="150"
+     title="flex-direction: column-reverse; wrap-reverse">
+<span class="item">1</span>
+<span class="item">2</span>
+<span class="item">3</span>
+<span class="item">4</span>
+<span class="item">5</span>
+</div>
+</div>
+
+<script>
+document.fonts.ready.then(() =>
+    checkLayout('[data-expected-width], [data-expected-height]'));
+</script>
