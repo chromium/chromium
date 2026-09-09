@@ -964,4 +964,34 @@ TEST_F(ProfileReportSchedulerIOSTest, GetCookieManager) {
   EXPECT_EQ(browser_scheduler.GetCookieManager(), nullptr);
 }
 
+TEST_F(ProfileReportSchedulerIOSTest,
+       InitializationTriggersSecurityReportWhenSignalSharingEnabled) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                            enterprise_signals::features::
+                                kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{enterprise_reporting::kUploadReportOnProfileOpen});
+
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerSecurity,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kSignalsOnly,
+                                         /*use_cookies=*/false),
+                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+  CreateSchedulerForProfileReporting(
+      /*require_policy_fetch_with_profile_id=*/false);
+
+  task_environment_.RunUntilIdle();
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+}
 }  // namespace enterprise_reporting

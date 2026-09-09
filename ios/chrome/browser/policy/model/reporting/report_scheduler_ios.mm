@@ -42,9 +42,6 @@ PrefService* ReportSchedulerIOS::GetPrefService() {
                   : GetApplicationContext()->GetLocalState();
 }
 
-void ReportSchedulerIOS::OnInitializationCompleted() {
-  // No-op.
-}
 
 void ReportSchedulerIOS::StartWatchingUpdatesIfNeeded(
     base::Time last_upload,

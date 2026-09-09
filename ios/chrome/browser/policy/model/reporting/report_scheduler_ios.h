@@ -30,7 +30,6 @@ class ReportSchedulerIOS : public ReportScheduler::Delegate,
 
   // ReportScheduler::Delegate implementation.
   PrefService* GetPrefService() override;
-  void OnInitializationCompleted() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
