@@ -241,17 +241,23 @@ void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
           [](base::WeakPtr<SessionUiImpl> self,
              base::WeakPtr<tabs::TabInterface> tab_weak) {
             if (self && tab_weak && !tab_weak->IsActivated()) {
+              const SessionState state = self->controller_->GetState();
+              const bool was_actively_listening =
+                  state == SessionState::kTranscribing ||
+                  state == SessionState::kStreamInitializing;
               tab_weak->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
               self->overlay_view_.reset();
               self->controller_->FinalizeAndShutdown();
-              BrowserWindowInterface* const window =
-                  tab_weak->GetBrowserWindowInterface();
-              CHECK(window);
-              ToastController* const toast_controller =
-                  ToastController::From(window);
-              CHECK(toast_controller);
-              toast_controller->MaybeShowToast(
-                  ToastParams(ToastId::kDictationStopped));
+              if (was_actively_listening) {
+                BrowserWindowInterface* const window =
+                    tab_weak->GetBrowserWindowInterface();
+                CHECK(window);
+                ToastController* const toast_controller =
+                    ToastController::From(window);
+                CHECK(toast_controller);
+                toast_controller->MaybeShowToast(
+                    ToastParams(ToastId::kDictationStopped));
+              }
             }
           },
           weak_ptr_factory_.GetWeakPtr(), tab->GetWeakPtr()));

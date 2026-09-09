@@ -509,6 +509,27 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DictationSessionUiImplBrowserTest,
+    TabSwitchAfterDoneButtonDoesNotShowDictationStoppedToast) {
+  // Add a second tab with the first tab in the foreground.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    // Press "Done" to finish voice input.
+    PressButton(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    // Switch to the second tab and verify that the Dictation stopped toast
+    // is not shown
+    SelectTab(kTabStripElementId, 1),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+    CheckShowingDictationStoppedToast(false)
+  );
+  // clang-format on
+}
+
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        SwitchBackToDictatingTabDuringFinalization) {
   // Add a second tab with the first tab in the foreground.
