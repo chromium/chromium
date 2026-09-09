@@ -102,6 +102,7 @@ class OsSettingsManagerTest : public testing::Test {
     UserDataAuthClient::InitializeFake();
 
     manager_ = std::make_unique<OsSettingsManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->browser_policy_connector_ash(),

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_CROSTINI_CROSTINI_SECTION_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -13,6 +14,8 @@
 namespace content {
 class WebUIDataSource;
 }  // namespace content
+
+class PrefService;
 
 namespace ash::settings {
 
@@ -23,7 +26,9 @@ class SearchTagRegistry;
 // when those subpages are available.
 class CrostiniSection : public OsSettingsSection {
  public:
-  CrostiniSection(Profile* profile,
+  // `local_state` must be non-null and must outlive `this`.
+  CrostiniSection(PrefService* local_state,
+                  Profile* profile,
                   SearchTagRegistry* search_tag_registry,
                   PrefService* pref_service);
   ~CrostiniSection() override;
@@ -50,6 +55,7 @@ class CrostiniSection : public OsSettingsSection {
 
   void UpdateSearchTags();
 
+  const raw_ref<PrefService> local_state_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<Profile> profile_;

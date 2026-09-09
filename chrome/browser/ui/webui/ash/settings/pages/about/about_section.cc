@@ -190,6 +190,7 @@ std::string GetSafetyInfoLink() {
 }  // namespace
 
 AboutSection::AboutSection(
+    PrefService* local_state,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
@@ -197,7 +198,10 @@ AboutSection::AboutSection(
     : OsSettingsSection(profile, search_tag_registry),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       pref_service_(pref_service),
-      crostini_subsection_(profile, search_tag_registry, pref_service) {
+      crostini_subsection_(local_state,
+                           profile,
+                           search_tag_registry,
+                           pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAboutSearchConcepts());
 

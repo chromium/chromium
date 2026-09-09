@@ -10,6 +10,7 @@
 #include "ash/constants/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/byte_size.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -212,10 +213,12 @@ bool IsAdbSideloadingAllowed() {
 
 }  // namespace
 
-CrostiniSection::CrostiniSection(Profile* profile,
+CrostiniSection::CrostiniSection(PrefService* local_state,
+                                 Profile* profile,
                                  SearchTagRegistry* search_tag_registry,
                                  PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      local_state_(CHECK_DEREF(local_state)),
       pref_service_(pref_service),
       profile_(profile) {
   pref_change_registrar_.Init(pref_service_);
@@ -495,7 +498,8 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile_));
-  web_ui->AddMessageHandler(std::make_unique<CrostiniHandler>(profile_));
+  web_ui->AddMessageHandler(
+      std::make_unique<CrostiniHandler>(&local_state_.get(), profile_));
 }
 
 int CrostiniSection::GetSectionNameMessageId() const {

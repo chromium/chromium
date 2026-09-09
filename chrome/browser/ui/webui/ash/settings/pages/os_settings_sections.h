@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 
 class ArcAppListPrefs;
+class PrefService;
 class Profile;
 
 namespace policy {
@@ -46,8 +47,10 @@ namespace settings {
 // Collection of all OsSettingsSection implementations.
 class OsSettingsSections {
  public:
-  // 'browser_policy_connector_ash' must be non-null and must outlive 'this'.
+  // `local_state` and `browser_policy_connector_ash` must be non-null and must
+  // outlive `this`.
   OsSettingsSections(
+      PrefService* local_state,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       Profile* profile,
       SearchTagRegistry* search_tag_registry,

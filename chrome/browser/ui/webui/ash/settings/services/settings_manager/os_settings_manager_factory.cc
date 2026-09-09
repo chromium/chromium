@@ -66,7 +66,10 @@ OsSettingsManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
+  // NOTE: Allow g_browser_process here as this class is initialized lazily with
+  // base::NoDestructor.
   return std::make_unique<OsSettingsManager>(
+      g_browser_process->local_state(),
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       profile,
       local_search_service::LocalSearchServiceProxyFactory::
