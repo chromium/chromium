@@ -79,7 +79,7 @@ if (enable_extensions) {
     "clipboard.webidl",
     "feedback_private.webidl",
     "file_system.idl",
-    "hid.idl",
+    "hid.webidl",
     "mime_handler.webidl",
     "networking_private.webidl",
     "printer_provider_internal.webidl",
