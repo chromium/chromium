@@ -9090,6 +9090,8 @@ from previous Chrome versions.
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
   <int value="-1745909884" label="LibAssistantV2:disabled"/>
   <int value="-1745844997" label="AvifGainmapHdrImages:enabled"/>
+  <int value="-1745174236"
+      label="GlicContextualCueV2ActiveUserBackoff:disabled"/>
   <int value="-1744231895" label="CCTEphemeralMode:enabled"/>
   <int value="-1743234830" label="SubmenusTabContextMenuLffTabStrip:disabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
@@ -11503,6 +11505,8 @@ from previous Chrome versions.
   <int value="-1009727449" label="HelpAppWelcomeTips:enabled"/>
   <int value="-1009111883" label="NearbyShareVisibilityReminder:enabled"/>
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
+  <int value="-1008430553"
+      label="GlicContextualCueV2ActiveUserBackoff:enabled"/>
   <int value="-1008130438" label="PageEntitiesPageContentAnnotations:enabled"/>
   <int value="-1007985511" label="SidePanelJourneys:enabled"/>
   <int value="-1007961880" label="PrivacySandboxSettings:enabled"/>
