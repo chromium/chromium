@@ -660,6 +660,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                        FiltersGoogleSearchAndHome) {
+  base::HistogramTester histogram_tester;
+
   // 1. Navigate to a valid URL (a.test).
   NavigateToValidURL();
 
@@ -700,6 +702,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   if (!result.empty()) {
     EXPECT_EQ(result[0]->GetLastCommittedURL(), valid_url());
   }
+
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.SmartTabSharing.TabFilterReason",
+      SmartTabSharingFilterReason::kDomainDenylisted, 2);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.SmartTabSharing.TabFilterReason",
+      SmartTabSharingFilterReason::kNotFiltered, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -1394,6 +1403,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ContextDeterminationStatus",
       ContextDeterminationStatus::kNoEligibleTabs, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.SmartTabSharing.TabFilterReason",
+      SmartTabSharingFilterReason::kSensitiveContent, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -1700,6 +1712,9 @@ IN_PROC_BROWSER_TEST_F(
       "ContextualTasks.Context.RelevantTabsCount", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.CandidateTabHasEmbeddings", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.SmartTabSharing.TabFilterReason",
+      SmartTabSharingFilterReason::kLowRelevance, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,

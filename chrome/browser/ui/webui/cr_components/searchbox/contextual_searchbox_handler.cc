@@ -834,7 +834,8 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
   contextual_tasks::LogMenuOptionClicked(
       active ? contextual_tasks::SmartTabSharingToggleState::kToggledOn
              : contextual_tasks::SmartTabSharingToggleState::kToggledOff);
-  if (!active && IsSmartTabSharingActive()) {
+  if (!active && IsSmartTabSharingActive() &&
+      !contextual_tasks::ShouldToggleOffAfterSubmit()) {
     auto* session_handle = GetContextualSessionHandle();
     if (session_handle && !session_handle->previous_turns().empty()) {
       contextual_tasks::LogOptOutMidThread(true);
@@ -2033,7 +2034,8 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
   contextual_tasks::LogThreadWithTabsSubmitted(IsSmartTabSharingActive());
-  if (IsSmartTabSharingActive()) {
+  if (IsSmartTabSharingActive() &&
+      !contextual_tasks::ShouldToggleOffAfterSubmit()) {
     auto* session_handle = GetContextualSessionHandle();
     if (session_handle && !session_handle->previous_turns().empty()) {
       contextual_tasks::LogOptOutMidThread(false);
