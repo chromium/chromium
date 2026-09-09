@@ -2453,7 +2453,7 @@ void Node::setTextContent(const String& text) {
       // mutation observer listeners attached.
       if (container->HasOneTextChild() &&
           To<Text>(container->firstChild())->data() == text && !text.empty() &&
-          !GetDocument().HasMutationObservers()) {
+          !GetDocument().MayHaveMutationObservers()) {
         return;
       }
 
@@ -3349,7 +3349,7 @@ void Node::UnregisterTransientMutationObserver(
 }
 
 void Node::NotifyMutationObserversNodeWillDetach() {
-  if (!GetDocument().HasMutationObservers())
+  if (!GetDocument().MayHaveMutationObservers())
     return;
 
   ScriptForbiddenScope forbid_script_during_raw_iteration;

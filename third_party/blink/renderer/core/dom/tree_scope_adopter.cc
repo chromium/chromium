@@ -308,7 +308,7 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
       if (rare_data->NodeLists()) {
         rare_data->NodeLists()->AdoptDocument(old_document, new_document);
       }
-      if (old_document.HasMutationObservers()) {
+      if (old_document.MayHaveMutationObservers()) {
         node.MoveMutationObserversToNewDocument(new_document);
       }
     }
@@ -332,7 +332,7 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
     DCHECK(!old_document.HasNodeIterators());
     DCHECK(!old_document.HasRanges());
     DCHECK(!old_document.HasAnyNodeWithEventListeners());
-    DCHECK(!old_document.HasMutationObservers());
+    DCHECK(!old_document.MayHaveMutationObservers());
     DCHECK(!old_document.ShouldInvalidateNodeListCaches());
     DCHECK(!old_document.HasCachedAttrAssociatedElements());
   }
@@ -357,7 +357,7 @@ inline bool TreeScopeAdopter::IsDocumentEligibleForFastAdoption(
     Document& old_document) const {
   return !old_document.HasNodeIterators() && !old_document.HasRanges() &&
          !old_document.HasAnyNodeWithEventListeners() &&
-         !old_document.HasMutationObservers() &&
+         !old_document.MayHaveMutationObservers() &&
          !old_document.ShouldInvalidateNodeListCaches() &&
          !old_document.HasCachedAttrAssociatedElements();
 }

@@ -45,7 +45,7 @@ class MutationObserverInterestGroup final
  public:
   static MutationObserverInterestGroup* CreateForChildListMutation(
       Node& target) {
-    if (!target.GetDocument().HasMutationObserversOfType(
+    if (!target.GetDocument().MayHaveMutationObserversOfType(
             kMutationTypeChildList))
       return nullptr;
 
@@ -55,7 +55,7 @@ class MutationObserverInterestGroup final
 
   static MutationObserverInterestGroup* CreateForCharacterDataMutation(
       Node& target) {
-    if (!target.GetDocument().HasMutationObserversOfType(
+    if (!target.GetDocument().MayHaveMutationObserversOfType(
             kMutationTypeCharacterData))
       return nullptr;
 
@@ -66,7 +66,7 @@ class MutationObserverInterestGroup final
   static MutationObserverInterestGroup* CreateForAttributesMutation(
       Node& target,
       const QualifiedName& attribute_name) {
-    if (!target.GetDocument().HasMutationObserversOfType(
+    if (!target.GetDocument().MayHaveMutationObserversOfType(
             kMutationTypeAttributes))
       return nullptr;
 
