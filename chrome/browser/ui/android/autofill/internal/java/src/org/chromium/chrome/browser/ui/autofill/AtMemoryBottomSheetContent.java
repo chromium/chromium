@@ -16,11 +16,15 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Implements the content for the AtMemory bottom sheet. */
 @NullMarked
 class AtMemoryBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final AtMemoryBottomSheetView mView;
     private final BottomSheetController mBottomSheetController;
 
@@ -47,6 +51,11 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
