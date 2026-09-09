@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
@@ -78,7 +79,7 @@ public final class ProfileStore {
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.ProfileStore.GET_OR_CREATE_PROFILE", callSiteToString(callSite))) {
-            mAwInit.maybeSetChromiumUiThread(Looper.getMainLooper());
+            StartupController.getInstance().maybeSetChromiumUiThread(Looper.getMainLooper());
             ThreadUtils.checkUiThread();
 
             RecordHistogram.recordBooleanHistogram(
@@ -91,7 +92,8 @@ public final class ProfileStore {
 
     @Nullable
     public Profile getProfile(@NonNull String name) {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.PROFILE_STORE_GET_PROFILE);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.PROFILE_STORE_GET_PROFILE);
 
         try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.ApiCall.GET_PROFILE")) {
             ThreadUtils.checkUiThread();
@@ -112,8 +114,9 @@ public final class ProfileStore {
 
     @NonNull
     public List<String> getAllProfileNames() {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                StartupCallSite.PROFILE_STORE_GET_ALL_PROFILE_NAMES);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(
+                        StartupCallSite.PROFILE_STORE_GET_ALL_PROFILE_NAMES);
 
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.ProfileStore.ApiCall.GET_ALL_PROFILE_NAMES")) {
@@ -123,7 +126,8 @@ public final class ProfileStore {
     }
 
     public boolean deleteProfile(@NonNull String name) {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.PROFILE_STORE_DELETE_PROFILE);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.PROFILE_STORE_DELETE_PROFILE);
 
         try (TraceEvent event = TraceEvent.scoped("WebView.ProfileStore.ApiCall.DELETE_PROFILE")) {
             ThreadUtils.checkUiThread();

@@ -4,6 +4,7 @@
 
 package com.android.webview.chromium;
 
+import android.os.Looper;
 import android.webkit.CookieManager;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
@@ -14,21 +15,28 @@ import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwQuotaManagerBridge;
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceError;
 import org.chromium.android_webview.AwWebResourceRequest;
+import org.chromium.android_webview.StartupController;
+import org.chromium.android_webview.StartupDiagnostics;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.content_public.browser.MessagePort;
 
+import java.util.Set;
+
 /**
  * Class converting webkit objects to glue-objects shared between the webkit-glue and the support
- * library glue.
- * This class is used to minimize dependencies from the support-library-glue on the webkit-glue.
+ * library glue. This class is used to minimize dependencies from the support-library-glue on the
+ * webkit-glue.
  */
 @Lifetime.Singleton
 public class WebkitToSharedGlueConverter {
@@ -48,6 +56,50 @@ public class WebkitToSharedGlueConverter {
 
     public static WebViewChromiumAwInit getGlobalAwInit() {
         return WebViewChromiumFactoryProvider.getSingleton().getAwInit();
+    }
+
+    public static void startUpWebView(
+            StartupDiagnostics.Callback callback,
+            boolean shouldRunUiThreadStartUpTasks,
+            @Nullable Set<String> profilesToLoad) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new IllegalStateException(
+                    "startUpWebView should not be called on the Android main looper");
+        }
+
+        if (profilesToLoad != null) {
+            if (!shouldRunUiThreadStartUpTasks) {
+                throw new IllegalArgumentException(
+                        "Can't specify profiles to load without running UI thread startup tasks");
+            }
+            WebViewChromiumAwInit awInit = getGlobalAwInit();
+            if (awInit != null) {
+                awInit.setShouldInitializeDefaultProfile(false);
+            }
+        }
+
+        if (!shouldRunUiThreadStartUpTasks) {
+            callback.onSuccess(StartupController.getInstance().getStartupDiagnostics());
+            return;
+        }
+
+        StartupController.getInstance()
+                .requestAsyncStartup(
+                        diagnostics -> {
+                            Set<String> profilesCopy =
+                                    profilesToLoad != null
+                                            ? profilesToLoad
+                                            : Set.of(AwBrowserContext.getDefaultContextName());
+
+                            WebViewChromiumAwInit awInit = getGlobalAwInit();
+                            for (String context : profilesCopy) {
+                                awInit.getProfileStore()
+                                        .getOrCreateProfile(
+                                                context,
+                                                ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
+                            }
+                            callback.onSuccess(diagnostics);
+                        });
     }
 
     public static AwServiceWorkerSettings getServiceWorkerSettings(

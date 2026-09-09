@@ -13,6 +13,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.base.ThreadUtils;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SharedWebViewChromium {
     private final WebViewChromiumRunQueue mRunQueue;
-    private final WebViewChromiumAwInit mAwInit;
+    private final StartupController mStartupController;
     // If set to false, WebViewBuilder configuration may no longer be applied (or, more strictly,
     // cannot begin applying). Non-View method WebView instance APIs (including methods that accept
     // a WebView instance as an argument) will set this to false.
@@ -47,9 +48,9 @@ public class SharedWebViewChromium {
     private WebViewClient mWebViewClient = sNullWebViewClient;
     private WebChromeClient mWebChromeClient;
 
-    public SharedWebViewChromium(WebViewChromiumRunQueue runQueue, WebViewChromiumAwInit awInit) {
+    public SharedWebViewChromium(WebViewChromiumRunQueue runQueue) {
         mRunQueue = runQueue;
-        mAwInit = awInit;
+        mStartupController = StartupController.getInstance();
     }
 
     void setWebViewClient(WebViewClient client) {
@@ -69,7 +70,7 @@ public class SharedWebViewChromium {
     }
 
     public AwRenderProcess getRenderProcess() {
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.WEBVIEW_INSTANCE_GET_RENDER_PROCESS);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(() -> getRenderProcess());
@@ -122,7 +123,7 @@ public class SharedWebViewChromium {
     }
 
     public MessagePort[] createWebMessageChannel() {
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.WEBVIEW_INSTANCE_CREATE_WEBMESSAGE_CHANNEL);
         if (checkNeedsPost()) {
             MessagePort[] ret =
@@ -242,7 +243,7 @@ public class SharedWebViewChromium {
     }
 
     public SharedWebViewRendererClientAdapter getWebViewRendererClientAdapter() {
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.WEBVIEW_INSTANCE_GET_WEBVIEW_RENDERER_CLIENT_ADAPTER);
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(
@@ -270,11 +271,14 @@ public class SharedWebViewChromium {
             return mRunQueue.runOnUiThreadBlocking(this::getProfile);
         }
         String profileName = mAwContents.getBrowserContextForPublicApi().getName();
-        return mAwInit.getProfileStore().getProfile(profileName);
+        return WebkitToSharedGlueConverter.getGlobalAwInit()
+                .getProfileStore()
+                .getProfile(profileName);
     }
 
     protected boolean checkNeedsPost() {
-        boolean needsPost = !mAwInit.isChromiumInitialized() || !ThreadUtils.runningOnUiThread();
+        boolean needsPost =
+                !mStartupController.isChromiumInitialized() || !ThreadUtils.runningOnUiThread();
         if (!needsPost && mAwContents == null) {
             throw new IllegalStateException("AwContents must be created if we are not posting!");
         }
@@ -282,7 +286,8 @@ public class SharedWebViewChromium {
     }
 
     public AwContents getAwContents() {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.WEBVIEW_INSTANCE_GET_AW_CONTENTS);
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_GET_AW_CONTENTS);
         return mAwContents;
     }
 

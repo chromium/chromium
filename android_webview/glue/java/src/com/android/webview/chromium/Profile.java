@@ -20,6 +20,7 @@ import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwHttpCacheManager;
 import org.chromium.android_webview.AwOriginMatchedHeader;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
@@ -82,7 +83,8 @@ public class Profile {
         mName = profileName;
         mTraceArgs = String.format("{name: \"%s\"}", mName);
 
-        if (ThreadUtils.runningOnUiThread() && mAwInit.isChromiumInitialized()) {
+        if (ThreadUtils.runningOnUiThread()
+                && StartupController.getInstance().isChromiumInitialized()) {
             initializeProfile();
         }
     }
@@ -132,7 +134,7 @@ public class Profile {
             return mState;
         }
 
-        mAwInit.triggerAndWaitForChromiumStarted(callSite);
+        StartupController.getInstance().triggerAndWaitForChromiumStarted(callSite);
 
         /**
          * TODO(crbug.com/529836096): This is a temporary workaround. During async startup,

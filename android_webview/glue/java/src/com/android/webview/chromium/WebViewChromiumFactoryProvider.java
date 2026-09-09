@@ -430,16 +430,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                     BaseFeatures.SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP));
 
             mAwInit = createAwInit();
-            mSharedStatics = new SharedStatics(mAwInit);
-            mStaticsAdapter = new StaticsAdapter(mSharedStatics);
-
             // TODO(crbug.com/544990736): Ideally StartupController should be initialized at the end
-            // of
-            // provider init once all early usages (e.g. runNonUiThreadCapableStartupTasks) are
+            // of provider init once all early usages (e.g. runNonUiThreadCapableStartupTasks) are
             // removed.
             mStartupDelegate =
                     new StartupDelegateImpl(webViewDelegate, mAwInit::initializeDefaultProfileOnUI);
             StartupController startupController = StartupController.initialize(mStartupDelegate);
+
+            mSharedStatics = new SharedStatics(mAwInit);
+            mStaticsAdapter = new StaticsAdapter(mSharedStatics);
 
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 startupController.setProviderInitOnMainLooperLocation(
@@ -909,7 +908,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public TracingController getTracingController() {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.GET_TRACING_CONTROLLER);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_TRACING_CONTROLLER);
         synchronized (mAwInit.getLazyInitLock()) {
             if (mTracingController == null) {
                 mTracingController =

@@ -898,7 +898,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             StartupDiagnostics.Callback chromiumCallback =
                     result -> handleStartupResult(onSuccess, result);
 
-            mAwInit.startUpWebView(
+            WebkitToSharedGlueConverter.startUpWebView(
                     chromiumCallback,
                     startUpConfig.mShouldRunUiThreadStartUpTasks,
                     startUpConfig.mProfileNamesToLoad);
@@ -1019,7 +1019,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                         supportLibResult));
                     };
 
-            mAwInit.startUpWebView(
+            WebkitToSharedGlueConverter.startUpWebView(
                     callback,
                     webViewStartUpConfig.shouldRunUiThreadStartUpTasks(),
                     getProfilesToLoad(webViewStartUpConfig));

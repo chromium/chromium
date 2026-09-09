@@ -17,6 +17,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDevToolsServer;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
@@ -44,9 +45,11 @@ import java.util.List;
 @Lifetime.Singleton
 public class SharedStatics {
     private final WebViewChromiumAwInit mAwInit;
+    private final StartupController mStartupController;
 
     public SharedStatics(WebViewChromiumAwInit awInit) {
         mAwInit = awInit;
+        mStartupController = StartupController.getInstance();
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -102,15 +105,17 @@ public class SharedStatics {
     }
 
     public String getDefaultUserAgent(Context context) {
-        if (!mAwInit.isChromiumInitialized()) {
-            mAwInit.maybeSetChromiumUiThread(Looper.getMainLooper());
+        if (!mStartupController.isChromiumInitialized()) {
+            mStartupController.maybeSetChromiumUiThread(Looper.getMainLooper());
             RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.Static.GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted",
+                    "Android.WebView.Static"
+                            + ".GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted",
                     ThreadUtils.runningOnUiThread());
         }
         if (!WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_FASTER_GET_DEFAULT_USER_AGENT)) {
-            mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.STATIC_GET_DEFAULT_USER_AGENT);
+            mStartupController.triggerAndWaitForChromiumStarted(
+                    StartupCallSite.STATIC_GET_DEFAULT_USER_AGENT);
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_DEFAULT_USER_AGENT")) {
@@ -126,7 +131,8 @@ public class SharedStatics {
             // a background thread but don't block on it. That way, the next time a WebView API is
             // called, startup may have already completed.
             if (!ThreadUtils.runningOnUiThread()) {
-                mAwInit.postChromiumStartupIfNeeded(StartupCallSite.STATIC_GET_DEFAULT_USER_AGENT);
+                mStartupController.postChromiumStartupIfNeeded(
+                        StartupCallSite.STATIC_GET_DEFAULT_USER_AGENT);
             }
             // This only depends on command line flags for UA reduction. Command line flags are
             // already initialized by the time we get here since that happens during provider
@@ -148,7 +154,8 @@ public class SharedStatics {
         // TODO(437338203): When we clean this up after it ships to 100%, we can remove all the
         // triggerAndWaitForChromiumStarted calls in the methods that use shouldPost, since they
         // will always be no-ops.
-        return shouldEnableStaticMethodsNotTriggerStartup() && !mAwInit.isChromiumInitialized();
+        return shouldEnableStaticMethodsNotTriggerStartup()
+                && !mStartupController.isChromiumInitialized();
     }
 
     public void setWebContentsDebuggingEnabled(boolean enable) {
@@ -156,7 +163,7 @@ public class SharedStatics {
             mAwInit.getRunQueue().addTask(() -> setWebContentsDebuggingEnabled(enable));
             return;
         }
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.STATIC_SET_WEB_CONTENTS_DEBUGGING_ENABLED);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_WEB_CONTENTS_DEBUGGING_ENABLED")) {
@@ -185,11 +192,11 @@ public class SharedStatics {
             // startup here. It's very unlikely that this method is what triggers WebView startup
             // in the wild, so not deferring startup here shouldn't really hurt much.
             // See crbug/533032033 for more details.
-            mAwInit.postChromiumStartupIfNeeded(
+            mStartupController.postChromiumStartupIfNeeded(
                     StartupCallSite.STATIC_CLEAR_CLIENT_CERT_PREFERENCES);
             return;
         }
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.STATIC_CLEAR_CLIENT_CERT_PREFERENCES);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.CLEAR_CLIENT_CERT_PREFERENCES")) {
@@ -201,7 +208,8 @@ public class SharedStatics {
     }
 
     public void freeMemoryForTests() {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.STATIC_FREE_MEMORY_FOR_TESTS);
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.STATIC_FREE_MEMORY_FOR_TESTS);
         if (ActivityManager.isRunningInTestHarness()) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
@@ -218,7 +226,7 @@ public class SharedStatics {
             mAwInit.getRunQueue().addTask(() -> enableSlowWholeDocumentDraw());
             return;
         }
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.STATIC_ENABLE_SLOW_WHOLE_DOCUMENT_DRAW);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ENABLE_SLOW_WHOLE_DOCUMENT_DRAW")) {
@@ -228,7 +236,8 @@ public class SharedStatics {
     }
 
     public Uri[] parseFileChooserResult(int resultCode, Intent intent) {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.STATIC_PARSE_FILE_CHOOSER_RESULT);
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.STATIC_PARSE_FILE_CHOOSER_RESULT);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PARSE_RESULT")) {
             recordStaticApiCall(ApiCall.PARSE_RESULT);
             return AwContentsClient.parseFileChooserResult(resultCode, intent);
@@ -243,7 +252,8 @@ public class SharedStatics {
      *     callback will be run on the UI thread.
      */
     public void initSafeBrowsing(Context context, Callback<Boolean> callback) {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.STATIC_INIT_SAFE_BROWSING);
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.STATIC_INIT_SAFE_BROWSING);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.START_SAFE_BROWSING")) {
             recordStaticApiCall(ApiCall.START_SAFE_BROWSING);
@@ -258,7 +268,7 @@ public class SharedStatics {
             mAwInit.getRunQueue().addTask(() -> setSafeBrowsingAllowlist(urls, callback));
             return;
         }
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.STATIC_SET_SAFE_BROWSING_ALLOWLIST);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_SAFE_BROWSING_ALLOWLIST")) {
@@ -275,7 +285,7 @@ public class SharedStatics {
      * @return the url pointing to a privacy policy document which can be displayed to users.
      */
     public Uri getSafeBrowsingPrivacyPolicyUrl() {
-        mAwInit.triggerAndWaitForChromiumStarted(
+        mStartupController.triggerAndWaitForChromiumStarted(
                 StartupCallSite.STATIC_GET_SAFE_BROWSING_PRIVACY_POLICY_URL);
         try (TraceEvent event =
                 TraceEvent.scoped(
@@ -296,7 +306,8 @@ public class SharedStatics {
     }
 
     public String getVariationsHeader() {
-        mAwInit.triggerAndWaitForChromiumStarted(StartupCallSite.STATIC_GET_VARIATIONS_HEADER);
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.STATIC_GET_VARIATIONS_HEADER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_VARIATIONS_HEADER")) {
             recordStaticApiCall(ApiCall.GET_VARIATIONS_HEADER);

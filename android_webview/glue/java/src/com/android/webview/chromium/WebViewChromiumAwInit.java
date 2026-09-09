@@ -5,13 +5,11 @@
 package com.android.webview.chromium;
 
 import android.content.Context;
-import android.os.Looper;
 import android.webkit.CookieManager;
 import android.webkit.WebIconDatabase;
 import android.webkit.WebViewDatabase;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.ApiCallLogger.ApiCall;
 import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
@@ -23,7 +21,6 @@ import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupController;
-import org.chromium.android_webview.StartupDiagnostics;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
@@ -31,7 +28,6 @@ import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -83,42 +79,8 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    boolean isChromiumInitialized() {
-        return getStartupController().isChromiumInitialized();
-    }
-
-    /**
-     * If UI thread is not set, Android main looper will be set as the UI thread.
-     *
-     * <p>Postcondition: Chromium startup is finished when this method returns.
-     */
-    void triggerAndWaitForChromiumStarted(@StartupCallSite int callSite) {
-        if (isChromiumInitialized()) {
-            return;
-        }
-        // For threadSafe WebView APIs that can trigger startup, holding a lock while waiting for
-        // the startup to complete can lead to a deadlock. This would happen when:
-        // - A background thread B call threadsafe funcA and acquires mLazyInitLock.
-        // - Thread B posts the startup task to the UI thread and waits for completion.
-        // - UI thread calls funcA before it has executed the posted startup task.
-        // - UI thread blocks trying to acquire mLazyInitLock that's held by thread B.
-        // - Deadlock!
-        // See crbug.com/395877483 for more details.
-        assert !Thread.holdsLock(mLazyInitLock);
-        getStartupController().triggerAndWaitForChromiumStarted(callSite);
-    }
-
-    /**
-     * If UI thread is not set, Android main looper will be set as the UI thread.
-     *
-     * <p>Postcondition: Chromium startup will be finished in the near future.
-     */
-    void postChromiumStartupIfNeeded(@StartupCallSite int callSite) {
-        getStartupController().postChromiumStartupIfNeeded(callSite);
-    }
-
-    void maybeSetChromiumUiThread(Looper looper) {
-        getStartupController().maybeSetChromiumUiThread(looper);
+    void setShouldInitializeDefaultProfile(boolean value) {
+        mShouldInitializeDefaultProfile = value;
     }
 
     public SharedStatics getSharedStatics() {
@@ -130,7 +92,8 @@ public class WebViewChromiumAwInit {
     }
 
     public AwTracingController getAwTracingController() {
-        triggerAndWaitForChromiumStarted(StartupCallSite.GET_AW_TRACING_CONTROLLER);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_AW_TRACING_CONTROLLER);
         return AwTracingController.getInstance();
     }
 
@@ -140,7 +103,8 @@ public class WebViewChromiumAwInit {
             mShouldInitializeDefaultProfile = false;
         }
         if (ProfileStore.requiresStartup()) {
-            triggerAndWaitForChromiumStarted(StartupCallSite.GET_PROFILE_STORE);
+            StartupController.getInstance()
+                    .triggerAndWaitForChromiumStarted(StartupCallSite.GET_PROFILE_STORE);
         }
         return mProfileStore;
     }
@@ -156,7 +120,8 @@ public class WebViewChromiumAwInit {
     }
 
     public WebIconDatabase getWebIconDatabase() {
-        triggerAndWaitForChromiumStarted(StartupCallSite.GET_WEB_ICON_DATABASE);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_WEB_ICON_DATABASE);
         ApiCallLogger.recordWebViewApiCall(
                 ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
                 ApiCallUserAction.WEB_ICON_DATABASE_GET_INSTANCE);
@@ -169,7 +134,8 @@ public class WebViewChromiumAwInit {
     }
 
     public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
-        triggerAndWaitForChromiumStarted(StartupCallSite.GET_DEFAULT_WEBVIEW_DATABASE);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_DEFAULT_WEBVIEW_DATABASE);
         synchronized (mLazyInitLock) {
             if (mDefaultWebViewDatabase == null) {
                 mDefaultWebViewDatabase =
@@ -187,47 +153,6 @@ public class WebViewChromiumAwInit {
 
     public Object getLazyInitLock() {
         return mLazyInitLock;
-    }
-
-    // Starts up WebView asynchronously.
-    // MUST NOT be called on the UI thread.
-    // The callback can either be called synchronously or on the UI thread.
-    public void startUpWebView(
-            StartupDiagnostics.Callback callback,
-            boolean shouldRunUiThreadStartUpTasks,
-            @Nullable Set<String> profilesToLoad) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            throw new IllegalStateException(
-                    "startUpWebView should not be called on the Android main looper");
-        }
-
-        if (profilesToLoad != null) {
-            if (!shouldRunUiThreadStartUpTasks) {
-                throw new IllegalArgumentException(
-                        "Can't specify profiles to load without running UI thread startup tasks");
-            }
-            mShouldInitializeDefaultProfile = false;
-        }
-
-        if (!shouldRunUiThreadStartUpTasks) {
-            callback.onSuccess(getStartupController().getStartupDiagnostics());
-            return;
-        }
-
-        getStartupController()
-                .requestAsyncStartup(
-                        diagnostics -> {
-                            Set<String> profilesCopy =
-                                    profilesToLoad != null
-                                            ? profilesToLoad
-                                            : Set.of(AwBrowserContext.getDefaultContextName());
-
-                            for (String context : profilesCopy) {
-                                mProfileStore.getOrCreateProfile(
-                                        context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
-                            }
-                            callback.onSuccess(diagnostics);
-                        });
     }
 
     public Profile getDefaultProfile(@StartupCallSite int callSite) {
@@ -264,7 +189,7 @@ public class WebViewChromiumAwInit {
          * default profile is ready the first time a thread-safe framework API is called.
          */
         private void ensureInitializationIsDone(@StartupCallSite int callSite) {
-            triggerAndWaitForChromiumStarted(callSite);
+            StartupController.getInstance().triggerAndWaitForChromiumStarted(callSite);
             if (mDefaultProfile != null) {
                 return;
             }
