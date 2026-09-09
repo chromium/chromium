@@ -629,7 +629,10 @@ export const ComposeboxEmbedderMixin =
           if (changedPrivateProperties.has('selectedMatchIndex')) {
             if (this.selectedMatch) {
               // Update the input.
-              this.input = this.selectedMatch.fillIntoEdit;
+              if (this.input !== this.selectedMatch.fillIntoEdit) {
+                this.getInputElement().resetHeight();
+                this.input = this.selectedMatch.fillIntoEdit;
+              }
             } else if (!this.lastQueriedInput) {
               // This is for cases when focus leaves the matches/input.
               // If there was already text in the input do not clear it.
@@ -641,7 +644,10 @@ export const ComposeboxEmbedderMixin =
             } else {
               // For typed queries reset the input back to typed value when
               // focus leaves the match.
-              this.input = this.lastQueriedInput;
+              if (this.input !== this.lastQueriedInput) {
+                this.getInputElement().resetHeight();
+                this.input = this.lastQueriedInput;
+              }
             }
           }
           if (changedPrivateProperties.has('attachedContext')) {

@@ -43,6 +43,17 @@ function simulateUserTextInput(
   return microtasksFinished();
 }
 
+async function pollUntil(
+    predicate: () => boolean, timeoutMs = 10000): Promise<void> {
+  const start = Date.now();
+  while (!predicate()) {
+    if (Date.now() - start > timeoutMs) {
+      throw new Error('pollUntil timed out');
+    }
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+  }
+}
+
 function setSelectionOffset(input: HTMLElement, offset: number) {
   if (input instanceof HTMLTextAreaElement) {
     input.setSelectionRange(offset, offset);
@@ -1009,22 +1020,100 @@ suite('ComposeboxMixinTest', () => {
     element.input = 'Draft text';
     element.lastQueriedInput = 'Draft text';
     element.activeQueryId = 1;
+    await microtasksFinished();
 
-    const matches = [
-      {fillIntoEdit: 'Draft text suggestion', supportsDeletion: false} as
-          AutocompleteMatch,
-    ];
-    element.result = {input: 'Draft text', matches} as AutocompleteResult;
-    element.selectedMatchIndex = 0;
-    await element.updateComplete;
+    const inputComponent = element.getInputElement();
+    const dropdown = element.getDropdownElement();
+    const originalResetHeight = inputComponent.resetHeight;
+    let resetCount = 0;
+    inputComponent.resetHeight = () => {
+      resetCount++;
+      originalResetHeight.call(inputComponent);
+    };
 
-    element.clearAutocompleteMatches();
-    await element.updateComplete;
+    try {
+      // 1. Same-text suggestion preview and draft restoration should preserve
+      // the height lock without calling resetHeight.
+      element.result = {
+        input: 'Draft text',
+        matches: [
+          {fillIntoEdit: 'Draft text', supportsDeletion: false} as
+              AutocompleteMatch,
+        ],
+      } as AutocompleteResult;
+      await microtasksFinished();
 
-    assertEquals('Draft text', element.input);
-    assertEquals(-1, element.selectedMatchIndex);
-    assertEquals(null, element.result);
-    assertEquals(-1, element.activeQueryId);
+      dropdown.selectIndex(0);
+      await microtasksFinished();
+      assertEquals(0, element.selectedMatchIndex);
+      assertEquals('Draft text', element.input);
+      assertEquals(0, resetCount);
+
+      element.clearAutocompleteMatches();
+      await microtasksFinished();
+      assertEquals('Draft text', element.input);
+      assertEquals(-1, element.selectedMatchIndex);
+      assertEquals(null, element.result);
+      assertEquals(-1, element.activeQueryId);
+      assertEquals(0, resetCount);
+
+      // 2. Different-text suggestion preview and draft restoration resets
+      // height.
+      element.result = {
+        input: 'Draft text',
+        matches: [
+          {fillIntoEdit: 'Draft text suggestion', supportsDeletion: false} as
+              AutocompleteMatch,
+        ],
+      } as AutocompleteResult;
+      await microtasksFinished();
+
+      dropdown.selectIndex(0);
+      await microtasksFinished();
+      assertEquals(0, element.selectedMatchIndex);
+      assertEquals('Draft text suggestion', element.input);
+      assertEquals(1, resetCount);
+
+      element.clearAutocompleteMatches();
+      await microtasksFinished();
+      assertEquals('Draft text', element.input);
+      assertEquals(-1, element.selectedMatchIndex);
+      assertEquals(null, element.result);
+      assertEquals(-1, element.activeQueryId);
+      assertEquals(2, resetCount);
+
+      // 3. Zero-state preview (no typed draft query): clearing after preview
+      // clears the input and releases the height lock.
+      element.input = '';
+      element.lastQueriedInput = '';
+      await microtasksFinished();
+      resetCount = 0;
+
+      element.result = {
+        input: '',
+        matches: [
+          {fillIntoEdit: 'Preview suggestion', supportsDeletion: false} as
+              AutocompleteMatch,
+        ],
+      } as AutocompleteResult;
+      await microtasksFinished();
+
+      dropdown.selectIndex(0);
+      await microtasksFinished();
+      assertEquals(0, element.selectedMatchIndex);
+      assertEquals('Preview suggestion', element.input);
+      assertEquals(1, resetCount);
+
+      element.clearAutocompleteMatches();
+      await microtasksFinished();
+      assertEquals('', element.input);
+      assertEquals(-1, element.selectedMatchIndex);
+      assertEquals(null, element.result);
+      assertEquals(-1, element.activeQueryId);
+      assertEquals(2, resetCount);
+    } finally {
+      inputComponent.resetHeight = originalResetHeight;
+    }
   });
 
   test('smartComposeInlineHint is sliced on sequential typing', async () => {
@@ -1326,53 +1415,125 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test('navigates matches with ArrowDown and ArrowUp', async () => {
-    const input = element.getInputElement().inputElement;
-    const matchesElement = element.getDropdownElement();
+    const originalBodyWidth = document.body.style.width;
+    const originalBodyHeight = document.body.style.height;
+    const originalElementWidth = element.style.width;
+    const inputComponent = element.getInputElement();
+    const originalResetHeight = inputComponent.resetHeight;
 
-    element.result = {input: '', matches: []} as unknown as AutocompleteResult;
-    await microtasksFinished();
+    try {
+      document.body.style.width = '800px';
+      document.body.style.height = '600px';
+      element.style.width = '100%';
 
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(-1, matchesElement.selectedMatchIndex);
+      const input = inputComponent.inputElement as HTMLTextAreaElement;
+      const matchesElement = element.getDropdownElement();
+      const wrapper = inputComponent.shadowRoot.querySelector<HTMLElement>(
+          '#inputWrapper')!;
 
-    const matches = [
-      {fillIntoEdit: 'test1'} as AutocompleteMatch,
-      {fillIntoEdit: 'test2'} as AutocompleteMatch,
-    ];
-    element.result = {input: 'test', matches} as AutocompleteResult;
-    await microtasksFinished();
+      element.result = {input: '', matches: []} as unknown as
+          AutocompleteResult;
+      await microtasksFinished();
 
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(0, matchesElement.selectedMatchIndex);
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(-1, matchesElement.selectedMatchIndex);
 
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(1, matchesElement.selectedMatchIndex);
+      // 1. Establish height lock with multiline text.
+      const initialHeight = wrapper.clientHeight;
+      input.value = 'line 1\nline 2\nline 3\nline 4\nline 5';
+      input.dispatchEvent(new Event('input', {bubbles: true}));
+      await microtasksFinished();
+      await pollUntil(
+          () => wrapper.clientHeight > initialHeight &&
+              parseFloat(wrapper.style.minHeight) === wrapper.clientHeight);
+      const initialMinHeight = wrapper.style.minHeight;
+      const tallHeight = wrapper.clientHeight;
 
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(0, matchesElement.selectedMatchIndex);
+      // 2. Shorten/delete text; the height lock is preserved.
+      input.value = 'test';
+      input.dispatchEvent(new Event('input', {bubbles: true}));
+      await microtasksFinished();
+      await new Promise<void>(
+          resolve => requestAnimationFrame(
+              () => requestAnimationFrame(() => resolve())));
+      assertEquals(initialMinHeight, wrapper.style.minHeight);
+      assertEquals(tallHeight, wrapper.clientHeight);
 
-    input.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'ArrowDown',
-      ctrlKey: true,
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals(0, matchesElement.selectedMatchIndex);
+      let resetCount = 0;
+      inputComponent.resetHeight = () => {
+        resetCount++;
+        originalResetHeight.call(inputComponent);
+      };
 
-    element.dropdownNeeded = false;
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(0, matchesElement.selectedMatchIndex);
+      const matches = [
+        {fillIntoEdit: 'test'} as AutocompleteMatch,
+        {fillIntoEdit: 'test2'} as AutocompleteMatch,
+      ];
+      element.result = {input: 'test', matches} as AutocompleteResult;
+      await microtasksFinished();
+
+      // 3. ArrowDown to suggestion with same text ('test') -> lock is NOT
+      // reset.
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(0, matchesElement.selectedMatchIndex);
+      assertEquals('test', element.input);
+      assertEquals(0, resetCount);
+      assertEquals(initialMinHeight, wrapper.style.minHeight);
+      assertEquals(tallHeight, wrapper.clientHeight);
+
+      // 4. ArrowDown to suggestion with different text ('test2') -> height lock
+      // shrinks and does not bounce back.
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(1, matchesElement.selectedMatchIndex);
+      assertEquals('test2', element.input);
+      assertEquals(1, resetCount);
+
+      await pollUntil(
+          () => wrapper.style.minHeight !== '' &&
+              parseFloat(wrapper.style.minHeight) <
+                  parseFloat(initialMinHeight) &&
+              wrapper.clientHeight < tallHeight);
+
+      await new Promise<void>(
+          resolve => requestAnimationFrame(
+              () => requestAnimationFrame(() => resolve())));
+      assertTrue(
+          parseFloat(wrapper.style.minHeight) < parseFloat(initialMinHeight));
+      assertTrue(wrapper.clientHeight < tallHeight);
+
+      // 5. Verify existing keyboard navigation behaviors (ArrowUp, ctrlKey,
+      // dropdownNeeded).
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(0, matchesElement.selectedMatchIndex);
+
+      input.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'ArrowDown',
+        ctrlKey: true,
+        bubbles: true,
+        composed: true,
+      }));
+      await microtasksFinished();
+      assertEquals(0, matchesElement.selectedMatchIndex);
+
+      element.dropdownNeeded = false;
+      input.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+      await microtasksFinished();
+      assertEquals(0, matchesElement.selectedMatchIndex);
+    } finally {
+      inputComponent.resetHeight = originalResetHeight;
+      element.style.width = originalElementWidth;
+      document.body.style.width = originalBodyWidth;
+      document.body.style.height = originalBodyHeight;
+    }
   });
 
   test('selects first or last match with PageUp and PageDown', async () => {

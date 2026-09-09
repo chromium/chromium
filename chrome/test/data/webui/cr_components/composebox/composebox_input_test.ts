@@ -424,6 +424,82 @@ suite('ComposeboxScrollCaret', () => {
     assertEquals('', wrapper.style.minHeight);
     assertEquals('', input.style.minHeight);
   });
+
+  test(
+      'ResizeObserver and rAF: stale callback does not write old height and new lock establishes for short text',
+      async () => {
+        document.body.style.width = '800px';
+        document.body.style.height = '600px';
+        inputElement.style.width = '100%';
+        inputElement.style.setProperty('--text-input-max-height', '500px');
+
+        const wrapper =
+            inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+        const input = inputElement.$.input as HTMLTextAreaElement;
+        assertTrue(!!wrapper);
+
+        const capturedCallbacks: FrameRequestCallback[] = [];
+        let captureRaf = false;
+        const originalRaf = window.requestAnimationFrame;
+
+        try {
+          window.requestAnimationFrame = (cb: FrameRequestCallback) => {
+            if (captureRaf) {
+              capturedCallbacks.push(cb);
+              return capturedCallbacks.length;
+            }
+            return originalRaf(cb);
+          };
+
+          // 1. Enter tall multiline text and capture pending rAF callbacks.
+          captureRaf = true;
+          input.value = 'line 1\nline 2\nline 3\nline 4\nline 5\nline 6';
+          input.dispatchEvent(new Event('input', {bubbles: true}));
+          await inputElement.updateComplete;
+
+          await new Promise<void>(
+              resolve => originalRaf(() => originalRaf(() => resolve())));
+          assertTrue(capturedCallbacks.length > 0);
+          captureRaf = false;
+
+          const tallHeight = wrapper.clientHeight;
+          assertTrue(tallHeight > 50);
+
+          // 2. Reset height to increment generation and clear minHeight.
+          inputElement.resetHeight();
+          assertEquals('', wrapper.style.minHeight);
+
+          // 3. Enter shorter text and allow its new rAF to execute naturally.
+          input.value = 'line 1\nline 2';
+          input.dispatchEvent(new Event('input', {bubbles: true}));
+          await inputElement.updateComplete;
+
+          await pollUntil(() => wrapper.style.minHeight !== '');
+          const shortLockHeight = wrapper.style.minHeight;
+          assertTrue(parseFloat(shortLockHeight) < tallHeight);
+
+          // 4. Execute the stale rAF callbacks from the tall text.
+          for (const cb of capturedCallbacks) {
+            cb(performance.now());
+          }
+
+          // Stale callback must be ignored due to generation mismatch;
+          // the short lock must not be overwritten by the tall height.
+          assertEquals(shortLockHeight, wrapper.style.minHeight);
+          assertTrue(parseFloat(wrapper.style.minHeight) < tallHeight);
+
+          // 5. Verify the new height lock is active and prevents shrinking on
+          // delete.
+          input.value = 'line 1';
+          input.dispatchEvent(new Event('input', {bubbles: true}));
+          await inputElement.updateComplete;
+          await new Promise<void>(
+              resolve => originalRaf(() => originalRaf(() => resolve())));
+          assertEquals(shortLockHeight, wrapper.style.minHeight);
+        } finally {
+          window.requestAnimationFrame = originalRaf;
+        }
+      });
 });
 
 suite('ComposeboxCaretGeometry', () => {

@@ -78,6 +78,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   // Min height of the input wrapper so that it doesn't collapse when text is
   // deleted.
   private lockedMinHeight_: number = 0;
+  private heightLockGeneration_: number = 0;
   private isRtl_: boolean = false;
 
   get inputElement(): HTMLElement {
@@ -95,6 +96,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.heightLockGeneration_++;
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;
@@ -385,7 +387,11 @@ export class ComposeboxInputElement extends I18nMixinLit
       // Handle height changes.
       const currentHeight = inputWrapper.clientHeight;
       if (currentHeight > this.lockedMinHeight_) {
+        const generation = this.heightLockGeneration_;
         requestAnimationFrame(() => {
+          if (generation !== this.heightLockGeneration_) {
+            return;
+          }
           if (currentHeight > this.lockedMinHeight_) {
             this.lockedMinHeight_ = currentHeight;
             inputWrapper.style.minHeight = `${currentHeight}px`;
@@ -498,6 +504,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   }
 
   resetHeight() {
+    this.heightLockGeneration_++;
     this.lockedMinHeight_ = 0;
     this.$.input.style.minHeight = '';
     const inputWrapper = this.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
