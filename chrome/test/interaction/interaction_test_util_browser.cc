@@ -188,54 +188,75 @@ class InteractionTestUtilSimulatorBrowser
     }
 #endif  // BUILDFLAG(IS_MAC)
 
+    // Extract the hosting WebView and WebContents for web or WebUI elements.
+    views::WebView* view = nullptr;
+    content::WebContents* web_contents = nullptr;
     if (auto* const tracked_contents =
             element->AsA<TrackedElementWebContents>()) {
-      if (auto* const view = tracked_contents->owner()->GetWebView()) {
-        // There are two possibilities:
-        //  1. This is a legitimate accelerator, which must be handled by the
-        //     focus manager.
-        //  2. This is a control key that will be processed by Blink (e.g.
-        //     pressing enter or space to "click" an HTML button), and therefore
-        //     must be injected as a keypress.
-        bool result = view->GetFocusManager()->ProcessAccelerator(accelerator);
-        if (!result) {
-          result = ui_controls::SendKeyPress(
-              tracked_contents->owner()
-                  ->web_contents()
-                  ->GetTopLevelNativeWindow(),
-              accelerator.key_code(), accelerator.IsCtrlDown(),
-              accelerator.IsShiftDown(), accelerator.IsAltDown(),
-              accelerator.IsCmdDown());
-        }
-        return result ? ui::test::ActionResult::kSucceeded
-                      : ui::test::ActionResult::kFailed;
-      } else {
-        LOG(ERROR) << "No associated view to send accelerators to.";
-        return ui::test::ActionResult::kFailed;
+      view = tracked_contents->owner()->GetWebView();
+      web_contents = tracked_contents->owner()->web_contents();
+    } else if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+      view = webui_el->GetWebView();
+      if (view) {
+        web_contents = view->GetWebContents();
       }
+    } else {
+      // Non-web elements are handled by other simulators (e.g. Views).
+      return ui::test::ActionResult::kNotAttempted;
     }
 
-    return ui::test::ActionResult::kNotAttempted;
+    if (!view || !web_contents) {
+      LOG(ERROR) << "No associated view or contents to send accelerators to.";
+      return ui::test::ActionResult::kFailed;
+    }
+
+    // There are two possibilities:
+    //  1. This is a legitimate accelerator, which must be handled by the
+    //     focus manager.
+    //  2. This is a control key that will be processed by Blink (e.g.
+    //     pressing enter or space to "click" an HTML button), and therefore
+    //     must be injected as a keypress.
+    bool result = view->GetFocusManager()->ProcessAccelerator(accelerator);
+    if (!result) {
+      result = ui_controls::SendKeyPress(
+          web_contents->GetTopLevelNativeWindow(), accelerator.key_code(),
+          accelerator.IsCtrlDown(), accelerator.IsShiftDown(),
+          accelerator.IsAltDown(), accelerator.IsCmdDown());
+    }
+    return result ? ui::test::ActionResult::kSucceeded
+                  : ui::test::ActionResult::kFailed;
   }
 
-  // Handle sending key presses to web contents. All other cases are handled by
-  // the Views simulator.
+  // Handle sending key presses to web contents and WebUI elements. All other
+  // cases are handled by the Views simulator.
   ui::test::ActionResult SendKeyPress(ui::TrackedElement* element,
                                       ui::KeyboardCode key,
                                       int flags) override {
+    gfx::NativeWindow native_window = gfx::NativeWindow();
     if (auto* const tracked_contents =
             element->AsA<TrackedElementWebContents>()) {
-      auto native_window =
+      native_window =
           tracked_contents->owner()->web_contents()->GetTopLevelNativeWindow();
-      const bool result = ui_test_utils::SendKeyPressToWindowSync(
-          native_window, key, flags & ui::EF_CONTROL_DOWN,
-          flags & ui::EF_SHIFT_DOWN, flags & ui::EF_ALT_DOWN,
-          flags & ui::EF_COMMAND_DOWN);
-      return result ? ui::test::ActionResult::kSucceeded
-                    : ui::test::ActionResult::kFailed;
+    } else if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+      if (auto* const web_view = webui_el->GetWebView()) {
+        if (auto* const contents = web_view->GetWebContents()) {
+          native_window = contents->GetTopLevelNativeWindow();
+        }
+      }
+    } else {
+      return ui::test::ActionResult::kNotAttempted;
     }
 
-    return ui::test::ActionResult::kNotAttempted;
+    if (!native_window) {
+      return ui::test::ActionResult::kFailed;
+    }
+
+    const bool result = ui_test_utils::SendKeyPressToWindowSync(
+        native_window, key, flags & ui::EF_CONTROL_DOWN,
+        flags & ui::EF_SHIFT_DOWN, flags & ui::EF_ALT_DOWN,
+        flags & ui::EF_COMMAND_DOWN);
+    return result ? ui::test::ActionResult::kSucceeded
+                  : ui::test::ActionResult::kFailed;
   }
 
   // Chrome has better and more thorough functionality for bringing a browser
