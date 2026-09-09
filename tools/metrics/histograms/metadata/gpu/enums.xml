@@ -1201,6 +1201,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="32029" label="0x7d1d, Intel Meteorlake"/>
   <int value="44317" label="0xad1d, Intel Arrowlake"/>
   <int value="45118" label="0xb03e, Intel Pantherlake"/>
+  <int value="64830" label="0xfd3e, Intel Wildcatlake"/>
 </enum>
 
 <enum name="MaximumGLESVersion">
