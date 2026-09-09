@@ -1527,18 +1527,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // This test makes sure a crashed singleton tab reloads from a new navigation.
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/477008551): Investigate this Windows timeout.
-#define MAYBE_NavigateToCrashedSingletonTab \
-  DISABLED_NavigateToCrashedSingletonTab
-#else
-#define MAYBE_NavigateToCrashedSingletonTab NavigateToCrashedSingletonTab
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       MAYBE_NavigateToCrashedSingletonTab) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
   const GURL singleton_url(GetContentSettingsURL());
   WebContents* web_contents = chrome::AddSelectedTabWithURL(
       browser(), singleton_url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
   // We should have one browser with 2 tabs, the 2nd selected.
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -1548,11 +1541,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Kill the singleton tab.
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-
-    content::RenderFrameDeletedObserver crash_observer(
-        web_contents->GetPrimaryMainFrame());
-    web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(1);
-    crash_observer.WaitUntilDeleted();
+    content::CrashTab(web_contents);
   }
   EXPECT_TRUE(web_contents->IsCrashed());
 
