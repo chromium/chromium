@@ -9,6 +9,7 @@ import android.animation.AnimatorListenerAdapter;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
@@ -135,11 +136,13 @@ public class CompositorAnimationHandler {
 
     /**
      * Enable or disable testing mode. This causes any animations to end immediately.
+     *
      * @param enabled Whether testing mode is enabled or disabled.
      */
     @VisibleForTesting
     public static void setTestingMode(boolean enabled) {
         sIsInTestingMode = enabled;
+        ResettersForTesting.register(() -> sIsInTestingMode = false);
     }
 
     /**
