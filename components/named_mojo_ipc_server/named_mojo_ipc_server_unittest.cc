@@ -194,7 +194,7 @@ void NamedMojoIpcServerTest::CreateIpcServer(EndpointOptions options) {
       options, base::BindRepeating([](test::mojom::Echo* impl,
                                       const ConnectionInfo&) { return impl; },
                                    this));
-  ipc_server_->set_on_server_endpoint_created_callback_for_testing(
+  ipc_server_->set_on_server_endpoint_created_callback(
       base::BindRepeating(&NamedMojoIpcServerTest::OnServerEndpointCreated,
                           base::Unretained(this)));
 }

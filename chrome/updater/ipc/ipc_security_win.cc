@@ -4,6 +4,7 @@
 
 #include "chrome/updater/ipc/ipc_security.h"
 
+#include "base/check.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -42,6 +43,30 @@ named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     options.security_descriptor = L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GRGW;;;AU)";
   }
 
+  return options;
+}
+
+named_mojo_ipc_server::EndpointOptions CreateProtectedServerEndpointOptions(
+    UpdaterScope scope,
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
+  CHECK(IsSystemInstall(scope));
+  named_mojo_ipc_server::EndpointOptions options =
+      CreateServerEndpointOptions(server_name);
+  options.pipe_name_type =
+      mojo::NamedPlatformChannel::PipeNameType::kAdminProtected;
+
+  // A DACL to grant:
+  // GA = Generic All
+  // access to:
+  // SY = LOCAL_SYSTEM
+  // BA = BUILTIN_ADMINISTRATORS
+  // 0x12019B = GENERIC_READ | GENERIC_WRITE excluding
+  //            FILE_CREATE_PIPE_INSTANCE (0x4), which would let a client add
+  //            an instance under this name and inherit its privileged owner
+  // access to:
+  // AU = AUTHENTICATED_USERS
+  options.security_descriptor =
+      L"D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;0x12019B;;;AU)";
   return options;
 }
 

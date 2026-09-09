@@ -172,8 +172,8 @@ void NamedMojoMessagePipeServer::OnClientConnected(
 }
 
 void NamedMojoMessagePipeServer::OnServerEndpointCreated() {
-  if (on_server_endpoint_created_callback_for_testing_) {
-    on_server_endpoint_created_callback_for_testing_.Run();
+  if (on_server_endpoint_created_callback_) {
+    on_server_endpoint_created_callback_.Run();
   }
 }
 

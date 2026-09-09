@@ -72,11 +72,10 @@ class NamedMojoMessagePipeServer {
   void StartServer();
   void StopServer();
 
-  // Sets a callback to be run when an invitation is sent. Used by unit tests
-  // only.
-  void set_on_server_endpoint_created_callback_for_testing(
+  // Sets a callback to be run each time a server endpoint is created.
+  void set_on_server_endpoint_created_callback(
       const base::RepeatingClosure& callback) {
-    on_server_endpoint_created_callback_for_testing_ = callback;
+    on_server_endpoint_created_callback_ = callback;
   }
 
  private:
@@ -101,7 +100,7 @@ class NamedMojoMessagePipeServer {
 
   base::OneShotTimer restart_endpoint_timer_;
 
-  base::RepeatingClosure on_server_endpoint_created_callback_for_testing_;
+  base::RepeatingClosure on_server_endpoint_created_callback_;
 
   base::WeakPtrFactory<NamedMojoMessagePipeServer> weak_factory_{this};
 };

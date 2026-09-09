@@ -69,7 +69,7 @@ class Stub final : public mojom::EnterpriseCompanion {
     server_.set_disconnect_handler(base::BindRepeating(
         [] { VLOG(1) << "EnterpriseCompanion client disconnected"; }));
     if (endpoint_created_listener_for_testing) {
-      server_.set_on_server_endpoint_created_callback_for_testing(
+      server_.set_on_server_endpoint_created_callback(
           endpoint_created_listener_for_testing);
     }
     server_.StartServer();

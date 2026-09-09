@@ -38,12 +38,10 @@ class NamedMojoIpcServerBase : public IpcServer {
   void StopServer() override;
   void Close(mojo::ReceiverId id) override;
 
-  // Sets a callback to be run when an invitation is sent. Used by unit tests
-  // only.
-  void set_on_server_endpoint_created_callback_for_testing(
+  // Sets a callback to be run each time a server endpoint is created.
+  void set_on_server_endpoint_created_callback(
       const base::RepeatingClosure& callback) {
-    message_pipe_server_.set_on_server_endpoint_created_callback_for_testing(
-        callback);
+    message_pipe_server_.set_on_server_endpoint_created_callback(callback);
   }
 
  protected:

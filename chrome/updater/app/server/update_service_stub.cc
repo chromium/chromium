@@ -28,6 +28,10 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace updater {
 namespace {
 
@@ -195,6 +199,18 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
   raw_ptr<mojom::UpdateService> impl_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+base::RepeatingCallback<
+    mojom::UpdateService*(const named_mojo_ipc_server::ConnectionInfo&)>
+MakeImplProvider(mojom::UpdateService* interface,
+                 mojom::UpdateService* filter) {
+  return base::BindRepeating(
+      [](mojom::UpdateService* interface, mojom::UpdateService* filter,
+         const named_mojo_ipc_server::ConnectionInfo& info) {
+        return IsConnectionTrusted(info) ? interface : filter;
+      },
+      interface, filter);
+}
 
 }  // namespace
 
@@ -390,23 +406,39 @@ UpdateServiceStub::UpdateServiceStub(
     base::RepeatingClosure endpoint_created_listener_for_testing)
     : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
       server_(CreateServerEndpointOptions(GetUpdateServiceServerName(scope)),
-              base::BindRepeating(base::BindRepeating(
-                  [](mojom::UpdateService* interface,
-                     mojom::UpdateService* filter,
-                     const named_mojo_ipc_server::ConnectionInfo& info) {
-                    return IsConnectionTrusted(info) ? interface : filter;
-                  },
-                  this,
-                  filter_.get()))),
+              MakeImplProvider(this, filter_.get())),
       impl_(impl),
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {
-  server_.set_disconnect_handler(base::BindRepeating(
-      [] { VLOG(1) << "UpdateService client disconnected."; }));
+  base::RepeatingClosure on_client_disconnected = base::BindRepeating(
+      [] { VLOG(1) << "UpdateService client disconnected."; });
+  server_.set_disconnect_handler(on_client_disconnected);
   if (endpoint_created_listener_for_testing) {
-    server_.set_on_server_endpoint_created_callback_for_testing(  // IN-TEST
+    server_.set_on_server_endpoint_created_callback(
         endpoint_created_listener_for_testing);
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (IsSystemInstall(scope) &&
+      base::win::GetVersion() >= base::win::Version::WIN10_RS3) {
+    protected_server_.emplace(CreateProtectedServerEndpointOptions(
+                                  scope, GetUpdateServiceServerName(scope)),
+                              MakeImplProvider(this, filter_.get()));
+    protected_server_->set_disconnect_handler(on_client_disconnected);
+
+    base::RepeatingClosure on_endpoint_created = base::BindRepeating(
+        &named_mojo_ipc_server::NamedMojoIpcServerBase::StartServer,
+        base::Unretained(&server_));
+    protected_server_->set_on_server_endpoint_created_callback(
+        endpoint_created_listener_for_testing
+            ? std::move(on_endpoint_created)
+                  .Then(endpoint_created_listener_for_testing)
+            : std::move(on_endpoint_created));
+    protected_server_->StartServer();
+    return;
+  }
+#endif
+
   server_.StartServer();
 }
 

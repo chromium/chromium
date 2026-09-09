@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -89,6 +90,42 @@ bool IsServerElevated(HANDLE pipe_handle) {
              base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators);
 }
 
+std::optional<mojo::PlatformChannelEndpoint> ConnectToUpdateService(
+    UpdaterScope scope,
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
+  mojo::NamedPlatformChannel::Options options;
+  options.server_name = server_name;
+  options.allow_impersonation = true;
+  options.verify_server_privilege = true;
+  options.pipe_name_type = pipe_name_type;
+  mojo::PlatformChannelEndpoint connected_endpoint =
+      named_mojo_ipc_server::ConnectToServer(options);
+  if (!connected_endpoint.is_valid() ||
+      (IsSystemInstall(scope) &&
+       !IsServerElevated(
+           connected_endpoint.platform_handle().GetHandle().get()))) {
+    return std::nullopt;
+  }
+  return connected_endpoint;
+}
+
+// `::WaitNamedPipeW` reports ERROR_FILE_NOT_FOUND only when NPFS has no pipe
+// registered under the name, and ERROR_PATH_NOT_FOUND when the prefix
+// directory itself is absent; a pipe that exists but is busy reports
+// ERROR_SEM_TIMEOUT instead.
+bool IsPipeMissing(const mojo::NamedPlatformChannel::ServerName& server_name,
+                   mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
+  const std::wstring pipe_name =
+      mojo::NamedPlatformChannel::GetPipeNameFromServerName(server_name,
+                                                            pipe_name_type);
+  if (::WaitNamedPipeW(pipe_name.c_str(), 1)) {
+    return false;
+  }
+  const DWORD error = ::GetLastError();
+  return error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND;
+}
+
 void ConnectMojoImpl(
     UpdaterScope scope,
     bool is_internal_service,
@@ -114,31 +151,33 @@ void ConnectMojoImpl(
     }
 
     server = result;
-    mojo::NamedPlatformChannel::Options options;
-    options.server_name = is_internal_service
-                              ? GetUpdateServiceInternalServerName(scope)
-                              : GetUpdateServiceServerName(scope);
-    options.allow_impersonation = true;
-    options.verify_server_privilege = true;
-    mojo::PlatformChannelEndpoint connected_endpoint =
-        named_mojo_ipc_server::ConnectToServer(options);
-    if (IsSystemInstall(scope) && connected_endpoint.is_valid() &&
-        !IsServerElevated(
-            connected_endpoint.platform_handle().GetHandle().get())) {
-      return std::nullopt;
+    const mojo::NamedPlatformChannel::ServerName server_name =
+        is_internal_service ? GetUpdateServiceInternalServerName(scope)
+                            : GetUpdateServiceServerName(scope);
+
+    if (IsSystemInstall(scope) && !is_internal_service) {
+      return SelectUpdateServiceEndpoint(
+          [&](mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
+            return ConnectToUpdateService(scope, server_name, pipe_name_type);
+          },
+          [&](mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
+            return IsPipeMissing(server_name, pipe_name_type);
+          });
     }
-    return connected_endpoint;
+
+    return ConnectToUpdateService(
+        scope, server_name, mojo::NamedPlatformChannel::PipeNameType::kDefault);
   }();
 
-  if (tries >= 1 && !endpoint) {
-    VLOG(1) << "Failed to connect to remote mojo service, is_internal_service: "
-            << is_internal_service << ", scope: " << scope;
-    std::move(connected_callback).Run(std::nullopt, {});
+  if (endpoint) {
+    std::move(connected_callback).Run(std::move(endpoint), server);
     return;
   }
 
-  if (endpoint && endpoint->is_valid()) {
-    std::move(connected_callback).Run(std::move(endpoint), server);
+  if (tries >= 1) {
+    VLOG(1) << "Failed to connect to remote mojo service, is_internal_service: "
+            << is_internal_service << ", scope: " << scope;
+    std::move(connected_callback).Run(std::nullopt, {});
     return;
   }
 
@@ -150,6 +189,29 @@ void ConnectMojoImpl(
 }
 
 }  // namespace
+
+std::optional<mojo::PlatformChannelEndpoint> SelectUpdateServiceEndpoint(
+    base::FunctionRef<std::optional<mojo::PlatformChannelEndpoint>(
+        mojo::NamedPlatformChannel::PipeNameType)> connect,
+    base::FunctionRef<bool(mojo::NamedPlatformChannel::PipeNameType)>
+        is_pipe_missing) {
+  constexpr auto kProtected =
+      mojo::NamedPlatformChannel::PipeNameType::kAdminProtected;
+  constexpr auto kDefault = mojo::NamedPlatformChannel::PipeNameType::kDefault;
+
+  if (std::optional<mojo::PlatformChannelEndpoint> endpoint =
+          connect(kProtected)) {
+    return endpoint;
+  }
+
+  // A server serving the legacy pipe but not the protected one either predates
+  // it or failed to create it; both want the fallback. While the server is
+  // still starting neither pipe exists yet, so retry instead of downgrading.
+  if (is_pipe_missing(kProtected) && !is_pipe_missing(kDefault)) {
+    return connect(kDefault);
+  }
+  return std::nullopt;
+}
 
 void ConnectMojo(
     UpdaterScope scope,

@@ -6,11 +6,13 @@
 #define CHROME_UPDATER_APP_SERVER_UPDATE_SERVICE_STUB_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
@@ -91,6 +93,10 @@ class UpdateServiceStub : public mojom::UpdateService {
 
   std::unique_ptr<mojom::UpdateService> filter_;
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
+#if BUILDFLAG(IS_WIN)
+  std::optional<named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService>>
+      protected_server_;
+#endif
   scoped_refptr<updater::UpdateService> impl_;
   base::RepeatingClosure task_start_listener_;
   base::RepeatingClosure task_end_listener_;

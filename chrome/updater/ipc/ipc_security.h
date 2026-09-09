@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_IPC_IPC_SECURITY_H_
 #define CHROME_UPDATER_IPC_IPC_SECURITY_H_
 
+#include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
@@ -22,6 +23,14 @@ bool IsConnectionTrusted(
 // Creates the options for instantiating the `NamedMojoIpcServer`.
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     const mojo::NamedPlatformChannel::ServerName& server_name);
+
+#if BUILDFLAG(IS_WIN)
+// Like above, but for the pipe under "ProtectedPrefix\Administrators", where
+// only Administrators and LocalSystem may create pipes. System scope only.
+named_mojo_ipc_server::EndpointOptions CreateProtectedServerEndpointOptions(
+    UpdaterScope scope,
+    const mojo::NamedPlatformChannel::ServerName& server_name);
+#endif
 
 }  // namespace updater
 
