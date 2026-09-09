@@ -55,8 +55,8 @@ public abstract class ValuesReturned {
             Boolean value = sBoolValues.get(key);
             if (value == null) {
                 value = valueSupplier.get();
+                sBoolValues.put(key, value);
             }
-            sBoolValues.put(key, value);
             return value;
         }
     }
@@ -67,8 +67,8 @@ public abstract class ValuesReturned {
             String value = sStringValues.get(key);
             if (value == null) {
                 value = valueSupplier.get();
+                sStringValues.put(key, value);
             }
-            sStringValues.put(key, value);
             return value;
         }
     }
@@ -79,8 +79,8 @@ public abstract class ValuesReturned {
             Integer value = sIntValues.get(key);
             if (value == null) {
                 value = valueSupplier.get();
+                sIntValues.put(key, value);
             }
-            sIntValues.put(key, value);
             return value;
         }
     }
@@ -91,8 +91,8 @@ public abstract class ValuesReturned {
             Double value = sDoubleValues.get(key);
             if (value == null) {
                 value = valueSupplier.get();
+                sDoubleValues.put(key, value);
             }
-            sDoubleValues.put(key, value);
             return value;
         }
     }
