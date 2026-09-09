@@ -214,7 +214,7 @@
 #include "extensions/test/test_extension_dir.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CLIENT_CERTS)
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MarkDataAsNonSecure) {
             chrome_security_state::GetSecurityLevel(contents));
 }
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CLIENT_CERTS)
 class SSLUITestWithClientCert : public SSLUITestBase {
  public:
   SSLUITestWithClientCert() : cert_db_(nullptr) {}
@@ -1303,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
-#endif  // BUILDFLAG(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CLIENT_CERTS)
 
 // A stub ClientCertStore that returns a FakeClientCertIdentity.
 class ClientCertStoreStub : public net::ClientCertStore {

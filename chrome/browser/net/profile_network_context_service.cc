@@ -125,10 +125,10 @@
 #include "net/cert/x509_util.h"
 #endif
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CLIENT_CERTS)
 #include "chrome/browser/ui/crypto_module_delegate_nss.h"
 #include "net/ssl/client_cert_store_nss.h"
-#endif  // BUILDFLAG(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CLIENT_CERTS)
 
 #if BUILDFLAG(IS_WIN)
 #include "net/ssl/client_cert_store_win.h"
@@ -1287,7 +1287,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
       std::move(certificate_provider), kcer::KcerFactoryAsh::GetKcer(profile_),
       GetClientCertIssuerSourceFactory());
 
-#elif BUILDFLAG(USE_NSS_CERTS)
+#elif BUILDFLAG(USE_NSS_CLIENT_CERTS)
   std::unique_ptr<net::ClientCertStore> store =
       std::make_unique<net::ClientCertStoreNSS>(
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,

@@ -12,7 +12,11 @@ if (is_ios) {
 
 buildflag_header("buildflags") {
   header = "crypto_buildflags.h"
-  flags = [ "USE_NSS_CERTS=$use_nss_certs" ]
+  flags = [
+    "USE_NSS_CLIENT_CERTS=$use_nss_client_certs",
+    "USE_NSS_SERVER_CERTS=$use_nss_server_certs",
+    "USE_NSS_CERTS=$use_nss_certs",
+  ]
 }
 
 import("//build/rust/rust_static_library.gni")

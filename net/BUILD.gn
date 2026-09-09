@@ -1443,7 +1443,6 @@ component("net") {
       "cert/internal/trust_store_mac.h",
       "cert/test_keychain_search_list_mac.cc",
       "cert/test_keychain_search_list_mac.h",
-      "cert/test_root_certs_builtin.cc",
       "proxy_resolution/mac/mac_proxy_resolution_status.h",
       "proxy_resolution/mac/mac_system_proxy_resolution_request.cc",
       "proxy_resolution/mac/mac_system_proxy_resolution_request.h",
@@ -1500,7 +1499,6 @@ component("net") {
       "base/winsock_init.h",
       "base/winsock_util.cc",
       "base/winsock_util.h",
-      "cert/test_root_certs_builtin.cc",
       "cert/x509_util_win.cc",
       "cert/x509_util_win.h",
       "disk_cache/blockfile/file_win.cc",
@@ -1623,6 +1621,10 @@ component("net") {
     }
   }
 
+  if (chrome_root_store_only) {
+    sources += [ "cert/test_root_certs_builtin.cc" ]
+  }
+
   if (chrome_root_store_supported) {
     sources += [
       "cert/internal/trust_store_chrome.cc",
@@ -1652,11 +1654,8 @@ component("net") {
 
   if (use_nss_certs) {
     sources += [
-      "cert/internal/trust_store_nss.cc",
-      "cert/internal/trust_store_nss.h",
       "cert/nss_cert_database.cc",
       "cert/nss_cert_database.h",
-      "cert/test_root_certs_builtin.cc",
       "cert/x509_util_nss.cc",
       "cert/x509_util_nss.h",
       "third_party/mozilla_security_manager/nsNSSCertificateDB.cpp",
@@ -1664,8 +1663,22 @@ component("net") {
       "third_party/mozilla_security_manager/nsPKCS12Blob.cpp",
       "third_party/mozilla_security_manager/nsPKCS12Blob.h",
     ]
-    deps += [ "//build:chromeos_buildflags" ]
-    if (!is_castos) {
+
+    # TODO(crbug.com/41467965): This is a public config because
+    # multi_threaded_cert_verifier.h depends on NSS. When the linked bug is
+    # fixed, switch this to a non-public config, so NSS usage must be explicit
+    # in the build.
+    public_configs = [ "//build/config/linux/nss" ]
+
+    if (use_nss_server_certs) {
+      sources += [
+        "cert/internal/trust_store_nss.cc",
+        "cert/internal/trust_store_nss.h",
+      ]
+      deps += [ "//build:chromeos_buildflags" ]
+    }
+
+    if (use_nss_client_certs) {
       sources += [
         "ssl/client_cert_store_nss.cc",
         "ssl/client_cert_store_nss.h",
@@ -1673,12 +1686,6 @@ component("net") {
         "ssl/ssl_platform_key_nss.h",
       ]
     }
-
-    # TODO(crbug.com/41467965): This is a public config because
-    # multi_threaded_cert_verifier.h depends on NSS. When the linked bug is
-    # fixed, switch this to a non-public config, so NSS usage must be explicit
-    # in the build.
-    public_configs = [ "//build/config/linux/nss" ]
   }
 
   if (is_fuchsia) {
@@ -3491,11 +3498,13 @@ target(_test_target_type, "net_unittests") {
 
   if (use_nss_certs) {
     sources += [
-      "cert/internal/trust_store_nss_unittest.cc",
       "cert/nss_cert_database_unittest.cc",
       "cert/x509_util_nss_unittest.cc",
     ]
-    if (!is_castos) {
+    if (use_nss_server_certs) {
+      sources += [ "cert/internal/trust_store_nss_unittest.cc" ]
+    }
+    if (use_nss_client_certs) {
       sources += [
         "ssl/client_cert_store_nss_unittest.cc",
         "ssl/ssl_platform_key_nss_unittest.cc",

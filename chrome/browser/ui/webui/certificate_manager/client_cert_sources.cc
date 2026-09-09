@@ -37,14 +37,14 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CLIENT_CERTS)
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/ui/crypto_module_delegate_nss.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/ssl/client_cert_store_nss.h"
-#endif  // BUILDFLAG(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CLIENT_CERTS)
 
 #if BUILDFLAG(IS_WIN)
 #include "net/ssl/client_cert_store_win.h"

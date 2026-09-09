@@ -25,7 +25,7 @@
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_SERVER_CERTS)
 #include "net/cert/internal/trust_store_nss.h"
 #elif BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
@@ -248,7 +248,7 @@ std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
 }
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_SERVER_CERTS)
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {

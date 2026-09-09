@@ -12,7 +12,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_store.h"
 
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CLIENT_CERTS)
 #include "net/ssl/client_cert_store_nss.h"
 #elif BUILDFLAG(IS_WIN)
 #include "net/ssl/client_cert_store_win.h"
@@ -109,7 +109,7 @@ std::unique_ptr<net::ClientCertIdentity> GetBestMatchFromCertificateList(
 }
 
 std::unique_ptr<net::ClientCertStore> CreateClientCertStoreInstance() {
-#if BUILDFLAG(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CLIENT_CERTS)
   return std::make_unique<net::ClientCertStoreNSS>(
       net::ClientCertStoreNSS::PasswordDelegateFactory());
 #elif BUILDFLAG(IS_WIN)
