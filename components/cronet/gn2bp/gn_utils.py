@@ -566,9 +566,10 @@ class GnParser:
                     )
         elif target.type == "rust_bindgen":
             # rust_bindgen is a supported module in Soong but GN depend on actions
-            # so we need to copy the action fields (sources, outputs and args) in
+            # so we need to copy the action fields (sources, inputs, outputs and args) in
             # order to correctly generate the `rust_bindgen` module.
             target.arch[arch].sources.update(desc.get('sources', []))
+            target.arch[arch].inputs.update(desc.get('inputs', []))
             outs = [_remove_out_prefix(x) for x in desc['outputs']]
             target.arch[arch].outputs.update(outs)
             target.arch[arch].args = desc['args']

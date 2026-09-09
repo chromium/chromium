@@ -753,16 +753,21 @@ def create_bindgen_module(
                                      target.name,
                                      context,
                                      is_test=is_test_target)
-    if len(target.common.sources) > 1:
+    header_candidates = [
+        src for src in (target.common.sources or target.common.inputs)
+        if src.endswith(('.h', '.hpp', '.hxx', '.hh', '.inc'))
+    ]
+    if len(header_candidates) != 1:
         raise ValueError(
-            f"Expected a single source file for bindgen but found {target.common.sources}."
+            f"Expected a single header file for bindgen but found {header_candidates} "
+            f"(sources: {target.common.sources}, inputs: {target.common.inputs})."
         )
 
     if len(target.common.outputs) > 2:
         raise ValueError(
             f"Expected at most two output files for bindgen but found {target.common.outputs}"
         )
-    module.wrapper_src = gn_utils.label_to_path(list(target.common.sources)[0])
+    module.wrapper_src = gn_utils.label_to_path(header_candidates[0])
     module.crate_name = module_name
 
     if "c++" in target.common.args:
