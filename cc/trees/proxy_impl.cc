@@ -559,6 +559,11 @@ void ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread() {
   scheduler_->SetNeedsOneBeginImplFrame();
 }
 
+void ProxyImpl::NotifyInputEvent() {
+  DCHECK(IsImplThread());
+  scheduler_->NotifyInputEvent();
+}
+
 void ProxyImpl::SetNeedsPrepareTilesOnImplThread() {
   DCHECK(IsImplThread());
   scheduler_->SetNeedsPrepareTiles();

@@ -8969,7 +8969,9 @@ TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
                                       gfx::Size(10, 10));
   UpdateDrawProperties(host_impl_->active_tree());
 
+  EXPECT_FALSE(did_notify_input_event_);
   host_impl_->NotifyInputEvent(/*is_fling=*/false);
+  EXPECT_TRUE(did_notify_input_event_);
   host_impl_->SetFullViewportDamage();
   host_impl_->SetNeedsRedraw(/*animation_only=*/false,
                              /*skip_if_inside_draw=*/false);
@@ -8987,6 +8989,17 @@ TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
     EXPECT_TRUE(frame_interval_inputs.has_input);
     EXPECT_EQ(args.frame_time, frame_interval_inputs.frame_time);
   }
+}
+
+TEST_P(LayerTreeHostImplTest, NotifyInputEvent) {
+  EXPECT_FALSE(did_notify_input_event_);
+
+  host_impl_->NotifyInputEvent(/*is_fling=*/false);
+  EXPECT_TRUE(did_notify_input_event_);
+
+  did_notify_input_event_ = false;
+  host_impl_->NotifyInputEvent(/*is_fling=*/true);
+  EXPECT_TRUE(did_notify_input_event_);
 }
 
 #if BUILDFLAG(IS_ANDROID)

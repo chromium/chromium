@@ -967,6 +967,7 @@ void LayerTreeHostImpl::NotifyInputEvent(bool is_fling) {
   has_input_for_frame_interval_ = true;
   has_input_resetter_.Schedule();
   has_non_fling_input_since_last_frame_ |= (!is_fling);
+  delegate_->NotifyInputEvent();
 }
 
 void LayerTreeHostImpl::QueueSwapPromiseForMainThreadScrollUpdate(

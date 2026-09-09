@@ -1634,6 +1634,20 @@ void SchedulerStateMachine::SetUrgentBeginMainFramePending() {
   SetNeedsBeginMainFrame(true);
 }
 
+void SchedulerStateMachine::NotifyInputEvent() {
+  // We unthrottle normally when we receive damage. But, it doesn't happen
+  // until we process the damaged frame. This would lead to a noticeable delay
+  // with input handling, so we cancel the throttling immediately upon
+  // receiving input instead.
+  //
+  // Note: This is a pessimization, since the input may lead to no change, and
+  // thus we may unthrottle too eagerly. However, unthrottling doesn't cause
+  // correctness issues, so it's better to be pessimistic here, to avoid
+  // regressions on input when we do actually want to unthrottle.
+  consecutive_no_damage_main_frames_ = 0;
+  UpdateConsecutiveNoDamageThrottlingInterval();
+}
+
 void SchedulerStateMachine::SetNeedsOneBeginImplFrame() {
   needs_one_begin_impl_frame_ = true;
 }

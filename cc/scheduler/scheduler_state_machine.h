@@ -260,6 +260,10 @@ class CC_EXPORT SchedulerStateMachine {
   // SetCriticalBeginMainFrameToActivateIsFast.
   bool ImplLatencyTakesPriority() const;
 
+  // Notifies that we have received an input event. This is used for
+  // unthrottling.
+  void NotifyInputEvent();
+
   // Indicates that a new begin main frame flow needs to be performed, either
   // to pull updates from the main thread to the impl, or to push deltas from
   // the impl thread to main.

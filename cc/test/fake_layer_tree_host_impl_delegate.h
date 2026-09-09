@@ -25,6 +25,7 @@ class FakeLayerTreeHostImplDelegate : public LayerTreeHostImplDelegate {
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override {}
   void SetNeedsOneBeginImplFrameOnImplThread() override {}
+  void NotifyInputEvent() override {}
   void SetNeedsCommitOnImplThread(BeginMainFrameReason,
                                   bool urgent,
                                   bool unthrottled) override {}

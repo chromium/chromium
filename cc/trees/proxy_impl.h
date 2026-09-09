@@ -153,6 +153,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
+  void NotifyInputEvent() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(BeginMainFrameReason reason,
                                   bool urgent,

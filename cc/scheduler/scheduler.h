@@ -265,6 +265,10 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void SetIsScrolling(bool is_scrolling);
   void SetWaitingForScrollEvent(bool waiting_for_scroll_event);
 
+  // When we receive an input event, we may want to back off of throttling, so
+  // we pass this information down to |SchedulerStateMachine|.
+  void NotifyInputEvent();
+
   const viz::BeginFrameSource* begin_frame_source() const {
     return begin_frame_source_;
   }

@@ -141,6 +141,7 @@ LayerTreeHostImplTestBase::LayerTreeHostImplTestBase(
       did_request_commit_(false),
       did_request_redraw_(false),
       did_request_next_frame_(false),
+      did_notify_input_event_(false),
       did_request_prepare_tiles_(false),
       did_prepare_tiles_(false),
       did_complete_page_scale_animation_(false),
@@ -226,6 +227,9 @@ void LayerTreeHostImplTestBase::SetNeedsRedrawOnImplThread() {
 }
 void LayerTreeHostImplTestBase::SetNeedsOneBeginImplFrameOnImplThread() {
   did_request_next_frame_ = true;
+}
+void LayerTreeHostImplTestBase::NotifyInputEvent() {
+  did_notify_input_event_ = true;
 }
 void LayerTreeHostImplTestBase::SetNeedsPrepareTilesOnImplThread() {
   did_request_prepare_tiles_ = true;

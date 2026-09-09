@@ -93,6 +93,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
+  void NotifyInputEvent() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(cc::BeginMainFrameReason,
                                   bool urgent,

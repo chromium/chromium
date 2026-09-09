@@ -577,6 +577,14 @@ void SingleThreadProxy::SetNeedsOneBeginImplFrameOnImplThread() {
   needs_impl_frame_ = true;
 }
 
+void SingleThreadProxy::NotifyInputEvent() {
+  DCHECK(!task_runner_provider_->HasImplThread() ||
+         task_runner_provider_->IsImplThread());
+  if (scheduler_on_impl_thread_) {
+    scheduler_on_impl_thread_->NotifyInputEvent();
+  }
+}
+
 void SingleThreadProxy::SetNeedsPrepareTilesOnImplThread() {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());

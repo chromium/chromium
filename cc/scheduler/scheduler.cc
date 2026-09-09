@@ -185,6 +185,12 @@ void Scheduler::SetNeedsBeginMainFrame(bool now, bool unthrottled) {
   ProcessScheduledActions();
 }
 
+void Scheduler::NotifyInputEvent() {
+  state_machine_->NotifyInputEvent();
+  // This is called before we process the input event, so we do not need to
+  // call |ProcessScheduledActions()| here.
+}
+
 void Scheduler::SetNeedsOneBeginImplFrame() {
   state_machine_->SetNeedsOneBeginImplFrame();
   ProcessScheduledActions();

@@ -180,6 +180,7 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
+  void NotifyInputEvent() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(BeginMainFrameReason,
                                   bool urgent,
@@ -385,6 +386,7 @@ class LayerTreeHostImplTestBase : public testing::Test,
   bool did_request_commit_;
   bool did_request_redraw_;
   bool did_request_next_frame_;
+  bool did_notify_input_event_;
   bool did_request_prepare_tiles_;
   bool did_prepare_tiles_;
   bool did_complete_page_scale_animation_;

@@ -139,6 +139,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
+  void NotifyInputEvent() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(BeginMainFrameReason reason,
                                   bool urgent,

@@ -43,6 +43,7 @@ class LayerTreeHostImplDelegate {
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   virtual void SetNeedsRedrawOnImplThread() = 0;
   virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
+  virtual void NotifyInputEvent() = 0;
   virtual void SetNeedsCommitOnImplThread(BeginMainFrameReason reason,
                                           bool urgent = false,
                                           bool unthrottled = false) = 0;

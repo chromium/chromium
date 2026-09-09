@@ -199,6 +199,12 @@ class StateMachine : public SchedulerStateMachine {
   BeginImplFrameState begin_impl_frame_state() const {
     return begin_impl_frame_state_;
   }
+  base::TimeDelta consecutive_no_damage_throttled_interval() const {
+    return main_frame_consecutive_no_damage_throttled_interval_;
+  }
+  base::TimeDelta throttled_interval() const {
+    return main_frame_throttled_interval_;
+  }
 
   LayerTreeFrameSinkState layer_tree_frame_sink_state() const {
     return layer_tree_frame_sink_state_;
@@ -3928,6 +3934,50 @@ TEST(SchedulerStateMachineTest,
   state.IssueNextBeginImplFrame();
   state.SetNeedsBeginMainFrame(false);
   EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
+}
+
+TEST(SchedulerStateMachineTest,
+     ThrottleDueToConsecutiveNoDamageFramesWithInputEvent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThrottleRepeatedNoDamageFrames);
+
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.FrameIntervalUpdated(base::Hertz(60));
+
+  // Simulate throttling.
+  for (int i = 0; i < 90; i++) {
+    state.IssueNextBeginImplFrame();
+    state.SetNeedsBeginMainFrame(false);
+    EXPECT_ACTION_UPDATE_STATE(
+        SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+    state.BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
+  }
+
+  // Should throttle now.
+  state.IssueNextBeginImplFrame();
+  state.SetNeedsBeginMainFrame(false);
+  EXPECT_TRUE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Verify intervals before input.
+  EXPECT_TRUE(state.consecutive_no_damage_throttled_interval().is_positive());
+
+  // Trigger input event.
+  state.NotifyInputEvent();
+
+  // Verify intervals after input.
+  EXPECT_EQ(base::TimeDelta(),
+            state.consecutive_no_damage_throttled_interval());
+  EXPECT_EQ(base::TimeDelta(), state.throttled_interval());
+
+  // Throttling should stop immediately.
+  EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
 }
 
 }  // namespace
