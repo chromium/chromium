@@ -689,6 +689,38 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
   OpenscreenSessionHost& session_host() { return *session_host_; }
 
+  bool IsRefreshTimerRunning() const {
+    return session_host_->refresh_timer_.IsRunning();
+  }
+
+  bool IsExpectingRefreshFrame() const {
+    return session_host_->expecting_a_refresh_frame_;
+  }
+
+  void FireRefreshTimer() { session_host_->OnRefreshTimerFired(); }
+
+  void SetVideoSender(std::unique_ptr<media::cast::VideoSender> video_sender) {
+    session_host_->video_sender_ = std::move(video_sender);
+  }
+
+  uint32_t GetVideoNetworkBandwidth() const {
+    return session_host_->GetVideoNetworkBandwidth();
+  }
+
+  base::TimeDelta GetAudioTargetPlayoutDelay() const {
+    return session_host_->audio_sender_
+               ? session_host_->audio_sender_->GetTargetPlayoutDelay()
+               : base::TimeDelta();
+  }
+
+  void UpdateBandwidthEstimate(int bandwidth_estimate) {
+    session_host_->UpdateBandwidthEstimate(bandwidth_estimate);
+  }
+
+  void InsertVideoFrame(scoped_refptr<media::VideoFrame> video_frame) {
+    session_host_->InsertVideoFrame(std::move(video_frame));
+  }
+
   const openscreen::cast::SenderMessage& last_sent_offer() const {
     EXPECT_TRUE(last_sent_offer_);
     return *last_sent_offer_;
@@ -965,10 +997,8 @@ TEST_F(OpenscreenSessionHostTest, ChangeTargetPlayoutDelay) {
   // Currently new delays are ignored due to the playout delay being bounded by
   // the minimum and maximum both being set to the default value.
   session_host().SetTargetPlayoutDelay(base::Milliseconds(300));
-  EXPECT_EQ(session_host().audio_sender_->GetTargetPlayoutDelay(),
-            kDefaultPlayoutDelay);
-  EXPECT_EQ(session_host().audio_sender_->GetTargetPlayoutDelay(),
-            kDefaultPlayoutDelay);
+  EXPECT_EQ(GetAudioTargetPlayoutDelay(), kDefaultPlayoutDelay);
+  EXPECT_EQ(GetAudioTargetPlayoutDelay(), kDefaultPlayoutDelay);
 
   StopSession();
 }
@@ -979,40 +1009,37 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
 
   auto fake_video_sender = std::make_unique<FakeVideoSender>();
   FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
-  session_host().video_sender_ = std::move(fake_video_sender);
+  SetVideoSender(std::move(fake_video_sender));
 
   constexpr uint32_t kMinVideoBitrate = 393216;
   constexpr uint32_t kMaxVideoBitrate = 1250000;
   // Default bitrate should match kDefaultBitrate (5 Mbps).
-  EXPECT_EQ(5000000u, session_host().GetVideoNetworkBandwidth());
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
 
   // If the estimate is below the minimum and frames were dropped, it should
   // stay at the minimum.
   fake_sender_ptr->set_frames_dropped(1);
-  session_host().forced_bandwidth_estimate_for_testing_ = 1000;
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(kMinVideoBitrate, session_host().GetVideoNetworkBandwidth());
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(kMinVideoBitrate, GetVideoNetworkBandwidth());
 
   // It should gradually reach the max bandwidth estimate when raised.
-  session_host().forced_bandwidth_estimate_for_testing_ = 1000000;
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(432537u, session_host().GetVideoNetworkBandwidth());
+  UpdateBandwidthEstimate(1000000);
+  EXPECT_EQ(432537u, GetVideoNetworkBandwidth());
 
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(475790u, session_host().GetVideoNetworkBandwidth());
+  UpdateBandwidthEstimate(1000000);
+  EXPECT_EQ(475790u, GetVideoNetworkBandwidth());
   for (int i = 0; i < 20; ++i) {
-    session_host().UpdateBandwidthEstimate();
+    UpdateBandwidthEstimate(1000000);
   }
-  // The max should be 80% of `forced_bandwidth_estimate_for_testing_`.
-  EXPECT_EQ(800000u, session_host().GetVideoNetworkBandwidth());
+  // The max should be 80% of the bandwidth estimate.
+  EXPECT_EQ(800000u, GetVideoNetworkBandwidth());
 
   // The video bitrate should stay saturated at the cap when reached.
-  session_host().forced_bandwidth_estimate_for_testing_ = kMaxVideoBitrate + 1;
   for (int i = 0; i < 20; ++i) {
-    session_host().UpdateBandwidthEstimate();
+    UpdateBandwidthEstimate(kMaxVideoBitrate + 1);
   }
   // The max should be 80% of `kMaxVideoBitrate`.
-  EXPECT_EQ(1000000u, session_host().GetVideoNetworkBandwidth());
+  EXPECT_EQ(1000000u, GetVideoNetworkBandwidth());
 
   StopSession();
 }
@@ -1021,13 +1048,12 @@ TEST_F(OpenscreenSessionHostTest, PreservesBandwidthWhenNoFramesDropped) {
   CreateSession(SessionType::VIDEO_ONLY);
   StartSession();
 
-  EXPECT_EQ(5000000u, session_host().GetVideoNetworkBandwidth());
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
 
   // Updating bandwidth estimate with a lower estimate but without frame drops
   // should not reduce the available video bandwidth.
-  session_host().forced_bandwidth_estimate_for_testing_ = 1000;
-  session_host().UpdateBandwidthEstimate();
-  EXPECT_EQ(5000000u, session_host().GetVideoNetworkBandwidth());
+  UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
 
   StopSession();
 }
@@ -1042,22 +1068,22 @@ TEST_F(OpenscreenSessionHostTest, CanRequestRefresh) {
 TEST_F(OpenscreenSessionHostTest, RestartRefreshTimerOnInsertVideoFrame) {
   CreateSession(SessionType::VIDEO_ONLY);
   StartSession();
-  ASSERT_TRUE(session_host().refresh_timer_.IsRunning());
+  ASSERT_TRUE(IsRefreshTimerRunning());
 
   // Simulate static screen timeout where two refresh timer intervals fire
   // without receiving a frame, stopping the timer.
-  session_host().OnRefreshTimerFired();
-  EXPECT_TRUE(session_host().expecting_a_refresh_frame_);
-  session_host().OnRefreshTimerFired();
-  EXPECT_FALSE(session_host().refresh_timer_.IsRunning());
+  FireRefreshTimer();
+  EXPECT_TRUE(IsExpectingRefreshFrame());
+  FireRefreshTimer();
+  EXPECT_FALSE(IsRefreshTimerRunning());
 
   // When motion resumes and a frame is inserted, the refresh timer must
   // restart.
   auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(640, 480));
   frame->metadata().reference_time = base::TimeTicks::Now();
-  session_host().InsertVideoFrame(std::move(frame));
-  EXPECT_TRUE(session_host().refresh_timer_.IsRunning());
-  EXPECT_FALSE(session_host().expecting_a_refresh_frame_);
+  InsertVideoFrame(std::move(frame));
+  EXPECT_TRUE(IsRefreshTimerRunning());
+  EXPECT_FALSE(IsExpectingRefreshFrame());
 
   StopSession();
 }

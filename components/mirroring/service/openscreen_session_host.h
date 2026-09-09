@@ -153,12 +153,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
  private:
   friend class OpenscreenSessionHostTest;
-  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, ChangeTargetPlayoutDelay);
-  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, UpdateBandwidthEstimate);
-  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest,
-                           RestartRefreshTimerOnInsertVideoFrame);
-  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest,
-                           PreservesBandwidthWhenNoFramesDropped);
 
   using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;
 
@@ -221,6 +215,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Called periodically to update the `bandwidth_estimate_`.
   void UpdateBandwidthEstimate();
+  void UpdateBandwidthEstimate(int bandwidth_estimate);
 
   // Create and send OFFER message.
   void Negotiate();
@@ -405,10 +400,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Used to periodically update the currently used bandwidth estimate.
   base::RepeatingTimer bandwidth_update_timer_;
-
-  // Used to override getting the bandwidth from the session. Setting to a
-  // positive value causes the session's bandwidth estimation to not be called.
-  int forced_bandwidth_estimate_for_testing_ = 0;
 
   // The portion of the bandwidth estimate that is currently available for use.
   // Note that the actual bandwidth will be effectively capped at the sum of the

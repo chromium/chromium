@@ -227,7 +227,8 @@ OpenscreenSessionHost::OpenscreenSessionHost(
   // Use of `Unretained` is safe here since we own the update timer.
   bandwidth_update_timer_.Start(
       FROM_HERE, kBandwidthUpdateInterval,
-      base::BindRepeating(&OpenscreenSessionHost::UpdateBandwidthEstimate,
+      base::BindRepeating(static_cast<void (OpenscreenSessionHost::*)()>(
+                              &OpenscreenSessionHost::UpdateBandwidthEstimate),
                           base::Unretained(this)));
 }
 
@@ -1022,10 +1023,12 @@ uint32_t OpenscreenSessionHost::GetVideoNetworkBandwidth() const {
 
 void OpenscreenSessionHost::UpdateBandwidthEstimate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int bandwidth_estimate = forced_bandwidth_estimate_for_testing_ > 0
-                                     ? forced_bandwidth_estimate_for_testing_
-                                     : session_->GetEstimatedNetworkBandwidth();
+  UpdateBandwidthEstimate(session_->GetEstimatedNetworkBandwidth());
+}
 
+void OpenscreenSessionHost::UpdateBandwidthEstimate(
+    const int bandwidth_estimate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Nothing to do yet.
   if (bandwidth_estimate <= 0) {
     return;
