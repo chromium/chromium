@@ -272,6 +272,9 @@ crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encod
 crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_3000000 [ Failure ]
 crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
 
+# Somewhat reliable failures on M2 devices
+crbug.com/559266103 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
+
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
 
