@@ -410,7 +410,13 @@ class AndroidNetworkLibrary {
     @CalledByNative
     @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
     static int getEchMode(@JniType("std::string") String host) {
-        int encryptionMode = NetworkSecurityPolicyProxy.getInstance().getDomainEncryptionMode(host);
+        int encryptionMode;
+        try {
+            encryptionMode =
+                    NetworkSecurityPolicyProxy.getInstance().getDomainEncryptionMode(host);
+        } catch (IllegalArgumentException e) {
+            encryptionMode = NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_UNKNOWN;
+        }
         switch (encryptionMode) {
             case NetworkSecurityPolicy.DOMAIN_ENCRYPTION_MODE_DISABLED:
                 return EchMode.DISABLED;
