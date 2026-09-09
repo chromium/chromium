@@ -50,6 +50,28 @@ enum class PersonalContextPrefetchTriggerResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchTriggerResult)
 
+// LINT.IfChange(AutofillAiPersonalContextPrefetchEntityValidationResult)
+// Represents the result of validating an entity received from Personal Context
+// during Ambient Autofill prefetch. Logged to UMA.
+enum class PersonalContextPrefetchEntityValidationResult {
+  // Entity satisfies all import constraints and freshness TTL requirements.
+  kValid = 0,
+  // Entity does not meet schema import constraints (missing required
+  // attributes).
+  kFailedImportConstraints = 1,
+  // Entity has expired beyond the allowable TTL freshness window.
+  kFailedTtlExpired = 2,
+  // Entity is missing the required date attribute used for TTL evaluation.
+  kFailedTtlMissingDate = 3,
+  // Entity date attribute cannot be parsed into a valid YYYY-MM-DD date.
+  kFailedTtlInvalidDate = 4,
+  // Entity type is not supported by Ambient Autofill (e.g. KTN or Redress
+  // Number).
+  kUnsupportedEntityType = 5,
+  kMaxValue = kUnsupportedEntityType,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchEntityValidationResult)
+
 // Returns the readiness state of the prefetch cache for `entity_type` when the
 // user first interacts with an Ambient Autofill supported field of that type.
 PersonalContextCacheReadinessOnFirstInteraction GetCacheReadinessState(
@@ -77,6 +99,12 @@ void LogPersonalContextPrefetchTotalLatency(EntityType type,
 // Logs the non-eligibility reason for personal context.
 void LogPersonalContextNonEligibilityReason(
     personal_context::PersonalContextNonEligibilityReason reason);
+
+// Logs the validation outcome when filtering entities extracted from Personal
+// Context prefetch responses for Ambient Autofill.
+void LogPersonalContextPrefetchEntityValidationResult(
+    EntityType type,
+    PersonalContextPrefetchEntityValidationResult result);
 
 }  // namespace autofill
 

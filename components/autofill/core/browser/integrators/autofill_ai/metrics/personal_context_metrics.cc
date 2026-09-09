@@ -92,4 +92,16 @@ void LogPersonalContextNonEligibilityReason(
       "Autofill.Ai.PersonalContext.NonEligibilityReason", reason);
 }
 
+void LogPersonalContextPrefetchEntityValidationResult(
+    EntityType type,
+    PersonalContextPrefetchEntityValidationResult result) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult", result);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult.",
+           EntityTypeToMetricsString(type)}),
+      result);
+}
+
 }  // namespace autofill

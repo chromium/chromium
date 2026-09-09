@@ -97,6 +97,9 @@ const base::TimeDelta kUnmaskedSpiiCacheTTL =
 constexpr EntityType kPassportType{EntityTypeName::kPassport};
 constexpr EntityType kOrderType{EntityTypeName::kOrder};
 constexpr EntityType kDriversLicenseType{EntityTypeName::kDriversLicense};
+constexpr EntityType kVehicleType{EntityTypeName::kVehicle};
+constexpr EntityType kKnownTravelerNumberType{
+    EntityTypeName::kKnownTravelerNumber};
 
 // Checks that ContextMemoryAmbientAutofillRequest matches the `expected_types`
 // and `expected_presence`.
@@ -2369,6 +2372,96 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       .Times(0);
 
   PrefetchContextSync(requested_types, /*expected_spii_types=*/{}, response);
+}
+
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_RecordsEntityValidationResultMetrics) {
+  SetClockToDate("2025-06-01 12:00:00");
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse
+      presence_response;
+  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
+      SensitivePiiPresence::PASSPORT);
+
+  // Non-SPII response (first request).
+  // 1. Expired Order -> kFailedTtlExpired
+  *presence_response.add_entities() = CreateOrderProto(
+      {.id = u"EXPIRED", .date = u"2025-02-01", .merchant_name = u"Store"});
+  // 2. Order with malformed date -> kFailedTtlInvalidDate
+  personal_context::proto::Entity malformed_order =
+      CreateOrderProto({.id = u"MALFORMED", .merchant_name = u"Store"});
+  malformed_order.mutable_order()->mutable_order_date()->set_year(2025);
+  malformed_order.mutable_order()->mutable_order_date()->set_month(6);
+  malformed_order.mutable_order()->mutable_order_date()->set_day(32);
+  *presence_response.add_entities() = std::move(malformed_order);
+  // 3. Vehicle missing import constraints (no VIN and no plate) ->
+  // kFailedImportConstraints
+  *presence_response.add_entities() =
+      CreateVehicleProto({.plate = nullptr, .number = nullptr});
+  // 4. Unsupported Entity (KTN) -> kUnsupportedEntityType
+  personal_context::proto::Entity* ktn = presence_response.add_entities();
+  ktn->mutable_known_traveler_number()->set_number("KTN123");
+  ktn->mutable_known_traveler_number()->set_name("Alice");
+
+  // SPII response (second request).
+  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
+  // 5. Passport missing expiry date -> kFailedTtlMissingDate
+  *spii_response.add_entities() =
+      CreatePassportProto({.number = u"NO_EXPIRY", .expiry_date = nullptr});
+  // 6. Valid Passport -> kValid
+  *spii_response.add_entities() =
+      CreatePassportProto({.number = u"VALID", .expiry_date = u"2025-06-01"});
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(IsEmpty())));
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync(
+      {kPassportType, kOrderType, kVehicleType, kKnownTravelerNumberType},
+      {kPassportType}, presence_response, spii_response);
+
+  // Only the valid passport should survive.
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_EQ(entities[0].type(), kPassportType);
+
+  using Result = PersonalContextPrefetchEntityValidationResult;
+  static constexpr std::string_view kBaseMetric =
+      "Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult";
+
+  // Verify Aggregate Metric
+  histogram_tester().ExpectBucketCount(kBaseMetric, Result::kValid, 1);
+  histogram_tester().ExpectBucketCount(kBaseMetric, Result::kFailedTtlExpired,
+                                       1);
+  histogram_tester().ExpectBucketCount(kBaseMetric,
+                                       Result::kFailedTtlInvalidDate, 1);
+  histogram_tester().ExpectBucketCount(kBaseMetric,
+                                       Result::kFailedTtlMissingDate, 1);
+  histogram_tester().ExpectBucketCount(kBaseMetric,
+                                       Result::kFailedImportConstraints, 1);
+  histogram_tester().ExpectBucketCount(kBaseMetric,
+                                       Result::kUnsupportedEntityType, 1);
+  histogram_tester().ExpectTotalCount(kBaseMetric, 6);
+
+  // Verify Type-Specific Metric Breakdown
+  histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Passport"}),
+                                       Result::kValid, 1);
+  histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Passport"}),
+                                       Result::kFailedTtlMissingDate, 1);
+  histogram_tester().ExpectTotalCount(base::StrCat({kBaseMetric, ".Passport"}),
+                                      2);
+  histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Order"}),
+                                       Result::kFailedTtlExpired, 1);
+  histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Order"}),
+                                       Result::kFailedTtlInvalidDate, 1);
+  histogram_tester().ExpectTotalCount(base::StrCat({kBaseMetric, ".Order"}), 2);
+  histogram_tester().ExpectUniqueSample(base::StrCat({kBaseMetric, ".Vehicle"}),
+                                        Result::kFailedImportConstraints, 1);
+  histogram_tester().ExpectUniqueSample(
+      base::StrCat({kBaseMetric, ".KnownTravelerNumber"}),
+      Result::kUnsupportedEntityType, 1);
 }
 
 }  // namespace

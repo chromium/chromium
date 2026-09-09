@@ -318,6 +318,19 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:PersonalContextCacheReadinessOnFirstInteraction) -->
 
+<!-- LINT.IfChange(AutofillAiPersonalContextPrefetchEntityValidationResult) -->
+
+<enum name="AutofillAiPersonalContextPrefetchEntityValidationResult">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Failed: Import constraints not met"/>
+  <int value="2" label="Failed: TTL expired"/>
+  <int value="3" label="Failed: Missing date attribute for TTL"/>
+  <int value="4" label="Failed: Malformed date string"/>
+  <int value="5" label="Failed: Unsupported entity type"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:PersonalContextPrefetchEntityValidationResult) -->
+
 <!-- LINT.IfChange(AutofillAiPersonalContextPrefetchTriggerResult) -->
 
 <enum name="AutofillAiPersonalContextPrefetchTriggerResult">

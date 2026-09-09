@@ -2082,6 +2082,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult{EntityType}"
+    enum="AutofillAiPersonalContextPrefetchEntityValidationResult"
+    expires_after="2027-09-01">
+  <owner>schickin@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the validation outcome for entities received from Personal Context
+    during Ambient Autofill prefetch. Emitted for each entity instance converted
+    from the prefetch response, tracking whether it satisfied import constraints
+    and freshness TTL requirements or the reason it was rejected.
+
+    {EntityType}
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for all entity types (aggregate)."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.PersonalContext.Prefetch.TotalLatency{EntityType}"
     units="ms" expires_after="2027-02-14">
   <owner>vidhanj@google.com</owner>
