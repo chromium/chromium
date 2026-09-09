@@ -29,12 +29,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -104,6 +102,17 @@ public class ActorTabStateHelper {
         }
 
         return sessions;
+    }
+
+    /**
+     * Returns the {@link ActorKeyedService} instance for the profile associated with the model.
+     *
+     * @param model The {@link TabModel} to query for profile.
+     * @return The {@link ActorKeyedService} instance, or null if not available.
+     */
+    public static @Nullable ActorKeyedService getActorKeyedServiceForTesting(
+            @Nullable TabModel model) {
+        return getActorKeyedService(model);
     }
 
     /**
@@ -185,70 +194,6 @@ public class ActorTabStateHelper {
     }
 
     /**
-     * Restores background tabs belonging to the active window context. Any tabs in the same session
-     * belonging to other windows remain backgrounded/offscreen.
-     *
-     * @param selector The TabModelSelector of the active foreground window.
-     * @param activeWindowId The WindowId of the active foreground window.
-     * @param window The WindowAndroid instance of the active foreground window.
-     * @param backgroundSessions The list of currently tracked active background sessions.
-     * @param tabDelegateFactory The delegate factory for the foreground window.
-     */
-    // TODO(crbug.com/548056570): We plan to replace this with a different flow entirely once
-    // tab decoupling allows true windowless Background Sessions.
-    public static List<BackgroundSession> restoreActiveWindowBackgroundTabs(
-            TabModelSelector selector,
-            int activeWindowId,
-            WindowAndroid window,
-            List<BackgroundSession> backgroundSessions,
-            TabDelegateFactory tabDelegateFactory) {
-        ThreadUtils.assertOnUiThread();
-        TabModel model = selector.getModel(/* incognito= */ false);
-        if (model == null) return Collections.emptyList();
-
-        List<BackgroundSession> sessionsToRemove = new ArrayList<>();
-
-        for (BackgroundSession session : backgroundSessions) {
-            Iterator<BackgroundSession.BackgroundTabData> iterator =
-                    session.getTabDataList().iterator();
-            while (iterator.hasNext()) {
-                BackgroundSession.BackgroundTabData tabData = iterator.next();
-                int tabWindowId = tabData.getTabWindowId();
-
-                // Background sessions created directly in the background may not have a valid
-                // window ID associated yet (defaults to INVALID_WINDOW_ID).
-                boolean windowMatches =
-                        (tabWindowId == TabWindowManager.INVALID_WINDOW_ID
-                                || tabWindowId == activeWindowId);
-
-                if (windowMatches) {
-                    Tab originalTab = tabData.getTab();
-                    if (originalTab != null) {
-                        Integer placeholderTabId = tabData.getPlaceholderTabId();
-                        int placeholderId =
-                                placeholderTabId != null ? placeholderTabId : Tab.INVALID_TAB_ID;
-                        restoreSessionTabToForeground(
-                                originalTab,
-                                placeholderId,
-                                tabData.getOriginalTabIndex(),
-                                model,
-                                window,
-                                tabDelegateFactory);
-                    }
-                    // Remove directly using iterator since we are safely iterating.
-                    iterator.remove();
-                }
-            }
-
-            if (session.getTabDataList().isEmpty()) {
-                sessionsToRemove.add(session);
-            }
-        }
-
-        return sessionsToRemove;
-    }
-
-    /**
      * Restores a background session tab to the foreground {@link TabModel}, stopping offscreen
      * rendering, updating window attachment, transferring grouping and pinning properties, and
      * destroying any existing placeholder tab.
@@ -291,14 +236,28 @@ public class ActorTabStateHelper {
 
             if (placeholderTab != null) {
                 transferGroupAndPinState(placeholderTab, originalTab, model, targetIndex);
-                model.getTabRemover().removeTab(placeholderTab, /* allowDialog= */ false);
-                if (!placeholderTab.isDestroyed()) {
-                    placeholderTab.destroy();
-                }
+                removePlaceholderTab(model, placeholderTab.getId());
 
                 if (wasActive) {
                     TabModelUtils.setIndex(model, model.indexOf(originalTab));
                 }
+            }
+        }
+    }
+
+    /**
+     * Removes and destroys a placeholder tab from the TabModel if it exists.
+     *
+     * @param model The {@link TabModel} containing the placeholder tab.
+     * @param placeholderTabId The tab ID of the placeholder tab to remove.
+     */
+    public static void removePlaceholderTab(@Nullable TabModel model, @TabId int placeholderTabId) {
+        if (model == null || placeholderTabId == Tab.INVALID_TAB_ID) return;
+        Tab placeholder = model.getTabById(placeholderTabId);
+        if (placeholder != null) {
+            model.getTabRemover().removeTab(placeholder, /* allowDialog= */ false);
+            if (!placeholder.isDestroyed()) {
+                placeholder.destroy();
             }
         }
     }

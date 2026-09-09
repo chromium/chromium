@@ -245,8 +245,11 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
      * @param taskId The ID of the task, or null.
      * @return The tab matching the task's last acted tabs, or the last tab in the list.
      */
-    public static Tab getLastActiveTabForTask(List<Tab> tabs, @Nullable Integer taskId) {
-        if (taskId != null && !tabs.isEmpty()) {
+    public static @Nullable Tab getLastActiveTabForTask(List<Tab> tabs, @Nullable Integer taskId) {
+        if (tabs == null || tabs.isEmpty()) {
+            return null;
+        }
+        if (taskId != null) {
             Profile profile = tabs.get(0).getProfile();
             if (profile != null) {
                 ActorKeyedService service =
