@@ -109,6 +109,7 @@ _CONVERTED_SCHEMAS = [
   ('sockets_tcp.idl', 'sockets_tcp.webidl'),
   ('sockets_udp.idl', 'sockets_udp.webidl'),
   ('socket.idl', 'socket.webidl'),
+  ('scripting.idl', 'scripting.webidl'),
 ]
 
 

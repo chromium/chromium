@@ -22,7 +22,7 @@ extensions_api_schema_files_ = [
   "power.webidl",
   "proxy.json",
   "runtime.json",
-  "scripting.idl",
+  "scripting.webidl",
   "storage.json",
   "system_cpu.webidl",
   "system_display.webidl",

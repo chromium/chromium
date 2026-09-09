@@ -1,0 +1,255 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[ExternalExtensionType="extensionTypes.RunAt"]
+typedef object ExtensionTypesRunAt;
+
+callback InjectedFunction = undefined();
+
+// The origin for a style change.
+// See <a href="https://developer.mozilla.org/en-US/docs/Glossary/Style_origin">style origins</a>
+// for more info.
+enum StyleOrigin {
+  "AUTHOR",
+  "USER"
+};
+
+// The JavaScript world for a script to execute within.
+enum ExecutionWorld {
+  // Specifies the isolated world, which is the execution environment unique
+  // to this extension.
+  "ISOLATED",
+  // Specifies the main world of the DOM, which is the execution environment
+  // shared with the host page's JavaScript.
+  "MAIN"
+};
+
+dictionary InjectionTarget {
+  // The ID of the tab into which to inject.
+  required long tabId;
+
+  // The <a href="https://developer.chrome.com/extensions/webNavigation#frame_ids">IDs</a>
+  // of specific frames to inject into.
+  sequence<long> frameIds;
+
+  // The <a href="https://developer.chrome.com/extensions/webNavigation#document_ids">IDs</a>
+  // of specific documentIds to inject into. This must not be set if
+  // <code>frameIds</code> is set.
+  sequence<DOMString> documentIds;
+
+  // Whether the script should inject into all frames within the tab. Defaults
+  // to false.
+  // This must not be true if <code>frameIds</code> is specified.
+  boolean allFrames;
+};
+
+dictionary ScriptInjection {
+  // A JavaScript function to inject. This function will be serialized, and
+  // then deserialized for injection. This means that any bound parameters
+  // and execution context will be lost.
+  // Exactly one of <code>files</code> or <code>func</code> must be
+  // specified.
+  [serializableFunction] InjectedFunction func;
+
+  // The arguments to pass to the provided function. This is only valid if
+  // the <code>func</code> parameter is specified. These arguments must be
+  // JSON-serializable.
+  sequence<any> args;
+
+  // We used to call the injected function `function`, but this is
+  // incompatible with JavaScript's object declaration shorthand (see
+  // https://crbug.com/40742098). We leave this silently in for backwards
+  // compatibility.
+  // TODO(devlin): Remove this in M95.
+  [nodoc, serializableFunction] InjectedFunction function;
+
+  // The path of the JS or CSS files to inject, relative to the extension's
+  // root directory.
+  // Exactly one of <code>files</code> or <code>func</code> must be
+  // specified.
+  sequence<DOMString> files;
+
+  // Details specifying the target into which to inject the script.
+  required InjectionTarget target;
+
+  // The JavaScript "world" to run the script in. Defaults to
+  // <code>ISOLATED</code>.
+  ExecutionWorld world;
+
+  // Whether the injection should be triggered in the target as soon as
+  // possible. Note that this is not a guarantee that injection will occur
+  // prior to page load, as the page may have already loaded by the time the
+  // script reaches the target.
+  boolean injectImmediately;
+};
+
+dictionary CSSInjection {
+  // Details specifying the target into which to insert the CSS.
+  required InjectionTarget target;
+
+  // A string containing the CSS to inject.
+  // Exactly one of <code>files</code> and <code>css</code> must be
+  // specified.
+  DOMString css;
+
+  // The path of the CSS files to inject, relative to the extension's root
+  // directory.
+  // Exactly one of <code>files</code> and <code>css</code> must be
+  // specified.
+  sequence<DOMString> files;
+
+  // The style origin for the injection. Defaults to <code>'AUTHOR'</code>.
+  StyleOrigin origin;
+};
+
+dictionary InjectionResult {
+  // The result of the script execution.
+  any result;
+
+  // The frame associated with the injection.
+  required long frameId;
+
+  // The document associated with the injection.
+  required DOMString documentId;
+};
+
+// Describes a content script to be injected into a web page registered
+// through this API.
+dictionary RegisteredContentScript {
+  // The id of the content script, specified in the API call. Must not start
+  // with a '_' as it's reserved as a prefix for generated script IDs.
+  required DOMString id;
+
+  // Specifies which pages this content script will be injected into. See
+  // <a href="develop/concepts/match-patterns">Match Patterns</a> for more
+  // details on the syntax of these strings. Must be specified for
+  // $(ref:registerContentScripts).
+  sequence<DOMString> matches;
+
+  // Excludes pages that this content script would otherwise be injected into.
+  // See <a href="develop/concepts/match-patterns">Match Patterns</a> for
+  // more details on the syntax of these strings.
+  sequence<DOMString> excludeMatches;
+
+  // The list of CSS files to be injected into matching pages. These are
+  // injected in the order they appear in this array, before any DOM is
+  // constructed or displayed for the page.
+  sequence<DOMString> css;
+
+  // The list of JavaScript files to be injected into matching pages. These
+  // are injected in the order they appear in this array.
+  sequence<DOMString> js;
+
+  // If specified true, it will inject into all frames, even if the frame is
+  // not the top-most frame in the tab. Each frame is checked independently
+  // for URL requirements; it will not inject into child frames if the URL
+  // requirements are not met. Defaults to false, meaning that only the top
+  // frame is matched.
+  boolean allFrames;
+
+  // Indicates whether the script can be injected into frames where the URL
+  // contains an unsupported scheme; specifically: about:, data:, blob:, or
+  // filesystem:. In these cases, the URL's origin is checked to determine if
+  // the script should be injected. If the origin is `null` (as is the case
+  // for data: URLs) then the used origin is either the frame that created
+  // the current frame or the frame that initiated the navigation to this
+  // frame. Note that this may not be the parent frame.
+  boolean matchOriginAsFallback;
+
+  // Specifies when JavaScript files are injected into the web page. The
+  // preferred and default value is <code>document_idle</code>.
+  ExtensionTypesRunAt runAt;
+
+  // Specifies if this content script will persist into future sessions. The
+  // default is true.
+  boolean persistAcrossSessions;
+
+  // The JavaScript "world" to run the script in. Defaults to
+  // <code>ISOLATED</code>.
+  ExecutionWorld world;
+};
+
+// An object used to filter content scripts for
+// ${ref:getRegisteredContentScripts}.
+dictionary ContentScriptFilter {
+  // If specified, $(ref:getRegisteredContentScripts) will only return scripts
+  // with an id specified in this list.
+  sequence<DOMString> ids;
+};
+
+// Use the <code>chrome.scripting</code> API to execute script in different
+// contexts.
+interface Scripting {
+  // Injects a script into a target context. By default, the script will be run
+  // at <code>document_idle</code>, or immediately if the page has already
+  // loaded. If the <code>injectImmediately</code> property is set, the script
+  // will inject without waiting, even if the page has not finished loading. If
+  // the script evaluates to a promise, the browser will wait for the promise to
+  // settle and return the resulting value.
+  // |injection|: The details of the script which to inject.
+  // |Returns|: Returns a Promise which resolves upon completion of the
+  // injection. The resulting array contains the result of execution for each
+  // frame where the injection succeeded.
+  // |PromiseValue|: results
+  static Promise<sequence<InjectionResult>> executeScript(
+      ScriptInjection injection);
+
+  // Inserts a CSS stylesheet into a target context.
+  // If multiple frames are specified, unsuccessful injections are ignored.
+  // |injection|: The details of the styles to insert.
+  // |Returns|: Returns a Promise which resolves upon completion of the
+  // insertion.
+  static Promise<undefined> insertCSS(CSSInjection injection);
+
+  // Removes a CSS stylesheet that was previously inserted by this extension
+  // from a target context.
+  // |injection|: The details of the styles to remove. Note that the
+  // <code>css</code>, <code>files</code>, and <code>origin</code> properties
+  // must exactly match the stylesheet inserted through $(ref:insertCSS).
+  // Attempting to remove a non-existent stylesheet is a no-op.
+  // |Returns|: Returns a Promise which resolves upon the completion of the
+  // removal.
+  static Promise<undefined> removeCSS(CSSInjection injection);
+
+  // Registers one or more content scripts for this extension.
+  // |scripts|: Contains a list of scripts to be registered. If there are
+  // errors during script parsing/file validation, or if the IDs specified
+  // already exist, then no scripts are registered.
+  // |Returns|: Returns a Promise which resolves once scripts have been
+  // fully registered or rejects if an error has occurred.
+  static Promise<undefined> registerContentScripts(
+      sequence<RegisteredContentScript> scripts);
+
+  // Returns all dynamically registered content scripts for this extension
+  // that match the given filter.
+  // |filter|: An object to filter the extension's dynamically registered
+  // scripts.
+  // |PromiseValue|: scripts
+  static Promise<sequence<RegisteredContentScript>> getRegisteredContentScripts(
+      optional ContentScriptFilter filter);
+
+  // Unregisters content scripts for this extension.
+  // |filter|: If specified, only unregisters dynamic content scripts which
+  // match the filter. Otherwise, all of the extension's dynamic content
+  // scripts are unregistered.
+  // |Returns|: Returns a Promise which resolves once scripts have been
+  // unregistered or rejects if an error has occurred.
+  static Promise<undefined> unregisterContentScripts(
+      optional ContentScriptFilter filter);
+
+  // Updates one or more content scripts for this extension.
+  // |scripts|: Contains a list of scripts to be updated. A property is only
+  // updated for the existing script if it is specified in this object. If
+  // there are errors during script parsing/file validation, or if the IDs
+  // specified do not correspond to a fully registered script, then no scripts
+  // are updated.
+  // |Returns|: Returns a Promise which resolves once scripts have been
+  // updated or rejects if an error has occurred.
+  static Promise<undefined> updateContentScripts(
+      sequence<RegisteredContentScript> scripts);
+};
+
+partial interface Browser {
+  static attribute Scripting scripting;
+};
