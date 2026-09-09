@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
@@ -27,6 +29,7 @@ public class NtpBackgroundDataSyncController implements SyncStateChangedListener
     private @TriState int mIsThemeSyncEnabled;
     private @Nullable Profile mProfile;
     private @Nullable SyncService mSyncService;
+    private @Nullable NtpBackgroundDataManager mBackgroundDataManager;
 
     private static @Nullable NtpBackgroundDataSyncController sInstanceForTesting;
 
@@ -100,7 +103,18 @@ public class NtpBackgroundDataSyncController implements SyncStateChangedListener
 
     /** Handles actions when theme sync is disabled. */
     public void handleThemeSyncDisabled() {
-        // TODO(https://crbug.com/488439751): Handles the theme sync disabled case.
+        getBackgroundDataManager().removeAllNonAndroidPlatformData();
+    }
+
+    private NtpBackgroundDataManager getBackgroundDataManager() {
+        if (mBackgroundDataManager == null) {
+            // It is fine to use the application context here since we don't use
+            // mBackgroundDataManager to load data, but only to remove theme sync data. Otherwise,
+            // use the activity context instead.
+            mBackgroundDataManager =
+                    new NtpBackgroundDataManager(ContextUtils.getApplicationContext());
+        }
+        return mBackgroundDataManager;
     }
 
     public static void setInstanceForTesting(@Nullable NtpBackgroundDataSyncController instance) {
@@ -108,8 +122,13 @@ public class NtpBackgroundDataSyncController implements SyncStateChangedListener
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
-    @TriState
-    int getIsThemeSyncEnabledForTesting() {
+    public @TriState int getIsThemeSyncEnabledForTesting() {
         return mIsThemeSyncEnabled;
+    }
+
+    public void setBackgroundDataManagerForTesting(NtpBackgroundDataManager backgroundDataManager) {
+        NtpBackgroundDataManager oldInstance = mBackgroundDataManager;
+        mBackgroundDataManager = backgroundDataManager;
+        ResettersForTesting.register(() -> mBackgroundDataManager = oldInstance);
     }
 }

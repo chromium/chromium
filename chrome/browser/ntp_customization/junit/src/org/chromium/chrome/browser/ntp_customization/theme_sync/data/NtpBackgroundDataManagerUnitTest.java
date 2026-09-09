@@ -43,6 +43,7 @@ public class NtpBackgroundDataManagerUnitTest {
     private static final String OTHER_COLLECTION_ID = "other_collection";
     private static final String UNUSED_FILE_HASH = "unusedFileHash";
     private static final String HISTORY_FILE_HASH = "historyFileHash";
+    private static final String LOCAL_HISTORY_FILE_HASH = "LocalhistoryFileHash";
     private static final @PlatformType int REMOTE_PLATFORM_TYPE = PlatformType.IOS;
     private static final @ColorInt int TEST_PRIMARY_COLOR = Color.RED;
 
@@ -791,5 +792,70 @@ public class NtpBackgroundDataManagerUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(savedFile.exists());
         return themeData;
+    }
+
+    @Test
+    public void testRemoveAllNonAndroidPlatformData() {
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        CustomBackgroundInfo customBgInfoLocallySelected =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        CustomBackgroundInfo customBgInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_2,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+
+        NtpBackgroundDataThemeCollection iosThemeData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.IOS,
+                        customBgInfoLocallySelected,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        LOCAL_HISTORY_FILE_HASH);
+        NtpBackgroundDataThemeCollection desktopThemeData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.DESKTOP,
+                        customBgInfo,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        HISTORY_FILE_HASH);
+
+        File localUsedFile = new File(iosThemeData.getLastUploadImageFilePath());
+        File remoteUsedOnlyFile = new File(desktopThemeData.getLastUploadImageFilePath());
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, localUsedFile);
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, remoteUsedOnlyFile);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(localUsedFile.exists());
+        assertTrue(remoteUsedOnlyFile.exists());
+
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(iosThemeData);
+        mManager.saveRemoteSyncDataToSharedPreference(iosThemeData);
+        mManager.saveRemoteSyncDataToSharedPreference(desktopThemeData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.IOS).isEmpty());
+        assertFalse(
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.DESKTOP)
+                        .isEmpty());
+
+        mManager.removeAllNonAndroidPlatformData();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.IOS).isEmpty());
+        assertTrue(
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.DESKTOP)
+                        .isEmpty());
+        assertFalse(
+                mManager.getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID)
+                        .isEmpty());
+        assertTrue(localUsedFile.exists());
+        assertFalse(remoteUsedOnlyFile.exists());
     }
 }

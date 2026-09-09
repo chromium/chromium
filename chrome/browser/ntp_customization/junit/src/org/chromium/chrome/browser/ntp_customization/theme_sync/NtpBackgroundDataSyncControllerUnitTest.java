@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
@@ -38,13 +37,15 @@ public class NtpBackgroundDataSyncControllerUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private SyncService mSyncService;
+    @Mock private NtpBackgroundDataManager mBackgroundDataManager;
 
     private NtpBackgroundDataSyncController mController;
 
     @Before
     public void setUp() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        mController = spy(new NtpBackgroundDataSyncController());
+        mController = new NtpBackgroundDataSyncController();
+        mController.setBackgroundDataManagerForTesting(mBackgroundDataManager);
     }
 
     @Test
@@ -107,7 +108,6 @@ public class NtpBackgroundDataSyncControllerUnitTest {
                                 : Collections.emptySet());
 
         mController.onFinishNativeInitialization(mProfile);
-        clearInvocations(mController);
 
         when(mSyncService.getSelectedTypes())
                 .thenReturn(
@@ -119,7 +119,7 @@ public class NtpBackgroundDataSyncControllerUnitTest {
 
         assertEquals(expectedEnabled, mController.getIsThemeSyncEnabledForTesting());
         if (expectedEnabled == TriState.FALSE) {
-            verify(mController).handleThemeSyncDisabled();
+            verify(mBackgroundDataManager).removeAllNonAndroidPlatformData();
         }
     }
 

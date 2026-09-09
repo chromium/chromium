@@ -162,6 +162,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLocationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpBackgroundDataSyncController;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
@@ -1544,6 +1545,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mNtpSyncedThemeManager = new NtpSyncedThemeManager(mActivity, originalProfile);
             NtpCustomizationPolicyManager.getInstance()
                     .onFinishNativeInitialization(currentlySelectedProfile);
+            if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {
+                NtpBackgroundDataSyncController.getInstance()
+                        .onFinishNativeInitialization(originalProfile);
+            }
         }
         NewTabPageLocationPolicyManager.getInstance().onFinishNativeInitialization(originalProfile);
 
