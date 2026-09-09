@@ -364,12 +364,16 @@ MediaQueryEvaluatorTestCase g_device_posture_folded_over_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_standard_cases[] = {
+    {"(dynamic-range)", true},
+    {"(dynamic-range), not all and (dynamic-range)", true},
     {"(dynamic-range: standard)", true},
     {"(dynamic-range: high)", false},
     {"(dynamic-range: invalid)", false},
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_high_cases[] = {
+    {"(dynamic-range)", true},
+    {"(dynamic-range), not all and (dynamic-range)", true},
     {"(dynamic-range: standard)", true},
     {"(dynamic-range: high)", true},
     {"(dynamic-range: invalid)", false},
@@ -382,18 +386,24 @@ MediaQueryEvaluatorTestCase g_dynamic_range_feature_disabled_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_standard_cases[] = {
+    {"(video-dynamic-range)", true},
+    {"(video-dynamic-range), not all and (video-dynamic-range)", true},
     {"(video-dynamic-range: standard)", true},
     {"(video-dynamic-range: high)", false},
     {"(video-dynamic-range: invalid)", false},
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_high_cases[] = {
+    {"(video-dynamic-range)", true},
+    {"(video-dynamic-range), not all and (video-dynamic-range)", true},
     {"(video-dynamic-range: standard)", true},
     {"(video-dynamic-range: high)", true},
     {"(video-dynamic-range: invalid)", false},
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_feature_disabled_cases[] = {
+    {"(video-dynamic-range)", false},
+    {"(video-dynamic-range), not all and (video-dynamic-range)", false},
     {"(video-dynamic-range: standard)", false},
     {"(video-dynamic-range: high)", false},
     {"(video-dynamic-range: invalid)", false},

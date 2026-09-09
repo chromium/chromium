@@ -516,9 +516,12 @@ static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kDynamicRangeMediaQuery);
 
-  if (!value.IsId()) {
-    return false;
+  // An invalid value is only possible in a boolean context with no value
+  // attached. We should treat no value as truthy.
+  if (!value.IsValid()) {
+    return true;
   }
+  CHECK(value.IsId());
 
   switch (value.Id()) {
     case CSSValueID::kStandard:

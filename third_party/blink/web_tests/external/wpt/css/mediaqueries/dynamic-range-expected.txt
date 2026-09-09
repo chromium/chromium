@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Should be known: '(dynamic-range)'
-  assert_true: expected true got false
-[FAIL] Should be known: '(video-dynamic-range)'
-  assert_true: expected true got false
-Harness: the test ran to completion.
-

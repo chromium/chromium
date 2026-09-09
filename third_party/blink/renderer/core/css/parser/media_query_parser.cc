@@ -73,6 +73,9 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithoutValue(
          feature == media_feature_names::kDisplayModeMediaFeature ||
          feature == media_feature_names::kScanMediaFeature ||
          feature == media_feature_names::kColorGamutMediaFeature ||
+         feature == media_feature_names::kDynamicRangeMediaFeature ||
+         (feature == media_feature_names::kVideoDynamicRangeMediaFeature &&
+          RuntimeEnabledFeatures::CSSVideoDynamicRangeMediaQueriesEnabled()) ||
          feature == media_feature_names::kPrefersColorSchemeMediaFeature ||
          feature == media_feature_names::kPrefersContrastMediaFeature ||
          feature == media_feature_names::kPrefersReducedMotionMediaFeature ||
