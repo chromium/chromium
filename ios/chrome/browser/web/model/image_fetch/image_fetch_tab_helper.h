@@ -95,12 +95,14 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   // Handler for calling GetImageDataByJs inside GetImageData.
   void JsCallbackOfGetImageData(const GURL& url,
                                 const web::Referrer& referrer,
+                                const url::Origin& frame_origin,
                                 ImageDataCallback callback,
                                 const std::string* data);
 
   // Fetches image data using ImageFetcher.
   void FetchImageDataWithFetcher(const GURL& url,
                                  const web::Referrer& referrer,
+                                 const url::Origin& frame_origin,
                                  ImageDataCallback callback);
 
   // WebState this tab helper is attached to.

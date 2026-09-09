@@ -8,8 +8,10 @@
 
 #import "base/byte_size.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
@@ -408,4 +410,31 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataFromSubframeSucceeds) {
   histogram_tester_.ExpectUniqueSample(
       kUmaGetImageDataByJsResult,
       ContextMenuGetImageDataByJsResult::kCanvasSucceed, 1);
+}
+
+// Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
+// with CredentialsMode::kOmit when the frame origin is cross-origin to the
+// image URL.
+TEST_F(ImageFetchTabHelperTest,
+       GetImageDataWithCrossOriginFallbackOmitsCredentials) {
+  std::optional<network::mojom::CredentialsMode> intercepted_credentials_mode;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        intercepted_credentials_mode = request.credentials_mode;
+      }));
+  url::Origin cross_origin =
+      url::Origin::Create(GURL("https://untrusted-cross-origin.test/"));
+  __block base::test::TestFuture<NSData*> future;
+
+  image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         "invalid-frame-id", cross_origin,
+                                         ^(NSData* data) {
+                                           future.SetValue(data);
+                                         });
+  NSData* data = future.Get();
+  ASSERT_TRUE(data);
+  EXPECT_NSEQ(GetExpectedData(), data);
+  ASSERT_TRUE(intercepted_credentials_mode.has_value());
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            intercepted_credentials_mode.value());
 }
