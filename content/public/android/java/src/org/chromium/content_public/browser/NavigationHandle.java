@@ -210,10 +210,13 @@ public class NavigationHandle {
      */
     @CalledByNative
     @VisibleForTesting
-    public void didRedirect(GURL url, boolean isExternalProtocol) {
+    public void didRedirect(
+            GURL url, boolean isExternalProtocol, GURL referrerUrl, int referrerPolicy) {
         mUrl = url;
         mIsRedirect = true;
         mIsExternalProtocol = isExternalProtocol;
+        mReferrerUrl = referrerUrl;
+        mReferrerPolicy = referrerPolicy;
 
         takeNavigationStateSnapshot();
     }

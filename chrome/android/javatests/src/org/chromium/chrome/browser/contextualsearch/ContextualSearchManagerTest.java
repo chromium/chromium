@@ -84,6 +84,7 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
@@ -366,7 +367,11 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                                 (Boolean shouldIgnore) -> {
                                                     result.set(shouldIgnore);
                                                 });
-                                navigationHandle.didRedirect(redirectUrl, true);
+                                navigationHandle.didRedirect(
+                                        redirectUrl,
+                                        true,
+                                        /* referrerUrl= */ GURL.emptyGURL(),
+                                        /* referrerPolicy= */ ReferrerPolicy.DEFAULT);
                                 mPanel.getOverlayPanelContent()
                                         .getInterceptNavigationDelegateForTesting()
                                         .shouldIgnoreNavigation(

@@ -78,7 +78,10 @@ void NavigationHandleProxy::DidRedirect() {
   Java_NavigationHandle_didRedirect(
       env, java_navigation_handle_,
       url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
-      cpp_navigation_handle_->IsExternalProtocol());
+      cpp_navigation_handle_->IsExternalProtocol(),
+      url::GURLAndroid::FromNativeGURL(
+          env, cpp_navigation_handle_->GetReferrer().url),
+      static_cast<jint>(cpp_navigation_handle_->GetReferrer().policy));
 }
 
 void NavigationHandleProxy::DidFinish() {
