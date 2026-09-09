@@ -26,6 +26,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
+#include "ui/events/platform/wayland/wayland_event_watcher.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
 #include "ui/ozone/common/features.h"
@@ -256,6 +257,12 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
   // blocks until wl_display.sync is done. Use it to ensure the required globals
   // are emitted.
   while (!WlGlobalsReady()) {
+    if (int err = wl_display_get_error(display())) {
+      LOG(ERROR) << "Wayland connection error during initialization: "
+                 << WaylandEventWatcher::GetWaylandProtocolError(err,
+                                                                 display());
+      return false;
+    }
     RoundTripQueue();
   }
 

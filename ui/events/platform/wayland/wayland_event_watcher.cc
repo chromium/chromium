@@ -56,32 +56,6 @@ void wayland_log(const char* fmt, va_list argp) {
   }
 }
 
-std::string GetWaylandProtocolError(int err, wl_display* display) {
-  std::string error_string;
-  if (err == EPROTO) {
-    uint32_t ec, id;
-    const struct wl_interface* intf;
-    ec = wl_display_get_protocol_error(display, &intf, &id);
-    if (intf) {
-      error_string = base::StringPrintf(
-          "Fatal Wayland protocol error %u on interface %s (object %u). "
-          "Shutting down..",
-          ec, intf->name, id);
-    } else {
-      error_string = base::StringPrintf(
-          "Fatal Wayland protocol error %u. Shutting down..", ec);
-    }
-  } else {
-    error_string = base::StringPrintf("Fatal Wayland communication error: %s.",
-                                      std::strerror(err));
-  }
-  LOG(ERROR) << error_string;
-  // Format the error message only after it's printed. Otherwise, object id will
-  // be lost and local development and debugging will be harder to do.
-  FormatErrorMessage(&error_string);
-  return error_string;
-}
-
 void RecordCrashKeys(const std::string& error_string) {
   static crash_reporter::CrashKeyString<256> error("wayland_error");
   error.Set(error_string);
@@ -358,6 +332,34 @@ void WaylandEventWatcher::WlDisplayCheckForErrors() {
     }
     StopProcessingEvents();
   }
+}
+
+// static
+std::string WaylandEventWatcher::GetWaylandProtocolError(int err,
+                                                         wl_display* display) {
+  std::string error_string;
+  if (err == EPROTO) {
+    uint32_t ec, id;
+    const struct wl_interface* intf;
+    ec = wl_display_get_protocol_error(display, &intf, &id);
+    if (intf) {
+      error_string = base::StringPrintf(
+          "Fatal Wayland protocol error %u on interface %s (object %u). "
+          "Shutting down..",
+          ec, intf->name, id);
+    } else {
+      error_string = base::StringPrintf(
+          "Fatal Wayland protocol error %u. Shutting down..", ec);
+    }
+  } else {
+    error_string = base::StringPrintf("Fatal Wayland communication error: %s.",
+                                      std::strerror(err));
+  }
+  LOG(ERROR) << error_string;
+  // Format the error message only after it's printed. Otherwise, object id will
+  // be lost and local development and debugging will be harder to do.
+  FormatErrorMessage(&error_string);
+  return error_string;
 }
 
 }  // namespace ui

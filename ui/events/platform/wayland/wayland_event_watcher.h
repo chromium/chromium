@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_PLATFORM_WAYLAND_WAYLAND_EVENT_WATCHER_H_
 #define UI_EVENTS_PLATFORM_WAYLAND_WAYLAND_EVENT_WATCHER_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,6 +45,9 @@ class WaylandEventWatcher {
       wl_display* display,
       wl_event_queue* event_queue,
       bool use_threaded_polling = false);
+
+  // Returns a formatted error string for a Wayland error.
+  static std::string GetWaylandProtocolError(int err, wl_display* display);
 
   // Sets a callback that that shutdowns the browser in case of
   // unrecoverable error. Can only be set once.
