@@ -20,7 +20,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../test_support.js';
+import {createFuseboxAction, installMock} from '../test_support.js';
 
 type ActionChipClickEvent = CustomEvent<ActionChipClickDetail>;
 
@@ -121,17 +121,13 @@ suite('NewTabPageActionChipsTest', () => {
           ...chip,
           suggestTemplateInfo: {
             ...chip.suggestTemplateInfo,
-            fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ? {
-              preselectedTool: ToolMode.kUnspecified,
-              preferredInventory: null,
-              preselectedModel: ModelMode.kUnspecified,
-              queryActionOverride: null,
-              preselectedInputSource: null,
-              searchboxOverride: null,
-              searchboxTutorial: null,
-              ...chip.suggestTemplateInfo.fuseboxAction,
-            } :
-                                                                    null,
+            fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?
+                createFuseboxAction({
+                  preselectedTool: ToolMode.kUnspecified,
+                  preselectedModel: ModelMode.kUnspecified,
+                  ...chip.suggestTemplateInfo.fuseboxAction,
+                }) :
+                null,
           },
         }));
     handler.setResultMapperFor('startActionChipsRetrieval', () => {
@@ -457,16 +453,11 @@ suite('NewTabPageActionChipsTest', () => {
      },
     ].forEach(({name, iconType, iconClass, fuseboxAction, suggestion}) => {
       test(`${name} chip triggers chip click event`, async () => {
-        const expectedFuseboxAction = fuseboxAction ? {
+        const expectedFuseboxAction = fuseboxAction ? createFuseboxAction({
           preselectedTool: ToolMode.kUnspecified,
-          preferredInventory: null,
           preselectedModel: ModelMode.kUnspecified,
-          queryActionOverride: null,
-          preselectedInputSource: null,
-          searchboxOverride: null,
-          searchboxTutorial: null,
           ...fuseboxAction,
-        } :
+        }) :
                                                       null;
         await initializeChips({
           actionChips: [{
