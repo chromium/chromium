@@ -2009,6 +2009,8 @@
   self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
 
+  [self stopRecentTabsCoordinator];
+
   [self hideReaderModeBlurOverlay];
 
   [self stopRepostFormCoordinator];

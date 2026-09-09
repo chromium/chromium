@@ -1896,7 +1896,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 
   if (IsSigninForcedByPolicy()) {
-    if (self.mainCoordinator.isSigninInProgress) {
+    if (self.sceneState.signinInProgress) {
       // Return NO because intents cannot be handled when a sign-in is in
       // progress.
       return NO;

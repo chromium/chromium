@@ -86,9 +86,6 @@ enum class WarningType;
 // because the incognito profile is deleted.
 @property(nonatomic, assign) Browser* incognitoBrowser;
 
-// Returns YES if sign-in is in progress.
-@property(nonatomic, readonly) BOOL isSigninInProgress;
-
 // The scene level component for url loading.
 @property(nonatomic, assign) raw_ptr<SceneUrlLoadingService>
     sceneURLLoadingService;
