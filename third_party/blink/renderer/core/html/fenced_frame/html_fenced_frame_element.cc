@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -138,7 +139,8 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
     : HTMLFrameOwnerElement(html_names::kFencedframeTag, document),
       sandbox_(MakeGarbageCollected<HTMLIFrameElementSandbox>(this)) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
-  UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
+  Deprecation::CountDeprecation(GetExecutionContext(),
+                                WebFeature::kHTMLFencedFrameElement);
   StartResizeObserver();
 }
 

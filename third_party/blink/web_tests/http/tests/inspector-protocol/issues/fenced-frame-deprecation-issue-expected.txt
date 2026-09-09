@@ -1,0 +1,21 @@
+Tests that fenced frame deprecation issue is reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 27
+                    lineNumber : 1
+                    scriptId : <string>
+                    url :
+                }
+                type : FencedFrame
+            }
+        }
+    }
+}
+

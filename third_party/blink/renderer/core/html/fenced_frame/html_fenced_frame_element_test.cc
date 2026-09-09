@@ -18,6 +18,9 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -286,6 +289,25 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
   // outermost main frame.
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameFailedSandboxLoadInTopLevelFrame, false, 1);
+}
+
+TEST_F(HTMLFencedFrameElementTest, ReportFencedFrameRemovalOnCreation) {
+  Document& doc = GetDocument();
+  InspectorIssueStorage& storage = doc.GetPage()->GetInspectorIssueStorage();
+  wtf_size_t initial_size = storage.size();
+
+  MakeGarbageCollected<HTMLFencedFrameElement>(doc);
+  EXPECT_EQ(initial_size + 1, storage.size());
+
+  auto* issue = storage.at(initial_size);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::DeprecationIssue,
+            issue->getCode());
+  ASSERT_TRUE(issue->getDetails()->hasDeprecationIssueDetails());
+  EXPECT_EQ("FencedFrame",
+            issue->getDetails()->getDeprecationIssueDetails()->getType());
+
+  // Verify that the deprecation use counter was also bumped.
+  EXPECT_TRUE(doc.IsUseCounted(WebFeature::kHTMLFencedFrameElement));
 }
 
 }  // namespace blink

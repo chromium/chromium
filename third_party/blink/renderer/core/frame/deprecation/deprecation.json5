@@ -214,6 +214,16 @@
       translation_note: "Translation is not needed, this will never be exposed in production code.",
     },
     {
+      name: "FencedFrame",
+      message: "Fenced Frame API is deprecated and scheduled for removal.",
+      translation_note: "Warning displayed to developers that they are using the Fenced Frame API which has been deprecated and is scheduled to be removed.",
+      web_features: [
+        "kHTMLFencedFrameElement",
+      ],
+      chrome_status_feature: 6366274495053824,
+      milestone: 156,
+    },
+    {
       name: "Fledge",
       message: "The Protected Audience API is deprecated and will be removed in a future release.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when one of the Protected Audience APIs like `navigator.joinAdInterestGroup`, `navigator.getInterestGroupAdAuctionData` or `navigator.runAdAuction` are called.",
