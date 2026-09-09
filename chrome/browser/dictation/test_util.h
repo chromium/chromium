@@ -79,7 +79,8 @@ void ExtensionSendTranscriptUpdate(
 void ExtensionSendStreamStateUpdate(
     Profile* profile,
     DictationMultiplexer::StreamId stream_id,
-    extensions::api::dictation_private::StreamState state);
+    extensions::api::dictation_private::StreamState state,
+    std::optional<int> error_code = std::nullopt);
 
 // Blocks until the extension has received the OnStartStream event for the given
 // stream ID.
@@ -119,7 +120,10 @@ class MockStreamProvider : public StreamProvider {
               OnTranscriptionUpdated,
               (const std::string& data, bool is_final),
               (override));
-  MOCK_METHOD(void, OnStreamStateChanged, (StreamState state), (override));
+  MOCK_METHOD(void,
+              OnStreamStateChanged,
+              (StreamState state, StreamErrorReason reason),
+              (override));
   MOCK_METHOD(StreamState, GetState, (), (const, override));
   MOCK_METHOD(Target*, GetTarget, (), (override));
   MOCK_METHOD(const Target*, GetTarget, (), (const, override));
@@ -130,7 +134,10 @@ class MockSessionUi : public SessionUi {
   MockSessionUi();
   ~MockSessionUi() override;
 
-  MOCK_METHOD(void, OnError, (StreamType stream_type), (override));
+  MOCK_METHOD(void,
+              OnError,
+              (StreamType stream_type, StreamErrorReason reason),
+              (override));
   MOCK_METHOD(void, OnStopped, (), (override));
   MOCK_METHOD(void, UpdateAudioLevel, (float audio_level), (override));
   MOCK_METHOD(void,

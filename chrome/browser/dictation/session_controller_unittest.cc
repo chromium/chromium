@@ -657,7 +657,7 @@ TEST_F(DictationSessionControllerTest, ActiveStreamFailureOnErrorCalled) {
 
   EXPECT_CALL(*stream_provider_ptr, GetState())
       .WillRepeatedly(Return(StreamProvider::StreamState::kFailed));
-  EXPECT_CALL(*ui_ptr, OnError(SessionUi::StreamType::kAttached));
+  EXPECT_CALL(*ui_ptr, OnError(SessionUi::StreamType::kAttached, _));
 
   controller_->DidUpdateStreamProviderState(
       *stream_provider_ptr, StreamProvider::StreamState::kTranscribing);
@@ -688,7 +688,7 @@ TEST_F(DictationSessionControllerTest, CompletedStreamFailureOnErrorNotCalled) {
   // Now transition to failed. OnError should not be called.
   EXPECT_CALL(*stream_provider_ptr, GetState())
       .WillRepeatedly(Return(StreamProvider::StreamState::kFailed));
-  EXPECT_CALL(*ui_ptr, OnError(_)).Times(0);
+  EXPECT_CALL(*ui_ptr, OnError(_, _)).Times(0);
 
   controller_->DidUpdateStreamProviderState(
       *stream_provider_ptr, StreamProvider::StreamState::kComplete);

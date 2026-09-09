@@ -57,6 +57,8 @@ class DictationInteractiveBrowserTestBase
   // If a StreamId isn't specified, then these operate on the last started
   // stream.
   MultiStep ExtensionAPISetStreamState(ExtensionStreamState state);
+  MultiStep ExtensionAPISetStreamState(ExtensionStreamState state,
+                                       std::optional<int> error_code);
   MultiStep ExtensionAPISetStreamState(const StreamId& stream_id,
                                        ExtensionStreamState state);
   MultiStep ExtensionAPIUpdateTranscription(ExtensionTranscriptionType type,

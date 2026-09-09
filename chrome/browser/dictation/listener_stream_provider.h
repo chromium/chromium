@@ -40,7 +40,8 @@ class ListenerStreamProvider : public StreamProvider {
   void BindToTargetAndConnect(std::unique_ptr<Target> target) override;
   void Stop(DictationStreamEndTrigger trigger) override;
   void OnTranscriptionUpdated(const std::string& data, bool is_final) override;
-  void OnStreamStateChanged(StreamState state) override;
+  void OnStreamStateChanged(StreamState state,
+                            StreamErrorReason reason) override;
   StreamState GetState() const override;
   Target* GetTarget() override;
   const Target* GetTarget() const override;

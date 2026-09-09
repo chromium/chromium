@@ -28,12 +28,13 @@ bool DictationMultiplexer::UpdateTranscription(StreamId stream_id,
 }
 
 bool DictationMultiplexer::SetStreamState(StreamId stream_id,
-                                          StreamProvider::StreamState state) {
+                                          StreamProvider::StreamState state,
+                                          StreamErrorReason reason) {
   auto it = stream_providers_.find(stream_id);
   if (it == stream_providers_.end()) {
     return false;
   }
-  it->second->OnStreamStateChanged(state);
+  it->second->OnStreamStateChanged(state, reason);
   return true;
 }
 

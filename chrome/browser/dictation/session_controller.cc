@@ -280,7 +280,8 @@ void SessionController::HostTabDidClose() {
 
 void SessionController::DidUpdateStreamProviderState(
     StreamProvider& stream_provider,
-    StreamProvider::StreamState old_state) {
+    StreamProvider::StreamState old_state,
+    StreamErrorReason reason) {
   using StreamState = StreamProvider::StreamState;
 
   const bool is_attached = attached_stream_provider_.get() == &stream_provider;
@@ -338,7 +339,7 @@ void SessionController::DidUpdateStreamProviderState(
         is_attached ? SessionUi::StreamType::kAttached
                     : SessionUi::StreamType::kFinalizing;
     if (ui_) {
-      ui_->OnError(stream_type);
+      ui_->OnError(stream_type, reason);
     }
   }
 }

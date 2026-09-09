@@ -101,8 +101,8 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
     transcription_updates_.push_back({data, is_final});
   }
 
-  void OnStreamStateChanged(
-      dictation::StreamProvider::StreamState state) override {
+  void OnStreamStateChanged(dictation::StreamProvider::StreamState state,
+                            dictation::StreamErrorReason reason) override {
     state_changes_.push_back(state);
   }
 

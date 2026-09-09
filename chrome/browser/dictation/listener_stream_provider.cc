@@ -196,7 +196,8 @@ void ListenerStreamProvider::OnTranscriptionUpdated(const std::string& data,
   target_->SetComposition(base::UTF8ToUTF16(data), is_final);
 }
 
-void ListenerStreamProvider::OnStreamStateChanged(StreamState state) {
+void ListenerStreamProvider::OnStreamStateChanged(StreamState state,
+                                                  StreamErrorReason reason) {
   if (state == StreamState::kComplete) {
     RecordExitMetric(DictationStreamEndTrigger::kSpeechComplete);
     VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
@@ -223,7 +224,7 @@ void ListenerStreamProvider::OnStreamStateChanged(StreamState state) {
   StreamState old_state = state_;
   state_ = state;
 
-  delegate_->DidUpdateStreamProviderState(*this, old_state);
+  delegate_->DidUpdateStreamProviderState(*this, old_state, reason);
 }
 
 void ListenerStreamProvider::OnPendingInsertionsComplete() {
