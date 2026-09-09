@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/views/view_observer.h"
@@ -388,6 +389,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // This value is ideally 0 or 1, i.e. no nested focus change.
   // See crbug.com/1203960.
   int setting_focused_view_entrance_count_ = 0;
+
+  // Observes `focused_view_`, so the FocusManager is told when the focused
+  // View is destroyed out from under it. Set and cleared only in
+  // SetFocusedViewWithReason().
+  base::ScopedObservation<View, ViewObserver> view_observation_{this};
 };
 
 }  // namespace views

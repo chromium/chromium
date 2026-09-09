@@ -41,9 +41,7 @@ FocusManager::FocusManager(Widget* widget,
 }
 
 FocusManager::~FocusManager() {
-  if (focused_view_) {
-    focused_view_->RemoveObserver(this);
-  }
+  view_observation_.Reset();
   focus_change_listeners_.Notify(&FocusChangeListener::OnFocusManagerDestroying,
                                  this);
 }
@@ -365,7 +363,7 @@ void FocusManager::SetFocusedViewWithReason(View* view,
       setting_focused_view_entrance_count_ + 1);
 
   if (old_focused_view_tracker.view()) {
-    old_focused_view_tracker.view()->RemoveObserver(this);
+    view_observation_.Reset();
     old_focused_view_tracker.view()->Blur();
   }
   // Also make |focused_view_| the stored focus view. This way the stored focus
@@ -374,9 +372,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   SetStoredFocusView(focused_view_);
   if (focused_view_) {
     // TODO(40763787): Remove this once reentrant callsites have been addressed.
-    if (!focused_view_->HasObserver(this)) {
-      focused_view_->AddObserver(this);
-    }
+    CHECK(!view_observation_.IsObserving());
+    view_observation_.Observe(focused_view_);
     focused_view_->Focus();
   }
 
@@ -624,6 +621,7 @@ void FocusManager::OnViewIsDeleting(View* view) {
   // child widgets it's possible to change the parent out from under the Widget
   // such that ViewRemoved() is never called.
   CHECK_EQ(view, focused_view_);
+  view_observation_.Reset();
   SetFocusedView(nullptr);
 }
 
