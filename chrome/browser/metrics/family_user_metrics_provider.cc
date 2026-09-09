@@ -119,6 +119,10 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
   ObserveIdentityManager(profile);
 
   num_secondary_accounts_ = GetNumSecondaryAccounts(profile);
+  if (num_secondary_accounts_ < 0 && profile->IsChild()) {
+    // Secondary accounts not loaded yet; we cannot determine the log segment.
+    return;
+  }
 
   if (IsSupervisedUser(profile)) {
     family_user_log_segment_ = FamilyUserLogSegment::kSupervisedUser;
