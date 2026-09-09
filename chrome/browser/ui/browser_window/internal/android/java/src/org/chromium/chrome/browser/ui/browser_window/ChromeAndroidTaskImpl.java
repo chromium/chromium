@@ -317,17 +317,13 @@ final class ChromeAndroidTaskImpl
 
                 @Override
                 public void onProfileDestroyed(Profile profile) {
-                    removeAllFeaturesForProfile(profile);
-
                     if (mPendingBrowserWindow != null
                             && mPendingBrowserWindow.getProfile() == profile) {
-                        assert mActivityScopedObjectsDeque.isEmpty();
-
-                        destroyBrowserWindow(
-                                mPendingBrowserWindow, null, mAndroidBrowserWindowObserverNotifier);
-                        mPendingBrowserWindow = null;
-                        return;
+                        throw new IllegalStateException(
+                                "Profile destroyed when an associated browser window is pending");
                     }
+
+                    removeAllFeaturesForProfile(profile);
 
                     var iterator = mActivityScopedObjectsDeque.iterator();
                     while (iterator.hasNext()) {
@@ -861,7 +857,7 @@ final class ChromeAndroidTaskImpl
     @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
-        if (mState != State.IDLE) {
+        if (mState == State.DESTROYING || mState == State.DESTROYED || mState == State.UNKNOWN) {
             return;
         }
 
@@ -915,11 +911,9 @@ final class ChromeAndroidTaskImpl
         } else {
             assert browserWindow.getActivityWindowAndroid()
                     == internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid;
-        }
-        long ptr = browserWindow.getNativePtr();
-        assert ptr != 0 : "Native object has not been created.";
+            long ptr = browserWindow.getNativePtr();
+            assert ptr != 0 : "Native object has not been created.";
 
-        if (internalActivityScopedObjects != null) {
             var profile = browserWindow.getProfile();
             internalActivityScopedObjects
                     .mActivityScopedObjects
@@ -931,7 +925,9 @@ final class ChromeAndroidTaskImpl
 
         // Note: Notify observers immediately before browserWindow.destroy(), and after everything
         // else.
-        browserWindowObserverNotifier.notifyBrowserWindowDestroyed(browserWindow);
+        if (browserWindow.getNativePtr() != 0) {
+            browserWindowObserverNotifier.notifyBrowserWindowDestroyed(browserWindow);
+        }
         browserWindow.destroy();
     }
 
