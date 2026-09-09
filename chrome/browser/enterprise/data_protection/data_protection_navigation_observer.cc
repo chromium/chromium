@@ -56,6 +56,9 @@ namespace {
 constexpr char kURLVerdictSourceHistogram[] =
     "Enterprise.DataProtection.URLVerdictSource";
 
+constexpr char kURLVerdictScreenshotHistogram[] =
+    "Enterprise.DataProtection.URLVerdictForScreenshot";
+
 // This is non-null in tests to install a fake service.
 safe_browsing::RealTimeUrlLookupServiceBase* g_lookup_service = nullptr;
 
@@ -227,7 +230,7 @@ std::string GetIdentifier(content::BrowserContext* browser_context) {
 
 void LogVerdictSource(
     DataProtectionNavigationObserver::URLVerdictSource verdict_source) {
-  VLOG(1) << "enterprise.watermark: verdict source: "
+  VLOG(1) << "enterprise.data_protection: verdict source: "
           << static_cast<int>(verdict_source);
   base::UmaHistogramEnumeration(kURLVerdictSourceHistogram, verdict_source);
 }
@@ -412,6 +415,11 @@ void DataProtectionNavigationObserver::OnLookupComplete(
   if (!web_contents()) {
     return;
   }
+
+  base::UmaHistogramBoolean(
+      kURLVerdictScreenshotHistogram,
+      GetUrlSettings("", rt_lookup_response.get()).allow_screenshots);
+
   if (is_navigation_finished_) {
     OnDoLookupComplete(web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_,

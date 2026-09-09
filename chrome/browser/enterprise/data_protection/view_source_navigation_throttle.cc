@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
