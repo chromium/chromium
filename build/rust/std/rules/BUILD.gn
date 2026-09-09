@@ -2880,6 +2880,7 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/fs/windows.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/fs/windows/dir.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/fs/windows/remove_dir_all.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/fs/windows/tests.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/helpers/c_opaque.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/helpers/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/helpers/small_c_string.rs",
