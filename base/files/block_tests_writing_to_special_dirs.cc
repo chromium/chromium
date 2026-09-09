@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -27,14 +28,20 @@ bool BlockTestsWritingToSpecialDirs::CanWriteToPath(const FilePath& path) {
   if (!dir_blocker.has_value()) {
     return true;
   }
-  // Allow writing to temporary directories (or sub-directories of DIR_TEMP),
-  // even if DIR_TEMP resides under a blocked directory (e.g.
+  // Allow writing to temporary directories (or sub-directories of DIR_TEMP or
+  // DIR_SYSTEM_TEMP), even if they reside under a blocked directory (e.g.
   // DIR_SRC_TEST_DATA_ROOT).
   FilePath temp_path;
   if (PathService::Get(DIR_TEMP, &temp_path) &&
       (temp_path == path || temp_path.IsParent(path))) {
     return true;
   }
+#if BUILDFLAG(IS_WIN)
+  if (PathService::Get(DIR_SYSTEM_TEMP, &temp_path) &&
+      (temp_path == path || temp_path.IsParent(path))) {
+    return true;
+  }
+#endif
   if (!dir_blocker->blocked_dirs_.empty()) {
     // `blocked_paths_` needs to be initialized lazily because PathService::Get
     // can't be called from the test harness code before the indiviudal tests

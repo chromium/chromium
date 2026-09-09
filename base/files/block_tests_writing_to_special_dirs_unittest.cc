@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -71,7 +72,7 @@ TEST_F(BlockTestsWritingToSpecialDirsTest, AllowTempDirSubdirectories) {
   }
   Get().emplace(std::move(dirs_to_block), ([](const FilePath& path) {}));
 
-  // Writing to `src_dir` outside `temp_sub_dir' should be blocked.
+  // Writing to `src_dir` outside `temp_sub_dir` should be blocked.
   EXPECT_FALSE(BlockTestsWritingToSpecialDirs::CanWriteToPath(
       src_dir.AppendASCII("other_file")));
 
@@ -81,6 +82,17 @@ TEST_F(BlockTestsWritingToSpecialDirsTest, AllowTempDirSubdirectories) {
       temp_sub_dir.AppendASCII("temp_file")));
   EXPECT_TRUE(BlockTestsWritingToSpecialDirs::CanWriteToPath(
       temp_sub_dir.AppendASCII("subdir").AppendASCII("temp_file")));
+
+#if BUILDFLAG(IS_WIN)
+  FilePath system_temp_sub_dir = src_dir.AppendASCII("system_temp_test_dir");
+  base::ScopedPathOverride system_temp_override(DIR_SYSTEM_TEMP,
+                                                system_temp_sub_dir,
+                                                /*should_skip_check=*/true);
+  EXPECT_TRUE(BlockTestsWritingToSpecialDirs::CanWriteToPath(
+      system_temp_sub_dir.AppendASCII("temp_file")));
+  EXPECT_TRUE(BlockTestsWritingToSpecialDirs::CanWriteToPath(
+      system_temp_sub_dir.AppendASCII("subdir").AppendASCII("temp_file")));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace base
