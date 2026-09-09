@@ -128,4 +128,7 @@ tast.hwsec.CrossVersionChromeLogin.ti50_r125
 # b/556069856: This test itself passes but makes the succeeding tests failed.
 tast.arc.MIDIClient.vm
 
+# b/559243046: Consistent failures with no obvious cause
+tast.crostini.AudioPlaybackConfigurations.bookworm_stable@brya
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
