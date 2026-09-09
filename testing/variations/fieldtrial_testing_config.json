@@ -17668,29 +17668,6 @@
             ]
         }
     ],
-    "SearchPrefetchHighPriorityPrefetches": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledHighPriorityBothTriggers_20230721",
-                    "params": {
-                        "mouse_down": "true",
-                        "navigation_prefetch_param": "op",
-                        "up_or_down": "true"
-                    },
-                    "enable_features": [
-                        "SearchNavigationPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
     "SearchPromotionIPH": [
         {
             "platforms": [
