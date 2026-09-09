@@ -201,6 +201,10 @@ cr-composebox-submit::part(submit) {
   --color-composebox-input-plate-outline: #DADCE0;
 }
 
+:host([energy-effect-animation-enabled]) {
+  --border-animation-delay: 150ms;
+}
+
 :host-context([energy-effect-enabled_]) search-animated-glow {
   inset: 0;
   z-index: -1;

@@ -142,11 +142,11 @@
   /* Energy Effect Box Shadow */
   --box-shadow-energy-effect-no-alpha: 0 4px 18px -2px rgba(60, 64, 67, 0);
   --box-shadow-animation-duration: 650ms;
+  --border-animation-delay: 0ms;
   position: relative;
 }
 
-:host([energy-effect-enabled])::after,
-:host([energy-effect-animation-enabled])::after {
+:host([energy-effect-enabled])::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -273,7 +273,8 @@ search-animated-glow {
 }
 
 :host([energy-effect-animation-enabled][animation-state='expanding'])::after {
-  animation: animateBorder var(--box-shadow-animation-duration) linear both;
+  animation: animateBorder var(--box-shadow-animation-duration) linear
+      var(--border-animation-delay, 0ms) both;
   opacity: 0;
 }
 
