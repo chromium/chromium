@@ -1911,6 +1911,16 @@
     "expiry_milestone": 150
   },
   {
+    "name": "client-side-detection-ios",
+    "owners": [
+      "jdh@chromium.org",
+      "nwokedi@chromium.org",
+      "chrome-counter-abuse-alerts@google.com",
+      "bling-flags@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "client-side-detection-server-model-for-scam-detection-android",
     "owners": [
       "xinghuilu@chromium.org",

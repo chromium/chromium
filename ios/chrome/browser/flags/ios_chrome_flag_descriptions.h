@@ -389,6 +389,11 @@ inline constexpr char kChromeNextIaName[] = "ChromeNextIa";
 inline constexpr char kChromeNextIaDescription[] =
     "Enables the chrome_next_ia feature.";
 
+inline constexpr char kClientSideDetectionIosName[] =
+    "Client Side Detection on iOS";
+inline constexpr char kClientSideDetectionIosDescription[] =
+    "Enables Client Side Detection (CSD) for phishing on iOS.";
+
 inline constexpr char kCollaborationMessagingName[] = "Collaboration Messaging";
 inline constexpr char kCollaborationMessagingDescription[] =
     "Enables the messaging framework within the collaboration feature, "

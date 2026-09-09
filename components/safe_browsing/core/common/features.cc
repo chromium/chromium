@@ -553,6 +553,7 @@ base::ListValue GetFeatureStatusList() {
       &kBundledSecuritySettings,
       &kBundledSecuritySettingsAskBeforeHttp,
       &kClientSideDetectionClipboardCopyApi,
+      &kClientSideDetectionEnabledIos,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
       &kClientSideDetectionImageEmbeddingMatch,
       &kClientSideDetectionKillswitch,
@@ -592,6 +593,8 @@ base::ListValue GetFeatureStatusList() {
   }
 
   // Manually add experimental features that we want param values for.
+  param_list.Append(kCsdEnforceIos.Get());
+  param_list.Append(kCsdEnforceIos.name);
   param_list.Append(kCsdProactivePasswordProtectionSampleRate.Get());
   param_list.Append(kCsdProactivePasswordProtectionSampleRate.name);
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());

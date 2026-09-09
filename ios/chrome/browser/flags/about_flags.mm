@@ -1237,6 +1237,18 @@ const FeatureEntry::FeatureVariation
          kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcGPU,
          nullptr}};
 
+constexpr FeatureEntry::FeatureParam kClientSideDetectionWithoutEnforcement[] =
+    {{"CsdEnforceIos", "false"}};
+constexpr FeatureEntry::FeatureParam kClientSideDetectionWithEnforcement[] = {
+    {"CsdEnforceIos", "true"}};
+
+constexpr FeatureEntry::FeatureVariation
+    kClientSideDetectionEnforcementVariations[] = {
+        {"without enforcement", kClientSideDetectionWithoutEnforcement,
+         nullptr},
+        {"with enforcement", kClientSideDetectionWithEnforcement, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2759,6 +2771,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAimHistoryThreadsManagementName,
      flag_descriptions::kAimHistoryThreadsManagementDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAimHistoryThreadsManagement)},
+    {"client-side-detection-ios",
+     flag_descriptions::kClientSideDetectionIosName,
+     flag_descriptions::kClientSideDetectionIosDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         safe_browsing::kClientSideDetectionEnabledIos,
+         kClientSideDetectionEnforcementVariations,
+         "ClientSideDetectionEnabledIos")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
