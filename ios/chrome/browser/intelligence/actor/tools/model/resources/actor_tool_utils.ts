@@ -6,6 +6,8 @@
  * @fileoverview Utility functions for actuation.
  */
 
+import {safeHasAttribute} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/safe_dom_utils.js';
+
 /**
  * Coordinate matching optimization_guide::proto::Coordinate.
  */
@@ -100,4 +102,23 @@ export function getElementFromPoint(coordinate: Coordinate):
     clientX: clientX,
     clientY: clientY,
   };
+}
+
+/**
+ * Checks whether an element is disabled.
+ * @param element The DOM element to check.
+ * @return True if the element is disabled.
+ */
+export function isDisabled(element: Element): boolean {
+  if (element instanceof HTMLButtonElement ||
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLSelectElement ||
+      element instanceof HTMLTextAreaElement ||
+      element instanceof HTMLOptGroupElement ||
+      element instanceof HTMLOptionElement ||
+      element instanceof HTMLFieldSetElement) {
+    return Boolean(element.disabled);
+  }
+  // Protect against DOM clobbering (e.g. form[name="hasAttribute"]).
+  return safeHasAttribute(element, 'disabled');
 }

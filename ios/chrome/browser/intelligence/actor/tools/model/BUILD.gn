@@ -228,7 +228,10 @@ source_set("history_tool") {
 }
 
 compile_ts("actor_tool_utils_ts") {
-  sources = [ "resources/actor_tool_utils.ts" ]
+  sources = [
+    "resources/actor_tool_utils.ts",
+    "resources/safe_dom_utils.ts",
+  ]
 }
 
 optimize_ts("action_target_ts") {
@@ -250,6 +253,25 @@ optimize_ts("click_tool_ts") {
     ":actor_tool_utils_ts",
     "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
     "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+optimize_ts("drag_and_release_tool_ts") {
+  sources = [ "resources/drag_and_release_tool.ts" ]
+  output_name = "drag_and_release_tool"
+
+  deps = [
+    ":actor_tool_utils_ts",
+    "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+bundle_data("drag_html_bundle_data") {
+  testonly = true
+  sources = [ "//components/test/data/actor/drag.html" ]
+  outputs = [
+    "{{bundle_resources_dir}}/components/test/data/actor/{{source_file_part}}",
   ]
 }
 
@@ -547,6 +569,7 @@ source_set("unit_tests") {
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
     "click_tool_unittest.mm",
+    "drag_and_release_tool_js_unittest.mm",
     "fake_tool_delegate.h",
     "fake_tool_delegate.mm",
     "history_tool_unittest.mm",
@@ -582,6 +605,8 @@ source_set("unit_tests") {
     ":attempt_login_tool",
     ":click_tool",
     ":click_tool_ts",
+    ":drag_and_release_tool_ts",
+    ":drag_html_bundle_data",
     ":history_tool",
     ":java_script_features",
     ":navigate_tool",
@@ -642,5 +667,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
