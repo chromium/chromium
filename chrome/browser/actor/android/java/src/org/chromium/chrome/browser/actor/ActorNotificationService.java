@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -14,6 +15,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -29,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 public class ActorNotificationService {
     private static final String TAG = "ActorNotification";
+    private static final int INVALID_TASK_ID = -1;
+    private static final int INVALID_TASK_STATE = -1;
 
     // Delay to demote terminal live notifications to regular dismissible notifications.
     // Matches the toolbar action chip collapse delay (30 seconds).
@@ -52,6 +57,14 @@ public class ActorNotificationService {
     public ActorNotificationService(ActorKeyedService keyedService) {
         mNotificationManager = BaseNotificationManagerProxyFactory.create();
         mKeyedService = keyedService;
+    }
+
+    public static long getDemotionDelayMs() {
+        return sDemotionDelayMs;
+    }
+
+    public boolean hasPendingDemotions() {
+        return !mDemoteRunnables.isEmpty();
     }
 
     /**
@@ -133,6 +146,11 @@ public class ActorNotificationService {
                         /* isLive= */ false);
         mNotificationCache.put(taskId, nonLiveWrapper);
         mNotificationManager.notify(nonLiveWrapper);
+
+        ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
+        if (manager != null) {
+            manager.onTaskDemoted(taskId);
+        }
     }
 
     /**
@@ -172,6 +190,47 @@ public class ActorNotificationService {
         mNotificationCache.put(taskId, loudNotification);
         mTaskStates.put(taskId, task.getState());
         mNotificationManager.notify(loudNotification);
+    }
+
+    /**
+     * Cancels the notification for an actor task if the task is in a completed state.
+     *
+     * @param intent The intent received when the notification or its action button was clicked.
+     * @param profile The current user {@link Profile}.
+     */
+    public static void maybeDismissNotificationFromIntent(
+            @Nullable Intent intent, @Nullable Profile profile) {
+        if (intent == null) return;
+        if (!intent.hasExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID)) return;
+
+        int taskId = intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, INVALID_TASK_ID);
+        if (taskId == INVALID_TASK_ID) return;
+
+        int state = INVALID_TASK_STATE;
+        if (profile != null) {
+            ActorKeyedService service =
+                    ActorKeyedServiceFactory.getForProfile(profile.getOriginalProfile());
+            if (service != null) {
+                ActorTask task = service.getTask(taskId);
+                if (task != null) {
+                    state = task.getState();
+                }
+            }
+        }
+
+        if (state == INVALID_TASK_STATE) {
+            state =
+                    intent.getIntExtra(
+                            NotificationConstants.EXTRA_ACTOR_TASK_STATE, INVALID_TASK_STATE);
+        }
+
+        if (state != INVALID_TASK_STATE && ActorUtils.isCompletedState(state)) {
+            BaseNotificationManagerProxyFactory.create().cancel(taskId);
+            ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
+            if (manager != null) {
+                manager.onNotificationDismissed(taskId);
+            }
+        }
     }
 
     /**
@@ -235,7 +294,7 @@ public class ActorNotificationService {
         mTaskCache.clear();
     }
 
-    private void clearTaskData(int taskId) {
+    void clearTaskData(int taskId) {
         cancelDemoteRunnable(taskId);
         mNotificationCache.remove(taskId);
         mTaskStates.remove(taskId);

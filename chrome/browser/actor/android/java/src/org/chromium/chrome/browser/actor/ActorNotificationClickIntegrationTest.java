@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
@@ -24,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -31,6 +34,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 
 /** Integration tests for actor notification clicks. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -56,6 +61,7 @@ public class ActorNotificationClickIntegrationTest {
         ActorForegroundServiceController.setInstanceForTesting(null);
         ActorForegroundServiceManager.resetInstanceForTesting();
         ActorKeyedServiceFactory.setForTesting(null);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(null);
     }
 
     @Test
@@ -159,5 +165,76 @@ public class ActorNotificationClickIntegrationTest {
         mActivityTestRule.startMainActivityFromIntent(intent, null);
 
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationClick_CompletedTask_DismissesNotification() throws Exception {
+        int taskId = 105;
+        int state = ActorTaskState.FINISHED;
+
+        MockNotificationManagerProxy notificationManager = new MockNotificationManagerProxy();
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(notificationManager);
+        notificationManager.notify(taskId, new Notification());
+        assertEquals(1, notificationManager.getNotifications().size());
+
+        Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+
+        mActivityTestRule.startMainActivityFromIntent(intent, null);
+
+        CriteriaHelper.pollUiThread(() -> notificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationClickWarmStart_CompletedTask_DismissesNotification()
+            throws Exception {
+        int taskId = 106;
+        int state = ActorTaskState.FINISHED;
+
+        MockNotificationManagerProxy notificationManager = new MockNotificationManagerProxy();
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(notificationManager);
+        notificationManager.notify(taskId, new Notification());
+        assertEquals(1, notificationManager.getNotifications().size());
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onNewIntent(intent));
+
+        CriteriaHelper.pollUiThread(() -> notificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationClick_ActiveTask_DoesNotDismissNotification() throws Exception {
+        int taskId = 107;
+        int state = ActorTaskState.ACTING;
+
+        MockNotificationManagerProxy notificationManager = new MockNotificationManagerProxy();
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(notificationManager);
+        notificationManager.notify(taskId, new Notification());
+        assertEquals(1, notificationManager.getNotifications().size());
+
+        Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+
+        mActivityTestRule.startMainActivityFromIntent(intent, null);
+
+        assertEquals(1, notificationManager.getNotifications().size());
     }
 }
