@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isNtpOv
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bricks.BricksPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginAdapter;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
@@ -707,6 +709,14 @@ public class NativePageFactory {
         @Override
         public void print() {
             PrintHelper.printTab(mTab);
+        }
+
+        @Override
+        public void downloadUrl(String url) {
+            if (mTab.isDestroyed() || mTab.getWebContents() == null || TextUtils.isEmpty(url)) {
+                return;
+            }
+            DownloadController.downloadUrl(url, mTab);
         }
     }
 
