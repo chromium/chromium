@@ -107,6 +107,48 @@ std::optional<pid_t> GetTmuxPaneShellPid(int32_t id) {
   return std::nullopt;
 }
 
+std::string GetTmuxScrollback(int32_t id) {
+  base::FilePath tmx2_path = FindTmx2Path();
+  if (tmx2_path.empty()) {
+    return std::string();
+  }
+
+  // Capture full pane history with -epJ flags.
+  std::string scrollback_output;
+  std::vector<std::string> args = {
+      tmx2_path.value(), "-L", std::string(kTmuxSocketName),
+      "capture-pane",    "-epJ",
+      "-S",              "-",
+      "-t",              GetTmuxSessionName(id)};
+
+  if (!base::GetAppOutput(args, &scrollback_output) ||
+      scrollback_output.empty()) {
+    return std::string();
+  }
+
+  // Trim trailing newlines so the terminal does not scroll an extra line
+  // (which would push the top visible line into scrollback and cause a
+  // duplicate line when tmux redraws).
+  std::string_view trimmed =
+      base::TrimString(scrollback_output, "\r\n", base::TRIM_TRAILING);
+  if (trimmed.empty()) {
+    return std::string();
+  }
+  scrollback_output.resize(trimmed.size());
+
+  // Normalize line endings to CRLF. Direct callback output bypasses the
+  // PTY's automatic ONLCR translation, causing terminal staircasing.
+  //
+  // A two-step replacement (\r\n -> \n, then \n -> \r\n) is used to ensure
+  // idempotency: it converts any mixed or standalone '\n' to '\r\n' while
+  // preventing already-CRLF lines from turning into duplicate carriage returns
+  // (\r\r\n), unlike naive ONLCR prefixing.
+  base::ReplaceSubstringsAfterOffset(&scrollback_output, 0, "\r\n", "\n");
+  base::ReplaceSubstringsAfterOffset(&scrollback_output, 0, "\n", "\r\n");
+
+  return scrollback_output;
+}
+
 // PreExecDelegate to set up the PTY session in the child process. It creates
 // a new session leader and attaches the process to the PTY.
 class TerminalPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
@@ -258,7 +300,15 @@ class TerminalSessionLinux : public TerminalSession {
     // OnProcessLaunched(), which is only called once by Start().
     CHECK(!process_.IsValid());
     process_ = std::move(process);
-    WatchOutput();
+
+    // Asynchronously retrieve and forward existing scrollback history before
+    // starting to watch live PTY output to avoid stream interleaving. Sequence
+    // through writer_task_runner_ to preserve order with lifecycle commands.
+    writer_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetTmuxScrollback, id_),
+        base::BindOnce(&TerminalSessionLinux::OnScrollbackRetrieved,
+                       weak_factory_.GetWeakPtr()));
   }
 
   static void WriteToPtyManager(int fd, std::string payload) {
@@ -408,6 +458,26 @@ class TerminalSessionLinux : public TerminalSession {
         std::move(exit_callback_).Run(id_);
       }
     }
+  }
+
+  void OnScrollbackRetrieved(std::string scrollback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (detached_ || terminated_) {
+      HOST_LOG
+          << "OnScrollbackRetrieved called after detach or terminate, ignoring";
+      return;
+    }
+    base::WeakPtr<TerminalSessionLinux> weak_this = weak_factory_.GetWeakPtr();
+    if (!scrollback.empty() && output_callback_) {
+      output_callback_.Run(id_, std::move(scrollback));
+    }
+    // Re-verify session validity and state before starting output watcher in
+    // case output_callback_ synchronously destroyed the instance
+    // or triggered Detach()/Terminate().
+    if (!weak_this || weak_this->detached_ || weak_this->terminated_) {
+      return;
+    }
+    WatchOutput();
   }
 
   void OnShellPidRetrieved(std::optional<pid_t> pid) {
