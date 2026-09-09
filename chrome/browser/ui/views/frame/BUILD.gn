@@ -559,6 +559,57 @@ source_set("system_menu_model_delegate") {
   ]
 }
 
+source_set("system_menu_model_delegate_impl") {
+  sources = [ "system_menu_model_delegate.cc" ]
+  public_deps = [
+    ":system_menu_model_delegate",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/glic",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/sessions",
+    "//ui/base",
+  ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ui/frame" ]
+  }
+  if (is_win) {
+    deps += [ "//ui/aura" ]
+  }
+}
+
+source_set("vertical_tab_strip_background_blur_backdrop") {
+  public = [ "vertical_tab_strip_background_blur_backdrop.h" ]
+  sources = [ "vertical_tab_strip_background_blur_backdrop.cc" ]
+  public_deps = [
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":custom_corners_background",
+    "//cc/paint",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/color:color_headers",
+    "//ui/color:color_headers",
+    "//ui/compositor",
+    "//ui/gfx",
+  ]
+}
+
 source_set("tab_modal_dialog_host") {
   public = [ "tab_modal_dialog_host.h" ]
   public_deps = [

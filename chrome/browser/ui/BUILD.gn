@@ -2523,7 +2523,6 @@ static_library("ui") {
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
-      "views/extensions/extension_view_utils.cc",
       "views/extensions/extensions_toolbar_desktop.cc",
       "views/extensions/extensions_toolbar_desktop.h",
       "views/frame/app_menu_button.cc",
@@ -2565,14 +2564,11 @@ static_library("ui") {
       "views/frame/picture_in_picture_browser_frame_view.h",
       "views/frame/system_menu_model_builder.cc",
       "views/frame/system_menu_model_builder.h",
-      "views/frame/system_menu_model_delegate.cc",
       "views/frame/tab_modal_dialog_host.cc",
       "views/frame/themed_background.cc",
       "views/frame/themed_background.h",
       "views/frame/top_container_view.cc",
       "views/frame/top_container_view.h",
-      "views/frame/vertical_tab_strip_background_blur_backdrop.cc",
-      "views/frame/vertical_tab_strip_background_blur_backdrop.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
       "views/tab_search_bubble_host.cc",
@@ -2746,6 +2742,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:extension_install_dialog_view",
       "//chrome/browser/ui/views/extensions:extension_install_dialog_view_impl",
       "//chrome/browser/ui/views/extensions:extension_view_utils",
+      "//chrome/browser/ui/views/extensions:extension_view_utils_impl",
       "//chrome/browser/ui/views/extensions:extensions_container_views",
       "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
       "//chrome/browser/ui/views/extensions:extensions_menu_delegate_desktop",
@@ -2802,7 +2799,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:shadow_overlay_view",
       "//chrome/browser/ui/views/frame:shadow_overlay_view_impl",
       "//chrome/browser/ui/views/frame:system_menu_model_delegate",
+      "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host",
+      "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/frame:windows_icon_painter",
       "//chrome/browser/ui/views/fullscreen_control",
@@ -3064,11 +3063,14 @@ static_library("ui") {
 
       # TODO(crbug.com/353332589): These targets include headers from
       # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/extensions:extension_view_utils_impl",
       "//chrome/browser/ui/views/frame:custom_corners_background_impl",
       "//chrome/browser/ui/views/frame:custom_corners_impl",
       "//chrome/browser/ui/views/frame:custom_floating_corner_impl",
       "//chrome/browser/ui/views/frame:scrim_view_controller_impl",
       "//chrome/browser/ui/views/frame:shadow_overlay_view_impl",
+      "//chrome/browser/ui/views/frame:system_menu_model_delegate_impl",
+      "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
@@ -3488,6 +3490,7 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",
+      "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop_impl",
       "//chrome/browser/ui/views/extensions:extension_popup",
       "//chrome/browser/ui/views/extensions:extension_popup_impl",
       "//chrome/browser/ui/views/extensions:extension_view_views_impl",
@@ -3511,8 +3514,6 @@ static_library("ui") {
       # //chrome/browser/ui:ui.
       "//chrome/browser/ui/webui/extensions_zero_state_promo",
     ]
-
-    sources += [ "views/extensions/extension_action_delegate_desktop.cc" ]
 
     if (use_aura) {
       sources += [ "views/javascript_app_modal_event_blocker_aura.cc" ]

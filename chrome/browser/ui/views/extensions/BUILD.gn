@@ -535,6 +535,21 @@ source_set("extension_view_utils") {
   public_deps = [ "//ui/gfx" ]
 }
 
+source_set("extension_view_utils_impl") {
+  sources = [ "extension_view_utils.cc" ]
+  public_deps = [
+    ":extension_view_utils",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":extensions_container_views",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//content/public/browser",
+  ]
+}
+
 source_set("extensions_request_access_hover_card_coordinator") {
   public = [ "extensions_request_access_hover_card_coordinator.h" ]
   sources = [ "extensions_request_access_hover_card_coordinator.cc" ]
@@ -678,6 +693,24 @@ source_set("extension_action_delegate_desktop") {
     "//chrome/browser/ui/extensions",
     "//extensions/browser",
     "//ui/base",
+  ]
+}
+
+source_set("extension_action_delegate_desktop_impl") {
+  sources = [ "extension_action_delegate_desktop.cc" ]
+  public_deps = [
+    ":extension_action_delegate_desktop",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":extension_popup",
+    ":extensions_container_views",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//extensions/common",
+    "//ui/views",
   ]
 }
 
