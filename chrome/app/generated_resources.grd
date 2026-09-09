@@ -14972,6 +14972,12 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_SAVED_INFO_WITH_DEVICE" desc="Subtitle of a sign-in promo informing the user they can access their saved info (such as autofill data, addresses, and payment methods) from their other device.">
           Sign in to get your saved info and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>
         </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_READING_LIST_WITH_DEVICE" desc="Subtitle of a sign-in promo informing the user they can access their reading list from their other device.">
+          Sign in to get your reading list and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_EXTENSIONS_WITH_DEVICE" desc="Subtitle of a sign-in promo informing the user they can access their extensions from their computer. Only desktop/computer DEVICE are supported for extensions.">
+          Sign in to get your extensions and more from <ph name="DEVICE">$1<ex>your computer</ex></ph>
+        </message>
         <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_PASSWORDS" desc="Subtitle of a sign-in promo informing the user they can access their passwords on all their devices.">
           Sign in to get your passwords and more on all your devices
         </message>
@@ -14980,6 +14986,12 @@ This can include information about installed software, files, your browser, the 
         </message>
         <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_SAVED_INFO" desc="Subtitle of a sign-in promo informing the user they can access their saved info (such as autofill data, addresses, and payment methods) on all their devices.">
           Sign in to get your saved info and more on all your devices
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_READING_LIST" desc="Subtitle of a sign-in promo informing the user they can access their reading list on all their devices.">
+          Sign in to get your reading list and more on all your devices
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_PROMO_SUBTITLE_EXTENSIONS" desc="Subtitle of a sign-in promo informing the user they can access their extensions on all your devices.">
+          Sign in to get your extensions and more on all your devices
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN" desc="Body of the web signin interception bubble when the new account is managed via a token">
           You just signed in a managed account, creating a new managed profile will allow you to access some resources linked to that account.
