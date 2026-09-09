@@ -2379,6 +2379,14 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           layout_data.Rows().GetSetOffset(row_set_idx_for_gap + 1) +
           (*row_offset_adjustments)[row_set_idx_for_gap + 1] +
           *cumulative_gap_offset_adjustment;
+
+      // A clamped offset makes the spillover below a made-up number. It is
+      // used in `cumulative_gap_offset_adjustment`, which persists across
+      // fragmentainers, so bail out instead of corrupting later fragments.
+      if (last_gap_end_offset.MightBeSaturated() ||
+          next_row_offset.MightBeSaturated()) {
+        return;
+      }
       // Make gap offset relative to this fragmentainer.
       next_row_offset -= *offset_in_stitched_container;
 
