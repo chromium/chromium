@@ -5276,7 +5276,9 @@ inline constexpr char kOnDeviceModelSpeculativeDecodingDescription[] =
     "Enables speculative decoding enhancements for built-in AI APIs. Also "
     "enables requisite LiteRT-LM, Gemma 4, and Sampling Mode features. "
     "Prompt API sessions must specify compatible sampling options, i.e. "
-    "`samplingMode:'most-predictable'` or `topK:1` or `temperature:0`.";
+    "`samplingMode:'most-predictable'` or `topK:1` or `temperature:0`. "
+    "Summarizer API sessions automatically use greedy decoding for default "
+    "(auto) or capability performance preferences.";
 
 inline constexpr char kPromptAPIMultimodalInputName[] =
     "Prompt API Multimodal Input";

@@ -382,6 +382,7 @@ void CreateSessionWithConfigAndResolver(
     base::OnceCallback<
         void(std::unique_ptr<optimization_guide::OnDeviceSession>)> callback,
     AIManager::UseCaseResolver resolver,
+    optimization_guide::SessionConfigParams config_params,
     std::optional<mojo_base::ProtoWrapper> wrapper) {
   std::optional<std::string> use_case = std::move(resolver).Run(wrapper);
 
@@ -395,8 +396,7 @@ void CreateSessionWithConfigAndResolver(
                                                     std::move(monitor));
   }
 
-  broker_client->CreateSession(*use_case,
-                               ::optimization_guide::SessionConfigParams{},
+  broker_client->CreateSession(*use_case, std::move(config_params),
                                std::move(callback));
 }
 
@@ -412,7 +412,7 @@ void CreateSessionWithConfig(
   CreateSessionWithConfigAndResolver(
       broker_client, std::move(monitor), std::move(callback),
       base::BindOnce(&GetUseCaseFromFeatureConfig<FeatureConfigProto>),
-      std::move(wrapper));
+      ::optimization_guide::SessionConfigParams{}, std::move(wrapper));
 }
 
 // Request assets and wait for the model broker client to become
@@ -1175,6 +1175,20 @@ void AIManager::CreateSummarizer(
   auto callback =
       CreateSummarizerSessionCallback(std::move(options), std::move(client));
 
+  optimization_guide::SessionConfigParams config_params;
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelSpeculativeDecoding) &&
+      (!options_clone ||
+       options_clone->preference ==
+           blink::mojom::PerformancePreference::kAuto ||
+       options_clone->preference ==
+           blink::mojom::PerformancePreference::kCapability)) {
+    config_params.sampling_params = optimization_guide::SamplingParams{
+        .top_k = 1,
+        .temperature = 0.0f,
+    };
+  }
+
   if (base::FeatureList::IsEnabled(
           optimization_guide::kOptimizationGuideManifestBroker)) {
     model_broker_client_->GetConfig(
@@ -1183,7 +1197,8 @@ void AIManager::CreateSummarizer(
                        model_broker_client_.get(), std::move(monitor),
                        std::move(callback),
                        base::BindOnce(&ResolveSummarizerUseCaseName,
-                                      std::move(options_clone))));
+                                      std::move(options_clone)),
+                       std::move(config_params)));
   } else {
     if (monitor) {
       model_broker_client_->AddModelDownloadProgressObserver(
@@ -1193,7 +1208,7 @@ void AIManager::CreateSummarizer(
     }
     model_broker_client_->CreateSession(
         optimization_guide::mojom::OnDeviceFeature::kSummarize,
-        ::optimization_guide::SessionConfigParams{}, std::move(callback));
+        std::move(config_params), std::move(callback));
   }
 }
 

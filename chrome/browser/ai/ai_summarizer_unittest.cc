@@ -866,6 +866,58 @@ TEST_F(AISummarizerTest, NoMetadata) {
               ElementsAreArray({"Result text"}));
 }
 
+TEST_F(AISummarizerTest, SpeculativeDecodingGreedySamplingDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(GetDefaultOptions());
+
+  std::vector<std::string> responses =
+      Summarize(*summarizer_remote, kInputString, kContextString);
+  // FakeService only appends a "TopK: ..." chunk when sampling parameters
+  // differ from greedy sampling (top_k=1, temperature=0.0). The absence of
+  // "TopK:" indicates that greedy sampling was configured.
+  EXPECT_THAT(responses,
+              testing::Not(testing::Contains(testing::HasSubstr("TopK:"))));
+}
+
+TEST_F(AISummarizerTest, SpeculativeDecodingGreedySamplingCapability) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
+
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kCapability;
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(std::move(options));
+
+  std::vector<std::string> responses =
+      Summarize(*summarizer_remote, kInputString, kContextString);
+  // FakeService only appends a "TopK: ..." chunk when sampling parameters
+  // differ from greedy sampling (top_k=1, temperature=0.0). The absence of
+  // "TopK:" indicates that greedy sampling was configured.
+  EXPECT_THAT(responses,
+              testing::Not(testing::Contains(testing::HasSubstr("TopK:"))));
+}
+
+TEST_F(AISummarizerTest, SpeculativeDecodingDisabledUsesDefaultSampling) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(GetDefaultOptions());
+
+  std::vector<std::string> responses =
+      Summarize(*summarizer_remote, kInputString, kContextString);
+  // When speculative decoding is disabled, default sampling parameters are used
+  // (which differ from greedy sampling), so FakeService emits a "TopK: ..."
+  // chunk.
+  EXPECT_THAT(responses, testing::Contains(testing::HasSubstr("TopK:")));
+}
+
 class AISummarizerWithFeatureConfigTest : public AISummarizerTest {
  public:
   void SetupBroker() override {
