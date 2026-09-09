@@ -42,6 +42,7 @@ enum GrContextType {
   kGL,  // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,
+  kGraphiteVulkan,
 };
 
 // Corresponds to gpu::DawnBackendValidationLevel

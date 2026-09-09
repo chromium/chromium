@@ -22,8 +22,8 @@
 namespace mojo {
 
 template <>
-struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GrContextType,
-                                        gpu::GrContextType> {
+struct GPU_IPC_COMMON_EXPORT
+    EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
   static gpu::mojom::GrContextType ToMojom(gpu::GrContextType input) {
     switch (input) {
       case gpu::GrContextType::kNone:
@@ -34,6 +34,8 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GrContextType,
         return gpu::mojom::GrContextType::kVulkan;
       case gpu::GrContextType::kGraphiteDawn:
         return gpu::mojom::GrContextType::kGraphiteDawn;
+      case gpu::GrContextType::kGraphiteVulkan:
+        return gpu::mojom::GrContextType::kGraphiteVulkan;
     }
     NOTREACHED();
   }
@@ -47,6 +49,8 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GrContextType,
         return gpu::GrContextType::kVulkan;
       case gpu::mojom::GrContextType::kGraphiteDawn:
         return gpu::GrContextType::kGraphiteDawn;
+      case gpu::mojom::GrContextType::kGraphiteVulkan:
+        return gpu::GrContextType::kGraphiteVulkan;
     }
     NOTREACHED();
   }

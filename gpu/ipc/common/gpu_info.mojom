@@ -48,6 +48,7 @@ enum SkiaBackendType {
   kGraphiteDawnD3D11,
   kGraphiteDawnD3D12,
   kGraphiteDawnOpenGLES,
+  kGraphiteVulkan,
 };
 
 // LINT.IfChange(VideoCodecProfile)

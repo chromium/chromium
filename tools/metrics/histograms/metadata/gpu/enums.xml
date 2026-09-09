@@ -1477,6 +1477,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="GraphiteDawnD3D12"/>
   <int value="8" label="GraphiteMetal (Deprecated)"/>
   <int value="9" label="GraphiteDawnOpenGLES"/>
+  <int value="10" label="GraphiteVulkan"/>
 </enum>
 
 <!-- LINT.ThenChange(//gpu/config/gpu_preferences.h:SkiaBackendType) -->

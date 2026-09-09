@@ -807,6 +807,7 @@ bool IsGrContextTypeSupported(GrContextType gr_context_type,
                               const GpuFeatureInfo& gpu_feature_info) {
   switch (gr_context_type) {
     case GrContextType::kGraphiteDawn:
+    case GrContextType::kGraphiteVulkan:
       return gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
              kGpuFeatureStatusEnabled;
     case GrContextType::kVulkan:

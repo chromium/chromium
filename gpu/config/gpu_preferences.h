@@ -66,6 +66,7 @@ enum class GrContextType : uint32_t {
   kGL,      // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,
+  kGraphiteVulkan,
 };
 
 GPU_CONFIG_EXPORT std::string GrContextTypeToString(GrContextType type);
@@ -85,7 +86,8 @@ enum class SkiaBackendType {
   kGraphiteDawnD3D12 = 7,
   //  kDeprecatedGraphiteMetal = 8,
   kGraphiteDawnOpenGLES = 9,
-  kMaxValue = kGraphiteDawnOpenGLES
+  kGraphiteVulkan = 10,
+  kMaxValue = kGraphiteVulkan
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:SkiaBackendType)
 

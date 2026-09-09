@@ -938,6 +938,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_ANDROID)
       gpu_preferences_.gr_context_type = GrContextType::kGL;
     }
+  } else if (gpu_preferences.gr_context_type ==
+             GrContextType::kGraphiteVulkan) {
+    // TODO(crbug.com/552951905): Implement GraphiteVulkan initialization.
+    NOTREACHED();
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1322,6 +1326,9 @@ void GpuInit::SetSkiaBackendType() {
       NOTREACHED();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
     }
+    case gpu::GrContextType::kGraphiteVulkan:
+      skia_backend_type = SkiaBackendType::kGraphiteVulkan;
+      break;
   }
 
   gpu_info_.skia_backend_type = skia_backend_type;
