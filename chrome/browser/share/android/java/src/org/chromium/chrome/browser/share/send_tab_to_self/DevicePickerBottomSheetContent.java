@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.widget.Toast;
 
@@ -35,6 +36,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private final Context mContext;
     private final BottomSheetController mController;
     private ViewGroup mToolbarView;
@@ -114,6 +118,11 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
