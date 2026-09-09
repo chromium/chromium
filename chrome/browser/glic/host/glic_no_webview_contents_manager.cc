@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
@@ -366,7 +367,12 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
       privileged_guest_contents_(pwc::PrivilegedWebContents::Create(
           pwc::PrivilegedComponent::kGlic,
           profile,
-          std::make_unique<GlicPwcPolicyDelegate>())) {
+          std::make_unique<GlicPwcPolicyDelegate>())),
+      zoom_controller_(
+          privileged_guest_contents_->web_contents(),
+          profile ? profile->GetPrefs() : nullptr,
+          base::BindRepeating(&GlicNoWebviewContentsManager::OnZoomLevelChange,
+                              base::Unretained(this))) {
   CHECK(privileged_guest_contents_);
   content::WebContents* guest = guest_contents();
   CHECK(guest);
@@ -462,6 +468,17 @@ bool GlicNoWebviewContentsManager::ShouldReloadOnShow() const {
     return true;
   }
   return overlay_manager_.ShouldReloadOnShow();
+}
+
+void GlicNoWebviewContentsManager::Zoom(mojom::ZoomAction zoom_action,
+                                        ZoomSource source) {
+  zoom_controller_.Zoom(zoom_action, source);
+}
+
+void GlicNoWebviewContentsManager::OnZoomLevelChange() {
+  if (host_) {
+    host_->instance_metrics().OnZoomLevelChange();
+  }
 }
 
 void GlicNoWebviewContentsManager::NotifyWebContentsChanged() {

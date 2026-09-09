@@ -9,6 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "content/public/browser/visibility.h"
 
 namespace content {
@@ -87,6 +89,10 @@ class GlicWebContentsManager {
   // state (such as a sign-in or policy error panel) that should be presented
   // to the user rather than reloaded.
   virtual bool ShouldReloadOnShow() const = 0;
+
+  // Performs a zoom action (ZoomIn, ZoomOut, Reset) on the managed guest
+  // contents.
+  virtual void Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {}
 };
 
 }  // namespace glic

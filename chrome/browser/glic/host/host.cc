@@ -348,6 +348,12 @@ void Host::NotifyWindowIntentToShow() {
 }
 
 void Host::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
+  if (base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+    if (contents_) {
+      contents_->Zoom(zoom_action, source);
+    }
+    return;
+  }
   if (GlicPageHandler* handler = page_handler()) {
     handler->Zoom(zoom_action, source);
   }
