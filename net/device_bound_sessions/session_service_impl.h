@@ -301,10 +301,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void DoGarbageCollection(
       std::vector<unexportable_keys::UnexportableSigningKeyId> all_key_ids);
 
-  void AddSession(const SchemefulSite& site,
-                  std::unique_ptr<Session> session,
-                  SessionStore::SaveSessionMode mode =
-                      SessionStore::SaveSessionMode::kNewSession);
+  void AddSessionAndNotify(const SchemefulSite& site,
+                           std::unique_ptr<Session> session,
+                           SessionService::OnAccessCallback on_access_callback,
+                           SessionStore::SaveSessionMode mode =
+                               SessionStore::SaveSessionMode::kNewSession);
 
   // Continue or restart all deferred requests and complete any proactive
   // refresh requests waiting for the session, removing the session key from

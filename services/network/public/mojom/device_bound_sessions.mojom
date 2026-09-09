@@ -74,6 +74,7 @@ enum DeviceBoundSessionDeletionReason {
   kInvalidSessionParams = 6,  // Refresh provided invalid params.
   kRefreshFatalError = 7,  // Fatal error during refresh.
   kDevTools = 8,  // Deleted via DevTools.
+  kReplaced = 9,  // Session was replaced by a new session.
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/deletion_reason.h:DeletionReason)

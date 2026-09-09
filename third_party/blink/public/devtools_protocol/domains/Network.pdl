@@ -2168,6 +2168,7 @@ domain Network
         InvalidSessionParams
         RefreshFatalError
         DevTools
+        Replaced
 
   # Session event details specific to challenges.
   experimental type ChallengeEventDetails extends object

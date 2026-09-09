@@ -645,6 +645,48 @@ TEST_F(SessionServiceImplTest, EventObserverOnAddSession) {
   EXPECT_EQ(add_session_future.Take(), SessionError::kSuccess);
 }
 
+TEST_F(SessionServiceImplTest, AddSessionReplacesExistingSession) {
+  base::HistogramTester histograms;
+  net::SchemefulSite site(kTestUrl);
+  SessionKey session_key{site, Session::Id(kSessionId)};
+
+  // Initial registration of session.
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  ASSERT_TRUE(service().GetSession(session_key));
+
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+
+  {
+    InSequence seq;
+    EXPECT_CALL(event_callback, Run).WillOnce([](const SessionEvent& event) {
+      ASSERT_TRUE(std::holds_alternative<TerminationEventDetails>(
+          event.event_type_details));
+      EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+      EXPECT_EQ(event.session_id, kSessionId);
+      EXPECT_TRUE(event.succeeded);
+      const auto& details =
+          std::get<TerminationEventDetails>(event.event_type_details);
+      EXPECT_EQ(details.deletion_reason, DeletionReason::kReplaced);
+    });
+    EXPECT_CALL(event_callback, Run).WillOnce([](const SessionEvent& event) {
+      ASSERT_TRUE(std::holds_alternative<CreationEventDetails>(
+          event.event_type_details));
+      EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+      EXPECT_EQ(event.session_id, kSessionId);
+      EXPECT_TRUE(event.succeeded);
+    });
+  }
+
+  // Registering again with same session id replaces the existing session.
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  EXPECT_TRUE(service().GetSession(session_key));
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
+                                DeletionReason::kReplaced, 1);
+}
+
 TEST_F(SessionServiceImplTest, NoCallbackIfEventObserverRemoved) {
   base::MockCallback<SessionService::OnEventCallback> event_callback;
   // Subscription goes out of scope, which should remove the observer.
@@ -2776,6 +2818,65 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   session->set_expiry_date(base::Time::Now() - base::Days(1));
   // Will invoke the store's delete session method.
   EXPECT_EQ(GetSiteSessionsCount(site), 0u);
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       AddSessionReplacesExistingSessionInStore) {
+  base::HistogramTester histograms;
+  EXPECT_CALL(store(), LoadSessions)
+      .Times(1)
+      .WillOnce(
+          Invoke(this, &SessionServiceImplWithStoreTest::OnSessionsLoaded));
+  EXPECT_CALL(store(), SaveSession(SchemefulSite(kTestUrl), _,
+                                   SessionStore::SaveSessionMode::kNewSession))
+      .Times(1);
+
+  service().LoadSessionsAsync();
+
+  {
+    auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+        kSessionId, kRefreshUrlString, kOrigin);
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::sign::ECDSA_SHA256}, "challenge",
+        /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(
+        base::DoNothing(), std::move(fetch_param),
+        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+        SiteForCookies(), NetLogWithSource(),
+        /*original_request_initiator=*/std::nullopt);
+  }
+
+  auto site = SchemefulSite(kTestUrl);
+  SessionKey session_key{site, Session::Id(kSessionId)};
+  ASSERT_TRUE(service().GetSession(session_key));
+
+  // When registering again with the same session id, the store should be
+  // notified to delete the old session, and then save the new session.
+  {
+    InSequence seq;
+    EXPECT_CALL(store(), DeleteSession(session_key));
+    EXPECT_CALL(
+        store(),
+        SaveSession(site, _, SessionStore::SaveSessionMode::kNewSession));
+  }
+
+  {
+    auto scoped_test_fetcher2 =
+        ScopedTestRegistrationFetcher::CreateWithSuccess(
+            kSessionId, kRefreshUrlString, kOrigin);
+    auto fetch_param2 = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::sign::ECDSA_SHA256}, "challenge",
+        /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(
+        base::DoNothing(), std::move(fetch_param2),
+        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+        SiteForCookies(), NetLogWithSource(),
+        /*original_request_initiator=*/std::nullopt);
+  }
+
+  EXPECT_TRUE(service().GetSession(session_key));
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
+                                DeletionReason::kReplaced, 1);
 }
 
 TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {

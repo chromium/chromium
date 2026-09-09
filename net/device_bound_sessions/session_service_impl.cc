@@ -1178,43 +1178,69 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
       session_or_error = CreateSessionFromUnexportableKey(
           std::move(params), std::move(key_or_error));
 
-  NotifyIfEventCallbackListeners([&] {
-    bool succeeded = session_or_error.has_value();
-    SessionError::ErrorType result =
-        succeeded ? SessionError::kSuccess : session_or_error.error();
-    std::optional<std::string> session_id;
-    std::optional<SessionDisplay> display_info;
-    if (succeeded) {
-      session_id = session_or_error.value()->id().value();
-      display_info = session_or_error.value()->ToDisplay();
-    }
-    return SessionEvent::MakeCreationEvent(site, std::move(session_id),
-                                           succeeded, SessionError(result),
-                                           std::move(display_info));
-  });
-
   if (!session_or_error.has_value()) {
+    NotifyIfEventCallbackListeners([&] {
+      return SessionEvent::MakeCreationEvent(
+          site, /*session_id=*/std::nullopt, /*succeeded=*/false,
+          SessionError(session_or_error.error()),
+          /*new_session_display=*/std::nullopt);
+    });
     std::move(callback).Run(session_or_error.error());
     return;
   }
 
-  NotifySessionAccess(base::NullCallback(),
-                      SessionAccess::AccessType::kCreation,
-                      SessionKey{site, session_or_error.value()->id()},
-                      *session_or_error.value());
-
-  AddSession(site, std::move(session_or_error.value()));
+  AddSessionAndNotify(site, std::move(session_or_error.value()),
+                      base::NullCallback());
   std::move(callback).Run(SessionError::kSuccess);
 }
 
-void SessionServiceImpl::AddSession(const SchemefulSite& site,
-                                    std::unique_ptr<Session> session,
-                                    SessionStore::SaveSessionMode mode) {
+void SessionServiceImpl::AddSessionAndNotify(
+    const SchemefulSite& site,
+    std::unique_ptr<Session> session,
+    SessionService::OnAccessCallback on_access_callback,
+    SessionStore::SaveSessionMode mode) {
+  SessionKey session_key{site, session->id()};
+  if (mode != SessionStore::SaveSessionMode::kRefresh) {
+    auto it = unpartitioned_sessions_.find(session_key);
+    if (it != unpartitioned_sessions_.end()) {
+      LogSessionDeletionReason(DeletionReason::kReplaced);
+
+      if (session_store_) {
+        session_store_->DeleteSession(session_key);
+      }
+
+      NotifySessionAccess(base::NullCallback(),
+                          SessionAccess::AccessType::kTermination, session_key,
+                          *it->second);
+      NotifyIfEventCallbackListeners([&] {
+        return SessionEvent::MakeTerminationEvent(
+            session_key.site, session_key.id.value(),
+            /*succeeded=*/true, DeletionReason::kReplaced);
+      });
+
+      unpartitioned_sessions_.erase(it);
+    }
+  }
+
   if (session_store_) {
     session_store_->SaveSession(site, *session, mode);
   }
 
-  unpartitioned_sessions_[SessionKey{site, session->id()}] = std::move(session);
+  auto [it, _] =
+      unpartitioned_sessions_.insert_or_assign(session_key, std::move(session));
+
+  if (mode != SessionStore::SaveSessionMode::kRefresh) {
+    Session* new_session = it->second.get();
+    CHECK(new_session);
+    NotifySessionAccess(on_access_callback,
+                        SessionAccess::AccessType::kCreation, session_key,
+                        *new_session);
+    NotifyIfEventCallbackListeners([&] {
+      return SessionEvent::MakeCreationEvent(
+          site, session_key.id.value(), /*succeeded=*/true,
+          SessionError(SessionError::kSuccess), new_session->ToDisplay());
+    });
+  }
 }
 
 void SessionServiceImpl::DeleteAllSessions(
@@ -1373,14 +1399,6 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
                 CHECK(session);
                 const SchemefulSite site(session->origin());
                 SessionError::ErrorType success_result = SessionError::kSuccess;
-                NotifyIfEventCallbackListeners([&] {
-                  return SessionEvent::MakeCreationEvent(
-                      site, session->id().value(), /*succeeded=*/true,
-                      SessionError(success_result), session->ToDisplay());
-                });
-                NotifySessionAccess(on_access_callback,
-                                    SessionAccess::AccessType::kCreation,
-                                    SessionKey{site, session->id()}, *session);
                 if (session->unexportable_key_id().has_value()) {
                   // Consume the pre-provisioned key.
                   std::erase_if(pre_provisioned_keys_,
@@ -1389,7 +1407,8 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
                                          session->unexportable_key_id();
                                 });
                 }
-                AddSession(site, std::move(session));
+                AddSessionAndNotify(site, std::move(session),
+                                    on_access_callback);
                 return success_result;
               },
               [](RegistrationResult::NoSessionConfigChange)
@@ -1463,8 +1482,9 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 std::optional<SessionDisplay> new_session_display =
                     event_callbacks_.empty() ? std::optional<SessionDisplay>()
                                              : new_session->ToDisplay();
-                AddSession(new_site, std::move(new_session),
-                           SessionStore::SaveSessionMode::kRefresh);
+                AddSessionAndNotify(new_site, std::move(new_session),
+                                    base::NullCallback(),
+                                    SessionStore::SaveSessionMode::kRefresh);
                 // The session has been refreshed, restart the request.
                 SessionError::ErrorType success_result = SessionError::kSuccess;
                 UnblockWaitingRequests(session_key, RefreshResult::kRefreshed,
@@ -1842,7 +1862,8 @@ void SessionServiceImpl::HandleResponseHeaders(
 bool SessionServiceImpl::CanAddPreProvisionedKey(const GURL& provider_url,
                                                  const url::Origin& rp_origin) {
   if (!CanAccessPreProvisionedKey(has_cookie_access_cb_,
-                               url::Origin::Create(provider_url), rp_origin)) {
+                                  url::Origin::Create(provider_url),
+                                  rp_origin)) {
     return false;
   }
 

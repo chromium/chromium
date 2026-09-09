@@ -625,6 +625,7 @@ historical analysis. -->
   <int value="6" label="Invalid session params"/>
   <int value="7" label="Fatal error during refresh"/>
   <int value="8" label="Deleted via DevTools"/>
+  <int value="9" label="Session replaced"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionDeletionReason) -->

@@ -1339,7 +1339,6 @@ String NetworkHandler::NetErrorToString(int net_error) {
   }
 }
 
-
 // static
 const char* NetworkHandler::ResourceTypeToString(
     blink::mojom::ResourceType resource_type) {
@@ -2096,6 +2095,9 @@ String BuildProtocolDeviceBoundSessionDeletionReason(
     case net::device_bound_sessions::DeletionReason::kDevTools:
       return protocol::Network::TerminationEventDetails::DeletionReasonEnum::
           DevTools;
+    case net::device_bound_sessions::DeletionReason::kReplaced:
+      return protocol::Network::TerminationEventDetails::DeletionReasonEnum::
+          Replaced;
   }
 }
 
@@ -3664,7 +3666,6 @@ void NetworkHandler::OnSignedExchangeReceived(
       std::move(signed_exchange_info));
 }
 
-
 void NetworkHandler::BodyDataReceived(const String& request_id,
                                       const String& body,
                                       bool is_base64_encoded) {
@@ -3743,7 +3744,6 @@ void NetworkHandler::GetResponseBody(
   ProcessDurableMessageOrGetLocalData(request_id, std::move(callback),
                                       std::nullopt);
 }
-
 
 // static
 std::string NetworkHandler::ExtractFragment(const GURL& url,
