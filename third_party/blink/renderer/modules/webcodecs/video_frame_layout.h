@@ -41,7 +41,7 @@ class VideoFrameLayout {
   wtf_size_t NumPlanes() const;
   uint32_t Offset(wtf_size_t i) const;
   uint32_t Stride(wtf_size_t i) const;
-  media::VideoFrameLayout ToMediaLayout();
+  media::VideoFrameLayout ToMediaLayout() const;
 
  private:
   struct Plane {

@@ -144,7 +144,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
 
-  void ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
+  bool ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                            const gfx::Rect& src_rect,
                            const VideoFrameLayout& dest_layout,
                            base::span<uint8_t> buffer,
@@ -152,7 +152,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   CopyToPromise CopyToAsync(ScriptState* script_state,
                             scoped_refptr<media::VideoFrame> frame,
-                            gfx::Rect src_rect,
+                            scoped_refptr<media::VideoFrame> dest_frame,
                             const AllowSharedBufferSource* destination,
                             const VideoFrameLayout& dest_layout);
 

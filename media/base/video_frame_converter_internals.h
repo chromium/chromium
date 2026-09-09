@@ -27,7 +27,8 @@ MEDIA_EXPORT const libyuv::ArgbConstants* GetArgbConstantsForColorSpace(
 // If a method doesn't support scaling it's noted in the comments.
 
 // Scaling not supported.
-void CopyVisiblePlanes(const VideoFrame& src_frame, VideoFrame& dst_frame);
+MEDIA_EXPORT void CopyVisiblePlanes(const VideoFrame& src_frame,
+                                    VideoFrame& dst_frame);
 
 bool ARGBScale(const VideoFrame& src_frame,
                VideoFrame& dst_frame,
@@ -64,7 +65,7 @@ void Shift12To10(VideoFrame& frame);
 bool I4xxxToNVxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
-void MergeUV(const VideoFrame& src_frame, VideoFrame& dst_frame);
+MEDIA_EXPORT void MergeUV(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
 void SplitUV(const VideoFrame& src_frame, VideoFrame& dst_frame);

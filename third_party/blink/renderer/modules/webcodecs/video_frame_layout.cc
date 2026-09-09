@@ -124,11 +124,11 @@ VideoFrameLayout::VideoFrameLayout(
   }
 }
 
-media::VideoFrameLayout VideoFrameLayout::ToMediaLayout() {
+media::VideoFrameLayout VideoFrameLayout::ToMediaLayout() const {
   std::vector<media::ColorPlaneLayout> planes;
   planes.reserve(planes_.size());
   for (wtf_size_t i = 0; i < planes_.size(); i++) {
-    auto& plane = planes_[i];
+    const auto& plane = planes_[i];
     const size_t height =
         media::VideoFrame::PlaneSizeInSamples(format_, i, coded_size_).height();
     const size_t plane_size = plane.stride * height;
