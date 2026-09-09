@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/hdr_metadata_track.h"
+#include "media/base/hdr_metadata_track.h"
 
 #include <iterator>
 #include <vector>
@@ -10,11 +10,11 @@
 #include "media/base/decoder_buffer_side_data.h"
 #include "media/base/stream_parser_buffer.h"
 
-namespace media::mp4 {
+namespace media {
 
 HdrMetadataTrack::HdrMetadataTrack(
     StreamParser::TrackId metadata_track_id,
-    MetadataIT35SampleEntry::IT35PrefixType prefix_type,
+    IT35PrefixType prefix_type,
     base::span<const StreamParser::TrackId> render_track_ids)
     : metadata_track_id_(metadata_track_id), it35_prefix_type_(prefix_type) {
   for (const auto& render_track_id : render_track_ids) {
@@ -43,11 +43,11 @@ void HdrMetadataTrack::AttachMetadataOrHoldBuffers(
         // Parse the metadata in the sample.
         gfx::HDRMetadata buf_metadata;
         switch (it35_prefix_type_) {
-          case MetadataIT35SampleEntry::IT35PrefixType::kSmpteSt2094App5: {
+          case IT35PrefixType::kSmpteSt2094App5: {
             buf_metadata.SetSerializedAgtm(base::span(*buf));
             break;
           }
-          case MetadataIT35SampleEntry::IT35PrefixType::kUnknown:
+          case IT35PrefixType::kUnknown:
             break;
         }
         metadata_.SetInterval(buf->timestamp(),
@@ -120,4 +120,4 @@ void HdrMetadataTrack::Reset() {
   metadata_.clear();
 }
 
-}  // namespace media::mp4
+}  // namespace media

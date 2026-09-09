@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/hdr_metadata_track.h"
+#include "media/base/hdr_metadata_track.h"
 
 #include <vector>
 
@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/switches.h"
 
-namespace media::mp4 {
+namespace media {
 
 namespace {
 constexpr StreamParser::TrackId kMetadataTrackId = 1;
@@ -24,10 +24,9 @@ constexpr StreamParser::TrackId kRenderTrackId = 2;
 class HdrMetadataTrackTest : public testing::Test {
  public:
   HdrMetadataTrackTest()
-      : metadata_track_(
-            kMetadataTrackId,
-            MetadataIT35SampleEntry::IT35PrefixType::kSmpteSt2094App5,
-            {kRenderTrackId}) {
+      : metadata_track_(kMetadataTrackId,
+                        HdrMetadataTrack::IT35PrefixType::kSmpteSt2094App5,
+                        {kRenderTrackId}) {
     feature_list_.InitWithFeatures({features::kHdrAgtm}, {});
   }
 
@@ -191,4 +190,4 @@ TEST_F(HdrMetadataTrackTest, OrderVerification) {
   }
 }
 
-}  // namespace media::mp4
+}  // namespace media

@@ -597,7 +597,7 @@ bool MetadataIT35SampleEntry::Parse(BoxReader* reader) {
   RCHECK(reader->ReadVec(&it35_prefix, it35_identifier_length));
 
   if (gfx::HdrMetadataAgtm::IsEnabled() && MatchesAgtmT35(it35_prefix)) {
-    it35_prefix_type = IT35PrefixType::kSmpteSt2094App5;
+    it35_prefix_type = HdrMetadataTrack::IT35PrefixType::kSmpteSt2094App5;
   }
   return true;
 }

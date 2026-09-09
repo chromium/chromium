@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/hdr_metadata_track.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/video_codecs.h"
@@ -404,11 +405,8 @@ struct MEDIA_EXPORT MetadataIT35SampleEntry : Box {
 
   uint16_t data_reference_index = 0;
 
-  enum class IT35PrefixType {
-    kUnknown,
-    kSmpteSt2094App5,
-  };
-  IT35PrefixType it35_prefix_type = IT35PrefixType::kUnknown;
+  HdrMetadataTrack::IT35PrefixType it35_prefix_type =
+      HdrMetadataTrack::IT35PrefixType::kUnknown;
 };
 
 struct MEDIA_EXPORT ElementaryStreamDescriptor : Box {

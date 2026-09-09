@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_MP4_HDR_METADATA_TRACK_H_
-#define MEDIA_FORMATS_MP4_HDR_METADATA_TRACK_H_
+#ifndef MEDIA_BASE_HDR_METADATA_TRACK_H_
+#define MEDIA_BASE_HDR_METADATA_TRACK_H_
 
 #include <optional>
 
@@ -13,10 +13,9 @@
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/formats/mp4/box_definitions.h"
 #include "ui/gfx/hdr_metadata.h"
 
-namespace media::mp4 {
+namespace media {
 
 // A HdrMetadataTrack is used to attach metadata from a timed metadata track to
 // the StreamParserBuffers for the render track that they reference. This is
@@ -24,8 +23,13 @@ namespace media::mp4 {
 // decoder.
 class MEDIA_EXPORT HdrMetadataTrack {
  public:
+  enum class IT35PrefixType {
+    kUnknown,
+    kSmpteSt2094App5,
+  };
+
   HdrMetadataTrack(StreamParser::TrackId metadata_track_id,
-                   MetadataIT35SampleEntry::IT35PrefixType prefix_type,
+                   IT35PrefixType prefix_type,
                    base::span<const StreamParser::TrackId> render_track_ids);
   ~HdrMetadataTrack();
 
@@ -59,7 +63,7 @@ class MEDIA_EXPORT HdrMetadataTrack {
   base::flat_map<StreamParser::TrackId, RenderTrack> render_tracks_;
 
   const StreamParser::TrackId metadata_track_id_;
-  const MetadataIT35SampleEntry::IT35PrefixType it35_prefix_type_;
+  const IT35PrefixType it35_prefix_type_;
 
   // IntervalMap creates a default interval. In order to distinguish between
   // empty metadata and no metadata, use an optional vector as the data type.
@@ -68,6 +72,6 @@ class MEDIA_EXPORT HdrMetadataTrack {
   IntervalMap<base::TimeDelta, std::optional<gfx::HDRMetadata>> metadata_;
 };
 
-}  // namespace media::mp4
+}  // namespace media
 
-#endif  // MEDIA_FORMATS_MP4_HDR_METADATA_TRACK_H_
+#endif  // MEDIA_BASE_HDR_METADATA_TRACK_H_

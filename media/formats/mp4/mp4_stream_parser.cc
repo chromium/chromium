@@ -23,6 +23,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/hdr_metadata_track.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
@@ -37,7 +38,6 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
 #include "media/formats/mp4/es_descriptor.h"
-#include "media/formats/mp4/hdr_metadata_track.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mpeg/adts_constants.h"
 
@@ -119,9 +119,9 @@ std::unique_ptr<HdrMetadataTrack> MakeMetadataTrack(
   }
 
   switch (it35_sample_entry.it35_prefix_type) {
-    case MetadataIT35SampleEntry::IT35PrefixType::kUnknown:
+    case HdrMetadataTrack::IT35PrefixType::kUnknown:
       return nullptr;
-    case MetadataIT35SampleEntry::IT35PrefixType::kSmpteSt2094App5:
+    case HdrMetadataTrack::IT35PrefixType::kSmpteSt2094App5:
       break;
   }
 

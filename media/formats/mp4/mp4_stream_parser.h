@@ -25,13 +25,16 @@
 #include "media/formats/mp4/aac.h"
 #endif
 
+namespace media {
+class HdrMetadataTrack;
+}
+
 namespace media::mp4 {
 
 struct Movie;
 struct MovieHeader;
 struct TrackHeader;
 class BoxReader;
-class HdrMetadataTrack;
 
 class MEDIA_EXPORT MP4StreamParser : public StreamParser {
  public:
