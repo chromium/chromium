@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #include "chrome/browser/lifetime/scheduled_restart_test_utils.h"
-#include "chrome/browser/ui/browser.h"  // nocheck
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"

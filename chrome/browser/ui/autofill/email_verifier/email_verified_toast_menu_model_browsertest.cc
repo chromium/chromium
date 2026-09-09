@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/autofill/email_verifier/email_verified_toast_menu_model.h"
 
 #include "base/test/metrics/user_action_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"

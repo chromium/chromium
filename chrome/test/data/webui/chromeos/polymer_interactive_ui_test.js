@@ -4,7 +4,6 @@
 
 GEN_INCLUDE(['polymer_browser_test_base.js']);
 
-GEN('#include "chrome/browser/ui/browser.h"');
 GEN('#include "chrome/browser/ui/tabs/tab_strip_model.h"');
 GEN('#include "content/public/browser/web_contents.h"');
 

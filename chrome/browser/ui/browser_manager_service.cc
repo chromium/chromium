@@ -13,9 +13,9 @@
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -78,7 +78,8 @@ size_t BrowserManagerService::GetSize() const {
   return size;
 }
 
-void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
+void BrowserManagerService::AddBrowser(
+    std::unique_ptr<BrowserWindowInterface> browser) {
   CHECK(browsers_and_subscriptions_for_testing_.empty());
   BrowserWindowInterface* const browser_ptr = browser.get();
   // Prefer push_back, see totw/112.
