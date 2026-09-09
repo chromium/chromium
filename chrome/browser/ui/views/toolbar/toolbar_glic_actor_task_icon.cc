@@ -38,8 +38,7 @@ void ToolbarGlicActorTaskIcon::AddedToWidget() {
   SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
 
   SetDefaultBackgroundColorId(kColorToolbarGlicButtonBackgroundDefault);
-  UpdateIconsWithStandardColors(
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON));
+  UpdateIconsWithStandardColors(GetGlicActorTaskIcon());
   GlicActorTaskIcon<ToolbarButton>::AddedToWidget();
 }
 

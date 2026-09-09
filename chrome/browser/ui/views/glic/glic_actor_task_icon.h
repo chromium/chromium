@@ -10,10 +10,14 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/glic/glic_base_shim.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -26,6 +30,13 @@
 class BrowserWindowInterface;
 
 namespace glic {
+
+inline const gfx::VectorIcon& GetGlicActorTaskIcon() {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNewIcon)) {
+    return kCursorSparkIcon;
+  }
+  return GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
+}
 
 inline constexpr int kActorNudgeLabelMargin = 6;
 inline constexpr int kSplitLeftEdgeRadius = 2;

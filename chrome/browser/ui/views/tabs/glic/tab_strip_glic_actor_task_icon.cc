@@ -29,10 +29,6 @@ namespace glic {
 BASE_FEATURE(kGlicActorTaskIconUseGlicButtonAltIconBackgroundColor,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const gfx::VectorIcon& GetTaskIcon() {
-  return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
-}
-
 TabStripGlicActorTaskIcon::TabStripGlicActorTaskIcon(
     BrowserWindowInterface* browser_window_interface,
     PressedCallback pressed_callback)
@@ -44,7 +40,7 @@ TabStripGlicActorTaskIcon::TabStripGlicActorTaskIcon(
                                              std::u16string(),
                                              kGlicActorTaskIconElementId,
                                              Edge::kNone,
-                                             GetTaskIcon(),
+                                             GetGlicActorTaskIcon(),
                                              /*show_close_button=*/false),
       browser_window_interface_(browser_window_interface) {
   SetTaskIconToDefault();

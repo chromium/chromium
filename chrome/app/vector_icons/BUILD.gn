@@ -100,6 +100,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "credit_card.icon",
     "credit_card_chrome_refresh_old.icon",
     "credit_card_old.icon",
+    "cursor_spark.icon",
     "cut_menu_old.icon",
     "default_touch_favicon_custom.icon",
     "default_touch_favicon_mask_custom.icon",
