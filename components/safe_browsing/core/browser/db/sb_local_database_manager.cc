@@ -279,6 +279,27 @@ void OnCheckForUrlHighConfidenceAllowlistComplete(
                           std::move(logging_details));
 }
 
+// Returns the metric suffix for a given `type`.
+std::string_view GetThreatInfoSizeMetricSuffix(
+    SBLocalDatabaseManager::ClientCallbackType type) {
+  using enum SBLocalDatabaseManager::ClientCallbackType;
+  switch (type) {
+    case CHECK_BROWSE_URL:
+      return ".BrowseUrl";
+    case CHECK_DOWNLOAD_URLS:
+      return ".DownloadUrls";
+    case CHECK_EXTENSION_IDS:
+      return ".ExtensionIds";
+    case CHECK_URL_FOR_SUBRESOURCE_FILTER:
+      return ".SubresourceFilter";
+    case CHECK_CSD_ALLOWLIST:
+      return ".CsdAllowlist";
+    case CHECK_OTHER:
+      // Synchronous checks never perform full-hash checks.
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 SBLocalDatabaseManager::PendingCheck::PendingCheck(
@@ -810,9 +831,15 @@ void SBLocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
     const std::vector<FullHashStr>& full_hashes,
     std::vector<SBThreatType>* full_hash_threat_types,
     SBThreatType* most_severe_threat_type,
-    ThreatMetadata* metadata) {
-  UMA_HISTOGRAM_COUNTS_100("SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
-                           full_hash_infos.size());
+    ThreatMetadata* metadata,
+    ClientCallbackType client_callback_type) {
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+      full_hash_infos.size());
+  base::UmaHistogramCounts100(
+      base::StrCat({"SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+                    GetThreatInfoSizeMetricSuffix(client_callback_type)}),
+      full_hash_infos.size());
   ThreatSeverity most_severe_yet = kLeastSeverity;
   for (const FullHashInfo& fhi : full_hash_infos) {
     ThreatSeverity severity = GetThreatSeverity(fhi.list_id);
@@ -1125,7 +1152,8 @@ void SBLocalDatabaseManager::OnFullHashResponseV4(
   // Find out the most severe threat, if any, to report to the client.
   GetSeverestThreatTypeAndMetadata(
       full_hash_infos, check->full_hashes, &check->full_hash_threat_types,
-      &check->most_severe_threat_type, &check->url_metadata);
+      &check->most_severe_threat_type, &check->url_metadata,
+      check->client_callback_type);
 
   FinishFullHashResponse(std::move(check), it, start_processing);
 }

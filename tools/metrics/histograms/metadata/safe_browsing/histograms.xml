@@ -3942,14 +3942,22 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
+<histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize{CheckType}"
     units="verdicts" expires_after="2027-02-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records the number of verdicts received in the full hash check. Logged each
-    time a full hash check response is received.
+    Records the number of verdicts received in the full hash check for
+    {CheckType}. Logged each time a full hash check response is received.
   </summary>
+  <token key="CheckType">
+    <variant name="" summary="all checks"/>
+    <variant name=".BrowseUrl" summary="URL checks for browsing navigation"/>
+    <variant name=".CsdAllowlist" summary="CSD allowlist checks"/>
+    <variant name=".DownloadUrls" summary="download URL checks"/>
+    <variant name=".ExtensionIds" summary="extension ID checks"/>
+    <variant name=".SubresourceFilter" summary="subresource filter checks"/>
+  </token>
 </histogram>
 
 <histogram

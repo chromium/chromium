@@ -1127,6 +1127,13 @@ TEST_F(SBLocalDatabaseManagerTest_V4,
   // Wait for PerformFullHashCheck to complete.
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.callback_called());
+
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize.CsdAllowlist",
+      /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5, TestCheckCsdAllowlistWithFullMatch) {
@@ -1458,7 +1465,7 @@ TEST_F(SBLocalDatabaseManagerTest_V4, TestGetSeverestThreatTypeAndMetadata) {
 
   sb_local_database_manager_->GetSeverestThreatTypeAndMetadata(
       fhis, full_hashes, &full_hash_threat_types, &result_threat_type,
-      &metadata);
+      &metadata, SBLocalDatabaseManager::ClientCallbackType::CHECK_BROWSE_URL);
   EXPECT_EQ(expected_full_hash_threat_types, full_hash_threat_types);
 
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, result_threat_type);
@@ -1469,13 +1476,16 @@ TEST_F(SBLocalDatabaseManagerTest_V4, TestGetSeverestThreatTypeAndMetadata) {
 
   sb_local_database_manager_->GetSeverestThreatTypeAndMetadata(
       fhis, full_hashes, &full_hash_threat_types, &result_threat_type,
-      &metadata);
+      &metadata, SBLocalDatabaseManager::ClientCallbackType::CHECK_BROWSE_URL);
   EXPECT_EQ(expected_full_hash_threat_types, full_hash_threat_types);
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE, result_threat_type);
 
   histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
-      /* sample */ 2, /* expected_count */ 2);
+      /*sample=*/2, /*expected_bucket_count=*/2);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize.BrowseUrl",
+      /*sample=*/2, /*expected_bucket_count=*/2);
 }
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5, TestChecksAreQueued) {
@@ -1743,6 +1753,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, ShutdownCancelsQueued) {
 }
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5, QueuedCheckWithFullHash) {
+  base::HistogramTester histogram_tester;
   std::string url_bad_no_scheme("example.com/bad/");
   const GURL url_bad("https://" + url_bad_no_scheme);
 
@@ -1773,6 +1784,15 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, QueuedCheckWithFullHash) {
 
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.on_check_browse_url_result_called());
+
+  if (!IsV5()) {
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize.BrowseUrl",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+  }
 }
 
 // This test is somewhat similar to TestCheckBrowseUrlWithFakeDbReturnsMatch but
@@ -1839,6 +1859,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, UsingWeakPtrDropsCallback) {
 }
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5, TestMatchDownloadAllowlistUrl) {
+  base::HistogramTester histogram_tester;
   SetupFakeManager();
   GURL good_url("http://safe.com");
   GURL other_url("http://iffy.com");
@@ -1868,6 +1889,9 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestMatchDownloadAllowlistUrl) {
 
   EXPECT_FALSE(FakeSBLocalDatabaseManager::PerformFullHashCheckCalled(
       sb_local_database_manager_));
+
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize", 0);
 }
 
 // This verifies the fix for race in http://crbug.com/660293
@@ -1913,6 +1937,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
 }
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5, TestSubresourceFilterCallback) {
+  base::HistogramTester histogram_tester;
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
 
@@ -1942,6 +1967,16 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestSubresourceFilterCallback) {
     EXPECT_FALSE(client.on_check_subresource_filter_url_result_called());
     WaitForTasksOnTaskRunner();
     EXPECT_TRUE(client.on_check_subresource_filter_url_result_called());
+
+    if (!IsV5()) {
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+          /*sample=*/0, /*expected_bucket_count=*/1);
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize."
+          "SubresourceFilter",
+          /*sample=*/0, /*expected_bucket_count=*/1);
+    }
 
     if (IsV5()) {
       CHECK(v5_fake_manager());
@@ -2053,6 +2088,7 @@ TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
 
 TEST_F(SBLocalDatabaseManagerTest_ExtensionNetworkQuery,
        TestCheckExtensionIDsOneIsBlocklisted_WithNetworkCheck) {
+  base::HistogramTester histogram_tester;
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
       good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
@@ -2080,6 +2116,13 @@ TEST_F(SBLocalDatabaseManagerTest_ExtensionNetworkQuery,
   EXPECT_FALSE(client.on_check_extensions_result_called());
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.on_check_extensions_result_called());
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize.ExtensionIds",
+      /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
 TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
@@ -2253,6 +2296,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5,
        TestCheckDownloadUrlWithOneBlocklisted) {
+  base::HistogramTester histogram_tester;
   // Setup to receive full-hash hit.
   std::string url_bad_no_scheme("example.com/bad/");
   FullHashStr bad_full_hash(std::string(
@@ -2283,6 +2327,15 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
   EXPECT_FALSE(client.on_check_download_urls_result_called());
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.on_check_download_urls_result_called());
+
+  if (!IsV5()) {
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize.DownloadUrls",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+  }
 
   if (IsV5()) {
     CHECK(v5_fake_manager());

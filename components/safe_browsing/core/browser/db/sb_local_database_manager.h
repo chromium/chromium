@@ -65,6 +65,33 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
     return current_local_database_manager_;
   }
 
+  enum class ClientCallbackType : int {
+    // This represents the case when we're trying to determine if a URL is
+    // unsafe from the following perspectives: Malware, Phishing, UwS.
+    CHECK_BROWSE_URL,
+
+    // This represents the case when we're trying to determine if any of the
+    // URLs in a vector of URLs is unsafe for downloading binaries.
+    CHECK_DOWNLOAD_URLS,
+
+    // This represents the case when we're trying to determine if a Chrome
+    // extension is unsafe.
+    CHECK_EXTENSION_IDS,
+
+    // This represents the case when we're trying to determine if a URL belongs
+    // to the list where subresource filter should be active.
+    CHECK_URL_FOR_SUBRESOURCE_FILTER,
+
+    // This represents the case when we're trying to determine if a URL is
+    // part of the CSD allowlist.
+    CHECK_CSD_ALLOWLIST,
+
+    // This represents the other cases when a check is being performed
+    // synchronously so a client callback isn't required. For instance, when
+    // trying to determine if an IP address is unsafe due to hosting Malware.
+    CHECK_OTHER,
+  };
+
   //
   // SafeBrowsingDatabaseManager implementation
   //
@@ -125,33 +152,6 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests);
 
   ~SBLocalDatabaseManager() override;
-
-  enum class ClientCallbackType : int {
-    // This represents the case when we're trying to determine if a URL is
-    // unsafe from the following perspectives: Malware, Phishing, UwS.
-    CHECK_BROWSE_URL,
-
-    // This represents the case when we're trying to determine if any of the
-    // URLs in a vector of URLs is unsafe for downloading binaries.
-    CHECK_DOWNLOAD_URLS,
-
-    // This represents the case when we're trying to determine if a Chrome
-    // extension is a unsafe.
-    CHECK_EXTENSION_IDS,
-
-    // This respresents the case when we're trying to determine if a URL belongs
-    // to the list where subresource filter should be active.
-    CHECK_URL_FOR_SUBRESOURCE_FILTER,
-
-    // This respresents the case when we're trying to determine if a URL is
-    // part of the CSD allowlist.
-    CHECK_CSD_ALLOWLIST,
-
-    // This represents the other cases when a check is being performed
-    // synchronously so a client callback isn't required. For instance, when
-    // trying to determing if an IP address is unsafe due to hosting Malware.
-    CHECK_OTHER,
-  };
 
   // The information we need to process a URL safety reputation request and
   // respond to the SafeBrowsing client that asked for it.
@@ -295,16 +295,18 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void GetPrefixMatches(PendingCheck* check,
                         base::OnceCallback<void(DbLookupResult)> callback);
 
-  // Goes over the |full_hash_infos| and stores the most severe SBThreatType in
-  // |most_severe_threat_type|, and the corresponding metadata in |metadata|.
-  // Also, updates in |full_hash_threat_types|, the threat type for each full
-  // hash in |full_hashes|.
+  // Goes over `full_hash_infos` and stores the most severe SBThreatType in
+  // `most_severe_threat_type`, and the corresponding metadata in `metadata`.
+  // Also updates in `full_hash_threat_types` the threat type for each full
+  // hash in `full_hashes`. `client_callback_type` specifies the type of check
+  // being performed for metrics logging.
   void GetSeverestThreatTypeAndMetadata(
       const std::vector<FullHashInfo>& full_hash_infos,
       const std::vector<FullHashStr>& full_hashes,
       std::vector<SBThreatType>* full_hash_threat_types,
       SBThreatType* most_severe_threat_type,
-      ThreatMetadata* metadata);
+      ThreatMetadata* metadata,
+      ClientCallbackType client_callback_type);
 
   // Helper method for shared v4 + v5 code to find the iterator for the pending
   // check if relevant. Also logs a histogram.
