@@ -53,6 +53,12 @@ void PrintImpl(const FuseboxAction& action, int indent, std::ostream* os) {
   } else {
     *os << ind << "  searchbox_override: null,\n";
   }
+  if (action.searchbox_tutorial) {
+    *os << ind << "  searchbox_tutorial: "
+        << static_cast<int>(*action.searchbox_tutorial) << ",\n";
+  } else {
+    *os << ind << "  searchbox_tutorial: null,\n";
+  }
   *os << ind << "}";
 }
 

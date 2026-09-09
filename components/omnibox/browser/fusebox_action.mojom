@@ -54,6 +54,13 @@ enum SearchboxOverride {
   kComposebox = 2,
 };
 
+// Maps to //third_party/omnibox_proto/searchbox_tutorial.proto.
+enum SearchboxTutorial {
+  kUnspecified = 0,
+  // Glow animation on the plus button to educate users.
+  kGlowPlusButton = 1,
+};
+
 // Actions for the Fusebox (a fusion of "Composebox" and "Searchbox"), which can
 // be either the Composebox (for AI queries) or the Searchbox (for non-AI
 // queries). FuseboxAction carries optional client behavior and configuration to
@@ -76,4 +83,6 @@ struct FuseboxAction {
   // Whether and which searchbox to open, if specified.
   // Null means no override was provided.
   SearchboxOverride? searchbox_override;
+  // Whether and which searchbox tutorial experience to trigger, if specified.
+  SearchboxTutorial? searchbox_tutorial;
 };

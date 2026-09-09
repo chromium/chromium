@@ -1355,6 +1355,7 @@ suite('SearchboxTest', () => {
           queryActionOverride: null,
           preselectedInputSource: InputSource.kInputSourceTabPicker,
           searchboxOverride: SearchboxOverride.kRealbox,
+          searchboxTutorial: null,
         });
         await microtasksFinished();
 
