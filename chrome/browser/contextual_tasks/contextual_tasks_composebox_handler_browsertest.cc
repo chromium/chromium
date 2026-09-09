@@ -3772,18 +3772,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   files.emplace_back(file2_path, file2_path);
 
   base::RunLoop run_loop;
-  int file_contexts_added = 0;
+  std::vector<base::UnguessableToken> added_tokens;
   EXPECT_CALL(mock_searchbox_page_, AddFileContext(testing::_, testing::_))
       .Times(2)
       .WillRepeatedly([&](const base::UnguessableToken& token,
                           searchbox::mojom::SelectedFileInfoPtr file_info) {
-        file_contexts_added++;
+        added_tokens.push_back(token);
         if (file_info->file_name == "file1.pdf") {
           EXPECT_EQ(file_info->mime_type, "application/pdf");
         } else if (file_info->file_name == "file2.png") {
           EXPECT_EQ(file_info->mime_type, "image/png");
         }
-        if (file_contexts_added == 2) {
+        if (added_tokens.size() == 2) {
           run_loop.Quit();
         }
       });
@@ -3794,6 +3794,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 
   EXPECT_EQ(handler_->GetNumContextUploading(), 2);
+
+  // Clean up pending uploads before test teardown to prevent asynchronous tasks
+  // running during fixture destruction.
+  for (const auto& token : added_tokens) {
+    SimulateUploadStatusChanged(
+        token, lens::MimeType::kUnknown,
+        contextual_search::ContextUploadStatus::kUploadSuccessful,
+        std::nullopt);
+  }
+  EXPECT_EQ(handler_->GetNumContextUploading(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
