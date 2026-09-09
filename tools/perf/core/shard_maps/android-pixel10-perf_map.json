@@ -554,7 +554,7 @@
             "web_power.crossbench": {
                 "crossbench_name": "web-power",
                 "arguments": [
-                    "--enable-field-trials=benchmarking"
+                    "--disable-field-trials"
                 ]
             }
         },
