@@ -288,7 +288,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"};
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
           !std::ranges::contains(kAllowlist,
-                                 extension()->hashed_id().value())) {
+                                 extension()->hashed_id().value_sha1())) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }
