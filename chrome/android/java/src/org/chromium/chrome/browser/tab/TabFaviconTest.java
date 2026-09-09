@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
@@ -355,32 +354,19 @@ public class TabFaviconTest {
     }
 
     @Test
-    public void testGetBitmapWithFallback_NativePageReturnsFavicon() {
-        Context context = ContextUtils.getApplicationContext();
-        TabImpl nativeTab = mock(TabImpl.class);
-        UserDataHost newUserDataHost = new UserDataHost();
-        doReturn(newUserDataHost).when(nativeTab).getUserDataHost();
-        doReturn(context).when(nativeTab).getContext();
-        doReturn(JUnitTestGURLs.NTP_URL).when(nativeTab).getUrl();
-        doReturn(true).when(nativeTab).isNativePage();
-        doReturn(false).when(nativeTab).isIncognito();
-        doReturn(true).when(nativeTab).isInitialized();
+    public void testGetBitmapWithFallback_NativePageReturnsNull() {
+        doReturn(true).when(mTab).isNativePage();
 
-        Bitmap bitmap = TabFavicon.getBitmapWithFallback(nativeTab, /* allowFallback= */ false);
-        assertNotNull(bitmap);
+        Bitmap bitmap = TabFavicon.getBitmapWithFallback(mTab, /* allowFallback= */ false);
+        assertNull(bitmap);
     }
 
     @Test
-    public void testGetFaviconOrFallback_NativePageReturnsFavicon() {
-        Context context = ContextUtils.getApplicationContext();
-        doReturn(context).when(mTab).getContext();
-        doReturn(JUnitTestGURLs.NTP_URL).when(mTab).getUrl();
+    public void testGetFaviconOrFallback_NativePageRejected() {
         doReturn(true).when(mTab).isNativePage();
-        doReturn(false).when(mTab).isIncognito();
 
         Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
         assertNotNull(promise);
-        assertTrue(promise.isFulfilled());
-        assertNotNull(promise.getResult());
+        assertTrue(promise.isRejected());
     }
 }

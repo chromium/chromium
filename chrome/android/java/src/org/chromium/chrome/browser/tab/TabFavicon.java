@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
@@ -21,7 +20,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -104,27 +102,8 @@ public class TabFavicon extends TabWebContentsUserData {
     @CalledByNative
     public static @Nullable Bitmap getBitmapWithFallback(
             @JniType("TabAndroid*") Tab tab, boolean allowFallback) {
-        Bitmap nativeFavicon = getNativePageFavicon(tab);
-        if (nativeFavicon != null) return nativeFavicon;
-
         TabFavicon tabFavicon = get(tab);
         return tabFavicon != null ? tabFavicon.getFavicon(allowFallback) : null;
-    }
-
-    private static @Nullable Bitmap getNativePageFavicon(Tab tab) {
-        if (!tab.isNativePage()) return null;
-        Context context = tab.getContext();
-        if (context == null) return null;
-        boolean isNightMode =
-                context.getResources() != null
-                        && context.getResources().getConfiguration() != null
-                        && ColorUtils.inNightMode(context);
-        return new FaviconHelper.DefaultFaviconHelper()
-                .getDefaultFaviconBitmap(
-                        context,
-                        tab.getUrl(),
-                        /* useDarkIcon= */ !tab.isIncognito() && !isNightMode,
-                        /* useIncognitoNtpIcon= */ tab.isIncognito());
     }
 
     private TabFavicon(Tab tab) {
@@ -226,11 +205,6 @@ public class TabFavicon extends TabWebContentsUserData {
     public Promise<Bitmap> getFaviconOrFallback() {
         Promise<Bitmap> promise = new Promise<>();
         if (mNativeTabFavicon == 0 || mTab.isNativePage()) {
-            Bitmap nativeFavicon = getNativePageFavicon(mTab);
-            if (nativeFavicon != null) {
-                promise.fulfill(nativeFavicon);
-                return promise;
-            }
             promise.reject(new Exception("Not eligible for favicon"));
             return promise;
         }
