@@ -7,6 +7,8 @@
 #import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/contextual_search/input_state_model.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -106,11 +109,36 @@
 
 @end
 
+#pragma mark - FakePresenterTabPickerHandler
+
+@interface FakePresenterTabPickerHandler : NSObject <TabPickerCommands>
+
+@property(nonatomic, assign) BOOL tabPickerShown;
+@property(nonatomic, strong) TabPickerParams* lastParams;
+@property(nonatomic, copy) TabPickerCompletionBlock lastCompletionBlock;
+
+@end
+
+@implementation FakePresenterTabPickerHandler
+
+- (void)showTabPickerWithParams:(TabPickerParams*)params
+                     completion:(TabPickerCompletionBlock)completion {
+  self.tabPickerShown = YES;
+  self.lastParams = params;
+  self.lastCompletionBlock = completion;
+}
+
+- (void)hideTabPicker {
+}
+
+@end
+
 #pragma mark - FakePresenterDataSource
 
 @interface FakePresenterDataSource
     : NSObject <ComposeboxPickerPresenterDataSource>
 
+@property(nonatomic, assign) std::set<web::WebStateID> attachedWebStateIDs;
 @property(nonatomic, assign) NSUInteger remainingCapacity;
 
 @end
@@ -119,7 +147,7 @@
 
 - (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContextForPresenter:
     (ComposeboxPickerPresenter*)presenter {
-  return {};
+  return self.attachedWebStateIDs;
 }
 
 - (NSUInteger)maxTabAttachmentCountForPresenter:
@@ -135,6 +163,58 @@
 - (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
     (ComposeboxPickerPresenter*)presenter {
   return @[];
+}
+
+@end
+
+#pragma mark - FakePresenterDelegate
+
+@interface FakePresenterDelegate : NSObject <ComposeboxPickerPresenterDelegate>
+
+@property(nonatomic, assign) BOOL didPickTabsCalled;
+@property(nonatomic, assign) std::set<web::WebStateID> selectedWebStateIDs;
+@property(nonatomic, assign) std::set<web::WebStateID> cachedWebStateIDs;
+@property(nonatomic, assign) BOOL didCancelTabPickerCalled;
+
+@end
+
+@implementation FakePresenterDelegate
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+    handleSelectedTabsWithWebStateIDs:
+        (std::set<web::WebStateID>)selectedWebStateIDs
+                    cachedWebStateIDs:
+                        (std::set<web::WebStateID>)cachedWebStateIDs {
+  self.didPickTabsCalled = YES;
+  self.selectedWebStateIDs = selectedWebStateIDs;
+  self.cachedWebStateIDs = cachedWebStateIDs;
+}
+
+- (void)composeboxPickerPresenterDidCancelTabPicker:
+    (ComposeboxPickerPresenter*)presenter {
+  self.didCancelTabPickerCalled = YES;
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+                didPickDriveItems:
+                    (NSArray<ComposeboxPickerDriveResult*>*)items {
+}
+
+- (void)composeboxPickerPresenterDidCancelDrivePicker:
+    (ComposeboxPickerPresenter*)presenter {
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+                    didPickImages:
+                        (NSArray<ComposeboxPickerImageResult*>*)results {
+}
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+             didPickFilesWithURLs:(NSArray<NSURL*>*)urls {
+}
+
+- (void)composeboxPickerPresenterDidDissmissCamera:
+    (ComposeboxPickerPresenter*)presenter {
 }
 
 @end
@@ -162,6 +242,10 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:handler_
                              forProtocol:@protocol(DriveFilePickerCommands)];
+
+    tab_picker_handler_ = [[FakePresenterTabPickerHandler alloc] init];
+    [dispatcher startDispatchingToTarget:tab_picker_handler_
+                             forProtocol:@protocol(TabPickerCommands)];
 
     data_source_ = [[FakePresenterDataSource alloc] init];
     data_source_.remainingCapacity = 8;
@@ -208,6 +292,7 @@ class ComposeboxPickerPresenterTest : public PlatformTest {
   UIViewController* base_view_controller_ = nil;
   std::unique_ptr<TestBrowser> browser_;
   FakePresenterDriveFilePickerHandler* handler_ = nil;
+  FakePresenterTabPickerHandler* tab_picker_handler_ = nil;
   FakePresenterDataSource* data_source_ = nil;
   ComposeboxMetricsRecorder* metrics_recorder_ = nil;
   ComposeboxPickerPresenter* presenter_ = nil;
@@ -613,6 +698,178 @@ TEST_F(ComposeboxPickerPresenterTest,
 
   histogram_tester.ExpectUniqueSample(
       "Omnibox.MobileFusebox.PickerOutcome.File",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+}
+
+// Tests that picking Drive items records kAttachmentAdded and notifies the
+// delegate.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestDriveFilePicker_DidPickItems_RecordsAttachmentAdded) {
+  base::HistogramTester histogram_tester;
+  id mock_delegate =
+      OCMStrictProtocolMock(@protocol(ComposeboxPickerPresenterDelegate));
+  presenter_.delegate = mock_delegate;
+
+  id<DriveFilePickerResponseCommands> response_handler =
+      static_cast<id<DriveFilePickerResponseCommands>>(presenter_);
+
+  ComposeboxPickerDriveResult* result =
+      [[ComposeboxPickerDriveResult alloc] init];
+  result.identifier = @"drive_file_id";
+  NSArray<ComposeboxPickerDriveResult*>* items = @[ result ];
+
+  OCMExpect([mock_delegate composeboxPickerPresenter:presenter_
+                                   didPickDriveItems:items]);
+
+  [response_handler driveFilePickerDidPickItems:items];
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Drive",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+}
+
+// Tests that cancelling Drive file picker records kManualUserExit and notifies
+// the delegate.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestDriveFilePicker_DidCancel_RecordsManualUserExit) {
+  base::HistogramTester histogram_tester;
+  id mock_delegate =
+      OCMStrictProtocolMock(@protocol(ComposeboxPickerPresenterDelegate));
+  presenter_.delegate = mock_delegate;
+
+  id<DriveFilePickerResponseCommands> response_handler =
+      static_cast<id<DriveFilePickerResponseCommands>>(presenter_);
+
+  OCMExpect(
+      [mock_delegate composeboxPickerPresenterDidCancelDrivePicker:presenter_]);
+
+  [response_handler driveFilePickerDidCancel];
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Drive",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
+}
+
+// Tests that picking tabs records kAttachmentAdded and notifies the delegate.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestTabPicker_DidPickTabs_RecordsAttachmentAdded) {
+  base::HistogramTester histogram_tester;
+  FakePresenterDelegate* delegate = [[FakePresenterDelegate alloc] init];
+  presenter_.delegate = delegate;
+
+  [presenter_ presentTabPicker];
+
+  EXPECT_TRUE(tab_picker_handler_.tabPickerShown);
+  ASSERT_NE(tab_picker_handler_.lastCompletionBlock, nil);
+
+  std::set<web::WebStateID> selected_ids = {
+      web::WebStateID::FromSerializedValue(1)};
+  std::set<web::WebStateID> cached_ids = {};
+
+  tab_picker_handler_.lastCompletionBlock(TabPickerSelection{
+      .selected_ids = selected_ids,
+      .cached_ids = cached_ids,
+  });
+
+  EXPECT_TRUE(delegate.didPickTabsCalled);
+  EXPECT_EQ(delegate.selectedWebStateIDs, selected_ids);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Tabs",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome",
+      static_cast<int>(MobileFuseboxPickerOutcome::kAttachmentAdded), 1);
+}
+
+// Tests that unselecting tabs in tab picker records no outcome metric.
+// TODO(crbug.com/558537506): This is not working as intended and may need
+// fixing; this doesn't address the case where tabs are unselected, and an
+// outcome case is likely missing in the enum.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestTabPicker_DidPickTabs_UnselectingTabs_RecordsNoOutcome) {
+  base::HistogramTester histogram_tester;
+  FakePresenterDelegate* delegate = [[FakePresenterDelegate alloc] init];
+  presenter_.delegate = delegate;
+  data_source_.attachedWebStateIDs = {web::WebStateID::FromSerializedValue(1)};
+
+  [presenter_ presentTabPicker];
+
+  EXPECT_TRUE(tab_picker_handler_.tabPickerShown);
+  ASSERT_NE(tab_picker_handler_.lastCompletionBlock, nil);
+
+  std::set<web::WebStateID> selected_ids = {};
+  std::set<web::WebStateID> cached_ids = {};
+
+  tab_picker_handler_.lastCompletionBlock(TabPickerSelection{
+      .selected_ids = selected_ids,
+      .cached_ids = cached_ids,
+  });
+
+  EXPECT_TRUE(delegate.didPickTabsCalled);
+  EXPECT_EQ(delegate.selectedWebStateIDs, selected_ids);
+  histogram_tester.ExpectTotalCount("Omnibox.MobileFusebox.PickerOutcome.Tabs",
+                                    0);
+  histogram_tester.ExpectTotalCount("Omnibox.MobileFusebox.PickerOutcome", 0);
+}
+
+// Tests that keeping the same tabs in tab picker records no outcome metric.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestTabPicker_DidPickTabs_KeepingSameTabs_RecordsNoOutcome) {
+  base::HistogramTester histogram_tester;
+  FakePresenterDelegate* delegate = [[FakePresenterDelegate alloc] init];
+  presenter_.delegate = delegate;
+  data_source_.attachedWebStateIDs = {web::WebStateID::FromSerializedValue(1)};
+
+  [presenter_ presentTabPicker];
+
+  EXPECT_TRUE(tab_picker_handler_.tabPickerShown);
+  ASSERT_NE(tab_picker_handler_.lastCompletionBlock, nil);
+
+  std::set<web::WebStateID> selected_ids = {
+      web::WebStateID::FromSerializedValue(1)};
+  std::set<web::WebStateID> cached_ids = {};
+
+  tab_picker_handler_.lastCompletionBlock(TabPickerSelection{
+      .selected_ids = selected_ids,
+      .cached_ids = cached_ids,
+  });
+
+  EXPECT_TRUE(delegate.didPickTabsCalled);
+  EXPECT_EQ(delegate.selectedWebStateIDs, selected_ids);
+  histogram_tester.ExpectTotalCount("Omnibox.MobileFusebox.PickerOutcome.Tabs",
+                                    0);
+  histogram_tester.ExpectTotalCount("Omnibox.MobileFusebox.PickerOutcome", 0);
+}
+
+// Tests that cancelling tab picker records kManualUserExit and notifies the
+// delegate.
+TEST_F(ComposeboxPickerPresenterTest,
+       TestTabPicker_DidCancel_RecordsManualUserExit) {
+  base::HistogramTester histogram_tester;
+  FakePresenterDelegate* delegate = [[FakePresenterDelegate alloc] init];
+  presenter_.delegate = delegate;
+
+  [presenter_ presentTabPicker];
+
+  EXPECT_TRUE(tab_picker_handler_.tabPickerShown);
+  ASSERT_NE(tab_picker_handler_.lastCompletionBlock, nil);
+
+  tab_picker_handler_.lastCompletionBlock(std::nullopt);
+
+  EXPECT_TRUE(delegate.didCancelTabPickerCalled);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.PickerOutcome.Tabs",
       static_cast<int>(MobileFuseboxPickerOutcome::kManualUserExit), 1);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.MobileFusebox.PickerOutcome",

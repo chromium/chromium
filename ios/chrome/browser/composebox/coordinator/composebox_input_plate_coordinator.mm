@@ -864,6 +864,16 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [self focusComposebox];
 }
 
+- (void)composeboxPickerPresenterDidCancelDrivePicker:
+    (ComposeboxPickerPresenter*)presenter {
+  [self focusComposebox];
+}
+
+- (void)composeboxPickerPresenterDidCancelTabPicker:
+    (ComposeboxPickerPresenter*)presenter {
+  [self focusComposebox];
+}
+
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
     handleSelectedTabsWithWebStateIDs:
         (std::set<web::WebStateID>)selectedWebStateIDs
@@ -876,9 +886,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
   if (diff.added.size() > 0) {
     [_metricsRecorder recordTabPickerTabsAttached:diff.added.size()];
-    [_metricsRecorder
-        recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
-          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
   }
 
   [_mediator attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
@@ -893,9 +900,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   }
 
   [_metricsRecorder recordDriveFilesAttached:results.count];
-  [_metricsRecorder
-      recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
-        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
 
   for (ComposeboxPickerDriveResult* result in results) {
     [_mediator processDriveFileWithIdentifier:result.identifier

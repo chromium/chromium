@@ -16,7 +16,9 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_ui_constants.h"
@@ -698,6 +700,42 @@ void RemoveAttachmentWithTitle(NSString* title) {
   // Verify that the tab was successfully attached.
   // If the bug is present, this will fail/timeout because the tab never loads.
   VerifyTabIsAttachedWithTitle(firstPageTitle);
+}
+
+// Tests that cancelling the tab picker records the manual user exit outcome
+// metric.
+- (void)testTabPickerCancelOutcomeMetric {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to setup histogram tester.");
+
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  OpenTabPicker();
+
+  // Tap the cancel button in the navigation bar.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                static_cast<int>(
+                                    MobileFuseboxPickerOutcome::kManualUserExit)
+                         forHistogram:
+                             @"Omnibox.MobileFusebox.PickerOutcome.Tabs"],
+      @"Failed to record manual user exit metric for tab picker cancellation.");
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
 }
 
 @end

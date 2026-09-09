@@ -46,6 +46,14 @@
                 didPickDriveItems:
                     (NSArray<ComposeboxPickerDriveResult*>*)results;
 
+// Called when the Drive picker is cancelled or dismissed without picking items.
+- (void)composeboxPickerPresenterDidCancelDrivePicker:
+    (ComposeboxPickerPresenter*)presenter;
+
+// Called when the tab picker is cancelled or dismissed without picking tabs.
+- (void)composeboxPickerPresenterDidCancelTabPicker:
+    (ComposeboxPickerPresenter*)presenter;
+
 @end
 
 /// Data source for providing information to the pickers.

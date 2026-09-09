@@ -14,12 +14,14 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/memory/weak_ptr.h"
+#import "base/not_fatal_until.h"
 #import "components/contextual_search/input_state_model.h"
 #import "components/contextual_search/pref_names.h"
 #import "components/lens/lens_features.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
@@ -313,10 +315,18 @@ constexpr int kChromeIOSProductId = 71720513;
 
 - (void)driveFilePickerDidPickItems:
     (NSArray<ComposeboxPickerDriveResult*>*)items {
+  CHECK(items.count, base::NotFatalUntil::M157);
+  [self.metricsRecorder
+      recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
   [self.delegate composeboxPickerPresenter:self didPickDriveItems:items];
 }
 
 - (void)driveFilePickerDidCancel {
+  [self.metricsRecorder
+      recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
+        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
+  [self.delegate composeboxPickerPresenterDidCancelDrivePicker:self];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
@@ -427,11 +437,32 @@ constexpr int kChromeIOSProductId = 71720513;
 
 /// Handles tab picker completion with `selection`.
 - (void)userDidPickTabs:(std::optional<TabPickerSelection>)selection {
-  if (selection.has_value()) {
-    [self.delegate composeboxPickerPresenter:self
-           handleSelectedTabsWithWebStateIDs:selection->selected_ids
-                           cachedWebStateIDs:selection->cached_ids];
+  if (!selection.has_value()) {
+    [self.metricsRecorder
+        recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
+          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
+    [self.delegate composeboxPickerPresenterDidCancelTabPicker:self];
+    return;
   }
+  std::set<web::WebStateID> currentIDs =
+      self.dataSource
+          ? [self.dataSource
+                attachedWebStateIDsInCurrentContextForPresenter:self]
+          : std::set<web::WebStateID>{};
+  composebox::TabDiff diff =
+      composebox::ComputeTabDiff(currentIDs, selection->selected_ids);
+  // Only record attachment added if new tabs were actually selected.
+  // Note: If tabs were only unselected or unchanged, no outcome is recorded
+  // because MobileFuseboxPickerOutcome currently has no dedicated bucket for
+  // removals or no-op edits (tracked in crbug.com/558537506).
+  if (!diff.added.empty()) {
+    [self.metricsRecorder
+        recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
+  }
+  [self.delegate composeboxPickerPresenter:self
+         handleSelectedTabsWithWebStateIDs:selection->selected_ids
+                         cachedWebStateIDs:selection->cached_ids];
 }
 
 /// Returns the primary identity if the browser is regular and the user is

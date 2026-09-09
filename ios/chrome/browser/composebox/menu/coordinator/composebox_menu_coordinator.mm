@@ -481,9 +481,6 @@ CGFloat const kSheetTopPadding = 40.0f;
 
   if (diff.added.size() > 0) {
     [_metricsRecorder recordTabPickerTabsAttached:diff.added.size()];
-    [_metricsRecorder
-        recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
-          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
   }
 
   [_mediator processWebStateIDs:selectedWebStateIDs
@@ -497,10 +494,17 @@ CGFloat const kSheetTopPadding = 40.0f;
     return;
   }
   [_metricsRecorder recordDriveFilesAttached:results.count];
-  [_metricsRecorder
-      recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
-        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
   [_mediator processDriveItems:results];
+}
+
+- (void)composeboxPickerPresenterDidCancelDrivePicker:
+    (ComposeboxPickerPresenter*)presenter {
+  // NO-OP.
+}
+
+- (void)composeboxPickerPresenterDidCancelTabPicker:
+    (ComposeboxPickerPresenter*)presenter {
+  // NO-OP.
 }
 
 #pragma mark - ComposeboxPickerPresenterDataSource
