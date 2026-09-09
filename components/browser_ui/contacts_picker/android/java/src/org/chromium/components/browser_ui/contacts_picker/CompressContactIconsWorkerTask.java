@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
@@ -70,8 +72,10 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
             Bitmap icon = mBitmaps.get(contact.getId());
             if (icon == null) {
                 Drawable drawable = contact.isSelf() ? contact.getSelfIcon() : null;
-                if (drawable != null && drawable instanceof BitmapDrawable) {
-                    icon = ((BitmapDrawable) drawable).getBitmap();
+                if (drawable instanceof BitmapDrawable bd) {
+                    icon = bd.getBitmap();
+                } else if (drawable instanceof RoundedBitmapDrawable rbd) {
+                    icon = rbd.getBitmap();
                 } else if (!contact.isSelf()) {
                     Log.e(TAG, "Icons of non-self contacts should be already tried to load");
                 }

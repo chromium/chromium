@@ -10,11 +10,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
@@ -527,7 +528,9 @@ public class ContactsPickerDialogTest
                             Arrays.asList("owner@example.com"),
                             /* phoneNumbers= */ null,
                             /* addresses= */ null);
-            owner.setSelfIcon(new BitmapDrawable(mIcon));
+            RoundedBitmapDrawable roundedIcon =
+                    RoundedBitmapDrawableFactory.create(mActivity.getResources(), mIcon);
+            owner.setSelfIcon(roundedIcon);
             ContactDetails owner2 =
                     new ContactDetails(
                             "7",
