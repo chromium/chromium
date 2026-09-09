@@ -2847,6 +2847,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
   html_source->AddString("doNotTrackLearnMoreURL",
                          chrome::kDoNotTrackLearnMoreURL);
+  html_source->AddString("universalOptOutLearnMoreURL",
+                         chrome::kUniversalOptOutLearnMoreURL);
   html_source->AddString("exceptionsLearnMoreURL",
                          chrome::kContentSettingsExceptionsLearnMoreURL);
   html_source->AddString("enhancedProtectionHelpCenterURL",

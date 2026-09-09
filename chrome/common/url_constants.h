@@ -211,6 +211,10 @@ inline constexpr char16_t kDoNotTrackLearnMoreURL[] =
     u"https://support.google.com/chrome?p=settings_do_not_track";
 #endif
 
+// "Learn more" URL for Universal Opt-Out.
+inline constexpr char16_t kUniversalOptOutLearnMoreURL[] =
+    u"https://support.google.com/chrome?p=opt_out_request";
+
 // The URL for the "Learn more" page for interrupted downloads.
 inline constexpr char kDownloadInterruptedLearnMoreURL[] =
     "https://support.google.com/chrome?p=ui_download_errors";

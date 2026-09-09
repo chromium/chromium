@@ -205,6 +205,7 @@ suite('UniversalOptOut', function() {
     const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
         '#universalOptOutToggle');
     assertTrue(!!toggle);
+    assertEquals(page.i18n('universalOptOutLearnMoreURL'), toggle.learnMoreUrl);
     const pref = page.getPref<boolean>('universal_optout.enabled');
 
     toggle.click();
