@@ -106,6 +106,7 @@ _CONVERTED_SCHEMAS = [
   ('hid.idl', 'hid.webidl'),
   ('file_system.idl', 'file_system.webidl'),
   ('sockets_tcp_server.idl', 'sockets_tcp_server.webidl'),
+  ('sockets_tcp.idl', 'sockets_tcp.webidl'),
 ]
 
 

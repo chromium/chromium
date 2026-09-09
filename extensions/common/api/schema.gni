@@ -86,7 +86,7 @@ if (enable_extensions) {
     "printer_provider.webidl",
     "socket.idl",
     "sockets_tcp_server.webidl",
-    "sockets_tcp.idl",
+    "sockets_tcp.webidl",
     "sockets_udp.idl",
     "system_storage.webidl",
   ]
