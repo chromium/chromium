@@ -51,10 +51,6 @@ external/wpt/css/css-fonts/font-display/font-display-change.html
 external/wpt/css/css-fonts/font-display/font-display-preload.html
 external/wpt/css/css-fonts/matching/font-unicode-PUA.html
 external/wpt/css/css-fonts/system-ui-mixed.html
-external/wpt/css/css-inline/baseline-source/baseline-source-first-textarea-002.tentative.html
-external/wpt/css/css-inline/baseline-source/baseline-source-last-textarea-002.tentative.html
-external/wpt/css/css-inline/initial-letter/*
-external/wpt/css/css-inline/text-box-trim/text-box-trim-initial-letter-end-001.html
 external/wpt/css/css-layout-api/baseline/orthogonal-baseline.https.html
 external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html
 external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html
