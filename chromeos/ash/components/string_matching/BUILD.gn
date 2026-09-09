@@ -22,8 +22,6 @@ source_set("string_matching") {
     "term_break_iterator.h",
     "tokenized_string.cc",
     "tokenized_string.h",
-    "tokenized_string_char_iterator.cc",
-    "tokenized_string_char_iterator.h",
     "tokenized_string_match.cc",
     "tokenized_string_match.h",
   ]
@@ -49,7 +47,6 @@ source_set("unit_tests") {
     "prefix_matcher_unittest.cc",
     "sequence_matcher_unittest.cc",
     "term_break_iterator_unittest.cc",
-    "tokenized_string_char_iterator_unittest.cc",
     "tokenized_string_match_unittest.cc",
     "tokenized_string_unittest.cc",
   ]
