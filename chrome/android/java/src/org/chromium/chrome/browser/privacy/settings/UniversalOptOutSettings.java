@@ -40,6 +40,10 @@ public class UniversalOptOutSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting
     static final String PREF_UNIVERSAL_OPT_OUT_INFO_TEXT = "universal_opt_out_info_text";
 
+    @VisibleForTesting
+    static final String UNIVERSAL_OPT_OUT_LEARN_MORE_URL =
+            "https://support.google.com/chrome?p=opt_out_request";
+
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
@@ -63,15 +67,13 @@ public class UniversalOptOutSettings extends ChromeBaseSettingsFragment {
 
         ChromeBasePreference universalOptOutInfoText =
                 findPreference(PREF_UNIVERSAL_OPT_OUT_INFO_TEXT);
-        // TODO(b/552612002): Update link to a more specific article once it is ready.
+
         ChromeClickableSpan learnMoreLink =
                 new ChromeClickableSpan(
                         getContext(),
                         (view) -> {
                             getCustomTabLauncher()
-                                    .openUrlInCct(
-                                            getContext(),
-                                            "https://support.google.com/");
+                                    .openUrlInCct(getContext(), UNIVERSAL_OPT_OUT_LEARN_MORE_URL);
                         });
 
         universalOptOutInfoText.setSummary(

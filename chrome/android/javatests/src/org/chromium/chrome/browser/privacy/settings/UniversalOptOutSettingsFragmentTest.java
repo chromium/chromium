@@ -4,17 +4,32 @@
 
 package org.chromium.chrome.browser.privacy.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.preference.Preference;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +51,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -55,6 +71,7 @@ public class UniversalOptOutSettingsFragmentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SettingsIndexData mSearchIndexDataMock;
+    @Mock private SettingsCustomTabLauncher mCustomTabLauncherMock;
 
     @Before
     public void setUp() {
@@ -141,8 +158,7 @@ public class UniversalOptOutSettingsFragmentTest {
 
         String expectedSummary =
                 ApplicationProvider.getApplicationContext()
-                        .getString(R.string.universal_opt_out_info_text)
-                        .replaceAll("<.?link>", "");
+                        .getString(R.string.universal_opt_out_info_text);
         assertEquals(expectedSummary, infoTextPref.getSummary().toString());
     }
 
@@ -203,5 +219,51 @@ public class UniversalOptOutSettingsFragmentTest {
                 .removeEntry(
                         indexProvider.getUniqueId(
                                 UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
+    }
+
+    private ViewAction clickOnLearnMoreLink() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return Matchers.instanceOf(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Clicks on the learn more link in the info text";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView textView = (TextView) view;
+                Spanned spannedString = (Spanned) textView.getText();
+                ClickableSpan[] spans =
+                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+                if (spans.length != 1) {
+                    throw new NoMatchingViewException.Builder()
+                            .includeViewHierarchy(true)
+                            .withRootView(textView)
+                            .build();
+                }
+                spans[0].onClick(view);
+            }
+        };
+    }
+
+    @Test
+    @LargeTest
+    public void testLearnMoreLinkOpensCustomTab() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        UniversalOptOutSettings fragment = mSettingsActivityTestRule.getFragment();
+        fragment.setCustomTabLauncher(mCustomTabLauncherMock);
+
+        String summaryText =
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.universal_opt_out_info_text)
+                        .replaceAll("<.?link>", "");
+        onView(withText(summaryText)).perform(clickOnLearnMoreLink());
+
+        verify(mCustomTabLauncherMock)
+                .openUrlInCct(any(), eq(UniversalOptOutSettings.UNIVERSAL_OPT_OUT_LEARN_MORE_URL));
     }
 }
