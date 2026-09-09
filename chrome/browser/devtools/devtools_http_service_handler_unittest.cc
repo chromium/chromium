@@ -42,7 +42,7 @@ class DevToolsHttpServiceHandlerTest : public testing::Test {
         CreateProfileForIdentityTestEnvironment();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    mock_handler_ = base::WrapUnique(new TestServiceHandler());
+    mock_handler_ = std::make_unique<TestServiceHandler>();
 
     params_.service = "unknownService";
     params_.path = "/path";

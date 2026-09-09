@@ -25,7 +25,7 @@ class DefaultGeolocationPolicyHandlerTest
   void SetUp() override {
     scoped_feature_list_.InitAndDisableFeature(ash::features::kCrosPrivacyHub);
     handler_list_.AddHandler(
-        base::WrapUnique(new DefaultGeolocationPolicyHandler));
+        std::make_unique<DefaultGeolocationPolicyHandler>());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -36,7 +36,7 @@ class DefaultGeolocationPolicyHandlerTestWithPHEnabled
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
     handler_list_.AddHandler(
-        base::WrapUnique(new DefaultGeolocationPolicyHandler));
+        std::make_unique<DefaultGeolocationPolicyHandler>());
   }
 };
 
