@@ -55,6 +55,10 @@ source_set("new_tab_page") {
   if (!is_android) {
     public_deps += [ "//components/user_education/webui" ]
   }
+  if (!is_official_build) {
+    public_deps +=
+        [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+  }
 }
 
 # Full implementation target.
