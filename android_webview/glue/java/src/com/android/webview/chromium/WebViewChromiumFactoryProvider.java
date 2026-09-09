@@ -150,6 +150,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             "Android.WebView.AssetPathWorkaroundUsed.FactoryInit";
 
     private StartupDelegateImpl mStartupDelegate;
+    private FactoryInitDelegate mFactoryInitDelegate;
+
+    interface FactoryInitDelegate {
+        /** Returns the {@link PackageInfo} for the WebView package. */
+        PackageInfo getLoadedPackageInfo();
+
+        /** Returns the {@link Application} of the embedding app. */
+        Application getApplication();
+    }
 
     private static final String HTTP_AUTH_DATABASE_FILE = "http_auth.db";
 
@@ -285,6 +294,19 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
+    private class FactoryInitDelegateImpl implements FactoryInitDelegate {
+        @Override
+        public PackageInfo getLoadedPackageInfo() {
+            return WebViewFactory.getLoadedPackageInfo();
+        }
+
+        @Override
+        public Application getApplication() {
+            return mWebViewDelegate.getApplication();
+        }
+    }
+    ;
+
     private Statics mStaticsAdapter;
 
     private boolean mIsSafeModeEnabled;
@@ -376,6 +398,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @SuppressWarnings({"NoContextGetApplicationContext"})
     private void initialize(WebViewDelegate webViewDelegate) {
+        mFactoryInitDelegate = new FactoryInitDelegateImpl();
         // Capture startup init time before anything else.
         long startTime = SystemClock.uptimeMillis();
         // Use `ScopedSysTraceEvent` until `EarlyTraceEvent` is potentially enabled further down.
@@ -389,13 +412,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // The package is used to locate the services for copying crash minidumps and
                 // requesting variations seeds. So it must be set before initializing variations and
                 // before a renderer has a chance to crash.
-                packageInfo = WebViewFactory.getLoadedPackageInfo();
+                packageInfo = mFactoryInitDelegate.getLoadedPackageInfo();
             }
-            AwBrowserProcess.setWebViewPackageName(packageInfo.packageName);
+            String webViewPackageName = packageInfo.packageName;
+            AwBrowserProcess.setWebViewPackageName(webViewPackageName);
             AwBrowserProcess.initializeApkType(packageInfo.applicationInfo);
 
             mWebViewDelegate = webViewDelegate;
-            Application application = webViewDelegate.getApplication();
+            Application application = mFactoryInitDelegate.getApplication();
             Context ctx = application.getApplicationContext();
             // If the application context is DE, but we have credentials, use a CE context instead
             try (ScopedSysTraceEvent e2 =
@@ -411,7 +435,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // Initialize some of SafeMode. It's not safe to use the data directory yet so don't
             // actually *do* anything. We need to do this early to check whether it's safe to use
             // cached flags or not.
-            String webViewPackageName = AwBrowserProcess.getWebViewPackageName();
             SafeModeController controller = SafeModeController.getInstance();
             controller.registerActions(BrowserSafeModeActionList.sList);
             mIsSafeModeEnabled = controller.isSafeModeEnabled(ctx, webViewPackageName);
