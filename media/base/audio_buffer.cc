@@ -249,14 +249,14 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
     return;
   }
 
-  // Remaining formats are interleaved data.
-  CHECK(IsInterleaved(sample_format)) << sample_format_;
-  // Allocate our own buffer and copy the supplied data into it. Buffer must
-  // contain the data for all channels.
-  if (!IsBitstreamFormat()) {
-    data_size_ = data_size_per_channel * channel_count_;
-  } else {
+  // Remaining formats are either bitstream or interleaved data.
+  if (IsBitstreamFormat()) {
     DCHECK_GT(data_size_, 0u);
+  } else {
+    CHECK(IsInterleaved(sample_format)) << sample_format_;
+    // Allocate our own buffer and copy the supplied data into it. Buffer must
+    // contain the data for all channels.
+    data_size_ = data_size_per_channel * channel_count_;
   }
 
   data_ = pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);

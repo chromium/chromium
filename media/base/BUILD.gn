@@ -669,6 +669,7 @@ source_set("unit_tests") {
     "ranges_unittest.cc",
     "reentrancy_checker_unittest.cc",
     "renderer_factory_selector_unittest.cc",
+    "sample_format_unittest.cc",
     "seekable_buffer_unittest.cc",
     "sequence_unittest.cc",
     "serial_runner_unittest.cc",
