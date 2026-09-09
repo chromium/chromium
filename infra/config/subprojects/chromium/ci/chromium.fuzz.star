@@ -45,8 +45,6 @@ _DEFAULT_CONSOLE_ORDERING = consoles.ordering(short_names = ["dbg", "rel"])
 _LIBFUZZER_CONSOLE_ORDERING = consoles.ordering(short_names = [
     "linux",
     "linux-dbg",
-    "linux high dbg",
-    "linux high end",
     "linux32",
     "linux-msan",
     "linux-ubsan",
@@ -715,89 +713,6 @@ centipede_linux_asan_builder(
     max_concurrent_invocations = 4 if settings.is_main else None,
     swarming_mixins = ["linux-jammy"],
     test_builder_name = "linux-x64-centipede-asan-rel-tests",
-)
-
-centipede_linux_asan_builder(
-    name = "Centipede High End Upload Linux ASan",
-    description_html = """This builder uploads centipede high end fuzzers.\
-Those fuzzers require more resources to run correctly.\
-""",
-    clusterfuzz_archive_name_prefix = "centipede-high-end",
-    clusterfuzz_archive_path = "linux-release-asan/centipede-high-end-linux-release",
-    console_short_name = "cent high",
-    gn_extra_configs = [
-        "chromeos_codecs",
-        "pdf_xfa",
-        "high_end_fuzzer_targets",
-        "mojo_fuzzer",
-    ],
-    max_concurrent_invocations = 4,
-)
-
-centipede_linux_asan_builder(
-    name = "Centipede High End Upload Linux ASan DCheck",
-    description_html = """This builder uploads centipede high end fuzzers \
-in release mode with dcheck_always_on.\
-""",
-    # TODO(crbug.com/399002817): add this to the gardener_rotations.
-    gardener_rotations = args.ignore_default(None),
-    clusterfuzz_archive_name_prefix = "centipede-high-end-dcheck",
-    clusterfuzz_archive_path = "linux-release-asan/centipede-high-end-dcheck-linux-release",
-    console_short_name = "cent high dc",
-    dcheck_always_on = True,
-    gn_extra_configs = [
-        "high_end_fuzzer_targets",
-        "sanitizer_coverage_skip_stdlib_and_absl",
-    ],
-)
-
-def libfuzzer_linux_asan_high_end_builder(
-        gn_extra_configs = [],
-        **kwargs):
-    gn_configs = [
-        "high_end_fuzzer_targets",
-        "disable_seed_corpus",
-    ] + gn_extra_configs
-
-    return libfuzzer_linux_asan_builder(
-        description_html = """This builder uploads libfuzzer high end fuzzers.\
-Those fuzzers require more resources to run correctly.\
-""",
-        # TODO(crbug.com/399002817): add this to the gardener_rotations.
-        gardener_rotations = args.ignore_default(None),
-        target_bits = 64,
-        clusterfuzz_archive_name_prefix = "libfuzzer-high-end",
-        gn_extra_configs = gn_configs,
-        **kwargs
-    )
-
-libfuzzer_linux_asan_high_end_builder(
-    name = "Libfuzzer High End Upload Linux ASan",
-    build_config = builder_config.build_config.RELEASE,
-    clusterfuzz_archive_path = "linux-release-asan/libfuzzer-high-end-linux-release",
-    console_short_name = "linux high end",
-    gclient_apply_configs_for_ci = [
-        "checkout_mesa",
-    ],
-    gn_extra_configs = ["mojo_fuzzer"],
-    gn_extra_configs_for_ci = [
-        "tint_mesa_fuzz",
-    ],
-)
-
-libfuzzer_linux_asan_high_end_builder(
-    name = "Libfuzzer High End Upload Linux ASan Debug",
-    build_config = builder_config.build_config.DEBUG,
-    clusterfuzz_archive_path = "linux-debug-asan/libfuzzer-high-end-linux-debug",
-    console_short_name = "linux high dbg",
-    gclient_apply_configs_for_ci = [
-        "checkout_mesa",
-    ],
-    gn_extra_configs = ["sanitizer_coverage_skip_stdlib_and_absl"],
-    gn_extra_configs_for_ci = [
-        "tint_mesa_fuzz",
-    ],
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 browser_asan_builder(

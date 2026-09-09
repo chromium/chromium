@@ -20,7 +20,6 @@ ci/Android x64 Builder All Targets (dbg)
 ci/Android x86 Builder (dbg)
 ci/CFI Linux CF
 ci/CFI Linux ToT
-ci/Centipede High End Upload Linux ASan
 ci/Centipede Upload Linux ASan
 ci/ChromeOS FYI Release (amd64-generic)
 ci/ChromiumOS ASAN Release

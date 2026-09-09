@@ -5,7 +5,6 @@
 
 load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//consoles.star", "consoles")
-load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
 load("//lib/siso.star", "siso")
 load("//lib/try_constants.star", "try_constants")
@@ -154,45 +153,6 @@ _builder(
     name = "win-asan-media-rel",
     os = os.WINDOWS_DEFAULT,
     mirror_of = "ci/Win ASan Release Media",
-)
-
-try_.builder(
-    name = "linux-centipede-high-end-asan-dcheck",
-    mirrors = ["ci/Centipede High End Upload Linux ASan DCheck"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Centipede High End Upload Linux ASan DCheck",
-            "no_symbols",
-            "skip_generate_fuzzer_owners",
-        ],
-    ),
-    contact_team_email = "chrome-fuzzing-core@google.com",
-)
-
-try_.builder(
-    name = "linux-libfuzzer-high-end-asan-rel",
-    mirrors = ["ci/Libfuzzer High End Upload Linux ASan"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Libfuzzer High End Upload Linux ASan",
-            "no_symbols",
-            "skip_generate_fuzzer_owners",
-        ],
-    ),
-    contact_team_email = "chrome-fuzzing-core@google.com",
-)
-
-try_.builder(
-    name = "linux-libfuzzer-high-end-asan-dbg",
-    mirrors = ["ci/Libfuzzer High End Upload Linux ASan Debug"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Libfuzzer High End Upload Linux ASan Debug",
-            "no_symbols",
-            "skip_generate_fuzzer_owners",
-        ],
-    ),
-    contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
 # Libfuzzer test bots.
