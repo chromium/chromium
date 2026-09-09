@@ -393,6 +393,9 @@ public class WebSigninLoadingDialogTest {
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(spyTab).loadUrl(captor.capture());
         Assert.assertEquals("https://continue.url/", captor.getValue().getUrl());
+        Assert.assertTrue(captor.getValue().getIsRendererInitiated());
+        Assert.assertNotNull(captor.getValue().getInitiatorOrigin());
+        Assert.assertTrue(captor.getValue().getInitiatorOrigin().isOpaque());
     }
 
     @Test

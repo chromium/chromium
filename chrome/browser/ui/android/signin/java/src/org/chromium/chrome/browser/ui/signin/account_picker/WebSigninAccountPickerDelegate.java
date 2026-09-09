@@ -25,6 +25,7 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.function.Function;
 
@@ -169,7 +170,7 @@ public class WebSigninAccountPickerDelegate
                     if (tab != null && !tab.isDestroyed()) {
                         // This code path may be called asynchronously, so check
                         // that the tab is still alive.
-                        tab.loadUrl(new LoadUrlParams(continueUrl));
+                        tab.loadUrl(createLoadUrlParamsForContinueUrl(continueUrl));
                     }
                     SigninSurveyController.registerTrigger(
                             mProfile, SigninSurveyController.SigninSurveyType.WEB);
@@ -202,7 +203,7 @@ public class WebSigninAccountPickerDelegate
                     if (!tab.isDestroyed()) {
                         // This code path may be called asynchronously, so check that the tab is
                         // still alive.
-                        tab.loadUrl(new LoadUrlParams(continueUrl));
+                        tab.loadUrl(createLoadUrlParamsForContinueUrl(continueUrl));
                     }
                     break;
                 case WebSigninTrackerResult.AUTH_ERROR:
@@ -219,6 +220,17 @@ public class WebSigninAccountPickerDelegate
                     break;
             }
         };
+    }
+
+    private static LoadUrlParams createLoadUrlParamsForContinueUrl(GURL continueUrl) {
+        LoadUrlParams params = new LoadUrlParams(continueUrl);
+        // Mark the navigation as renderer-initiated rather than browser-initiated as the continue
+        // URL originates from the web page.
+        params.setIsRendererInitiated(true);
+        // Use an opaque origin because the source cannot be trusted and should not have same-origin
+        // privileges.
+        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        return params;
     }
 
     private void destroyWebSigninBridge() {

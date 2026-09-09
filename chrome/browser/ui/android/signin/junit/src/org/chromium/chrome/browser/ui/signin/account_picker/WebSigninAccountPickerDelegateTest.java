@@ -199,6 +199,9 @@ public class WebSigninAccountPickerDelegateTest {
             LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
             Assert.assertEquals(
                     "Continue url does not match!", CONTINUE_URL.getSpec(), loadUrlParams.getUrl());
+            Assert.assertTrue(loadUrlParams.getIsRendererInitiated());
+            Assert.assertNotNull(loadUrlParams.getInitiatorOrigin());
+            Assert.assertTrue(loadUrlParams.getInitiatorOrigin().isOpaque());
         } else if (result == WebSigninTrackerResult.OTHER_ERROR) {
             verify(mSigninMetricsUtilsJniMock)
                     .logAccountConsistencyPromoAction(
