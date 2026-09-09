@@ -56,8 +56,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/test/url_request/url_request_failed_job.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -200,6 +202,8 @@ class TestRegistrationCallback {
     closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
+
+  bool has_called() const { return outcome_.has_value(); }
 
   const RegistrationResult& outcome() {
     EXPECT_TRUE(outcome_.has_value());
@@ -4366,6 +4370,117 @@ TEST_F(RegistrationTest, RegistrationNoRetryTransientError) {
       net::ERR_INVALID_HTTP_RESPONSE, 1);
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt", 0);
+}
+
+class RegistrationTimeoutTest : public TestWithTaskEnvironment {
+ protected:
+  RegistrationTimeoutTest()
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        context_(CreateTestURLRequestContextBuilder()->Build()) {
+    URLRequestFailedJob::AddUrlHandler();
+  }
+
+  ~RegistrationTimeoutTest() override {
+    net::URLRequestFilter::GetInstance()->ClearHandlers();
+  }
+
+  URLRequestContext* context() { return context_.get(); }
+  unexportable_keys::UnexportableKeyService& unexportable_key_service() {
+    return unexportable_key_service_;
+  }
+  SessionServiceMock& session_service() { return session_service_; }
+
+  UnexportableSigningKeyId CreateSigningKey() {
+    base::test::TestFuture<
+        unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId>>
+        future;
+    unexportable_key_service_.GenerateSigningKeySlowlyAsync(
+        CreateAlgArray(), kTaskPriority, future.GetCallback());
+    return *future.Take();
+  }
+
+ private:
+  testing::NiceMock<SessionServiceMock> session_service_;
+  std::unique_ptr<URLRequestContext> context_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, kTaskOrigin, crypto::UnexportableKeyProvider::Config()};
+};
+
+TEST_F(RegistrationTimeoutTest, RefreshTimeout) {
+  base::HistogramTester histogram_tester;
+  URLRequestFailedJob::AddUrlHandlerForHostname("a.test");
+
+  GURL url =
+      URLRequestFailedJob::GetMockHttpsUrlForHostname(ERR_IO_PENDING, "a.test");
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      url, kSessionIdentifier, kChallenge, /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kUserBlocking);
+
+  fetcher->StartFetchWithExistingKey(param, CreateSigningKey(),
+                                     callback.callback());
+  FastForwardBy(base::Seconds(20));
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), IsErrorRegistrationResult());
+  const SessionError* error = callback.outcome().SessionErrorForTesting();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->type, SessionError::kNetError);
+  ASSERT_TRUE(error->failed_request.has_value());
+  EXPECT_EQ(error->failed_request->net_error, net::ERR_TIMED_OUT);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Refresh.Network.Result", net::ERR_TIMED_OUT, 1);
+}
+
+TEST_F(RegistrationTimeoutTest, RegistrationTimeout) {
+  base::HistogramTester histogram_tester;
+  URLRequestFailedJob::AddUrlHandlerForHostname("a.test");
+
+  GURL url =
+      URLRequestFailedJob::GetMockHttpsUrlForHostname(ERR_IO_PENDING, "a.test");
+  TestRegistrationCallback callback;
+  auto param = RegistrationRequestParam::CreateForTesting(
+      url, /*session_identifier=*/std::nullopt, kChallenge,
+      /*authorization=*/std::nullopt);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  FastForwardBy(base::Seconds(20));
+  EXPECT_FALSE(callback.has_called());
+  FastForwardBy(base::Seconds(10));
+  callback.WaitForCall();
+
+  EXPECT_THAT(callback.outcome(), IsErrorRegistrationResult());
+  const SessionError* error = callback.outcome().SessionErrorForTesting();
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->type, SessionError::kNetError);
+  ASSERT_TRUE(error->failed_request.has_value());
+  EXPECT_EQ(error->failed_request->net_error, net::ERR_TIMED_OUT);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result", net::ERR_TIMED_OUT,
+      1);
 }
 
 class RegistrationTokenHelperTest : public testing::Test {
