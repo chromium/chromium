@@ -772,8 +772,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
         main_thread_compositor_task_runner_;
   }
 
-  if (base::FeatureList::IsEnabled(features::kDirectCompositorThreadIpc) &&
-      !for_web_tests && params.embedder_params->compositor_task_runner) {
+  if (!for_web_tests && params.embedder_params->compositor_task_runner) {
     params.embedder_params->use_direct_client_receiver = true;
   }
 
