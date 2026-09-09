@@ -23,6 +23,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/block_universal_links_buildflags.h"
+#import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/navigation/navigation_item_impl.h"
@@ -1348,6 +1349,205 @@ TEST_F(CRWWebControllerPolicyDeciderTest, RejectForgedErrorPageNavigation) {
   }));
 
   EXPECT_FALSE([web_controller() navigationHandler].allowedErrorPageFileURL);
+}
+
+// Tests that reloading an error page is only allowed if it is currently active,
+// and back/forward is only allowed if the error page exists in session history.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       AllowOrRejectHistoryAndReloadErrorPageNavigation) {
+  NSString* path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_loaded"
+                                               ofType:@"html"];
+  ASSERT_TRUE(path);
+  NSURL* error_url = [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"file://%@?url=chrome://settings",
+                                         path]];
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:error_url];
+  request.mainDocumentURL = error_url;
+
+  FakeWKFrameInfo* fake_frame = [[FakeWKFrameInfo alloc] init];
+  fake_frame.mainFrame = YES;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = request;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+
+  // 1. Reload when current item is NOT the error page (even if present in
+  // backList) -> Cancel.
+  [fake_wk_list_ setCurrentURL:@"http://www.example.com"
+                  backListURLs:@[ [error_url absoluteString] ]
+               forwardListURLs:nil];
+  action.navigationType = WKNavigationTypeReload;
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  // 2. Reload when current item IS the error page and matches browser
+  // NavigationItem -> Allow.
+  [fake_wk_list_ setCurrentURL:[error_url absoluteString]];
+  auto nav_item = std::make_unique<NavigationItemImpl>();
+  nav_item->SetURL(net::GURLWithNSURL(error_url));
+  nav_item->SetVirtualURL(GURL("chrome://settings"));
+  [[CRWNavigationItemHolder
+      holderForBackForwardListItem:fake_wk_list_.currentItem]
+      setNavigationItem:std::move(nav_item)];
+  action.navigationType = WKNavigationTypeReload;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  // 3. Back/forward targeting an error page while current item is on another
+  // page (even if error page is present in backList) -> Cancel.
+  [fake_wk_list_ setCurrentURL:@"http://www.example.com"
+                  backListURLs:@[ [error_url absoluteString] ]
+               forwardListURLs:nil];
+  action.navigationType = WKNavigationTypeBackForward;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  // 4. Back/forward when error page is NOT in history -> Cancel.
+  [fake_wk_list_ setCurrentURL:@"http://www.example.com"
+                  backListURLs:@[ @"http://www.other.com" ]
+               forwardListURLs:nil];
+  action.navigationType = WKNavigationTypeBackForward;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  // 5. Back/forward when currentItem IS the error page (WebKit updates
+  // currentItem to the destination item before calling decidePolicy) -> Allow.
+  [fake_wk_list_ setCurrentURL:[error_url absoluteString]];
+  auto bf_nav_item = std::make_unique<NavigationItemImpl>();
+  bf_nav_item->SetURL(net::GURLWithNSURL(error_url));
+  bf_nav_item->SetVirtualURL(GURL("chrome://settings"));
+  [[CRWNavigationItemHolder
+      holderForBackForwardListItem:fake_wk_list_.currentItem]
+      setNavigationItem:std::move(bf_nav_item)];
+  action.navigationType = WKNavigationTypeBackForward;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  // 6. Reload/BackForward in subframe -> Cancel.
+  fake_frame.mainFrame = NO;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+  [fake_wk_list_ setCurrentURL:[error_url absoluteString]];
+  action.navigationType = WKNavigationTypeReload;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+}
+
+// Tests that reloading an error page whose URL was modified (e.g. via
+// history.replaceState) is rejected.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       RejectReloadErrorPageWithReplacedState) {
+  NSString* path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_loaded"
+                                               ofType:@"html"];
+  ASSERT_TRUE(path);
+
+  NSURL* original_error_url = [NSURL
+      URLWithString:[NSString stringWithFormat:
+                                  @"file://%@?url=http://www.example.com/fail",
+                                  path]];
+  NSURL* replaced_error_url = [NSURL
+      URLWithString:[NSString stringWithFormat:@"file://%@?url=chrome://flags",
+                                               path]];
+
+  // In WebKit, history.replaceState mutates currentItem.URL to
+  // replaced_error_url.
+  [fake_wk_list_ setCurrentURL:[replaced_error_url absoluteString]];
+
+  // Associate a NavigationItemImpl representing the original legitimate error
+  // page.
+  auto nav_item = std::make_unique<NavigationItemImpl>();
+  nav_item->SetURL(net::GURLWithNSURL(original_error_url));
+  nav_item->SetVirtualURL(GURL("http://www.example.com/fail"));
+  [[CRWNavigationItemHolder
+      holderForBackForwardListItem:fake_wk_list_.currentItem]
+      setNavigationItem:std::move(nav_item)];
+
+  NSMutableURLRequest* request =
+      [NSMutableURLRequest requestWithURL:replaced_error_url];
+  request.mainDocumentURL = replaced_error_url;
+
+  FakeWKFrameInfo* fake_frame = [[FakeWKFrameInfo alloc] init];
+  fake_frame.mainFrame = YES;
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = request;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+  action.navigationType = WKNavigationTypeReload;
+
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
 }
 
 // Test fixture for window.open tests.

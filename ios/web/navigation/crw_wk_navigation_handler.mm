@@ -345,17 +345,44 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // If this is an error navigation, pass through only if initiated by the
   // browser, or if it is a back/forward or reload of an already committed page.
   if ([CRWErrorPageHelper isErrorPageFileURL:requestURL]) {
-    BOOL isHistoryOrReloadOrRestore =
-        action.navigationType == WKNavigationTypeBackForward ||
-        action.navigationType == WKNavigationTypeReload ||
-        self.navigationManagerImpl->IsRestoreSessionInProgress();
+    // Error pages must never load in subframes.
+    if (!action.targetFrame.mainFrame) {
+      decisionHandler(WKNavigationActionPolicyCancel);
+      return;
+    }
+    // Browser-initiated error page load (one-shot token).
     BOOL isExpectedErrorPage =
         allowedErrorPageFileURL &&
         requestURL == net::GURLWithNSURL(allowedErrorPageFileURL);
-    if ((isExpectedErrorPage && action.targetFrame.mainFrame) ||
-        isHistoryOrReloadOrRestore) {
+    if (isExpectedErrorPage) {
       decisionHandler(WKNavigationActionPolicyAllow);
       return;
+    }
+    // Tab/Session restore in progress.
+    if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
+      decisionHandler(WKNavigationActionPolicyAllow);
+      return;
+    }
+    // Reload or Back/Forward is only valid if this exact error-page URL is
+    // currently active in the session history, i.e. it was previously committed
+    // via a browser-initiated loadFileURL:. Note that for back/forward
+    // navigations, WebKit updates `currentItem` to the destination item before
+    // calling this delegate method.
+    // Check against NavigationItem in case history.replaceState altered
+    // currentItem.
+    WKBackForwardListItem* currentItem = webView.backForwardList.currentItem;
+    if (currentItem && (action.navigationType == WKNavigationTypeReload ||
+                        action.navigationType == WKNavigationTypeBackForward)) {
+      if (requestURL == net::GURLWithNSURL(currentItem.URL)) {
+        web::NavigationItem* item = [[CRWNavigationItemHolder
+            holderForBackForwardListItem:currentItem] navigationItem];
+        GURL failedURL = [CRWErrorPageHelper
+            failedNavigationURLFromErrorPageFileURL:requestURL];
+        if (item && item->GetVirtualURL() == failedURL) {
+          decisionHandler(WKNavigationActionPolicyAllow);
+          return;
+        }
+      }
     }
     decisionHandler(WKNavigationActionPolicyCancel);
     return;
