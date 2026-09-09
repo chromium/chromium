@@ -54,6 +54,12 @@ if (is_chromeos) {
       "//chrome/browser/ui/views",
     ]
   }
+
+  source_set("browser_native_widget_factory_chromeos") {
+    sources = [ "browser_native_widget_factory_chromeos.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [ ":browser_native_widget_factory" ]
+  }
 }
 
 static_library("test_support") {
@@ -565,6 +571,23 @@ source_set("contents_border_controller") {
   public_deps = [ "//base" ]
 }
 
+source_set("contents_border_controller_impl") {
+  sources = [ "contents_border_controller.cc" ]
+  public_deps = [
+    ":contents_border_controller",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/tab_sharing",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
 source_set("multi_contents_background_view") {
   public = [ "multi_contents_background_view.h" ]
   public_deps = [ "//ui/views" ]
@@ -720,4 +743,22 @@ source_set("contents_capture_border_view_impl") {
     "//ui/gfx",
     "//ui/views",
   ]
+}
+
+source_set("main_background_region_view") {
+  public = [ "main_background_region_view.h" ]
+  sources = [ "main_background_region_view.cc" ]
+  public_deps = [ "//ui/views" ]
+  deps = [
+    ":custom_corners_background",
+    "//ui/base/metadata",
+  ]
+}
+
+if (is_mac) {
+  source_set("browser_native_widget_factory_mac") {
+    sources = [ "browser_native_widget_factory_mac.mm" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [ ":browser_native_widget_factory" ]
+  }
 }

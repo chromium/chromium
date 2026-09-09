@@ -1886,7 +1886,6 @@ static_library("ui") {
       "views/frame/browser_frame_view_factory_chromeos.cc",
       "views/frame/browser_native_widget_ash.cc",
       "views/frame/browser_native_widget_ash.h",
-      "views/frame/browser_native_widget_factory_chromeos.cc",
       "views/frame/browser_view_ash.cc",
       "views/frame/browser_view_ash.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
@@ -2042,6 +2041,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions/dialogs:document_scanner_start_scan_confirmation_dialog",
       "//chrome/browser/ui/views/extensions/dialogs:print_job_confirmation_dialog",
       "//chrome/browser/ui/views/extensions/dialogs:request_file_system_dialog",
+      "//chrome/browser/ui/views/frame:browser_native_widget_factory_chromeos",
       "//chrome/browser/ui/views/profiles:profile_indicator_icon",
       "//chrome/browser/ui/views/select_file_dialog_extension",
       "//chrome/browser/ui/views/web_apps:protocol_handler_picker_coordinator",
@@ -2148,6 +2148,10 @@ static_library("ui") {
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/wm",
       "//chrome/browser/ui/chromeos/locked_state",
+
+      # browser_native_widget_factory_chromeos.cc includes
+      # views/frame/browser_native_widget_ash.h which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:browser_native_widget_factory_chromeos",
       "//chrome/browser/ui/webui/ash/add_supervision",
       "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chrome/browser/ui/webui/ash/settings/pages/main",
@@ -2353,7 +2357,6 @@ static_library("ui") {
       "views/frame/browser_frame_view_factory_mac.mm",
       "views/frame/browser_frame_view_mac.h",
       "views/frame/browser_frame_view_mac.mm",
-      "views/frame/browser_native_widget_factory_mac.mm",
       "views/frame/browser_native_widget_mac.h",
       "views/frame/browser_native_widget_mac.mm",
       "views/frame/immersive_mode_controller_mac.h",
@@ -2368,6 +2371,7 @@ static_library("ui") {
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
       "//chrome/browser/ui/views:certificate_viewer_mac_views",
+      "//chrome/browser/ui/views/frame:browser_native_widget_factory_mac",
     ]
 
     # Any circular includes must depend on the target
@@ -2375,6 +2379,10 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
+
+      # browser_native_widget_factory_mac.mm includes
+      # views/frame/browser_native_widget_mac.h which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:browser_native_widget_factory_mac",
     ]
 
     deps += [
@@ -2534,7 +2542,6 @@ static_library("ui") {
       "views/frame/browser_widget.cc",
       "views/frame/browser_widget.h",
       "views/frame/browser_window_factory.cc",
-      "views/frame/contents_border_controller.cc",
       "views/frame/contents_container_view.cc",
       "views/frame/contents_container_view.h",
       "views/frame/find_bar_owner_views.cc",
@@ -2554,8 +2561,6 @@ static_library("ui") {
       "views/frame/layout/browser_view_popup_layout_impl.h",
       "views/frame/layout/browser_view_tabbed_layout_impl.cc",
       "views/frame/layout/browser_view_tabbed_layout_impl.h",
-      "views/frame/main_background_region_view.cc",
-      "views/frame/main_background_region_view.h",
       "views/frame/multi_contents_view.cc",
       "views/frame/multi_contents_view.h",
       "views/frame/multi_contents_view_mini_toolbar.cc",
@@ -2771,6 +2776,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_view_layout_delegate",
       "//chrome/browser/ui/views/frame:caption_button_placeholder_container",
       "//chrome/browser/ui/views/frame:contents_border_controller",
+      "//chrome/browser/ui/views/frame:contents_border_controller_impl",
       "//chrome/browser/ui/views/frame:contents_capture_border_view",
       "//chrome/browser/ui/views/frame:contents_capture_border_view_impl",
       "//chrome/browser/ui/views/frame:contents_container_outline",
@@ -2783,6 +2789,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:custom_floating_corner",
       "//chrome/browser/ui/views/frame:custom_floating_corner_impl",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_stub",
+      "//chrome/browser/ui/views/frame:main_background_region_view",
       "//chrome/browser/ui/views/frame:multi_contents_background_view",
       "//chrome/browser/ui/views/frame:multi_contents_background_view_impl",
       "//chrome/browser/ui/views/frame:multi_contents_drop_target_view",
@@ -3037,6 +3044,10 @@ static_library("ui") {
       # extensions_toolbar_desktop.h which cannot be split out yet.
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator_impl",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller_impl",
+
+      # contents_border_controller_impl includes browser_view.h and
+      # contents_container_view.h which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:contents_border_controller_impl",
 
       # TODO(crbug.com/353332589): These targets include headers from
       # //chrome/browser/ui:ui.
