@@ -132,8 +132,6 @@ glic_api_ts_files = [
   "glic_api_impl/actor/actor_host.ts",
   "glic_api_impl/actor/actor_types.ts",
   "glic_api_impl/annotation/annotation_client.ts",
-  "glic_api_impl/annotation/annotation_host.ts",
-  "glic_api_impl/annotation/annotation_types.ts",
   "glic_api_impl/client/glic_api_client.ts",
   "glic_api_impl/client/glic_client_common.ts",
   "glic_api_impl/client/image_utils.ts",

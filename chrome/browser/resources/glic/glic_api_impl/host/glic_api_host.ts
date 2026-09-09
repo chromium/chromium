@@ -5,10 +5,8 @@
 // Chrome-WebUI-side of the Glic API.
 // Communicates with the web client side in ../client/.
 
-import {assert} from '//resources/js/assert.js';
-
 import {enumToClient} from '../../enum_conversions.js';
-import {ActorClientReceiver, ActorHandlerRemote, AnnotationHandlerRemote, ExperimentalTriggeringClientReceiver, GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote, ZeroStateSuggestionsHandlerRemote} from '../../glic.mojom-webui.js';
+import {ActorClientReceiver, ActorHandlerRemote, ExperimentalTriggeringClientReceiver, GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote, ZeroStateSuggestionsHandlerRemote} from '../../glic.mojom-webui.js';
 import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
@@ -16,9 +14,6 @@ import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
 import {ActorClientImpl, ActorHostMessageHandler} from '../actor/actor_host.js';
 import {ActorClientDef, ActorHostDef} from '../actor/actor_types.js';
-import {AnnotationHostMessageHandler} from '../annotation/annotation_host.js';
-import {AnnotationHostDef} from '../annotation/annotation_types.js';
-import type {AnnotationHost} from '../annotation/annotation_types.js';
 import {ExperimentalTriggeringClientImpl} from '../experimental_triggering/experimental_triggering_host.js';
 import {ExperimentalTriggeringClientDef} from '../experimental_triggering/experimental_triggering_types.js';
 import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
@@ -77,7 +72,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   captureRegionObserver?: CaptureRegionObserverImpl;
 
   actorHandler?: ActorHandlerRemote;
-  annotationHandler?: AnnotationHandlerRemote;
   readonly router: PostMessageRouter;
 
   zeroStateSuggestionsHandler?: ZeroStateSuggestionsHandlerRemote;
@@ -122,10 +116,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     if (this.actorHandler) {
       this.actorHandler.$.close();
       this.actorHandler = undefined;
-    }
-    if (this.annotationHandler) {
-      this.annotationHandler.$.close();
-      this.annotationHandler = undefined;
     }
     for (const handler of this.experimentalTriggeringUpdatesHandler.values()) {
       handler.$.close();
@@ -201,18 +191,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
       experimentalTriggeringReceiver,
       zeroStateSuggestionsRemote,
     };
-  }
-
-  createAnnotationHandler(receiver: PendingReceiver<AnnotationHost>): void {
-    assert(!this.annotationHandler);
-    this.annotationHandler = maybeWrapWithLogging(
-        new AnnotationHandlerRemote(), {prefix: 'AnnotationHandler'});
-    this.handler.createAnnotationHandler(
-        this.annotationHandler.$.bindNewPipeAndPassReceiver());
-    const annotationHostMessageHandler =
-        new AnnotationHostMessageHandler(this.annotationHandler);
-    this.router.newReceiver(
-        receiver, annotationHostMessageHandler, AnnotationHostDef);
   }
 
   waitingOnPanelWillOpen() {

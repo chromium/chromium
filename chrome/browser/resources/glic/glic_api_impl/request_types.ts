@@ -5,18 +5,15 @@
 import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
-import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
 import type {ExperimentalTriggeringClient} from './experimental_triggering/experimental_triggering_types.js';
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
-import type {ErrorCodec, PendingReceiver, PendingRemote, TransferableException} from './transport/post_message_transport.js';
+import type {ErrorCodec, PendingRemote, TransferableException} from './transport/post_message_transport.js';
 import type {ZeroStateSuggestionsClient, ZeroStateSuggestionsHost} from './zero_state_suggestions/zero_state_suggestions_types.js';
 
 export type {
   ActorClient,
   ActorHost,
-  AnnotationClient,
-  AnnotationHost,
   ExperimentalTriggeringClient,
   ZeroStateSuggestionsClient,
   ZeroStateSuggestionsHost,
@@ -191,13 +188,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 56},
     },
     {
-      name: 'setContextAccessIndicator',
-      request: defMessage<{
-        show: boolean,
-      }>(),
-      histogram: {id: 24},
-    },
-    {
       name: 'setActuationOnWebSetting',
       request: defMessage<{
         enabled: boolean,
@@ -370,7 +360,6 @@ export const WebClientHostDef = defInterface({
       name: 'maybeRefreshUserStatus',
       histogram: {id: 58},
     },
-
     {
       name: 'subscribeToPageMetadata',
       request: defMessage<{
@@ -444,12 +433,6 @@ export const WebClientHostDef = defInterface({
       }>(),
       histogram: {id: 100},
     },
-    {
-      name: 'createAnnotationHandler',
-      request: defMessage<{
-        annotationReceiver: PendingReceiver<AnnotationHost>,
-      }>(),
-    },
   ],
 });
 
@@ -510,8 +493,8 @@ export type WebClientRequestTypes =
     InterfaceDefMethods<WebClientTabDataObserver>&
     InterfaceDefMethods<WebClientTabFaviconObserver>;
 
-export type HostRequestTypes = InterfaceDefMethods<WebClientHost>&
-    InterfaceDefMethods<ActorHost>&InterfaceDefMethods<AnnotationHost>;
+export type HostRequestTypes =
+    InterfaceDefMethods<WebClientHost>&InterfaceDefMethods<ActorHost>;
 
 type InterfaceHistogramIds<I extends InterfaceDef> = {
   [M in I['methods'][number] as M['histogram'] extends {id: number} ?
@@ -548,7 +531,7 @@ export const RECORDED_REQUEST_IDS = {
   SetMicrophonePermissionState: 21,
   SetLocationPermissionState: 22,
   SetTabContextPermissionState: 23,
-  SetContextAccessIndicator: 24,
+  // Do not reuse deleted request ID: 24,
   GetUserProfileInfo: 25,
   RefreshSignInCookies: 26,
   // Do not reuse deleted request ID: 27,
@@ -569,7 +552,7 @@ export const RECORDED_REQUEST_IDS = {
   OnSessionTerminated: 42,
   OnTurnCompleted: 43,
   // Do not reuse deleted request ID: 44,
-  ScrollTo: 45,
+  // Do not reuse deleted request ID: 45,
   SetSyntheticExperimentState: 46,
   // Do not reuse deleted request ID: 47,
   GetOsMicrophonePermissionStatus: 48,
@@ -581,7 +564,7 @@ export const RECORDED_REQUEST_IDS = {
   GetZeroStateSuggestionsForFocusedTab: 54,
   // Do not reuse deleted request ID: 55,
   SetClosedCaptioningSetting: 56,
-  DropScrollToHighlight: 57,
+  // Do not reuse deleted request ID: 57,
   MaybeRefreshUserStatus: 58,
   OnClosedCaptionsShown: 59,
   CreateTask: 60,
@@ -630,8 +613,7 @@ export const RECORDED_REQUEST_IDS = {
   OpenPinnedTabPicker: 104,
   // Do not reuse deleted request ID: 105,
 } as const satisfies
-InterfaceHistogramIds<WebClientHost>&InterfaceHistogramIds<ActorHost>&
-    InterfaceHistogramIds<AnnotationHost>;
+InterfaceHistogramIds<WebClientHost>&InterfaceHistogramIds<ActorHost>;
 export const MAX_REQUEST_ID = Math.max(...Object.values(RECORDED_REQUEST_IDS));
 
 // Provides metrics histogram information for a host request type.

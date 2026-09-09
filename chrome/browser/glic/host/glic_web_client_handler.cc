@@ -1191,6 +1191,7 @@ class GlicWebClientHandler
   }
 
   void SetContextAccessIndicator(bool enabled) override {
+    LogApiRequestCount(GlicHostApiRequestId::kSetContextAccessIndicator);
     host().SetContextAccessIndicator(enabled);
   }
 

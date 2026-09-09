@@ -155,7 +155,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.clientRemote = directPair.client.rootRemote;
 
     this.actorClient = new GlicBrowserHostActor(this);
-    this.annotationClient = new GlicBrowserHostAnnotation(this);
+    this.annotationClient = new GlicBrowserHostAnnotation();
     this.skillsClient = new GlicBrowserHostSkills();
     this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions(this);
     this.toolsClient = new GlicBrowserHostTools();
@@ -204,6 +204,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.pinCandidates?.setObsolete();
     this.skillsClient.destroySkills();
     this.toolsClient.destroyTools();
+    this.annotationClient.destroyAnnotation();
     if (this.webClientReceiver) {
       this.webClientReceiver.$.close();
       this.webClientReceiver = undefined;
@@ -221,7 +222,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         this.hostApi.setInitialState(initialState, clientCapabilities);
     this.actorClient.initialize(
         initialState, initialPipes.actorRemote, initialPipes.actorReceiver);
-    this.annotationClient.initialize(initialState);
+    this.annotationClient.initialize(initialState, this.handler);
     this.skillsClient.initialize(initialState, this.handler);
     this.experimentalTriggeringClient.initialize(
         this.router, initialPipes.experimentalTriggeringReceiver,
@@ -843,7 +844,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   setContextAccessIndicator(show: boolean): void {
-    this.clientRemote.requestWithResponse('setContextAccessIndicator', {show});
+    this.handler.setContextAccessIndicator(show);
   }
 
   setActuationOnWebSetting?(enabled: boolean): Promise<void> {

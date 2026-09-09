@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
@@ -153,6 +154,7 @@ GlicAnnotationManager::~GlicAnnotationManager() = default;
 void GlicAnnotationManager::ScrollTo(mojom::ScrollToParamsPtr params,
                                      ScrollToCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
+  LogApiRequestCount(GlicHostApiRequestId::kScrollTo);
   if (annotation_task_ && annotation_task_->IsRunning()) {
     annotation_task_->FailTaskOrDropAnnotation(
         mojom::ScrollToErrorReason::kNewerScrollToCall);
@@ -311,6 +313,7 @@ void GlicAnnotationManager::ScrollTo(mojom::ScrollToParamsPtr params,
 }
 
 void GlicAnnotationManager::DropScrollToHighlight() {
+  LogApiRequestCount(GlicHostApiRequestId::kDropScrollToHighlight);
   RemoveAnnotation(mojom::ScrollToErrorReason::kDroppedByWebClient);
 }
 

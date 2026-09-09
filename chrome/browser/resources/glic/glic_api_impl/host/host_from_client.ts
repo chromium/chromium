@@ -15,10 +15,10 @@ import {CaptureScreenshotErrorReason, ResponseStopCause} from '../../glic_api/gl
 import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ExperimentalTriggeringUpdate, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {getGuestLoadTimeData} from '../guest_load_time_data.js';
-import type {AnnotationHost, GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from '../request_types.js';
+import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationType} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
-import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
 import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, counterAbuseVerdictFromClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
@@ -41,12 +41,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
       private handler: WebClientHandlerInterface, private host: GlicApiHost) {}
 
   destroy() {}
-
-  createAnnotationHandler(
-      request: {annotationReceiver: PendingReceiver<AnnotationHost>},
-      _extras: ResponseExtras): void {
-    this.host.createAnnotationHandler(request.annotationReceiver);
-  }
 
   webClientInitialized(request: {success: boolean, exception?: GlicException}) {
     // The webview may have been re-shown by webui, having previously been
@@ -305,9 +299,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     return this.handler.syncCookies();
   }
 
-  setContextAccessIndicator(request: {show: boolean}): void {
-    this.handler.setContextAccessIndicator(request.show);
-  }
 
   setAudioDucking(request: {enabled: boolean}): void {
     this.handler.setAudioDucking(request.enabled);
