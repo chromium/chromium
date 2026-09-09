@@ -37,10 +37,11 @@ import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab_ui.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -249,7 +250,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                         getActivity(),
                         mBrowserControlStateProvider,
                         tabContentManager,
-                        getCurrentTabModelSupplier());
+                        getCurrentTabModelSupplier(),
+                        TabFavicon::getBitmap);
         mMultiThumbnailCardProvider.initWithNative(
                 assumeNonNull(getTabModelSelector().getModel(/* incognito= */ false).getProfile()));
 

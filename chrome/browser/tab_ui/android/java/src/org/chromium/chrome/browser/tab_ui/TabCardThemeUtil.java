@@ -4,19 +4,26 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
@@ -28,6 +35,8 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 @NullMarked
 public class TabCardThemeUtil {
     private static final String TAG = "TabCardThemeUtil";
+
+    @VisibleForTesting public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
 
     /**
      * Returns the tint color for Chrome owned favicon based on the incognito mode or selected.
@@ -150,6 +159,23 @@ public class TabCardThemeUtil {
     }
 
     /**
+     * Returns the color used for an empty thumbnail placeholder illustration.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
+     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
+     * @return The {@link ColorInt} for the empty thumbnail placeholder illustration.
+     */
+    public static @ColorInt int getEmptyThumbnailColor(
+            Context context,
+            boolean isIncognito,
+            boolean isSelected,
+            @Nullable @TabGroupColorId Integer colorId) {
+        return getCardViewBackgroundColor(context, isIncognito, isSelected, colorId);
+    }
+
+    /**
      * Returns the color to use for the tab grid card hover view background.
      *
      * @param context {@link Context} used to retrieve color.
@@ -245,5 +271,93 @@ public class TabCardThemeUtil {
     public static ColorStateList getToggleActionButtonBackgroundTintList(
             Context context, boolean isIncognito, boolean isSelected) {
         return getActionButtonTintList(context, isIncognito, isSelected, /* colorId= */ null);
+    }
+
+    /**
+     * Returns the mini-thumbnail frame color based on the incognito mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The mini-thumbnail frame color.
+     */
+    public static @ColorInt int getMiniThumbnailFrameColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
+                : SemanticColorUtils.getTabGridCardDividerTintColor(context);
+    }
+
+    /**
+     * Returns the favicon background color based on the incognito mode.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The favicon background color.
+     */
+    public static @ColorInt int getFaviconBackgroundColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.favicon_background_color_incognito)
+                : SemanticColorUtils.getColorSurfaceBright(context);
+    }
+
+    /**
+     * Returns the space represented by dimension for spaces between mini thumbnails in a group tab.
+     *
+     * @param context {@link Context} to retrieve dimension.
+     * @return The padding between mini thumbnails in float number.
+     */
+    public static float getTabMiniThumbnailPaddingDimension(Context context) {
+        return context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
+    }
+
+    /**
+     * Returns the aspect ratio for grid tab card based on form factor and orientation.
+     *
+     * @param context Context of the application.
+     * @param browserControlsStateProvider For getting browser controls height.
+     * @return Aspect ratio for the grid tab card.
+     */
+    public static float getTabThumbnailAspectRatio(
+            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
+        if (context.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
+            assert browserControlsStateProvider != null;
+            int browserControlsHeightDp =
+                    (browserControlsStateProvider == null)
+                            ? 0
+                            : Math.round(
+                                    (float) browserControlsStateProvider.getTopControlsHeight()
+                                            / context.getResources().getDisplayMetrics().density);
+            int horizontalAutomotiveToolbarHeightDp =
+                    AutomotiveUtils.getHorizontalAutomotiveToolbarHeightDp(context);
+            int verticalAutomotiveToolbarWidthDp =
+                    AutomotiveUtils.getVerticalAutomotiveToolbarWidthDp(context);
+            DimensionCompat dimensionCompat = getDimensionCompat(context);
+            float windowWidthDp = getWindowWidthDp(dimensionCompat, context);
+            float windowHeightDp = getWindowHeightExcludingSystemBarsDp(dimensionCompat, context);
+            // This should match the aspect ratio of a Tab's content area.
+            return (windowWidthDp - verticalAutomotiveToolbarWidthDp)
+                    / (windowHeightDp
+                            - browserControlsHeightDp
+                            - horizontalAutomotiveToolbarHeightDp);
+        }
+        // This is an experimentally determined value.
+        return PORTRAIT_THUMBNAIL_ASPECT_RATIO;
+    }
+
+    private static float getWindowWidthDp(DimensionCompat compat, Context context) {
+        return compat.getWindowWidth() / context.getResources().getDisplayMetrics().density;
+    }
+
+    private static float getWindowHeightExcludingSystemBarsDp(
+            DimensionCompat compat, Context context) {
+        return (compat.getWindowHeight() - compat.getNavbarHeight() - compat.getStatusBarHeight())
+                / context.getResources().getDisplayMetrics().density;
+    }
+
+    private static DimensionCompat getDimensionCompat(Context context) {
+        // (TODO: crbug.com/351854698) Pass activity context instead.
+        Activity activity = ContextUtils.activityFromContext(context);
+        assert activity != null : "Activity from context should not be null for this class.";
+        return DimensionCompat.create(activity, null);
     }
 }

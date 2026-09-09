@@ -164,6 +164,7 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
+    "+chrome/browser/tab_ui/android/java/src/org/chromium/chrome/browser/tab_ui/TabCardThemeUtil.java",
   ],
   'TabViewManagerImpl\\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",

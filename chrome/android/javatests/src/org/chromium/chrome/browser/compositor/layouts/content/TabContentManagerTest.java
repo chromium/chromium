@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -105,7 +105,7 @@ public class TabContentManagerTest {
                     final int width =
                             Math.round(
                                     height
-                                            * TabUtils.getTabThumbnailAspectRatio(
+                                            * TabCardThemeUtil.getTabThumbnailAspectRatio(
                                                     mActivityTestRule.getActivity(),
                                                     mActivityTestRule
                                                             .getActivity()

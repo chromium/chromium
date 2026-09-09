@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -24,9 +23,7 @@ import android.widget.ImageView.ScaleType;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -34,10 +31,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -47,8 +43,6 @@ import org.chromium.ui.display.DisplayUtil;
 /** Collection of utility methods that operates on Tab. */
 @NullMarked
 public class TabUtils {
-    @VisibleForTesting public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
-
     // Do not instantiate this class.
     private TabUtils() {}
 
@@ -136,57 +130,6 @@ public class TabUtils {
     }
 
     /**
-     * Return aspect ratio for grid tab card based on form factor and orientation.
-     * @param context - Context of the application.
-     * @param browserControlsStateProvider - For getting browser controls height.
-     * @return Aspect ratio for the grid tab card.
-     */
-    public static float getTabThumbnailAspectRatio(
-            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
-        if (context.getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE) {
-            assert browserControlsStateProvider != null;
-            int browserControlsHeightDp =
-                    (browserControlsStateProvider == null)
-                            ? 0
-                            : Math.round(
-                                    (float) browserControlsStateProvider.getTopControlsHeight()
-                                            / context.getResources().getDisplayMetrics().density);
-            int horizontalAutomotiveToolbarHeightDp =
-                    AutomotiveUtils.getHorizontalAutomotiveToolbarHeightDp(context);
-            int verticalAutomotiveToolbarWidthDp =
-                    AutomotiveUtils.getVerticalAutomotiveToolbarWidthDp(context);
-            DimensionCompat dimensionCompat = getDimensionCompat(context);
-            float windowWidthDp = getWindowWidthDp(dimensionCompat, context);
-            float windowHeightDp = getWindowHeightExcludingSystemBarsDp(dimensionCompat, context);
-            // This should match the aspect ratio of a Tab's content area.
-            return (windowWidthDp - verticalAutomotiveToolbarWidthDp)
-                    / (windowHeightDp
-                            - browserControlsHeightDp
-                            - horizontalAutomotiveToolbarHeightDp);
-        }
-        // This is an experimentally determined value.
-        return PORTRAIT_THUMBNAIL_ASPECT_RATIO;
-    }
-
-    private static float getWindowWidthDp(DimensionCompat compat, Context context) {
-        return compat.getWindowWidth() / context.getResources().getDisplayMetrics().density;
-    }
-
-    private static float getWindowHeightExcludingSystemBarsDp(
-            DimensionCompat compat, Context context) {
-        return (compat.getWindowHeight() - compat.getNavbarHeight() - compat.getStatusBarHeight())
-                / context.getResources().getDisplayMetrics().density;
-    }
-
-    private static DimensionCompat getDimensionCompat(Context context) {
-        // (TODO: crbug.com/351854698) Pass activity context instead.
-        Activity activity = ContextUtils.activityFromContext(context);
-        assert activity != null : "Activity from context should not be null for this class.";
-        return DimensionCompat.create(activity, null);
-    }
-
-    /**
      * Derive grid card height based on width, expected thumbnail aspect ratio and margins.
      *
      * @param cardWidthPx width of the card
@@ -198,7 +141,8 @@ public class TabUtils {
             int cardWidthPx,
             Context context,
             BrowserControlsStateProvider browserControlsStateProvider) {
-        float aspectRatio = getTabThumbnailAspectRatio(context, browserControlsStateProvider);
+        float aspectRatio =
+                TabCardThemeUtil.getTabThumbnailAspectRatio(context, browserControlsStateProvider);
         int thumbnailHeight = (int) ((cardWidthPx - getThumbnailWidthDiff(context)) / aspectRatio);
         return thumbnailHeight + getThumbnailHeightDiff(context);
     }
@@ -215,7 +159,8 @@ public class TabUtils {
             int cardHeightPx,
             Context context,
             BrowserControlsStateProvider browserControlsStateProvider) {
-        float aspectRatio = getTabThumbnailAspectRatio(context, browserControlsStateProvider);
+        float aspectRatio =
+                TabCardThemeUtil.getTabThumbnailAspectRatio(context, browserControlsStateProvider);
         int thumbnailWidth = (int) ((cardHeightPx - getThumbnailHeightDiff(context)) * aspectRatio);
         return thumbnailWidth + getThumbnailWidthDiff(context);
     }

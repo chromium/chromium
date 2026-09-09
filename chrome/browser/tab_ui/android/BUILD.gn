@@ -21,6 +21,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab_ui/ActionConfirmationManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/MultiThumbnailCardProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/OnTabSelectingListener.java",
     "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
     "java/src/org/chromium/chrome/browser/tab_ui/SuggestionLifecycleObserverHandler.java",
@@ -37,12 +38,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherIphController.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailFetcher.java",
     "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/app:java_strings_grd",
+    "//chrome/browser/actor/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/collaboration:messaging_factory_java",
     "//chrome/browser/flags:java",
@@ -63,6 +67,7 @@ android_library("java") {
     "//chrome/browser/ui/vertical_tabs:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/cached_flags:java",
@@ -127,6 +132,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherGroupSuggestionServiceUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/ThumbnailFetcherUnitTest.java",
   ]
 
   deps = [

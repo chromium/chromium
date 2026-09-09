@@ -67,7 +67,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab_ui.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
@@ -414,7 +416,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             activity,
                             browserControlsStateProvider,
                             tabContentManager,
-                            tabModelSupplier);
+                            tabModelSupplier,
+                            TabFavicon::getBitmap);
 
             var recyclerViewTimer = new UptimeMillisTimer();
 

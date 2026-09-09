@@ -7,23 +7,11 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="tab_list_selected_margin">7dp</dimen>
     <dimen name="tab_grid_price_card_radius">4dp</dimen>
-    <dimen name="tab_list_mini_card_radius">4dp</dimen>
-    <dimen name="tab_list_mini_card_frame_size">1dp</dimen>
     <dimen name="tab_grid_close_button_size">18dp</dimen>
     <dimen name="tab_grid_dialog_min_margin">16dp</dimen>
     <dimen name="tab_grid_dialog_max_margin">85dp</dimen>
     <dimen name="tab_grid_iph_item_description_margin">16dp</dimen>
     <dimen name="tab_grid_large_message_side_padding_landscape">114dp</dimen>
-    <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_frame_corner_radius">7dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_frame_size">24dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_frame_padding_from_card">8dp</dimen>
-    <dimen name="tab_grid_empty_thumbnail_lr_inset">8dp</dimen>
-    <dimen name="tab_grid_empty_thumbnail_top_inset">40dp</dimen>
-    <dimen name="tab_grid_empty_thumbnail_bottom_inset">8dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">4dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_background_radius">3dp</dimen>
-    <dimen name="tab_grid_thumbnail_favicon_background_down_shift">2dp</dimen>
     <dimen name="share_button_padding_start_end">12dp</dimen>
     <dimen name="share_button_height">32dp</dimen>
     <!-- Keep in sync with height + margin + 15dp for the FAB. -->
@@ -67,7 +55,6 @@ found in the LICENSE file.
     <dimen name="tab_grid_card_title_end_margin_alert_indicator">71dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_top">12dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_bottom">20dp</dimen>
-    <dimen name="tab_grid_card_thumbnail_margin">4dp</dimen>
     <dimen name="tab_grid_thumbnail_fetch_spinner_size">32dp</dimen>
     <dimen name="tab_grid_thumbnail_fetch_spinner_thickness">2.5dp</dimen>
     <dimen name="tab_list_card_action_button_size">48dp</dimen>

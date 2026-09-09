@@ -221,6 +221,28 @@ public class TabCardThemeUtilUnitTest {
     }
 
     @Test
+    public void testGetEmptyThumbnailColor() {
+        @ColorInt
+        int expectedColor =
+                TabCardThemeUtil.getCardViewBackgroundColor(
+                        mContext,
+                        /* isIncognito= */ false,
+                        /* isSelected= */ false,
+                        /* colorId= */ null);
+        @ColorInt
+        int actualColor =
+                TabCardThemeUtil.getEmptyThumbnailColor(
+                        mContext,
+                        /* isIncognito= */ false,
+                        /* isSelected= */ false,
+                        /* colorId= */ null);
+        assertEquals(
+                "Empty thumbnail color should match card view background color.",
+                expectedColor,
+                actualColor);
+    }
+
+    @Test
     public void testGetTabGroupNumberTextColor_isSelected() {
         @ColorInt int expectedColor = MaterialColors.getColor(mContext, R.attr.colorOnPrimary, "");
         @ColorInt
@@ -320,5 +342,13 @@ public class TabCardThemeUtilUnitTest {
                 "Toggle action button tint should delegate to the main action button tint method.",
                 expected,
                 actual);
+    }
+
+    @Test
+    public void testGetTabThumbnailAspectRatio_portrait() {
+        assertEquals(
+                TabCardThemeUtil.PORTRAIT_THUMBNAIL_ASPECT_RATIO,
+                TabCardThemeUtil.getTabThumbnailAspectRatio(mContext, null),
+                0.001f);
     }
 }

@@ -84,7 +84,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -219,7 +219,7 @@ public class TabSwitcherLayoutTest {
         onViewWaiting(tabSwitcherViewMatcher())
                 .check(
                         ThumbnailAspectRatioAssertion.havingAspectRatio(
-                                TabUtils.getTabThumbnailAspectRatio(
+                                TabCardThemeUtil.getTabThumbnailAspectRatio(
                                         mActivityTestRule.getActivity(),
                                         mActivityTestRule
                                                 .getActivity()
@@ -1248,7 +1248,7 @@ public class TabSwitcherLayoutTest {
 
     private void simulateJpegHasCachedWithDefaultAspectRatio() throws IOException {
         simulateJpegHasCachedWithAspectRatio(
-                TabUtils.getTabThumbnailAspectRatio(
+                TabCardThemeUtil.getTabThumbnailAspectRatio(
                         mActivityTestRule.getActivity(),
                         mActivityTestRule.getActivity().getBrowserControlsManager()));
     }

@@ -46,6 +46,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -286,7 +287,8 @@ public class TabUtilsUnitTest {
         assertEquals(
                 "Thumbnail aspect ratio is not as expected.",
                 expectedAspectRatio,
-                TabUtils.getTabThumbnailAspectRatio(spyActivity, mBrowserControlsStateProvider),
+                TabCardThemeUtil.getTabThumbnailAspectRatio(
+                        spyActivity, mBrowserControlsStateProvider),
                 0.01);
     }
 }

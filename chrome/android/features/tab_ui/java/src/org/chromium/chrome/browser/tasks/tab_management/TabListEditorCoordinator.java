@@ -28,6 +28,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab_ui.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
@@ -718,7 +720,8 @@ public class TabListEditorCoordinator {
                             mActivity,
                             mBrowserControlsStateProvider,
                             tabContentManager,
-                            mCurrentTabModelSupplier);
+                            mCurrentTabModelSupplier,
+                            TabFavicon::getBitmap);
             return mMultiThumbnailCardProvider;
         }
         return new TabContentManagerThumbnailProvider(tabContentManager);

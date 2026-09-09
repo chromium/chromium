@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
@@ -147,7 +147,7 @@ public class HomeSurfaceTestUtils {
         final int width =
                 Math.round(
                         height
-                                * TabUtils.getTabThumbnailAspectRatio(
+                                * TabCardThemeUtil.getTabThumbnailAspectRatio(
                                         ContextUtils.getApplicationContext(),
                                         browserControlsStateProvider));
         final Bitmap thumbnailBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
