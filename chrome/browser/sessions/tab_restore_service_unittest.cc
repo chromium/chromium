@@ -285,6 +285,10 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     service_->Shutdown();
     content::RunAllTasksUntilIdle();
     service_.reset();
+    // TabRestoreService indirectly owns a CommandStorageBackend, which
+    // inherits from RefCountedDeleteOnSequence. This ensures the
+    // CommandStorageBackend is cleaned up before creating the new service.
+    content::RunAllTasksUntilIdle();
 
     CreateService();
     SynchronousLoadTabsFromLastSession();
