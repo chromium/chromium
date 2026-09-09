@@ -27,10 +27,21 @@ public class WebContentsPrinter implements Printable {
     private final String mDefaultTitle;
     private final String mErrorMessage;
 
+    /**
+     * Creates a {@link WebContentsPrinter} for the given web contents.
+     *
+     * @param webContents The web contents to print.
+     */
     public WebContentsPrinter(WebContents webContents) {
         this(webContents, false);
     }
 
+    /**
+     * Creates a {@link WebContentsPrinter} for the given web contents with selection flag.
+     *
+     * @param webContents The web contents to print.
+     * @param printSelectionOnly Whether to print only the selection within the frame.
+     */
     public WebContentsPrinter(WebContents webContents, boolean printSelectionOnly) {
         mWebContents = webContents;
         mPrintSelectionOnly = printSelectionOnly;
@@ -40,10 +51,24 @@ public class WebContentsPrinter implements Printable {
     }
 
     @Override
+    public boolean initiatePrint(int renderProcessId, int renderFrameId) {
+        if (!canPrint()) return false;
+        return WebContentsPrinterJni.get()
+                .initiatePrint(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
+    }
+
+    @Override
     public boolean print(int renderProcessId, int renderFrameId) {
         if (!canPrint()) return false;
         return WebContentsPrinterJni.get()
                 .print(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
+    }
+
+    @Override
+    public void finishPrint(int renderProcessId, int renderFrameId) {
+        if (mWebContents.isDestroyed()) return;
+        WebContentsPrinterJni.get()
+                .finishPrint(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
     }
 
     @Override
@@ -76,7 +101,19 @@ public class WebContentsPrinter implements Printable {
 
     @NativeMethods
     interface Natives {
+        boolean initiatePrint(
+                @Nullable WebContents webContents,
+                int renderProcessId,
+                int renderFrameId,
+                boolean printSelectionOnly);
+
         boolean print(
+                @Nullable WebContents webContents,
+                int renderProcessId,
+                int renderFrameId,
+                boolean printSelectionOnly);
+
+        void finishPrint(
                 @Nullable WebContents webContents,
                 int renderProcessId,
                 int renderFrameId,

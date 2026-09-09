@@ -126,6 +126,8 @@ public class PrintingControllerImpl
 
     private boolean mIsBusy;
 
+    private boolean mPrintInitiated;
+
     private @Nullable PrintManagerDelegate mPrintManager;
 
     private final WindowAndroid mWindowAndroid;
@@ -251,6 +253,7 @@ public class PrintingControllerImpl
             Log.d(TAG, "Pending print can't be set. PrintingController is busy.");
             return;
         }
+        mPrintInitiated = false;
         mPrintable = printable;
         mErrorMessage = mPrintable.getErrorMessage();
         mPrintManager = printManager;
@@ -301,6 +304,10 @@ public class PrintingControllerImpl
     }
 
     private void notifyPendingPrintFailed() {
+        if (mPrintInitiated && mPrintable != null) {
+            mPrintable.finishPrint(mRenderProcessId, mRenderFrameId);
+        }
+        mPrintInitiated = false;
         mIsBusy = false;
         mPrintingState = PRINTING_STATE_FINISHED;
         mPrintManager = null;
@@ -339,9 +346,19 @@ public class PrintingControllerImpl
         }
     }
 
+    private void initiatePrintIfNeeded() {
+        if (!mPrintInitiated
+                && mPrintable != null
+                && mPrintable.canPrint()
+                && mPrintable.getPdfInputStream() == null) {
+            mPrintInitiated = mPrintable.initiatePrint(mRenderProcessId, mRenderFrameId);
+        }
+    }
+
     @Override
     public void onStart() {
         mPrintingState = PRINTING_STATE_READY;
+        initiatePrintIfNeeded();
     }
 
     @Override
@@ -434,6 +451,11 @@ public class PrintingControllerImpl
 
     @Override
     public void onFinish() {
+        if (mPrintInitiated && mPrintable != null) {
+            mPrintable.finishPrint(mRenderProcessId, mRenderFrameId);
+        }
+        mPrintInitiated = false;
+
         mPages = null;
 
         mRenderProcessId = -1;

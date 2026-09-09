@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_op.h"
 #include "chrome/browser/printing/print_view_manager_basic.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "content/public/browser/browser_thread.h"
@@ -14,6 +15,63 @@
 using base::android::ScopedJavaLocalRef;
 
 namespace printing {
+
+namespace {
+
+content::RenderFrameHost* GetTargetFrame(content::WebContents* web_contents,
+                                         int32_t render_process_id,
+                                         int32_t render_frame_id,
+                                         bool print_selection_only) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (rfh) {
+    // The caller is expected to pass IDs belonging to `web_contents`; a
+    // mismatch means the browser-side bookkeeping is inconsistent.
+    CHECK_EQ(content::WebContents::FromRenderFrameHost(rfh), web_contents);
+  }
+  // If the target frame is invalid, inactive, or no longer live:
+  // - For selection printing, fail safely to avoid printing the whole
+  //   page/wrong frame.
+  // - For normal printing, fall back to the default main frame.
+  if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
+    if (print_selection_only) {
+      return nullptr;
+    }
+    rfh = GetFrameToPrint(web_contents);
+  }
+
+  if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
+    return nullptr;
+  }
+  return rfh;
+}
+
+}  // namespace
+
+static bool JNI_WebContentsPrinter_InitiatePrint(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents,
+    int32_t render_process_id,
+    int32_t render_frame_id,
+    bool print_selection_only) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return false;
+  }
+
+  content::RenderFrameHost* rfh = GetTargetFrame(
+      web_contents, render_process_id, render_frame_id, print_selection_only);
+  if (!rfh) {
+    return false;
+  }
+
+  PrintViewManagerBasic* print_view_manager =
+      PrintViewManagerBasic::FromWebContents(web_contents);
+  return print_view_manager && print_view_manager->InitiatePrint(rfh);
+}
 
 static bool JNI_WebContentsPrinter_Print(
     JNIEnv* env,
@@ -29,33 +87,43 @@ static bool JNI_WebContentsPrinter_Print(
     return false;
   }
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (rfh) {
-    DCHECK_EQ(content::WebContents::FromRenderFrameHost(rfh), web_contents);
-  }
-  // If the target frame is invalid, inactive, or no longer live:
-  // - For selection printing, fail safely to avoid printing the whole
-  //   page/wrong frame.
-  // - For normal printing, fall back to the default main frame.
-  if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
-    if (print_selection_only) {
-      return false;
-    }
-    rfh = GetFrameToPrint(web_contents);
-  }
-
-  if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
+  content::RenderFrameHost* rfh = GetTargetFrame(
+      web_contents, render_process_id, render_frame_id, print_selection_only);
+  if (!rfh) {
     return false;
   }
 
-  content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-
   PrintViewManagerBasic* print_view_manager =
-      PrintViewManagerBasic::FromWebContents(contents);
+      PrintViewManagerBasic::FromWebContents(web_contents);
   return print_view_manager &&
          print_view_manager->PrintNow(rfh, print_selection_only);
+}
+
+static void JNI_WebContentsPrinter_FinishPrint(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents,
+    int32_t render_process_id,
+    int32_t render_frame_id,
+    bool print_selection_only) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return;
+  }
+
+  content::RenderFrameHost* rfh = GetTargetFrame(
+      web_contents, render_process_id, render_frame_id, print_selection_only);
+  if (!rfh) {
+    return;
+  }
+
+  PrintViewManagerBasic* print_view_manager =
+      PrintViewManagerBasic::FromWebContents(web_contents);
+  if (print_view_manager) {
+    print_view_manager->FinishPrint(rfh);
+  }
 }
 
 }  // namespace printing

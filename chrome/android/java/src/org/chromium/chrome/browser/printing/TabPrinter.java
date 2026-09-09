@@ -62,6 +62,9 @@ public class TabPrinter implements Printable {
     private final String mErrorMessage;
     private final boolean mPrintSelectionOnly;
 
+    // Lifecycle state active between initiatePrint() and finishPrint().
+    private @Nullable WebContentsPrinter mWebContentsPrinter;
+
     @CalledByNative
     private static TabPrinter getPrintable(Tab tab) {
         return new TabPrinter(tab);
@@ -136,17 +139,52 @@ public class TabPrinter implements Printable {
     }
 
     @Override
-    public boolean print(int renderProcessId, int renderFrameId) {
-        if (!canPrint()) return false;
-        Tab tab = mTab.get();
-        assert tab != null && tab.isInitialized();
-        WebContents webContents = tab.getWebContents();
+    public boolean initiatePrint(int renderProcessId, int renderFrameId) {
+        assert mWebContentsPrinter == null;
+
+        WebContents webContents = getWebContentsIfInitialized();
         if (webContents == null) return false;
-        int targetProcessId = mTargetFrameId != null ? mTargetFrameId.childId() : renderProcessId;
-        int targetFrameId =
-                mTargetFrameId != null ? mTargetFrameId.frameRoutingId() : renderFrameId;
-        return new WebContentsPrinter(webContents, mPrintSelectionOnly)
-                .print(targetProcessId, targetFrameId);
+        mWebContentsPrinter = new WebContentsPrinter(webContents, mPrintSelectionOnly);
+        boolean initiated =
+                mWebContentsPrinter.initiatePrint(
+                        targetProcessId(renderProcessId), targetFrameId(renderFrameId));
+        if (!initiated) {
+            mWebContentsPrinter = null;
+        }
+        return initiated;
+    }
+
+    @Override
+    public boolean print(int renderProcessId, int renderFrameId) {
+        if (!canPrint() || mWebContentsPrinter == null) return false;
+        return mWebContentsPrinter.print(
+                targetProcessId(renderProcessId), targetFrameId(renderFrameId));
+    }
+
+    @Override
+    public void finishPrint(int renderProcessId, int renderFrameId) {
+        // Deliberately not gated on canPrint(): the Activity may be stopped (and therefore the
+        // Tab hidden) while the system print dialog is up, but afterprint must still be
+        // dispatched so the renderer does not stay stuck in the printing state.
+        if (mWebContentsPrinter != null) {
+            mWebContentsPrinter.finishPrint(
+                    targetProcessId(renderProcessId), targetFrameId(renderFrameId));
+            mWebContentsPrinter = null;
+        }
+    }
+
+    private @Nullable WebContents getWebContentsIfInitialized() {
+        Tab tab = mTab.get();
+        if (tab == null || !tab.isInitialized()) return null;
+        return tab.getWebContents();
+    }
+
+    private int targetProcessId(int renderProcessId) {
+        return mTargetFrameId != null ? mTargetFrameId.childId() : renderProcessId;
+    }
+
+    private int targetFrameId(int renderFrameId) {
+        return mTargetFrameId != null ? mTargetFrameId.frameRoutingId() : renderFrameId;
     }
 
     @Override
