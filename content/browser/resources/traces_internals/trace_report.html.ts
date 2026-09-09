@@ -12,12 +12,14 @@ export function getHtml(this: TraceReportElement) {
   // clang-format off
   return html`
 ${this.isHeader ? html`
-    <div class="info">Trace ID</div>
-    <div class="info">Date created</div>
-    <div class="info">Scenario</div>
-    <div class="info">Triggered rule</div>
-    <div class="info">Uncompressed size</div>` : (this.trace !== null ?
-    html`<div>
+  <div class="info">Trace ID</div>
+  <div class="info">Date created</div>
+  <div class="info">Scenario</div>
+  <div class="info">Triggered rule</div>
+  <div class="info">Uncompressed size</div>
+` : html`
+  ${this.trace !== null ? html`
+    <div>
       <button class="clickable-field copiable"
           title="${getTokenAsUuidString(this.trace.uuid)}"
           @click="${this.onCopyUuidClick_}">
@@ -69,6 +71,7 @@ ${this.isHeader ? html`
           ?disabled="${this.isLoading}">
       </cr-icon-button>
     </div>
-` : nothing)}`;
+  ` : nothing}
+`}`;
   // clang-format on
 }

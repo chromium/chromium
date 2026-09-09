@@ -10,7 +10,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     <div id="container">
-      ${this.file.type === 'injectedinput' ? this.file.iconName ? html`
+      ${this.file.type === 'injectedinput' ? html`${this.file.iconName ? html`
         <div id="injectedInputChip" class="chip">
           <div id="injectedInputIconThumbnail" class="thumbnail" part="thumbnail">
             ${this.isUploading_ ? html`
@@ -38,7 +38,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </div>
           <div class="chip-overlay"></div>
         </div>
-      ` : this.file.name ? html`
+      ` : html`
+        ${this.file.name ? html`
         <div id="injectedInputChip" class="chip">
           <div id="injectedInputImgThumbnail"
             class="thumbnail injected-input-img-thumbnail">
@@ -87,7 +88,11 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               @click="${this.onRemoveButtonClick_}">
           </cr-icon-button>`: ''}
         </div>
-      ` : this.file.url ? this.isAndroid_ ? html`
+        `}
+      `}
+    ` : html`
+      ${this.file.url ? html`
+        ${this.isAndroid_ ? html`
         <div id="tabChip" title="${this.file.name}"
           ?hidden="${this.tabFaviconChipsToCoinsEnabled_}">
           <div id="tabChipContent">
@@ -148,9 +153,12 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </div>
           <div class="chip-overlay"></div>
         </div>
-      ` : (this.file.type.startsWith('image/') || this.file.objectUrl
+        `}
+      ` : html`
+        ${(this.file.type.startsWith('image/') || this.file.objectUrl
             || this.file.dataUrl || this.file.thumbnailUrl) ?
-          this.isAndroid_ ? html`
+          html`
+            ${this.isAndroid_ ? html`
         <div id="imgChip">
           <div id="imgChipContent">
             ${this.isUploading_ ? html`
@@ -162,20 +170,22 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 <img is="cr-auto-img" class="img-thumbnail"
                   auto-src="${this.file.thumbnailUrl}"
                   aria-label="${this.file.name}">
-              ` : this.isVideo_() && this.file.objectUrl ? html`
-                <video class="img-thumbnail"
-                  src="${this.file.objectUrl}#t=0.001"
-                  preload="metadata"
-                  muted
-                  playsinline
-                  disablepictureinpicture
-                  disableremoteplayback
-                  aria-label="${this.file.name}">
-                </video>
               ` : html`
-              <img class="img-thumbnail"
-                src="${this.file.objectUrl || this.file.dataUrl}"
-                aria-label="${this.file.name}">
+                ${this.isVideo_() && this.file.objectUrl ? html`
+                  <video class="img-thumbnail"
+                    src="${this.file.objectUrl}#t=0.001"
+                    preload="metadata"
+                    muted
+                    playsinline
+                    disablepictureinpicture
+                    disableremoteplayback
+                    aria-label="${this.file.name}">
+                  </video>
+                ` : html`
+                  <img class="img-thumbnail"
+                    src="${this.file.objectUrl || this.file.dataUrl}"
+                    aria-label="${this.file.name}">
+                `}
               `}
             `}
             <div id="imgChipStateLayer">
@@ -200,20 +210,22 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               <img is="cr-auto-img" class="img-thumbnail"
                 auto-src="${this.file.thumbnailUrl}"
                 aria-label="${this.file.name}">
-            ` : this.isVideo_() && this.file.objectUrl ? html`
-              <video class="img-thumbnail"
-                src="${this.file.objectUrl}#t=0.001"
-                preload="metadata"
-                muted
-                playsinline
-                disablepictureinpicture
-                disableremoteplayback
-                aria-label="${this.file.name}">
-              </video>
             ` : html`
-            <img class="img-thumbnail"
-              src="${this.file.objectUrl || this.file.dataUrl}"
-              aria-label="${this.file.name}">
+              ${this.isVideo_() && this.file.objectUrl ? html`
+                <video class="img-thumbnail"
+                  src="${this.file.objectUrl}#t=0.001"
+                  preload="metadata"
+                  muted
+                  playsinline
+                  disablepictureinpicture
+                  disableremoteplayback
+                  aria-label="${this.file.name}">
+                </video>
+              ` : html`
+                <img class="img-thumbnail"
+                  src="${this.file.objectUrl || this.file.dataUrl}"
+                  aria-label="${this.file.name}">
+              `}
             `}
           `}
           ${this.file.isDeletable ? html`<cr-icon-button
@@ -224,7 +236,10 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               aria-label="${this.getDeleteFileButtonTitle_()}"
               @click="${this.onRemoveButtonClick_}">
           </cr-icon-button>`: ''}
-        </div>` : this.isAndroid_ ? html`
+        </div>
+          `}
+        ` : html`
+          ${this.isAndroid_ ? html`
         <div id="documentChip">
           <div id="documentChipContent">
             <div id="documentThumbnail">
@@ -232,18 +247,20 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 <svg role="image" class="spinner" viewBox="0 0 100 100">
                   <circle class="spinner-circle" cx="50" cy="50" r="40" />
                 </svg>
-              ` : this.file.iconUrl ? html`
-                <img is="cr-auto-img" class="document-icon" draggable="false"
-                    auto-src="${this.file.iconUrl}">
               ` : html`
-                <cr-icon icon="${
-                    this.shouldUsePdfIcon_() ?
-                        'thumbnail:drive-pdf' :
-                        'thumbnail:attach-file'}"
-                    class="${
-                    this.shouldUsePdfIcon_() ?
-                        'pdf-icon' :
-                        'document-icon'}"></cr-icon>
+                ${this.file.iconUrl ? html`
+                  <img is="cr-auto-img" class="document-icon" draggable="false"
+                      auto-src="${this.file.iconUrl}">
+                ` : html`
+                  <cr-icon icon="${
+                      this.shouldUsePdfIcon_() ?
+                          'thumbnail:drive-pdf' :
+                          'thumbnail:attach-file'}"
+                      class="${
+                      this.shouldUsePdfIcon_() ?
+                          'pdf-icon' :
+                          'document-icon'}"></cr-icon>
+                `}
               `}
             </div>
             <p class="title"
@@ -264,18 +281,20 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               <svg role="image" class="spinner" viewBox="0 0 100 100">
                 <circle class="spinner-circle" cx="50" cy="50" r="40" />
               </svg>
-            ` : this.file.iconUrl ? html`
-              <img is="cr-auto-img" class="document-icon" draggable="false"
-                  auto-src="${this.file.iconUrl}">
             ` : html`
-              <cr-icon icon="${
-                  this.shouldUsePdfIcon_() ?
-                      'thumbnail:drive-pdf' :
-                      'thumbnail:attach-file'}"
-                  class="${
-                  this.shouldUsePdfIcon_() ?
-                      'pdf-icon' :
-                      'document-icon'}"></cr-icon>
+              ${this.file.iconUrl ? html`
+                <img is="cr-auto-img" class="document-icon" draggable="false"
+                    auto-src="${this.file.iconUrl}">
+              ` : html`
+                <cr-icon icon="${
+                    this.shouldUsePdfIcon_() ?
+                        'thumbnail:drive-pdf' :
+                        'thumbnail:attach-file'}"
+                    class="${
+                    this.shouldUsePdfIcon_() ?
+                        'pdf-icon' :
+                        'document-icon'}"></cr-icon>
+              `}
             `}
           </div>
           <p class="title"
@@ -293,7 +312,10 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </div>
           <div class="chip-overlay"></div>
         </div>
+          `}
+        `}
       `}
+    `}
     </div>
   <!--_html_template_end_-->`;
   // clang-format on

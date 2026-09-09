@@ -35,9 +35,7 @@ export function getHtml(this: PolicyTestRowElement) {
     </div>
     <div role="cell">
       <label>$i18n{testTableValue}</label>
-      ${
-      this.valueType === 'boolean' ?
-          html`
+      ${this.valueType === 'boolean' ? html`
         <select class="value ${this.valueError ? 'error' : ''}"
             .value="${this.policyValue}"
             @change="${this.onValueChange}"
@@ -45,26 +43,25 @@ export function getHtml(this: PolicyTestRowElement) {
           <option value="true">${this.getBoolOptions()[0]}</option>
           <option value="false">${this.getBoolOptions()[1]}</option>
         </select>
-      ` :
-          this.valueType === 'integer' ?
-          html`
-        <input type="number" class="value ${this.valueError ? 'error' : ''}"
-            .value="${this.policyValue}"
-            @input="${this.onValueInput}"
-            @focus="${this.onFocus}">
-      ` :
-          this.valueType === 'number' ?
-          html`
-        <input type="number" step="any" class="value ${this.valueError ? 'error' : ''}"
-            .value="${this.policyValue}"
-            @input="${this.onValueInput}"
-            @focus="${this.onFocus}">
-      ` :
-          html`
-        <input type="text" class="value ${this.valueError ? 'error' : ''}"
-            .value="${this.policyValue}"
-            @input="${this.onValueInput}"
-            @focus="${this.onFocus}">
+      ` : html`
+        ${this.valueType === 'integer' ? html`
+          <input type="number" class="value ${this.valueError ? 'error' : ''}"
+              .value="${this.policyValue}"
+              @input="${this.onValueInput}"
+              @focus="${this.onFocus}">
+        ` : html`
+          ${this.valueType === 'number' ? html`
+            <input type="number" step="any" class="value ${this.valueError ? 'error' : ''}"
+                .value="${this.policyValue}"
+                @input="${this.onValueInput}"
+                @focus="${this.onFocus}">
+          ` : html`
+            <input type="text" class="value ${this.valueError ? 'error' : ''}"
+                .value="${this.policyValue}"
+                @input="${this.onValueInput}"
+                @focus="${this.onFocus}">
+          `}
+        `}
       `}
     </div>
     <div role="cell">
