@@ -508,7 +508,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
   });
 
   test('configures animated glow on composebox correctly', async () => {
-    await new Promise(r => setTimeout(r, 0));
+    await new Promise(r => requestAnimationFrame(r));
     await microtasksFinished();
     const glow = composebox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
         '#animatedSearchElement');
@@ -524,8 +524,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         composebox.playGlowAnimation(/*timeoutMs=*/ 10);
         assertEquals(GlowAnimationState.NONE, composebox.animationState);
 
-        await new Promise(r => setTimeout(r, 0));
-        await microtasksFinished();
+        await new Promise(r => requestAnimationFrame(r));
 
         // After rAF callback runs, animationState is EXPANDING.
         assertEquals(GlowAnimationState.EXPANDING, composebox.animationState);
