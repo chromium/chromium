@@ -384,6 +384,29 @@ TEST_F(DWriteFontProxyUnitTest, TestCustomFontFiles) {
   EXPECT_TRUE(SUCCEEDED(hr));
 }
 
+TEST_F(DWriteFontProxyUnitTest, DisconnectHandler) {
+  EXPECT_TRUE(collection_->IsFontServiceConnected());
+
+  fake_collection_.reset();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(collection_->IsFontServiceConnected());
+}
+
+TEST_F(DWriteFontProxyUnitTest, IsFontServiceConnectedSyncFailure) {
+  EXPECT_TRUE(collection_->IsFontServiceConnected());
+
+  fake_collection_.reset();
+  // Attempting to find a font will fail synchronously over Mojo.
+  // This must mark the font service disconnected without waiting for the
+  // disconnect task to be dispatched on the message loop.
+  UINT32 index = UINT_MAX;
+  BOOL exists = FALSE;
+  HRESULT hr = collection_->FindFamilyName(L"NonexistentFont", &index, &exists);
+  EXPECT_FALSE(SUCCEEDED(hr));
+  EXPECT_FALSE(collection_->IsFontServiceConnected());
+}
+
 }  // namespace
 
 }  // namespace content

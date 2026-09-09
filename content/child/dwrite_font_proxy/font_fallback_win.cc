@@ -99,7 +99,7 @@ HRESULT FontFallback::MapCharacters(IDWriteTextAnalysisSource* source,
                                              base_stretch),
           base::WideToUTF16(locale), source->GetParagraphReadingDirection(),
           base::WideToUTF16(base_family_name), &result)) {
-    DCHECK(false);
+    collection_->SetFontServiceDisconnected();
     return E_FAIL;
   }
 

@@ -42,6 +42,7 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -244,6 +246,18 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
         description);
     ++last_resort_fallback_attempt;
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (RuntimeEnabledFeatures::FontPrewarmerShutdownFallbackEnabled() &&
+      !font_platform_data &&
+      (!prewarmer_ || !prewarmer_->IsFontServiceConnected())) {
+    // If font lookup failed completely because the browser process has shut
+    // down and disconnected the font proxy IPC, use a safe empty fallback
+    // typeface to avoid a fatal crash on DCHECK during process teardown.
+    font_platform_data =
+        CreateFontPlatformDataForTypeface(skia::DefaultTypeface(), description);
+  }
+#endif
 
   // 0 <= last_resort_fallback_attempt <= 10 (9 on linux), so set the max to 11
   // and put failed attempts in that bucket.

@@ -3247,6 +3247,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/489865845.
+      name: "FontPrewarmerShutdownFallback",
+      status: "stable",
+    },
+    {
       // crbug.com/393391746
       name: "FontStyleObliqueZeroDegreeAsNormal",
       status: "stable",

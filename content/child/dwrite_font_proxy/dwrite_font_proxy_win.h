@@ -8,6 +8,7 @@
 #include <dwrite.h>
 #include <wrl.h>
 
+#include <atomic>
 #include <map>
 #include <string>
 #include <vector>
@@ -115,6 +116,10 @@ class DWriteFontCollectionProxy
       blink::ThreadSafeBrowserInterfaceBrokerProxy* interface_broker) override;
 
   void PrewarmFamily(const blink::WebString& family_name) override;
+  bool IsFontServiceConnected() const override;
+  void SetFontServiceDisconnected() {
+    is_font_service_connected_.store(false, std::memory_order_relaxed);
+  }
 
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
@@ -166,6 +171,8 @@ class DWriteFontCollectionProxy
   // doesn't originate from the "bound" sequence.
   base::SequenceLocalStorageSlot<mojo::Remote<blink::mojom::DWriteFontProxy>>
       font_proxy_;
+
+  mutable std::atomic<bool> is_font_service_connected_{true};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
