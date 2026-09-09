@@ -1282,17 +1282,68 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   loop.Run();
 #else
   Print(web_frame, blink::WebNode(), PrintRequestType::kScripted);
-#endif
   if (!weak_this) {
     return;
   }
 
   web_frame->DispatchAfterPrintEvent();
-  if (!weak_this)
+  // DispatchAfterPrintEvent() runs script, which may delete `this`.
+  if (!weak_this) {
     return;
+  }
+  print_in_progress_ = false;
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void PrintRenderFrameHelper::InitiatePrintAndroid() {
+  ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint) {
+    return;
+  }
+
+  if (print_in_progress_ || render_frame_gone_ || !render_frame()) {
+    return;
+  }
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    return;
+  }
+
+  // On Android, `print_in_progress_` remains true throughout the entire system
+  // print session until `FinishPrintAndroid()` is invoked, preventing duplicate
+  // `beforeprint` dispatches while allowing asynchronous rendering.
+  print_in_progress_ = true;
+  frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+}
+
+void PrintRenderFrameHelper::FinishPrintAndroid() {
+  ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint) {
+    return;
+  }
+
+  if (!print_in_progress_) {
+    return;
+  }
+
+  on_stop_loading_closure_.Reset();
+  is_loading_ = false;
+  Reset();
+
+  if (!render_frame_gone_) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    render_frame()->GetWebFrame()->DispatchAfterPrintEvent();
+    // DispatchAfterPrintEvent() runs script, which may delete `this`.
+    if (!weak_this) {
+      return;
+    }
+  }
 
   print_in_progress_ = false;
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void PrintRenderFrameHelper::WillBeDestroyed() {
   // TODO(crbug.com/40094746): Handle unpausing here when PrintRenderFrameHelper
@@ -1327,18 +1378,24 @@ void PrintRenderFrameHelper::PrintRequestedPagesInternal(
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
 
 #if BUILDFLAG(IS_ANDROID)
-  bool is_scripted = print_in_progress_;
+  bool has_external_lifecycle = print_in_progress_;
 #else
-  constexpr bool is_scripted = false;
+  constexpr bool has_external_lifecycle = false;
 #endif
 
-  if (!already_notified_frame && !is_scripted) {
-    frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
-    // Don't print if the RenderFrame is gone.
-    if (render_frame_gone_) {
-      return;
+  if (!already_notified_frame) {
+    // `beforeprint` may already have been dispatched outside of this method:
+    // by `ScriptedPrint()` (nested run loop) or by `InitiatePrintAndroid()`.
+    if (!has_external_lifecycle) {
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
+      frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+      // Don't print if the RenderFrame is gone.
+      if (!weak_this || render_frame_gone_) {
+        return;
+      }
     }
 
+    // Always give the document a chance to load print-only/lazy resources.
     is_loading_ = frame->WillPrintSoon();
     if (is_loading_) {
       on_stop_loading_closure_ = base::BindOnce(
@@ -1359,7 +1416,7 @@ void PrintRenderFrameHelper::PrintRequestedPagesInternal(
     return;
   }
 
-  if (!is_scripted) {
+  if (!has_external_lifecycle) {
     frame->DispatchAfterPrintEvent();
   }
   // WARNING: `this` may be gone at this point. Do not do any more work here and

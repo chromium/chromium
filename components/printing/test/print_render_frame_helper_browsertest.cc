@@ -477,6 +477,13 @@ class TestPrintManagerHost
     std::move(quit_closure_).Run();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetupScriptedPrintAndroid(
+      SetupScriptedPrintAndroidCallback callback) override {
+    std::move(callback).Run();
+  }
+#endif
+
   uint32_t number_pages_ = 0;
   bool is_setup_scripted_print_preview_ = false;
   bool is_printed_ = false;
@@ -573,6 +580,14 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     GetPrintRenderFrameHelper()->PrintRequestedPages();
     base::RunLoop().RunUntilIdle();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void OnInitiatePrint() {
+    GetPrintRenderFrameHelper()->InitiatePrintAndroid();
+  }
+
+  void OnFinishPrint() { GetPrintRenderFrameHelper()->FinishPrintAndroid(); }
+#endif
 
   void OnPrintPagesInFrame(std::string_view frame_name) {
     blink::WebFrame* frame =
@@ -705,6 +720,88 @@ class MAYBE_PrintRenderFrameHelperTest : public PrintRenderFrameHelperTestBase {
       const MAYBE_PrintRenderFrameHelperTest&) = delete;
   ~MAYBE_PrintRenderFrameHelperTest() override = default;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+class PrintRenderFrameHelperAndroidTest
+    : public PrintRenderFrameHelperTestBase {
+ public:
+  PrintRenderFrameHelperAndroidTest() = default;
+  ~PrintRenderFrameHelperAndroidTest() override = default;
+};
+
+TEST_F(PrintRenderFrameHelperAndroidTest, AndroidThreeStagePrintLifecycle) {
+  LoadHTML(kBeforeAfterPrintHtml);
+  ExpectNoBeforeNoAfterPrintEvent();
+  print_manager()->SetExpectedPagesCount(1);
+
+  // Stage 1: `InitiatePrintAndroid()` dispatches `beforeprint` early.
+  OnInitiatePrint();
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // Redundant `InitiatePrintAndroid()` calls should not dispatch `beforeprint`
+  // again.
+  OnInitiatePrint();
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // Stage 2: `PrintRequestedPages()` prints the document.
+  // It does not re-dispatch `beforeprint` or prematurely dispatch `afterprint`.
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // Stage 3: `FinishPrintAndroid()` concludes the session and dispatches
+  // `afterprint`.
+  OnFinishPrint();
+  ExpectOneBeforeOneAfterPrintEvent();
+
+  // Redundant `FinishPrintAndroid()` calls should safely no-op.
+  OnFinishPrint();
+  ExpectOneBeforeOneAfterPrintEvent();
+}
+
+TEST_F(PrintRenderFrameHelperAndroidTest, AndroidWindowPrint) {
+  LoadHTML(kBeforeAfterPrintHtml);
+  ExpectNoBeforeNoAfterPrintEvent();
+  print_manager()->SetExpectedPagesCount(1);
+
+  // `window.print()` dispatches `beforeprint`, but `afterprint` is deferred.
+  PrintWithJavaScript();
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // Framework requests the document via `onWrite()`.
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // Session concludes and dispatches `afterprint`.
+  OnFinishPrint();
+  ExpectOneBeforeOneAfterPrintEvent();
+
+  // Redundant `FinishPrintAndroid()` calls should safely no-op.
+  OnFinishPrint();
+  ExpectOneBeforeOneAfterPrintEvent();
+}
+
+TEST_F(PrintRenderFrameHelperAndroidTest,
+       WindowPrintAfterInitiatePrintBailsOut) {
+  LoadHTML(kBeforeAfterPrintHtml);
+  ExpectNoBeforeNoAfterPrintEvent();
+  print_manager()->SetExpectedPagesCount(1);
+
+  // Initiate print puts the frame into `print_in_progress_`.
+  OnInitiatePrint();
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // `window.print()` while `print_in_progress_` is already true should
+  // immediately bail out without re-dispatching `beforeprint` or printing.
+  PrintWithJavaScript();
+  ExpectOneBeforeNoAfterPrintEvent();
+
+  // `FinishPrintAndroid()` cleans up the session and dispatches `afterprint`.
+  OnFinishPrint();
+  ExpectOneBeforeOneAfterPrintEvent();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // This tests only for platforms without print preview.
 #if !BUILDFLAG(ENABLE_PRINT_PREVIEW)

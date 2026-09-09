@@ -273,6 +273,10 @@ class PrintRenderFrameHelper
   void PrintPreview(base::DictValue settings) override;
   void OnPrintPreviewDialogClosed() override;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(IS_ANDROID)
+  void InitiatePrintAndroid() override;
+  void FinishPrintAndroid() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
                          PrintFrameContentCallback callback) override;
   void PrintingDone(bool success) override;
@@ -651,6 +655,9 @@ class PrintRenderFrameHelper
 
   ScriptingThrottler scripting_throttler_;
 
+  // Indicates that printing has started. On Android in the 3-stage print
+  // lifecycle, this is set by InitiatePrintAndroid() and remains true until
+  // FinishPrintAndroid() is invoked.
   bool print_in_progress_ = false;
   PrintPreviewContext print_preview_context_;
   bool is_loading_ = false;

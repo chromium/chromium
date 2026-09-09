@@ -336,6 +336,17 @@ interface PrintRenderFrame {
   [EnableIf=enable_print_preview]
   OnPrintPreviewDialogClosed();
 
+  // Tells the RenderFrame to dispatch the beforeprint event early, before the
+  // Android print framework asks for the document content. The actual printing
+  // mode is entered later, by PrintRequestedPages().
+  [EnableIf=is_android]
+  InitiatePrintAndroid();
+
+  // Tells the RenderFrame that the Android print session ended (either
+  // completed or cancelled), so it can dispatch the afterprint event.
+  [EnableIf=is_android]
+  FinishPrintAndroid();
+
   // Prints the content of an out-of-process subframe. Replies back to the
   // browser the rendered subframe content that was requested.
   PrintFrameContent(PrintFrameContentParams params)

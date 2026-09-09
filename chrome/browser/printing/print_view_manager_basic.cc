@@ -71,6 +71,28 @@ void PrintViewManagerBasic::BindPrintManagerHost(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+bool PrintViewManagerBasic::InitiatePrint(content::RenderFrameHost* rfh) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (IsCrashed() || !rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
+    return false;
+  }
+
+  GetPrintRenderFrame(rfh)->InitiatePrintAndroid();
+  return true;
+}
+
+void PrintViewManagerBasic::FinishPrint(content::RenderFrameHost* rfh) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // FinishPrint is a teardown operation. It must be delivered as long as the
+  // frame is live, even if inactive (e.g. backgrounded or in BackForwardCache),
+  // so the renderer does not permanently retain `print_in_progress_ = true`.
+  if (IsCrashed() || !rfh || !rfh->IsRenderFrameLive()) {
+    return;
+  }
+
+  GetPrintRenderFrame(rfh)->FinishPrintAndroid();
+}
+
 void PrintViewManagerBasic::SetupScriptedPrintAndroid(
     SetupScriptedPrintAndroidCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -78,6 +100,7 @@ void PrintViewManagerBasic::SetupScriptedPrintAndroid(
   DCHECK(rfh.IsRenderFrameLive());
   if (!rfh.IsActive() || !web_contents() ||
       !web_contents()->GetTopLevelNativeWindow()) {
+    FinishPrint(&rfh);
     std::move(callback).Run();
     return;
   }

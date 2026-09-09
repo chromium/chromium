@@ -31,11 +31,19 @@ class PrintViewManagerBasic
       content::RenderFrameHost* rfh);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Asks `rfh` to dispatch beforeprint early, before the Android print
+  // framework requests the document content. Returns true if the IPC was sent,
+  // or false if `rfh` cannot receive the message.
+  bool InitiatePrint(content::RenderFrameHost* rfh);
+
+  // Finishes the print session for `rfh`.
+  void FinishPrint(content::RenderFrameHost* rfh);
+
   // printing::PrintManager:
   void SetupScriptedPrintAndroid(
       SetupScriptedPrintAndroidCallback callback) override;
   void PdfWritingDone(int page_count) override;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   explicit PrintViewManagerBasic(content::WebContents* web_contents);
