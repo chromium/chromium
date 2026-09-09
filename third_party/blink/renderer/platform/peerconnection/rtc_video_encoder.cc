@@ -347,6 +347,17 @@ bool IsValidTemporalSVC(
   return (num_temporal_layers <= 3);
 }
 
+void CopyColorSpaceFromNativeFrame(const webrtc::VideoFrameBuffer& from_buffer,
+                                   scoped_refptr<media::VideoFrame> to_frame) {
+  if (from_buffer.type() != webrtc::VideoFrameBuffer::Type::kNative) {
+    LOG(ERROR) << "Color space information lost because frame is not kNative";
+    return;
+  }
+  const blink::WebRtcVideoFrameAdapterInterface* frame_adapter =
+      static_cast<const blink::WebRtcVideoFrameAdapterInterface*>(&from_buffer);
+  to_frame->set_color_space(frame_adapter->getMediaVideoFrame()->ColorSpace());
+}
+
 }  // namespace
 
 namespace blink {
@@ -2054,6 +2065,7 @@ RTCVideoEncoder::Impl::CreateUnownedMemoryFrameByWebRTCVideoFrameBuffer(
          "Failed to convert WebRTC mapped buffer to media::VideoFrame"});
     return nullptr;
   }
+  CopyColorSpaceFromNativeFrame(frame_buffer, frame);
   return frame;
 }
 
@@ -2089,6 +2101,7 @@ RTCVideoEncoder::Impl::CreateI420SharedMemoryFrameByLibyuv(
                        "Failed to create input buffer"});
     return nullptr;
   }
+  CopyColorSpaceFromNativeFrame(frame_buffer, frame);
 
   // |frame| is STORAGE_UNOWNED_MEMORY at this point. Writing the data is
   // allowed.
