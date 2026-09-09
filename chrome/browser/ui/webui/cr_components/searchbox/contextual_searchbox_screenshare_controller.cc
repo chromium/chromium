@@ -34,6 +34,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -154,10 +155,33 @@ void ContextualSearchboxScreenshareController::StartScreenshare(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
+  StartScreenshareInternal(prefer_entire_screen, /*is_region_capture=*/false,
+                           std::move(callback));
+#else
+  std::move(callback).Run(std::nullopt);
+#endif
+}
+
+void ContextualSearchboxScreenshareController::CaptureRegionScreenshot(
+    CaptureRegionScreenshotCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  StartScreenshareInternal(/*prefer_entire_screen=*/true,
+                           /*is_region_capture=*/true, std::move(callback));
+#else
+  std::move(callback).Run(std::nullopt);
+#endif
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualSearchboxScreenshareController::StartScreenshareInternal(
+    bool prefer_entire_screen,
+    bool is_region_capture,
+    StartScreenshareCallback callback) {
   if (IsScreenshareInProgress()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
+
   bool use_native_picker = false;
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSMajorVersion() >= 14) {
@@ -169,8 +193,18 @@ void ContextualSearchboxScreenshareController::StartScreenshare(
   auto safe_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
   if (!use_native_picker) {
-    FallbackToChromeDefaultPicker(prefer_entire_screen,
+#if BUILDFLAG(IS_MAC)
+    FallbackToChromeDefaultPicker(prefer_entire_screen, is_region_capture,
                                   std::move(safe_callback));
+#else
+    if (is_region_capture) {
+      CaptureFullDesktopRegionScreenshot(std::move(safe_callback));
+    } else {
+      FallbackToChromeDefaultPicker(prefer_entire_screen,
+                                    /*is_region_capture=*/false,
+                                    std::move(safe_callback));
+    }
+#endif
     return;
   }
 
@@ -198,7 +232,7 @@ void ContextualSearchboxScreenshareController::StartScreenshare(
               base::BindOnce(&ContextualSearchboxScreenshareController::
                                  OnNativePickerSourceSelected,
                              weak_ptr_factory_.GetWeakPtr(),
-                             target_capture_type,
+                             target_capture_type, is_region_capture,
                              std::move(picker_selected_callback))),
           base::BindPostTask(
               content::GetUIThreadTaskRunner({}),
@@ -208,24 +242,36 @@ void ContextualSearchboxScreenshareController::StartScreenshare(
                              std::move(picker_cancelled_callback))),
           base::BindPostTask(
               content::GetUIThreadTaskRunner({}),
+#if BUILDFLAG(IS_MAC)
               base::BindOnce(&ContextualSearchboxScreenshareController::
                                  FallbackToChromeDefaultPicker,
                              weak_ptr_factory_.GetWeakPtr(),
-                             prefer_entire_screen,
-                             std::move(fallback_callback)))));
+                             prefer_entire_screen, is_region_capture,
+                             std::move(fallback_callback))
 #else
-  std::move(callback).Run(std::nullopt);
+              is_region_capture
+                  ? base::BindOnce(&ContextualSearchboxScreenshareController::
+                                       CaptureFullDesktopRegionScreenshot,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(fallback_callback))
+                  : base::BindOnce(&ContextualSearchboxScreenshareController::
+                                       FallbackToChromeDefaultPicker,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   prefer_entire_screen,
+                                   /*is_region_capture=*/false,
+                                   std::move(fallback_callback))
 #endif
+                  )));
 }
 
-void ContextualSearchboxScreenshareController::CaptureRegionScreenshot(
-    CaptureRegionScreenshotCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
+void ContextualSearchboxScreenshareController::
+    CaptureFullDesktopRegionScreenshot(
+        CaptureRegionScreenshotCallback callback) {
   if (IsScreenshareInProgress()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-  is_region_overlay_open_ = true;
+
   NotifyScreensharePickerOpened();
   // Captures the full virtual desktop across all connected monitors
   // (webrtc::kFullDesktopScreenId = -1).
@@ -234,12 +280,8 @@ void ContextualSearchboxScreenshareController::CaptureRegionScreenshot(
                                  kFullDesktopScreenId);
   CaptureAndUploadScreenshot(source, std::move(callback),
                              RegionCaptureSource::AllDisplays());
-#else
-  std::move(callback).Run(std::nullopt);
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ContextualSearchboxScreenshareController::OnNativePickerCreated(
     content::DesktopMediaID::Id /*session_id*/) {
   is_native_picker_open_ = true;
@@ -248,6 +290,7 @@ void ContextualSearchboxScreenshareController::OnNativePickerCreated(
 
 void ContextualSearchboxScreenshareController::OnNativePickerSourceSelected(
     content::DesktopMediaID::Type capture_type,
+    bool is_region_capture,
     StartScreenshareCallback callback,
     webrtc::DesktopCapturer::Source selected_source) {
   is_native_picker_open_ = false;
@@ -255,7 +298,26 @@ void ContextualSearchboxScreenshareController::OnNativePickerSourceSelected(
 #if BUILDFLAG(IS_MAC)
   media_id.id_type = content::DesktopMediaID::IdType::kNativePickerSession;
 #endif
-  CaptureAndUploadScreenshot(media_id, std::move(callback));
+
+  std::optional<RegionCaptureSource> region_source;
+  if (is_region_capture) {
+    if (selected_source.display_id != webrtc::kInvalidDisplayId) {
+      region_source =
+          RegionCaptureSource::ForDisplay(selected_source.display_id);
+    } else {
+      region_source = RegionCaptureSource{
+          .type = RegionCaptureSource::Type::kSpecificDisplay};
+      if (auto* screen = display::Screen::Get()) {
+        // TODO(crbug.com/532198850): Native picker screenshots currently don't
+        // populate display_id, so we fallback to the display of the cursor,
+        // which isn't 100% correct. Once fixed, remove this fallback.
+        region_source->display_id =
+            screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint()).id();
+      }
+    }
+  }
+
+  CaptureAndUploadScreenshot(media_id, std::move(callback), region_source);
 }
 
 void ContextualSearchboxScreenshareController::OnNativePickerCancelled(
@@ -267,6 +329,7 @@ void ContextualSearchboxScreenshareController::OnNativePickerCancelled(
 
 void ContextualSearchboxScreenshareController::FallbackToChromeDefaultPicker(
     bool prefer_entire_screen,
+    bool is_region_capture,
     StartScreenshareCallback callback) {
   is_native_picker_open_ = false;
   if (IsScreenshareInProgress()) {
@@ -276,6 +339,7 @@ void ContextualSearchboxScreenshareController::FallbackToChromeDefaultPicker(
   chrome_default_picker_destroyed_ = false;
   pending_screenshare_source_.reset();
   pending_screenshare_callback_.Reset();
+  pending_region_capture_source_.reset();
   screenshare_picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(picker_factory_);
 
@@ -301,8 +365,13 @@ void ContextualSearchboxScreenshareController::FallbackToChromeDefaultPicker(
   picker_params.target_name = picker_params.app_name;
   picker_params.modality = ui::mojom::ModalType::kWindow;
 
-  std::vector<DesktopMediaList::Type> sources = {
-      DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow};
+  std::vector<DesktopMediaList::Type> sources;
+  if (is_region_capture) {
+    sources = {DesktopMediaList::Type::kScreen};
+  } else {
+    sources = {DesktopMediaList::Type::kScreen,
+               DesktopMediaList::Type::kWindow};
+  }
   picker_params.preferred_display_surface =
       prefer_entire_screen ? blink::mojom::PreferredDisplaySurface::MONITOR
                            : blink::mojom::PreferredDisplaySurface::WINDOW;
@@ -314,7 +383,8 @@ void ContextualSearchboxScreenshareController::FallbackToChromeDefaultPicker(
       picker_params, sources,
       base::BindOnce(&ContextualSearchboxScreenshareController::
                          OnChromeDefaultPickerResults,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     is_region_capture),
       base::BindOnce(&ContextualSearchboxScreenshareController::
                          NotifyScreensharePickerOpened,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -322,6 +392,7 @@ void ContextualSearchboxScreenshareController::FallbackToChromeDefaultPicker(
 
 void ContextualSearchboxScreenshareController::OnChromeDefaultPickerResults(
     StartScreenshareCallback callback,
+    bool is_region_capture,
     const std::string& err,
     content::DesktopMediaID source) {
   screenshare_picker_controller_.reset();
@@ -331,12 +402,17 @@ void ContextualSearchboxScreenshareController::OnChromeDefaultPickerResults(
     std::move(callback).Run(std::nullopt);
     return;
   }
+  std::optional<RegionCaptureSource> region_source;
+  if (is_region_capture) {
+    region_source = RegionCaptureSource::ForDisplay(source.id);
+  }
   if (chrome_default_picker_destroyed_) {
     chrome_default_picker_destroyed_ = false;
-    CaptureAndUploadScreenshot(source, std::move(callback));
+    CaptureAndUploadScreenshot(source, std::move(callback), region_source);
   } else {
     pending_screenshare_source_ = source;
     pending_screenshare_callback_ = std::move(callback);
+    pending_region_capture_source_ = region_source;
   }
 }
 
@@ -347,7 +423,10 @@ void ContextualSearchboxScreenshareController::
     content::DesktopMediaID source = pending_screenshare_source_.value();
     pending_screenshare_source_.reset();
     auto callback = std::move(pending_screenshare_callback_);
-    CaptureAndUploadScreenshot(source, std::move(callback));
+    std::optional<RegionCaptureSource> region_source =
+        std::move(pending_region_capture_source_);
+    pending_region_capture_source_.reset();
+    CaptureAndUploadScreenshot(source, std::move(callback), region_source);
   } else {
     chrome_default_picker_destroyed_ = true;
   }
@@ -358,7 +437,6 @@ void ContextualSearchboxScreenshareController::CaptureAndUploadScreenshot(
     StartScreenshareCallback callback,
     std::optional<RegionCaptureSource> region_capture_source) {
   is_capturing_ = true;
-  const bool is_region_capture = region_capture_source.has_value();
   auto safe_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
   active_screenshot_request_ = content::desktop_capture::CaptureScreenshot(
@@ -368,9 +446,6 @@ void ContextualSearchboxScreenshareController::CaptureAndUploadScreenshot(
           weak_ptr_factory_.GetWeakPtr(), std::move(safe_callback),
           std::move(region_capture_source)));
   if (!active_screenshot_request_) {
-    if (is_region_capture) {
-      is_region_overlay_open_ = false;
-    }
     NotifyScreensharePickerClosed();
     is_capturing_ = false;
   }
@@ -386,7 +461,6 @@ void ContextualSearchboxScreenshareController::OnScreenshotCaptured(
   }
   if (bitmap.empty()) {
     if (region_capture_source) {
-      is_region_overlay_open_ = false;
       NotifyScreensharePickerClosed();
     }
     is_capturing_ = false;
@@ -396,13 +470,13 @@ void ContextualSearchboxScreenshareController::OnScreenshotCaptured(
 
   if (region_capture_source) {
     if (delegate_) {
+      is_region_overlay_open_ = true;
       delegate_->ShowRegionSelectOverlay(
           bitmap, *region_capture_source,
           base::BindOnce(
               &ContextualSearchboxScreenshareController::OnRegionSelected,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     } else {
-      is_region_overlay_open_ = false;
       NotifyScreensharePickerClosed();
       is_capturing_ = false;
       std::move(callback).Run(std::nullopt);
