@@ -31,6 +31,13 @@ JNI_EnterpriseSignalsDisclaimerBridge_SetAccountAcknowledgedSignalsDisclaimer(
       *g_browser_process->local_state(), gaia_id);
 }
 
+static void JNI_EnterpriseSignalsDisclaimerBridge_RemoveUnknownAccounts(
+    JNIEnv* env,
+    const std::vector<GaiaId>& gaia_ids) {
+  enterprise_signals_disclaimer::RemoveUnknownAccounts(
+      *g_browser_process->local_state(), gaia_ids);
+}
+
 DEFINE_JNI(EnterpriseSignalsDisclaimerBridge)
 
 }  // namespace enterprise_signals

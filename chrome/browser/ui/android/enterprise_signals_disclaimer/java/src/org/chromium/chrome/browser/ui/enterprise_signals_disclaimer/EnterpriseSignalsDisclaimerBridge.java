@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.google_apis.gaia.GaiaId;
 
+import java.util.List;
+
 /** Native bridge for Enterprise Signals Disclaimer. */
 @NullMarked
 class EnterpriseSignalsDisclaimerBridge {
@@ -24,10 +26,16 @@ class EnterpriseSignalsDisclaimerBridge {
         EnterpriseSignalsDisclaimerBridgeJni.get().setAccountAcknowledgedSignalsDisclaimer(gaiaId);
     }
 
+    public static void removeUnknownAccounts(List<GaiaId> gaiaIds) {
+        EnterpriseSignalsDisclaimerBridgeJni.get().removeUnknownAccounts(gaiaIds);
+    }
+
     @NativeMethods
     interface Natives {
         boolean hasAccountAcknowledgedSignalsDisclaimer(@JniType("GaiaId") GaiaId gaiaId);
 
         void setAccountAcknowledgedSignalsDisclaimer(@JniType("GaiaId") GaiaId gaiaId);
+
+        void removeUnknownAccounts(@JniType("std::vector<GaiaId>") List<GaiaId> gaiaIds);
     }
 }
