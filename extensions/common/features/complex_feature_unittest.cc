@@ -8,12 +8,13 @@
 #include <string>
 #include <string_view>
 
-#include "base/test/bind.h"
+#include "base/auto_reset.h"
 #include "base/test/gtest_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
+#include "extensions/common/features/feature_test_util.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/features/simple_feature_test_constants.h"
 #include "extensions/common/manifest.h"
@@ -35,6 +36,34 @@ constexpr auto kExtensionOnly =
     std::to_array<Manifest::Type>({Manifest::Type::kExtension});
 constexpr auto kLegacyPackagedAppOnly =
     std::to_array<Manifest::Type>({Manifest::Type::kLegacyPackagedApp});
+
+// The delegated availability check handler is a plain function pointer, so the
+// state a test wants to observe lives here rather than in a capture.
+struct DelegatedCheckRecord {
+  uint32_t call_count = 0;
+  std::string_view expected_name;
+};
+
+DelegatedCheckRecord& delegated_check_record() {
+  static DelegatedCheckRecord record;
+  return record;
+}
+
+constexpr uint32_t kSuccessCallCount = 2;
+
+bool CountingDelegatedCheck(std::string_view api_full_name,
+                            const Extension* extension,
+                            mojom::ContextType context,
+                            const GURL& url,
+                            Feature::Platform platform,
+                            int context_id,
+                            bool check_developer_mode,
+                            const ContextData& context_data) {
+  DelegatedCheckRecord& record = delegated_check_record();
+  ++record.call_count;
+  EXPECT_EQ(record.expected_name, api_full_name);
+  return record.call_count % kSuccessCallCount == 0u;
+}
 
 }  // namespace
 
@@ -313,20 +342,9 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
     };
     ComplexFeature complex_feature{StaticFeatureData(kData)};
     EXPECT_FALSE(complex_feature.RequiresDelegatedAvailabilityCheck());
-    EXPECT_FALSE(complex_feature.HasDelegatedAvailabilityCheckHandler());
+    EXPECT_EQ(nullptr, FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(
+                           complex_feature));
   }
-
-  auto make_delegated_availability_check = [](uint32_t* call_count) {
-    return base::BindLambdaForTesting(
-        [call_count](const std::string& api_full_name,
-                     const Extension* extension, mojom::ContextType context,
-                     const GURL& url, Feature::Platform platform,
-                     int context_id, bool check_developer_mode,
-                     const ContextData& context_data) {
-          ++*call_count;
-          return *call_count % 2u == 0u;
-        });
-  };
 
   // Test a complex feature where |requires_delegated_availability_check| is set
   // on multiple sub-features. The first sub-feature that requires the
@@ -334,26 +352,36 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
   // In this case, the delegated availability check handler should be called
   // twice.
   {
+    static constexpr char kDelegatedFeatureName[] = "delegatedFeature";
+    DelegatedCheckRecord& record = delegated_check_record();
+    base::AutoReset<DelegatedCheckRecord> record_reset(&record,
+                                                       DelegatedCheckRecord{});
+    record.expected_name = kDelegatedFeatureName;
     static constexpr auto kFeatures = std::to_array<SimpleFeatureData>({
-        {.config = {.contexts = StaticSpan(kPrivilegedExtensionOnly)}},
-        {.config = {.requires_delegated_availability_check = true}},
-        {.config = {.requires_delegated_availability_check = true}},
+        {.feature = {.name = kDelegatedFeatureName},
+         .config = {.contexts = StaticSpan(kPrivilegedExtensionOnly)}},
+        {.feature = {.name = kDelegatedFeatureName},
+         .config = {.requires_delegated_availability_check = true}},
+        {.feature = {.name = kDelegatedFeatureName},
+         .config = {.requires_delegated_availability_check = true}},
     });
     static constexpr ComplexFeatureData kData = {
+        .feature = {.name = kDelegatedFeatureName},
         .features = StaticSpan(kFeatures),
         .feature_type = ComplexFeatureType::kSimple,
     };
     ComplexFeature complex_feature{StaticFeatureData(kData)};
     EXPECT_TRUE(complex_feature.RequiresDelegatedAvailabilityCheck());
-    EXPECT_FALSE(complex_feature.HasDelegatedAvailabilityCheckHandler());
+    EXPECT_EQ(nullptr, FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(
+                           complex_feature));
 
-    // A call to SetDelegatedAvailabilityCheckHandler() should set the
-    // handler to the sub-features that require it.
-    uint32_t delegated_availability_check_call_count = 0;
-    complex_feature.SetDelegatedAvailabilityCheckHandler(
-        make_delegated_availability_check(
-            &delegated_availability_check_call_count));
-    EXPECT_TRUE(complex_feature.HasDelegatedAvailabilityCheckHandler());
+    // Install the handler on the complex feature. Availability checks pass it
+    // to temporary child facades that require delegated checks.
+    FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers scoped_handler(
+        complex_feature, &CountingDelegatedCheck);
+    EXPECT_EQ(
+        &CountingDelegatedCheck,
+        FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(complex_feature));
 
     // This feature should be available the second time that the delegated
     // availability check is called.
@@ -363,53 +391,61 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
                       /*extension=*/nullptr, mojom::ContextType::kUnspecified,
                       GURL(), kUnspecifiedContextId, TestContextData())
                   .result());
-    EXPECT_EQ(2u, delegated_availability_check_call_count);
+    EXPECT_EQ(2u, record.call_count);
   }
 
-  static constexpr auto kDescriptorFeatures = std::to_array<SimpleFeatureData>({
-      {
-          .feature = {.name = "descriptor"},
-          .config =
-              {
-                  .contexts = StaticSpan(kPrivilegedExtensionOnly),
-              },
-      },
-      {
-          .feature = {.name = "descriptor"},
-          .config =
-              {
-                  .requires_delegated_availability_check = true,
-              },
-      },
-      {
-          .feature = {.name = "descriptor"},
-          .config =
-              {
-                  .requires_delegated_availability_check = true,
-              },
-      },
-  });
-  static constexpr ComplexFeatureData kDescriptor = {
-      .feature = {.name = "descriptor"},
-      .features = StaticSpan(kDescriptorFeatures),
-      .feature_type = ComplexFeatureType::kSimple,
-  };
-  ComplexFeature descriptor_feature{StaticFeatureData(kDescriptor)};
-  EXPECT_TRUE(descriptor_feature.RequiresDelegatedAvailabilityCheck());
-  uint32_t descriptor_check_call_count = 0;
-  descriptor_feature.SetDelegatedAvailabilityCheckHandler(
-      make_delegated_availability_check(&descriptor_check_call_count));
-  for (int i = 0; i < 2; ++i) {
-    SCOPED_TRACE(i);
-    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
-              descriptor_feature
-                  .IsAvailableToContext(
-                      /*extension=*/nullptr, mojom::ContextType::kUnspecified,
-                      GURL(), kUnspecifiedContextId, TestContextData())
-                  .result());
+  {
+    DelegatedCheckRecord& record = delegated_check_record();
+    base::AutoReset<DelegatedCheckRecord> record_reset(&record,
+                                                       DelegatedCheckRecord{});
+    record.expected_name = "descriptor";
+    static constexpr auto kDescriptorFeatures =
+        std::to_array<SimpleFeatureData>({
+            {
+                .feature = {.name = "descriptor"},
+                .config =
+                    {
+                        .contexts = StaticSpan(kPrivilegedExtensionOnly),
+                    },
+            },
+            {
+                .feature = {.name = "descriptor"},
+                .config =
+                    {
+                        .requires_delegated_availability_check = true,
+                    },
+            },
+            {
+                .feature = {.name = "descriptor"},
+                .config =
+                    {
+                        .requires_delegated_availability_check = true,
+                    },
+            },
+        });
+    static constexpr ComplexFeatureData kDescriptor = {
+        .feature = {.name = "descriptor"},
+        .features = StaticSpan(kDescriptorFeatures),
+        .feature_type = ComplexFeatureType::kSimple,
+    };
+    ComplexFeature descriptor_feature{StaticFeatureData(kDescriptor)};
+    EXPECT_TRUE(descriptor_feature.RequiresDelegatedAvailabilityCheck());
+    FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers scoped_handler(
+        descriptor_feature, &CountingDelegatedCheck);
+    for (int i = 0; i < 2; ++i) {
+      SCOPED_TRACE(i);
+      EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+                descriptor_feature
+                    .IsAvailableToContext(
+                        /*extension=*/nullptr, mojom::ContextType::kUnspecified,
+                        GURL(), kUnspecifiedContextId, TestContextData())
+                    .result());
+    }
+    EXPECT_EQ(4u, record.call_count);
+    EXPECT_EQ(&CountingDelegatedCheck,
+              FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(
+                  descriptor_feature));
   }
-  EXPECT_EQ(4u, descriptor_check_call_count);
-  EXPECT_TRUE(descriptor_feature.HasDelegatedAvailabilityCheckHandler());
 }
 
 TEST(ComplexFeatureTest, PreservesFirstFailureMessage) {

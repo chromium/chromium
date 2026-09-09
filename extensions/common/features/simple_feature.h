@@ -133,7 +133,9 @@ class SimpleFeature : public Feature {
                                     int context_id,
                                     const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, GURL(), platform,
-                                    context_id, true, context_data);
+                                    context_id, /*check_developer_mode=*/true,
+                                    context_data,
+                                    /*delegated_handler=*/nullptr);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     mojom::ContextType context,
@@ -141,8 +143,9 @@ class SimpleFeature : public Feature {
                                     int context_id,
                                     const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, url,
-                                    GetCurrentPlatform(), context_id, true,
-                                    context_data);
+                                    GetCurrentPlatform(), context_id,
+                                    /*check_developer_mode=*/true, context_data,
+                                    /*delegated_handler=*/nullptr);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     mojom::ContextType context,
@@ -151,7 +154,9 @@ class SimpleFeature : public Feature {
                                     int context_id,
                                     const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, url, platform,
-                                    context_id, true, context_data);
+                                    context_id, /*check_developer_mode=*/true,
+                                    context_data,
+                                    /*delegated_handler=*/nullptr);
   }
 
   // extension::Feature:
@@ -166,9 +171,6 @@ class SimpleFeature : public Feature {
   bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const override;
   bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const override;
   bool RequiresDelegatedAvailabilityCheck() const override;
-  void SetDelegatedAvailabilityCheckHandler(
-      DelegatedAvailabilityCheckHandler handler) override;
-  bool HasDelegatedAvailabilityCheckHandler() const override;
 
   // Similar to mojom::ManifestLocation, these are the classes of locations
   // supported in feature files. These should only be used in this class and in
@@ -221,7 +223,8 @@ class SimpleFeature : public Feature {
       Platform platform,
       int context_id,
       bool check_developer_mode,
-      const ContextData& context_data) const override;
+      const ContextData& context_data,
+      DelegatedAvailabilityCheckHandler delegated_handler) const override;
 
  private:
   friend class ComplexFeature;
@@ -295,17 +298,14 @@ class SimpleFeature : public Feature {
       Platform platform,
       int context_id,
       bool check_developer_mode,
-      const ContextData& context_data) const;
+      const ContextData& context_data,
+      DelegatedAvailabilityCheckHandler delegated_handler) const;
 
   bool MatchesURL(const GURL& url) const;
 
   // Immutable configuration, owned by whoever constructed this feature. For
   // generated features this is static storage; tests own their own copy.
   RAW_PTR_EXCLUSION const SimpleFeatureConfig* simple_feature_config_;
-
-  // If set and the feature needs to be overridden, this is the handler used
-  // to perform the override availability check.
-  DelegatedAvailabilityCheckHandler delegated_availability_check_handler_;
 };
 
 struct SimpleFeatureData {

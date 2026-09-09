@@ -4,10 +4,6 @@
 
 #include "extensions/common/features/feature.h"
 
-#include <map>
-#include <memory>
-#include <string_view>
-
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
@@ -16,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {
@@ -51,8 +48,22 @@ Feature::Feature(const FeatureData* feature_data)
 
 Feature::~Feature() = default;
 
-bool Feature::HasDelegatedAvailabilityCheckHandlerForTesting() const {
-  return HasDelegatedAvailabilityCheckHandler();
+Feature::DelegatedAvailabilityCheckHandler
+Feature::ResolveDelegatedAvailabilityCheckHandler(
+    DelegatedAvailabilityCheckHandler handler) const {
+  return handler ? handler : delegated_availability_check_handler();
+}
+
+Feature::DelegatedAvailabilityCheckHandler
+Feature::delegated_availability_check_handler() const {
+  if (!RequiresDelegatedAvailabilityCheck()) {
+    return nullptr;
+  }
+
+  const auto& handlers =
+      ExtensionsClient::Get()->GetFeatureDelegatedAvailabilityCheckMap();
+  const auto it = handlers.find(name());
+  return it == handlers.end() ? nullptr : it->second;
 }
 
 }  // namespace extensions

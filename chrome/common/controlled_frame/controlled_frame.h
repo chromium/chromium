@@ -5,8 +5,7 @@
 #ifndef CHROME_COMMON_CONTROLLED_FRAME_CONTROLLED_FRAME_H_
 #define CHROME_COMMON_CONTROLLED_FRAME_CONTROLLED_FRAME_H_
 
-#include <memory>
-#include <string>
+#include <string_view>
 
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/context_data.h"
@@ -22,7 +21,7 @@ namespace controlled_frame {
 // Returns the availability of an API that requires //chrome-level checks (as
 // opposed to //extensions-level checks). For certain platforms (e.g. Android)
 // some features may always return false.
-bool AvailabilityCheck(const std::string& api_full_name,
+bool AvailabilityCheck(std::string_view api_full_name,
                        const extensions::Extension* extension,
                        extensions::mojom::ContextType context,
                        const GURL& url,

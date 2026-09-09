@@ -13,6 +13,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/complex_feature.h"
+#include "extensions/common/features/feature_test_util.h"
 #include "extensions/test/test_extensions_client.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -45,7 +46,8 @@ IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
               feature->RequiresDelegatedAvailabilityCheck())
         << feature_name;
     EXPECT_EQ(is_delegated_feature,
-              feature->HasDelegatedAvailabilityCheckHandlerForTesting())
+              FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(*feature) !=
+                  nullptr)
         << feature_name;
   }
 }

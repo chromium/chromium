@@ -45,30 +45,21 @@ ComplexFeature::~ComplexFeature() = default;
 bool ComplexFeature::VisitFeatures(
     base::FunctionRef<bool(const Feature&)> visitor) const {
   for (const auto& data : complex_feature_data_->features.span()) {
-    auto visit = [&](SimpleFeature& feature) {
-      if (feature.RequiresDelegatedAvailabilityCheck() &&
-          !delegated_availability_check_handler_.is_null()) {
-        feature.SetDelegatedAvailabilityCheckHandler(
-            delegated_availability_check_handler_);
-      }
-      return visitor(feature);
-    };
-
     bool should_continue = false;
     switch (complex_feature_data_->feature_type) {
       case ComplexFeatureType::kSimple: {
         SimpleFeature feature(&data);
-        should_continue = visit(feature);
+        should_continue = visitor(feature);
         break;
       }
       case ComplexFeatureType::kManifest: {
         ManifestFeature feature(&data);
-        should_continue = visit(feature);
+        should_continue = visitor(feature);
         break;
       }
       case ComplexFeatureType::kPermission: {
         PermissionFeature feature(&data);
-        should_continue = visit(feature);
+        should_continue = visitor(feature);
         break;
       }
     }
@@ -115,11 +106,14 @@ Feature::Availability ComplexFeature::IsAvailableToContextImpl(
     Platform platform,
     int context_id,
     bool check_developer_mode,
-    const ContextData& context_data) const {
+    const ContextData& context_data,
+    DelegatedAvailabilityCheckHandler delegated_handler) const {
+  const DelegatedAvailabilityCheckHandler installed_handler =
+      ResolveDelegatedAvailabilityCheckHandler(delegated_handler);
   return FindFirstAvailability([&](const Feature& feature) {
     return feature.IsAvailableToContextImpl(extension, context, url, platform,
                                             context_id, check_developer_mode,
-                                            context_data);
+                                            context_data, installed_handler);
   });
 }
 
@@ -156,18 +150,6 @@ bool ComplexFeature::IsInternal() const {
 
 bool ComplexFeature::RequiresDelegatedAvailabilityCheck() const {
   return requires_delegated_availability_check_;
-}
-
-void ComplexFeature::SetDelegatedAvailabilityCheckHandler(
-    DelegatedAvailabilityCheckHandler handler) {
-  DCHECK(RequiresDelegatedAvailabilityCheck());
-  DCHECK(!HasDelegatedAvailabilityCheckHandler());
-
-  delegated_availability_check_handler_ = std::move(handler);
-}
-
-bool ComplexFeature::HasDelegatedAvailabilityCheckHandler() const {
-  return !delegated_availability_check_handler_.is_null();
 }
 
 }  // namespace extensions

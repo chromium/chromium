@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/common/controlled_frame/controlled_frame.h"
@@ -50,13 +51,9 @@ CombineAllAvailabilityCheckMaps() {
 
   for (auto& map : map_list) {
     result.merge(map);
-    // DCHECK that none of the keys were overlapping i.e. the map we merged in
-    // is empty now. This is done as a DCHECK rather than a CHECK as it is meant
-    // as a catch for developers adding a new delegated availability check that
-    // might have overlapping keys with an existing one.
-    DCHECK(map.empty()) << "Overlapping feature name key in delegated "
-                           "availability check map for: "
-                        << map.begin()->first;
+    // Overlapping names could silently install the wrong availability policy.
+    CHECK(map.empty()) << "Overlapping delegated availability handler for: "
+                       << map.begin()->first;
   }
   return result;
 }

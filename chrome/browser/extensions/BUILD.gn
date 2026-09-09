@@ -2557,6 +2557,7 @@ source_set("browser_tests") {
     "//extensions/browser:crx_installer",
     "//extensions/browser:webstore_installer",
     "//extensions/browser/updater",
+    "//extensions/common:test_support",
     "//extensions/renderer",
     "//extensions/strings",
     "//services/network/public/cpp:ip_address_space_overrides_test_utils",

@@ -5,11 +5,9 @@
 #include "extensions/common/mime_handler_availability.h"
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -22,7 +20,7 @@ namespace extensions::mime_handler_availability {
 namespace {
 
 bool IsMimeHandlerApiAvailable(
-    const std::string& /*api_full_name*/,
+    std::string_view /*api_full_name*/,
     const extensions::Extension* /*extension*/,
     extensions::mojom::ContextType /*context*/,
     const GURL& /*url*/,
@@ -43,7 +41,7 @@ bool IsMimeHandlerApiAvailable(
 
 Feature::FeatureDelegatedAvailabilityCheckMap CreateAvailabilityCheckMap() {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
-  map.emplace("mimeHandler", base::BindRepeating(&IsMimeHandlerApiAvailable));
+  map.emplace("mimeHandler", &IsMimeHandlerApiAvailable);
   return map;
 }
 

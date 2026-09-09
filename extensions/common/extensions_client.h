@@ -50,6 +50,8 @@ class ExtensionsClient {
   ExtensionsClient& operator=(const ExtensionsClient&) = delete;
   virtual ~ExtensionsClient();
 
+  // Production clients set this before Set() publishes the client. Tests may
+  // replace it when no feature availability checks are running.
   void SetFeatureDelegatedAvailabilityCheckMap(
       Feature::FeatureDelegatedAvailabilityCheckMap map);
   const Feature::FeatureDelegatedAvailabilityCheckMap&

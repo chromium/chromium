@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <set>
-#include <string>
+#include <string_view>
+#include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/test/gtest_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -45,7 +45,7 @@ base::span<const char* const> GetFeatureList() {
   return base::span(feature_list);
 }
 
-bool FeatureDelegatedCheck(const std::string& api_full_name,
+bool FeatureDelegatedCheck(std::string_view api_full_name,
                            const Extension* extension,
                            mojom::ContextType context,
                            const GURL& url,
@@ -61,7 +61,7 @@ CreateFeatureDelegatedAvailabilityCheckMap() {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
   auto feature_list = GetFeatureList();
   for (const auto* item : feature_list) {
-    map.emplace(item, base::BindRepeating(&FeatureDelegatedCheck));
+    map.emplace(item, &FeatureDelegatedCheck);
   }
   return map;
 }
@@ -75,23 +75,33 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
     EXPECT_EQ(2u, map.size());
 
     ASSERT_EQ(1u, map.count("AllowedFeature"));
-    bool allowed_result =
-        map.at("AllowedFeature")
-            .Run("AllowedFeature", /*extension=*/nullptr,
-                 mojom::ContextType::kUnspecified, GURL(),
-                 Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
-                 /*check_developer_mode=*/false, TestContextData());
+    bool allowed_result = map.at("AllowedFeature")(
+        "AllowedFeature", /*extension=*/nullptr,
+        mojom::ContextType::kUnspecified, GURL(),
+        Feature::Platform::UNSPECIFIED_PLATFORM,
+        /*context_id*/ 0,
+        /*check_developer_mode=*/false, TestContextData());
     EXPECT_TRUE(allowed_result);
 
     ASSERT_EQ(1u, map.count("DisallowedFeature"));
-    bool disallowed_result =
-        map.at("DisallowedFeature")
-            .Run("DisallowedFeature", /*extension=*/nullptr,
-                 mojom::ContextType::kUnspecified, GURL(),
-                 Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
-                 /*check_developer_mode=*/false, TestContextData());
+    bool disallowed_result = map.at("DisallowedFeature")(
+        "DisallowedFeature", /*extension=*/nullptr,
+        mojom::ContextType::kUnspecified, GURL(),
+        Feature::Platform::UNSPECIFIED_PLATFORM,
+        /*context_id*/ 0,
+        /*check_developer_mode=*/false, TestContextData());
     EXPECT_FALSE(disallowed_result);
   }
+}
+
+TEST_F(ChromeExtensionsClientTest,
+       RejectsNullFeatureDelegatedAvailabilityCheck) {
+  Feature::FeatureDelegatedAvailabilityCheckMap map;
+  map.emplace("NullFeature", nullptr);
+
+  EXPECT_CHECK_DEATH(
+      ExtensionsClient::Get()->SetFeatureDelegatedAvailabilityCheckMap(
+          std::move(map)));
 }
 
 // Test that a browser action extension returns a path to an icon.

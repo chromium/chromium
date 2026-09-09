@@ -9,7 +9,6 @@
 
 #include <functional>
 #include <map>
-#include <memory>
 #include <set>
 #include <string>
 #include <string_view>
@@ -31,6 +30,7 @@ namespace extensions {
 inline constexpr int kUnspecifiedContextId = -1;
 
 class Extension;
+class FeatureTestPeer;
 
 // A retained pointer to immutable descriptor data. Its consteval constructor
 // enforces static storage and compile-time-readable contents.
@@ -148,15 +148,21 @@ class Feature {
   // Shorthand for delegated availability check handler function signature. The
   // function signature's arguments should contain all of the arguments passed
   // into IsAvailableToContextImpl().
+  //
+  // A plain function pointer rather than a callback: the type requires the
+  // exact signature and prevents captures or bound receivers. Handlers may
+  // consult process-global state, but have no per-registration state and live
+  // for the process lifetime. They run synchronously and must not retain
+  // `api_full_name`.
   using DelegatedAvailabilityCheckHandler =
-      base::RepeatingCallback<bool(const std::string& api_full_name,
-                                   const Extension* extension,
-                                   mojom::ContextType context,
-                                   const GURL& url,
-                                   Platform platform,
-                                   int context_id,
-                                   bool check_developer_mode,
-                                   const ContextData& context_data)>;
+      bool (*)(std::string_view api_full_name,
+               const Extension* extension,
+               mojom::ContextType context,
+               const GURL& url,
+               Platform platform,
+               int context_id,
+               bool check_developer_mode,
+               const ContextData& context_data);
 
   // Mapping Feature::name() to override function.
   using FeatureDelegatedAvailabilityCheckMap =
@@ -211,10 +217,6 @@ class Feature {
   // check.
   virtual bool RequiresDelegatedAvailabilityCheck() const = 0;
 
-  // Sets the feature availability override handler to use.
-  virtual void SetDelegatedAvailabilityCheckHandler(
-      DelegatedAvailabilityCheckHandler handler) = 0;
-
   // Returns true if the feature is available to be parsed into a new extension
   // manifest.
   Availability IsAvailableToManifest(const HashedExtensionId& hashed_id,
@@ -253,7 +255,9 @@ class Feature {
                                     int context_id,
                                     const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, url, platform,
-                                    context_id, true, context_data);
+                                    context_id, /*check_developer_mode=*/true,
+                                    context_data,
+                                    /*delegated_handler=*/nullptr);
   }
 
   Availability IsAvailableToContextIgnoringDevMode(
@@ -265,7 +269,8 @@ class Feature {
       const ContextData& context_data) const {
     return IsAvailableToContextImpl(
         extension, context, url, platform, context_id,
-        /*check_developer_mode=*/false, context_data);
+        /*check_developer_mode=*/false, context_data,
+        /*delegated_handler=*/nullptr);
   }
   // Returns true if the feature is available to the current environment,
   // without needing to know information about an Extension or any other
@@ -281,16 +286,15 @@ class Feature {
   virtual bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const = 0;
   virtual bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const = 0;
 
-  bool HasDelegatedAvailabilityCheckHandlerForTesting() const;
-
  protected:
   friend class SimpleFeature;
   friend class ComplexFeature;
 
   explicit Feature(const FeatureData* feature_data);
 
-  // These parameters should be kept in sync with
-  // DelegatedAvailabilityCheckHandler.
+  // Parameters through `context_data` should be kept in sync with
+  // DelegatedAvailabilityCheckHandler. `delegated_handler` lets temporary
+  // descriptor facades use their parent's handler without storing a copy.
   virtual Availability IsAvailableToContextImpl(
       const Extension* extension,
       mojom::ContextType context,
@@ -298,14 +302,24 @@ class Feature {
       Platform platform,
       int context_id,
       bool check_developer_mode,
-      const ContextData& context_data) const = 0;
+      const ContextData& context_data,
+      DelegatedAvailabilityCheckHandler delegated_handler) const = 0;
 
-  // Gets whether a feature availability override handler has been set.
-  virtual bool HasDelegatedAvailabilityCheckHandler() const = 0;
+  // Returns `handler` when provided, otherwise looks up the handler registered
+  // for this feature's name.
+  DelegatedAvailabilityCheckHandler ResolveDelegatedAvailabilityCheckHandler(
+      DelegatedAvailabilityCheckHandler handler) const;
 
   // Immutable configuration, owned by whoever constructed this feature. For
   // generated features this is static storage; tests own their own copy.
   RAW_PTR_EXCLUSION const FeatureData* feature_data_;
+
+ private:
+  friend class FeatureTestPeer;
+
+  // Returns the registered handler, or null.
+  DelegatedAvailabilityCheckHandler delegated_availability_check_handler()
+      const;
 };
 
 }  // namespace extensions

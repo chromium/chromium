@@ -5,11 +5,9 @@
 #include "chrome/common/controlled_frame/controlled_frame.h"
 
 #include <algorithm>
-#include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "components/version_info/version_info.h"
@@ -81,7 +79,7 @@ base::span<const char* const> GetControlledFrameFeatureList() {
 //    ControlledFrameAllowedForUrls, ControlledFrameBlockedForUrls).
 //    These checks need to happen in the browser context, so look for them in
 //    the BrowserFrameContextData::HasControlledFrameCapability method.
-bool AvailabilityCheck(const std::string& api_full_name,
+bool AvailabilityCheck(std::string_view api_full_name,
                        const extensions::Extension* extension,
                        extensions::mojom::ContextType context,
                        const GURL& url,
@@ -115,7 +113,7 @@ extensions::Feature::FeatureDelegatedAvailabilityCheckMap
 CreateAvailabilityCheckMap() {
   extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
   for (const auto* item : GetControlledFrameFeatureList()) {
-    map.emplace(item, base::BindRepeating(&AvailabilityCheck));
+    map.emplace(item, &AvailabilityCheck);
   }
   return map;
 }

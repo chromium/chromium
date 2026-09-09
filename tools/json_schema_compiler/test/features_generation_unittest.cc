@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/test/bind.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/complex_feature.h"
@@ -219,13 +218,12 @@ TEST(FeaturesGenerationTest, DescriptorBackedFeature) {
 
 TEST(FeaturesGenerationTest, FeaturesTest) {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
-  map.emplace("requires_delegated_availability_check",
-              base::BindLambdaForTesting(
-                  [&](const std::string& api_full_name,
-                      const Extension* extension, mojom::ContextType context,
-                      const GURL& url, Feature::Platform platform,
-                      int context_id, bool check_developer_mode,
-                      const ContextData& context_data) { return false; }));
+  map.emplace(
+      "requires_delegated_availability_check",
+      +[](std::string_view api_full_name, const Extension* extension,
+          mojom::ContextType context, const GURL& url,
+          Feature::Platform platform, int context_id, bool check_developer_mode,
+          const ContextData& context_data) { return false; });
   ExtensionsClient::Get()->SetFeatureDelegatedAvailabilityCheckMap(
       std::move(map));
   FeatureProvider provider;

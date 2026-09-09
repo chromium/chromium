@@ -48,6 +48,9 @@ ExtensionsClient::GetFeatureDelegatedAvailabilityCheckMap() const {
 
 void ExtensionsClient::SetFeatureDelegatedAvailabilityCheckMap(
     Feature::FeatureDelegatedAvailabilityCheckMap map) {
+  for (const auto& [name, handler] : map) {
+    CHECK(handler) << "Null delegated availability check handler for " << name;
+  }
   availability_check_map_ = std::move(map);
 }
 

@@ -11,11 +11,12 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_flags.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/features/feature_test_util.h"
 #include "extensions/common/features/simple_feature_test_constants.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -143,6 +145,33 @@ Feature::AvailabilityResult IsAvailableInChannel(
     case Channel::UNKNOWN:
       return get_availability(StaticFeatureData(kUnknown));
   }
+}
+
+// The delegated availability check handler is a plain function pointer, so the
+// state a test wants to observe lives here rather than in a lambda capture.
+struct DelegatedCheckRecord {
+  uint32_t call_count = 0;
+  std::string_view expected_name;
+  std::string_view allowed_name;
+};
+
+DelegatedCheckRecord& delegated_check_record() {
+  static DelegatedCheckRecord record;
+  return record;
+}
+
+bool RecordDelegatedCheck(std::string_view api_full_name,
+                          const Extension* extension,
+                          mojom::ContextType context,
+                          const GURL& url,
+                          Feature::Platform platform,
+                          int context_id,
+                          bool check_developer_mode,
+                          const ContextData& context_data) {
+  DelegatedCheckRecord& record = delegated_check_record();
+  ++record.call_count;
+  EXPECT_EQ(record.expected_name, api_full_name);
+  return api_full_name == record.allowed_name;
 }
 
 }  // namespace
@@ -1396,22 +1425,59 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
   }
 }
 
+TEST(SimpleFeatureUnitTest, ResolveDelegatedAvailabilityCheck) {
+  Feature::FeatureDelegatedAvailabilityCheckMap map;
+  static constexpr char kDelegatedFeatureName[] = "delegatedFeature";
+  static constexpr char kNondelgatedFeatureName[] = "nondelegatedFeature";
+  static constexpr char kMissingRequiresDelegatedCheckFeatureName[] =
+      "missingRequiresDelegatedCheckFeature";
+
+  constexpr Feature::DelegatedAvailabilityCheckHandler
+      delegated_availability_check =
+          [](std::string_view /*api_full_name*/, const Extension* /*extension*/,
+             mojom::ContextType /*context*/, const GURL& /*url*/,
+             Feature::Platform /*platform*/, int /*context_id*/,
+             bool /*check_developer_mode*/,
+             const ContextData& /*context_data*/) { return false; };
+  map.emplace(kDelegatedFeatureName, delegated_availability_check);
+  map.emplace(kMissingRequiresDelegatedCheckFeatureName,
+              delegated_availability_check);
+  static constexpr SimpleFeatureData kDelegatedFeature = {
+      .feature = {.name = kDelegatedFeatureName},
+      .config = {.requires_delegated_availability_check = true},
+  };
+  static constexpr SimpleFeatureData kNondelegatedFeature = {
+      .feature = {.name = kNondelgatedFeatureName}};
+  static constexpr SimpleFeatureData kMissingRequiresDelegatedCheckFeature = {
+      .feature = {.name = kMissingRequiresDelegatedCheckFeatureName}};
+
+  SimpleFeature delegated_feature{StaticFeatureData(kDelegatedFeature)};
+  SimpleFeature nondelegated_feature{StaticFeatureData(kNondelegatedFeature)};
+  SimpleFeature missing_requires_delegated_check_feature{
+      StaticFeatureData(kMissingRequiresDelegatedCheckFeature)};
+
+  FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers scoped_handlers(
+      std::move(map));
+
+  EXPECT_EQ(
+      delegated_availability_check,
+      FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(delegated_feature));
+  EXPECT_EQ(nullptr, FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(
+                         nondelegated_feature));
+  EXPECT_EQ(nullptr, FeatureTestPeer::GetDelegatedAvailabilityCheckHandler(
+                         missing_requires_delegated_check_feature));
+}
+
 TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   // Test a feature that requires a delegated availability check, but the check
   // fails.
   static constexpr char kDisallowedFeatureName[] = "DisallowedFeature";
   static constexpr char kAllowedFeatureName[] = "AllowedFeature";
-  std::string_view expected_feature_name = kDisallowedFeatureName;
-  uint32_t delegated_availability_check_call_count = 0;
-  auto delegated_availability_check = base::BindLambdaForTesting(
-      [&](const std::string& api_full_name, const Extension* extension,
-          mojom::ContextType context, const GURL& url,
-          Feature::Platform platform, int context_id, bool check_developer_mode,
-          const ContextData& context_data) {
-        ++delegated_availability_check_call_count;
-        EXPECT_EQ(expected_feature_name, api_full_name);
-        return api_full_name == kAllowedFeatureName;
-      });
+  DelegatedCheckRecord& record = delegated_check_record();
+  base::AutoReset<DelegatedCheckRecord> record_reset(&record,
+                                                     DelegatedCheckRecord{});
+  record.expected_name = kDisallowedFeatureName;
+  record.allowed_name = kAllowedFeatureName;
 
   const GURL kTestPage = GURL("https://www.example.com");
   static constexpr auto kMatches =
@@ -1465,8 +1531,8 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   }
 
   SimpleFeature disallowed_feature{StaticFeatureData(kDisallowedData)};
-  disallowed_feature.SetDelegatedAvailabilityCheckHandler(
-      delegated_availability_check);
+  FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers disallowed_handler(
+      disallowed_feature, &RecordDelegatedCheck);
   {
     // Test a feature that requires a delegated availability check and the check
     // is not successful.
@@ -1476,13 +1542,13 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
                       kTestPage, kUnspecifiedContextId, TestContextData())
                   .result());
-    EXPECT_EQ(1u, delegated_availability_check_call_count);
+    EXPECT_EQ(1u, record.call_count);
   }
 
-  expected_feature_name = kAllowedFeatureName;
+  record.expected_name = kAllowedFeatureName;
   SimpleFeature allowed_feature{StaticFeatureData(kAllowedData)};
-  allowed_feature.SetDelegatedAvailabilityCheckHandler(
-      delegated_availability_check);
+  FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers allowed_handler(
+      allowed_feature, &RecordDelegatedCheck);
   {
     // Test a feature that requires a delegated availability check and the check
     // is successful.
@@ -1492,12 +1558,12 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
                       kTestPage, kUnspecifiedContextId, TestContextData())
                   .result());
-    EXPECT_EQ(2u, delegated_availability_check_call_count);
+    EXPECT_EQ(2u, record.call_count);
   }
 
   SimpleFeature dev_feature{StaticFeatureData(kDevData)};
-  dev_feature.SetDelegatedAvailabilityCheckHandler(
-      delegated_availability_check);
+  FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers dev_handler(
+      dev_feature, &RecordDelegatedCheck);
   {
     // Test a feature that requires a delegated availability check and the check
     // would be successful, but actually isn't called since the environment
@@ -1509,11 +1575,11 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
                       kTestPage, kUnspecifiedContextId, TestContextData())
                   .result());
-    EXPECT_EQ(2u, delegated_availability_check_call_count);
+    EXPECT_EQ(2u, record.call_count);
   }
   SimpleFeature stable_feature{StaticFeatureData(kStableData)};
-  stable_feature.SetDelegatedAvailabilityCheckHandler(
-      delegated_availability_check);
+  FeatureTestPeer::ScopedDelegatedAvailabilityCheckHandlers stable_handler(
+      stable_feature, &RecordDelegatedCheck);
   {
     // Test a feature that requires a delegated availability check and the check
     // would be successful, then confirm the check is called because the
@@ -1525,7 +1591,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
                       /*extension=*/nullptr, mojom::ContextType::kWebPage,
                       kTestPage, kUnspecifiedContextId, TestContextData())
                   .result());
-    EXPECT_EQ(3u, delegated_availability_check_call_count);
+    EXPECT_EQ(3u, record.call_count);
   }
 
   const GURL kTestPageNotInMatchList = GURL("https://www.not.example.com");
@@ -1539,7 +1605,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
                       kTestPageNotInMatchList, kUnspecifiedContextId,
                       TestContextData())
                   .result());
-    EXPECT_EQ(4u, delegated_availability_check_call_count);
+    EXPECT_EQ(4u, record.call_count);
   }
 }
 

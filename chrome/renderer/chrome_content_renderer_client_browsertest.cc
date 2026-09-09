@@ -208,9 +208,10 @@ IN_PROC_BROWSER_TEST_F(ChromeContentRendererClientBrowserTest,
   {
     const auto& map =
         extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
-    EXPECT_TRUE(!map.empty());
-    for (const auto* feature :
-         extension_test_util::GetExpectedDelegatedFeaturesForTest()) {
+    const auto expected_features =
+        extension_test_util::GetExpectedDelegatedFeaturesForTest();
+    EXPECT_EQ(expected_features.size(), map.size());
+    for (const auto* feature : expected_features) {
       EXPECT_EQ(1u, map.count(feature));
     }
   }

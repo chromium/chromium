@@ -5,12 +5,9 @@
 #include "extensions/common/user_scripts_availability.h"
 
 #include <array>
-#include <string>
 #include <string_view>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -33,7 +30,7 @@ constexpr static auto kUserScriptOverrideFeatureList =
     });
 
 bool AreUserScriptsFeaturesAvailable(
-    const std::string& api_full_name,
+    std::string_view api_full_name,
     const extensions::Extension* extension,
     extensions::mojom::ContextType context,
     const GURL& url,
@@ -56,7 +53,7 @@ extensions::Feature::FeatureDelegatedAvailabilityCheckMap
 CreateAvailabilityCheckMap() {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
   for (const auto item : kUserScriptOverrideFeatureList) {
-    map.emplace(item, base::BindRepeating(&AreUserScriptsFeaturesAvailable));
+    map.emplace(item, &AreUserScriptsFeaturesAvailable);
   }
   return map;
 }

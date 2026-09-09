@@ -11,8 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
@@ -46,7 +44,7 @@ constexpr static std::array<std::string_view, 2> kWebstoreOverrideFeatureList =
 // determines that the feature has a "delegated availability check" and runs
 // the check that was installed by `CreateAvailabilityCheckMap()` when the
 // Extensions client was initialized.
-bool AreWebstoreFeaturesAvailable(const std::string& api_full_name,
+bool AreWebstoreFeaturesAvailable(std::string_view api_full_name,
                                   const extensions::Extension* extension,
                                   extensions::mojom::ContextType context,
                                   const GURL& url,
@@ -108,7 +106,7 @@ namespace extensions::webstore_override {
 Feature::FeatureDelegatedAvailabilityCheckMap CreateAvailabilityCheckMap() {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
   for (const auto item : kWebstoreOverrideFeatureList) {
-    map.emplace(item, base::BindRepeating(&AreWebstoreFeaturesAvailable));
+    map.emplace(item, &AreWebstoreFeaturesAvailable);
   }
   return map;
 }
