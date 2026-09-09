@@ -66,7 +66,7 @@ ClientSideDetectionIntelligentScanDelegateFactory::
 #else
   return std::make_unique<ClientSideDetectionIntelligentScanDelegateDesktop>(
       *profile->GetPrefs(), opt_guide,
-      policy::ManagementServiceFactory::GetForProfile(profile));
+      policy::ManagementServiceFactory::GetForProfile(profile), opt_guide);
 #endif
 }
 

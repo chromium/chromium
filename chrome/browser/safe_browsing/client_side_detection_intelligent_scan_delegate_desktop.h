@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_DESKTOP_H_
 
 #include "base/containers/flat_map.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
@@ -28,6 +28,8 @@ namespace safe_browsing {
 // Client Side Detection Desktop implementation of IntelligentScanDelegate. This
 // class is responsible for managing the on-device model for intelligent
 // scanning, including loading, observing updates, and executing the model.
+// TODO(b/546066852): Refactor common logic between Desktop & Android delegate
+// into IntelligentScanDelegate
 class ClientSideDetectionIntelligentScanDelegateDesktop
     : public IntelligentScanDelegate,
       public optimization_guide::OnDeviceModelAvailabilityObserver {
@@ -35,7 +37,8 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   ClientSideDetectionIntelligentScanDelegateDesktop(
       PrefService& pref,
       OptimizationGuideKeyedService* opt_guide,
-      policy::ManagementService* management_service);
+      policy::ManagementService* management_service,
+      optimization_guide::RemoteModelExecutor* remote_model_executor);
   ~ClientSideDetectionIntelligentScanDelegateDesktop() override;
 
   ClientSideDetectionIntelligentScanDelegateDesktop(
@@ -53,17 +56,14 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   bool CancelIntelligentScan(const base::UnguessableToken& scan_id) override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
+  void OnScamWarningShown() override;
 
   // KeyedService implementation.
   void Shutdown() override;
 
-  int GetAliveSessionCountForTesting() { return inquiries_.size(); }
+  int GetAliveInquiryCountForTesting() { return inquiries_.size(); }
 
  private:
-  friend class ClientSideDetectionIntelligentScanDelegateDesktopTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionIntelligentScanDelegateDesktopTest,
-      ResetOnDeviceSession);
   class Inquiry;
   void OnPrefsUpdated();
 
@@ -88,12 +88,14 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   std::unique_ptr<optimization_guide::OnDeviceSession>
   GetModelExecutorSession();
 
-  void ModelExecutionCallback(
-      const base::UnguessableToken& session_id,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+  bool ResetAllInquiries();
 
-  bool ResetAllSessions();
+  // Functions related to intelligent scan quota:
+  // Returns true if we have reached the quota limit. Also clears the expired
+  // timestamps.
+  bool IsAtIntelligentScanQuota();
+  void AddIntelligentScanQuota();
+  void RemoveLastIntelligentScanQuota();
 
   // It is set to true when the on-device model is not readily available, but
   // it's expected to be ready soon. See `kWaitableReasons` for more details.
@@ -110,10 +112,16 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   const raw_ref<PrefService> pref_;
   const raw_ptr<OptimizationGuideKeyedService> opt_guide_;
   const raw_ptr<policy::ManagementService> management_service_;
+  // This object is for server-side model execution. It may be null after
+  // shutdown.
+  raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;
 
   // PrefChangeRegistrar used to track when the enhanced protection state
   // changes.
   PrefChangeRegistrar pref_change_registrar_;
+
+  const bool is_feature_enabled_;
+  const bool is_server_model_enabled_;
 
   base::WeakPtrFactory<ClientSideDetectionIntelligentScanDelegateDesktop>
       weak_factory_{this};

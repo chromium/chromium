@@ -5130,6 +5130,24 @@
             ]
         }
     ],
+    "ClientSideDetectionServerModelForScamDetectionDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionServerModelForScamDetectionDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionSkipErrorPage": [
         {
             "platforms": [
