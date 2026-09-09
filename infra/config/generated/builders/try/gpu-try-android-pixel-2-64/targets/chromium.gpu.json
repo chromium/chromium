@@ -9,7 +9,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite",
           "--enforce-browser-version",
           "--jobs=1",
           "--initial-find-device-attempts=3"
@@ -19,7 +19,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "context_lost_validating_tests",
+        "name": "context_lost_passthrough_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -50,7 +50,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force-online-connection-state-for-indicator",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
@@ -64,7 +64,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "expected_color_pixel_validating_test",
+        "name": "expected_color_pixel_passthrough_ganesh_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -227,7 +227,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force-online-connection-state-for-indicator",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--git-revision=${got_revision}",
           "--dont-restore-color-profile-after-test",
@@ -241,7 +241,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "pixel_skia_gold_validating_test",
+        "name": "pixel_skia_gold_passthrough_ganesh_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -277,7 +277,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force-online-connection-state-for-indicator",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--jobs=1",
@@ -288,7 +288,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "screenshot_sync_validating_tests",
+        "name": "screenshot_sync_passthrough_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -360,7 +360,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gles --use-cmd-decoder=passthrough --use-gl=angle --disable-skia-graphite --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_android_runtimes.json",
           "--jobs=1",
@@ -371,7 +371,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "webgl_conformance_validating_tests",
+        "name": "webgl_conformance_gles_passthrough_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

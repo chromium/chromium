@@ -3118,11 +3118,6 @@ targets.bundle(
         "gpu_android_arm64_release_telemetry_tests",
         "gpu_fyi_android_arm64_release_telemetry_tests",
     ],
-    per_test_modifications = {
-        "webgl_conformance_validating_tests": targets.remove(
-            reason = "Only run default behavior tests on non-FYI.",
-        ),
-    },
 )
 
 targets.bundle(
@@ -3139,11 +3134,6 @@ targets.bundle(
         "gpu_android_arm_release_telemetry_tests",
         "gpu_fyi_android_arm_release_telemetry_tests",
     ],
-    per_test_modifications = {
-        "webgl_conformance_validating_tests": targets.remove(
-            reason = "Only run default behavior tests on non-FYI.",
-        ),
-    },
 )
 
 targets.bundle(
@@ -3303,15 +3293,15 @@ targets.bundle(
 targets.bundle(
     name = "gpu_android_arm_release_telemetry_tests",
     targets = [
-        "context_lost_validating_tests",
-        "expected_color_pixel_validating_test",
+        "context_lost_passthrough_ganesh_tests",
+        "expected_color_pixel_passthrough_ganesh_test",
         "gpu_process_launch_tests",
         "hardware_accelerated_feature_tests",
         "info_collection_tests",
-        "pixel_skia_gold_validating_test",
-        "screenshot_sync_validating_tests",
+        "pixel_skia_gold_passthrough_ganesh_test",
+        "screenshot_sync_passthrough_ganesh_tests",
         "trace_test",
-        "webgl_conformance_validating_tests",
+        "webgl_conformance_gles_passthrough_ganesh_tests",
     ],
 )
 
@@ -4329,14 +4319,13 @@ targets.bundle(
         # typically use for 32-bit testing do not have good Vulkan support
         # for Graphite.
         "android_webview_pixel_skia_gold_test",
-        "context_lost_passthrough_ganesh_tests",
-        "expected_color_pixel_passthrough_ganesh_test",
-        "pixel_skia_gold_passthrough_ganesh_test",
-        "screenshot_sync_passthrough_ganesh_tests",
+        "context_lost_validating_tests",
+        "expected_color_pixel_validating_test",
+        "pixel_skia_gold_validating_test",
+        "screenshot_sync_validating_tests",
         "webcodecs_validating_ganesh_tests",
         "webgl2_conformance_gles_passthrough_tests",
         "webgl2_conformance_validating_tests",
-        "webgl_conformance_gles_passthrough_ganesh_tests",
         "webgl_conformance_validating_ganesh_tests",
         "webrtc_validating_ganesh_tests",
     ],

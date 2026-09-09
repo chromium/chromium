@@ -137,22 +137,19 @@ ci.thin_tester(
             "android_webview_pixel_skia_gold_test": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "context_lost_passthrough_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            "context_lost_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if validating test coverage is worth it on these devices since passthrough has already shipped aside from WebView",
             ),
-            "expected_color_pixel_passthrough_ganesh_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            "expected_color_pixel_validating_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if validating test coverage is worth it on these devices since passthrough has already shipped aside from WebView",
             ),
-            "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            "pixel_skia_gold_validating_test": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if validating test coverage is worth it on these devices since passthrough has already shipped aside from WebView",
             ),
-            "screenshot_sync_passthrough_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+            "screenshot_sync_validating_tests": targets.remove(
+                reason = "TODO(crbug.com/541312843): Determine if validating test coverage is worth it on these devices since passthrough has already shipped aside from WebView",
             ),
             "webcodecs_validating_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
-            ),
-            "webgl_conformance_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "webrtc_validating_ganesh_tests": targets.remove(
