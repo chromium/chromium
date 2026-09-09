@@ -105,6 +105,7 @@ _CONVERTED_SCHEMAS = [
   ('mime_handler_private.idl', 'mime_handler_private.webidl'),
   ('hid.idl', 'hid.webidl'),
   ('file_system.idl', 'file_system.webidl'),
+  ('sockets_tcp_server.idl', 'sockets_tcp_server.webidl'),
 ]
 
 
