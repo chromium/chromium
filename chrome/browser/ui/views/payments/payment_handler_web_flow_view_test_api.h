@@ -33,6 +33,14 @@ class PaymentHandlerWebFlowViewTestApi {
     return controller_->permission_dashboard_view();
   }
 
+  bool is_indicator_chip_collapse_timer_running() const {
+    return controller_->indicator_chip_collapse_timer_.IsRunning();
+  }
+
+  void fire_indicator_chip_collapse_timer() {
+    controller_->indicator_chip_collapse_timer_.FireNow();
+  }
+
  private:
   const raw_ref<PaymentHandlerWebFlowViewController> controller_;
 };

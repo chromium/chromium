@@ -11,12 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,6 +27,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -59,7 +62,9 @@ class PaymentHandlerWebFlowViewController
       public ChromeLocationBarModelDelegate,
       public IconLabelBubbleView::Delegate,
       public LocationIconView::Delegate,
-      public MediaStreamCaptureIndicator::Observer {
+      public MediaStreamCaptureIndicator::Observer,
+      public PermissionChipInterface::Observer,
+      public views::ViewObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAppIconElementId);
   // This ctor forwards its first 3 args to PaymentRequestSheetController's
@@ -161,6 +166,13 @@ class PaymentHandlerWebFlowViewController
   void OnIsCapturingVideoChanged(content::WebContents* contents,
                                  bool is_capturing_video) override;
 
+  // PermissionChipInterface::Observer:
+  void OnExpandAnimationEnded() override;
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override;
+
+  void CollapseIndicatorChip();
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
   void AbortPayment();
@@ -173,9 +185,15 @@ class PaymentHandlerWebFlowViewController
   std::unique_ptr<LocationBarModel> location_bar_model_;
   views::ViewTracker location_icon_view_tracker_;
   views::ViewTracker permission_dashboard_view_tracker_;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
   base::ScopedObservation<MediaStreamCaptureIndicator,
                           MediaStreamCaptureIndicator::Observer>
       indicator_observation_{this};
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
+      chip_observation_{this};
+  base::OneShotTimer indicator_chip_collapse_timer_;
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;
   base::WeakPtr<PaymentHandlerOriginLabel> origin_label_;
   base::WeakPtr<PaymentHandlerCloseButton> close_button_;

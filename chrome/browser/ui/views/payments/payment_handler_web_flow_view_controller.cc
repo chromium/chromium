@@ -61,6 +61,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -73,6 +74,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -82,6 +84,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PaymentHandlerWebFlowViewController,
                                       kAppIconElementId);
 
 namespace {
+
+// Matches Omnibox indicator collapse delay.
+constexpr base::TimeDelta kIndicatorCollapseDelay = base::Seconds(4);
+constexpr base::TimeDelta kIndicatorCollapseAnimationDuration =
+    base::Milliseconds(250);
 
 // WebContentsUserData key for retrieving PaymentHandlerWebFlowViewController
 // from the payment handler's WebContents. Attached in FillContentView.
@@ -358,6 +365,10 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
 
     PermissionDashboardView* dashboard =
         icon_view->AddChildView(std::make_unique<PermissionDashboardView>());
+    view_observation_.Reset();
+    view_observation_.Observe(dashboard->GetIndicatorChip());
+    chip_observation_.Reset();
+    chip_observation_.Observe(dashboard->GetIndicatorChip());
     dashboard->GetIndicatorChip()->SetChipIcon(vector_icons::kVideocamIcon);
     dashboard->GetIndicatorChip()->SetTheme(
         PermissionChipTheme::kInUseActivityIndicator);
@@ -684,6 +695,44 @@ void PaymentHandlerWebFlowViewController::OnIsCapturingVideoChanged(
     permission_dashboard_view()->SetVisible(is_capturing_video);
     permission_dashboard_view()->GetIndicatorChip()->SetVisible(
         is_capturing_video);
+    if (is_capturing_video) {
+      permission_dashboard_view()->GetIndicatorChip()->SetMessage(
+          l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE));
+      permission_dashboard_view()->GetIndicatorChip()->ResetAnimation(
+          PermissionChipInterface::AnimationState::kCollapsed);
+      permission_dashboard_view()->GetIndicatorChip()->AnimateExpand(
+          gfx::Animation::RichAnimationDuration(base::Milliseconds(350)));
+    } else {
+      indicator_chip_collapse_timer_.Stop();
+      permission_dashboard_view()->GetIndicatorChip()->ResetAnimation(
+          PermissionChipInterface::AnimationState::kCollapsed);
+    }
+  }
+}
+
+void PaymentHandlerWebFlowViewController::OnExpandAnimationEnded() {
+  indicator_chip_collapse_timer_.Start(
+      FROM_HERE, kIndicatorCollapseDelay,
+      base::BindOnce(
+          &PaymentHandlerWebFlowViewController::CollapseIndicatorChip,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PaymentHandlerWebFlowViewController::OnViewIsDeleting(
+    views::View* observed_view) {
+  if (view_observation_.IsObservingSource(observed_view)) {
+    view_observation_.Reset();
+    chip_observation_.Reset();
+    indicator_chip_collapse_timer_.Stop();
+  }
+}
+
+void PaymentHandlerWebFlowViewController::CollapseIndicatorChip() {
+  if (permission_dashboard_view() &&
+      !permission_dashboard_view()->GetIndicatorChip()->IsAnimating()) {
+    permission_dashboard_view()->GetIndicatorChip()->AnimateCollapse(
+        gfx::Animation::RichAnimationDuration(
+            kIndicatorCollapseAnimationDuration));
   }
 }
 bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
