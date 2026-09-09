@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 #include <cursor-shape-v1-client-protocol.h>
@@ -908,6 +907,52 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   SendConfigureEvent(surface_id_, {0, 0}, active);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   VerifyAndClearExpectations();
+}
+
+// Regression test: a configure without the maximized state that races with a
+// client-initiated Maximize() must not leave the window unable to unmaximize.
+TEST_P(WaylandWindowTest, RestoreAfterStatelessConfigureDuringMaximize) {
+  constexpr gfx::Rect kMaximizedBounds{800, 600};
+
+  // Keep some client-side requests in flight so the next configure is
+  // throttled.
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(testing::AnyNumber());
+  window_->SetBoundsInDIP(gfx::Rect(500, 300));
+  window_->SetBoundsInDIP(gfx::Rect(510, 310));
+  window_->SetBoundsInDIP(gfx::Rect(520, 320));
+  ASSERT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface()->xdg_toplevel(), SetMaximized());
+  });
+  window_->Maximize();
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+
+  // The compositor sends a configure with no states before the maximized one.
+  auto active = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, {0, 0}, active);
+  auto active_maximized = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
+  SendConfigureEvent(surface_id_, kMaximizedBounds.size(), active_maximized);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface()->xdg_toplevel(), UnsetMaximized());
+  });
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(delegate_, OnWindowStateChanged(PlatformWindowState::kMaximized,
+                                              PlatformWindowState::kNormal));
+  window_->Restore();
+  SendConfigureEvent(surface_id_, {0, 0}, active);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
 }
 
 TEST_P(WaylandWindowTest, MaximizeAndRestoreWithInsets) {
