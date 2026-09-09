@@ -699,8 +699,9 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
             if (grid_item->IsSubgrid()) {
               return subgrid_minmax_sizes();
             }
-            return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type,
-                                           space);
+            return node.ComputeMinMaxSizes(
+                item_style.GetWritingMode(), type, space,
+                MinMaxSizesFloatInput::UnconstrainedUntriaged());
           };
           return ResolveMinInlineLength(space, item_style, border_padding,
                                         MinMaxSizesFunc, min_length);

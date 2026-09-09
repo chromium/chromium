@@ -839,7 +839,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     if (phase == Phase::kColumnWrapIntrinsicSize) {
       auto space = BuildSpaceForIntrinsicInlineSize(child, alignment);
       MinMaxSizesResult child_contributions =
-          ComputeMinAndMaxContentContribution(Style(), child, space);
+          ComputeMinAndMaxContentContribution(
+              Style(), child, space,
+              MinMaxSizesFloatInput::UnconstrainedUntriaged());
       max_content_contribution = child_contributions.sizes.max_size;
       BoxStrut child_margins =
           ComputeMarginsFor(space, child.Style(), GetConstraintSpace());
@@ -887,7 +889,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       // We want the child's intrinsic inline sizes in its writing mode, so
       // pass child's writing mode as the first parameter, which is nominally
       // |container_writing_mode|.
-      return child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
+      return child.ComputeMinMaxSizes(
+          child_writing_mode, type, child_space,
+          MinMaxSizesFloatInput::UnconstrainedUntriaged());
     };
 
     auto InlineSizeFunc = [&]() -> LayoutUnit {
@@ -2917,7 +2921,9 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer(
       const ConstraintSpace space =
           BuildSpaceForIntrinsicInlineSize(child, item.alignment);
       const MinMaxSizesResult min_max_content_contributions =
-          ComputeMinAndMaxContentContribution(Style(), child, space);
+          ComputeMinAndMaxContentContribution(
+              Style(), child, space,
+              MinMaxSizesFloatInput::UnconstrainedUntriaged());
       depends_on_block_constraints |=
           min_max_content_contributions.depends_on_block_constraints;
 
@@ -3036,8 +3042,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
 
     const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(
         child, ResolvedAlignSelf(child.Style()));
-    MinMaxSizesResult child_result =
-        ComputeMinAndMaxContentContribution(Style(), child, space);
+    MinMaxSizesResult child_result = ComputeMinAndMaxContentContribution(
+        Style(), child, space, MinMaxSizesFloatInput::UnconstrainedUntriaged());
     BoxStrut child_margins =
         ComputeMarginsFor(space, child.Style(), GetConstraintSpace());
     child_result.sizes += child_margins.InlineSum();

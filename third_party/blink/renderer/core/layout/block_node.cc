@@ -940,7 +940,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const SizeType type,
     const ConstraintSpace& constraint_space,
-    const MinMaxSizesFloatInput float_input) const {
+    const MinMaxSizesFloatInput& float_input) const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())

@@ -110,7 +110,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       WritingMode container_writing_mode,
       const SizeType,
       const ConstraintSpace&,
-      const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput()) const;
+      const MinMaxSizesFloatInput& float_input) const;
 
   LayoutInputNode FirstChild() const;
 

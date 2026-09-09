@@ -241,7 +241,8 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
   builder.SetContainsAnnotations(contains_annotations_);
   return BlockNode(this)
       .ComputeMinMaxSizes(mode, SizeType::kIntrinsic,
-                          builder.ToConstraintSpace())
+                          builder.ToConstraintSpace(),
+                          MinMaxSizesFloatInput::Unconstrained())
       .sizes.min_size;
 }
 
@@ -886,7 +887,8 @@ void LayoutView::LayoutRoot() {
     builder.SetContainsAnnotations(contains_annotations_);
     min_size = BlockNode(this)
                    .ComputeMinMaxSizes(writing_mode, SizeType::kIntrinsic,
-                                       builder.ToConstraintSpace())
+                                       builder.ToConstraintSpace(),
+                                       MinMaxSizesFloatInput::Unconstrained())
                    .sizes.min_size;
     if (style.OverflowBlockDirection() == EOverflow::kAuto) {
       min_size -= ComputeLogicalScrollbars().InlineSum();

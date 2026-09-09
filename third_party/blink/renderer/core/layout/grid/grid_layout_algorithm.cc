@@ -619,7 +619,9 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       return To<GridNode>(node).ComputeSubgridMinMaxSizes(
           sizing_subtree.SubgridSizingSubtree(*grid_item), space);
     }
-    return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type, space);
+    return node.ComputeMinMaxSizes(
+        item_style.GetWritingMode(), type, space,
+        MinMaxSizesFloatInput::UnconstrainedUntriaged());
   };
 
   auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {

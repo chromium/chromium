@@ -615,8 +615,9 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
       }
       return MinMaxSizesResult();
     }
-    return item_node.ComputeMinMaxSizes(item_node.Style().GetWritingMode(),
-                                        type, space_for_measure);
+    return item_node.ComputeMinMaxSizes(
+        item_node.Style().GetWritingMode(), type, space_for_measure,
+        MinMaxSizesFloatInput::UnconstrainedUntriaged());
   };
 
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
@@ -1455,9 +1456,11 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
           CreateConstraintSpaceForMeasure(SubgriddedItemData(
               grid_lanes_item, &layout_data, container_writing_mode));
       if (space_for_measure.AvailableSize().inline_size == kIndefiniteSize) {
-        const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
-                                      grid_lanes_item.node, space_for_measure)
-                                      .sizes;
+        const MinMaxSizes sizes =
+            ComputeMinAndMaxContentContributionForSelf(
+                grid_lanes_item.node, space_for_measure,
+                MinMaxSizesFloatInput::UnconstrainedUntriaged())
+                .sizes;
         opt_fixed_inline_size = sizes.max_size;
       }
     }
@@ -2223,8 +2226,9 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
             }
             return MinMaxSizesResult();
           }
-          return item_node.ComputeMinMaxSizes(item_style.GetWritingMode(), type,
-                                              space);
+          return item_node.ComputeMinMaxSizes(
+              item_style.GetWritingMode(), type, space,
+              MinMaxSizesFloatInput::UnconstrainedUntriaged());
         };
         const MinMaxSizesResult result =
             ComputeMinAndMaxContentContributionForSelf(item_node, space,
@@ -2489,8 +2493,9 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
     // If we are orthogonal virtual item, resolving against an indefinite
     // size, set our inline size to our max-content contribution.
     const MinMaxSizesResult min_max_sizes_result =
-        ComputeMinAndMaxContentContributionForSelf(grid_lanes_item->node,
-                                                   space_for_measure);
+        ComputeMinAndMaxContentContributionForSelf(
+            grid_lanes_item->node, space_for_measure,
+            MinMaxSizesFloatInput::UnconstrainedUntriaged());
     // The min/max contribution may depend on the block-size of the
     // grid-area: <div id="target" style="height: 200px; width: 600px;">
     //   <div style="display: inline-grid-lanes; width: min-content;

@@ -102,7 +102,8 @@ MinMaxSizesResult MathTokenLayoutAlgorithm::ComputeMinMaxSizes(
   sizes += BorderScrollbarPadding().InlineSum();
 
   const auto child_result = To<InlineNode>(child).ComputeMinMaxSizes(
-      Style().GetWritingMode(), GetConstraintSpace(), MinMaxSizesFloatInput());
+      Style().GetWritingMode(), GetConstraintSpace(),
+      MinMaxSizesFloatInput::UnconstrainedUntriaged());
   sizes += child_result.sizes;
 
   return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);

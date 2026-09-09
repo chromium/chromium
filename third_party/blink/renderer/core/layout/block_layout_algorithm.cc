@@ -458,9 +458,8 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
         float_right_inline_size = LayoutUnit();
     }
 
-    MinMaxSizesFloatInput child_float_input;
-    child_float_input.constrained_inline_size =
-        float_input.constrained_inline_size;
+    MinMaxSizesFloatInput child_float_input =
+        MinMaxSizesFloatInput::Constrained(float_input.constrained_inline_size);
     if (child.IsInline() || child.IsAnonymousBlockFlow()) {
       child_float_input.float_left_inline_size = float_left_inline_size;
       child_float_input.float_right_inline_size = float_right_inline_size;

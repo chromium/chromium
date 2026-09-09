@@ -163,7 +163,8 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
   const auto space = builder.ToConstraintSpace();
 
   MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
-      parent_style, To<BlockNode>(child), space);
+      parent_style, To<BlockNode>(child), space,
+      MinMaxSizesFloatInput::Unconstrained());
   resolver_->DowncastTo<CustomIntrinsicSizes>()->Resolve(
       MakeGarbageCollected<CustomIntrinsicSizes>(
           child_, token_, result.sizes.min_size, result.sizes.max_size));

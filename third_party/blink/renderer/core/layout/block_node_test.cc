@@ -187,9 +187,10 @@ TEST_F(BlockNodeForTest, MinContentForControls) {
 
   for (const auto* id : ids) {
     BlockNode box(GetLayoutBoxByElementId(id));
-    MinMaxSizes sizes = box.ComputeMinMaxSizes(WritingMode::kHorizontalTb,
-                                               SizeType::kContent, space)
-                            .sizes;
+    MinMaxSizes sizes =
+        box.ComputeMinMaxSizes(WritingMode::kHorizontalTb, SizeType::kContent,
+                               space, MinMaxSizesFloatInput::Unconstrained())
+            .sizes;
     EXPECT_EQ(LayoutUnit(kExpectedMinWidth), sizes.min_size);
   }
 }

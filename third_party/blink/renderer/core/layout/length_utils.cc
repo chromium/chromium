@@ -459,7 +459,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
     const ComputedStyle& parent_style,
     const BlockNode& child,
     const ConstraintSpace& space,
-    const MinMaxSizesFloatInput float_input) {
+    const MinMaxSizesFloatInput& float_input) {
   const auto& child_style = child.Style();
   const auto parent_writing_mode = parent_style.GetWritingMode();
   const auto child_writing_mode = child_style.GetWritingMode();
@@ -480,7 +480,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     const BlockNode& child,
-    const ConstraintSpace& space) {
+    const ConstraintSpace& space,
+    const MinMaxSizesFloatInput& input) {
   DCHECK(child.CreatesNewFormattingContext());
 
   const ComputedStyle& child_style = child.Style();
@@ -490,7 +491,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     return ComputeMinAndMaxContentContributionForReplaced(child, space);
 
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
-    return child.ComputeMinMaxSizes(writing_mode, type, space);
+    return child.ComputeMinMaxSizes(writing_mode, type, space, input);
   };
 
   return ComputeMinAndMaxContentContributionInternal(writing_mode, child, space,
@@ -1754,7 +1755,9 @@ FragmentGeometry CalculateInitialFragmentGeometry(
     const BlockBreakToken* break_token,
     bool is_intrinsic) {
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
-    return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space);
+    DCHECK(!is_intrinsic);
+    return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space,
+                                   MinMaxSizesFloatInput::Unconstrained());
   };
 
   return CalculateInitialFragmentGeometry(space, node, break_token,

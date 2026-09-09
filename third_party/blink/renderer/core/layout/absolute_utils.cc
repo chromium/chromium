@@ -650,7 +650,8 @@ bool ComputeOofInlineDimensions(
     builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
     builder.SetBlockAutoBehavior(block_auto_size_behavior);
     return node.ComputeMinMaxSizes(style.GetWritingMode(), type,
-                                   builder.ToConstraintSpace());
+                                   builder.ToConstraintSpace(),
+                                   MinMaxSizesFloatInput::Unconstrained());
   };
 
   LayoutUnit inline_size;

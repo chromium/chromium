@@ -3198,8 +3198,9 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
           : constraint_space_.PercentageResolutionBlockSize());
   const auto space = builder.ToConstraintSpace();
 
-  const MinMaxSizesResult result =
-      ComputeMinAndMaxContentContribution(node_.Style(), child, space);
+  const MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
+      node_.Style(), child, space,
+      MinMaxSizesFloatInput::UnconstrainedUntriaged());
   // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
   CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
   const LayoutUnit inline_margins = item_result->margins.InlineSum();

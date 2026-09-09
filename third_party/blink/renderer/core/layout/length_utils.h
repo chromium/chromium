@@ -347,7 +347,8 @@ inline LayoutUnit ComputeInlineSizeForFragment(
       return MinMaxSizesResult(*override_min_max_sizes_for_test,
                                /* depends_on_block_constraints */ false);
     }
-    return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space);
+    return node.ComputeMinMaxSizes(space.GetWritingMode(), type, space,
+                                   MinMaxSizesFloatInput::Unconstrained());
   };
 
   return ComputeInlineSizeForFragment(space, node, border_padding,
@@ -714,14 +715,15 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
     const ComputedStyle& parent_style,
     const BlockNode& child,
     const ConstraintSpace& space,
-    const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput());
+    const MinMaxSizesFloatInput& float_input);
 
 // Similar to `ComputeMinAndMaxContentContribution` but ignores the writing mode
 // of the parent, and instead computes the contribution relative to the child's
 // own writing mode.
 MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     const BlockNode& child,
-    const ConstraintSpace& space);
+    const ConstraintSpace& space,
+    const MinMaxSizesFloatInput& input);
 
 // Same as above, but allows a custom function to compute min/max sizes.
 MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(

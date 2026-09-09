@@ -444,8 +444,8 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   BlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
-  MinMaxSizesResult result =
-      algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput());
+  MinMaxSizesResult result = algorithm.ComputeMinMaxSizes(
+      MinMaxSizesFloatInput::UnconstrainedUntriaged());
 
   // How column-width affects min/max sizes is currently not defined in any
   // spec, but there used to be a definition, which everyone still follows to
@@ -539,8 +539,9 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
                                            *child_block, /* is_new_fc */ true);
       builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
       const ConstraintSpace child_space = builder.ToConstraintSpace();
-      child_result = ComputeMinAndMaxContentContribution(Style(), *child_block,
-                                                         child_space);
+      child_result = ComputeMinAndMaxContentContribution(
+          Style(), *child_block, child_space,
+          MinMaxSizesFloatInput::UnconstrainedUntriaged());
     }
     result.sizes.Encompass(child_result.sizes);
   }

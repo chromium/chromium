@@ -50,7 +50,10 @@ TableTypes::Caption ComputeCaptionConstraint(
     const auto space = builder.ToConstraintSpace();
 
     MinMaxSizes min_max_sizes =
-        ComputeMinAndMaxContentContribution(table_style, caption, space).sizes;
+        ComputeMinAndMaxContentContribution(
+            table_style, caption, space,
+            MinMaxSizesFloatInput::UnconstrainedUntriaged())
+            .sizes;
     min_max_sizes +=
         ComputeMarginsFor(space, caption.Style(), table_space).InlineSum();
     caption_min_max.Encompass(min_max_sizes);

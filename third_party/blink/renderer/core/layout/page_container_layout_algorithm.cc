@@ -562,7 +562,8 @@ PageContainerLayoutAlgorithm::EdgeMarginNodePreferredSize(
           /*is_new_fc=*/true);
       intrinsic_space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
       minmax = ComputeMinAndMaxContentContributionForSelf(
-                   child, intrinsic_space_builder.ToConstraintSpace())
+                   child, intrinsic_space_builder.ToConstraintSpace(),
+                   MinMaxSizesFloatInput::UnconstrainedUntriaged())
                    .sizes;
     } else {
       BoxStrut border_padding = ComputeBorders(child_space, child) +
