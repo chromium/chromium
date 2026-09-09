@@ -38,3 +38,7 @@ tast.crash.Sender.mock_consent_fieldtrial_testing_config_off
 tast.ui.ChromeCrashReporterMetrics.miss_crashpad@reven-vmtest
 tast.ui.ChromeCrashReporterMetrics.success_crashpad@reven-vmtest
 
+# b/555605549
+tast.camera.CCAUISmoke.vivid
+tast.camera.CCAUISmoke.fake_hal
+tast.camera.CCAUISmoke.fake_vcd
