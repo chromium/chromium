@@ -364,12 +364,6 @@ void AwBrowserProcess::FetchHostAppCacheQuota() {
 }
 
 // static
-void AwBrowserProcess::TriggerMinidumpUploading() {
-  Java_AwBrowserProcess_triggerMinidumpUploading(
-      base::android::AttachCurrentThread());
-}
-
-// static
 ApkType AwBrowserProcess::GetApkType() {
   return static_cast<ApkType>(
       Java_AwBrowserProcess_getApkType(base::android::AttachCurrentThread()));

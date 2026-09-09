@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_render_process_gone_delegate.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_features.h"
+#include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/android/sys_utils.h"
 #include "base/logging.h"
@@ -29,6 +30,9 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwMinidumpUploader_jni.h"
 
 using base::android::ScopedJavaGlobalRef;
 using content::BrowserThread;
@@ -141,7 +145,8 @@ void OnRenderProcessGone(
 
   // By this point we have moved the minidump to the crash directory, so it can
   // now be copied and uploaded.
-  AwBrowserProcess::TriggerMinidumpUploading();
+  Java_AwMinidumpUploader_triggerMinidumpUploading(
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace

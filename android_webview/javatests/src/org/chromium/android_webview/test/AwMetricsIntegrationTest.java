@@ -26,6 +26,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwMinidumpUploader;
 import org.chromium.android_webview.AwWindowCoverageTracker;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
@@ -87,10 +88,11 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
-        // Kick off the metrics consent-fetching process. MetricsTestPlatformServiceBridge mocks out
-        // user consent for when we query it with
-        // AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(), so metrics consent is guaranteed
-        // to be granted.
+        // Kick off the metrics consent-fetching process.
+        // MetricsTestPlatformServiceBridge mocks out user consent for when we
+        // query it with
+        // AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(), so metrics
+        // consent is guaranteed to be granted.
         mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
         ThreadUtils.runOnUiThreadBlocking(
@@ -133,7 +135,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     AwMetricsServiceClient.setFastStartupForTesting(true);
                     AwMetricsServiceClient.setUploadIntervalForTesting(UPLOAD_INTERVAL_MS);
 
-                    AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
+                    AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(
                             /* updateMetricsConsent= */ true);
                 });
 

@@ -467,7 +467,7 @@ public class StartupController {
 
         AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
         AwBrowserProcess.setupSupervisedUser();
-        AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+        AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
         AwBrowserProcess.startObservingOsAccessibilitySettingChanges();
         AwTracingController.getInstance();
 
