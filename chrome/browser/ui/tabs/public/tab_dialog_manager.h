@@ -123,7 +123,8 @@ class TabDialogManager : public content::WebContentsObserver,
   void WidgetDestroyed(views::Widget* widget);
 
   // Returns the widget associated with the browser window. This widget is used
-  // as the parent for tab-scoped widgets.
+  // as the parent for tab-scoped widgets. Returns nullptr if the tab is
+  // currently detached from a browser window (e.g. during tab dragging).
   views::Widget* GetHostWidget() const;
 
   // Updates the bounds of the modal dialog. If `Params::animated` is true, this
