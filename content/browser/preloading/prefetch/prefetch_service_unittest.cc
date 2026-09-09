@@ -6837,6 +6837,13 @@ class RecordingPrefetchContainerObserver final
               PrefetchContainer::LoadState::kFailed);
     AddEvent(Event::kObserverOnPrefetchCompletedOrFailed);
   }
+  void OnPrefetchStale(const PrefetchContainer& prefetch_container) override {
+    CHECK_EQ(&prefetch_container, prefetch_container_.get());
+    CHECK(prefetch_container.IsPrefetchStale() ||
+          prefetch_container.is_in_dtor());
+    // TODO(crbug.com/551306029): Revisit what and how to record here once
+    // `OnPrefetchStale()` has complete notification semantics.
+  }
 
   base::WeakPtr<PrefetchContainer> prefetch_container_;
   std::vector<Event> actual_output_event_sequence_;

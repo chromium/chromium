@@ -29,6 +29,7 @@ class PrefetchContainerObserverForPrefetchRequestStatusListener final
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override;
+  void OnPrefetchStale(const PrefetchContainer& prefetch_container) override;
 
  private:
   explicit PrefetchContainerObserverForPrefetchRequestStatusListener(

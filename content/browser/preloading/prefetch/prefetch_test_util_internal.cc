@@ -69,6 +69,7 @@ class TestPrefetchContainerObserver final : public PrefetchContainerObserver {
       const PrefetchContainer& prefetch_container) override {
     on_complete_loop_.Quit();
   }
+  void OnPrefetchStale(const PrefetchContainer& prefetch_container) override {}
 
   base::WeakPtr<PrefetchContainer> prefetch_container_;
   base::RunLoop on_complete_loop_;

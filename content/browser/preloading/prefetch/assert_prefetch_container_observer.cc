@@ -105,4 +105,12 @@ void AssertPrefetchContainerObserver::OnPrefetchCompletedOrFailed(
   UpdateObservedLoadState();
 }
 
+void AssertPrefetchContainerObserver::OnPrefetchStale(
+    const PrefetchContainer& prefetch_container) {
+  DUMP_WILL_BE_CHECK_EQ(&prefetch_container, prefetch_container_.get());
+  DUMP_WILL_BE_CHECK(!on_will_be_destroyed_called_);
+  DUMP_WILL_BE_CHECK(prefetch_container.IsPrefetchStale() ||
+                     prefetch_container.is_in_dtor());
+}
+
 }  // namespace content

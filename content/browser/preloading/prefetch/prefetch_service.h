@@ -372,6 +372,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainerObserver {
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override;
+  void OnPrefetchStale(const PrefetchContainer& prefetch_container) override;
 
   // When `prefetch_status_on_destruction` has a value, it's set as the final
   // `PrefetchStatus` of `prefetch_container` for metrics.

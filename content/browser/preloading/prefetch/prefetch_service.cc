@@ -1951,6 +1951,9 @@ void PrefetchService::OnPrefetchCompletedOrFailed(
   RemoveFromSchedulerAndProgressAsync(prefetch_container);
 }
 
+void PrefetchService::OnPrefetchStale(
+    const PrefetchContainer& prefetch_container) {}
+
 void PrefetchService::DumpPrefetchesForDebug() const {
 #if DCHECK_IS_ON()
   std::ostringstream ss;

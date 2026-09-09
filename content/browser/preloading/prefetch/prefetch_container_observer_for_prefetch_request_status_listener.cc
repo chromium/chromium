@@ -65,4 +65,7 @@ void PrefetchContainerObserverForPrefetchRequestStatusListener::
   }
 }
 
+void PrefetchContainerObserverForPrefetchRequestStatusListener::OnPrefetchStale(
+    const PrefetchContainer& prefetch_container) {}
+
 }  // namespace content

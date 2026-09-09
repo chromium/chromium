@@ -1832,6 +1832,7 @@ class TestPrefetchContainerObserver final : public PrefetchContainerObserver {
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {}
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override {}
+  void OnPrefetchStale(const PrefetchContainer& prefetch_container) override {}
 
   base::OnceClosure callback_;
 };
