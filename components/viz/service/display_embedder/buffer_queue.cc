@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/service/display/render_pass_backing_shared_image.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
@@ -26,12 +28,12 @@ BufferQueue::~BufferQueue() {
   FreeAllBuffers();
 }
 
-gpu::Mailbox BufferQueue::GetCurrentBuffer() {
+const gpu::Mailbox& BufferQueue::GetCurrentBuffer() {
   if (!current_buffer_) {
     current_buffer_ = GetNextBuffer();
   }
   DCHECK(current_buffer_);
-  return current_buffer_->mailbox;
+  return current_buffer_->shared_image.mailbox();
 }
 
 void BufferQueue::UpdateBufferDamage(const gfx::Rect& damage) {
@@ -154,27 +156,16 @@ void BufferQueue::RecreateBuffers() {
 
 void BufferQueue::FreeAllBuffers() {
   TRACE_EVENT("viz", __PRETTY_FUNCTION__);
-  FreeBuffer(std::move(displayed_buffer_));
-  FreeBuffer(std::move(current_buffer_));
+  displayed_buffer_.reset();
+  current_buffer_.reset();
 
   // This is intentionally not emptied since the swap buffers acks are still
   // expected to arrive.
   for (auto& buffer : in_flight_buffers_) {
-    FreeBuffer(std::move(buffer));
+    buffer.reset();
   }
 
-  for (auto& buffer : available_buffers_) {
-    FreeBuffer(std::move(buffer));
-  }
   available_buffers_.clear();
-}
-
-void BufferQueue::FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer) {
-  if (!buffer) {
-    return;
-  }
-  DCHECK(!buffer->mailbox.IsZero());
-  skia_output_surface_->DestroySharedImage(buffer->mailbox);
 }
 
 bool BufferQueue::SetBufferPurgeable(AllocatedBuffer& buffer, bool purgeable) {
@@ -182,7 +173,8 @@ bool BufferQueue::SetBufferPurgeable(AllocatedBuffer& buffer, bool purgeable) {
     return false;
   }
 
-  skia_output_surface_->SetSharedImagePurgeable(buffer.mailbox, purgeable);
+  skia_output_surface_->SetSharedImagePurgeable(buffer.shared_image.mailbox(),
+                                                purgeable);
   buffer.purgeable = purgeable;
   return true;
 }
@@ -198,13 +190,13 @@ void BufferQueue::AllocateBuffers(size_t n) {
 
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {
-    const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
-        format_.value(), size_, color_space_, alpha_type_, usage,
-        "VizBufferQueue", surface_handle_);
-    DCHECK(!mailbox.IsZero());
-
-    available_buffers_.push_back(
-        std::make_unique<AllocatedBuffer>(mailbox, gfx::Rect(size_)));
+    available_buffers_.push_back(std::make_unique<AllocatedBuffer>(
+        RenderPassBackingSharedImage(
+            skia_output_surface_,
+            skia_output_surface_->CreateSharedImage(
+                format_.value(), size_, color_space_, alpha_type_, usage,
+                "VizBufferQueue", surface_handle_)),
+        gfx::Rect(size_)));
   }
 }
 
@@ -219,7 +211,7 @@ std::unique_ptr<BufferQueue::AllocatedBuffer> BufferQueue::GetNextBuffer() {
   return buffer;
 }
 
-gpu::Mailbox BufferQueue::GetLastSwappedBuffer() {
+const gpu::Mailbox BufferQueue::GetLastSwappedBuffer() const {
   if (buffers_destroyed_) {
     // Buffers will not be destroyed on platforms where we need to use a buffer
     // for overlay testing (Ash).
@@ -230,12 +222,12 @@ gpu::Mailbox BufferQueue::GetLastSwappedBuffer() {
   // the last completed swap was empty or there haven't been any completed swaps
   // since Reshape() was last called.
   if (displayed_buffer_) {
-    return displayed_buffer_->mailbox;
+    return displayed_buffer_->shared_image.mailbox();
   }
 
   // If displayed_buffer_ is null then any available buffer will do.
   if (!available_buffers_.empty()) {
-    return available_buffers_.back()->mailbox;
+    return available_buffers_.back()->shared_image.mailbox();
   }
 
   // If there's nothing displayed or available, then we should have no buffers
@@ -303,9 +295,10 @@ void BufferQueue::RecreateBuffersIfDestroyed() {
   }
 }
 
-BufferQueue::AllocatedBuffer::AllocatedBuffer(const gpu::Mailbox& mailbox,
-                                              const gfx::Rect& rect)
-    : mailbox(mailbox), damage(rect) {}
+BufferQueue::AllocatedBuffer::AllocatedBuffer(
+    RenderPassBackingSharedImage buffer,
+    const gfx::Rect& rect)
+    : shared_image(std::move(buffer)), damage(rect) {}
 
 BufferQueue::AllocatedBuffer::~AllocatedBuffer() = default;
 

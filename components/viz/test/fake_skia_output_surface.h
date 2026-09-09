@@ -100,17 +100,18 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   gpu::SyncToken Flush() override;
   void PreserveChildSurfaceControls() override {}
-  gpu::Mailbox CreateSharedImage(SharedImageFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 RenderPassAlphaType alpha_type,
-                                 gpu::SharedImageUsageSet usage,
-                                 std::string_view debug_label,
-                                 gpu::SurfaceHandle surface_handle) override;
-  gpu::Mailbox CreateSolidColorSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      RenderPassAlphaType alpha_type,
+      gpu::SharedImageUsageSet usage,
+      std::string_view debug_label,
+      gpu::SurfaceHandle surface_handle) override;
+  scoped_refptr<gpu::ClientSharedImage> CreateSolidColorSharedImage(
       const SkColor4f& color,
       const gfx::ColorSpace& color_space) override;
-  void DestroySharedImage(const gpu::Mailbox& mailbox) override;
+  void OnDestroySharedImage(const gpu::Mailbox& mailbox) override;
   const std::vector<gpu::Mailbox>& destroyed_mailboxes() const {
     return destroyed_mailboxes_;
   }

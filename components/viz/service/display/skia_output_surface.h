@@ -185,21 +185,22 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Enqueue a GPU task to create a shared image with the specified params and
   // returns the mailbox.
   // Note: |kTopLeft_GrSurfaceOrigin| is used for all images.
-  virtual gpu::Mailbox CreateSharedImage(SharedImageFormat format,
-                                         const gfx::Size& size,
-                                         const gfx::ColorSpace& color_space,
-                                         RenderPassAlphaType alpha_type,
-                                         gpu::SharedImageUsageSet usage,
-                                         std::string_view debug_label,
-                                         gpu::SurfaceHandle surface_handle) = 0;
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      RenderPassAlphaType alpha_type,
+      gpu::SharedImageUsageSet usage,
+      std::string_view debug_label,
+      gpu::SurfaceHandle surface_handle) = 0;
 
   // Enqueue a GPU task to create a 1x1 shared image of the specified color.
-  virtual gpu::Mailbox CreateSolidColorSharedImage(
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSolidColorSharedImage(
       const SkColor4f& color,
       const gfx::ColorSpace& color_space) = 0;
 
   // Enqueue a GPU task to delete the specified shared image.
-  virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
+  virtual void OnDestroySharedImage(const gpu::Mailbox& mailbox) = 0;
 
   // Enqueue a GPU task to set specified shared image as `purgeable`.
   virtual void SetSharedImagePurgeable(const gpu::Mailbox& mailbox,

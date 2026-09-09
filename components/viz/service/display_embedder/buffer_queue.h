@@ -14,11 +14,14 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/render_pass_alpha_type.h"
+#include "components/viz/service/display/render_pass_backing_shared_image.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -50,13 +53,13 @@ class VIZ_SERVICE_EXPORT BufferQueue {
 
   // Returns the SharedImage backed by the current buffer (i.e., the render
   // target for compositing).
-  gpu::Mailbox GetCurrentBuffer();
+  const gpu::Mailbox& GetCurrentBuffer();
 
   // Returns a mailbox to be used for overlay testing. This will be the last
   // swapped buffer if one exists, or another buffer in the queue if not. This
   // will return a zero-mailbox if DestroyBuffers() has been called and buffers
   // have not been recreated since.
-  gpu::Mailbox GetLastSwappedBuffer();
+  const gpu::Mailbox GetLastSwappedBuffer() const;
 
   // Returns a rectangle whose contents may have changed since the current
   // buffer was last submitted and needs to be redrawn. For partial swap,
@@ -122,6 +125,10 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // hasn't been displayed yet.
   void UpdateBufferDamage(const gfx::Rect& damage);
 
+  base::WeakPtr<BufferQueue> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class BufferQueueTest;
   friend class BufferQueueMockedSharedImageInterfaceTest;
@@ -130,20 +137,18 @@ class VIZ_SERVICE_EXPORT BufferQueue {
                            AllocateFails);
 
   struct VIZ_SERVICE_EXPORT AllocatedBuffer {
-    AllocatedBuffer(const gpu::Mailbox& mailbox, const gfx::Rect& rect);
+    AllocatedBuffer(RenderPassBackingSharedImage shared_image,
+                    const gfx::Rect& rect);
     ~AllocatedBuffer();
 
     bool purgeable = false;
-    gpu::Mailbox mailbox;
+    RenderPassBackingSharedImage shared_image;
     gfx::Rect damage;  // This is the damage for this frame from the previous.
   };
 
   // Frees all buffers that have been allocated, and destroys their shared
   // images.
   void FreeAllBuffers();
-
-  // Free |buffer| and destroy its shared image.
-  void FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer);
 
   // Sets `buffer`s shared image as `purgeable` and returns true if the value
   // changed.
@@ -203,6 +208,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   std::optional<base::ElapsedTimer> destroyed_timer_;
   // Whether or not to allocate these buffers as protected buffers.
   bool is_protected_ = false;
+
+  base::WeakPtrFactory<BufferQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace viz

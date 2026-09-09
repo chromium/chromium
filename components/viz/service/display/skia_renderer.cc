@@ -60,6 +60,7 @@
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
+#include "components/viz/service/display/render_pass_backing_shared_image.h"
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/resource_fence.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -70,6 +71,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "skia/ext/opacity_filter_canvas.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -533,7 +535,7 @@ class SkiaRenderer::VizDebuggerLog {
                                ? "premul"
                                : "opaque"},
             {"format", backing.format.ToString()},
-            {"mailbox", backing.mailbox.ToDebugString()},
+            {"mailbox", backing.GetCurrentMailbox().ToDebugString()},
             {"is_root", backing.is_root},
             {"is_scanout", backing.is_scanout},
             {"scanout_dcomp_surface", backing.scanout_dcomp_surface},
@@ -573,21 +575,19 @@ SkiaRenderer::RenderPassBacking::RenderPassBacking(
     gfx::ColorSpace color_space,
     RenderPassAlphaType alpha_type,
     SharedImageFormat format,
-    gpu::Mailbox mailbox,
+    BufferOwner buffer,
     bool is_root,
     bool is_scanout,
-    bool scanout_dcomp_surface,
-    std::unique_ptr<BufferQueue> buffer_queue)
+    bool scanout_dcomp_surface)
     : size(size),
       generate_mipmap(generate_mipmap),
       color_space(color_space),
       alpha_type(alpha_type),
       format(format),
-      mailbox(mailbox),
+      buffer(std::move(buffer)),
       is_root(is_root),
       is_scanout(is_scanout),
-      scanout_dcomp_surface(scanout_dcomp_surface),
-      buffer_queue(std::move(buffer_queue)) {}
+      scanout_dcomp_surface(scanout_dcomp_surface) {}
 
 SkiaRenderer::RenderPassBacking::~RenderPassBacking() = default;
 
@@ -610,6 +610,41 @@ bool SkiaRenderer::RenderPassBacking::IsSufficientForRequirements(
   return size_appropriate && mipmap_appropriate && no_change_in_format &&
          no_change_in_alpha_type && no_change_in_color_space &&
          scanout_appropriate;
+}
+
+const gpu::Mailbox& SkiaRenderer::RenderPassBacking::GetCurrentMailbox() const {
+  return std::visit(
+      absl::Overload(
+          [](const std::unique_ptr<BufferQueue>& queue) -> const gpu::Mailbox& {
+            CHECK(queue);
+            return queue->GetCurrentBuffer();
+          },
+          [](const base::WeakPtr<BufferQueue>& queue) -> const gpu::Mailbox& {
+            if (!queue) {
+              static const gpu::Mailbox kEmptyMailbox;
+              return kEmptyMailbox;
+            }
+            return queue->GetCurrentBuffer();
+          },
+          [](const RenderPassBackingSharedImage& image) -> const gpu::Mailbox& {
+            return image.mailbox();
+          }),
+      buffer);
+}
+
+BufferQueue* SkiaRenderer::RenderPassBacking::GetBufferQueue() const {
+  return std::visit(
+      absl::Overload(
+          [](const std::unique_ptr<BufferQueue>& queue) -> BufferQueue* {
+            return queue.get();
+          },
+          [](const base::WeakPtr<BufferQueue>& queue) -> BufferQueue* {
+            return queue.get();
+          },
+          [](const RenderPassBackingSharedImage& image) -> BufferQueue* {
+            return nullptr;
+          }),
+      buffer);
 }
 
 // chrome style prevents this from going in skia_renderer.h, but since it
@@ -1246,10 +1281,6 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   // Delete render pass overlay backings from the previous frame that will not
   // be used again.
-  for (auto& overlay : available_render_pass_overlay_backings_) {
-    skia_output_surface_->DestroySharedImage(
-        overlay.render_pass_backing.mailbox);
-  }
   available_render_pass_overlay_backings_.clear();
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
@@ -1526,7 +1557,7 @@ void SkiaRenderer::BeginDrawingRenderPass(
         backing.generate_mipmap ? skgpu::Mipmapped::kYes
                                 : skgpu::Mipmapped::kNo,
         backing.scanout_dcomp_surface, RenderPassBackingColorSpace(backing),
-        /*is_overlay=*/backing.is_scanout, backing.mailbox);
+        /*is_overlay=*/backing.is_scanout, backing.GetCurrentMailbox());
   }
 
   if (is_root && debug_settings_->show_overdraw_feedback) {
@@ -2959,7 +2990,7 @@ void SkiaRenderer::ScheduleOverlays() {
           render_pass_backings_.find(current_frame()->root_render_pass->id);
       // The root pass backing should always exist.
       DCHECK(root_pass_backing != render_pass_backings_.end());
-      overlay.mailbox = root_pass_backing->second.mailbox;
+      overlay.mailbox = root_pass_backing->second.GetCurrentMailbox();
       overlay.damage_rect = gfx::RectF(swap_buffer_rect_);
 
       has_primary_plane_overlay = true;
@@ -3023,7 +3054,7 @@ void SkiaRenderer::ScheduleOverlays() {
                            gfx::RectF(overlay.rpdq->rect), overlay.uv_rect);
         }
 
-        overlay.mailbox = backing->mailbox;
+        overlay.mailbox = backing->GetCurrentMailbox();
         overlay.resource_size_in_pixels = backing->size;
 
         // We do not add the overlay mailbox to |locks| since we're using a
@@ -3473,7 +3504,7 @@ void SkiaRenderer::DrawRenderPassQuad(
       skia_output_surface_->MakePromiseSkImageFromRenderPass(
           quad->render_pass_id, backing.size, backing.format,
           backing.generate_mipmap, RenderPassBackingColorSpace(backing),
-          backing.mailbox);
+          backing.GetCurrentMailbox());
   DLOG_IF(ERROR, !content_image)
       << "MakePromiseSkImageFromRenderPass() failed for render pass";
 
@@ -3522,7 +3553,7 @@ void SkiaRenderer::CopyDrawnRenderPass(
   AggregatedRenderPassId render_pass_id = render_pass->id;
   auto it = render_pass_backings_.find(render_pass_id);
   if (it != render_pass_backings_.end()) {
-    mailbox = it->second.mailbox;
+    mailbox = it->second.GetCurrentMailbox();
   }
 
   skia_output_surface_->CopyOutput(geometry, RenderPassColorSpace(render_pass),
@@ -3546,8 +3577,8 @@ void SkiaRenderer::DidChangeVisibility() {
       }
 
       for (auto& pair : render_pass_backings_) {
-        if (pair.second.buffer_queue) {
-          pair.second.buffer_queue->DestroyBuffers();
+        if (auto* buffer_queue = pair.second.GetBufferQueue()) {
+          buffer_queue->DestroyBuffers();
         }
       }
 
@@ -3667,7 +3698,7 @@ void SkiaRenderer::UpdateRenderPassTextures(
     // reallocation is done in Reshape before drawing the frame. The SharedImage
     // of non-root render pass backings that are managed by a BufferQueue will
     // be destroyed when the backing is destroyed.
-    if (!(root_buffer_queue_ && backing.is_root) && !backing.buffer_queue) {
+    if (!(root_buffer_queue_ && backing.is_root) && !backing.GetBufferQueue()) {
       const bool should_stash_scanout_backing =
           backing.is_scanout && !scanout_backing_for_reuse_ &&
           base::FeatureList::IsEnabled(kReuseScanoutRenderPassBacking);
@@ -3687,8 +3718,6 @@ void SkiaRenderer::UpdateRenderPassTextures(
         // first one we see. This is not a great heuristic, but it is not worse
         // than not keeping a reuse pool.
         scanout_backing_for_reuse_.emplace(std::move(backing));
-      } else {
-        skia_output_surface_->DestroySharedImage(backing.mailbox);
       }
     }
     render_pass_backings_.erase(it);
@@ -3712,8 +3741,6 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     if (it != render_pass_backings_.end()) {
       auto& backing = it->second;
       backing.is_root = is_root;
-      backing.mailbox =
-          GetRenderPassBufferQueue(render_pass_id)->GetCurrentBuffer();
       backing.generate_mipmap = requirements.generate_mipmap;
       backing.size = requirements.size;
       backing.format = requirements.format;
@@ -3724,24 +3751,22 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       return;
     }
 
-    std::unique_ptr<BufferQueue> queue;
-    gpu::Mailbox mailbox;
+    RenderPassBacking::BufferOwner buffer;
     if (!is_root) {
-      queue = CreateBufferQueue();
+      std::unique_ptr<BufferQueue> queue = CreateBufferQueue();
       queue->Reshape(requirements.size, requirements.color_space,
                      requirements.alpha_type, requirements.format);
-      mailbox = queue->GetCurrentBuffer();
+      buffer = std::move(queue);
     } else {
-      mailbox = root_buffer_queue_->GetCurrentBuffer();
+      buffer = root_buffer_queue_->AsWeakPtr();
     }
-
     render_pass_backings_.emplace(
         render_pass_id,
         RenderPassBacking(requirements.size, requirements.generate_mipmap,
                           requirements.color_space, requirements.alpha_type,
-                          requirements.format, mailbox, is_root,
+                          requirements.format, std::move(buffer), is_root,
                           /*is_scanout=*/true,
-                          /*scanout_dcomp_surface=*/false, std::move(queue)));
+                          /*scanout_dcomp_surface=*/false));
     return;
   }
 
@@ -3758,15 +3783,14 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   // Try to reuse our previously stashed scanout backing, if possible. In the
   // case that we cannot use it, opt to delete it to minimize memory usage.
   if (requirements.is_scanout && scanout_backing_for_reuse_.has_value()) {
-    const RenderPassBacking& reusable = *scanout_backing_for_reuse_;
-    if (reusable.IsSufficientForRequirements(requirements)) {
+    if (scanout_backing_for_reuse_->IsSufficientForRequirements(requirements)) {
+      RenderPassBacking& reusable = *scanout_backing_for_reuse_;
       render_pass_backings_.emplace(
           render_pass_id,
-          RenderPassBacking(reusable.size, reusable.generate_mipmap,
-                            reusable.color_space, reusable.alpha_type,
-                            reusable.format, reusable.mailbox, is_root,
-                            reusable.is_scanout, reusable.scanout_dcomp_surface,
-                            /*buffer_queue=*/nullptr));
+          RenderPassBacking(
+              reusable.size, reusable.generate_mipmap, reusable.color_space,
+              reusable.alpha_type, reusable.format, std::move(reusable.buffer),
+              is_root, reusable.is_scanout, reusable.scanout_dcomp_surface));
       scanout_backing_for_reuse_.reset();
       if (base::FeatureList::IsEnabled(
               kDumpWithoutCrashingOnMissingRenderPassBacking)) {
@@ -3774,7 +3798,6 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       }
       return;
     } else {
-      skia_output_surface_->DestroySharedImage(reusable.mailbox);
       scanout_backing_for_reuse_.reset();
     }
   }
@@ -3815,7 +3838,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     DCHECK(!requirements.scanout_dcomp_surface);
   }
 
-  auto mailbox = skia_output_surface_->CreateSharedImage(
+  auto buffer = skia_output_surface_->CreateSharedImage(
       requirements.format, requirements.size, requirements.color_space,
       requirements.alpha_type, usage, "RenderPassBacking",
       gpu::kNullSurfaceHandle);
@@ -3826,10 +3849,12 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       render_pass_id,
       RenderPassBacking(requirements.size, requirements.generate_mipmap,
                         requirements.color_space, requirements.alpha_type,
-                        requirements.format, mailbox, is_root,
-                        requirements.is_scanout,
-                        requirements.scanout_dcomp_surface,
-                        /*buffer_queue=*/nullptr));
+                        requirements.format,
+                        RenderPassBacking::BufferOwner(
+                            std::in_place_type<RenderPassBackingSharedImage>,
+                            skia_output_surface_, std::move(buffer)),
+                        is_root, requirements.is_scanout,
+                        requirements.scanout_dcomp_surface));
   if (base::FeatureList::IsEnabled(
           kDumpWithoutCrashingOnMissingRenderPassBacking)) {
     seen_render_pass_ids_.insert(render_pass_id);
@@ -3851,7 +3876,7 @@ BufferQueue* SkiaRenderer::GetRenderPassBufferQueue(
   if (it->second.is_root) {
     return root_buffer_queue_.get();
   }
-  return it->second.buffer_queue.get();
+  return it->second.GetBufferQueue();
 }
 
 std::unique_ptr<BufferQueue> SkiaRenderer::CreateBufferQueue() {
@@ -3990,19 +4015,23 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
-    auto mailbox = skia_output_surface_->CreateSharedImage(
-        buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
-        kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
-    overlay_params.render_pass_backing = {buffer_size,
-                                          /*generate_mipmap=*/false,
-                                          color_space,
-                                          RenderPassAlphaType::kPremul,
-                                          buffer_format,
-                                          mailbox,
-                                          /*is_root=*/false,
-                                          /*is_scanout=*/true,
-                                          /*scanout_dcomp_surface=*/false,
-                                          /*buffer_queue=*/nullptr};
+    RenderPassBacking::BufferOwner buffer = RenderPassBackingSharedImage(
+        skia_output_surface_,
+        skia_output_surface_->CreateSharedImage(
+            buffer_format, buffer_size, color_space,
+            RenderPassAlphaType::kPremul, kOverlayUsage, "RenderPassOverlay",
+            gpu::kNullSurfaceHandle));
+    overlay_params.render_pass_backing = {
+        buffer_size,
+        /*generate_mipmap=*/false,
+        color_space,
+        RenderPassAlphaType::kPremul,
+        buffer_format,
+        std::move(buffer),
+        /*is_root=*/false,
+        /*is_scanout=*/true,
+        /*scanout_dcomp_surface=*/false,
+    };
   } else {
     overlay_params = std::move(*it);
     available_render_pass_overlay_backings_.erase(it);
@@ -4187,7 +4216,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   const RenderPassBacking& dst_overlay_backing =
       overlay_params->render_pass_backing;
-  overlay->mailbox = dst_overlay_backing.mailbox;
+  overlay->mailbox = dst_overlay_backing.GetCurrentMailbox();
   overlay->resource_size_in_pixels = dst_overlay_backing.size;
 
   if (!can_skip_render_pass) {
@@ -4231,7 +4260,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
               quad->render_pass_id, src_quad_backing->size,
               src_quad_backing->format, src_quad_backing->generate_mipmap,
               RenderPassBackingColorSpace(*src_quad_backing),
-              src_quad_backing->mailbox);
+              src_quad_backing->GetCurrentMailbox());
       if (!content_image) {
         DLOG(ERROR) << "MakePromiseSkImageFromRenderPass() in "
                        "PrepareRenderPassOverlay() failed.";
@@ -4455,8 +4484,8 @@ void SkiaRenderer::EnsureMinNumberOfBuffers(int n) {
   root_buffer_queue_->EnsureMinNumberOfBuffers(n);
   // TODO(crbug.com/489361939) Support dynamic buffer allocation.
   for (auto& [id, backing] : render_pass_backings_) {
-    if (backing.buffer_queue) {
-      backing.buffer_queue->EnsureMinNumberOfBuffers(n);
+    if (auto* buffer_queue = backing.GetBufferQueue()) {
+      buffer_queue->EnsureMinNumberOfBuffers(n);
     }
   }
 }
@@ -4527,11 +4556,11 @@ SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
   CHECK(renderer_);
   CHECK(!mailbox_.IsZero());
 
-  auto it =
-      std::ranges::find(renderer_->in_flight_render_pass_overlay_backings_,
-                        mailbox_, [](const RenderPassOverlayParams& overlay) {
-                          return overlay.render_pass_backing.mailbox;
-                        });
+  auto it = std::ranges::find(
+      renderer_->in_flight_render_pass_overlay_backings_, mailbox_,
+      [](const RenderPassOverlayParams& overlay) {
+        return overlay.render_pass_backing.GetCurrentMailbox();
+      });
   CHECK(it != renderer_->in_flight_render_pass_overlay_backings_.end());
 
   it->ref_count++;
@@ -4542,11 +4571,11 @@ void SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::Reset() {
     return;
   }
 
-  auto it =
-      std::ranges::find(renderer_->in_flight_render_pass_overlay_backings_,
-                        mailbox_, [](const RenderPassOverlayParams& overlay) {
-                          return overlay.render_pass_backing.mailbox;
-                        });
+  auto it = std::ranges::find(
+      renderer_->in_flight_render_pass_overlay_backings_, mailbox_,
+      [](const RenderPassOverlayParams& overlay) {
+        return overlay.render_pass_backing.GetCurrentMailbox();
+      });
   CHECK(it != renderer_->in_flight_render_pass_overlay_backings_.end());
 
   // Render pass overlay backings can be reused across multiple frames so we

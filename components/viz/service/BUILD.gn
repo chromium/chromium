@@ -129,6 +129,8 @@ viz_component("service") {
     "display/pending_swap_params.cc",
     "display/pending_swap_params.h",
     "display/render_pass_alpha_type.h",
+    "display/render_pass_backing_shared_image.cc",
+    "display/render_pass_backing_shared_image.h",
     "display/renderer_utils.cc",
     "display/renderer_utils.h",
     "display/resolved_frame_data.cc",

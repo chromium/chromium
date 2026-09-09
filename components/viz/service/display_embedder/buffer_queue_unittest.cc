@@ -13,9 +13,11 @@
 #include <string_view>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "components/viz/test/fake_skia_output_surface.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,7 +61,7 @@ class BufferQueueTest : public ::testing::Test {
 
   gpu::Mailbox current_buffer() {
     return buffer_queue_->current_buffer_
-               ? buffer_queue_->current_buffer_->mailbox
+               ? buffer_queue_->current_buffer_->shared_image.mailbox()
                : gpu::Mailbox();
   }
   const base::circular_deque<std::unique_ptr<BufferQueue::AllocatedBuffer>>&
@@ -94,16 +96,16 @@ class BufferQueueTest : public ::testing::Test {
       return false;
     }
     if (displayed_frame() &&
-        !InsertUnique(&buffers, displayed_frame()->mailbox)) {
+        !InsertUnique(&buffers, displayed_frame()->shared_image.mailbox())) {
       return false;
     }
     for (auto& buffer : available_buffers()) {
-      if (!InsertUnique(&buffers, buffer->mailbox)) {
+      if (!InsertUnique(&buffers, buffer->shared_image.mailbox())) {
         return false;
       }
     }
     for (auto& buffer : in_flight_buffers()) {
-      if (buffer && !InsertUnique(&buffers, buffer->mailbox)) {
+      if (buffer && !InsertUnique(&buffers, buffer->shared_image.mailbox())) {
         return false;
       }
     }
@@ -145,15 +147,16 @@ const gfx::Rect overlapping_damage = gfx::Rect(gfx::Size(5, 20));
 class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
  public:
   MockedSkiaOutputSurface() : FakeSkiaOutputSurface(nullptr) {}
-  MOCK_METHOD7(CreateSharedImage,
-               gpu::Mailbox(SharedImageFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            RenderPassAlphaType alpha_type,
-                            gpu::SharedImageUsageSet usage,
-                            std::string_view debug_label,
-                            gpu::SurfaceHandle surface_handle));
-  MOCK_METHOD1(DestroySharedImage, void(const gpu::Mailbox& mailbox));
+  MOCK_METHOD7(
+      CreateSharedImage,
+      scoped_refptr<gpu::ClientSharedImage>(SharedImageFormat format,
+                                            const gfx::Size& size,
+                                            const gfx::ColorSpace& color_space,
+                                            RenderPassAlphaType alpha_type,
+                                            gpu::SharedImageUsageSet usage,
+                                            std::string_view debug_label,
+                                            gpu::SurfaceHandle surface_handle));
+  MOCK_METHOD1(OnDestroySharedImage, void(const gpu::Mailbox& mailbox));
 };
 
 TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
@@ -161,7 +164,8 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
   std::unique_ptr<BufferQueue> buffer_queue = std::make_unique<BufferQueue>(
       mock_skia_output_surface.get(), kFakeSurfaceHandle, 1);
 
-  const gpu::Mailbox expected_mailbox = gpu::Mailbox::Generate();
+  const scoped_refptr<gpu::ClientSharedImage> expected_shared_image =
+      gpu::ClientSharedImage::CreateForTesting();
   {
     testing::InSequence dummy;
     EXPECT_CALL(*mock_skia_output_surface,
@@ -171,15 +175,15 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
                                   _, _))
-        .WillOnce(Return(expected_mailbox));
+        .WillOnce(Return(expected_shared_image));
     EXPECT_CALL(*mock_skia_output_surface,
-                DestroySharedImage(expected_mailbox));
+                OnDestroySharedImage(expected_shared_image->mailbox()));
   }
 
   EXPECT_TRUE(buffer_queue->Reshape(screen_size, kBufferQueueColorSpace,
                                     RenderPassAlphaType::kPremul,
                                     kBufferQueueFormat));
-  EXPECT_EQ(expected_mailbox, buffer_queue->GetCurrentBuffer());
+  EXPECT_EQ(expected_shared_image->mailbox(), buffer_queue->GetCurrentBuffer());
 }
 
 TEST_F(BufferQueueTest, PartialSwapReuse) {
@@ -256,7 +260,7 @@ TEST_F(BufferQueueTest, MultipleGetCurrentBufferCalls) {
                                      kBufferQueueFormat));
   // Check that multiple bind calls do not create or change buffers.
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
-  gpu::Mailbox fb = buffer_queue_->GetCurrentBuffer();
+  auto fb = buffer_queue_->GetCurrentBuffer();
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_EQ(fb, buffer_queue_->GetCurrentBuffer());
 }
@@ -285,22 +289,22 @@ TEST_F(BufferQueueTest, CheckDoubleBuffering) {
   buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
 
   EXPECT_EQ(0U, in_flight_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_TRUE(CheckUnique());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_EQ(0U, in_flight_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   buffer_queue_->UpdateBufferDamage(screen_rect);
   buffer_queue_->SwapBuffers();
   EXPECT_TRUE(CheckUnique());
   EXPECT_EQ(1U, in_flight_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_TRUE(CheckUnique());
   EXPECT_EQ(0U, in_flight_buffers().size());
   EXPECT_EQ(1U, available_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_TRUE(CheckUnique());
   EXPECT_TRUE(available_buffers().empty());
@@ -326,17 +330,17 @@ TEST_F(BufferQueueTest, CheckTripleBuffering) {
 
   EXPECT_TRUE(CheckUnique());
   EXPECT_EQ(1U, in_flight_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_TRUE(CheckUnique());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_EQ(1U, in_flight_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
   EXPECT_TRUE(CheckUnique());
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
   EXPECT_EQ(0U, in_flight_buffers().size());
-  EXPECT_FALSE(displayed_frame()->mailbox.IsZero());
+  EXPECT_FALSE(displayed_frame()->shared_image.mailbox().IsZero());
   EXPECT_EQ(1U, available_buffers().size());
 }
 
@@ -386,9 +390,10 @@ TEST_F(BufferQueueTest, CheckCorrectBufferOrdering) {
 
   EXPECT_EQ(kSwapCount, in_flight_buffers().size());
   for (size_t i = 0; i < kSwapCount; ++i) {
-    gpu::Mailbox next_mailbox = in_flight_buffers().front()->mailbox;
+    gpu::Mailbox next_mailbox =
+        in_flight_buffers().front()->shared_image.mailbox();
     buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
-    EXPECT_EQ(displayed_frame()->mailbox, next_mailbox);
+    EXPECT_EQ(displayed_frame()->shared_image.mailbox(), next_mailbox);
   }
 }
 
@@ -451,9 +456,10 @@ TEST_F(BufferQueueTest, SwapAfterReshape) {
   EXPECT_TRUE(CheckUnique());
 
   for (size_t i = 0; i < kSwapCount; ++i) {
-    gpu::Mailbox next_mailbox = in_flight_buffers().front()->mailbox;
+    gpu::Mailbox next_mailbox =
+        in_flight_buffers().front()->shared_image.mailbox();
     buffer_queue_->SwapBuffersComplete(/*did_present=*/true);
-    EXPECT_EQ(displayed_frame()->mailbox, next_mailbox);
+    EXPECT_EQ(displayed_frame()->shared_image.mailbox(), next_mailbox);
     EXPECT_TRUE(displayed_frame());
   }
 

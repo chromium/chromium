@@ -258,18 +258,7 @@ class SkiaOutputSurfaceImplOnGpu
   void AddAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
   void RemoveAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
 
-  void CreateSharedImage(gpu::Mailbox mailbox,
-                         SharedImageFormat format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         SkAlphaType alpha_type,
-                         gpu::SharedImageUsageSet usage,
-                         std::string debug_label,
-                         gpu::SurfaceHandle surface_handle);
-  void CreateSolidColorSharedImage(gpu::Mailbox mailbox,
-                                   const SkColor4f& color,
-                                   const gfx::ColorSpace& color_space);
-  void DestroySharedImage(gpu::Mailbox mailbox);
+  void OnDestroySharedImage(gpu::Mailbox mailbox);
   void SetSharedImagePurgeable(const gpu::Mailbox& mailbox, bool purgeable);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -607,10 +596,6 @@ class SkiaOutputSurfaceImplOnGpu
   base::circular_deque<std::pair<GrBackendSemaphore,
                                  base::OnceCallback<void(gfx::GpuFenceHandle)>>>
       pending_release_fence_cbs_;
-
-  // A cache of solid color image mailboxes so we can destroy them in the
-  // destructor.
-  base::flat_set<gpu::Mailbox> solid_color_images_;
 
   THREAD_CHECKER(thread_checker_);
 
