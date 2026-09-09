@@ -154,8 +154,10 @@ class AdsPageLoadMetricsObserverBrowserTest
          subresource_filter::testing::CreateSuffixRule(
              "expensive_animation_frame.html*"),
          subresource_filter::testing::CreateSuffixRule("ad.html")});
-    // Ensure browser is active so that the expected dimensions are correct.
-    ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
+    // Ensure browser window bounds are initialized correctly. On Wayland, this
+    // requires waiting for an async roundtrip. On platforms where bounds are
+    // initialized synchronously (e.g. Mac), this is safely a no-op.
+    ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser()).Wait();
   }
 };
 
@@ -176,9 +178,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an empty embedded ad isn't reported at all.
-// TODO(crbug.com/40188872): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_OriginStatusMetricEmbeddedEmpty) {
+                       OriginStatusMetricEmbeddedEmpty) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -249,9 +250,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       static_cast<int>(page_load_metrics::OriginStatus::kCross));
 }
 
-// TODO(crbug.com/40840626): Re-enable this test
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_AverageViewportAdDensity) {
+                       AverageViewportAdDensity) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -326,10 +326,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
             expected_final_viewport_density);
 }
 
-// TODO(crbug.com/431787502): Re-enable this test.
-// The test seems to be flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_AverageViewportAdDensity_ImageAd) {
+                       AverageViewportAdDensity_ImageAd) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
 
@@ -384,11 +382,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(reported_average_viewport_density);
 }
 
-// TODO(crbug.com/431787502): Re-enable this test.
-// The test seems to be flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(
-    AdsPageLoadMetricsObserverBrowserTest,
-    DISABLED_AverageViewportAdDensity_SpanBackgroundImageAd) {
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       AverageViewportAdDensity_SpanBackgroundImageAd) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
 
@@ -446,17 +441,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that viewport ad density does not accumulate for ads that are injected
 // while the tab is in the background.
-// TODO(crbug.com/448982399): Re-enable this test
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
-#define MAYBE_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground \
-  DISABLED_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground
-#else
-#define MAYBE_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground \
-  AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground
-#endif
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
-    MAYBE_AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground) {
+    AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
 
@@ -531,17 +518,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that viewport ad density starts to accumulate for an ad injected in a
 // backgrounded tab, once that tab is shown again.
-// TODO(https://crbug.com/448524935): Flaky on mac x64.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
-#define MAYBE_AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused \
-  DISABLED_AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused
-#else
-#define MAYBE_AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused \
-  AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused
-#endif
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
-    MAYBE_AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused) {
+    AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
 
@@ -754,9 +733,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 // a page's lifecycling by creating a large ad frame, destroying it, and
 // creating a smaller iframe. The ad density recorded is the density with
 // the first larger frame.
-// TODO(crbug.com/443615131, crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_PageAdDensityRecordsPageMax) {
+                       PageAdDensityRecordsPageMax) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -857,9 +835,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Creates multiple overlapping frames and verifies the page ad density.
-// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_PageAdDensityMultipleFrames) {
+                       PageAdDensityMultipleFrames) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1133,9 +1110,8 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 
 // Test that an ad creative with the same origin as the main page,
 // but nested in a cross-origin root ad frame, is same-origin.
-// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_CreativeOriginStatusSameNested) {
+                       CreativeOriginStatusSameNested) {
   TestCreativeOriginStatus(
       MakeFrame("a",
                 MakeFrame("b", MakeFrame("a", MakeFrame("c", nullptr), true))),
@@ -1178,9 +1154,8 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that if no iframe is created, there is no histogram set.
-// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_CreativeOriginStatusNoSubframes) {
+                       CreativeOriginStatusNoSubframes) {
   TestCreativeOriginStatus(MakeFrame("a", nullptr), OriginStatus::kUnknown,
                            OriginStatusWithThrottling::kUnknownAndUnthrottled);
 }
@@ -1241,9 +1216,8 @@ IN_PROC_BROWSER_TEST_F(
       OriginStatusWithThrottling::kUnknownAndUnthrottled);
 }
 
-// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_UserActivationSetOnFrame) {
+                       UserActivationSetOnFrame) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1294,11 +1268,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                   ukm::builders::AdFrameLoad::kStatus_UserActivationName));
 }
 
-// See https://crbug.com/40758137.
-// TODO(crbug.com/402536429): Fix flakiness and re-enable.
-IN_PROC_BROWSER_TEST_F(
-    AdsPageLoadMetricsObserverBrowserTest,
-    DISABLED_UserActivationSetOnFrameAfterSameOriginActivation) {
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       UserActivationSetOnFrameAfterSameOriginActivation) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1343,17 +1314,10 @@ IN_PROC_BROWSER_TEST_F(
       page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
 }
 
-// TODO(https://crbug.com/40286659): Fix this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
-#else
-#define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
-#endif
 // Test that a subframe that aborts (due to doc.write) doesn't cause a crash
 // if it continues to load resources.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_DocOverwritesNavigation) {
+                       DocOverwritesNavigation) {
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
   // TODO(https://crbug.com/40189815): Investigate if this needs further fix.
@@ -1393,13 +1357,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that a blank ad subframe that is docwritten correctly reports metrics.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DocWriteAboutBlankAdframe DISABLED_DocWriteAboutBlankAdframe
-#else
-#define MAYBE_DocWriteAboutBlankAdframe DocWriteAboutBlankAdframe
-#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_DocWriteAboutBlankAdframe) {
+                       DocWriteAboutBlankAdframe) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
@@ -1783,17 +1742,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 1, 1);
 }
 
-// TODO(crbug.com/402536429): Re-enable once the test is fixed.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
-#define MAYBE_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd \
-  DISABLED_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd
-#else
-#define MAYBE_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd \
-  FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd
-#endif
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
-    MAYBE_FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd) {
+    FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd) {
   // Subdocument resources should always check allowlist rules, even if
   // there is not matching blocklist rule.
   SetRulesetWithRules(
@@ -2860,9 +2811,8 @@ void WaitForRAF(content::DOMMessageQueue* message_queue) {
 }
 
 // Test that rAF events are measured as part of the cpu metrics.
-// TODO(crbug.com/402536429): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_FrameRAFTriggersCpuUpdate) {
+                       FrameRAFTriggersCpuUpdate) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
 
@@ -2949,17 +2899,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that cpu time aggregation across a subframe navigation is cumulative.
-// TODO(https://crbug.com/448524935): Flaky on mac x64.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
-#define MAYBE_AggregateCpuTriggersCpuUpdateOverSubframeNavigate \
-  DISABLED_AggregateCpuTriggersCpuUpdateOverSubframeNavigate
-#else
-#define MAYBE_AggregateCpuTriggersCpuUpdateOverSubframeNavigate \
-  AggregateCpuTriggersCpuUpdateOverSubframeNavigate
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AdsPageLoadMetricsObserverBrowserTest,
-    MAYBE_AggregateCpuTriggersCpuUpdateOverSubframeNavigate) {
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       AggregateCpuTriggersCpuUpdateOverSubframeNavigate) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
 
