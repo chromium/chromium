@@ -2752,4 +2752,76 @@ IN_PROC_BROWSER_TEST_F(WebIdEmbedderInitiatedLoginTest,
   EXPECT_TRUE(entry->GetHasPostData());
 }
 
+IN_PROC_BROWSER_TEST_F(WebIdEmbedderInitiatedLoginTest,
+                       MismatchedIdPInPopupDoesNotTriggerEmbedderCallback) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  const url::Origin expected_idp =
+      url::Origin::Create(GURL("https://expected-idp.example"));
+  const url::Origin actual_idp = url::Origin::Create(GURL(BaseIdpUrl()));
+  EXPECT_NE(expected_idp, actual_idp);
+
+  std::optional<webid::FederatedLoginResult> received_result;
+  webid::FederatedEmbedderLoginRequest::Set(
+      shell()->web_contents(), expected_idp, "expected_account",
+      base::BindLambdaForTesting([&](webid::FederatedLoginResult result) {
+        received_result = result;
+      }));
+
+  ShellAddedObserver popup_observer;
+  GURL popup_url = https_server().GetURL(kRpHostName, "/title1.html");
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("window.open($1, '_blank');", popup_url)));
+  Shell* popup = popup_observer.GetShell();
+  ASSERT_TRUE(popup);
+  EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+
+  RenderFrameHost* opener_rfh = popup->web_contents()->GetOpener();
+  ASSERT_TRUE(opener_rfh);
+  EXPECT_EQ(shell()->web_contents(),
+            WebContents::FromRenderFrameHost(opener_rfh));
+  webid::FederatedEmbedderLoginRequest* req =
+      webid::FederatedEmbedderLoginRequest::Get(popup->web_contents());
+  ASSERT_TRUE(req);
+  EXPECT_EQ(expected_idp, req->idp_origin());
+
+  EXPECT_EQ(std::string(kToken), EvalJs(popup, GetBasicRequestString()));
+
+  EXPECT_FALSE(received_result.has_value());
+  EXPECT_NE(nullptr,
+            webid::FederatedEmbedderLoginRequest::Get(shell()->web_contents()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebIdEmbedderInitiatedLoginTest,
+                       MatchingIdPInPopupTriggersEmbedderCallback) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  const url::Origin expected_idp = url::Origin::Create(GURL(BaseIdpUrl()));
+
+  std::optional<webid::FederatedLoginResult> received_result;
+  base::RunLoop run_loop;
+  webid::FederatedEmbedderLoginRequest::Set(
+      shell()->web_contents(), expected_idp, "expected_account",
+      base::BindLambdaForTesting([&](webid::FederatedLoginResult result) {
+        received_result = result;
+        run_loop.Quit();
+      }));
+
+  ShellAddedObserver popup_observer;
+  GURL popup_url = https_server().GetURL(kRpHostName, "/title1.html");
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("window.open($1, '_blank');", popup_url)));
+  Shell* popup = popup_observer.GetShell();
+  ASSERT_TRUE(popup);
+  EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+
+  EXPECT_EQ(std::string(kToken), EvalJs(popup, GetBasicRequestString()));
+
+  run_loop.Run();
+  ASSERT_TRUE(received_result.has_value());
+  EXPECT_EQ(webid::FederatedLoginResult::kSuccess, *received_result);
+  EXPECT_EQ(nullptr,
+            webid::FederatedEmbedderLoginRequest::Get(shell()->web_contents()));
+}
+
 }  // namespace content

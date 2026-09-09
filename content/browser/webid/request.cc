@@ -1911,10 +1911,15 @@ void Request::CompleteRequest(
     // request, even if the callback is delayed.
     RecordMetricsAndConsoleError(result, token_status, selected_idp_config_url);
 
+    std::optional<url::Origin> idp_origin;
+    if (selected_idp_config_url) {
+      idp_origin = url::Origin::Create(*selected_idp_config_url);
+    }
+
     RenderFrameHostImpl::From(&render_frame_host())
         ->delegate()
         ->OnFedCmFederatedLogin(
-            FederatedRequestResultToFederatedLoginResult(result));
+            FederatedRequestResultToFederatedLoginResult(result), idp_origin);
 
     if (token_received_callback_for_autofill_) {
       std::move(token_received_callback_for_autofill_)

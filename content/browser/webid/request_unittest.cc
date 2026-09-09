@@ -2138,6 +2138,26 @@ TEST_F(RequestTest, NotifiesFederatedEmbedderLoginRequest) {
   RunTest(kDefaultRequestParameters, kExpectationSuccess, kConfigurationValid);
 }
 
+// Test that the FederatedEmbedderLoginRequest is not notified when the FedCM
+// flow completes successfully for a different IdP.
+TEST_F(RequestTest,
+       DoesNotNotifyFederatedEmbedderLoginRequestWithMismatchedIdp) {
+  url::Origin idp_origin =
+      url::Origin::Create(GURL("https://other-idp.example"));
+  std::string account_id = "account_id123";
+
+  base::MockCallback<base::OnceCallback<void(FederatedLoginResult)>>
+      result_callback;
+  // Since the result from the mismatched IdP is ignored, the embedder request
+  // only finishes when it times out during WaitForCurrentRequest().
+  EXPECT_CALL(result_callback, Run(FederatedLoginResult::kTimeout)).Times(1);
+
+  FederatedEmbedderLoginRequest::Set(web_contents(), idp_origin, account_id,
+                                     result_callback.Get());
+
+  RunTest(kDefaultRequestParameters, kExpectationSuccess, kConfigurationValid);
+}
+
 // Test successful well-known fetching.
 TEST_F(RequestTest, WellKnownSuccess) {
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters

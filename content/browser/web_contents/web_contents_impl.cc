@@ -2266,7 +2266,8 @@ void WebContentsImpl::DidCapturedSurfaceControl() {
 }
 
 void WebContentsImpl::OnFedCmFederatedLogin(
-    webid::FederatedLoginResult result) {
+    webid::FederatedLoginResult result,
+    const std::optional<url::Origin>& idp_origin) {
   observers_.NotifyObservers(&WebContentsObserver::OnFedCmFederatedLogin,
                              result == webid::FederatedLoginResult::kSuccess);
 
@@ -2278,7 +2279,10 @@ void WebContentsImpl::OnFedCmFederatedLogin(
 
   webid::FederatedEmbedderLoginRequest* embedder_login_request =
       webid::FederatedEmbedderLoginRequest::Get(this);
-  if (embedder_login_request) {
+  // Continue waiting if the resolved IdP isn't the same IdP from the embedder
+  // request.
+  if (embedder_login_request && idp_origin &&
+      *idp_origin == embedder_login_request->idp_origin()) {
     embedder_login_request->OnFederatedResultReceived(result);
   }
 }

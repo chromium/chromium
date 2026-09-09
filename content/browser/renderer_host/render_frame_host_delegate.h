@@ -243,7 +243,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* render_frame_host) {}
 
   // Called when a federated login request completes.
-  virtual void OnFedCmFederatedLogin(webid::FederatedLoginResult result) {}
+  virtual void OnFedCmFederatedLogin(
+      webid::FederatedLoginResult result,
+      const std::optional<url::Origin>& idp_origin) {}
 
   // Binds a DisplayCutoutHost object associated to |render_frame_host|.
   virtual void BindDisplayCutoutHost(

@@ -746,7 +746,9 @@ class CONTENT_EXPORT WebContentsImpl
       RenderFrameHostImpl* render_frame_host) override;
   void WebAuthnAssertionRequestSucceeded(
       RenderFrameHostImpl* render_frame_host) override;
-  void OnFedCmFederatedLogin(webid::FederatedLoginResult result) override;
+  void OnFedCmFederatedLogin(
+      webid::FederatedLoginResult result,
+      const std::optional<url::Origin>& idp_origin) override;
   void BindDisplayCutoutHost(
       RenderFrameHostImpl* render_frame_host,
       mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver)
