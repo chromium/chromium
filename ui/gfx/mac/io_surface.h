@@ -123,6 +123,24 @@ bool IOSurfacePixelFormatIsWebGPUCompatible(uint32_t pixel_format);
 COMPONENT_EXPORT(GFX)
 bool IOSurfacePixelFormatSupportsCpuAccess(uint32_t pixel_format);
 
+// Return true if the specified IOSurface pixel format can be displayed using
+// an AVSampleBufferDisplayLayer.
+COMPONENT_EXPORT(GFX)
+bool IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(uint32_t pixel_format);
+
+// Return the maximum bit depth across all components for the specified
+// IOSurface pixel format, or 0 if the format is not recognized. For pixel
+// formats with non-uniform component sizes (such as 10-10-10-2 or 5-6-5),
+// this returns the maximum bit depth among the components (for example,
+// 10 for 10-10-10-2).
+COMPONENT_EXPORT(GFX)
+uint32_t IOSurfacePixelFormatMaxBitsPerComponent(uint32_t pixel_format);
+
+// Return the color space range ID for the specified IOSurface pixel format,
+// or INVALID if the format is not recognized.
+COMPONENT_EXPORT(GFX)
+gfx::ColorSpace::RangeID IOSurfacePixelFormatRangeID(uint32_t pixel_format);
+
 // Return true if the specified IOSurface pixel format can be used with the
 // specified viz::SharedImageFormat. If `match_rgba_and_bgra` is true, then
 // allow matching BGRA to RGBA formats and vice-versa.

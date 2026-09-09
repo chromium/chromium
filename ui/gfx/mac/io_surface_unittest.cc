@@ -63,6 +63,66 @@ TEST(IOSurface, WebGPUCompatibility) {
       kCVPixelFormatType_420YpCbCr8Planar));
 }
 
+TEST(IOSurface, MaxBitsPerComponent) {
+  EXPECT_EQ(
+      IOSurfacePixelFormatMaxBitsPerComponent(kCVPixelFormatType_OneComponent8),
+      8u);
+  EXPECT_EQ(IOSurfacePixelFormatMaxBitsPerComponent(
+                kCVPixelFormatType_ARGB2101010LEPacked),
+            10u);
+  EXPECT_EQ(
+      IOSurfacePixelFormatMaxBitsPerComponent(kCVPixelFormatType_64RGBAHalf),
+      16u);
+  EXPECT_EQ(IOSurfacePixelFormatMaxBitsPerComponent(
+                kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+            8u);
+  EXPECT_EQ(IOSurfacePixelFormatMaxBitsPerComponent(
+                kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange),
+            10u);
+  EXPECT_EQ(IOSurfacePixelFormatMaxBitsPerComponent('FAKE'), 0u);
+}
+
+TEST(IOSurface, CanDisplayAsAVSampleBuffer) {
+  EXPECT_TRUE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange));
+  EXPECT_TRUE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange));
+  EXPECT_TRUE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange));
+  EXPECT_TRUE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange));
+  EXPECT_TRUE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange));
+  EXPECT_TRUE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange));
+
+  EXPECT_FALSE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_32BGRA));
+  EXPECT_FALSE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_32RGBA));
+  EXPECT_FALSE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_420YpCbCr8Planar));
+  EXPECT_FALSE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar));
+  EXPECT_FALSE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(
+      kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange));
+  EXPECT_FALSE(IOSurfacePixelFormatCanDisplayAsAVSampleBuffer('FAKE'));
+}
+
+TEST(IOSurface, RangeID) {
+  EXPECT_EQ(IOSurfacePixelFormatRangeID(kCVPixelFormatType_OneComponent8),
+            ColorSpace::RangeID::FULL);
+  EXPECT_EQ(IOSurfacePixelFormatRangeID(kCVPixelFormatType_ARGB2101010LEPacked),
+            ColorSpace::RangeID::FULL);
+  EXPECT_EQ(IOSurfacePixelFormatRangeID(
+                kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+            ColorSpace::RangeID::LIMITED);
+  EXPECT_EQ(IOSurfacePixelFormatRangeID(
+                kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange),
+            ColorSpace::RangeID::LIMITED);
+  EXPECT_EQ(IOSurfacePixelFormatRangeID('FAKE'), ColorSpace::RangeID::INVALID);
+}
+
 TEST(IOSurface, OddSizeMultiPlanar) {
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
       CreateIOSurface(gfx::Size(101, 99), viz::MultiPlaneFormat::kNV12);

@@ -177,9 +177,9 @@ void VideoToolboxFrameConverter::Convert(
     // Chrome and macOS do not agree on the color space; force compositing to
     // ensure a consistent result. See crbug.com/343014700.
     shared_image_usage.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-    // Always use limited range since we request a limited range output format.
     color_space = metadata->color_space.GetWithMatrixAndRange(
-        metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
+        metadata->color_space.GetMatrixID(),
+        gfx::IOSurfacePixelFormatRangeID(pixel_format));
   }
 
   auto shared_image = shared_image_interface->CreateSharedImage(

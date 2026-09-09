@@ -56,6 +56,12 @@ struct IOSurfaceFormatInfo {
 
   // Various properties of the CVPixelFormat.
   uint32_t flags = 0;
+
+  // The color range of the format.
+  ColorSpace::RangeID range = ColorSpace::RangeID::INVALID;
+
+  // The number of bits per component.
+  uint32_t bits_per_component = 0;
 };
 
 // This flag is set if an IOSurface of the specified format can be imported
@@ -66,29 +72,41 @@ constexpr uint32_t kWebGPUImport = 0x1;
 // and therefore cannot be accessed by the CPU.
 constexpr uint32_t kCompressed = 0x2;
 
+// This flag is set if an IOSurface of the specified format can be displayed
+// using an AVSampleBufferDisplayLayer.
+constexpr uint32_t kCanDisplayAsAVSampleBuffer = 0x4;
+
 constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
     // 8-bit unorm formats.
     {
         kCVPixelFormatType_OneComponent8,
         {viz::SinglePlaneFormat::kR_8},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        8,
     },
     {
         kCVPixelFormatType_TwoComponent8,
         {viz::SinglePlaneFormat::kRG_88},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        8,
     },
     {
         kCVPixelFormatType_32BGRA,
         {viz::SinglePlaneFormat::kBGRA_8888,
          viz::SinglePlaneFormat::kBGRX_8888},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        8,
     },
     {
         kCVPixelFormatType_32RGBA,
         {viz::SinglePlaneFormat::kRGBA_8888,
          viz::SinglePlaneFormat::kRGBX_8888},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        8,
     },
 
     // 16-bit unorm formats.
@@ -96,11 +114,15 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
         kCVPixelFormatType_OneComponent16,
         {viz::SinglePlaneFormat::kR_16},
         0,
+        ColorSpace::RangeID::FULL,
+        16,
     },
     {
         kCVPixelFormatType_TwoComponent16,
         {viz::SinglePlaneFormat::kRG_1616},
         0,
+        ColorSpace::RangeID::FULL,
+        16,
     },
 
     // 16-bit float formats.
@@ -108,16 +130,22 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
         kCVPixelFormatType_OneComponent16Half,
         {viz::SinglePlaneFormat::kR_F16},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        16,
     },
     {
         kCVPixelFormatType_TwoComponent16Half,
         {},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        16,
     },
     {
         kCVPixelFormatType_64RGBAHalf,
         {viz::SinglePlaneFormat::kRGBA_F16},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        16,
     },
 
     // 10-10-10-2 format.
@@ -125,50 +153,68 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
         kCVPixelFormatType_ARGB2101010LEPacked,
         {viz::SinglePlaneFormat::kBGRA_1010102},
         kWebGPUImport,
+        ColorSpace::RangeID::FULL,
+        10,
     },
 
     // 8-bit video formats.
     {
         kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kNV12},
-        kWebGPUImport,
+        kWebGPUImport | kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::LIMITED,
+        8,
     },
     {
         kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kNV16},
-        0,
+        kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::LIMITED,
+        8,
     },
     {
         kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kNV24},
-        0,
+        kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::LIMITED,
+        8,
     },
     {
         kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar,
         {viz::MultiPlaneFormat::kNV12A},
         0,
+        ColorSpace::RangeID::LIMITED,
+        8,
     },
     {
         kCVPixelFormatType_420YpCbCr8Planar,
         {viz::MultiPlaneFormat::kI420},
         0,
+        ColorSpace::RangeID::LIMITED,
+        8,
     },
 
     // 10-bit video formats.
     {
         kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP010},
-        0,
+        kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::LIMITED,
+        10,
     },
     {
         kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP210},
-        0,
+        kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::LIMITED,
+        10,
     },
     {
         kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP410},
-        0,
+        kCanDisplayAsAVSampleBuffer,
+        ColorSpace::RangeID::LIMITED,
+        10,
     },
 
     // Losslessly-compressed video formats. These occur after the non-compressed
@@ -178,16 +224,22 @@ constexpr IOSurfaceFormatInfo kIOSurfaceFormats[] = {
         kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange,
         {viz::MultiPlaneFormat::kNV12},
         kCompressed,
+        ColorSpace::RangeID::LIMITED,
+        8,
     },
     {
         kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP010},
         kCompressed,
+        ColorSpace::RangeID::LIMITED,
+        10,
     },
     {
         kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange,
         {viz::MultiPlaneFormat::kP210},
         kCompressed,
+        ColorSpace::RangeID::LIMITED,
+        10,
     },
 };
 
@@ -239,6 +291,33 @@ bool IOSurfacePixelFormatSupportsCpuAccess(uint32_t cv_pixel_format) {
     }
   }
   return false;
+}
+
+bool IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(uint32_t cv_pixel_format) {
+  for (const auto& info : kIOSurfaceFormats) {
+    if (cv_pixel_format == info.cv_pixel_format) {
+      return (info.flags & kCanDisplayAsAVSampleBuffer) != 0;
+    }
+  }
+  return false;
+}
+
+uint32_t IOSurfacePixelFormatMaxBitsPerComponent(uint32_t cv_pixel_format) {
+  for (const auto& info : kIOSurfaceFormats) {
+    if (cv_pixel_format == info.cv_pixel_format) {
+      return info.bits_per_component;
+    }
+  }
+  return 0;
+}
+
+ColorSpace::RangeID IOSurfacePixelFormatRangeID(uint32_t cv_pixel_format) {
+  for (const auto& info : kIOSurfaceFormats) {
+    if (cv_pixel_format == info.cv_pixel_format) {
+      return info.range;
+    }
+  }
+  return ColorSpace::RangeID::INVALID;
 }
 
 bool IOSurfacePixelFormatMatchesSharedImageFormat(uint32_t pixel_format,
@@ -343,17 +422,22 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
     return true;
   }
 
-  gfx::ColorSpace as_rgb = color_space.GetAsRGB();
-  gfx::ColorSpace as_full_range_rgb = color_space.GetAsFullRangeRGB();
-
-  // IOSurfaces do not support full-range YUV video. Fortunately, the hardware
-  // decoders never produce full-range video.
+  // For IOSurfaces, color range is a property of the pixel format rather than
+  // the color space. Ensure that the color space's range matches the IOSurface
+  // pixel format's range.
   // https://crbug.com/882627
-  if (color_space != as_rgb && as_rgb == as_full_range_rgb)
-    return false;
+  if (io_surface) {
+    const ColorSpace::RangeID range =
+        IOSurfacePixelFormatRangeID(IOSurfaceGetPixelFormat(io_surface));
+    if (range == ColorSpace::RangeID::INVALID ||
+        range != color_space.GetRangeID()) {
+      return false;
+    }
+  }
 
   // Generate an ICCProfile from the parametric color space.
-  ICCProfile icc_profile = ICCProfile::FromColorSpace(as_full_range_rgb);
+  ICCProfile icc_profile =
+      ICCProfile::FromColorSpace(color_space.GetAsFullRangeRGB());
   if (!icc_profile.IsValid())
     return false;
 
