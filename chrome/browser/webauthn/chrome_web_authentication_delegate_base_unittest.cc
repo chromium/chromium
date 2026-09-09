@@ -20,7 +20,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "device/fido/public/features.h"
 
 namespace {
 
@@ -260,8 +259,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_IWAAccepted) {
   ChromeWebAuthenticationDelegateBase delegate;
-  base::test::ScopedFeatureList scoped_feature_list(
-      device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
 
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
@@ -276,8 +273,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_IWANotAccepted_Another_Caller_Origin) {
   ChromeWebAuthenticationDelegateBase delegate;
-  base::test::ScopedFeatureList scoped_feature_list(
-      device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
 
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
@@ -290,28 +285,8 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 }
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
-       AllowedOriginsPolicy_IWAsNotAccepted_Feature_Off) {
-  ChromeWebAuthenticationDelegateBase delegate;
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
-
-  PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-
-  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::ListValue().Append(kTestIsolatedAppOrigin));
-
-  EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
-      browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
-}
-
-TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_IWAsNotAccepted_Origin_Not_Listed) {
   ChromeWebAuthenticationDelegateBase delegate;
-  base::test::ScopedFeatureList scoped_feature_list(
-      device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
 
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));

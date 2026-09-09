@@ -102,11 +102,6 @@ BASE_DECLARE_FEATURE(kWebAuthnCrossDeviceFallbackUrl);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnRemoteClientDataJson);
 
-// Enables support for the WebAuthenticationRemoteDesktopAllowedOrigins
-// enterprise policy for Isolated Web Apps.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
-
 // Enables to save keys from out of context ("opportunistic") retrieval.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);

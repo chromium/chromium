@@ -392,7 +392,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
-#include "device/fido/public/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/buildflags/buildflags.h"
@@ -7099,8 +7098,7 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
   // For IWAs, WebAuthn is only enabled together with the remote
   // desktop client override enterprise policy.
   if (IsIsolatedWebAppOrigin(caller_origin)) {
-    return base::FeatureList::IsEnabled(
-        device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
+    return true;
   }
 #endif  //! BUILDFLAG(IS_ANDROID)
   if (net::IsLocalhost(caller_origin.GetURL())) {

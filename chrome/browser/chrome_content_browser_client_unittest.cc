@@ -105,7 +105,6 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/crypto_buildflags.h"
-#include "device/fido/public/features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "media/media_buildflags.h"
@@ -2085,34 +2084,10 @@ class IWAWebAuthnTest : public ChromeRenderViewHostTestHarness {
       "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 };
 
-TEST_F(IWAWebAuthnTest, IWASupportedWithPolicyOn) {
-  // Enabling the kWebAuthnIWARemoteDesktopAllowedOriginsPolicy.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy,
-       features::kIsolatedWebApps},
-      {});
-
+TEST_F(IWAWebAuthnTest, IWASupported) {
   TestChromeContentBrowserClient client;
 
-  // For IWA accepted level for webauthn calls requires
-  // device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy to be enabled.
   EXPECT_TRUE(client.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
-}
-
-TEST_F(IWAWebAuthnTest, IWANotSupportedWithoutPolicy) {
-  // Disabling the kWebAuthnIWARemoteDesktopAllowedOriginsPolicy.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kIsolatedWebApps},
-      {device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy});
-
-  TestChromeContentBrowserClient client;
-
-  // For IWA accepted level for webauthn calls requires
-  // device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy to be enabled.
-  EXPECT_FALSE(client.IsSecurityLevelAcceptableForWebAuthn(
       main_rfh(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

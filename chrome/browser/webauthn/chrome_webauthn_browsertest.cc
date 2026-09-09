@@ -1637,10 +1637,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest,
 class WebAuthnIWABrowserTest : public WebAuthnBrowserTest {
  public:
   WebAuthnIWABrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy,
-         features::kIsolatedWebApps},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
   }
 
   WebAuthnIWABrowserTest(const WebAuthnIWABrowserTest&) = delete;

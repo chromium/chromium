@@ -14,8 +14,6 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/webapps/isolated_web_apps/scheme.h"
-#include "device/fido/public/features.h"
 
 namespace {
 
@@ -98,14 +96,6 @@ bool ChromeWebAuthenticationDelegateBase::
     OriginMayUseRemoteDesktopClientOverride(
         content::BrowserContext* browser_context,
         const url::Origin& caller_origin) {
-  // Isolated Web Apps may be configured to use the
-  // remoteDesktopClientOverride extension only if the feature flag is
-  // enabled.
-  if (caller_origin.scheme() == webapps::kIsolatedAppScheme &&
-      !base::FeatureList::IsEnabled(
-          device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy)) {
-    return false;
-  }
   // Allow an origin access to the RemoteDesktopClientOverride extension and
   // make WebAuthn requests on behalf of other origins, if a any of the
   // following are true:

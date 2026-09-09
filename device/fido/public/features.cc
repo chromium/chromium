@@ -132,10 +132,6 @@ BASE_FEATURE(kWebAuthnCrossDeviceFallbackUrl,
 
 BASE_FEATURE(kWebAuthnRemoteClientDataJson, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled by default in M149. Remove in or after M152.
-BASE_FEATURE(kWebAuthnIWARemoteDesktopAllowedOriginsPolicy,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled by default in M152. Remove in or after M155.
 BASE_FEATURE(kWebAuthnOpportunisticRetrieval, base::FEATURE_ENABLED_BY_DEFAULT);
 
