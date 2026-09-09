@@ -767,10 +767,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void SetSyncTransportState(syncer::SyncService::TransportState state);
 
   // HistoryBackendForJourneysSync:
-  bool AddOrUpdateJourneys(
+  bool AddOrUpdateJourneyRows(
       const std::vector<journeys::JourneyRow>& journeys) override;
   bool DeleteJourneys(const std::vector<std::string>& journey_ids) override;
-  std::vector<journeys::JourneyRow> GetAllJourneys() override;
+  std::vector<journeys::JourneyRow> GetAllJourneyRows() override;
   bool DeleteAllJourneys() override;
 
   // Deleting ------------------------------------------------------------------

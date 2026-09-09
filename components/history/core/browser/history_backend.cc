@@ -2089,7 +2089,7 @@ void HistoryBackend::SetSyncTransportState(
   }
 }
 
-bool HistoryBackend::AddOrUpdateJourneys(
+bool HistoryBackend::AddOrUpdateJourneyRows(
     const std::vector<journeys::JourneyRow>& journeys) {
   if (!db_) {
     return false;
@@ -2107,7 +2107,7 @@ bool HistoryBackend::DeleteJourneys(
   return db_->DeleteJourneys(journey_ids);
 }
 
-std::vector<journeys::JourneyRow> HistoryBackend::GetAllJourneys() {
+std::vector<journeys::JourneyRow> HistoryBackend::GetAllJourneyRows() {
   if (!db_) {
     return {};
   }

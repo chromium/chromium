@@ -6736,22 +6736,22 @@ TEST_F(HistoryBackendJourneysSyncTest, JourneysSyncBackendIntegration) {
   journey2.creation_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
 
-  EXPECT_TRUE(backend_->AddOrUpdateJourneys({journey1, journey2}));
-  EXPECT_EQ(2u, backend_->GetAllJourneys().size());
+  EXPECT_TRUE(backend_->AddOrUpdateJourneyRows({journey1, journey2}));
+  EXPECT_EQ(2u, backend_->GetAllJourneyRows().size());
 
   EXPECT_TRUE(backend_->DeleteJourneys({"backend_journey_1"}));
-  std::vector<journeys::JourneyRow> remaining = backend_->GetAllJourneys();
+  std::vector<journeys::JourneyRow> remaining = backend_->GetAllJourneyRows();
   ASSERT_EQ(1u, remaining.size());
   EXPECT_EQ("backend_journey_2", remaining[0].journey_id);
 
   EXPECT_TRUE(backend_->DeleteAllJourneys());
-  EXPECT_TRUE(backend_->GetAllJourneys().empty());
+  EXPECT_TRUE(backend_->GetAllJourneyRows().empty());
 
   // DeleteAllHistory should also clear all journeys.
-  EXPECT_TRUE(backend_->AddOrUpdateJourneys({journey1, journey2}));
-  EXPECT_EQ(2u, backend_->GetAllJourneys().size());
+  EXPECT_TRUE(backend_->AddOrUpdateJourneyRows({journey1, journey2}));
+  EXPECT_EQ(2u, backend_->GetAllJourneyRows().size());
   backend_->DeleteAllHistory();
-  EXPECT_TRUE(backend_->GetAllJourneys().empty());
+  EXPECT_TRUE(backend_->GetAllJourneyRows().empty());
 }
 
 }  // namespace history

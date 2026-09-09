@@ -148,7 +148,7 @@ JourneysSyncBridge::ApplyIncrementalSyncChanges(
   }
 
   if (!journeys_to_add_or_update.empty()) {
-    if (!backend_->AddOrUpdateJourneys(journeys_to_add_or_update)) {
+    if (!backend_->AddOrUpdateJourneyRows(journeys_to_add_or_update)) {
       return syncer::ModelError(
           FROM_HERE, syncer::ModelError::Type::kJourneysDatabaseError);
     }
@@ -169,7 +169,7 @@ std::unique_ptr<syncer::DataBatch>
 JourneysSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& journey_row : backend_->GetAllJourneys()) {
+  for (const auto& journey_row : backend_->GetAllJourneyRows()) {
     auto entity_data = std::make_unique<syncer::EntityData>();
     entity_data->name = journey_row.journey_id;
     *entity_data->specifics.mutable_journey() =

@@ -23,7 +23,7 @@ flowchart TD
 
   SyncEngine <-->|MergeFullSyncData / ApplyIncrementalSyncChanges| Bridge
   Bridge -->|SyncMetadataStoreChangeList| MetaDB
-  Bridge -->|AddOrUpdateJourneys / DeleteJourneys| BackendInterface
+  Bridge -->|AddOrUpdateJourneyRows / DeleteJourneys| BackendInterface
   BackendInterface -.->|implemented by| HistoryBackend
   HistoryBackend -->|writes to| HistoryDB
 ```
@@ -65,7 +65,7 @@ sequenceDiagram
   Handler->>Bridge: ApplyIncrementalSyncChanges(change_list, entity_changes)
   Note over Bridge: 1. Deletions executed first<br/>2. Additions / Updates upserted
   Bridge->>Backend: DeleteJourneys(journey_ids)
-  Bridge->>Backend: AddOrUpdateJourneys(journeys)
+  Bridge->>Backend: AddOrUpdateJourneyRows(journeys)
 ```
 
 ### Key Lifecycle & Design Characteristics
@@ -73,7 +73,7 @@ sequenceDiagram
 - **Entity Ingestion (`ApplyIncrementalSyncChanges`)**:
   - Protobuf `sync_pb::JourneySpecifics` payloads are converted into native `JourneyRow` structs via `JourneyRowFromSpecifics`.
   - The sync processor squashes per-entity changes, and updates/deletions are ingested against the backend.
-  - Additions and updates are grouped into a single batch upsert passed to `backend_->AddOrUpdateJourneys()`.
+  - Additions and updates are grouped into a single batch upsert passed to `backend_->AddOrUpdateJourneyRows()`.
 - **Full Sync Merge (`MergeFullSyncData`)**: Directly applies initial sync records via `ApplyIncrementalSyncChanges()` since no data originates locally and there is nothing to merge.
 - **Read-Only Operation**: `GetDataForCommit()` is `NOTREACHED()` because local mutations are not sent back to sync. `GetAllDataForDebugging()` is provided for diagnostic inspection in `chrome://sync-internals`.
 - **Sync Teardown (`ApplyDisableSyncChanges`)**: Wipes persisted entity metadata, datatype state, and all local journey rows from the database when the user disables sync or signs out.

@@ -29,14 +29,15 @@ class HistoryBackendForJourneysSync {
 
   // Persists or updates the given `journeys` in the local database.
   // Returns true on success, or false on database failure.
-  virtual bool AddOrUpdateJourneys(const std::vector<JourneyRow>& journeys) = 0;
+  virtual bool AddOrUpdateJourneyRows(
+      const std::vector<JourneyRow>& journeys) = 0;
 
   // Deletes journeys matching the given `journey_ids` from the local database.
   // Returns true on success, or false on database failure.
   virtual bool DeleteJourneys(const std::vector<std::string>& journey_ids) = 0;
 
-  // Retrieves all persisted journeys from the local database.
-  virtual std::vector<JourneyRow> GetAllJourneys() = 0;
+  // Retrieves all persisted journey rows from the local database.
+  virtual std::vector<JourneyRow> GetAllJourneyRows() = 0;
 
   // Deletes all journeys from the local database (called when sync is stopped
   // and local sync data is cleared). Returns true on success, or false on
