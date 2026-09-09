@@ -1631,6 +1631,31 @@ TEST_F(HeapTest, ClearInWeakProcessing) {
   ClearInWeakProcessingHelper<HeapLinkedHashSet<WeakMember<IntWrapper>>>();
 }
 
+TEST_F(HeapTest, HeapHashMapWithHeapLinkedHashSetValue) {
+  // HeapLinkedHashSet may be used as the inline value type of a HeapHashMap.
+  // Empty buckets in the map's backing are not visited during tracing, so a
+  // default-constructed value must not own any out-of-line allocations.
+  ClearOutOldGarbage();
+
+  using InnerSet = HeapLinkedHashSet<Member<IntWrapper>>;
+  using Map = GCedHeapHashMap<Member<IntWrapper>, InnerSet>;
+  Persistent<Map> map = MakeGarbageCollected<Map>();
+  Persistent<IntWrapper> key1 = MakeGarbageCollected<IntWrapper>(1);
+  Persistent<IntWrapper> key2 = MakeGarbageCollected<IntWrapper>(2);
+
+  map->ReserveCapacityForSize(8);
+  PreciselyCollectGarbage();
+
+  map->insert(key1.Get(), InnerSet()).stored_value->value.insert(key1.Get());
+  PreciselyCollectGarbage();
+  map->insert(key2.Get(), InnerSet()).stored_value->value.insert(key2.Get());
+  PreciselyCollectGarbage();
+
+  EXPECT_EQ(2u, map->size());
+  EXPECT_TRUE(map->find(key1.Get())->value.Contains(key1.Get()));
+  EXPECT_TRUE(map->find(key2.Get())->value.Contains(key2.Get()));
+}
+
 namespace {
 class ThingWithDestructor {
   DISALLOW_NEW();
