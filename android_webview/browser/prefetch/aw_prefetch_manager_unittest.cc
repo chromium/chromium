@@ -19,6 +19,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -347,5 +348,95 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
             url::Origin::Create(GURL(pre_prefetch_url)).Serialize());
   EXPECT_FALSE(prefs_->GetBoolean(prefs::kAwPrefetchLatestJavascriptEnabled));
 }
+
+class AwPrefetchManagerPruneStaleWrappersTest
+    : public AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  AwPrefetchManagerPruneStaleWrappersTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {features::kWebViewPrefetchOffTheMainThread,
+           features::kWebViewPrefetchPruneStaleWrappers,
+           ::features::kPrefetchOffTheMainThread},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {features::kWebViewPrefetchPruneStaleWrappers},
+          {features::kWebViewPrefetchOffTheMainThread,
+           ::features::kPrefetchOffTheMainThread});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(AwPrefetchManagerPruneStaleWrappersTest,
+       PruneStalePrefetchWrappersWhenCapacityReached) {
+  const std::string prefetch_url_a = "https://example.com/a";
+  const std::string prefetch_url_b = "https://example.com/b";
+  const std::string prefetch_url_c = "https://example.com/c";
+
+  base::RunLoop run_loop;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url == GURL(prefetch_url_b)) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 404 Not Found\nContent-Type: text/html\n\n",
+              "<html><body>Not Found</body></html>", params->client.get());
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, run_loop.QuitClosure());
+          return true;
+        }
+        return false;
+      }));
+
+  AwPrefetchManager prefetch_manager(browser_context_.get());
+  prefetch_manager.SetMaxPrefetches(env_, /*max_prefetches=*/2);
+
+  // 1. Start prefetch A (remains active).
+  int key_a = prefetch_manager.StartPrefetchRequest(
+      env_, prefetch_url_a, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_NE(key_a, NO_PREFETCH_KEY);
+
+  // 2. Start prefetch B (reaches capacity of 2).
+  int key_b = prefetch_manager.StartPrefetchRequest(
+      env_, prefetch_url_b, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_NE(key_b, NO_PREFETCH_KEY);
+
+  EXPECT_EQ(prefetch_manager.GetAllPrefetchKeysForTesting().size(), 2u);
+
+  // Wait until the 404 response for B is processed so it becomes stale.
+  run_loop.Run();
+
+  // 3. Start prefetch C.
+  int key_c = prefetch_manager.StartPrefetchRequest(
+      env_, prefetch_url_c, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
+      /*callback_executor=*/nullptr);
+  EXPECT_NE(key_c, NO_PREFETCH_KEY);
+
+  // Stale prefetch B (which failed with 404) should be pruned first, so active
+  // prefetch A is preserved alongside new prefetch C.
+  std::vector<AwPrefetchKey> keys =
+      prefetch_manager.GetAllPrefetchKeysForTesting();
+  EXPECT_EQ(keys.size(), 2u);
+  EXPECT_EQ(keys[0], key_a);
+  EXPECT_EQ(keys[1], key_c);
+  EXPECT_TRUE(prefetch_manager.GetIsPrefetchInCacheForTesting(env_, key_a));
+  EXPECT_FALSE(prefetch_manager.GetIsPrefetchInCacheForTesting(env_, key_b));
+  EXPECT_TRUE(prefetch_manager.GetIsPrefetchInCacheForTesting(env_, key_c));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AwPrefetchManagerPruneStaleWrappersTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<bool>& info) {
+      return info.param ? "WebViewPrefetchOffTheMainThreadEnabled"
+                        : "WebViewPrefetchOffTheMainThreadDisabled";
+    });
 
 }  // namespace android_webview

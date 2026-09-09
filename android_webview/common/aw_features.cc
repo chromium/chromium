@@ -332,6 +332,11 @@ BASE_FEATURE(kWebViewPrefetchOffTheMainThread,
 BASE_FEATURE(kWebViewPrefetchOnRendererReuse,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, stale `AwPrefetchHandleWrapper`s in `AwPrefetchManagerData` are
+// proactively pruned when new prefetch requests are added or reserved.
+BASE_FEATURE(kWebViewPrefetchPruneStaleWrappers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for reporting `PreloadServingMetrics` for WebView.
 BASE_FEATURE(kWebViewPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 

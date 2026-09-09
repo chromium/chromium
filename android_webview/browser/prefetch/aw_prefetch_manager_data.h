@@ -154,9 +154,22 @@ class AwPrefetchManagerData {
                                      expected_no_vary_search) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
+  // Evicts the oldest prefetches from `all_prefetches_map_` when capacity is
+  // reached, after optionally pruning stale wrappers if
+  // `WebViewPrefetchPruneStaleWrappers` is enabled.
+  // Returns evicted/pruned wrappers to be destroyed outside `lock_` to prevent
+  // accidental reentrancy.
+  [[nodiscard]] std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
   MayEvictOldestPrefetchHandleForANewRequestLocked()
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Scans `all_prefetches_map_` and removes any stale wrappers whose underlying
+  // prefetch is stale calculated by
+  // `CrossThreadPrefetchHandle::IsPrefetchStale()`.
+  // Returns pruned wrappers to be destroyed outside `lock_` to prevent
+  // accidental reentrancy.
+  [[nodiscard]] std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
+  PruneStalePrefetchHandleWrappersLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   AwPrefetchKey GetNextPrefetchKeyLocked() const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

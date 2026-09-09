@@ -85,6 +85,7 @@ BASE_DECLARE_FEATURE(kWebViewPrefetchNativeLibrary);
 extern const base::FeatureParam<bool> kWebViewPrefetchFromRenderer;
 BASE_DECLARE_FEATURE(kWebViewPrefetchOffTheMainThread);
 BASE_DECLARE_FEATURE(kWebViewPrefetchOnRendererReuse);
+BASE_DECLARE_FEATURE(kWebViewPrefetchPruneStaleWrappers);
 BASE_DECLARE_FEATURE(kWebViewPreloadServingMetrics);
 BASE_DECLARE_FEATURE(kWebViewProfileStoreNotTriggerStartup);
 BASE_DECLARE_FEATURE(kWebViewPropagateNetworkChangeSignals);

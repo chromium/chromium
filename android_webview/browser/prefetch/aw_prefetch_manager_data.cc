@@ -58,7 +58,8 @@ AwPrefetchKey AwPrefetchManagerData::ReservePrefetchHandleWrapper(
       return NO_PREFETCH_KEY;
     }
 
-    // Evict oldest handles if necessary.
+    // Prune stale wrappers (if `WebViewPrefetchPruneStaleWrappers` is enabled)
+    // and evict oldest handles if necessary.
     old_prefetch_handle_wrappers =
         MayEvictOldestPrefetchHandleForANewRequestLocked();
 
@@ -141,9 +142,29 @@ bool AwPrefetchManagerData::IsPrefetchDuplicateLocked(
 }
 
 std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
+AwPrefetchManagerData::PruneStalePrefetchHandleWrappersLocked() {
+  std::vector<std::unique_ptr<AwPrefetchHandleWrapper>> pruned_wrappers;
+  for (auto it = all_prefetches_map_.begin();
+       it != all_prefetches_map_.end();) {
+    if (it->second->IsPrefetchStale()) {
+      pruned_wrappers.push_back(std::move(it->second));
+      it = all_prefetches_map_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  return pruned_wrappers;
+}
+
+std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
 AwPrefetchManagerData::MayEvictOldestPrefetchHandleForANewRequestLocked() {
   std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
       old_prefetch_handle_wrappers;
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchPruneStaleWrappers)) {
+    old_prefetch_handle_wrappers = PruneStalePrefetchHandleWrappersLocked();
+  }
+
   if (all_prefetches_map_.size() >= max_prefetches_) {
     int num_prefetches_to_evict =
         all_prefetches_map_.size() - max_prefetches_ + 1;
