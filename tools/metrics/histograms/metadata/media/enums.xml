@@ -2691,6 +2691,7 @@ chromium-metrics-reviews@google.com.
   <int value="149" label="kWinMediaFoundationCameraBusy"/>
   <int value="150" label="kWebRtcStartCaptureFailed"/>
   <int value="151" label="kDesktopCaptureDeviceGpuAdapterChanged"/>
+  <int value="152" label="kVideoCaptureHostDuplicateDeviceId"/>
 </enum>
 
 <enum name="VideoCaptureFrameDropReason">

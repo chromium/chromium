@@ -214,7 +214,8 @@ enum class VideoCaptureError {
   kWinMediaFoundationCameraBusy = 149,
   kWebRtcStartCaptureFailed = 150,
   kDesktopCaptureDeviceGpuAdapterChanged = 151,
-  kMaxValue = 151
+  kVideoCaptureHostDuplicateDeviceId = 152,
+  kMaxValue = 152
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for

@@ -804,6 +804,9 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged:
       return media::mojom::VideoCaptureError::
           kDesktopCaptureDeviceGpuAdapterChanged;
+    case media::VideoCaptureError::kVideoCaptureHostDuplicateDeviceId:
+      return media::mojom::VideoCaptureError::
+          kVideoCaptureHostDuplicateDeviceId;
   }
   // TODO(crbug.com/40929600): Remove media::VideoCaptureError in favor of the
   // mojo one, or define it as an alias.
@@ -1303,6 +1306,8 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
     case media::mojom::VideoCaptureError::
         kDesktopCaptureDeviceGpuAdapterChanged:
       return media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged;
+    case media::mojom::VideoCaptureError::kVideoCaptureHostDuplicateDeviceId:
+      return media::VideoCaptureError::kVideoCaptureHostDuplicateDeviceId;
   }
   NOTREACHED();
 }

@@ -419,25 +419,24 @@ TEST_F(VideoCaptureTest, StartWithInvalidSessionId) {
   StopCapture();
 }
 
-TEST_F(VideoCaptureTest, StartWithDuplicateDeviceIdReportsBadMessage) {
+TEST_F(VideoCaptureTest, StartWithDuplicateDeviceIdReportsError) {
   StartCapture();
 
-  mojo::test::BadMessageObserver bad_message_observer;
-  mojo::PendingRemote<media::mojom::VideoCaptureObserver> dummy_observer;
-  std::ignore = dummy_observer.InitWithNewPipeAndPassReceiver();
+  base::RunLoop run_loop;
+  mojo::Receiver<media::mojom::VideoCaptureObserver> duplicate_receiver(this);
+  EXPECT_CALL(*this,
+              DoOnVideoCaptureError(
+                  media::VideoCaptureError::kVideoCaptureHostDuplicateDeviceId))
+      .WillOnce(ExitMessageLoop(task_runner(), run_loop.QuitClosure()));
+
   media::VideoCaptureParams params;
   params.requested_format = media::VideoCaptureFormat(gfx::Size(352, 288), 30,
                                                       media::PIXEL_FORMAT_I420);
   host_remote()->Start(DeviceId(), opened_session_id(), params,
-                       std::move(dummy_observer));
-  EXPECT_EQ("VideoCaptureHost::Start: Duplicate device_id.",
-            bad_message_observer.WaitForBadMessage());
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*this, DoOnStateChanged(media::mojom::VideoCaptureState::STOPPED))
-      .WillOnce(ExitMessageLoop(task_runner(), run_loop.QuitClosure()));
-  static_cast<media::mojom::VideoCaptureHost*>(host())->Stop(DeviceId());
+                       duplicate_receiver.BindNewPipeAndPassRemote());
   run_loop.Run();
+
+  StopCapture();
 }
 
 TEST_F(VideoCaptureTest, StartAndCaptureAndError) {

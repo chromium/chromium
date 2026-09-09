@@ -261,6 +261,7 @@ enum VideoCaptureError {
   kWinMediaFoundationCameraBusy,
   kWebRtcStartCaptureFailed,
   kDesktopCaptureDeviceGpuAdapterChanged,
+  kVideoCaptureHostDuplicateDeviceId,
 };
 
 enum VideoCaptureFrameDropReason {
