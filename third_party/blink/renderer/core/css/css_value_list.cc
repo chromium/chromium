@@ -188,8 +188,8 @@ bool CSSValueList::Equals(const CSSValueList& other) const {
          CompareCSSValueVector(values_, other.values_);
 }
 
-unsigned CSSValueList::CustomHash() const {
-  unsigned hash = value_list_separator_;
+uint32_t CSSValueList::CustomHash() const {
+  uint32_t hash = value_list_separator_;
   for (const CSSValue* value : values_) {
     AddIntToHash(hash, value->Hash());
   }

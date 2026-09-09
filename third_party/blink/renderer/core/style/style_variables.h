@@ -96,7 +96,7 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
   // as |this|.
   [[nodiscard]] HashTrieNode* Set(const AtomicString& key,
                                   Data* value,
-                                  unsigned& hash,
+                                  uint32_t& hash,
                                   unsigned shift = kAlignmentBits) {
     uintptr_t slot = GetSlot(key, shift);
     if (!keys_[slot].IsNull()) {
@@ -294,7 +294,7 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
   }
 
   // Add or remove the given key/value pair from the given hash.
-  static void UpdateHash(const AtomicString& key, Data* value, unsigned& hash) {
+  static void UpdateHash(const AtomicString& key, Data* value, uint32_t& hash) {
     if (value) {
       hash ^= HashInts(key.Hash(), value->Hash());
     }
@@ -412,7 +412,7 @@ class CORE_EXPORT StyleVariables {
   bool IsEmpty() const;
   void CollectNames(HashSet<AtomicString>&) const;
 
-  unsigned GetHash() const { return HashInts(data_hash_, values_hash_); }
+  uint32_t GetHash() const { return HashInts(data_hash_, values_hash_); }
 
  private:
   // mutable so that operator== can deduplicate them.
@@ -420,8 +420,8 @@ class CORE_EXPORT StyleVariables {
   mutable Member<HashTrieNode<const CSSValue>> values_root_;
 
   // See HashTrieNode class comment.
-  unsigned data_hash_ = 0;
-  unsigned values_hash_ = 0;
+  uint32_t data_hash_ = 0;
+  uint32_t values_hash_ = 0;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                               const StyleVariables& variables);

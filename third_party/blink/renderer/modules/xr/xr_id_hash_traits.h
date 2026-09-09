@@ -17,7 +17,7 @@ namespace blink {
 template <typename T>
 struct XrIdHashTraits : GenericHashTraits<T> {
   STATIC_ONLY(XrIdHashTraits);
-  static unsigned GetHash(T key) {
+  static uint32_t GetHash(T key) {
     return blink::HashInt(key.GetUnsafeValue());
   }
 

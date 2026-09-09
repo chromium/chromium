@@ -23,11 +23,11 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
  public:
   BoxedV8Module(v8::Isolate* isolate, v8::Local<v8::Module> module)
       : record_(isolate, module),
-        identity_hash_(static_cast<unsigned>(module->GetIdentityHash())) {}
+        identity_hash_(static_cast<uint32_t>(module->GetIdentityHash())) {}
 
   BoxedV8Module(v8::Isolate* isolate, v8::Local<v8::WasmModuleObject> module)
       : record_(isolate, module),
-        identity_hash_(static_cast<unsigned>(module->GetIdentityHash())) {}
+        identity_hash_(static_cast<uint32_t>(module->GetIdentityHash())) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(record_); }
 
@@ -48,13 +48,13 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
  private:
   // Must be either `v8::Module` or `v8::WasmModuleObject`.
   TraceWrapperV8Reference<v8::Data> record_;
-  const unsigned identity_hash_;
+  const uint32_t identity_hash_;
   friend struct HashTraits<Member<BoxedV8Module>>;
 };
 
 template <>
 struct HashTraits<Member<BoxedV8Module>> : MemberHashTraits<BoxedV8Module> {
-  static unsigned GetHash(const Member<BoxedV8Module>& key) {
+  static uint32_t GetHash(const Member<BoxedV8Module>& key) {
     return key->identity_hash_;
   }
 

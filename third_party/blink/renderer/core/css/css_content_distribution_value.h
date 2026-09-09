@@ -28,7 +28,7 @@ class CSSContentDistributionValue : public CSSValue {
   String CustomCSSText() const;
 
   bool Equals(const CSSContentDistributionValue&) const;
-  unsigned CustomHash() const;
+  uint32_t CustomHash() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);

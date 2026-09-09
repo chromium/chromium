@@ -77,7 +77,7 @@ class CORE_EXPORT CSSValueList : public CSSValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSValueList&) const;
-  unsigned CustomHash() const;
+  uint32_t CustomHash() const;
 
   const CSSValueList& PopulateWithTreeScope(const TreeScope*) const;
 

@@ -13,7 +13,7 @@ namespace blink {
 // Hashes V8CustomElementConstructor pointers by their v8 callback objects.
 struct V8CustomElementConstructorHashTraits
     : MemberHashTraits<V8CustomElementConstructor> {
-  static unsigned GetHash(
+  static uint32_t GetHash(
       const Member<V8CustomElementConstructor>& constructor) {
     return constructor->CallbackObject()->GetIdentityHash();
   }
@@ -31,7 +31,7 @@ struct V8CustomElementConstructorHashTraits
 // V8CustomElementConstructor or v8 object.
 struct V8CustomElementConstructorHashTranslator {
   STATIC_ONLY(V8CustomElementConstructorHashTranslator);
-  static unsigned GetHash(const v8::Local<v8::Object>& constructor) {
+  static uint32_t GetHash(const v8::Local<v8::Object>& constructor) {
     return constructor->GetIdentityHash();
   }
   static bool Equal(const Member<V8CustomElementConstructor>& a,

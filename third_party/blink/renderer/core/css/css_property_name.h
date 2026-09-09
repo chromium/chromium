@@ -69,7 +69,7 @@ class CORE_EXPORT CSSPropertyName {
     DCHECK(value == kEmptyValue || value == kDeletedValue);
   }
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
   bool IsEmptyValue() const { return value_ == kEmptyValue; }
   bool IsDeletedValue() const { return value_ == kDeletedValue; }
 
@@ -84,7 +84,7 @@ class CORE_EXPORT CSSPropertyName {
 
 template <>
 struct HashTraits<CSSPropertyName> : SimpleClassHashTraits<CSSPropertyName> {
-  static unsigned GetHash(const CSSPropertyName& name) {
+  static uint32_t GetHash(const CSSPropertyName& name) {
     return name.GetHash();
   }
 

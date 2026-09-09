@@ -54,7 +54,7 @@ class CORE_EXPORT CSSIdentifierValue : public CSSValue {
   bool Equals(const CSSIdentifierValue& other) const {
     return value_id_ == other.value_id_;
   }
-  unsigned CustomHash() const { return static_cast<unsigned>(value_id_); }
+  uint32_t CustomHash() const { return static_cast<uint32_t>(value_id_); }
 
   template <typename T>
   inline T ConvertTo() const {  // Overridden for special cases in

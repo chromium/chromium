@@ -38,8 +38,8 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
     return name_ == other.name_ && tree_scope_ == other.tree_scope_;
   }
 
-  unsigned GetHash() const {
-    unsigned hash = blink::GetHash(name_);
+  uint32_t GetHash() const {
+    uint32_t hash = blink::GetHash(name_);
     AddIntToHash(hash, blink::GetHash(tree_scope_.Get()));
     return hash;
   }
@@ -91,7 +91,7 @@ struct ScopedCSSNameWrapperPtrHashTraits
     : MemberHashTraits<ScopedCSSNameWrapperType> {
   using TraitType =
       typename MemberHashTraits<ScopedCSSNameWrapperType>::TraitType;
-  static unsigned GetHash(const TraitType& name) { return name->GetHash(); }
+  static uint32_t GetHash(const TraitType& name) { return name->GetHash(); }
   static bool Equal(const TraitType& a, const TraitType& b) {
     return base::ValuesEquivalent(a, b);
   }

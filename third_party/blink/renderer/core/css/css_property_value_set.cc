@@ -70,8 +70,8 @@ ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
       base::span(mutable_this->property_vector_), CssParserMode());
 }
 
-unsigned CSSPropertyValueSet::ComputeHash() const {
-  unsigned hash = 3141592653;
+uint32_t CSSPropertyValueSet::ComputeHash() const {
+  uint32_t hash = 3141592653;
 
   for (const CSSPropertyValue& property : Properties()) {
     if (property.PropertyID() == CSSPropertyID::kVariable) {

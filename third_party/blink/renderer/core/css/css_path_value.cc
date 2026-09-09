@@ -60,8 +60,8 @@ bool CSSPathValue::Equals(const CSSPathValue& other) const {
          ByteStream() == other.ByteStream();
 }
 
-unsigned CSSPathValue::CustomHash() const {
-  return HashInts(static_cast<unsigned>(style_path_->GetWindRule()),
+uint32_t CSSPathValue::CustomHash() const {
+  return HashInts(static_cast<uint32_t>(style_path_->GetWindRule()),
                   ByteStream().Hash());
 }
 

@@ -43,7 +43,7 @@ class CORE_EXPORT AnchorSpecifierValue
 
   bool operator==(const AnchorSpecifierValue&) const;
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   void Trace(Visitor*) const;
 

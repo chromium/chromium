@@ -62,8 +62,8 @@ bool operator==(const PreloadingAttemptKey& a, const PreloadingAttemptKey& b) {
 
 struct PreloadingAttemptKeyHashTraits
     : GenericHashTraits<PreloadingAttemptKey> {
-  static unsigned GetHash(const PreloadingAttemptKey& key) {
-    unsigned hash = blink::GetHash(key.action);
+  static uint32_t GetHash(const PreloadingAttemptKey& key) {
+    uint32_t hash = blink::GetHash(key.action);
     hash = HashInts(hash, blink::GetHash(key.url));
     hash = HashInts(hash, blink::GetHash(key.form_submission));
     hash = HashInts(hash, blink::GetHash(key.target_hint));

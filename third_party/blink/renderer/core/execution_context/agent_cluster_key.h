@@ -153,8 +153,8 @@ class CORE_EXPORT AgentClusterKey {
 template <>
 struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
   using PassKey = base::PassKey<HashTraits<AgentClusterKey>>;
-  static unsigned GetHash(const AgentClusterKey& agent_cluster_key) {
-    unsigned cross_origin_isolation_mode = 0;
+  static uint32_t GetHash(const AgentClusterKey& agent_cluster_key) {
+    uint32_t cross_origin_isolation_mode = 0;
     if (agent_cluster_key.GetCrossOriginIsolationKey()) {
       switch (agent_cluster_key.GetCrossOriginIsolationKey()->mode) {
         case mojom::blink::CrossOriginIsolationMode::kLogical:
@@ -166,7 +166,7 @@ struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
           NOTREACHED();
       }
     }
-    unsigned key_status = 0;
+    uint32_t key_status = 0;
     if (agent_cluster_key.IsOriginKeyed()) {
       key_status = 1;
     }
@@ -179,7 +179,7 @@ struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
     if (agent_cluster_key.IsUniversalFileAgent()) {
       key_status |= (1 << 3);
     }
-    unsigned hash_codes[] = {
+    uint32_t hash_codes[] = {
         key_status,
         agent_cluster_key.IsOriginKeyed()
             ? HashTraits<scoped_refptr<const SecurityOrigin>>::GetHash(

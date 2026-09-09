@@ -26,7 +26,7 @@ class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
   static RandomCachingKey* Create(const RandomCacheKey& random_cache_key,
                                   const Element* element);
   bool operator==(const RandomCachingKey& other) const;
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
   void Trace(Visitor* visitor) const;
   AtomicString Name() const { return name_; }
   const Element* GetElement() const { return element_.Get(); }
@@ -39,7 +39,7 @@ class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
 template <>
 struct HashTraits<WeakMember<RandomCachingKey>>
     : WeakMemberHashTraits<RandomCachingKey> {
-  static unsigned GetHash(const WeakMember<RandomCachingKey>& key) {
+  static uint32_t GetHash(const WeakMember<RandomCachingKey>& key) {
     return key ? key->GetHash() : 0;
   }
 

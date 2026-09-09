@@ -62,8 +62,8 @@ std::unique_ptr<protocol::DOM::Rect> LegacyBuildRectForPhysicalRect(
 
 struct LegacyDOMSnapshotAgent::VectorStringHashTraits
     : public GenericHashTraits<Vector<String>> {
-  static unsigned GetHash(const Vector<String>& vec) {
-    unsigned h = blink::GetHash(vec.size());
+  static uint32_t GetHash(const Vector<String>& vec) {
+    uint32_t h = blink::GetHash(vec.size());
     for (const String& s : vec) {
       h = HashInts(h, blink::GetHash(s));
     }

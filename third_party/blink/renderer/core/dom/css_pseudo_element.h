@@ -146,8 +146,8 @@ struct PseudoElementCacheKey {
 template <>
 struct HashTraits<PseudoElementCacheKey>
     : SimpleClassHashTraits<PseudoElementCacheKey> {
-  static unsigned GetHash(const PseudoElementCacheKey& key) {
-    unsigned arg_hash =
+  static uint32_t GetHash(const PseudoElementCacheKey& key) {
+    uint32_t arg_hash =
         key.pseudo_argument.IsNull() ? 0 : key.pseudo_argument.Hash();
     return HashInts(key.pseudo_id, arg_hash);
   }

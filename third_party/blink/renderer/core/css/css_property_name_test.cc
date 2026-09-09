@@ -29,7 +29,7 @@ class CSSPropertyNameTest : public PageTestBase {
     return name.IsEmptyValue();
   }
 
-  unsigned GetHash(const CSSPropertyName& name) const { return name.GetHash(); }
+  uint32_t GetHash(const CSSPropertyName& name) const { return name.GetHash(); }
 };
 
 TEST_F(CSSPropertyNameTest, IdStandardProperty) {

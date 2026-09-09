@@ -80,7 +80,7 @@ class CORE_EXPORT ContainerSelector {
            (has_anchored_query_ == o.has_anchored_query_);
   }
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   const AtomicString& Name() const { return name_; }
 
@@ -139,7 +139,7 @@ class CORE_EXPORT ContainerSelector {
 template <>
 struct HashTraits<blink::ContainerSelector>
     : SimpleClassHashTraits<blink::ContainerSelector> {
-  static unsigned GetHash(const blink::ContainerSelector& selector) {
+  static uint32_t GetHash(const blink::ContainerSelector& selector) {
     return selector.GetHash();
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted =

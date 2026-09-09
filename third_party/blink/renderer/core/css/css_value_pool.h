@@ -69,7 +69,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   // they're common colors and worth having an early-out for.
   struct ColorHashTraitsForCSSValuePool : GenericHashTraits<Color> {
     STATIC_ONLY(ColorHashTraitsForCSSValuePool);
-    static unsigned GetHash(const Color& key) { return key.GetHash(); }
+    static uint32_t GetHash(const Color& key) { return key.GetHash(); }
     static Color EmptyValue() { return Color::kTransparent; }
     static Color DeletedValue() { return Color::kWhite; }
   };

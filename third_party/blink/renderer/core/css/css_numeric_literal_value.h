@@ -90,7 +90,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSNumericLiteralValue& other) const;
-  unsigned CustomHash() const;
+  uint32_t CustomHash() const;
 
   UnitType CanonicalUnit() const;
   CSSNumericLiteralValue* CreateCanonicalUnitValue() const;

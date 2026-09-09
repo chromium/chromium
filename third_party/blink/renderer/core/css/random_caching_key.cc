@@ -36,8 +36,8 @@ bool RandomCachingKey::operator==(const RandomCachingKey& other) const {
   return name_ == other.name_ && element_ == other.element_;
 }
 
-unsigned RandomCachingKey::GetHash() const {
-  unsigned hash = blink::GetHash(name_);
+uint32_t RandomCachingKey::GetHash() const {
+  uint32_t hash = blink::GetHash(name_);
   if (element_) {
     AddIntToHash(hash, blink::GetHash(element_.Get()));
   }

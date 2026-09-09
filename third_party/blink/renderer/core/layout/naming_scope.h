@@ -46,8 +46,8 @@ class CORE_EXPORT NamingScope : public GarbageCollected<NamingScope> {
            scope_element_ == other.scope_element_;
   }
 
-  unsigned GetHash() const {
-    unsigned hash = name_->GetHash();
+  uint32_t GetHash() const {
+    uint32_t hash = name_->GetHash();
     AddIntToHash(hash, blink::GetHash(scope_element_.Get()));
     return hash;
   }
@@ -72,7 +72,7 @@ class CORE_EXPORT NamingScope : public GarbageCollected<NamingScope> {
 template <typename T>
 struct NamingScopeHashTraits : MemberHashTraits<T> {
   using TraitType = typename MemberHashTraits<T>::TraitType;
-  static unsigned GetHash(const TraitType& name) { return name->GetHash(); }
+  static uint32_t GetHash(const TraitType& name) { return name->GetHash(); }
   static bool Equal(const TraitType& a, const TraitType& b) {
     return base::ValuesEquivalent(a, b);
   }

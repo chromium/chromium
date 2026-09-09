@@ -13,7 +13,7 @@ namespace blink {
 // Specialization of HashTraits for OperandId.
 template <>
 struct HashTraits<webnn::OperandId> : GenericHashTraits<webnn::OperandId> {
-  static unsigned GetHash(const webnn::OperandId& key) {
+  static uint32_t GetHash(const webnn::OperandId& key) {
     return HashTraits<webnn::OperandId::underlying_type>::GetHash(key.value());
   }
 

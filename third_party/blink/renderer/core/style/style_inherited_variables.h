@@ -53,7 +53,7 @@ class CORE_EXPORT StyleInheritedVariables {
   }
 
   bool IsEmpty() const { return variables_.IsEmpty(); }
-  unsigned GetHash() const { return variables_.GetHash(); }
+  uint32_t GetHash() const { return variables_.GetHash(); }
 
   // For debugging/logging.
   friend std::ostream& operator<<(std::ostream& stream,

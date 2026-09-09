@@ -103,10 +103,10 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
   // Returns a hash of all the bindings, mixed with the parents' hash.
   // (We don't hash the CSSSyntaxDefinition, so there may be false positives
   // in weird cases.) The same caveats as operator== apply.
-  unsigned GetHash() const { return hash_; }
+  uint32_t GetHash() const { return hash_; }
 
  private:
-  unsigned ComputeHash() const;
+  uint32_t ComputeHash() const;
 
   HeapHashMap<String, Binding> bindings_;
   HeapHashMap<String, Member<CSSVariableData>> base_locals_;
@@ -114,7 +114,7 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
       conditional_override_locals_;
 
   Member<const MixinParameterBindings> parent_mixin_;
-  unsigned hash_;
+  uint32_t hash_;
 };
 
 template <>

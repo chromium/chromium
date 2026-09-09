@@ -44,7 +44,7 @@ class CORE_EXPORT PropertyHandle {
 
   bool operator==(const PropertyHandle&) const;
 
-  unsigned GetHash() const;
+  uint32_t GetHash() const;
 
   const CSSProperty& GetCSSProperty() const {
     return *css_property_;
@@ -96,7 +96,7 @@ class CORE_EXPORT PropertyHandle {
 
 template <>
 struct HashTraits<PropertyHandle> : SimpleClassHashTraits<PropertyHandle> {
-  static unsigned GetHash(const PropertyHandle& handle) {
+  static uint32_t GetHash(const PropertyHandle& handle) {
     return handle.GetHash();
   }
 

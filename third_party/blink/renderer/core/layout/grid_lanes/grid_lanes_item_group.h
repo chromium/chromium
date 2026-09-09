@@ -37,18 +37,18 @@ class GridLanesItemGroupProperties {
            baseline_group_ == other.baseline_group_;
   }
 
-  unsigned GetHash() const {
+  uint32_t GetHash() const {
     if (!item_span_) {
       // The default and "deleted" instances have the same initial values, so we
       // provide them with a different hash value to avoid collisions.
-      return is_deleted_ ? std::numeric_limits<unsigned>::max() : 0;
+      return is_deleted_ ? std::numeric_limits<uint32_t>::max() : 0;
     }
-    unsigned hash = item_span_->GetHash();
+    uint32_t hash = item_span_->GetHash();
     if (baseline_group_) {
       // The baseline group must be incorporated into the hash to ensure items
       // with the same span but different baseline groups are placed in
       // separate groups and avoid collisions.
-      hash = HashInts(hash, static_cast<unsigned>(*baseline_group_));
+      hash = HashInts(hash, static_cast<uint32_t>(*baseline_group_));
     }
     return hash;
   }

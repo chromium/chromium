@@ -34,7 +34,7 @@ struct PseudoElementStyleCacheKey {
 template <>
 struct HashTraits<PseudoElementStyleCacheKey>
     : SimpleClassHashTraits<PseudoElementStyleCacheKey> {
-  static unsigned GetHash(const PseudoElementStyleCacheKey& key) {
+  static uint32_t GetHash(const PseudoElementStyleCacheKey& key) {
     return HashInts(key.pseudo_type, key.pseudo_argument.IsNull()
                                          ? 0
                                          : key.pseudo_argument.Hash());

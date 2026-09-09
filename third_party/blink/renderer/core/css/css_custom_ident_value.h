@@ -50,7 +50,7 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
   }
 
   String CustomCSSText() const;
-  unsigned CustomHash() const;
+  uint32_t CustomHash() const;
 
   const CSSCustomIdentValue& PopulateWithTreeScope(const TreeScope*) const;
 

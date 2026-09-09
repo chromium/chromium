@@ -33,8 +33,8 @@ void NthIndexCache::Key::Trace(Visitor* visitor) const {
   visitor->Trace(filter);
 }
 
-unsigned NthIndexCache::Key::GetHash() const {
-  unsigned hash = blink::GetHash(parent);
+uint32_t NthIndexCache::Key::GetHash() const {
+  uint32_t hash = blink::GetHash(parent);
   if (filter != nullptr) {
     AddIntToHash(hash, blink::GetHash(filter));
   }

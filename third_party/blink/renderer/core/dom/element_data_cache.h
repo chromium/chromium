@@ -63,10 +63,10 @@ class CORE_EXPORT ElementDataCache final
   ShareableElementData* CachedElementData(
       const StringImpl* tag_name,
       const Vector<Attribute, kAttributePrealloc>&,
-      unsigned hash);
+      uint32_t hash);
 
   using ShareableElementDataCache =
-      HeapHashMap<unsigned,
+      HeapHashMap<uint32_t,
                   std::pair<const StringImpl*, Member<ShareableElementData>>,
                   AlreadyHashedTraits>;
   ShareableElementDataCache shareable_element_data_cache_;

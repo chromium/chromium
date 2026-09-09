@@ -578,7 +578,7 @@ String CSSValue::CssTextOrEmptyString(const CSSValue* value) {
   return value ? value->CssText() : String();
 }
 
-unsigned CSSValue::Hash() const {
+uint32_t CSSValue::Hash() const {
   switch (GetClassType()) {
     case kColorClass:
       return HashInts(GetClassType(),

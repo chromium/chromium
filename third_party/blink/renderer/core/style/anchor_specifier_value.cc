@@ -32,8 +32,8 @@ bool AnchorSpecifierValue::operator==(const AnchorSpecifierValue& other) const {
   return type_ == other.type_ && base::ValuesEquivalent(name_, other.name_);
 }
 
-unsigned AnchorSpecifierValue::GetHash() const {
-  unsigned hash = 0;
+uint32_t AnchorSpecifierValue::GetHash() const {
+  uint32_t hash = 0;
   AddIntToHash(hash, HashInt(type_));
   AddIntToHash(hash, name_ ? name_->GetHash() : 0);
   return hash;

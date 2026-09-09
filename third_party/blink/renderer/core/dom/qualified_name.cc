@@ -52,7 +52,7 @@ static QualifiedNameCache& GetQualifiedNameCache() {
 }
 
 struct QNameComponentsTranslator {
-  static unsigned GetHash(const QualifiedNameData& data) {
+  static uint32_t GetHash(const QualifiedNameData& data) {
     return HashComponents(data.components_);
   }
   static bool Equal(QualifiedNameImpl* name, const QualifiedNameData& data) {
@@ -138,7 +138,7 @@ uint32_t QualifiedName::BloomFilterSlow() const {
   return impl_->bloom_filter_;
 }
 
-unsigned QualifiedNameImpl::ComputeHash() const {
+uint32_t QualifiedNameImpl::ComputeHash() const {
   QualifiedNameComponents components = {prefix_.Impl(), local_name_.Impl(),
                                         namespace_.Impl()};
   return HashComponents(components);

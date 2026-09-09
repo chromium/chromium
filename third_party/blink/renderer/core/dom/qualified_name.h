@@ -61,7 +61,7 @@ class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
 
   ~QualifiedNameImpl();
 
-  unsigned ComputeHash() const;
+  uint32_t ComputeHash() const;
 
   bool IsStatic() const {
     return is_static_and_html_attribute_triggers_index_ != kNotStatic;
@@ -261,7 +261,7 @@ inline bool operator==(const QualifiedName& q, const AtomicString& a) {
   return a == q.LocalName();
 }
 
-inline unsigned HashComponents(const QualifiedNameComponents& buf) {
+inline uint32_t HashComponents(const QualifiedNameComponents& buf) {
   return StringHasher::HashMemory32(base::byte_span_from_ref(buf));
 }
 
@@ -269,7 +269,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const QualifiedName&);
 
 template <>
 struct HashTraits<QualifiedNameImpl*> : GenericHashTraits<QualifiedNameImpl*> {
-  static unsigned GetHash(const QualifiedNameImpl* name) {
+  static uint32_t GetHash(const QualifiedNameImpl* name) {
     if (!name->existing_hash_) {
       name->existing_hash_ = name->ComputeHash();
     }
@@ -280,7 +280,7 @@ struct HashTraits<QualifiedNameImpl*> : GenericHashTraits<QualifiedNameImpl*> {
 
 template <>
 struct HashTraits<QualifiedName> : GenericHashTraits<QualifiedName> {
-  static unsigned GetHash(const QualifiedName& name) {
+  static uint32_t GetHash(const QualifiedName& name) {
     return blink::GetHash(name.Impl());
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;

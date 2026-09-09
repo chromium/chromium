@@ -95,7 +95,7 @@ String CSSCustomIdentValue::CustomCSSText() const {
   return builder.ReleaseString();
 }
 
-unsigned CSSCustomIdentValue::CustomHash() const {
+uint32_t CSSCustomIdentValue::CustomHash() const {
   if (IsKnownPropertyID()) {
     return HashInt(property_id_);
   } else if (ident_function_) {

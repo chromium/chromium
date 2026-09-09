@@ -39,7 +39,7 @@ const AtomicString& CSSPropertyName::ToAtomicString() const {
   return CSSProperty::Get(Id()).GetPropertyNameAtomicString();
 }
 
-unsigned CSSPropertyName::GetHash() const {
+uint32_t CSSPropertyName::GetHash() const {
   if (IsCustomProperty()) {
     return blink::GetHash(custom_property_name_);
   }

@@ -22,9 +22,9 @@ namespace blink {
 // and hash function to match this. This allows us to re-use QualifiedName
 // and the "standard" WTF structures.
 struct SanitizerNameHashTraits : GenericHashTraits<blink::QualifiedName> {
-  static unsigned GetHash(const QualifiedName& name) {
+  static uint32_t GetHash(const QualifiedName& name) {
     CHECK(name.LocalName());
-    unsigned hash = HashTraits<AtomicString>::GetHash(name.LocalName());
+    uint32_t hash = HashTraits<AtomicString>::GetHash(name.LocalName());
     if (name.NamespaceURI()) {
       hash ^= HashTraits<AtomicString>::GetHash(name.NamespaceURI());
     }

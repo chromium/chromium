@@ -117,8 +117,8 @@ ContainerSelector::FeatureFlags ContainerSelector::CollectFeatureFlags(
   return collector.GetFlags();
 }
 
-unsigned ContainerSelector::GetHash() const {
-  unsigned hash = !name_.empty() ? blink::GetHash(name_) : 0;
+uint32_t ContainerSelector::GetHash() const {
+  uint32_t hash = !name_.empty() ? blink::GetHash(name_) : 0;
   AddIntToHash(hash, physical_axes_.value());
   AddIntToHash(hash, logical_axes_.value());
   AddIntToHash(hash, has_style_query_);

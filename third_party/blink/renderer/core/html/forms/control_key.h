@@ -53,7 +53,7 @@ using ControlKeyData = std::pair<const AtomicString&, const AtomicString&>;
 // ControlKeyTranslator reduces refcount churn of AtomicStrings on
 // HashMap lookups.
 struct ControlKeyTranslator {
-  static unsigned GetHash(const ControlKeyData& data) {
+  static uint32_t GetHash(const ControlKeyData& data) {
     // The following hash computation is equivalent to TwoFieldsHashTraits.
     // We can use neither PairHashTraits nor TwoFieldsHashTraits because of
     // reference data members of ControlKeyData.

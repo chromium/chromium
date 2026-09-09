@@ -63,7 +63,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
   using NamedNodeListKey = std::pair<CollectionType, AtomicString>;
   struct NodeListAtomicCacheMapEntryHashTraits
       : HashTraits<std::pair<CollectionType, AtomicString>> {
-    static unsigned GetHash(const NamedNodeListKey& entry) {
+    static uint32_t GetHash(const NamedNodeListKey& entry) {
       return blink::GetHash(entry.second == CSSSelector::UniversalSelectorAtom()
                                 ? g_star_atom
                                 : entry.second) +

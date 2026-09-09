@@ -17,7 +17,7 @@ namespace blink {
 // Root locale ("") is used as empty value since it's not a valid map key.
 template <>
 struct HashTraits<icu::Locale> : GenericHashTraits<icu::Locale> {
-  static unsigned GetHash(const icu::Locale& key) {
+  static uint32_t GetHash(const icu::Locale& key) {
     return StringHasher::ComputeHashAndMaskTop8Bits(
         base::as_byte_span(std::string_view(key.getName())));
   }

@@ -1273,8 +1273,8 @@ void StyleRuleCustomMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(media_query_value_);
 }
 
-unsigned MixinParameterBindings::ComputeHash() const {
-  unsigned hash = parent_mixin_ ? parent_mixin_->GetHash() : 1234;
+uint32_t MixinParameterBindings::ComputeHash() const {
+  uint32_t hash = parent_mixin_ ? parent_mixin_->GetHash() : 1234;
   for (const auto& [key, value] : bindings_) {
     hash = HashInts(hash, HashInts(key.Impl()->GetHash(),
                                    value.value ? value.value->Hash() : 5678));

@@ -42,14 +42,14 @@ struct CachedColor final : public GarbageCollected<CachedColor> {
   // 2. Cache it.
   // 2 is chosen as the hash is the only thing we need from `color_string`, so
   // no point in keeping it around.
-  unsigned hash_code;
+  uint32_t hash_code;
 };
 
 // Allows using CachedColor in a HashMap.
 struct CachedColorTraits final
     : public BaseMemberHashTraits<CachedColor, Member<CachedColor>> {
   STATIC_ONLY(CachedColorTraits);
-  static unsigned GetHash(const CachedColor* cached_color) {
+  static uint32_t GetHash(const CachedColor* cached_color) {
     return cached_color->hash_code;
   }
   static bool Equal(const CachedColor* a, const CachedColor* b) {
@@ -61,7 +61,7 @@ struct CachedColorTraits final
 // Used for looking up CachedColors by v8::String.
 struct ColorCacheHashTranslator final {
   STATIC_ONLY(ColorCacheHashTranslator);
-  static unsigned GetHash(const v8::Local<v8::String>& string) {
+  static uint32_t GetHash(const v8::Local<v8::String>& string) {
     return string->GetIdentityHash();
   }
   static bool Equal(const CachedColor* cached_color,

@@ -65,7 +65,7 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
            base::ValuesEquivalent(second_, other.second_) &&
            identical_values_policy_ == other.identical_values_policy_;
   }
-  unsigned CustomHash() const {
+  uint32_t CustomHash() const {
     return HashInts(identical_values_policy_,
                     HashInts(first_->Hash(), second_->Hash()));
   }

@@ -430,8 +430,7 @@ std::string BlinkAXEventIntent::ToString() const {
 }
 
 // static
-unsigned int BlinkAXEventIntentHashTraits::GetHash(
-    const BlinkAXEventIntent& key) {
+uint32_t BlinkAXEventIntentHashTraits::GetHash(const BlinkAXEventIntent& key) {
   // If the intent is uninitialized, it is not safe to rely on the memory being
   // initialized to zero, because any uninitialized field that might be
   // accidentally added in the future will produce a potentially non-zero memory
@@ -439,14 +438,13 @@ unsigned int BlinkAXEventIntentHashTraits::GetHash(
   if (!key.is_initialized())
     return 0u;
   if (key.IsHashTableDeletedValue())
-    return std::numeric_limits<unsigned>::max();
+    return std::numeric_limits<uint32_t>::max();
 
-  unsigned hash = 1u;
-  AddIntToHash(hash, static_cast<const unsigned>(key.intent().command));
-  AddIntToHash(hash,
-               static_cast<const unsigned>(key.intent().input_event_type));
-  AddIntToHash(hash, static_cast<const unsigned>(key.intent().text_boundary));
-  AddIntToHash(hash, static_cast<const unsigned>(key.intent().move_direction));
+  uint32_t hash = 1u;
+  AddIntToHash(hash, static_cast<uint32_t>(key.intent().command));
+  AddIntToHash(hash, static_cast<uint32_t>(key.intent().input_event_type));
+  AddIntToHash(hash, static_cast<uint32_t>(key.intent().text_boundary));
+  AddIntToHash(hash, static_cast<uint32_t>(key.intent().move_direction));
   return hash;
 }
 

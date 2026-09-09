@@ -18,7 +18,7 @@ String CSSUnparsedDeclarationValue::CustomCSSText() const {
   return data_->Serialize();
 }
 
-unsigned CSSUnparsedDeclarationValue::CustomHash() const {
+uint32_t CSSUnparsedDeclarationValue::CustomHash() const {
   return StringHasher::HashMemory32(data_->OriginalText().RawByteSpan());
 }
 

@@ -25,7 +25,7 @@ class CSSSuperellipseValue : public CSSValue {
     return *param_ == *other.param_;
   }
 
-  unsigned CustomHash() const { return param_->Hash(); }
+  uint32_t CustomHash() const { return param_->Hash(); }
 
   const CSSPrimitiveValue& Param() const { return *param_; }
 

@@ -41,7 +41,7 @@ struct HighlightRegistryMapEntry final
 struct HighlightRegistryMapEntryNameTranslator {
   STATIC_ONLY(HighlightRegistryMapEntryNameTranslator);
 
-  static unsigned GetHash(const AtomicString& name) {
+  static uint32_t GetHash(const AtomicString& name) {
     return blink::GetHash(name);
   }
   static bool Equal(const HighlightRegistryMapEntry* entry,
@@ -58,7 +58,7 @@ struct HashTraits<Member<HighlightRegistryMapEntry>>
   // because |HighlightRegistryMapEntry| is used for storing map entries
   // inside a set (i.e. there can only be one map entry in the set with the
   // same key which is |highlight_name|).
-  static inline unsigned GetHash(const Member<HighlightRegistryMapEntry>& key) {
+  static inline uint32_t GetHash(const Member<HighlightRegistryMapEntry>& key) {
     DCHECK(key);
     return blink::GetHash(key->highlight_name);
   }

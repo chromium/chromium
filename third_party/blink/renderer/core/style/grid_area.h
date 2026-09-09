@@ -95,7 +95,7 @@ struct GridSpan {
            line <= static_cast<wtf_size_t>(end_line_);
   }
 
-  unsigned GetHash() const {
+  uint32_t GetHash() const {
     // In general, a negative `end_line_` will reduce collisions of indefinite
     // spans since it represents the range `[-end_line_, 0]`, which can never
     // occur in definite spans that ensure `start_line_ < end_line_`.

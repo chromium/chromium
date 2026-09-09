@@ -68,7 +68,7 @@ struct PresentationAttributeCacheEntry final
 };
 
 using PresentationAttributeCache =
-    HeapHashMap<unsigned,
+    HeapHashMap<uint32_t,
                 Member<PresentationAttributeCacheEntry>,
                 AlreadyHashedTraits>;
 static PresentationAttributeCache& GetPresentationAttributeCache() {
@@ -87,17 +87,17 @@ static bool AttributeNameSort(const std::pair<StringImpl*, AtomicString>& p1,
   return p1.first < p2.first;
 }
 
-static unsigned ComputePresentationAttributeCacheHash(
+static uint32_t ComputePresentationAttributeCacheHash(
     const PresentationAttributeCacheKey& key) {
   DCHECK(key.tag_name);
   DCHECK(key.attributes_and_values.size());
-  unsigned attribute_hash =
+  uint32_t attribute_hash =
       StringHasher::HashMemory32(base::as_byte_span(key.attributes_and_values));
   return EnsureValidHash(
       HashInts(key.tag_name->ExistingHash(), attribute_hash));
 }
 
-static unsigned MakePresentationAttributeCacheKey(
+static uint32_t MakePresentationAttributeCacheKey(
     Element& element,
     PresentationAttributeCacheKey& result) {
   // FIXME: Enable for SVG.
@@ -136,7 +136,7 @@ CSSPropertyValueSet* ComputePresentationAttributeStyle(Element& element) {
   DCHECK(element.IsStyledElement());
 
   PresentationAttributeCacheKey cache_key;
-  unsigned cache_hash = MakePresentationAttributeCacheKey(element, cache_key);
+  uint32_t cache_hash = MakePresentationAttributeCacheKey(element, cache_key);
 
   PresentationAttributeCache::ValueType* cache_value;
   PresentationAttributeCache& cache = GetPresentationAttributeCache();

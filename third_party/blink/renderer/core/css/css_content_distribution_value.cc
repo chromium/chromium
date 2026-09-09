@@ -49,10 +49,10 @@ bool CSSContentDistributionValue::Equals(
          overflow_ == other.overflow_;
 }
 
-unsigned CSSContentDistributionValue::CustomHash() const {
-  return HashInts(static_cast<unsigned>(distribution_),
-                  HashInts(static_cast<unsigned>(position_),
-                           static_cast<unsigned>(overflow_)));
+uint32_t CSSContentDistributionValue::CustomHash() const {
+  return HashInts(static_cast<uint32_t>(distribution_),
+                  HashInts(static_cast<uint32_t>(position_),
+                           static_cast<uint32_t>(overflow_)));
 }
 
 }  // namespace cssvalue

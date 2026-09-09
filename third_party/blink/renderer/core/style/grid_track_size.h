@@ -274,14 +274,14 @@ template <>
 struct HashTraits<GridTrackSize> : GenericHashTraits<GridTrackSize> {
   STATIC_ONLY(HashTraits);
 
-  static unsigned GetHash(const GridTrackSize& key) {
-    unsigned type_hash = HashInt(static_cast<unsigned>(key.GetType()));
-    unsigned min_breadth_hash = key.MinTrackBreadth().GetHash();
-    unsigned max_breadth_hash = key.MaxTrackBreadth().GetHash();
-    unsigned fit_content_hash =
+  static uint32_t GetHash(const GridTrackSize& key) {
+    uint32_t type_hash = HashInt(static_cast<uint32_t>(key.GetType()));
+    uint32_t min_breadth_hash = key.MinTrackBreadth().GetHash();
+    uint32_t max_breadth_hash = key.MaxTrackBreadth().GetHash();
+    uint32_t fit_content_hash =
         key.IsFitContent() ? key.FitContentTrackBreadth().GetHash() : 0;
-    unsigned intrinsic_hash =
-        HashInt(static_cast<unsigned>(key.IsTrackDefinitionIntrinsic()));
+    uint32_t intrinsic_hash =
+        HashInt(static_cast<uint32_t>(key.IsTrackDefinitionIntrinsic()));
 
     return HashInts(
         HashInts(type_hash, min_breadth_hash),

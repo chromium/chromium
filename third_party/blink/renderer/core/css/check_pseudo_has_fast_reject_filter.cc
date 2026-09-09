@@ -20,19 +20,19 @@ inline bool IsExcludedAttribute(const AtomicString& name) {
          name == html_names::kStyleAttr.LocalName();
 }
 
-inline unsigned GetTagHash(const AtomicString& tag_name) {
+inline uint32_t GetTagHash(const AtomicString& tag_name) {
   return tag_name.Hash() * kTagNameSalt;
 }
 
-inline unsigned GetClassHash(const AtomicString& class_name) {
+inline uint32_t GetClassHash(const AtomicString& class_name) {
   return class_name.Hash() * kClassSalt;
 }
 
-inline unsigned GetIdHash(const AtomicString& id) {
+inline uint32_t GetIdHash(const AtomicString& id) {
   return id.Hash() * kIdSalt;
 }
 
-inline unsigned GetAttributeHash(const AtomicString& attribute_name) {
+inline uint32_t GetAttributeHash(const AtomicString& attribute_name) {
   return attribute_name.Hash() * kAttributeSalt;
 }
 
