@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.core.os.BuildCompat;
@@ -26,12 +27,15 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -44,6 +48,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -53,6 +59,7 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.widget.Toast;
+import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -122,6 +129,10 @@ public class LaunchIntentDispatcher {
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
         if (!isCustomTabIntent(dispatcher.mIntent)) return Action.CONTINUE;
+        if (shouldOverrideAlwaysOpenInBrowser(dispatcher.mIntent)) {
+            RecordUserAction.record("CustomTabs.AlwaysOpenInBrowserOverride");
+            return dispatcher.dispatchToTabbedActivity();
+        }
         if (dispatcher.launchCustomTabActivity()) {
             return Action.FINISH_ACTIVITY;
         } else {
@@ -522,5 +533,44 @@ public class LaunchIntentDispatcher {
         // For now we expose this risky change only to TWAs.
         return IntentUtils.safeGetBooleanExtra(
                 intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
+    }
+
+    @VisibleForTesting
+    static boolean shouldOverrideAlwaysOpenInBrowser(Intent intent) {
+        if (!ChromeFeatureList.sCctAlwaysOpenInBrowser.isEnabled()) {
+            return false;
+        }
+        if (!ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, false)) {
+            return false;
+        }
+        if (IntentHandler.wasIntentSenderChrome(intent)) {
+            return false;
+        }
+        if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
+            return false;
+        }
+        if (clearTopIntentsForCustomTabsEnabled(intent)) {
+            return false;
+        }
+        if (IntentHandler.willLaunchIncognitoCustomTab(intent)) {
+            return false;
+        }
+        if (intent.hasExtra(WebappConstants.EXTRA_ID)
+                || intent.hasExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME)) {
+            return false;
+        }
+        if (IntentUtils.safeGetIntExtra(
+                        intent, CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT)
+                != CustomTabsUiType.DEFAULT) {
+            return false;
+        }
+        if (CustomTabsConnection.getInstance()
+                        .extractTargetNetwork(
+                                intent, SessionHolder.getSessionHolderFromIntent(intent))
+                != null) {
+            return false;
+        }
+        return true;
     }
 }

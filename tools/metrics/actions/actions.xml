@@ -10516,6 +10516,15 @@ should be able to be added at any place in this file.
   <token key="Crow_Type" variants="Crow_Type"/>
 </action>
 
+<action name="CustomTabs.AlwaysOpenInBrowserOverride">
+  <owner>eisinger@google.com</owner>
+  <owner>jinsukkim@google.com</owner>
+  <description>
+    Emitted when a Custom Tab automatically overrides to open in Chrome browser
+    due to the always open in browser user setting.
+  </description>
+</action>
+
 <action name="CustomTabs.CloseButtonClicked">
   <owner>dfalcantara@chromium.org</owner>
   <description>

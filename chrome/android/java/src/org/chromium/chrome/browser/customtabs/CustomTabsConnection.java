@@ -1409,11 +1409,9 @@ public class CustomTabsConnection {
         return mClientManager.getClientPidForSession(session);
     }
 
-    /**
-     * Extracts the target network from the intent if the caller has the required permissions.
-     * Package-private to be used by {@link CustomTabIntentDataProvider}.
-     */
-    @Nullable Network extractTargetNetwork(Intent intent, @Nullable SessionHolder<?> session) {
+    /** Extracts the target network from the intent if the caller has the required permissions. */
+    public @Nullable Network extractTargetNetwork(
+            Intent intent, @Nullable SessionHolder<?> session) {
         Network network =
                 IntentUtils.safeGetParcelableExtra(intent, CustomTabsIntent.EXTRA_NETWORK);
         if (network == null) return null;

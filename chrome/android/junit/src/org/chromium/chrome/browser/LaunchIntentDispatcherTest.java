@@ -27,11 +27,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Process;
 
+import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.browser.trusted.sharing.ShareData;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,18 +45,24 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
@@ -101,6 +110,14 @@ public class LaunchIntentDispatcherTest {
 
         CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
         SessionDataHolder.setInstanceForTesting(mSessionDataHolder);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER);
+    }
+
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER);
     }
 
     @Test
@@ -755,5 +772,191 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
         verifyNoInteractions(mForegroundServiceUtils);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_OverridesToTabbedActivity() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+
+        Activity spyActivity = spy(mActivity);
+        UserActionTester userActionTester = new UserActionTester();
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture());
+        assertEquals(
+                ChromeTabbedActivity.class.getName(),
+                captor.getValue().getComponent().getClassName());
+        assertEquals(1, userActionTester.getActionCount("CustomTabs.AlwaysOpenInBrowserOverride"));
+        userActionTester.tearDown();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_FeatureDisabled() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_PrefDisabled() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, false);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_FromChrome() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.setPackage(mActivity.getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_AuthTab() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true);
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_Twa() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER,
+        ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY
+    })
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_Incognito() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.example");
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_NonDefaultUiType() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.MEDIA_VIEWER);
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER)
+    public void testDispatchToCustomTabActivity_AlwaysOpenInBrowser_NetworkBound() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, true);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        android.net.Network mockNetwork = mock(android.net.Network.class);
+        doReturn(mockNetwork).when(mCustomTabsConnection).extractTargetNetwork(any(), any());
+
+        Activity spyActivity = spy(mActivity);
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
     }
 }
