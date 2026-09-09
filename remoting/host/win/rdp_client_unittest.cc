@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -167,7 +166,7 @@ TEST_F(RdpClientTest, MAYBE_Basic) {
     GTEST_SKIP() << "https://crbug.com/365126540: Skipping test for WIN11_23H2 "
                     "and greater";
   }
-  terminal_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  terminal_id_ = WtsTerminalMonitor::GenerateVirtualTerminalId();
 
   // An ability to establish a loopback RDP connection depends on many factors
   // including OS SKU and having RDP enabled. Accept both successful connection

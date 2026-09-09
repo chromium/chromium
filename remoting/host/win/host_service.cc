@@ -224,10 +224,16 @@ void HostService::OnSessionChange(uint32_t event, uint32_t session_id) {
       continue;
     }
 
-    // The client currently attached to |session_id| was attached to a different
-    // session before. Reconnect it to |session_id|.
+    // The terminal currently attached to |session_id| was attached to a
+    // different session before. Reconnect it to |session_id|. Only the console
+    // terminal may be re-attached while its observer is still bound to another
+    // session: the physical console moves between sessions (e.g. on fast user
+    // switching). A virtual terminal is backed by a single RDP connection, so
+    // its observer stays bound to the session the terminal was originally
+    // attached to.
     if (attached && i->terminal_id == terminal_id &&
-        i->session_id != session_id) {
+        i->session_id != session_id &&
+        (i->session_id == kInvalidSessionId || i->terminal_id == kConsole)) {
       WtsTerminalObserver* observer = i->observer;
 
       if (i->session_id != kInvalidSessionId) {

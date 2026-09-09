@@ -236,6 +236,7 @@ source_set("unit_tests") {
     "rdp_client_unittest.cc",
     "unprivileged_process_delegate_unittest.cc",
     "wts_session_process_delegate_unittest.cc",
+    "wts_terminal_monitor_unittest.cc",
   ]
 
   deps = [

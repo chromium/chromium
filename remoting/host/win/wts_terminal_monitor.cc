@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace remoting {
@@ -46,8 +47,23 @@ bool WtsTerminalMonitor::LookupTerminalId(uint32_t session_id,
   absl::Cleanup wts_deleter = [working_directory] {
     ::WTSFreeMemory(working_directory);
   };
-  return base::WideToUTF8(working_directory, (bytes / sizeof(wchar_t)) - 1,
-                          terminal_id);
+
+  std::string id;
+  if (!base::WideToUTF8(working_directory, (bytes / sizeof(wchar_t)) - 1,
+                        &id)) {
+    return false;
+  }
+
+  // The working directory is controlled by the client of the RDP connection,
+  // so it identifies a terminal only if it carries a virtual terminal ID
+  // assigned by RdpClient. In particular, a session that is not attached to
+  // the physical console must never be reported as the console terminal.
+  if (!IsVirtualTerminalId(id)) {
+    return false;
+  }
+
+  *terminal_id = std::move(id);
+  return true;
 }
 
 // static
@@ -79,6 +95,16 @@ uint32_t WtsTerminalMonitor::LookupSessionId(const std::string& terminal_id) {
 
   // `terminal_id` is not associated with any session.
   return kInvalidSessionId;
+}
+
+// static
+std::string WtsTerminalMonitor::GenerateVirtualTerminalId() {
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
+}
+
+// static
+bool WtsTerminalMonitor::IsVirtualTerminalId(const std::string& terminal_id) {
+  return base::Uuid::ParseLowercase(terminal_id).is_valid();
 }
 
 WtsTerminalMonitor::WtsTerminalMonitor() = default;
