@@ -34,6 +34,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -56,6 +57,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -150,6 +152,8 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
+    // TODO(crbug.com/559090451): Solve flakiness and re-enable on auto.
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testDraggedLink_existingWindow_maxInstances() throws Exception {
         // Simulate creation of max Chrome instances (= 2 for the purpose of testing) and establish
         // the last accessed instance. Actual max # of instances will not be created as this would
