@@ -6417,6 +6417,7 @@
     {
       name: "text-decoration-thickness",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      interpolable: true,
       include_paths: ["third_party/blink/renderer/core/style/text_decoration_thickness.h"],
       inherited: false,
       field_group: "*",

@@ -8234,7 +8234,6 @@ crbug.com/360385661 virtual/threaded/wpt_internal/scheduler/integration_tests/hi
 crbug.com/361491550 [ Release Win11-arm64 ] external/wpt/css/css-backgrounds/parsing/background-clip-computed.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] external/wpt/css/css-backgrounds/parsing/background-computed.html [ Failure ]
-crbug.com/361491550 [ Release Win11-arm64 ] external/wpt/css/css-text-decor/animations/text-decoration-thickness-interpolation.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-clip-computed.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/parsing/background-computed.html [ Failure ]

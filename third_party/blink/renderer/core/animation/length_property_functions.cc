@@ -278,6 +278,12 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       result = style.StrokeDashOffset();
       success = true;
       break;
+    case CSSPropertyID::kTextDecorationThickness:
+      if (!style.GetTextDecorationThickness().IsFromFont()) {
+        result = style.GetTextDecorationThickness().Thickness();
+        success = true;
+      }
+      break;
     case CSSPropertyID::kTextIndent:
       result = style.TextIndent();
       success = true;

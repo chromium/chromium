@@ -1902,7 +1902,6 @@ external/wpt/css/css-tables/tentative/paint/overflow-hidden-table.html [ Failure
 external/wpt/css/css-tables/visibility-collapse-colspan-003.html [ Failure Pass ]
 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Failure Pass ]
 external/wpt/css/css-tables/whitespace-001.html [ Failure Pass ]
-external/wpt/css/css-text-decor/animations/text-decoration-thickness-interpolation.html [ Failure Pass ]
 external/wpt/css/css-text-decor/parsing/text-emphasis-position-valid.html [ Failure Pass ]
 external/wpt/css/css-text-decor/parsing/text-emphasis-style-computed.html [ Failure Pass ]
 external/wpt/css/css-text-decor/text-decoration-color.html [ Failure Pass ]
