@@ -700,6 +700,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ComponentUpdater.PlatformRuntime.InstallationResult.SystemLevel"
+    enum="PlatformRuntimeInstallationResult" expires_after="2027-01-03">
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Records the granular result of installing the Platform Runtime component on
+    Windows for system-level installs via elevated Google Update App Command.
+  </summary>
+</histogram>
+
+<histogram name="ComponentUpdater.PlatformRuntime.InstallationResult.UserLevel"
+    enum="PlatformRuntimeInstallationResult" expires_after="2027-01-03">
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Records the granular result of installing the Platform Runtime component on
+    Windows for per-user installs via direct setup.exe execution.
+  </summary>
+</histogram>
+
+<histogram name="ComponentUpdater.PlatformRuntime.InstallDuration.SystemLevel"
+    units="ms" expires_after="2027-01-03">
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Records the total time taken to execute the elevated Google Update App
+    Command installation of the Platform Runtime component on Windows for
+    system-level installs.
+  </summary>
+</histogram>
+
+<histogram name="ComponentUpdater.PlatformRuntime.InstallDuration.UserLevel"
+    units="ms" expires_after="2027-01-03">
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Records the total time taken to execute the user-level setup.exe
+    installation of the Platform Runtime component on Windows for per-user
+    installs.
+  </summary>
+</histogram>
+
 <histogram name="ComponentUpdater.PlatformRuntime.InstallTrigger"
     enum="PlatformRuntimeInstallTrigger" expires_after="2027-03-07">
   <owner>marwant@google.com</owner>

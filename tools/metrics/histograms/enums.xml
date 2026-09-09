@@ -23968,6 +23968,38 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="I/O"/>
 </enum>
 
+<enum name="PlatformRuntimeInstallationResult">
+  <summary>
+    The result or failure status when installing the Platform Runtime component
+    on Windows.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Component already exists and is up to date"/>
+  <int value="2" label="Inner CRX file not found in staging directory"/>
+  <int value="3" label="App Command not found or COM registration failed"/>
+  <int value="4"
+      label="Execution/launch failed (App Command execution failed or
+             setup.exe launch failed)"/>
+  <int value="5" label="Failed: internal error (unmanaged, local path)"/>
+  <int value="6"
+      label="Failed: signature or publisher proof verification failed"/>
+  <int value="7" label="Failed: invalid input structure or manifest"/>
+  <int value="8" label="Failed: other error"/>
+  <int value="9" label="Failed: internal error on enterprise managed device"/>
+  <int value="10" label="Failed: internal error with network path"/>
+  <int value="11"
+      label="Failed: internal error on enterprise managed device with network
+             path"/>
+  <int value="12" label="Failed: COM call access denied (E_ACCESSDENIED)"/>
+  <int value="13"
+      label="Failed: COM/RPC server died or disconnected (RPC_E_SERVER_DIED,
+             RPC_E_DISCONNECTED)"/>
+  <int value="14" label="Failed: COM invalid argument (E_INVALIDARG)"/>
+  <int value="15" label="Failed: COM unexpected internal error (E_UNEXPECTED)"/>
+  <int value="16" label="Failed: other COM/RPC error"/>
+  <int value="17" label="Failed: current process is not installed"/>
+</enum>
+
 <enum name="PlatformRuntimeInstallTrigger">
   <summary>
     The trigger/reason that led to the platform runtime component installation

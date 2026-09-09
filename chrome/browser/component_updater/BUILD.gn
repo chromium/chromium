@@ -270,6 +270,8 @@ source_set("impl") {
       sources += [ "recovery_improved_component_installer_win.cc" ]
     }
     deps += [
+      "//chrome/browser/enterprise",
+      "//chrome/browser/google",
       "//chrome/elevation_service:public_headers",
       "//chrome/installer/util:with_no_strings",
     ]
@@ -400,6 +402,15 @@ source_set("unit_tests") {
     if (is_mac) {
       deps += [ "//chrome/updater:browser_sources" ]
     }
+  }
+
+  if (is_win) {
+    deps += [
+      "//chrome/browser/google",
+      "//chrome/install_static/test:test_support",
+      "//chrome/installer/util:with_no_strings",
+      "//chrome/updater/app/server/win:updater_legacy_idl",
+    ]
   }
 
   if (safe_browsing_mode == 2 && is_android) {

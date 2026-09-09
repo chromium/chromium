@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -617,4 +618,40 @@ std::wstring InstallUtil::GuidToSquid(std::wstring_view guid) {
   std::reverse_copy(input + 32, input + 34, output);
   std::reverse_copy(input + 34, input + 36, output);
   return squid;
+}
+
+// static
+base::FilePath InstallUtil::GetLatestInstalledComponentDir(
+    const base::FilePath& application_dir,
+    std::string_view crx_id,
+    base::Version* version) {
+  if (application_dir.empty() || crx_id.empty()) {
+    return base::FilePath();
+  }
+  base::FilePath component_root = application_dir.AppendASCII(crx_id);
+  base::Version highest_version;
+  base::FilePath latest_dir;
+
+  base::FileEnumerator file_enumerator(component_root, /*recursive=*/false,
+                                       base::FileEnumerator::DIRECTORIES);
+  file_enumerator.ForEach([&highest_version,
+                           &latest_dir](const base::FilePath& path) {
+    base::Version dir_version(path.BaseName().MaybeAsASCII());
+    if (!dir_version.IsValid()) {
+      return;
+    }
+    // Manifest.json must be present to be considered valid.
+    if (!base::PathExists(path.Append(FILE_PATH_LITERAL("manifest.json")))) {
+      return;
+    }
+    if (!highest_version.IsValid() || dir_version > highest_version) {
+      highest_version = std::move(dir_version);
+      latest_dir = path;
+    }
+  });
+
+  if (version && highest_version.IsValid()) {
+    *version = std::move(highest_version);
+  }
+  return latest_dir;
 }

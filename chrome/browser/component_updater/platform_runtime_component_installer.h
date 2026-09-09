@@ -14,24 +14,38 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+
+#include "base/process/process.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/win/windows_types.h"
+
+struct IAppCommandWeb;
+#endif
 
 class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
+class CommandLine;
+struct LaunchOptions;
 class Version;
 }  // namespace base
 
 namespace component_updater {
 
-class PlatformRuntimeComponentInstallerTest;
-
-inline constexpr char kPlatformRuntimeLastInstallTime[] =
-    "platform_runtime.last_install_time";
+// Local state preference storing the release/build timestamp of the currently
+// installed Platform Runtime component.
+inline constexpr char kPlatformRuntimeLastReleaseTime[] =
+    "platform_runtime.last_release_time";
 inline constexpr char kPlatformRuntimeLastInstalledVersion[] =
     "platform_runtime.last_installed_version";
 
@@ -44,12 +58,61 @@ enum class PlatformRuntimeInstallTrigger {
   kMaxValue = kBackground,
 };
 
+// Persisted to UMA logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class PlatformRuntimeInstallationResult {
+  kSuccess = 0,
+  kAlreadyExists = 1,
+  kInnerCrxNotFound = 2,
+  kCommandNotFound = 3,
+  kLaunchFailed = 4,
+  kFailedInternal = 5,
+  kFailedSignature = 6,
+  kFailedInvalidInput = 7,
+  kFailedOther = 8,
+  kFailedInternalManagedDevice = 9,
+  kFailedInternalNetworkPath = 10,
+  kFailedInternalManagedDeviceAndNetworkPath = 11,
+  kFailedComAccessDenied = 12,
+  kFailedComServerDied = 13,
+  kFailedComInvalidArg = 14,
+  kFailedComUnexpected = 15,
+  kFailedComOther = 16,
+  kNotInstalled = 17,
+  kMaxValue = kNotInstalled,
+};
+
 BASE_DECLARE_FEATURE(kEnablePlatformRuntimeComponent);
+
+#if BUILDFLAG(IS_WIN)
+// Delegate interface to abstract external Windows installer mechanisms
+// Allows unit tests to mock external system interactions without touching the
+// live system or launching real processes.
+class PlatformRuntimeInstallerDelegate {
+ public:
+  virtual ~PlatformRuntimeInstallerDelegate() = default;
+
+  // Retrieves the Google Update AppCommand COM interface (IAppCommandWeb) for
+  // the given `command_name`. Used for elevated system-level installations.
+  virtual base::expected<Microsoft::WRL::ComPtr<IAppCommandWeb>, HRESULT>
+  GetAppCommand(const std::wstring& command_name);
+
+  // Launches an external child process with the given `cmd` and `options`.
+  // Used for per-user setup.exe component installation.
+  virtual base::Process LaunchProcess(const base::CommandLine& cmd,
+                                      const base::LaunchOptions& options);
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 class PlatformRuntimeComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
-  PlatformRuntimeComponentInstallerPolicy() = default;
+  PlatformRuntimeComponentInstallerPolicy();
+  ~PlatformRuntimeComponentInstallerPolicy() override;
+#if BUILDFLAG(IS_WIN)
+  explicit PlatformRuntimeComponentInstallerPolicy(
+      std::unique_ptr<PlatformRuntimeInstallerDelegate> delegate);
+#endif
   PlatformRuntimeComponentInstallerPolicy(
       const PlatformRuntimeComponentInstallerPolicy&) = delete;
   PlatformRuntimeComponentInstallerPolicy& operator=(
@@ -71,12 +134,30 @@ class PlatformRuntimeComponentInstallerPolicy
     ComponentReady(version, install_dir, std::move(manifest));
   }
 
+  update_client::CrxInstaller::Result OnCustomInstallForTesting(
+      const base::DictValue& manifest,
+      const base::FilePath& install_dir) {
+    return OnCustomInstall(manifest, install_dir);
+  }
+
+  bool VerifyInstallationForTesting(const base::DictValue& manifest,
+                                    const base::FilePath& install_dir) const {
+    return VerifyInstallation(manifest, install_dir);
+  }
+
   void SetInstallTrigger(PlatformRuntimeInstallTrigger trigger) {
     install_trigger_ = trigger;
   }
 
   // ComponentInstallerPolicy overrides:
   void GetHash(std::vector<uint8_t>* hash) const override;
+
+#if BUILDFLAG(IS_WIN)
+  // Friend and derived class of ScopedAllowBaseSyncPrimitives which allows
+  // InstallUserLevel() to wait on setup.exe.
+  class [[maybe_unused, nodiscard]] ScopedAllowWaitForExit
+      : public base::ScopedAllowBaseSyncPrimitives {};
+#endif
 
  private:
   // ComponentInstallerPolicy overrides:
@@ -97,6 +178,10 @@ class PlatformRuntimeComponentInstallerPolicy
 
   PlatformRuntimeInstallTrigger install_trigger_ =
       PlatformRuntimeInstallTrigger::kBackground;
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<PlatformRuntimeInstallerDelegate> installer_delegate_;
+#endif
 };
 
 void MaybeRegisterPlatformRuntimeComponent(ComponentUpdateService* cus);

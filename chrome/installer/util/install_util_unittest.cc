@@ -14,9 +14,11 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
@@ -160,3 +162,26 @@ TEST(AppendModeAndChannelSwitchesTest, ExtendedStable) {
   }
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+TEST(InstallUtilTest, GetLatestInstalledComponentDir) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  std::string crx_id = "jidecimafobogahglicpmeajcaaaibib";
+
+  base::FilePath component_root = temp_dir.GetPath().AppendASCII(crx_id);
+  base::CreateDirectory(component_root);
+
+  base::FilePath v1 = component_root.AppendASCII("1.0.0.0");
+  base::FilePath v2 = component_root.AppendASCII("2.0.0.0");
+  base::FilePath v3_corrupt = component_root.AppendASCII("3.0.0.0");
+  base::CreateDirectory(v1);
+  base::CreateDirectory(v2);
+  base::CreateDirectory(v3_corrupt);
+
+  base::WriteFile(v1.AppendASCII("manifest.json"), "{}");
+  base::WriteFile(v2.AppendASCII("manifest.json"), "{}");
+  // v3_corrupt has no manifest.json, so it should be skipped.
+
+  EXPECT_EQ(v2, InstallUtil::GetLatestInstalledComponentDir(temp_dir.GetPath(),
+                                                            crx_id));
+}

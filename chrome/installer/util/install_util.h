@@ -180,6 +180,15 @@ class InstallUtil {
   // Converts a product GUID into a SQuished gUID that is used for MSI installer
   // registry entries.
   static std::wstring GuidToSquid(std::wstring_view guid);
+
+  // Returns the latest installed component version directory under
+  // <application_dir>/<crx_id>, or an empty FilePath if none exists or no
+  // valid version containing a manifest.json is found. If `version` is
+  // non-null, it is populated with the parsed highest version found.
+  static base::FilePath GetLatestInstalledComponentDir(
+      const base::FilePath& application_dir,
+      std::string_view crx_id,
+      base::Version* version = nullptr);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_INSTALL_UTIL_H_
