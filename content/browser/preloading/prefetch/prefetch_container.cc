@@ -2326,9 +2326,6 @@ void PrefetchContainer::RecordPrefetchContainerServedCountHistogram() {
 // For WebView Prefetch, this is no-op, because `PrefetchCacheableDuration()` is
 // longer than TTL so `PrefetchContainer` is destroyed before that.
 void PrefetchContainer::OnStale() {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
-    return;
-  }
   if (is_stale_notified_) {
     return;
   }
