@@ -106,6 +106,20 @@ bool SnapSelectionStrategy::UsingFractionalOffsets() const {
   return false;
 }
 
+int SnapSelectionStrategy::Compare2dCandidates(
+    const gfx::PointF& candidate_a,
+    const gfx::PointF& candidate_b) const {
+  float dist_sq_a = (candidate_a - base_position()).LengthSquared();
+  float dist_sq_b = (candidate_b - base_position()).LengthSquared();
+  if (dist_sq_a < dist_sq_b) {
+    return -1;
+  }
+  if (dist_sq_a > dist_sq_b) {
+    return 1;
+  }
+  return 0;
+}
+
 bool EndPositionStrategy::ShouldSnapOnX() const {
   return scrolled_x_;
 }
@@ -253,6 +267,40 @@ const std::optional<SnapSearchResult>& DirectionStrategy::PickBestResult(
 
 bool DirectionStrategy::UsingFractionalOffsets() const {
   return use_fractional_offsets_;
+}
+
+int DirectionStrategy::Compare2dCandidates(
+    const gfx::PointF& candidate_a,
+    const gfx::PointF& candidate_b) const {
+  gfx::Vector2dF v_a = candidate_a - base_position();
+  gfx::Vector2dF v_b = candidate_b - base_position();
+
+  float len_sq_a = v_a.LengthSquared();
+  float len_sq_b = v_b.LengthSquared();
+
+  // Prefer the candidate with the higher signed cosine similarity to the
+  // scroll direction vector (smaller angular deviation from step_).
+  if (len_sq_a > 0.f && len_sq_b > 0.f) {
+    float cos_a = gfx::DotProduct(step_, v_a) / std::sqrt(len_sq_a);
+    float cos_b = gfx::DotProduct(step_, v_b) / std::sqrt(len_sq_b);
+    if (cos_a > cos_b) {
+      return -1;
+    }
+    if (cos_a < cos_b) {
+      return 1;
+    }
+  }
+
+  // Fall back to 2D Euclidean distance if candidates have identical angular
+  // alignment (e.g. collinear or symmetric points along the trajectory) or if
+  // a candidate sits directly on the base position (length = 0).
+  if (len_sq_a < len_sq_b) {
+    return -1;
+  }
+  if (len_sq_a > len_sq_b) {
+    return 1;
+  }
+  return 0;
 }
 
 std::unique_ptr<SnapSelectionStrategy> DirectionStrategy::Clone() const {

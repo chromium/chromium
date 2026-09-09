@@ -417,6 +417,10 @@ class CC_EXPORT SnapContainerData {
  private:
   void UpdateExtremes();
 
+  bool IsValidSnapArea(SearchAxis axis,
+                       const SnapSelectionStrategy& strategy,
+                       const SnapAreaData& area) const;
+
   // Finds the best SnapArea candidate that's optimal for the given selection
   // strategy, while satisfying two invariants:
   // - |candidate.snap_offset| is within |cross_axis_snap_result|'s visible

@@ -179,6 +179,11 @@ void UpdateMinMax(float offset,
   }
 }
 
+bool HasDualAxisSnapAlignment(const SnapAreaData& area) {
+  return area.scroll_snap_align.alignment_inline != SnapAlignment::kNone &&
+         area.scroll_snap_align.alignment_block != SnapAlignment::kNone;
+}
+
 }  // namespace
 
 SnapSearchResult::SnapSearchResult(float offset,
@@ -232,8 +237,29 @@ SnapContainerData& SnapContainerData::operator=(
 SnapContainerData& SnapContainerData::operator=(SnapContainerData&& other) =
     default;
 
+bool SnapContainerData::IsValidSnapArea(SearchAxis axis,
+                                        const SnapSelectionStrategy& strategy,
+                                        const SnapAreaData& area) const {
+  if (!strategy.IsValidSnapArea(axis, area)) {
+    return false;
+  }
+  // Under 'scroll-snap-type: pair', a snap area must define alignment on both
+  // axes to be a valid snap target; single-axis areas are ignored.
+  if (scroll_snap_type_.axis == SnapAxis::kPair) {
+    return HasDualAxisSnapAlignment(area);
+  }
+  return true;
+}
+
 void SnapContainerData::AddSnapAreaData(SnapAreaData snap_area_data) {
   snap_area_list_.push_back(snap_area_data);
+
+  // Ignore single-axis areas so they do not contribute to container min/max
+  // snap offset extremes under 'pair'.
+  if (scroll_snap_type_.axis == SnapAxis::kPair &&
+      !HasDualAxisSnapAlignment(snap_area_data)) {
+    return;
+  }
 
   gfx::RectF rect = snapport();
 
@@ -290,6 +316,13 @@ void SnapContainerData::UpdateExtremes() {
   gfx::RectF rect = snapport();
 
   for (const auto& area : snap_area_list_) {
+    // Ignore single-axis areas so they do not contribute to container min/max
+    // snap offset extremes under 'pair'.
+    if (scroll_snap_type_.axis == SnapAxis::kPair &&
+        !HasDualAxisSnapAlignment(area)) {
+      continue;
+    }
+
     if (area.scroll_snap_align.alignment_inline != SnapAlignment::kNone) {
       SnapSearchResult sr = GetSnapSearchResult(SearchAxis::kX, area);
       std::optional<gfx::RangeF> covered_range =
@@ -349,10 +382,11 @@ SnapPositionData SnapContainerData::FindSnapPosition(
 
   gfx::PointF base_position = strategy.base_position();
   SnapAxis axis = scroll_snap_type_.axis;
-  bool should_snap_on_x = strategy.ShouldSnapOnX() &&
-                          (axis == SnapAxis::kX || axis == SnapAxis::kBoth);
-  bool should_snap_on_y = strategy.ShouldSnapOnY() &&
-                          (axis == SnapAxis::kY || axis == SnapAxis::kBoth);
+  bool is_2d = axis == SnapAxis::kBoth || axis == SnapAxis::kPair;
+  bool should_snap_on_x =
+      strategy.ShouldSnapOnX() && (axis == SnapAxis::kX || is_2d);
+  bool should_snap_on_y =
+      strategy.ShouldSnapOnY() && (axis == SnapAxis::kY || is_2d);
   if (!should_snap_on_x && !should_snap_on_y) {
     // We may arrive here because the strategy wants to snap in an axis in
     // which we do not snap, and doesn't want to snap in an axis in which we do
@@ -360,8 +394,10 @@ SnapPositionData SnapContainerData::FindSnapPosition(
     // snapped.
     if (axis == SnapAxis::kY) {
       result.target_element_ids.y = target_snap_area_element_ids_.y;
-    } else {
+    } else if (axis == SnapAxis::kX) {
       result.target_element_ids.x = target_snap_area_element_ids_.x;
+    } else {
+      result.target_element_ids = target_snap_area_element_ids_;
     }
     return result;
   }
@@ -415,6 +451,37 @@ SnapPositionData SnapContainerData::FindSnapPosition(
     }
 
     return result;
+  }
+
+  if (axis == SnapAxis::kPair) {
+    // If only one axis was scrolled, SnapSelectionStrategy only searches along
+    // that axis, leaving the other search result unset. Derive the unsearched
+    // axis from the scrolled axis's candidate to prioritize the scrolled axis.
+    if (!selected_x.has_value()) {
+      selected_x = GetSnapSearchResult(SearchAxis::kX, *selected_y->area());
+    }
+    if (!selected_y.has_value()) {
+      selected_y = GetSnapSearchResult(SearchAxis::kY, *selected_x->area());
+    }
+    // If both axes were searched and selected different snap areas, resolve to
+    // a single target area according to the selection strategy.
+    if (selected_x->area() != selected_y->area()) {
+      SnapSearchResult x_cross =
+          GetSnapSearchResult(SearchAxis::kY, *selected_x->area());
+      SnapSearchResult y_cross =
+          GetSnapSearchResult(SearchAxis::kX, *selected_y->area());
+
+      gfx::PointF pos_from_x(selected_x->snap_offset(), x_cross.snap_offset());
+      gfx::PointF pos_from_y(y_cross.snap_offset(), selected_y->snap_offset());
+
+      int comparison = strategy.Compare2dCandidates(pos_from_x, pos_from_y);
+      // When all else is equal, prefer the candidate in the block direction.
+      if (comparison > 0 || (comparison == 0 && has_horizontal_writing_mode_)) {
+        selected_x = y_cross;
+      } else {
+        selected_y = x_cross;
+      }
+    }
   }
 
   // If snapping on both axes, ensure we find mutually visible targets. If one
@@ -587,7 +654,7 @@ SnapContainerData::GetTargetSnapAreaSearchResult(
   if (target_id == ElementId())
     return std::nullopt;
   for (const SnapAreaData& area : snap_area_list_) {
-    if (area.element_id == target_id && strategy.IsValidSnapArea(axis, area)) {
+    if (area.element_id == target_id && IsValidSnapArea(axis, strategy, area)) {
       auto aligned_result = GetSnapSearchResult(axis, area);
       if (CanCoverSnapportOnAxis(axis, snapport(), area.rect)) {
         // This code path handles snapping after layout changes. If the
@@ -766,7 +833,8 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
         smallest_distance = distance;
         closest = candidate;
         preferred_candidate = is_preferred_candidate;
-      } else if ((scroll_snap_type_.axis == SnapAxis::kBoth) &&
+      } else if ((scroll_snap_type_.axis == SnapAxis::kBoth ||
+                  scroll_snap_type_.axis == SnapAxis::kPair) &&
                  (area.scroll_snap_align.alignment_block !=
                   SnapAlignment::kNone) &&
                  (area.scroll_snap_align.alignment_inline !=
@@ -782,8 +850,9 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
   };
 
   for (const SnapAreaData& area : snap_area_list_) {
-    if (!strategy.IsValidSnapArea(axis, area))
+    if (!IsValidSnapArea(axis, strategy, area)) {
       continue;
+    }
 
     if (active_element_range) {
       gfx::RangeF area_range =
@@ -1036,37 +1105,44 @@ bool SnapContainerData::IsSnappedToArea(
   bool covered_on_x =
       IsSnapportCoveredOnAxis(SearchAxis::kX, scroll_offset.x(), area.rect);
   bool snaps_on_x = scroll_snap_type_.axis == SnapAxis::kX ||
-                    scroll_snap_type_.axis == SnapAxis::kBoth;
+                    scroll_snap_type_.axis == SnapAxis::kBoth ||
+                    scroll_snap_type_.axis == SnapAxis::kPair;
   bool snaps_on_y = scroll_snap_type_.axis == SnapAxis::kY ||
-                    scroll_snap_type_.axis == SnapAxis::kBoth;
+                    scroll_snap_type_.axis == SnapAxis::kBoth ||
+                    scroll_snap_type_.axis == SnapAxis::kPair;
   if ((snaps_on_x && covered_on_x) && (snaps_on_y && covered_on_y)) {
     return true;
   }
 
-  if (snaps_on_y &&
-      area.scroll_snap_align.alignment_block != SnapAlignment::kNone) {
-    SnapSearchResult snap_result_y = GetSnapSearchResult(SearchAxis::kY, area);
-    if (((std::abs(snap_result_y.snap_offset() - scroll_offset.y()) <=
-          kSnappedToTolerance) ||
-         covered_on_y) &&
-        gfx::RangeF(scroll_offset.x())
-            .IsBoundedBy(snap_result_y.visible_range())) {
-      return true;
-    }
-  }
+  bool is_snapped_on_x = false;
   if (snaps_on_x &&
       area.scroll_snap_align.alignment_inline != SnapAlignment::kNone) {
     SnapSearchResult snap_result_x = GetSnapSearchResult(SearchAxis::kX, area);
-    if (((std::abs(snap_result_x.snap_offset() - scroll_offset.x()) <=
-          kSnappedToTolerance) ||
-         covered_on_x) &&
-        gfx::RangeF(scroll_offset.y())
-            .IsBoundedBy(snap_result_x.visible_range())) {
-      return true;
-    }
+    is_snapped_on_x = ((std::abs(snap_result_x.snap_offset() -
+                                 scroll_offset.x()) <= kSnappedToTolerance) ||
+                       covered_on_x) &&
+                      gfx::RangeF(scroll_offset.y())
+                          .IsBoundedBy(snap_result_x.visible_range());
   }
 
-  return false;
+  bool is_snapped_on_y = false;
+  if (snaps_on_y &&
+      area.scroll_snap_align.alignment_block != SnapAlignment::kNone) {
+    SnapSearchResult snap_result_y = GetSnapSearchResult(SearchAxis::kY, area);
+    is_snapped_on_y = ((std::abs(snap_result_y.snap_offset() -
+                                 scroll_offset.y()) <= kSnappedToTolerance) ||
+                       covered_on_y) &&
+                      gfx::RangeF(scroll_offset.x())
+                          .IsBoundedBy(snap_result_y.visible_range());
+  }
+
+  // 'pair' requires the scroller to be snapped on both axes simultaneously
+  // for the area to receive :snapped state and trigger scrollsnapchange.
+  if (scroll_snap_type_.axis == SnapAxis::kPair) {
+    return is_snapped_on_x && is_snapped_on_y;
+  }
+
+  return is_snapped_on_x || is_snapped_on_y;
 }
 
 gfx::RectF SnapContainerData::snapport() const {

@@ -113,6 +113,12 @@ class CC_EXPORT SnapSelectionStrategy {
   // pixels.
   virtual bool UsingFractionalOffsets() const;
 
+  // Compares two 2D candidate snap positions (e.g. during SnapAxis::kPair
+  // conflict resolution). Returns < 0 if |candidate_a| is preferred, > 0 if
+  // |candidate_b| is preferred, and 0 if they are equally preferred.
+  virtual int Compare2dCandidates(const gfx::PointF& candidate_a,
+                                  const gfx::PointF& candidate_b) const;
+
   virtual std::unique_ptr<SnapSelectionStrategy> Clone() const = 0;
 
  protected:
@@ -229,6 +235,9 @@ class DirectionStrategy : public SnapSelectionStrategy {
       const std::optional<SnapSearchResult>& covering) const override;
 
   bool UsingFractionalOffsets() const override;
+
+  int Compare2dCandidates(const gfx::PointF& candidate_a,
+                          const gfx::PointF& candidate_b) const override;
 
   std::unique_ptr<SnapSelectionStrategy> Clone() const override;
 
