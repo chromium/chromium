@@ -755,9 +755,6 @@ void AtMemoryQueryService::Query(
     const GURL& url,
     std::u16string_view title,
     base::RepeatingCallback<void(MemorySearchResults)> callback) {
-  // Invalidate any in-flight queries.
-  query_weak_ptr_factory_.InvalidateWeakPtrs();
-
   if (net::NetworkChangeNotifier::IsOffline()) {
     callback.Run(MemorySearchResults(MemorySearchStatus::kNoConnectionFailure));
     return;
@@ -836,13 +833,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   };
 
   if (!result.response.has_value()) {
-    personal_context::ContextMemoryError::ExecutionError error =
-        result.response.error().error();
-    if (error ==
-        personal_context::ContextMemoryError::ExecutionError::kCancelled) {
-      return;
-    }
-    run_callback(MapContextMemoryError(error));
+    run_callback(MapContextMemoryError(result.response.error().error()));
     return;
   }
 

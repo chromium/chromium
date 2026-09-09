@@ -455,15 +455,32 @@ TEST_F(AtMemoryQueryServiceTest, Query_PersonalContextResolverError) {
   EXPECT_TRUE(result.entries.empty());
 }
 
-// Tests that the query service does not send results for a query that has been
-// superseded by a newer query.
-TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
-  AtMemoryQueryResponse response;
+// Tests that the query service returns kInternalFailure when the personal
+// context fetch is cancelled.
+TEST_F(AtMemoryQueryServiceTest, Query_PersonalContextCancelled) {
+  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
+
+  StubFetchContextError(
+      personal_context::ContextMemoryError::FromExecutionError(
+          personal_context::ContextMemoryError::ExecutionError::kCancelled));
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"random query", GURL("https://example.com"), u"Page Title",
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  EXPECT_EQ(result.status, MemorySearchStatus::kInternalFailure);
+  EXPECT_TRUE(result.entries.empty());
+}
+
+// Tests that the query service supports multiple concurrent queries, and both
+// callbacks are called when data retrieval completes.
+TEST_F(AtMemoryQueryServiceTest, ConcurrentQueriesBothReceiveResults) {
+  AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   plan->add_fetch_specifications()->set_data_type(
       personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
-  response.set_query_classification(
-      AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
 
   Any serialized_response1;
   serialized_response1.set_value(response.SerializeAsString());
@@ -515,14 +532,71 @@ TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
   // Complete the first query's data retrieval.
   fake_data_provider->CompleteNext({});
 
-  // The first query's callback should NOT be called.
-  EXPECT_FALSE(future1.IsReady());
+  // The first query's callback should be called.
+  ASSERT_TRUE(future1.Wait());
+  EXPECT_EQ(future1.Get().status, MemorySearchStatus::kFinalResponseSuccess);
 
   // Complete the second query's data retrieval.
   fake_data_provider->CompleteNext({});
 
   // The second query's callback should be called.
   ASSERT_TRUE(future2.Wait());
+  EXPECT_EQ(future2.Get().status, MemorySearchStatus::kFinalResponseSuccess);
+}
+
+// Tests that when PersonalContextService cancels an older query upon receiving
+// a newer one (due to single-concurrency limit), the first query's callback
+// receives kInternalFailure while the second query succeeds.
+TEST_F(AtMemoryQueryServiceTest, FirstQueryCancelledWhenSecondStarted) {
+  AtMemoryQueryResponse response = CreateQueryResponse();
+  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+  plan->add_fetch_specifications()->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+
+  Any serialized_response;
+  serialized_response.set_value(response.SerializeAsString());
+  personal_context::FetchContextResult success_result(
+      std::move(serialized_response));
+
+  EXPECT_CALL(
+      mock_service(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY, _,
+                   _, _))
+      .WillOnce([](personal_context::proto::ContextMemoryFeature feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const personal_context::ContextMemoryRequestOptions& options,
+                   personal_context::FetchContextCallback callback) {
+        std::move(callback).Run(
+            personal_context::FetchContextResult(base::unexpected(
+                personal_context::ContextMemoryError::FromExecutionError(
+                    personal_context::ContextMemoryError::ExecutionError::
+                        kCancelled))));
+      })
+      .WillOnce(
+          [&](personal_context::proto::ContextMemoryFeature feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const personal_context::ContextMemoryRequestOptions& options,
+              personal_context::FetchContextCallback callback) {
+            std::move(callback).Run(std::move(success_result));
+          });
+
+  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
+  std::unique_ptr<AtMemoryQueryService> service =
+      CreateQueryService(std::move(data_provider));
+
+  TestFuture<MemorySearchResults> future1;
+  service->Query(u"query 1", GURL("https://example.com"), u"Page Title",
+                 future1.GetRepeatingCallback());
+
+  TestFuture<MemorySearchResults> future2;
+  service->Query(u"query 2", GURL("https://example.com"), u"Page Title",
+                 future2.GetRepeatingCallback());
+
+  ASSERT_TRUE(future1.Wait());
+  EXPECT_EQ(future1.Get().status, MemorySearchStatus::kInternalFailure);
+
+  ASSERT_TRUE(future2.Wait());
+  EXPECT_EQ(future2.Get().status, MemorySearchStatus::kFinalResponseSuccess);
 }
 
 // Tests that deduplication preserves the original insertion order.
