@@ -113,10 +113,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.isIncognito = mIsEncrypted;
             state.parentId = tabStateFlatBuffer.parentId();
             state.rootId = tabStateFlatBuffer.rootId();
-            state.openerAppId =
-                    NULL_STR.equals(tabStateFlatBuffer.openerAppId())
-                            ? null
-                            : tabStateFlatBuffer.openerAppId();
+            String openerAppId = tabStateFlatBuffer.openerAppId();
+            state.openerAppId = NULL_STR.equals(openerAppId) ? null : openerAppId;
             state.timestampMillis = tabStateFlatBuffer.timestampMillis();
             state.lastNavigationCommittedTimestampMillis =
                     tabStateFlatBuffer.lastNavigationCommittedTimestampMillis();
@@ -135,8 +133,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.tabHasSensitiveContent = tabStateFlatBuffer.tabHasSensitiveContent();
             state.isPinned = tabStateFlatBuffer.isPinned();
 
-            boolean isUrlNull = NULL_STR.equals(tabStateFlatBuffer.url());
-            state.url = isUrlNull ? null : new GURL(tabStateFlatBuffer.url());
+            String url = tabStateFlatBuffer.url();
+            state.url = NULL_STR.equals(url) ? null : new GURL(url);
             if (state.url != null && !state.url.isValid()) state.url = null;
 
             ByteBuffer webContentsStateBuffer =
