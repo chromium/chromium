@@ -53,7 +53,7 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
     @Override
     public Tab attachTabImpl(TabModel tabModel, int index) {
         assert mTabState != null : "ColdBackgroundTab has already been attached or destroyed.";
-        mPool.removeTab(mPlaceholderTabId);
+        mPool.removeTabById(mTabId);
         TabState state = mTabState;
         mTabState = null;
         TabCreator tabCreator = tabModel.getTabCreator();

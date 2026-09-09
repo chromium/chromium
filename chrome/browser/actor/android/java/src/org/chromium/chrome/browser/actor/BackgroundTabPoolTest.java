@@ -327,6 +327,45 @@ public class BackgroundTabPoolTest {
     }
 
     @Test
+    public void testRemoveTabById() {
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+
+        mPool.addLiveTab(new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, /* taskId= */ null));
+        assertEquals(1, mPool.getLiveTabCount());
+        assertTrue(mPool.hasPlaceholder(PLACEHOLDER_ID));
+
+        mPool.removeTabById(TAB_ID_1);
+        assertEquals(0, mPool.getLiveTabCount());
+        assertFalse(mPool.hasPlaceholder(PLACEHOLDER_ID));
+        assertTrue(mPool.isEmpty());
+    }
+
+    @Test
+    public void testAddLiveTab_withoutPlaceholder() {
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+
+        LiveBackgroundTab liveTab =
+                new LiveBackgroundTab(
+                        mPool,
+                        tab,
+                        Tab.INVALID_TAB_ID,
+                        /* taskId= */ null,
+                        /* originalTabIndex= */ 0);
+        mPool.addLiveTab(liveTab);
+
+        assertEquals(1, mPool.getLiveTabCount());
+        assertSame(liveTab, mPool.getLiveTab(TAB_ID_1));
+        assertFalse(mPool.hasPlaceholder(Tab.INVALID_TAB_ID));
+
+        mPool.removeTabById(TAB_ID_1);
+        assertTrue(mPool.isEmpty());
+    }
+
+    @Test
     public void testInternalSharedPreferencesPersistence() {
         BackgroundTabPool.PlaceholderAssociationStore store = mPool.getAssociationStoreForTesting();
         store.storePlaceholderTabId(TAB_ID_1, PLACEHOLDER_ID);
