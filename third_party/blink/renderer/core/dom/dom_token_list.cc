@@ -138,17 +138,10 @@ bool DOMTokenList::toggle(const AtomicString& token,
   if (!CheckTokenSyntax(token, exception_state))
     return false;
 
-  // 4. If context object’s token set[token] exists, then:
-  if (contains(token)) {
-    // 1. If force is either not given or is false, then remove token from
-    // context object’s token set.
-    RemoveTokens(Vector<String>({token}));
-    return false;
-  }
-  // 5. Otherwise, if force not given or is true, append token to context
-  // object’s token set and set result to true.
-  AddTokens(Vector<String>({token}));
-  return true;
+  // Steps 4-5: ToggleToken() flips presence in a single scan.
+  bool added = token_set_.ToggleToken(token);
+  UpdateWithTokenSet(token_set_);
+  return added;
 }
 
 // https://dom.spec.whatwg.org/#dom-domtokenlist-toggle
@@ -158,19 +151,9 @@ bool DOMTokenList::toggle(const AtomicString& token,
   if (!CheckTokenSyntax(token, exception_state))
     return false;
 
-  // 4. If context object’s token set[token] exists, then:
-  if (contains(token)) {
-    // 1. If force is either not given or is false, then remove token from
-    // context object’s token set.
-    if (!force)
-      RemoveTokens(Vector<String>({token}));
-  } else {
-    // 5. Otherwise, if force not given or is true, append token to context
-    // object’s token set and set result to true.
-    if (force)
-      AddTokens(Vector<String>({token}));
-  }
-
+  // Steps 4-5: SetTokenPresence() decides and acts in a single scan.
+  if (token_set_.SetTokenPresence(token, force))
+    UpdateWithTokenSet(token_set_);
   return force;
 }
 

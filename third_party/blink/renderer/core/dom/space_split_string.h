@@ -61,10 +61,20 @@ class CORE_EXPORT SpaceSplitString {
   bool ContainsAll(const SpaceSplitString& names) const {
     return !names.data_ || (data_ && data_->ContainsAll(*names.data_));
   }
-  void Add(const AtomicString&);
-  void Remove(const AtomicString&);
+  // Returns true if the token set was changed.
+  bool Add(const AtomicString&);
+  bool Remove(const AtomicString&);
+
   void Remove(wtf_size_t index);
   void ReplaceAt(wtf_size_t index, const AtomicString&);
+
+  // Toggles |token|'s presence in one scan (avoids a separate Contains() +
+  // Add()/Remove() re-scan). Returns true if the token is now in the
+  // collection.
+  bool ToggleToken(const AtomicString& token);
+  // Like ToggleToken(), but sets presence to |should_contain| instead of
+  // flipping it. Returns true if the token set was changed.
+  bool SetTokenPresence(const AtomicString& token, bool should_contain);
 
   // https://dom.spec.whatwg.org/#concept-ordered-set-serializer
   // The ordered set serializer takes a set and returns the concatenation of the
@@ -145,6 +155,17 @@ class CORE_EXPORT SpaceSplitString {
   void EnsureUnique() {
     if (data_ && data_->MightBeShared()) {
       data_ = Data::CreateUnique(*data_);
+    }
+  }
+
+  // Appends |token|, which the caller has already confirmed is absent.
+  void AppendAssumingAbsent(const AtomicString& token) {
+    DCHECK(!Contains(token));
+    EnsureUnique();
+    if (data_) {
+      data_->Add(token);
+    } else {
+      data_ = Data::Create(token);
     }
   }
 

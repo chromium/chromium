@@ -113,19 +113,16 @@ void SpaceSplitString::Data::Remove(unsigned index) {
   vector_.EraseAt(index);
 }
 
-void SpaceSplitString::Add(const AtomicString& string) {
+bool SpaceSplitString::Add(const AtomicString& string) {
   if (Contains(string))
-    return;
-  EnsureUnique();
-  if (data_)
-    data_->Add(string);
-  else
-    data_ = Data::Create(string);
+    return false;
+  AppendAssumingAbsent(string);
+  return true;
 }
 
-void SpaceSplitString::Remove(const AtomicString& string) {
+bool SpaceSplitString::Remove(const AtomicString& string) {
   if (!data_) {
-    return;
+    return false;
   }
   unsigned i = 0;
   bool changed = false;
@@ -139,6 +136,22 @@ void SpaceSplitString::Remove(const AtomicString& string) {
     }
     ++i;
   }
+  return changed;
+}
+
+bool SpaceSplitString::ToggleToken(const AtomicString& token) {
+  if (Remove(token)) {
+    return false;
+  }
+  // Remove()'s scan above already established that |token| is absent, so skip
+  // Add()'s redundant Contains() check.
+  AppendAssumingAbsent(token);
+  return true;
+}
+
+bool SpaceSplitString::SetTokenPresence(const AtomicString& token,
+                                        bool should_contain) {
+  return should_contain ? Add(token) : Remove(token);
 }
 
 void SpaceSplitString::Remove(wtf_size_t index) {

@@ -55,4 +55,44 @@ TEST(SpaceSplitStringTest, SerializeToString) {
   tokens.Add(AtomicString("foo"));
   EXPECT_EQ("bar foo", tokens.SerializeToString());
 }
+
+TEST(SpaceSplitStringTest, ToggleToken) {
+  test::TaskEnvironment task_environment;
+  SpaceSplitString tokens;
+  tokens.Set(AtomicString("foo bar"));
+
+  EXPECT_FALSE(tokens.ToggleToken(AtomicString("foo")));
+  EXPECT_EQ(1u, tokens.size());
+  EXPECT_EQ(AtomicString("bar"), tokens[0]);
+
+  EXPECT_TRUE(tokens.ToggleToken(AtomicString("foo")));
+  EXPECT_EQ(2u, tokens.size());
+  EXPECT_EQ(AtomicString("bar"), tokens[0]);
+  EXPECT_EQ(AtomicString("foo"), tokens[1]);
+
+  EXPECT_TRUE(tokens.ToggleToken(AtomicString("baz")));
+  EXPECT_EQ(3u, tokens.size());
+  EXPECT_EQ(AtomicString("baz"), tokens[2]);
 }
+
+TEST(SpaceSplitStringTest, SetTokenPresence) {
+  test::TaskEnvironment task_environment;
+  SpaceSplitString tokens;
+  tokens.Set(AtomicString("foo"));
+
+  EXPECT_TRUE(tokens.SetTokenPresence(AtomicString("bar"), true));
+  EXPECT_EQ(2u, tokens.size());
+  EXPECT_EQ(AtomicString("bar"), tokens[1]);
+
+  EXPECT_FALSE(tokens.SetTokenPresence(AtomicString("bar"), true));
+  EXPECT_EQ(2u, tokens.size());
+
+  EXPECT_TRUE(tokens.SetTokenPresence(AtomicString("bar"), false));
+  EXPECT_EQ(1u, tokens.size());
+  EXPECT_EQ(AtomicString("foo"), tokens[0]);
+
+  EXPECT_FALSE(tokens.SetTokenPresence(AtomicString("bar"), false));
+  EXPECT_EQ(1u, tokens.size());
+}
+
+}  // namespace blink
