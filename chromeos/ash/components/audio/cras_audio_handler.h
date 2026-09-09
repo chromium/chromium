@@ -836,7 +836,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Sets up the additional active audio node's state.
   void SetupAdditionalActiveAudioNodeState(uint64_t node_id);
 
-  AudioDevice ConvertAudioNodeWithModifiedPriority(const AudioNode& node);
 
   const AudioDevice* GetDeviceFromStableDeviceId(
       bool is_input,
@@ -930,7 +929,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool hdmi_rediscovering() const { return hdmi_rediscovering_; }
 
   void SetHDMIRediscoverGracePeriodForTesting(int duration_in_ms);
-  bool ShouldSwitchToHotPlugDevice(const AudioDevice& hotplug_device) const;
 
   enum DeviceStatus {
     OLD_DEVICE,
@@ -966,9 +964,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
                                    bool has_device_change,
                                    bool has_device_removed,
                                    bool active_device_removed);
-
-  // Handles the regular user hotplug case with user priority.
-  void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
 
   // Switch to the top priority device in |devices|. |devices| must be a list
   // of devices with the same direction.

@@ -7463,11 +7463,6 @@ inline constexpr char kAssistantIphName[] = "Assistant IPH";
 inline constexpr char kAssistantIphDescription[] =
     "Enables showing Assistant IPH on ChromeOS.";
 
-inline constexpr char kAudioSelectionImprovementName[] =
-    "Enable audio selection improvement algorithm";
-inline constexpr char kAudioSelectionImprovementDescription[] =
-    "Enable set-based audio selection improvement algorithm.";
-
 inline constexpr char kAutoFramingOverrideName[] =
     "Auto-framing control override";
 inline constexpr char kAutoFramingOverrideDescription[] =

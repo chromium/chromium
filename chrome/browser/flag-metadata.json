@@ -856,11 +856,6 @@
     "expiry_milestone": 200
   },
   {
-    "name": "audio-selection-improvement",
-    "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 151
-  },
-  {
     "name": "auto-doc-pip-permission-prompt-android",
     "owners": [
       "philyan@chromium.org",
