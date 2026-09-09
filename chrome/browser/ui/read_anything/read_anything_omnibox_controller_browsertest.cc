@@ -231,6 +231,34 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       PrimaryPageChanged_CollapsesOnFourthPage) {
+  RegisterPageActionObserver();
+  // 1st page: chip is expanded.
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
+
+  // 2nd page: chip is expanded.
+  MockLongDwellTime();
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 1);
+
+  // 3rd page: chip is expanded.
+  MockLongDwellTime();
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 2);
+
+  // 4th page: chip should collapse (icon only, chip not showing).
+  MockLongDwellTime();
+  NavigateToDistillablePage();
+  WaitForChipShowing(false);
+  ExpectPageActionStateImmediate(true);
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
                        PrimaryPageChanged_HidesOnNonHttp) {
   RegisterPageActionObserver();
   NavigateToDistillablePage();

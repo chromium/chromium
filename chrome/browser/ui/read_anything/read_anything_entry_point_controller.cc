@@ -74,7 +74,7 @@ int GetOmniboxChipIgnoredCount(PrefService* prefs) {
 }
 
 bool ShouldShowOmniboxChip(BrowserWindowInterface* bwi) {
-  return GetOmniboxChipIgnoredCount(bwi->GetProfile()->GetPrefs()) <=
+  return GetOmniboxChipIgnoredCount(bwi->GetProfile()->GetPrefs()) <
          kMaxChipIgnoredCount;
 }
 
