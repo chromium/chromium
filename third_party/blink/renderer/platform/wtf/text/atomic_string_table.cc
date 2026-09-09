@@ -209,14 +209,11 @@ class UCharBuffer {
       case AtomicStringUCharEncoding::kUnknown:
         // encoding is always resolved in the constructor.
         NOTREACHED();
-      case AtomicStringUCharEncoding::kIs8Bit: {
-        using Reader = ConvertTo8BitHashReader;
+      case AtomicStringUCharEncoding::kIs8Bit:
         // This is a very common case from HTML parsing, so we take
         // the size penalty from inlining.
-        return StringHasher::ComputeHashAndMaskTop8BitsInline<Reader>(
-            UNSAFE_TODO({base::unchecked, bytes.data(),
-                         bytes.size() / Reader::kCompressionFactor}));
-      }
+        return StringHasher::ComputeHashAndMaskTop8BitsInline<
+            ConvertTo8BitHashReader>(bytes);
       case AtomicStringUCharEncoding::kIs16Bit:
         return StringHasher::ComputeHashAndMaskTop8Bits(bytes);
     }

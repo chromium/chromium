@@ -72,7 +72,9 @@ class StringHasher {
   template <class Reader = PlainHashReader>
   ALWAYS_INLINE static uint32_t ComputeHashAndMaskTop8BitsInline(
       base::span<const uint8_t> data) {
-    return MaskTop8Bits(rapidhash<Reader>(data.data(), data.size()));
+    return MaskTop8Bits(rapidhash<Reader>(
+        data.data(),
+        data.size() * Reader::kExpansionFactor / Reader::kCompressionFactor));
   }
 
   // TODO(crbug.com/458429790): Once clang is better able to optimize this,
