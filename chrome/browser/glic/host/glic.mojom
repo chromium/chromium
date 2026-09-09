@@ -622,6 +622,10 @@ struct SkillPreview {
   string? category;
   // The time when the skill was created.
   mojo_base.mojom.Time? creation_time;
+  // Whether the skill is enabled. If not present, the browser does not support
+  // per-skill enablement.
+  // @glic_optional
+  bool enabled = true;
 };
 
 // @generate glic_api

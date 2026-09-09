@@ -101,6 +101,7 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   static base::Time last_update_time(const skills::Skill& skill) {
     return skill.last_update_time;
   }
+  static bool enabled(const skills::Skill& skill) { return skill.enabled; }
 
   static bool Read(skills::mojom::SkillDataView data, skills::Skill* out);
 };

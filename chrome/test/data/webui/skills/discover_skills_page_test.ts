@@ -45,6 +45,7 @@ suite('DiscoverSkillsPage', function() {
       curatedBy: '',
       imageUrl: '',
       source: SkillSource.kFirstParty,
+      enabled: true,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
       category: '',

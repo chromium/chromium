@@ -84,6 +84,7 @@ suite('SkillsDialogAppPage', function() {
       curatedBy: '',
       imageUrl: '',
       source: SkillSource.kUnknown,
+      enabled: true,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
       category: '',

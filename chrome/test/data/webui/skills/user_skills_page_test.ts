@@ -44,6 +44,7 @@ suite('UserSkillsPage', function() {
       curatedBy: '',
       imageUrl: '',
       source: SkillSource.kUserCreated,
+      enabled: true,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
       category: '',

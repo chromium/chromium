@@ -50,7 +50,8 @@ class MockSkillsService : public SkillsService {
                std::string_view,
                base::Time,
                base::Time,
-               sync_pb::SkillSource));
+               sync_pb::SkillSource,
+               bool));
   MOCK_METHOD(
       const Skill*,
       UpdateSkill,

@@ -55,6 +55,7 @@ sync_pb::SkillSpecifics SkillToSpecifics(
   specifics.set_last_update_time_windows_epoch_micros(
       ToWindowsEpochMicros(skill.last_update_time));
   specifics.set_schema_version(kSchemaVersion);
+  specifics.set_enabled(skill.enabled);
 
   // Do not override the skill source if it is unknown. This skill may be
   // created by a newer version of the client, so it's better to preserve the
@@ -63,6 +64,12 @@ sync_pb::SkillSpecifics SkillToSpecifics(
     specifics.set_skill_source(skill.source);
   }
   return specifics;
+}
+
+bool IsSkillEnabled(const sync_pb::SkillSpecifics& specifics) {
+  // Skills created by older clients that do not have the `enabled` field are
+  // enabled by default.
+  return specifics.has_enabled() ? specifics.enabled() : true;
 }
 
 std::unique_ptr<Skill> SpecificsToSkill(
@@ -78,6 +85,7 @@ std::unique_ptr<Skill> SpecificsToSkill(
   if (!specifics.source_skill_id().empty()) {
     skill->source_skill_id = specifics.source_skill_id();
   }
+  skill->enabled = IsSkillEnabled(specifics);
 
   skill->creation_time =
       FromWindowsEpochMicros(specifics.creation_time_windows_epoch_micros());
@@ -173,7 +181,7 @@ std::optional<syncer::ModelError> SkillsSyncBridge::ApplyIncrementalSyncChanges(
                 skill_specifics.creation_time_windows_epoch_micros()),
             FromWindowsEpochMicros(
                 skill_specifics.last_update_time_windows_epoch_micros()),
-            skill_specifics.skill_source());
+            skill_specifics.skill_source(), IsSkillEnabled(skill_specifics));
         CHECK(skill);
 
         StoreSkill(*skill, *write_batch);
@@ -285,6 +293,7 @@ SkillsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_last_update_time_windows_epoch_micros();
   trimmed_specifics.clear_schema_version();
   trimmed_specifics.clear_source_skill_id();
+  trimmed_specifics.clear_enabled();
 
   // Note that in case of an unknown skill source, it's not stored in the
   // `skill_source` field but rather in unknown fields, and hence it's still

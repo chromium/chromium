@@ -50,6 +50,7 @@ bool StructTraits<skills::mojom::SkillDataView, skills::Skill>::Read(
   }
 
   out->source_skill_id = source_skill_id.value_or("");
+  out->enabled = data.enabled();
   return true;
 }
 

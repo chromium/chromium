@@ -2458,6 +2458,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SkillSpecifics& proto) {
   VISIT(schema_version);
   VISIT_ENUM(skill_source);
   VISIT(source_skill_id);
+  VISIT(enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SimpleSkill& proto) {

@@ -67,6 +67,9 @@ struct Skill {
 
   // The category of the skill.
   string? category;
+
+  // Whether the skill is enabled.
+  bool enabled = true;
 };
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.h:Skill, //chrome/browser/glic/host/glic.mojom:Skill)

@@ -29,6 +29,7 @@ class SkillsApiTests extends ApiTestFixtureBase {
     assertEquals(actualSkill.preview.id, targetSkill.id);
     assertEquals(actualSkill.preview.name, 'test_skill_1');
     assertEquals(actualSkill.preview.icon, 'test_icon_1');
+    assertEquals(true, actualSkill.preview.enabled);
     assertEquals(actualSkill.prompt, 'test_prompt_1');
     assertEquals(actualSkill.sourceSkillId, 'source_id_1');
   }
@@ -41,23 +42,48 @@ class SkillsApiTests extends ApiTestFixtureBase {
     const skill1 = skills.find(s => s.name === 'test_skill_1');
     assertDefined(skill1);
     assertEquals('test_icon_1', skill1.icon);
+    assertEquals(true, skill1.enabled);
     assertTrue(skill1.creationTime instanceof Date);
     const actualSkill1 = await this.host.getSkill(skill1.id);
     assertDefined(actualSkill1);
     assertEquals(actualSkill1.sourceSkillId, 'source_id_1');
+    assertEquals(true, actualSkill1.preview.enabled);
     assertEquals(
         actualSkill1.preview.creationTime?.getTime(),
         skill1.creationTime.getTime());
     const skill2 = skills.find(s => s.name === 'test_skill_2');
     assertDefined(skill2);
     assertEquals('test_icon_2', skill2.icon);
+    assertEquals(true, skill2.enabled);
     assertTrue(skill2.creationTime instanceof Date);
     const actualSkill2 = await this.host.getSkill(skill2.id);
     assertDefined(actualSkill2);
     assertEquals(actualSkill2.sourceSkillId, 'source_id_2');
+    assertEquals(true, actualSkill2.preview.enabled);
     assertEquals(
         actualSkill2.preview.creationTime?.getTime(),
         skill2.creationTime.getTime());
+  }
+
+  async testGetSkillWithEnabledBit() {
+    assertDefined(this.host.getSkillPreviews);
+    assertDefined(this.host.getSkill);
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+
+    const enabledSkillPreview = skills.find(s => s.name === 'enabled_skill');
+    assertDefined(enabledSkillPreview);
+    assertEquals(true, enabledSkillPreview.enabled);
+    const enabledSkill = await this.host.getSkill(enabledSkillPreview.id);
+    assertDefined(enabledSkill);
+    assertEquals(true, enabledSkill.preview.enabled);
+
+    const disabledSkillPreview = skills.find(s => s.name === 'disabled_skill');
+    assertDefined(disabledSkillPreview);
+    assertEquals(false, disabledSkillPreview.enabled);
+    const disabledSkill = await this.host.getSkill(disabledSkillPreview.id);
+    assertDefined(disabledSkill);
+    assertEquals(false, disabledSkill.preview.enabled);
   }
 
   async testGetSkillDisabled() {

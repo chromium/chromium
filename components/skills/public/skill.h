@@ -60,6 +60,9 @@ struct Skill {
   // The time when the skill was last updated.
   base::Time last_update_time = creation_time;
 
+  // Whether the skill is enabled.
+  bool enabled = true;
+
   Skill();
   Skill(const std::string& id,
         const std::string& name,

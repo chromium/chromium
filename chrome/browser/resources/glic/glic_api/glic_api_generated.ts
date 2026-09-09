@@ -865,6 +865,9 @@ export declare interface SkillPreview {
   category?: string;
   // The time when the skill was created.
   creationTime?: Date;
+  // Whether the skill is enabled. If not present, the browser does not support
+  // per-skill enablement.
+  enabled?: boolean;
 }
 
 // A single skill.

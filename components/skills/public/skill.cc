@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& os, const Skill& skill) {
      << skill.icon << "\", prompt: \"" << skill.prompt << "\", description: \""
      << skill.description << "\", source_skill_id: \"" << skill.source_skill_id
      << "\", source: " << static_cast<int>(skill.source) << ", category: \""
-     << skill.category << "\"}";
+     << skill.category << "\", enabled: " << skill.enabled << "}";
   return os;
 }
 

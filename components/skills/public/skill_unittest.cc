@@ -26,6 +26,7 @@ TEST(SkillTest, Construction) {
   EXPECT_EQ(icon, skill.icon);
   EXPECT_EQ(prompt, skill.prompt);
   EXPECT_EQ(category, skill.category);
+  EXPECT_TRUE(skill.enabled);
 }
 
 }  // namespace skills

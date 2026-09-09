@@ -57,6 +57,9 @@ message SkillSpecifics {
   // only present if the `skill_source` is
   // `SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY`.
   optional string source_skill_id = 9;
+
+  // Whether the skill is enabled.
+  optional bool enabled = 10;
 }
 
 // Represents a simple skill, primarily defined by a natural language prompt.

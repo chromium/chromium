@@ -110,6 +110,22 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills, testGetSkillWithEnabledBit) {
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",
+                            /*name=*/"enabled_skill",
+                            /*icon=*/"enabled_icon",
+                            /*prompt=*/"enabled_prompt");
+  SkillsService()->AddOrUpdateSkillFromSync(
+      /*skill_id=*/"disabled_id", /*source_skill_id=*/"",
+      /*name=*/"disabled_skill", /*icon=*/"disabled_icon",
+      /*prompt=*/"disabled_prompt", /*description=*/"disabled_description",
+      /*creation_time=*/base::Time::Now(),
+      /*last_update_time=*/base::Time::Now(),
+      sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED,
+      /*enabled=*/false);
+  ExecuteJsTest();
+}
+
 class GlicApiTestWithSkillsDisabled : public GlicApiBrowserTest {
  public:
   GlicApiTestWithSkillsDisabled()
@@ -261,12 +277,14 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills,
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt,
+      /*enabled=*/true));
   skills_batch_1.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_2", "contextual_skill_2", "contextual_skill_icon_2",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_2",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt,
+      /*enabled=*/true));
 
   GlicInstanceImpl* instance = GetOnlyGlicInstance();
   ASSERT_TRUE(instance);
@@ -280,7 +298,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills,
       "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_3",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt,
+      /*enabled=*/true));
   instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch_2));
 
@@ -298,7 +317,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills,
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt,
+      /*enabled=*/true));
 
   instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch));
@@ -322,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills,
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
       /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com"),
-      /*category=*/std::nullopt, /*creation_time=*/std::nullopt));
+      /*category=*/std::nullopt, /*creation_time=*/std::nullopt,
+      /*enabled=*/true));
 
   instance->skills_manager().NotifyContextualSkillsChanged(
       std::move(skills_batch));

@@ -46,6 +46,7 @@ TEST(SkillsStructTraitsTest, SkillRoundtrip) {
   EXPECT_EQ(skill.image_url, roundtrip_skill.image_url);
   EXPECT_EQ(skill.source, roundtrip_skill.source);
   EXPECT_EQ(skill.category, roundtrip_skill.category);
+  EXPECT_EQ(skill.enabled, roundtrip_skill.enabled);
 }
 
 TEST(SkillsStructTraitsTest, SkillDerivedRoundtrip) {

@@ -41,6 +41,7 @@ suite('SkillsWebviewBridgeTest', () => {
       curatedBy: '',
       imageUrl: '',
       source: SkillSource.kEnterprise,
+      enabled: true,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
       category: '',

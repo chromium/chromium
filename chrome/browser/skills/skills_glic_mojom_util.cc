@@ -73,7 +73,7 @@ glic::mojom::SkillPreviewPtr SkillToGlicMojomSkillPreview(
   return glic::mojom::SkillPreview::New(
       skill->id, skill->name, skill->icon,
       SyncPbToGlicMojomSkillSource(skill->source), skill->description,
-      curated_by, image_url, category, creation_time);
+      curated_by, image_url, category, creation_time, skill->enabled);
 }
 
 }  // namespace skills

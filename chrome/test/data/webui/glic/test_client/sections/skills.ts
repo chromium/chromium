@@ -84,6 +84,17 @@ function updateSkillsListUi(skillPreviews: SkillPreview[]) {
     name.setAttribute('value', skill.name);
     li.appendChild(name);
 
+    // Enabled.
+    const enabledDivider = document.createElement('SPAN');
+    enabledDivider.innerText = ' : ';
+    li.appendChild(enabledDivider);
+
+    const enabled = document.createElement('SPAN');
+    enabled.className = 'skill-enabled';
+    enabled.setAttribute('value', String(skill.enabled));
+    enabled.innerText = skill.enabled ? 'Enabled' : 'Disabled';
+    li.appendChild(enabled);
+
     // Creation Time.
     if (skill.creationTime) {
       const timeDivider = document.createElement('SPAN');

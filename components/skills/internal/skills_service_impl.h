@@ -81,7 +81,8 @@ class SkillsServiceImpl : public SkillsService {
                                         std::string_view description,
                                         base::Time creation_time,
                                         base::Time last_update_time,
-                                        sync_pb::SkillSource source) override;
+                                        sync_pb::SkillSource source,
+                                        bool enabled = true) override;
 
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
   // order of arguments.
@@ -143,7 +144,8 @@ class SkillsServiceImpl : public SkillsService {
                        std::string_view prompt,
                        std::string_view description,
                        base::Time update_time,
-                       UpdateSource update_source);
+                       UpdateSource update_source,
+                       bool enabled = true);
 
   // Whether the service is initialized, i.e. LoadInitialSkills() has been
   // called.

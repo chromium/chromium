@@ -136,13 +136,14 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
     std::string_view description,
     base::Time creation_time,
     base::Time last_update_time,
-    sync_pb::SkillSource source) {
+    sync_pb::SkillSource source,
+    bool enabled) {
   CHECK_EQ(GetServiceStatus(), ServiceStatus::kReady);
 
   if (Skill* skill = GetMutableSkillById(skill_id)) {
     // Skill already exists, update its fields.
     UpdateSkillImpl(skill, name, icon, prompt, description, last_update_time,
-                    UpdateSource::kSync);
+                    UpdateSource::kSync, enabled);
     return skill;
   }
 
@@ -155,6 +156,7 @@ const Skill* SkillsServiceImpl::AddOrUpdateSkillFromSync(
   skill->creation_time = creation_time;
   skill->last_update_time = last_update_time;
   skill->source = source;
+  skill->enabled = enabled;
   return AddSkillImpl(std::move(skill), UpdateSource::kSync);
 }
 
@@ -173,7 +175,8 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
   }
 
   UpdateSkillImpl(skill, name, icon, prompt, /*description=*/"",
-                  /*update_time=*/base::Time::Now(), UpdateSource::kLocal);
+                  /*update_time=*/base::Time::Now(), UpdateSource::kLocal,
+                  skill->enabled);
   return skill;
 }
 
@@ -399,7 +402,8 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
                                         std::string_view prompt,
                                         std::string_view description,
                                         base::Time update_time,
-                                        UpdateSource update_source) {
+                                        UpdateSource update_source,
+                                        bool enabled) {
   CHECK(skill);
 
   // Update the existing skill.
@@ -420,6 +424,10 @@ void SkillsServiceImpl::UpdateSkillImpl(Skill* skill,
   }
   if (skill->description != description) {
     skill->description = description;
+    is_changed = true;
+  }
+  if (skill->enabled != enabled) {
+    skill->enabled = enabled;
     is_changed = true;
   }
 
