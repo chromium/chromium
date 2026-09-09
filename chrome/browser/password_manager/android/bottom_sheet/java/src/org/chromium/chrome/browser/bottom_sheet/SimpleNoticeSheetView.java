@@ -22,11 +22,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** This class is responsible for rendering the simple notice sheet. */
 @NullMarked
 class SimpleNoticeSheetView implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().build();
+
     private final RelativeLayout mContentView;
 
     SimpleNoticeSheetView(Context context) {
@@ -82,6 +86,11 @@ class SimpleNoticeSheetView implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
