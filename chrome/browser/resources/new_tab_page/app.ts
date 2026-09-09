@@ -569,6 +569,8 @@ export class AppElement extends AppElementBase {
         /*value=*/ Math.floor(window.innerWidth));
 
     ColorChangeUpdater.forDocument().start();
+
+    window.navigator.virtualKeyboard.overlaysContent = true;
   }
 
   override connectedCallback() {

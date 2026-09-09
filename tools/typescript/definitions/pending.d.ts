@@ -115,6 +115,19 @@ interface PerformanceObserverInit {
   durationThreshold?: number;
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard
+interface VirtualKeyboard extends EventTarget {
+  readonly boundingRect: DOMRect;
+  overlaysContent: boolean;
+  ongeometrychange: ((this: VirtualKeyboard, event: Event) => any)|null;
+  hide(): void;
+  show(): void;
+}
+
+interface Navigator {
+  readonly virtualKeyboard: VirtualKeyboard;
+}
+
 // See https://github.com/microsoft/TypeScript/issues/46135.
 declare module '*.css' {
   const _default: CSSStyleSheet;
