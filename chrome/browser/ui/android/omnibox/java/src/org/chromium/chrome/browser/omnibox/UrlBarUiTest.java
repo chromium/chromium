@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ import java.util.Collections;
 /** Unit tests that rely on UI rendering for UrlBar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class UrlBarUiUnitTest {
+public class UrlBarUiTest {
     @ClassRule
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

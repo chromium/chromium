@@ -478,7 +478,7 @@ android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipViewBinderTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/UrlBarUiUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/UrlBarUiTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewRenderTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewTest.java",
   ]
