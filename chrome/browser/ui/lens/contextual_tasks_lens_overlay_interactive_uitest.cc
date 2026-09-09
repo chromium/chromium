@@ -512,6 +512,51 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       WaitForHide(LensOverlayController::kOverlayId));
 }
 
+class ContextualTasksLensOverlayEphemeralButtonInteractiveUiTest
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
+ public:
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksLensOverlayEphemeralButtonInteractiveUiTest,
+    ButtonShowsAfterClosingSidePanelWithLensQuery) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+  contextual_tasks::ContextualTasksPanelController* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      Do([&]() {
+        // Close the panel after it is opened.
+        controller->Close();
+      }),
+      WaitForContextualPanelAndLensToClose(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
 enum class AimEligibilityTestState {
   kEligible,
   kAimIneligible,
