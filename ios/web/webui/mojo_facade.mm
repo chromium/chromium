@@ -172,15 +172,15 @@ void MojoFacade::HandleMojoMessage(
   DCHECK_CURRENTLY_ON(WebThread::UI);
 
   const std::string* name = message->FindString("name");
-  CHECK(name);
   const base::DictValue* args = message->FindDict("args");
-  CHECK(args);
-
   base::Value result;
   WebUIMojoActions action_outcome = WebUIMojoActions::kSuccess;
 
-  if (*name == "Mojo.bindInterface") {
-    if (!HandleMojoBindInterface(*args)) {
+  if (!name || !args) {
+    action_outcome = WebUIMojoActions::kFailure;
+  } else if (*name == "Mojo.bindInterface") {
+    result = HandleMojoBindInterface(*args);
+    if (result.GetInt() != MOJO_RESULT_OK) {
       action_outcome = WebUIMojoActions::kFailure;
     }
   } else if (*name == "MojoHandle.close") {
@@ -230,7 +230,7 @@ void MojoFacade::HandleMojoMessage(
   std::move(completion).Run(message_id, json_result);
 }
 
-bool MojoFacade::HandleMojoBindInterface(const base::DictValue& args) {
+base::Value MojoFacade::HandleMojoBindInterface(const base::DictValue& args) {
   const std::string* interface_name = args.FindString("interfaceName");
   std::optional<int> pipe_id = FindIntOrDoubleAsInt(args, "requestHandle");
 
@@ -246,17 +246,19 @@ bool MojoFacade::HandleMojoBindInterface(const base::DictValue& args) {
                             pipe_id.value_or(-1));
     SCOPED_CRASH_KEY_BOOL("MojoFacade", "pipe_valid", pipe.is_valid());
     base::debug::DumpWithoutCrashing();
-    return false;
+    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
   }
 
   web_state_->GetInterfaceBinderForMainFrame()->BindInterface(
       mojo::GenericPendingReceiver(*interface_name, std::move(pipe)));
-  return true;
+  return base::Value(static_cast<int>(MOJO_RESULT_OK));
 }
 
 void MojoFacade::HandleMojoHandleClose(const base::DictValue& args) {
   std::optional<int> pipe_id = FindIntOrDoubleAsInt(args, "handle");
-  CHECK(pipe_id.has_value());
+  if (!pipe_id.has_value()) {
+    return;
+  }
 
   // Will close once out of scope.
   mojo::ScopedMessagePipeHandle pipe = TakePipeFromId(*pipe_id);
@@ -279,15 +281,17 @@ base::Value MojoFacade::HandleMojoCreateMessagePipe(
 base::Value MojoFacade::HandleMojoHandleWriteMessage(
     const base::DictValue& args) {
   std::optional<int> pipe_id = FindIntOrDoubleAsInt(args, "handle");
-  CHECK(pipe_id.has_value());
-  mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
-  CHECK(pipe.is_valid());
-
   const base::ListValue* handles_list = args.FindList("handles");
-  CHECK(handles_list);
-
   const std::string* buffer = args.FindString("buffer");
-  CHECK(buffer);
+  if (!pipe_id.has_value() || !handles_list || !buffer) {
+    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+  }
+
+  mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
+  std::optional<std::vector<uint8_t>> bytes = base::Base64Decode(*buffer);
+  if (!pipe.is_valid() || !bytes.has_value()) {
+    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+  }
 
   int flags = MOJO_WRITE_MESSAGE_FLAG_NONE;
 
@@ -295,11 +299,10 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(
   handles.reserve(handles_list->size());
   for (const base::Value& item : *handles_list) {
     std::optional<int> handle_id = FindIntOrDoubleAsInt(item);
+    if (!handle_id.has_value()) {
+      return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+    }
     handles.push_back(TakePipeFromId(*handle_id));
-  }
-  std::optional<std::vector<uint8_t>> bytes = base::Base64Decode(*buffer);
-  if (!bytes) {
-    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
   }
 
   MojoResult result = mojo::WriteMessageRaw(
@@ -396,11 +399,18 @@ void MojoFacade::OnWatcherCallback(int callback_id,
 
 base::Value MojoFacade::HandleMojoHandleWatch(const base::DictValue& args) {
   std::optional<int> pipe_id = FindIntOrDoubleAsInt(args, "handle");
-  CHECK(pipe_id.has_value());
   std::optional<int> signals = FindIntOrDoubleAsInt(args, "signals");
-  CHECK(signals.has_value());
   std::optional<int> callback_id = FindIntOrDoubleAsInt(args, "callbackId");
-  CHECK(callback_id.has_value());
+  if (!pipe_id.has_value() || !signals.has_value() ||
+      !callback_id.has_value()) {
+    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+  }
+
+  mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
+  if (!pipe.is_valid()) {
+    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+  }
+
   const int watch_id = ++last_watch_id_;
 
   // Note: base::Unretained() is safe because `this` owns all the watchers.
@@ -411,8 +421,10 @@ base::Value MojoFacade::HandleMojoHandleWatch(const base::DictValue& args) {
   auto watcher = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
 
-  mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
-  watcher->Watch(pipe, *signals, callback);
+  if (watcher->Watch(pipe, *signals, callback) != MOJO_RESULT_OK) {
+    return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
+  }
+
   watcher->ArmOrNotify();
   watchers_.insert(std::make_pair(watch_id, std::move(watcher)));
   return base::Value(watch_id);
@@ -420,7 +432,9 @@ base::Value MojoFacade::HandleMojoHandleWatch(const base::DictValue& args) {
 
 void MojoFacade::HandleMojoWatcherCancel(const base::DictValue& args) {
   std::optional<int> watch_id = FindIntOrDoubleAsInt(args, "watchId");
-  CHECK(watch_id.has_value());
+  if (!watch_id.has_value()) {
+    return;
+  }
   watchers_.erase(*watch_id);
 }
 

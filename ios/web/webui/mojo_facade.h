@@ -64,15 +64,15 @@ class MojoFacade : public web::WebStateObserver,
                                    const base::Value* value,
                                    NSError* error);
 
-  // Connects to specified Mojo interface. Returns true on success, false if
-  // arguments or handle are invalid. `args` is a dictionary with the
-  // following keys:
+  // Connects to specified Mojo interface. Returns MojoResult as a number
+  // (MOJO_RESULT_OK on success, MOJO_RESULT_INVALID_ARGUMENT on failure).
+  // `args` is a dictionary with the following keys:
   //   - "interfaceName" (a string representing an interface name);
   //   - "requestHandle" (a number representing MojoHandle of the interface
   //     request).
-  bool HandleMojoBindInterface(const base::DictValue& args);
+  base::Value HandleMojoBindInterface(const base::DictValue& args);
 
-  // Closes the given handle. `args` is a dictionary which must contain "handle"
+  // Closes the given handle. `args` is a dictionary which may contain "handle"
   // key, which is a number representing a MojoHandle.
   void HandleMojoHandleClose(const base::DictValue& args);
 
@@ -103,7 +103,8 @@ class MojoFacade : public web::WebStateObserver,
   //   - "signals" (a number representing MojoHandleSignals to watch);
   //   - "callbackId" (a number representing the id which should be passed to
   //     Mojo.internal.signalWatch call).
-  // Returns watch id as a number.
+  // Returns watch id as a positive number (note: 0 indicates failure to create
+  // the watcher, distinct from MOJO_RESULT_OK).
   base::Value HandleMojoHandleWatch(const base::DictValue& args);
 
   // Cancels a handle watch initiated by "MojoHandle.watch". `args` is a

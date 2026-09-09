@@ -189,7 +189,10 @@ TEST_F(MojoFacadeTest, BindInterface) {
   connect.Set("args", std::move(args));
 
   std::string handle_as_string = HandleMessage(connect);
-  EXPECT_TRUE(handle_as_string.empty());
+  // MOJO_RESULT_INVALID_ARGUMENT 3
+  unsigned result = 3u;
+  EXPECT_TRUE(base::StringToUint(handle_as_string, &result));
+  EXPECT_EQ(static_cast<unsigned>(MOJO_RESULT_OK), result);
 
   CloseHandle(handle1);
 }
@@ -342,6 +345,38 @@ TEST_F(MojoFacadeTest, AwaitNextMessagePreventsConcurrentPolls) {
 
   facade()->AwaitNextMessage();
   EXPECT_EQ(1u, main_frame()->GetJavaScriptCallHistory().size());
+}
+
+// Tests that writing to an invalid pipe handle is safely handled.
+TEST_F(MojoFacadeTest, WriteMessageWithInvalidPipe) {
+  base::DictValue write;
+  write.Set("name", "MojoHandle.writeMessage");
+  base::DictValue args;
+  args.Set("handle", 999999);
+  args.Set("handles", base::ListValue());
+  args.Set("buffer", "test");
+  write.Set("args", std::move(args));
+
+  std::string result_as_string = HandleMessage(write);
+  unsigned result = 0u;
+  EXPECT_TRUE(base::StringToUint(result_as_string, &result));
+  EXPECT_EQ(static_cast<unsigned>(MOJO_RESULT_INVALID_ARGUMENT), result);
+}
+
+// Tests that binding an interface with an invalid requestHandle argument is
+// safely handled and returns MOJO_RESULT_INVALID_ARGUMENT.
+TEST_F(MojoFacadeTest, BindInterfaceWithInvalidHandle) {
+  base::DictValue bind;
+  bind.Set("name", "Mojo.bindInterface");
+  base::DictValue args;
+  args.Set("interfaceName", "FakeInterface");
+  args.Set("requestHandle", 999999);
+  bind.Set("args", std::move(args));
+
+  std::string response = HandleMessage(bind);
+  unsigned result = 0u;
+  EXPECT_TRUE(base::StringToUint(response, &result));
+  EXPECT_EQ(static_cast<unsigned>(MOJO_RESULT_INVALID_ARGUMENT), result);
 }
 
 }  // namespace web
