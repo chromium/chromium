@@ -114,7 +114,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for AutofillPaymentMethodsFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
 @Batch(Batch.PER_CLASS)
 public class AutofillPaymentMethodsFragmentTest {
     @Rule public final AutofillTestRule mAutofillTestRule = new AutofillTestRule();
@@ -961,37 +960,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void
-            testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown_walletBrandingDisabled()
-                    throws Exception {
-        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
-
-        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
-        Preference deleteSavedCvcsToggle =
-                getPreferenceScreen(activity)
-                        .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    deleteSavedCvcsToggle.performClick();
-                });
-
-        onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_message))
-                .check(matches(isDisplayed()));
-        onView(
-                        withText(
-                                R.string
-                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
-                .check(matches(isDisplayed()));
-        onView(withText(android.R.string.cancel)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
     public void testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
 

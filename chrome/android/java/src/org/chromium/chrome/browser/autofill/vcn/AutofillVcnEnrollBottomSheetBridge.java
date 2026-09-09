@@ -144,10 +144,7 @@ import java.util.List;
                                         VirtualCardEnrollmentLinkType
                                                 .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
                                         /* linkOpener= */ this))
-                        .with(
-                                AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE,
-                                !ChromeFeatureList.isEnabled(
-                                        AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING))
+                        .with(AutofillVcnEnrollBottomSheetProperties.IS_GPAY_LOGO_VISIBLE, false)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
                                 ChromeFeatureList.isEnabled(

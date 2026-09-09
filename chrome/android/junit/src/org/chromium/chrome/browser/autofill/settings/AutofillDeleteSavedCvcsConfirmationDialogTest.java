@@ -26,17 +26,13 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Unit tests for {@link AutofillDeleteSavedCvcsConfirmationDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
 public class AutofillDeleteSavedCvcsConfirmationDialogTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -65,45 +61,6 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void testDialogShowsTitleMessageAndButtonLabels_walletBrandingDisabled() {
-        mDialog.show();
-
-        Context context = RuntimeEnvironment.application.getApplicationContext();
-        CharSequence dialogTitle =
-                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.TITLE);
-        assertThat(dialogTitle)
-                .isEqualTo(
-                        context.getString(
-                                R.string.autofill_delete_saved_cvcs_confirmation_dialog_title));
-        String dialogMessage =
-                (String)
-                        mModalDialogManager
-                                .getShownDialogModel()
-                                .get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
-        assertThat(dialogMessage)
-                .isEqualTo(
-                        context.getString(
-                                R.string.autofill_delete_saved_cvcs_confirmation_dialog_message));
-        String positiveButtonLabel =
-                mModalDialogManager
-                        .getShownDialogModel()
-                        .get(ModalDialogProperties.POSITIVE_BUTTON_TEXT);
-        assertThat(positiveButtonLabel)
-                .isEqualTo(
-                        context.getString(
-                                R.string
-                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label));
-        String negativeButtonLabel =
-                mModalDialogManager
-                        .getShownDialogModel()
-                        .get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT);
-        assertThat(negativeButtonLabel).isEqualTo(context.getString(android.R.string.cancel));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
     public void testDialogShowsTitleMessageAndButtonLabels() {
         mDialog.show();
 
