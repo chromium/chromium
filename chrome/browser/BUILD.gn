@@ -3047,6 +3047,7 @@ source_set("browser") {
       "//chrome/browser/ui:network_profile_bubble",
       "//chrome/browser/win:impl",
       "//components/app_launch_prefetch",
+      "//services/webnn/public/cpp:buildflags",
     ]
   } else {
     # Non - Windows.
