@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -108,6 +109,7 @@ FullscreenKeyboardBrowserTestBase::CreateNewBrowserInstance() {
   BrowserWindowInterface* const second_instance = creation_observer.Wait();
   ui_test_utils::WaitForBrowserSetLastActive(second_instance);
   EXPECT_NE(first_instance, second_instance);
+  WaitForInitialWebUIToolbar(second_instance);
 
   return second_instance;
 }
@@ -361,10 +363,13 @@ void FullscreenKeyboardBrowserTestBase::SendShortcutsAndExpectNotPrevented(
 
   ASSERT_NO_FATAL_FAILURE(enter_fullscreen());
 
+  ui_test_utils::BrowserCreatedObserver creation_observer;
   // A new window should be created and focused.
   ASSERT_NO_FATAL_FAILURE(SendShortcut(ui::VKEY_N));
-  WaitForBrowserCount(initial_browser_count + 1);
+  BrowserWindowInterface* new_browser = creation_observer.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
   ASSERT_EQ(initial_browser_count + 1, GetBrowserCount());
+  WaitForInitialWebUIToolbar(new_browser);
 
   ASSERT_NO_FATAL_FAILURE(enter_fullscreen());
 
@@ -421,6 +426,7 @@ void FullscreenKeyboardBrowserTestBase::VerifyShortcutsAreNotPrevented() {
   BrowserWindowInterface* new_browser = creation_observer.Wait();
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
   ASSERT_EQ(initial_browser_count + 1, GetBrowserCount());
+  WaitForInitialWebUIToolbar(new_browser);
 
   // The newly created window should be closed.
   ASSERT_NO_FATAL_FAILURE(SendShiftShortcut(ui::VKEY_W));
@@ -454,6 +460,7 @@ std::string FullscreenKeyboardBrowserTestBase::GetFullscreenFramePath() {
 
 void FullscreenKeyboardBrowserTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(GetActiveBrowser()));
+  WaitForInitialWebUIToolbar(GetActiveBrowser());
 }
 
 void FullscreenKeyboardBrowserTestBase::SetUpCommandLine(
