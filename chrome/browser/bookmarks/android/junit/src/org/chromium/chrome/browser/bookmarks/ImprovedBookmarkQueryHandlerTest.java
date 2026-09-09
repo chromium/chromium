@@ -40,8 +40,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -58,6 +61,7 @@ import java.util.List;
 
 /** Unit tests for {@link ImprovedBookmarkQueryHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
 public class ImprovedBookmarkQueryHandlerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -458,6 +462,36 @@ public class ImprovedBookmarkQueryHandlerTest {
                         fakeBookmarkModel.getDesktopFolderId(),
                         fakeBookmarkModel.getMobileFolderId(),
                         fakeBookmarkModel.getLocalOrSyncableReadingListFolder());
+        verifyBookmarkIds(expected, result);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testBuildBookmarkListForFolderSelect_rootFolder_desktopDialogEnabled() {
+        FakeBookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
+        fakeBookmarkModel.setAreAccountBookmarkFoldersActive(true);
+        mHandler =
+                new ImprovedBookmarkQueryHandler(
+                        fakeBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService,
+                        /* rootFolderForceVisibleMask= */ BookmarkNodeMaskBit.NONE);
+
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
+        // Canonical desktop display order: Bookmarks bar (Desktop), Other, Reading list, Mobile.
+        List<BookmarkId> expected =
+                Arrays.asList(
+                        null,
+                        fakeBookmarkModel.getAccountDesktopFolderId(),
+                        fakeBookmarkModel.getAccountOtherFolderId(),
+                        fakeBookmarkModel.getAccountReadingListFolder(),
+                        fakeBookmarkModel.getAccountMobileFolderId(),
+                        null,
+                        fakeBookmarkModel.getDesktopFolderId(),
+                        fakeBookmarkModel.getOtherFolderId(),
+                        fakeBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                        fakeBookmarkModel.getMobileFolderId());
         verifyBookmarkIds(expected, result);
     }
 

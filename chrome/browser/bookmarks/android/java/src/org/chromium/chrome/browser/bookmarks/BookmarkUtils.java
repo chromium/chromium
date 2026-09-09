@@ -957,6 +957,34 @@ public class BookmarkUtils {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT);
     }
 
+    /**
+     * Returns the 0-based display order index for top-level bookmark folders. Lower indices appear
+     * earlier in UI surfaces.
+     *
+     * @param bookmarkModel The bookmark model.
+     * @param id The ID of the folder.
+     * @return The 0-based display order index.
+     */
+    public static int getTopLevelFolderDisplayOrderIndex(
+            BookmarkModel bookmarkModel, BookmarkId id) {
+        // Check both local and account folder IDs. We can use the same index logic if we match
+        // either the local or account version of the folder.
+        if (Objects.equals(id, bookmarkModel.getDesktopFolderId())
+                || Objects.equals(id, bookmarkModel.getAccountDesktopFolderId())) {
+            return 0;
+        } else if (Objects.equals(id, bookmarkModel.getOtherFolderId())
+                || Objects.equals(id, bookmarkModel.getAccountOtherFolderId())) {
+            return 1;
+        } else if (Objects.equals(id, bookmarkModel.getLocalOrSyncableReadingListFolder())
+                || Objects.equals(id, bookmarkModel.getAccountReadingListFolder())) {
+            return 2;
+        } else if (Objects.equals(id, bookmarkModel.getMobileFolderId())
+                || Objects.equals(id, bookmarkModel.getAccountMobileFolderId())) {
+            return 3;
+        }
+        return 4;
+    }
+
     private static Locale getLocale(Activity activity) {
         LocaleList locales = activity.getResources().getConfiguration().getLocales();
         if (locales.size() > 0) {

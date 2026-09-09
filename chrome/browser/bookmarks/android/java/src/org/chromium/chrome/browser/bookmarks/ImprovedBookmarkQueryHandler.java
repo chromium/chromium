@@ -99,12 +99,32 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
         List<BookmarkListEntry> bookmarkListEntries =
                 mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId);
-        sortByStoredPref(bookmarkListEntries);
-        if (parentId.equals(mBookmarkModel.getRootFolderId())) {
+        boolean isRoot = parentId.equals(mBookmarkModel.getRootFolderId());
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled() && isRoot) {
+            sortTopLevelFolders(bookmarkListEntries);
+        } else {
+            sortByStoredPref(bookmarkListEntries);
+        }
+        if (isRoot) {
             sortByAccountStatus(bookmarkListEntries);
             maybeInsertLocalSectionHeader(bookmarkListEntries);
         }
         return bookmarkListEntries;
+    }
+
+    private void sortTopLevelFolders(List<BookmarkListEntry> bookmarkListEntries) {
+        Collections.sort(
+                bookmarkListEntries,
+                (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
+                    BookmarkItem item1 = entry1.getBookmarkItem();
+                    BookmarkItem item2 = entry2.getBookmarkItem();
+                    if (item1 == null || item2 == null) return 0;
+                    return Integer.compare(
+                            BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                                    mBookmarkModel, item1.getId()),
+                            BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                                    mBookmarkModel, item2.getId()));
+                });
     }
 
     private void sortByStoredPref(List<BookmarkListEntry> bookmarkListEntries) {

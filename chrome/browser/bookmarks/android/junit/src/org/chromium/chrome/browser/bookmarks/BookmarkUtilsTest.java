@@ -736,4 +736,55 @@ public class BookmarkUtilsTest {
     public void testIsDesktopBookmarksLayoutEnabled_featureDisabled() {
         assertFalse(BookmarkUtils.isDesktopBookmarksLayoutEnabled());
     }
+
+    @Test
+    public void testGetTopLevelFolderDisplayOrderIndex() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
+
+        // Desktop / Bookmarks bar -> 0
+        assertEquals(
+                0,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getDesktopFolderId()));
+        assertEquals(
+                0,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getAccountDesktopFolderId()));
+
+        // Other bookmarks -> 1
+        assertEquals(
+                1,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getOtherFolderId()));
+        assertEquals(
+                1,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getAccountOtherFolderId()));
+
+        // Reading list -> 2
+        assertEquals(
+                2,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getLocalOrSyncableReadingListFolder()));
+        assertEquals(
+                2,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getAccountReadingListFolder()));
+
+        // Mobile bookmarks -> 3
+        assertEquals(
+                3,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getMobileFolderId()));
+        assertEquals(
+                3,
+                BookmarkUtils.getTopLevelFolderDisplayOrderIndex(
+                        mBookmarkModel, mBookmarkModel.getAccountMobileFolderId()));
+
+        // Non-top-level folder -> 4
+        BookmarkId userFolder =
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "User Folder");
+        assertEquals(
+                4, BookmarkUtils.getTopLevelFolderDisplayOrderIndex(mBookmarkModel, userFolder));
+    }
 }
