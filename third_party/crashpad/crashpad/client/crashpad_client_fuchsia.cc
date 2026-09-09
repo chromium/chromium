@@ -20,6 +20,10 @@
 #include <lib/zx/process.h>
 #include <zircon/processargs.h>
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
@@ -40,10 +44,14 @@ bool CrashpadClient::StartHandler(
     const std::vector<std::string>& arguments,
     bool restartable,
     bool asynchronous_start,
-    const std::vector<base::FilePath>& attachments) {
-  DCHECK(attachments.empty()); // Attachments are not implemented on Fuchsia yet.
-  DCHECK_EQ(restartable, false);  // Not used on Fuchsia.
-  DCHECK_EQ(asynchronous_start, false);  // Not used on Fuchsia.
+    const std::vector<base::FilePath>& attachments,
+    const std::set<FileHandle>& preserve_file_handles) {
+  CHECK(
+      attachments.empty());  // Attachments are not implemented on Fuchsia yet.
+  CHECK(preserve_file_handles.empty());  // Preserve file handles are not
+                                         // implemented on Fuchsia yet.
+  CHECK_EQ(restartable, false);  // Not used on Fuchsia.
+  CHECK_EQ(asynchronous_start, false);  // Not used on Fuchsia.
 
   std::vector<std::string> argv_strings = BuildHandlerArgvStrings(
       handler, database, metrics_dir, url, annotations, arguments);

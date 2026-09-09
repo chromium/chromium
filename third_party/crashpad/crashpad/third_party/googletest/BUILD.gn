@@ -48,6 +48,12 @@ if (crashpad_is_in_chromium) {
     visibility = [ ":*" ]
     include_dirs = [ "$googletest_dir/googletest" ]
     defines = [ "GUNIT_NO_GOOGLE3=1" ]
+    if (crashpad_is_fuchsia) {
+      # TODO(crbug.com/544854901): Remove once a fix lands in googletest for
+      # crbug.com/544854901#comment5 and rolls.
+      configs = [ "//build:no_unused_template_warning" ]
+      cflags = [ "-Wno-unused-variable" ]
+    }
   }
 
   config("googletest_public_config") {

@@ -19,6 +19,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <set>
+#include <vector>
+
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -124,7 +127,8 @@ void MultiprocessExec::MultiprocessChild() {
   rv = HANDLE_EINTR(dup2(write_handle, STDOUT_FILENO));
   ASSERT_EQ(rv, STDOUT_FILENO) << ErrnoMessage("dup2");
 
-  CloseMultipleNowOrOnExec(STDERR_FILENO + 1, dup_orig_stdout_fd);
+  CloseMultipleNowOrOnExec(STDERR_FILENO + 1,
+                           std::set<int>{dup_orig_stdout_fd});
 
   // Start the new program, replacing this one. execv() has a weird declaration
   // where its argv argument is declared as char* const*. In reality, the

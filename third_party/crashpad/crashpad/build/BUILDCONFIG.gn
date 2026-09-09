@@ -71,6 +71,9 @@ if (crashpad_use_libfuzzer) {
 
 if (current_os == "fuchsia") {
   _default_configs += [
+    # TODO(crbug.com/544854901): Remove once a fix lands in the fuchsia SDK for
+    # crbug.com/544854901#comment6 and rolls.
+    "//build:no_unused_template_warning",
     "//third_party/fuchsia-gn-sdk/src/config:compiler",
     "//third_party/fuchsia-gn-sdk/src/config:runtime_library",
   ]

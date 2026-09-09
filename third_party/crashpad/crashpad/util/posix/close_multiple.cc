@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <set>
 
 #include "base/check_op.h"
 #include "base/files/scoped_file.h"
@@ -72,7 +73,8 @@ void CloseNowOrOnExec(int fd, bool ebadf_ok) {
 // system-specific FD directory to determine which file descriptors are open.
 // This is an advantage over looping over all possible file descriptors, because
 // no attempt needs to be made to close file descriptors that are not open.
-bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
+bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd,
+                                        const std::set<int>& preserve_fds) {
 #if BUILDFLAG(IS_APPLE)
   static constexpr char kFDDir[] = "/dev/fd";
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -95,8 +97,8 @@ bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
       return false;
     }
 
-    if (entry_fd >= min_fd && entry_fd != preserve_fd &&
-        entry_fd != directory_fd) {
+    if (entry_fd >= min_fd && entry_fd != directory_fd &&
+        preserve_fds.find(entry_fd) == preserve_fds.end()) {
       CloseNowOrOnExec(entry_fd, false);
     }
   }
@@ -109,14 +111,14 @@ bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
 
 }  // namespace
 
-void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
+void CloseMultipleNowOrOnExec(int fd, const std::set<int>& preserve_fds) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // See comments on the ResetFDOwnership() declaration in
   // base/files/scoped_file.h regarding why this is called here.
   base::subtle::ResetFDOwnership();
 #endif
 
-  if (CloseMultipleNowOrOnExecUsingFDDir(fd, preserve_fd)) {
+  if (CloseMultipleNowOrOnExecUsingFDDir(fd, preserve_fds)) {
     return;
   }
 
@@ -190,8 +192,27 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
 #endif
 
   for (int entry_fd = fd; entry_fd < max_fd; ++entry_fd) {
-    if (entry_fd != preserve_fd) {
+    if (preserve_fds.find(entry_fd) == preserve_fds.end()) {
       CloseNowOrOnExec(entry_fd, true);
+    }
+  }
+}
+
+void ClearCloseOnExec(const std::set<int>& fds) {
+  for (int fd : fds) {
+    int flags = fcntl(fd, F_GETFD);
+    if (flags == -1) {
+      PLOG(WARNING) << "fcntl";
+      continue;
+    }
+
+    if ((flags & FD_CLOEXEC) == 0) {
+      continue;
+    }
+
+    int rv = fcntl(fd, F_SETFD, flags & ~FD_CLOEXEC);
+    if (rv == -1) {
+      PLOG(WARNING) << "fcntl";
     }
   }
 }

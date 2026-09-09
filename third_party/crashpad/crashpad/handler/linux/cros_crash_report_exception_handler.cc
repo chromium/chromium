@@ -292,7 +292,7 @@ bool CrosCrashReportExceptionHandler::HandleExceptionWithConnection(
 
   if (!SpawnSubprocess(argv,
                        nullptr /* envp */,
-                       file_writer.fd() /* preserve_fd */,
+                       {file_writer.fd()} /* preserve_fds */,
                        false /* use_path */,
                        nullptr /* child_function */)) {
     Metrics::ExceptionCaptureResult(

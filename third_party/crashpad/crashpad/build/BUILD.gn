@@ -51,6 +51,12 @@ config("crashpad_fuzzer_flags") {
   ldflags = [ "-fsanitize=address" ]
 }
 
+config("no_unused_template_warning") {
+  if (crashpad_is_clang) {
+    cflags = [ "-Wno-unused-template" ]
+  }
+}
+
 if (crashpad_is_apple) {
   group("apple_enable_arc") {
     # If `crashpad_is_in_chromium`, then because Chromium enables ARC

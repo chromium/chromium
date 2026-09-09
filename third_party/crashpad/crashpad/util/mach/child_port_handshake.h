@@ -97,7 +97,7 @@ class ChildPortHandshakeTest;
 //!     // server_write_fd. Let the child know what file descriptor to use for
 //!     // server_write_fd by passing it as argv[1]. Example code for the child
 //!     // process is below.
-//!     CloseMultipleNowOrOnExec(STDERR_FILENO + 1, server_write_fd.get());
+//!     CloseMultipleNowOrOnExec(STDERR_FILENO + 1, {server_write_fd.get()});
 //!     execlp("./child", "child", server_write_fd_string.c_str(), nullptr);
 //!   }
 //!

@@ -26,7 +26,9 @@
 
 #include <atomic>
 #include <memory>
+#include <set>
 #include <string_view>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -253,25 +255,30 @@ bool IsInheritableHandle(HANDLE handle) {
   return handle_type == FILE_TYPE_DISK || handle_type == FILE_TYPE_PIPE;
 }
 
-// Adds |handle| to |handle_list| if it appears valid, and is not already in
-// |handle_list|.
+// Adds |handle| to |handle_list| if it is valid (not null or
+// INVALID_HANDLE_VALUE) and not already in |handle_list|.
 //
-// Invalid handles (including INVALID_HANDLE_VALUE and null handles) cannot be
-// added to a PPROC_THREAD_ATTRIBUTE_LIST’s PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
-// If INVALID_HANDLE_VALUE appears, CreateProcess() will fail with
-// ERROR_INVALID_PARAMETER. If a null handle appears, the child process will
-// silently not inherit any handles.
+// Invalid handles cannot be added to a PPROC_THREAD_ATTRIBUTE_LIST’s
+// PROC_THREAD_ATTRIBUTE_HANDLE_LIST. If INVALID_HANDLE_VALUE appears,
+// CreateProcess() will fail with ERROR_INVALID_PARAMETER. If a null handle
+// appears, the child process will silently not inherit any handles. If there's
+// a duplicate handle, CreateProcess() fails with ERROR_INVALID_PARAMETER.
+void AddHandleToListIfValid(std::vector<HANDLE>* handle_list, HANDLE handle) {
+  if (handle && handle != INVALID_HANDLE_VALUE &&
+      std::find(handle_list->begin(), handle_list->end(), handle) ==
+          handle_list->end()) {
+    handle_list->push_back(handle);
+  }
+}
+
+// Adds |handle| to |handle_list| if it appears valid and inheritable (as
+// determined by IsInheritableHandle()).
 //
 // Use this function to add handles with uncertain validities.
 void AddHandleToListIfValidAndInheritable(std::vector<HANDLE>* handle_list,
                                           HANDLE handle) {
-  // There doesn't seem to be any documentation of this, but if there's a handle
-  // duplicated in this list, CreateProcess() fails with
-  // ERROR_INVALID_PARAMETER.
-  if (IsInheritableHandle(handle) &&
-      std::find(handle_list->begin(), handle_list->end(), handle) ==
-          handle_list->end()) {
-    handle_list->push_back(handle);
+  if (IsInheritableHandle(handle)) {
+    AddHandleToListIfValid(handle_list, handle);
   }
 }
 
@@ -332,6 +339,7 @@ struct BackgroundHandlerStartThreadData {
       const std::map<std::string, std::string>& annotations,
       const std::vector<std::string>& arguments,
       const std::vector<base::FilePath>& attachments,
+      const std::set<FileHandle>& preserve_file_handles,
       const std::wstring& ipc_pipe,
       ScopedFileHANDLE ipc_pipe_handle)
       : handler(handler),
@@ -341,6 +349,7 @@ struct BackgroundHandlerStartThreadData {
         annotations(annotations),
         arguments(arguments),
         attachments(attachments),
+        preserve_file_handles(preserve_file_handles),
         ipc_pipe(ipc_pipe),
         ipc_pipe_handle(std::move(ipc_pipe_handle)) {}
 
@@ -351,6 +360,7 @@ struct BackgroundHandlerStartThreadData {
   std::map<std::string, std::string> annotations;
   std::vector<std::string> arguments;
   std::vector<base::FilePath> attachments;
+  std::set<FileHandle> preserve_file_handles;
   std::wstring ipc_pipe;
   ScopedFileHANDLE ipc_pipe_handle;
 };
@@ -411,8 +421,7 @@ bool StartHandlerProcess(
   }
   for (const base::FilePath& attachment : data->attachments) {
     AppendCommandLineArgument(
-        FormatArgumentString("attachment", attachment.value()),
-        &command_line);
+        FormatArgumentString("attachment", attachment.value()), &command_line);
   }
 
   ScopedKernelHANDLE this_process(
@@ -488,7 +497,7 @@ bool StartHandlerProcess(
     }
     proc_thread_attribute_list_owner.reset(startup_info.lpAttributeList);
 
-    handle_list.reserve(8);
+    handle_list.reserve(8 + data->preserve_file_handles.size());
     handle_list.push_back(g_signal_exception);
     handle_list.push_back(g_wer_registration.dump_without_crashing);
     handle_list.push_back(g_wer_registration.dump_completed);
@@ -500,6 +509,14 @@ bool StartHandlerProcess(
                                          startup_info.StartupInfo.hStdOutput);
     AddHandleToListIfValidAndInheritable(&handle_list,
                                          startup_info.StartupInfo.hStdError);
+
+    for (HANDLE handle : data->preserve_file_handles) {
+      if (SetHandleInformation(
+              handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) {
+        AddHandleToListIfValid(&handle_list, handle);
+      }
+    }
+
     rv = update_proc_thread_attribute(
         startup_info.lpAttributeList,
         0,
@@ -608,7 +625,8 @@ bool CrashpadClient::StartHandler(
     const std::vector<std::string>& arguments,
     bool restartable,
     bool asynchronous_start,
-    const std::vector<base::FilePath>& attachments) {
+    const std::vector<base::FilePath>& attachments,
+    const std::set<FileHandle>& preserve_file_handles) {
   DCHECK(ipc_pipe_.empty());
 
   // Both the pipe and the signalling events have to be created on the main
@@ -639,6 +657,7 @@ bool CrashpadClient::StartHandler(
                                                    annotations,
                                                    arguments,
                                                    attachments,
+                                                   preserve_file_handles,
                                                    ipc_pipe_,
                                                    std::move(ipc_pipe_handle));
 

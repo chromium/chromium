@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_UTIL_POSIX_SPAWN_SUBPROCESS_H_
 #define CRASHPAD_UTIL_POSIX_SPAWN_SUBPROCESS_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,7 @@ namespace crashpad {
 //! the process with process ID 1, relieving any other process of the
 //! responsibility to reap it via `waitpid()`. Aside from the three file
 //! descriptors associated with the standard input/output streams and any file
-//! descriptor passed in \a preserve_fd, the grandchild will not inherit any
+//! descriptors passed in \a preserve_fds, the grandchild will not inherit any
 //! file descriptors from the parent process.
 //!
 //! \param[in] argv The argument vector to start the grandchild process with.
@@ -40,10 +41,10 @@ namespace crashpad {
 //! \param[in] envp A vector of environment variables of the form `var=value` to
 //!     be passed to the spawned process. If this value is `nullptr`, the
 //!     current environment is used.
-//! \param[in] preserve_fd A file descriptor to be inherited by the grandchild
-//!     process. This file descriptor is inherited in addition to the three file
-//!     descriptors associated with the standard input/output streams. Use `-1`
-//!     if no additional file descriptors are to be inherited.
+//! \param[in] preserve_fds A set of file descriptors to be inherited by the
+//!     grandchild process. These file descriptors are inherited in addition to
+//!     the three file descriptors associated with the standard input/output
+//!     streams.
 //! \param[in] use_path Whether to consult the `PATH` environment variable when
 //!     requested to start an executable at a non-absolute path.
 //! \param[in] child_function If not `nullptr`, this function will be called in
@@ -60,7 +61,7 @@ namespace crashpad {
 //!     handshake with the grandchild process.
 bool SpawnSubprocess(const std::vector<std::string>& argv,
                      const std::vector<std::string>* envp,
-                     int preserve_fd,
+                     const std::set<int>& preserve_fds,
                      bool use_path,
                      void (*child_function)());
 

@@ -49,8 +49,8 @@ class Metrics {
     //! \brief The user manually requested the report be uploaded.
     kUserInitiated = 1,
 
-    //! \brief The number of values in this enumeration; not a valid value.
-    kMaxValue
+    //! \brief The highest valid value in this enumeration.
+    kMaxValue = kUserInitiated,
   };
 
   //! \brief Reports when a crash upload has entered the pending state.
@@ -99,8 +99,8 @@ class Metrics {
     //!     server, but the upload can be retried later.
     kUploadFailedButCanRetry = 6,
 
-    //! \brief The number of values in this enumeration; not a valid value.
-    kMaxValue
+    //! \brief The highest valid value in this enumeration.
+    kMaxValue = kUploadFailedButCanRetry,
   };
 
   //! \brief Reports when a report is moved to the completed state in the
@@ -160,8 +160,8 @@ class Metrics {
     //! \brief Failure to open a memfd caused this crash dump to be skipped.
     kOpenMemfdFailed = 12,
 
-    //! \brief The number of values in this enumeration; not a valid value.
-    kMaxValue
+    //! \brief The highest valid value in this enumeration.
+    kMaxValue = kOpenMemfdFailed,
   };
 
   //! \brief Reports on the outcome of capturing a report in the exception
@@ -201,8 +201,8 @@ class Metrics {
     //! \brief The handler process crashed.
     kCrashed,
 
-    //! \brief The number of values in this enumeration; not a valid value.
-    kMaxValue
+    //! \brief The highest valid value in this enumeration.
+    kMaxValue = kCrashed,
   };
 
   //! \brief Records a handler start/exit/crash event.

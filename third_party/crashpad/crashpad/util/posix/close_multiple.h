@@ -15,6 +15,8 @@
 #ifndef CRASHPAD_UTIL_POSIX_CLOSE_MULTIPLE_H_
 #define CRASHPAD_UTIL_POSIX_CLOSE_MULTIPLE_H_
 
+#include <set>
+
 namespace crashpad {
 
 //! \brief Close multiple file descriptors or mark them close-on-exec.
@@ -34,10 +36,16 @@ namespace crashpad {
 //! protected against `close()`.
 //!
 //! \param[in] fd The lowest file descriptor to close or set as close-on-exec.
-//! \param[in] preserve_fd A file descriptor to preserve and not close (or set
-//!     as close-on-exec), even if it is open and its value is greater than \a
-//!     fd. To not preserve any file descriptor, pass `-1` for this parameter.
-void CloseMultipleNowOrOnExec(int fd, int preserve_fd);
+//! \param[in] preserve_fds A set of file descriptors to preserve and not close
+//!     (or set as close-on-exec), even if they are open and their values are
+//!     greater than \a fd.
+void CloseMultipleNowOrOnExec(int fd, const std::set<int>& preserve_fds);
+
+//! \brief Clears the close-on-exec flag on a collection of file descriptors.
+//!
+//! \param[in] fds A collection of file descriptors on which to clear
+//!     `FD_CLOEXEC`.
+void ClearCloseOnExec(const std::set<int>& fds);
 
 }  // namespace crashpad
 

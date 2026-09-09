@@ -46,22 +46,19 @@ enum class ExceptionProcessingState {
   //! \brief Logged when exception processing completes.
   kFinished = 1,
 
-  //! \brief An invalid value.
-  kMaxValue,
+  //! \brief The highest valid value in this enumeration.
+  kMaxValue = kFinished,
 };
 
 void ExceptionProcessing(ExceptionProcessingState state) {
-  UMA_HISTOGRAM_ENUMERATION("Crashpad.ExceptionEncountered",
-                            state,
-                            ExceptionProcessingState::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.ExceptionEncountered", state);
 }
 
 }  // namespace
 
 // static
 void Metrics::CrashReportPending(PendingReportReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Crashpad.CrashReportPending", reason, PendingReportReason::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.CrashReportPending", reason);
 }
 
 // static
@@ -87,15 +84,13 @@ void Metrics::CrashUploadErrorCode(int error_code) {
 
 // static
 void Metrics::CrashUploadSkipped(CrashSkippedReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Crashpad.CrashUpload.Skipped", reason, CrashSkippedReason::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.CrashUpload.Skipped", reason);
 }
 
 // static
 void Metrics::ExceptionCaptureResult(CaptureResult result) {
   ExceptionProcessing(ExceptionProcessingState::kFinished);
-  UMA_HISTOGRAM_ENUMERATION(
-      "Crashpad.ExceptionCaptureResult", result, CaptureResult::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.ExceptionCaptureResult", result);
 }
 
 // static
@@ -111,9 +106,7 @@ void Metrics::ExceptionEncountered() {
 
 // static
 void Metrics::HandlerLifetimeMilestone(LifetimeMilestone milestone) {
-  UMA_HISTOGRAM_ENUMERATION("Crashpad.HandlerLifetimeMilestone",
-                            milestone,
-                            LifetimeMilestone::kMaxValue);
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.HandlerLifetimeMilestone", milestone);
 }
 
 // static
