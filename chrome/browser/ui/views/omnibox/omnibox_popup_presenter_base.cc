@@ -356,6 +356,13 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
 
   Observe(omnibox_popup_webui_content_->GetWebContents());
   EnsureWidgetCreated();
+
+  // Explicitly put the presenter into its resting hidden state upon creation.
+  // This ensures the pre-warmed widget and WebContents are marked hidden and
+  // detached from the GPU compositor until `Show()` is called.
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIPopupHideOnCreation)) {
+    Hide();
+  }
 }
 
 void OmniboxPopupPresenterBase::EnsureWidgetCreated() {
