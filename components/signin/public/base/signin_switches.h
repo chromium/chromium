@@ -336,6 +336,13 @@ BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kAccountPreviewPreferredAccountSingleAccountPromoFetchTimeout);
 
+// Controls followup features for preferred account preview (additional data
+// types, new promos, and updated strings).
+// This flag has no effect if `kEnableAccountPreviewPreferredAccount` is not
+// enabled.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the use of 1P app account information on Android in preferred account
 // computation.

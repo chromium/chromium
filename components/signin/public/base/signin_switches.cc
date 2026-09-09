@@ -382,6 +382,13 @@ BASE_FEATURE_PARAM(
     &kEnableAccountPreviewPreferredAccount,
     base::Seconds(1));
 
+// Controls followup features for preferred account preview (additional data
+// types, new promos, and updated strings).
+// This flag has no effect if `kEnableAccountPreviewPreferredAccount` is not
+// enabled.
+BASE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // This flag controls whether the CCT captures the account name of the 1p app
 // account when triggered in this context, and passes it to the native

@@ -11216,6 +11216,8 @@ from previous Chrome versions.
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
+  <int value="-1101546918"
+      label="EnableAccountPreviewPreferredAccountFollowup:enabled"/>
   <int value="-1101334831" label="SyncSupportTrustedVaultPassphrase:disabled"/>
   <int value="-1101036307" label="SetTimeoutWithoutClamp:enabled"/>
   <int value="-1099799372" label="IOSPromoRefreshedPasswordBubble:enabled"/>
@@ -14106,6 +14108,8 @@ from previous Chrome versions.
   <int value="-201053031" label="WebAppInstallDialogWinPin:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>
   <int value="-200792853" label="UnifiedPasswordManagerAndroid:disabled"/>
+  <int value="-200651333"
+      label="EnableAccountPreviewPreferredAccountFollowup:disabled"/>
   <int value="-200160012" label="RelatedSearchesUi:disabled"/>
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-199443830"
