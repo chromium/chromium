@@ -102,6 +102,7 @@ _CONVERTED_SCHEMAS = [
   ('experimental_actor.idl', 'experimental_actor.webidl'),
   ('file_system_provider.idl', 'file_system_provider.webidl'),
   ('icon_variants.idl', 'icon_variants.webidl'),
+  ('mime_handler_private.idl', 'mime_handler_private.webidl'),
 ]
 
 
