@@ -4,6 +4,7 @@
 
 #include "partition_alloc/partition_bucket.h"
 
+#include <array>
 #include <bit>
 #include <cstdint>
 #include <tuple>
@@ -20,6 +21,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
@@ -1213,14 +1215,14 @@ void PartitionBucket::SortActiveSlotSpans() {
   // - Current code cannot allocate.
   //
   // In practice though, it's rare to have that many active slot spans.
-  SlotSpanMetadata* active_spans_array[kMaxSlotSpansToSort];
+  std::array<SlotSpanMetadata*, kMaxSlotSpansToSort> active_spans_array;
   size_t index = 0;
   SlotSpanMetadata* overflow_spans_start = nullptr;
 
   for (auto* slot_span = active_slot_spans_head; slot_span;
        slot_span = slot_span->next_slot_span) {
     if (index < kMaxSlotSpansToSort) {
-      PA_UNSAFE_TODO(active_spans_array[index++]) = slot_span;
+      active_spans_array[index++] = slot_span;
     } else {
       // Starting from this one, not sorting the slot spans.
       overflow_spans_start = slot_span;
@@ -1247,22 +1249,20 @@ void PartitionBucket::SortActiveSlotSpans() {
   // it may not throw std::bad_alloc, which constrains the implementation. In
   // addition, this is protected by the reentrancy guard, so we would detect
   // such an allocation.
-  std::sort(active_spans_array, PA_UNSAFE_TODO(active_spans_array + index),
-            CompareSlotSpans);
+  std::ranges::sort(base::span(active_spans_array).first(index),
+                    CompareSlotSpans);
 
   active_slot_spans_head = overflow_spans_start;
 
   // Reverse order, since we insert at the head of the list.
   for (int i = index - 1; i >= 0; i--) {
-    if (PA_UNSAFE_TODO(active_spans_array[i]) ==
-        SlotSpanMetadata::get_sentinel_slot_span()) {
+    if (active_spans_array[i] == SlotSpanMetadata::get_sentinel_slot_span()) {
       // The sentinel is const, don't try to write to it.
       PA_DCHECK(active_slot_spans_head == nullptr);
     } else {
-      PA_UNSAFE_TODO(active_spans_array[i]->next_slot_span =
-                         active_slot_spans_head);
+      active_spans_array[i]->next_slot_span = active_slot_spans_head;
     }
-    active_slot_spans_head = PA_UNSAFE_TODO(active_spans_array[i]);
+    active_slot_spans_head = active_spans_array[i];
   }
 }
 
