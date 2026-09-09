@@ -1877,20 +1877,6 @@ void MaybeRegisterChromeFeaturePromos(
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
 
-  // kIPHLensOverlayTranslateButtonFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHLensOverlayTranslateButtonFeature,
-          kLensOverlayTranslateButtonElementId,
-          IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH,
-          IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetInAnyContext(true)
-          .SetMetadata(131, "juanmojica@google.com",
-                       "Triggered to inform users of the availability of the "
-                       "new translate screen feature on the Lens Overlay.")));
-
   // kIPHOmniboxEverywhereLensPromoFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(

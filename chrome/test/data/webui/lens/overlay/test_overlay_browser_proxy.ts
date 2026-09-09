@@ -44,8 +44,6 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'saveAsImage',
       'recordUkmAndTaskCompletionForLensOverlayInteraction',
       'recordLensOverlaySemanticEvent',
-      'maybeShowTranslateFeaturePromo',
-      'maybeCloseTranslateFeaturePromo',
       'fetchSupportedLanguages',
       'finishReshowOverlay',
       'acceptPrivacyNotice',
@@ -145,13 +143,6 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('recordLensOverlaySemanticEvent', semanticEvent);
   }
 
-  maybeShowTranslateFeaturePromo() {
-    this.methodCalled('maybeShowTranslateFeaturePromo');
-  }
-
-  maybeCloseTranslateFeaturePromo() {
-    this.methodCalled('maybeCloseTranslateFeaturePromo');
-  }
 
   fetchSupportedLanguages(): Promise<{
     browserLocale: string,

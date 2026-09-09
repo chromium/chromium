@@ -465,8 +465,6 @@ DEFINE_VARIATION_PARAM(kIPHMemorySaverModeFeature, "IPH_HighEfficiencyMode");
 DEFINE_VARIATION_PARAM(kIPHMultistepFilterPromoFeature,
                        "IPH_MultistepFilterPromo");
 DEFINE_VARIATION_PARAM(kIPHLensOverlayFeature, "IPH_LensOverlay");
-DEFINE_VARIATION_PARAM(kIPHLensOverlayTranslateButtonFeature,
-                       "IPH_LensOverlayTranslateButton");
 DEFINE_VARIATION_PARAM(kIPHOmniboxEverywhereLensPromoFeature,
                        "IPH_OmniboxEverywhereLensPromo");
 DEFINE_VARIATION_PARAM(kIPHPasswordsSavePrimingPromoFeature,

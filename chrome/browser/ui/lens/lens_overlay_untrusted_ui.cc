@@ -362,10 +362,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
     html_source->AddBoolean("enablePrivacyNotice", enable_privacy_notice);
     html_source->AddBoolean("hasPermissionsForSession", !enable_privacy_notice);
   }
-
-  ui::TrackedElementHandlerDocumentSingleton::Register(
-      this,
-      std::vector<ui::ElementIdentifier>{kLensOverlayTranslateButtonElementId});
 }
 
 void LensOverlayUntrustedUI::BindInterface(

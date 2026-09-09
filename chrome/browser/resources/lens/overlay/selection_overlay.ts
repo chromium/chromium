@@ -341,16 +341,16 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
           this.detectedTextStartIndex = -1;
           this.detectedTextEndIndex = -1;
         });
-      this.eventTracker_.add(
-          document, 'post-selection-updated', (e: CustomEvent) => {
-            this.selectedRegionContextMenuBox = e.detail.centerRotatedBox;
-            this.selectedRegionContextMenuX =
-                this.selectedRegionContextMenuBox.box.x -
-                this.selectedRegionContextMenuBox.box.width / 2;
-            this.selectedRegionContextMenuY =
-                this.selectedRegionContextMenuBox.box.y +
-                this.selectedRegionContextMenuBox.box.height / 2;
-          });
+    this.eventTracker_.add(
+        document, 'post-selection-updated', (e: CustomEvent) => {
+          this.selectedRegionContextMenuBox = e.detail.centerRotatedBox;
+          this.selectedRegionContextMenuX =
+              this.selectedRegionContextMenuBox.box.x -
+              this.selectedRegionContextMenuBox.box.width / 2;
+          this.selectedRegionContextMenuY =
+              this.selectedRegionContextMenuBox.box.y +
+              this.selectedRegionContextMenuBox.box.height / 2;
+        });
   }
 
   protected override shouldIgnoreEvent(event: PointerEvent) {
@@ -433,11 +433,6 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
   // LINT.ThenChange(//chrome/browser/resources/lens/overlay/cursor_tooltip.ts:CursorOffsetValues)
 
   protected override pointerDownHandled() {
-    // Try to close the translate feature promo if it is currently active. No-op
-    // if it is not active.
-    this.browserProxy.handler.maybeCloseTranslateFeaturePromo(
-        /*featureEngaged=*/ false);
-
     // If searchbox is stealing focus, we only want to respond to drag gestures,
     // so wait to send gesture started until a drag has happened. This is also
     // the case if the language pickers are currently open.
@@ -718,7 +713,8 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kSaveAsImage);
   }
 
-  // Make the cursor disappear when entering selectable buttons, as if leaving the overlay.
+  // Make the cursor disappear when entering selectable buttons, as if leaving
+  // the overlay.
   private handlePointerEnterButton() {
     this.isPointerInside = false;
     this.isPointerInsideButton = true;

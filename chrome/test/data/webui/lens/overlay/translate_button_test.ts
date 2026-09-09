@@ -157,10 +157,6 @@ suite('OverlayTranslateButton', function() {
 
     assertEquals(
         1,
-        testBrowserProxy.handler.getCallCount(
-            'maybeCloseTranslateFeaturePromo'));
-    assertEquals(
-        1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
     assertEquals(
         1,

@@ -292,7 +292,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHGMCSaveVideoFrameFeature,
     &kIPHHistorySearchFeature,
     &kIPHLensOverlayFeature,
-    &kIPHLensOverlayTranslateButtonFeature,
     &kIPHMemorySaverModeFeature,
     &kIPHMultistepFilterPromoFeature,
     &kIPHOmniboxEverywhereLensPromoFeature,

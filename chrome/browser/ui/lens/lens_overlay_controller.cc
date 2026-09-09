@@ -354,7 +354,6 @@ void LensOverlayController::SendRegionText(lens::mojom::TextPtr text,
   page_->RegionTextReceived(std::move(text), is_injected_image);
 }
 
-
 void LensOverlayController::SendObjects(
     std::vector<lens::mojom::OverlayObjectPtr> objects) {
   if (IsSelectedRegionOnlyMode()) {
@@ -609,38 +608,6 @@ void LensOverlayController::SaveAsImage(
   download_manager->DownloadUrl(std::move(params));
 }
 
-void LensOverlayController::MaybeShowTranslateFeaturePromo() {
-  auto* tracker = ui::ElementTracker::GetElementTracker();
-  translate_button_shown_subscription_ =
-      tracker->AddElementShownInAnyContextCallback(
-          kLensOverlayTranslateButtonElementId,
-          base::BindRepeating(
-              &LensOverlayController::TryShowTranslateFeaturePromo,
-              weak_factory_.GetWeakPtr()));
-}
-
-void LensOverlayController::MaybeCloseTranslateFeaturePromo(
-    bool feature_engaged) {
-  if (auto* const interface =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              tab_->GetContents())) {
-    if (!interface->IsFeaturePromoActive(
-            feature_engagement::kIPHLensOverlayTranslateButtonFeature)) {
-      // Do nothing if feature promo is not active.
-      return;
-    }
-
-    if (feature_engaged) {
-      interface->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHLensOverlayTranslateButtonFeature,
-          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-    } else {
-      interface->AbortFeaturePromo(
-          feature_engagement::kIPHLensOverlayTranslateButtonFeature);
-    }
-  }
-}
-
 void LensOverlayController::FetchSupportedLanguages(
     FetchSupportedLanguagesCallback callback) {
   CHECK(languages_controller_);
@@ -649,20 +616,6 @@ void LensOverlayController::FetchSupportedLanguages(
 
 void LensOverlayController::FinishReshowOverlay() {
   FinishReshowOverlayImpl();
-}
-
-void LensOverlayController::TryShowTranslateFeaturePromo(
-    ui::TrackedElement* element) {
-  if (!element) {
-    return;
-  }
-
-  if (auto* const interface =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              tab_->GetContents())) {
-    interface->MaybeShowFeaturePromo(
-        feature_engagement::kIPHLensOverlayTranslateButtonFeature);
-  }
 }
 
 std::string LensOverlayController::GetInvocationSourceString() {
@@ -1573,11 +1526,11 @@ LensOverlayController::GetPreselectionBubbleConfig() {
       .message_string_id = IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED,
       .bubble_background_color = kColorLensOverlayToastBackground,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
+      .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
 #else
-          .icon = &(features::IsRoundedIconsEnabled()
-                        ? vector_icons::kSearchIcon
-                        : vector_icons::kSearchChromeRefreshOldIcon)
+      .icon = &(features::IsRoundedIconsEnabled()
+                    ? vector_icons::kSearchIcon
+                    : vector_icons::kSearchChromeRefreshOldIcon)
 #endif
   };
 }

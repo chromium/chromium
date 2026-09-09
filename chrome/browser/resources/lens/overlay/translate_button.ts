@@ -611,8 +611,6 @@ export class TranslateButtonElement extends PolymerElement {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
     if (this.isTranslateModeEnabled) {
-      this.browserProxy.handler.maybeCloseTranslateFeaturePromo(
-          /*featureEngaged=*/ true);
       this.maybeIssueTranslateRequest();
     } else {
       this.browserProxy.handler.issueEndTranslateModeRequest();

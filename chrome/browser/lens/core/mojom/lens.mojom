@@ -181,18 +181,6 @@ interface LensPageHandler {
   // Records a semantic event for the lens overlay.
   RecordLensOverlaySemanticEvent(SemanticEvent event);
 
-  // Requests to show a feature promo on the translate button. This is a no-op
-  // if the promo show fails for reasons listed out at
-  // //components/user_education/common/feature_promo/feature_promo_result.h.
-  // The most common
-  // failures are due to the anchor not being visible or it has already been
-  // shown and dismissed.
-  MaybeShowTranslateFeaturePromo();
-
-  // Requests to close the feature promo on the translate button with a
-  // parameter denoting whether the feature was engaged. A no-op if no promo is
-  // showing.
-  MaybeCloseTranslateFeaturePromo(bool feature_engaged);
 
   // Requests to fetch the supported languages from the translate server.
   // Returns the supported source and target languages to translate from and to.

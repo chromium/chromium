@@ -2260,16 +2260,6 @@ Chromium is unable to recover your settings.
           Search this screenshot
         </message>
 
-        <!-- IPH Strings -->
-        <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH"
-          desc="Text that appears in the IPH toast informing the user about the availability of the new translate screen chip in the Lens Overlay that adds functionality to translate the entire screen.">
-          New! You can translate both text and images on your screen
-        </message>
-        <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_IPH_SCREENREADER"
-          is_accessibility_with_no_ui="true"
-          desc="Text that appears in the IPH toast informing the user about the availability of the new translate screen chip in the Lens Overlay that adds functionality to translate the entire screen.">
-          New! You can translate both text and images on your screen by selecting the "translate screen" button
-        </message>
 
         <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY"
           desc="The name of the Lens overlay command in the content area context menu">

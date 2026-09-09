@@ -786,58 +786,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, ShowsPromo) {
           feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature));
 }
 
-class LensOverlayControllerTranslatePromoTest
-    : public LensOverlayControllerCUJTest {
- public:
-  LensOverlayControllerTranslatePromoTest()
-      : LensOverlayControllerCUJTest(
-            feature_engagement::kIPHLensOverlayTranslateButtonFeature) {}
-  ~LensOverlayControllerTranslatePromoTest() override = default;
-};
-
-// This tests the following promo flow:
-//  (1) User opens the Lens Overlay.
-//  (2) Promo shows. After, user clicks the translate button.
-//  (3) Promo hides.
-// TODO(crbug.com/392907122): Re-enable this test once the translate button is
-// in a launchable state.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerTranslatePromoTest,
-                       DISABLED_ShowsTranslatePromo) {
-  WaitForTemplateURLServiceToLoad();
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
-
-  const DeepQuery kPathToTranslateButton{
-      "lens-overlay-app",
-      "#translateButton",
-      "#translateEnableButton",
-  };
-  RunTestSequence(
-      OpenLensOverlay(),
-
-      // The overlay controller is an independent floating widget
-      // associated with a tab rather than a browser window, so by
-      // convention gets its own element context.
-      InAnyContext(
-          InstrumentNonTabWebView(kOverlayId,
-                                  LensOverlayController::kOverlayId),
-          WaitForWebContentsReady(
-              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
-
-      // Wait for the webview to finish loading to prevent re-entrancy.
-      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
-                    WaitForScreenshotRendered(kOverlayId),
-                    EnsurePresent(kOverlayId, kPathToTranslateButton)),
-
-      // Wait for the initial translate promo help bubble.
-      WaitForPromo(feature_engagement::kIPHLensOverlayTranslateButtonFeature),
-
-      // Click the translate button element.
-      ClickElement(kOverlayId, kPathToTranslateButton),
-
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
 class LensPreselectionBubbleInteractiveUiTest
     : public LensOverlayControllerCUJTest {
  public:

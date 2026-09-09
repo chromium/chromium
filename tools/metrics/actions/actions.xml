@@ -694,8 +694,6 @@ should be able to be added at any place in this file.
   <variant name="_LauncherSearchHelpUi"
       summary="For launcher search IPH feature."/>
   <variant name="_LensOverlay" summary="For Lens Overlay IPH feature."/>
-  <variant name="_LensOverlayTranslateButton"
-      summary="For LensOverlay translate button feature."/>
   <variant name="_LiveCaption" summary="For LiveCaption feature. (obsolete)"/>
   <variant name="_LongPressToolbarTip" summary="For LongPressToolbar feature."/>
   <variant name="_LowUserEngagementDetector"
@@ -1064,8 +1062,6 @@ should be able to be added at any place in this file.
   <variant name=".HelpMeWrite" summary="Help Me Write"/>
   <variant name=".HistoryEmbeddings" summary="History Embeddings Search"/>
   <variant name=".iOSLensSWYS" summary="iOS Lens Search What You See"/>
-  <variant name=".LensOverlayTranslateButton"
-      summary="Lens Overlay Translate Button"/>
   <variant name=".LightningVideo" summary="Lightning Video"/>
   <variant name=".PdfInk2" summary="PDF Ink Signatures (obsolete)"/>
   <variant name=".PdfSaveToDrive" summary="PDF Save to Drive"/>

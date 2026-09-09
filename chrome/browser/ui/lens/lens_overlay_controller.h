@@ -84,10 +84,6 @@ class LensOverlayUrlResponse;
 }  // namespace proto
 }  // namespace lens
 
-namespace ui {
-class TrackedElement;
-}  // namespace ui
-
 class LensSearchController;
 class PrefService;
 enum class SidePanelEntryHideReason;
@@ -713,8 +709,6 @@ class LensOverlayController : public OverlayBaseController,
   void RecordLensOverlaySemanticEvent(
       lens::mojom::SemanticEvent event) override;
   void SaveAsImage(lens::mojom::CenterRotatedBoxPtr region) override;
-  void MaybeShowTranslateFeaturePromo() override;
-  void MaybeCloseTranslateFeaturePromo(bool feature_engaged) override;
   void FetchSupportedLanguages(
       FetchSupportedLanguagesCallback callback) override;
   void FinishReshowOverlay() override;
@@ -724,10 +718,6 @@ class LensOverlayController : public OverlayBaseController,
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-
-  // Tries to show the translate feature promo after the translate button
-  // element is shown.
-  void TryShowTranslateFeaturePromo(ui::TrackedElement* element);
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().
@@ -903,9 +893,6 @@ class LensOverlayController : public OverlayBaseController,
   // if the text response came back before the initialization data was ready.
   std::optional<lens::mojom::TextPtr> pre_initialization_text_;
 
-  // The callback subscription for the element shown callback used to show the
-  // translate feature promo.
-  base::CallbackListSubscription translate_button_shown_subscription_;
 
   // Matcher for URLs that are eligible to have the tutorial IPH shown.
   std::unique_ptr<url_matcher::URLMatcher> tutorial_iph_url_matcher_;

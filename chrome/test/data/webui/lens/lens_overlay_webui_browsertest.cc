@@ -239,10 +239,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, CubicBezier) {
   RunOverlayTest("lens/overlay/cubic_bezier_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslatePromo) {
-  RunOverlayTest("lens/overlay/overlay_show_translate_promo_test.js",
-                 "mocha.run()");
-}
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, Searchbox) {
   RunOverlayTest("lens/overlay/searchbox_test.js",
