@@ -4568,7 +4568,9 @@ class LayerTreeHostTestUIResource : public LayerTreeHostTest {
   int num_ui_resources_;
 };
 
+#if !BUILDFLAG(IS_FUCHSIA)
 MULTI_THREAD_TEST_F(LayerTreeHostTestUIResource);
+#endif
 
 class LayerTreeHostTestLayersPushProperties : public LayerTreeHostTest {
  protected:
