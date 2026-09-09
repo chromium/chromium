@@ -109,9 +109,8 @@ class OmniboxEverywhereMostVisitedPrefObserver
   OmniboxEverywhereMostVisitedPrefObserver(Profile* profile,
                                            MostVisitedHandler* handler)
       : MostVisitedPrefObserver(profile, handler) {
-    if (g_browser_process && g_browser_process->local_state()) {
-      local_state_pref_change_registrar_.Init(g_browser_process->local_state());
-      local_state_pref_change_registrar_.Add(
+    if (profile_ && profile_->GetPrefs()) {
+      pref_change_registrar_.Add(
           omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
           base::BindRepeating(&OmniboxEverywhereMostVisitedPrefObserver::
                                   OnTilesVisibilityPrefChanged,
@@ -123,17 +122,13 @@ class OmniboxEverywhereMostVisitedPrefObserver
  protected:
   bool IsShortcutsVisible() const override {
     return omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
-        profile_,
-        g_browser_process ? g_browser_process->local_state() : nullptr);
+        profile_);
   }
 
   void OnTileTypesChanged() override {
     MostVisitedPrefObserver::OnTileTypesChanged();
     OnTilesVisibilityPrefChanged();
   }
-
- private:
-  PrefChangeRegistrar local_state_pref_change_registrar_;
 };
 
 void AddMostVisitedSourceStrings(content::WebUIDataSource* source,
@@ -142,8 +137,7 @@ void AddMostVisitedSourceStrings(content::WebUIDataSource* source,
                      omnibox::kOmniboxEverywhereMostVisitedParam.Get());
   source->AddBoolean(
       "omniboxEverywhereShowShortcuts",
-      omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
-          profile, g_browser_process->local_state()));
+      omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(profile));
 
   static constexpr webui::LocalizedString kMostVisitedStrings[] = {
       {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},

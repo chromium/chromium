@@ -36,60 +36,57 @@ class OmniboxEverywherePrefsTest : public testing::Test {
 
 TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_FallbackToNtpTrue) {
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
 
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_FallbackToNtpFalse) {
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
 
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_ExplicitlyEnabled) {
   // Even if NTP shortcuts are disabled, explicit enabled overrides it.
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kEnabled));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kEnabled));
 
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_ExplicitlyDisabled) {
   // Even if NTP shortcuts are enabled, explicit disabled overrides it.
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-  local_state_.SetInteger(
+  profile_.GetPrefs()->SetInteger(
       kOmniboxEverywhereShowShortcuts,
       std::to_underlying(ShowShortcutsPrefValue::kDisabled));
 
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
-}
-
-TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_NullLocalStateFallback) {
-  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, nullptr));
-
-  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, nullptr));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_NullProfile) {
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kEnabled));
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(nullptr, &local_state_));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(nullptr));
+}
 
-  local_state_.SetInteger(
+TEST_F(OmniboxEverywherePrefsTest, ShortcutsVisible_ProfileScopedIsolation) {
+  TestingProfile profile2;
+  profile_.GetPrefs()->SetInteger(
       kOmniboxEverywhereShowShortcuts,
       std::to_underlying(ShowShortcutsPrefValue::kDisabled));
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(nullptr, &local_state_));
+  profile2.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kEnabled));
 
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(nullptr, &local_state_));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile2));
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
@@ -110,13 +107,15 @@ TEST_F(OmniboxEverywherePrefsTest,
 
   // Even if fallback or explicitly enabled, should return false because no
   // shortcuts exist to show.
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kEnabled));
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kEnabled));
+  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
@@ -133,9 +132,10 @@ TEST_F(OmniboxEverywherePrefsTest,
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
                                   true);
 
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
@@ -152,9 +152,10 @@ TEST_F(OmniboxEverywherePrefsTest,
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
                                   false);
 
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
@@ -166,13 +167,15 @@ TEST_F(OmniboxEverywherePrefsTest,
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
                                   false);
 
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kUnset));
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 
-  local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
-                          std::to_underlying(ShowShortcutsPrefValue::kEnabled));
-  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  profile_.GetPrefs()->SetInteger(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kEnabled));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_));
 }
 
 TEST_F(OmniboxEverywherePrefsTest, FreStagesProgression_Impressions) {

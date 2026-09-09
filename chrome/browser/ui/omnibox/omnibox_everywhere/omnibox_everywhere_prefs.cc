@@ -41,9 +41,6 @@ bool IsEphemeralModelEnabled() {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHotkeyEnabled, true);
   registry->RegisterStringPref(kOmniboxEverywhereHotkey, "");
-  registry->RegisterIntegerPref(
-      kOmniboxEverywhereShowShortcuts,
-      std::to_underlying(ShowShortcutsPrefValue::kUnset));
   registry->RegisterBooleanPref(kOmniboxEverywhereEnabled, true);
   registry->RegisterBooleanPref(kOmniboxEverywhereBackgroundMode, false);
   registry->RegisterBooleanPref(kOmniboxEverywhereLaunchOnStartup, false);
@@ -56,6 +53,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(
+      kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
   registry->RegisterBooleanPref(kOmniboxEverywhereShowAiMode, true);
   registry->RegisterBooleanPref(kFreDismissed, false);
   registry->RegisterIntegerPref(kFreImpressionCount, 0);
@@ -332,26 +332,25 @@ bool AreShortcutsAvailableForProfile(Profile* profile) {
   return enterprise_visible || personal_visible;
 }
 
-bool IsOmniboxEverywhereShortcutsVisible(Profile* profile,
-                                         PrefService* local_state) {
-  if (local_state) {
+bool IsOmniboxEverywhereShortcutsVisible(Profile* profile) {
+  if (profile && profile->GetPrefs()) {
+    PrefService* prefs = profile->GetPrefs();
     const auto pref_value = static_cast<ShowShortcutsPrefValue>(
-        local_state->GetInteger(kOmniboxEverywhereShowShortcuts));
+        prefs->GetInteger(kOmniboxEverywhereShowShortcuts));
     if (pref_value == ShowShortcutsPrefValue::kDisabled) {
       return false;
     }
     if (pref_value == ShowShortcutsPrefValue::kEnabled) {
       return AreShortcutsAvailableForProfile(profile);
     }
+    // Fallback to Customize Chrome / NTP setting.
+    if (!prefs->GetBoolean(ntp_prefs::kNtpShortcutsVisible)) {
+      return false;
+    }
+    return AreShortcutsAvailableForProfile(profile);
   }
 
-  // Fallback to Customize Chrome / NTP setting.
-  if (!profile || !profile->GetPrefs() ||
-      !profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible)) {
-    return false;
-  }
-
-  return AreShortcutsAvailableForProfile(profile);
+  return false;
 }
 
 }  // namespace prefs

@@ -174,10 +174,9 @@ std::vector<std::string> GetAvailableHotkeyPresets();
 bool AreShortcutsAvailableForProfile(Profile* profile);
 
 // Returns whether shortcuts should be shown in Omnibox Everywhere for the given
-// profile and local state, falling back to Customize Chrome / NTP settings
+// profile, falling back to Customize Chrome / NTP settings
 // (kNtpShortcutsVisible) if the Omnibox Everywhere preference is unset.
-bool IsOmniboxEverywhereShortcutsVisible(Profile* profile,
-                                         PrefService* local_state);
+bool IsOmniboxEverywhereShortcutsVisible(Profile* profile);
 
 }  // namespace prefs
 }  // namespace omnibox_everywhere

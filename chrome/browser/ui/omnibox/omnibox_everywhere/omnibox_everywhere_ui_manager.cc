@@ -194,11 +194,6 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
         base::BindRepeating(
             &OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged,
             base::Unretained(this)));
-    local_state_pref_change_registrar_.Add(
-        prefs::kOmniboxEverywhereShowShortcuts,
-        base::BindRepeating(
-            &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
-            base::Unretained(this)));
   }
 }
 
@@ -249,6 +244,11 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
     profile_pref_change_registrar_.Reset();
     if (profile && profile->GetPrefs()) {
       profile_pref_change_registrar_.Init(profile->GetPrefs());
+      profile_pref_change_registrar_.Add(
+          prefs::kOmniboxEverywhereShowShortcuts,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
       profile_pref_change_registrar_.Add(
           ntp_prefs::kNtpCustomLinksVisible,
           base::BindRepeating(
@@ -1218,11 +1218,11 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       break;
     }
     case kShowShortcuts:
-      if (g_browser_process && g_browser_process->local_state()) {
-        PrefService* local_state = g_browser_process->local_state();
+      if (profile_ && profile_->GetPrefs()) {
+        PrefService* prefs = profile_->GetPrefs();
         const bool is_currently_visible =
-            prefs::IsOmniboxEverywhereShortcutsVisible(profile_, local_state);
-        local_state->SetInteger(
+            prefs::IsOmniboxEverywhereShortcutsVisible(profile_);
+        prefs->SetInteger(
             prefs::kOmniboxEverywhereShowShortcuts,
             static_cast<int>(is_currently_visible
                                  ? prefs::ShowShortcutsPrefValue::kDisabled
@@ -1317,10 +1317,7 @@ bool OmniboxEverywhereUIManager::IsCommandIdChecked(int command_id) const {
     return true;
   }
   if (command_id == kShowShortcuts) {
-    return g_browser_process && g_browser_process->local_state()
-               ? prefs::IsOmniboxEverywhereShortcutsVisible(
-                     profile_, g_browser_process->local_state())
-               : true;
+    return prefs::IsOmniboxEverywhereShortcutsVisible(profile_);
   }
   return false;
 }

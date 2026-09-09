@@ -1385,33 +1385,30 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuShowShortcutsToggle) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
 
-  if (g_browser_process && g_browser_process->local_state()) {
-    g_browser_process->local_state()->SetInteger(
-        omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
-        static_cast<int>(
-            omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
-    EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
+  profile_.GetPrefs()->SetInteger(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+      static_cast<int>(
+          omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
+  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
 
-    ui_manager->ExecuteCommand(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
-    EXPECT_EQ(
-        g_browser_process->local_state()->GetInteger(
-            omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
-        static_cast<int>(
-            omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
-    EXPECT_FALSE(ui_manager->IsCommandIdChecked(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
+  EXPECT_EQ(profile_.GetPrefs()->GetInteger(
+                omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
+            static_cast<int>(
+                omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
 
-    ui_manager->ExecuteCommand(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
-    EXPECT_EQ(g_browser_process->local_state()->GetInteger(
-                  omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
-              static_cast<int>(
-                  omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
-    EXPECT_TRUE(ui_manager->IsCommandIdChecked(
-        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
-  }
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
+  EXPECT_EQ(profile_.GetPrefs()->GetInteger(
+                omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
+            static_cast<int>(
+                omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
+  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -1730,9 +1727,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_FALSE(ui_manager->widget()->IsVisible());
   EXPECT_TRUE(ui_manager->widget());
 
-  // Changing local state show shortcuts pref while hidden should clean up the
+  // Changing profile show shortcuts pref while hidden should clean up the
   // old widget.
-  TestingBrowserProcess::GetGlobal()->local_state()->SetInteger(
+  profile_.GetPrefs()->SetInteger(
       omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
       std::to_underlying(
           omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
