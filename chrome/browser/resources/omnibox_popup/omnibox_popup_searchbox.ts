@@ -884,12 +884,21 @@ export class OmniboxPopupSearchboxElement extends
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
 
-    // This mark is recorded when the input field is focused and the caret is
-    // positioned in the DOM, indicating readiness for user input. Placed before
-    // `queryAutocomplete()` to isolate input hydration from ZPS query dispatch.
+    // Records user timing marks when the input field is focused and the caret
+    // is positioned in the DOM without text selection, indicating readiness
+    // for user input. The first invocation marks the startup of the browser,
+    // while the subsequent focus event marks the first, warm new tab focus.
+    // Placed before `queryAutocomplete()` to isolate input hydration from ZPS
+    // query dispatch.
+    // TODO(crbug.com/553005514): Distinguish between New Tab Creation and Tab
+    // Switch Restoration.
     if (state.isFocused && document.visibilityState === 'visible' &&
         !this.hasInputSelection_) {
-      markOnce('OmniboxPopupSearchboxElement::onSetInputState_:CaretReady');
+      if (!markOnce(
+              'OmniboxPopupSearchboxElement::onSetInputState_:StartupCaretReady')) {
+        markOnce(
+            'OmniboxPopupSearchboxElement::onSetInputState_:NewTabCaretReady');
+      }
     }
 
     // If zero-prefix suggestions are requested by the new state, initiate

@@ -237,6 +237,7 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
+  TRACE_EVENT0("omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged");
   last_sent_text_.reset();
   last_sent_focus_.reset();
 
@@ -251,6 +252,9 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // progress.
   bool non_empty_user_input_in_progress =
       state ? state->model_state.user_input_in_progress : false;
+
+  const bool is_first_tab_changed = !has_completed_first_tab_changed_;
+  has_completed_first_tab_changed_ = true;
 
   if (state) {
     // Restore the saved state for the tab.
@@ -280,9 +284,11 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     controller()->edit_model()->OnChanged();
     should_focus_popup = ShouldFocusLocationBarForTab(contents);
     if (should_focus_popup) {
-      TRACE_EVENT_INSTANT0(
-          "omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged:NewTabFocus",
-          TRACE_EVENT_SCOPE_GLOBAL);
+      if (!is_first_tab_changed) {
+        TRACE_EVENT_INSTANT0(
+            "omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged:OnSetFocus",
+            TRACE_EVENT_SCOPE_THREAD);
+      }
       controller()->edit_model()->OnSetFocus(/*control_down=*/false);
       target_popup_state = OmniboxPopupState::kFull;
     } else {

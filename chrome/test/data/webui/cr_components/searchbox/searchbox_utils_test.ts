@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {markOnce, sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SearchboxUtilsTest', () => {
   suite('stripJavascriptSchemas', () => {
@@ -77,13 +77,21 @@ suite('SearchboxUtilsTest', () => {
   });
 
   suite('markOnce', () => {
-    test('only logs mark once', () => {
-      const markName = 'test-mark';
+    teardown(() => {
+      performance.clearMarks();
+    });
 
-      markOnce(markName);
-      markOnce(markName);
+    test('logs multiple independent marks once each', () => {
+      const markA = 'test-mark-a';
+      const markB = 'test-mark-b';
 
-      assertEquals(1, performance.getEntriesByName(markName).length);
+      assertTrue(markOnce(markA));
+      assertTrue(markOnce(markB));
+      assertFalse(markOnce(markA));
+      assertFalse(markOnce(markB));
+
+      assertEquals(1, performance.getEntriesByName(markA).length);
+      assertEquals(1, performance.getEntriesByName(markB).length);
     });
   });
 });
