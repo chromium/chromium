@@ -66,11 +66,11 @@ message SecurityAgent {
 }
 
 // Represents the entity that initiated the event.
-message Actor {
-  oneof actor {
+message EventInitiatorInfo {
+  oneof initiator {
     // Populated when the event was driven by a Chrome extension.
-    safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo chrome_extension =
-        1;
+    safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo
+        chrome_extension = 1;
   }
 }
 
