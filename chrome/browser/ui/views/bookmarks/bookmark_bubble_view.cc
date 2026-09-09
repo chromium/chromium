@@ -51,6 +51,7 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -115,7 +116,7 @@ void FetchImageForUrl(const GURL& url, Profile* profile) {
 gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
   const auto& color_provider = web_contents->GetColorProvider();
   const gfx::Image url_favicon =
-      favicon::TabFaviconFromWebContents(web_contents);
+      favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents);
   gfx::ImageSkia favicon =
       url_favicon.IsEmpty()
           ? favicon::GetDefaultFaviconModel(ui::kColorBubbleBackground)

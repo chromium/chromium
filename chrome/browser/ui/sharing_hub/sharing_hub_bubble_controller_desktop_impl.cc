@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "content/public/browser/navigation_controller.h"
@@ -169,7 +170,8 @@ SharingHubModel* SharingHubBubbleControllerDesktopImpl::GetSharingHubModel() {
 
 ui::ImageModel SharingHubBubbleControllerDesktopImpl::GetPreviewImage() {
   content::WebContents* web_contents = &GetWebContents();
-  gfx::Image favicon = favicon::TabFaviconFromWebContents(web_contents);
+  gfx::Image favicon =
+      favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents);
   if (favicon.IsEmpty()) {
     return {};
   }

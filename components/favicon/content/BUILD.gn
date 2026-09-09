@@ -6,6 +6,8 @@ static_library("content") {
   sources = [
     "content_favicon_driver.cc",
     "content_favicon_driver.h",
+    "content_favicon_util.cc",
+    "content_favicon_util.h",
     "favicon_url_util.cc",
     "favicon_url_util.h",
     "large_icon_service_getter.cc",
@@ -27,7 +29,10 @@ static_library("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_favicon_driver_unittest.cc" ]
+  sources = [
+    "content_favicon_driver_unittest.cc",
+    "content_favicon_util_unittest.cc",
+  ]
   deps = [
     ":content",
     "//base/test:test_support",
@@ -36,8 +41,10 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
+    "//net",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
   ]
 }

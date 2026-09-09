@@ -33,10 +33,6 @@ void CreateContentFaviconDriverForWebContents(
 // of the url and the monogram is the first letter of the URL domain.
 SkBitmap GenerateMonogramFavicon(GURL url, int icon_size, int circle_size);
 
-// Retrieves the favicon from given WebContents. If contents contain a
-// network error, desaturate the favicon.
-gfx::Image TabFaviconFromWebContents(content::WebContents* contents);
-
 // Returns the image to use when no favicon is available, taking dark mode
 // into account if necessary.
 gfx::Image GetDefaultFavicon();

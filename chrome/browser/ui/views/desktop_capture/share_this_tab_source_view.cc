@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -141,7 +142,7 @@ void ShareThisTabSourceView::UpdateFaviconAndTabTitle() {
   }
 
   const gfx::Image favicon =
-      favicon::TabFaviconFromWebContents(web_contents_.get());
+      favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents_.get());
   favicon_view_->SetImage(ui::ImageModel::FromImage(
       favicon.IsEmpty() ? favicon::GetDefaultFavicon() : favicon));
 

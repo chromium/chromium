@@ -8,7 +8,6 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/ash/mahi",
-  "+chrome/browser/favicon",
   "+chrome/browser/printing",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/screen_ai",

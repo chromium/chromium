@@ -23,7 +23,6 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_content_extraction_delegate.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
@@ -33,6 +32,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
@@ -447,7 +447,8 @@ void MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF(
 
 gfx::ImageSkia MahiWebContentsManagerImpl::GetFavicon(
     content::WebContents* web_contents) const {
-  return favicon::TabFaviconFromWebContents(web_contents).AsImageSkia();
+  return favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents)
+      .AsImageSkia();
 }
 
 bool MahiWebContentsManagerImpl::ShouldSkip(

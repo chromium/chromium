@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_network_state.h"
@@ -243,7 +244,7 @@ ui::ImageModel TabUIHelper::GetFavicon() {
   }
 
   return ui::ImageModel::FromImage(
-      favicon::TabFaviconFromWebContents(web_contents()));
+      favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents()));
 }
 
 bool TabUIHelper::ShouldHideThrobber() const {

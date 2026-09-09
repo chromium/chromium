@@ -12,8 +12,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -44,7 +44,8 @@ static constexpr base::TimeDelta kDefaultCacheTimeout = base::Days(7);
 
 DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
-    : icon(favicon::TabFaviconFromWebContents(web_contents).AsImageSkia()),
+    : icon(favicon::GetTabFaviconMaybeDesaturatedOnError(web_contents)
+               .AsImageSkia()),
       title(web_contents->GetTitle()),
       url(web_contents->GetLastCommittedURL().GetWithoutRef()) {}
 

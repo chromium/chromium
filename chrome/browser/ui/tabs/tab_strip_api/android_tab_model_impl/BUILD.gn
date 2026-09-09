@@ -22,11 +22,11 @@ source_set("android_tab_model_impl") {
   deps = [
     "//base",
     "//chrome/browser/android:tabs_public",
-    "//chrome/browser/favicon",
     "//chrome/browser/ui/android/tab_model",
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip/adapters",
     "//components/browser_apis/tab_strip/types",
+    "//components/favicon/content",
     "//components/tabs:public",
     "//mojo/public/mojom/base",
     "//skia",

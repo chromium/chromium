@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/enterprise/data_controls",
-  "+chrome/browser/favicon",
   "+chrome/browser/file_system_access",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",

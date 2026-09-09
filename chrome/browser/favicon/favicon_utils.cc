@@ -43,11 +43,6 @@ namespace {
 // contrast.
 constexpr SkColor kFallbackIconLetterColor = SK_ColorWHITE;
 
-// Desaturate favicon HSL shift values.
-const double kDesaturateHue = -1.0;
-const double kDesaturateSaturation = 0.0;
-const double kDesaturateLightness = 0.6;
-
 // Returns a color based on the hash of |icon_url|'s origin.
 SkColor ComputeBackgroundColorForUrl(const GURL& icon_url) {
   if (!icon_url.is_valid())
@@ -100,35 +95,6 @@ SkBitmap GenerateMonogramFavicon(GURL url, int icon_size, int circle_size) {
                             font_names, kFallbackIconLetterColor,
                             fallback_color);
   return bitmap;
-}
-
-gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
-  DCHECK(contents);
-
-  favicon::FaviconDriver* favicon_driver =
-      favicon::ContentFaviconDriver::FromWebContents(contents);
-  // TODO(crbug.com/40190724): Investigate why some WebContents do not have
-  // an attached ContentFaviconDriver.
-  if (!favicon_driver) {
-    return gfx::Image();
-  }
-
-  gfx::Image favicon = favicon_driver->GetFavicon();
-
-  // Desaturate the favicon if the navigation entry contains a network error.
-  if (!contents->ShouldShowLoadingUI()) {
-    content::NavigationController& controller = contents->GetController();
-
-    content::NavigationEntry* entry = controller.GetLastCommittedEntry();
-    if (entry && (entry->GetPageType() == content::PAGE_TYPE_ERROR)) {
-      color_utils::HSL shift = {kDesaturateHue, kDesaturateSaturation,
-                                kDesaturateLightness};
-      return gfx::Image(gfx::ImageSkiaOperations::CreateHSLShiftedImage(
-          *favicon.ToImageSkia(), shift));
-    }
-  }
-
-  return favicon;
 }
 
 gfx::Image GetDefaultFavicon() {

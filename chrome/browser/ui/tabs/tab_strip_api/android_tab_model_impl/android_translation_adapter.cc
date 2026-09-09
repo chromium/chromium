@@ -6,9 +6,9 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
+#include "components/favicon/content/content_favicon_util.h"
 #include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -40,8 +40,8 @@ AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   result->id = tabs_api::NodeId::FromTabHandle(handle);
   result->title = base::UTF16ToUTF8(contents->GetTitle());
 
-  auto image_model =
-      ui::ImageModel::FromImage(favicon::TabFaviconFromWebContents(contents));
+  auto image_model = ui::ImageModel::FromImage(
+      favicon::GetTabFaviconMaybeDesaturatedOnError(contents));
   result->favicon = image_model.Rasterize(&color_provider);
 
   // TODO(crbug.com/445765534): favicon...
