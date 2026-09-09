@@ -31,6 +31,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "components/personal_context/proto/features/smart_search.pb.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -54,6 +55,10 @@ struct TabStripSelectionChange;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace net {
+class BackoffEntry;
+}  // namespace net
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -357,8 +362,16 @@ class ContextHubService : public KeyedService,
   void OnCachedFirstPartyAutoTodosFetched(
       std::vector<AutoTodoEntry> stored_todos);
 
+  // Dispatches a personal context fetch for 1P AutoTodos with the given request
+  // metadata and exponential backoff retry state.
+  void ExecuteFirstPartyAutoTodosFetch(
+      personal_context::proto::AutoTodosRequest request_metadata,
+      std::unique_ptr<net::BackoffEntry> backoff);
+
   // Handles the async response from the AutoTodos fetch.
   void OnFirstPartyAutoTodosFetched(
+      personal_context::proto::AutoTodosRequest request_metadata,
+      std::unique_ptr<net::BackoffEntry> backoff,
       personal_context::FetchContextResult result);
 
   // Handles the async response from the SmartSearch fetch.
@@ -426,6 +439,9 @@ class ContextHubService : public KeyedService,
       page_content_extraction_service_;
 
   // Indicates if a First Party Auto Todos generation request is in flight.
+  // Remains true while waiting for exponential backoff retries via
+  // `first_party_auto_todos_retry_timer_`, enforcing that only a single
+  // generation flow is active at a time.
   bool is_generating_first_party_auto_todos_ = false;
 
   // Stores client callbacks waiting for completion of an in-flight
@@ -502,6 +518,13 @@ class ContextHubService : public KeyedService,
 
   // Periodic timer that generates and stores 1P AutoTodos during the session.
   base::RepeatingTimer first_party_auto_todos_timer_;
+
+  // Timer used to delay retry attempts for 1P AutoTodos generation. A single
+  // timer is sufficient because `is_generating_first_party_auto_todos_`
+  // enforces that only one generation request is in flight at a time (and
+  // remains true while waiting for backoff), preventing race conditions with
+  // concurrent requests.
+  base::OneShotTimer first_party_auto_todos_retry_timer_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;

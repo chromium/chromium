@@ -28,6 +28,18 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "first_party_auto_todos_interval",
                    base::Days(1));
 
+BASE_FEATURE_PARAM(int,
+                   kFirstPartyAutoTodosMaxRetries,
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "first_party_auto_todos_max_retries",
+                   2);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFirstPartyAutoTodosRetryDelay,
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "first_party_auto_todos_retry_delay",
+                   base::Seconds(5));
+
 BASE_FEATURE_PARAM(size_t,
                    kMaxTodoFeedbackCacheSize,
                    &browser::context_hub::mojom::kAutoTodos,

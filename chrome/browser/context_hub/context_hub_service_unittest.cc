@@ -530,11 +530,12 @@ TEST_F(ContextHubServiceTest,
   EXPECT_EQ(items.size(), 2u);
 }
 
-TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_NonTransientServiceError) {
   personal_context::ContextMemoryError expected_error =
       personal_context::ContextMemoryError::FromExecutionError(
           personal_context::ContextMemoryError::ExecutionError::
-              kGenericFailure);
+              kPermissionDenied);
 
   EXPECT_CALL(
       mock_personal_context_service_,
@@ -555,6 +556,109 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
+  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(service_.GetLastFirstPartyGenerationTime().is_null());
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_TransientError_RetriesAndSucceeds) {
+  personal_context::ContextMemoryError transient_error =
+      personal_context::ContextMemoryError::FromExecutionError(
+          personal_context::ContextMemoryError::ExecutionError::
+              kGenericFailure);
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  auto* todo = expected_response.add_todos();
+  todo->set_title("Retried Todo");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(transient_error))))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
+  EXPECT_CALL(observer, OnAutoTodosChanged(_));
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+
+  // Still generating while waiting for retry timer.
+  EXPECT_TRUE(service_.IsGeneratingFirstPartyAutoTodos());
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward past the retry delay to trigger the retry.
+  task_environment_.FastForwardBy(
+      features::kFirstPartyAutoTodosRetryDelay.Get());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_FALSE(service_.GetLastFirstPartyGenerationTime().is_null());
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_TransientError_RetriesExhausted) {
+  personal_context::ContextMemoryError transient_error =
+      personal_context::ContextMemoryError::FromExecutionError(
+          personal_context::ContextMemoryError::ExecutionError::
+              kGenericFailure);
+
+  // Initial attempt + 2 retries = 3 calls total.
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(transient_error))))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(transient_error))))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::unexpected(transient_error))));
+
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
+  EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+
+  const base::TimeDelta initial_delay =
+      features::kFirstPartyAutoTodosRetryDelay.Get();
+
+  // Fast forward just before the first retry delay: should not have triggered.
+  task_environment_.FastForwardBy(initial_delay - base::Seconds(1));
+  EXPECT_TRUE(service_.IsGeneratingFirstPartyAutoTodos());
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward the remaining 1s: triggers retry 1.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(service_.IsGeneratingFirstPartyAutoTodos());
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward just before the second retry delay (2x initial delay):
+  // should not have triggered retry 2 yet.
+  task_environment_.FastForwardBy(initial_delay * 2 - base::Seconds(1));
+  EXPECT_TRUE(service_.IsGeneratingFirstPartyAutoTodos());
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward the remaining 1s: triggers retry 2 (retries exhausted).
+  task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(future.Get());
   EXPECT_TRUE(service_.GetLastFirstPartyGenerationTime().is_null());
 }

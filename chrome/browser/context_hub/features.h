@@ -23,6 +23,13 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabBasedTodosInactivityThreshold);
 // The interval at which the first-party AutoTodos background job runs.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFirstPartyAutoTodosInterval);
 
+// The maximum number of retries for first-party AutoTodos generation on
+// transient errors.
+BASE_DECLARE_FEATURE_PARAM(int, kFirstPartyAutoTodosMaxRetries);
+
+// The initial delay between retries for first-party AutoTodos generation.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFirstPartyAutoTodosRetryDelay);
+
 // The maximum number of items stored in the todo feedback cache.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxTodoFeedbackCacheSize);
 

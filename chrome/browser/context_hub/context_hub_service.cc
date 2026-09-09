@@ -54,6 +54,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/backoff_entry.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tab_list/tab_removed_reason.h"
@@ -197,6 +198,21 @@ personal_context::proto::AutoTodoItem ToAutoTodoItemProto(
     }
   }
   return proto;
+}
+
+const net::BackoffEntry::Policy* GetFirstPartyAutoTodosBackoffPolicy() {
+  static net::BackoffEntry::Policy policy;
+  policy = {
+      .num_errors_to_ignore = 0,
+      .initial_delay_ms =
+          features::kFirstPartyAutoTodosRetryDelay.Get().InMilliseconds(),
+      .multiply_factor = 2.0,
+      .jitter_factor = 0.0,
+      .maximum_backoff_ms = base::Minutes(10).InMilliseconds(),
+      .entry_lifetime_ms = -1,
+      .always_use_initial_delay = false,
+  };
+  return &policy;
 }
 
 }  // namespace
@@ -445,6 +461,19 @@ void ContextHubService::OnCachedFirstPartyAutoTodosFetched(
     }
   }
 
+  ExecuteFirstPartyAutoTodosFetch(std::move(request_metadata),
+                                  std::make_unique<net::BackoffEntry>(
+                                      GetFirstPartyAutoTodosBackoffPolicy()));
+}
+
+void ContextHubService::ExecuteFirstPartyAutoTodosFetch(
+    personal_context::proto::AutoTodosRequest request_metadata,
+    std::unique_ptr<net::BackoffEntry> backoff) {
+  if (!auto_todos_store_ || !is_generating_first_party_auto_todos_) {
+    FinishFirstPartyAutoTodosGeneration(/*success=*/false);
+    return;
+  }
+
   personal_context::ContextMemoryRequestOptions options;
   options.request_timeout = features::kAutoTodosTimeoutSeconds.Get();
 
@@ -452,7 +481,8 @@ void ContextHubService::OnCachedFirstPartyAutoTodosFetched(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
       request_metadata, options,
       base::BindOnce(&ContextHubService::OnFirstPartyAutoTodosFetched,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), request_metadata,
+                     std::move(backoff)));
 }
 
 bool ContextHubService::IsGeneratingFirstPartyAutoTodos() const {
@@ -707,8 +737,28 @@ void ContextHubService::FinishTabBasedTodosGeneration(bool success) {
 }
 
 void ContextHubService::OnFirstPartyAutoTodosFetched(
+    personal_context::proto::AutoTodosRequest request_metadata,
+    std::unique_ptr<net::BackoffEntry> backoff,
     personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
+    const bool is_transient =
+        result.response.error().error() !=
+            personal_context::ContextMemoryError::ExecutionError::kUnknown &&
+        result.response.error().transient();
+    if (is_transient && backoff &&
+        backoff->failure_count() <
+            features::kFirstPartyAutoTodosMaxRetries.Get()) {
+      // Retry the request after exponential backoff if the error is transient
+      // and retries are remaining.
+      backoff->InformOfRequest(/*succeeded=*/false);
+      const base::TimeDelta retry_delay = backoff->GetTimeUntilRelease();
+      first_party_auto_todos_retry_timer_.Start(
+          FROM_HERE, retry_delay,
+          base::BindOnce(&ContextHubService::ExecuteFirstPartyAutoTodosFetch,
+                         weak_factory_.GetWeakPtr(),
+                         std::move(request_metadata), std::move(backoff)));
+      return;
+    }
     FinishFirstPartyAutoTodosGeneration(/*success=*/false);
     return;
   }
@@ -752,6 +802,7 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
 
 void ContextHubService::FinishFirstPartyAutoTodosGeneration(bool success) {
   is_generating_first_party_auto_todos_ = false;
+  first_party_auto_todos_retry_timer_.Stop();
   if (success) {
     last_first_party_generation_time_ = base::Time::Now();
     // Reset the periodic background timer so the 24-hour countdown restarts
