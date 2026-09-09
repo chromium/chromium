@@ -302,10 +302,6 @@ class BrowserWindowFeatures {
   // Called exactly once to tear down state that depends on the window object.
   void TearDownPreBrowserWindowDestruction();
 
-  chrome::BrowserCommandController* browser_command_controller() const {
-    return browser_command_controller_.get();
-  }
-
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();

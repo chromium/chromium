@@ -1019,12 +1019,7 @@ WebUIToolbarWebView::GetIconTableFetcher() {
 }
 
 CommandUpdater* WebUIToolbarWebView::GetCommandUpdater() {
-  // TODO(crbug.com/428946261): Convert to BrowserCommandController::From().
-  // Doing so makes WebUIToolbarUI::Init() see a null command updater and bail
-  // out, which hangs the WebUIToolbarLifecycle* browser tests. Those only run
-  // with the WebUI toolbar feature enabled, so the divergence between this
-  // accessor and From() is not yet understood.
-  return browser_->GetFeatures().browser_command_controller();
+  return controller_;
 }
 
 OmniboxController* WebUIToolbarWebView::GetOmniboxController() {
