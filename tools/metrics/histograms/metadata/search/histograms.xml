@@ -89,6 +89,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".NewDevice"/>
 </variants>
 
+<variants name="SearchIntegrityEnterprise">
+  <variant name="" summary="in the profile"/>
+  <variant name=".Enterprise" summary="on a managed profile"/>
+</variants>
+
 <variants name="TileUiSurface">
   <variant name="NTP." summary="Query tiles section on the new tab page"/>
   <variant name="Omnibox." summary="Query tiles suggestion on omnibox"/>
@@ -1394,17 +1399,103 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
     Records whether there are duplicate keywords among the installed search
-    engines{Enterprise}
+    engines {Enterprise}, distinguishing between default and non-default
+    engines.
 
     Recorded once per profile on profile load.
   </summary>
-  <token key="Enterprise">
-    <variant name=""
-        summary=", distinguishing between default and non-default engines."/>
-    <variant name=".Enterprise"
-        summary="on a managed profile, distinguishing between default and
-                 non-default engines."/>
-  </token>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.DuplicateKeyword.DuplicatedKeywordsCount"
+    units="keywords" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the number of distinct keywords that are duplicated (associated with
+    more than one TemplateURL) {Enterprise}.
+
+    Recorded once per profile on profile load if at least one duplicate keyword
+    exists. Desktop-only.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.DuplicateKeyword.EntriesPerDuplicatedKeyword"
+    units="entries" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the number of TemplateURL entries associated with each duplicated
+    keyword cluster {Enterprise}.
+
+    Recorded once per duplicated keyword cluster on profile load if at least one
+    duplicate keyword exists. Desktop-only.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.DuplicateKeyword.HasExtensionOnlyDuplicate"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether at least one duplicated keyword involves only extension
+    engines {Enterprise}.
+
+    Recorded once per profile on profile load if at least one duplicate keyword
+    exists. Desktop-only.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.DuplicateKeyword.HasMixedExtensionDuplicate"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether at least one duplicated keyword has both extension and
+    non-extension entries {Enterprise}.
+
+    Recorded once per profile on profile load if at least one duplicate keyword
+    exists. Desktop-only.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.DuplicateKeyword.HasStarterPackDuplicate"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether at least one duplicated keyword involves a starter pack
+    engine (e.g. @gemini) {Enterprise}. This helps track crash risks from
+    @-keyword collisions.
+
+    Recorded once per profile on profile load if at least one duplicate keyword
+    exists. Desktop-only.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
+</histogram>
+
+<histogram
+    name="Search.Integrity{Enterprise}.DuplicateKeyword.HasTrivialDuplicates"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether there is at least one pair of duplicate entries with
+    identical URLs {Enterprise}.
+
+    Recorded once per profile on profile load if at least one duplicate keyword
+    exists. Desktop-only.
+  </summary>
+  <token key="Enterprise" variants="SearchIntegrityEnterprise"/>
 </histogram>
 
 <histogram name="Search.iOS.SelectDefaultSearchEngine"

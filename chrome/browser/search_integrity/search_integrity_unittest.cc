@@ -18,8 +18,10 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace search_integrity {
@@ -51,8 +53,40 @@ class SearchIntegrityTest : public testing::Test {
     return search_integrity_->CheckSiteSearchReport();
   }
 
+  DuplicateKeywordDetailedReport CheckDuplicateKeywordReport() {
+    return search_integrity_->CheckDuplicateKeywordReport();
+  }
+
   void TriggerAllowlistInitialized() {
     search_integrity_->OnAllowlistInitialized({});
+  }
+
+  TemplateURL* AddSearchEngineWithKeyword(const std::u16string& keyword,
+                                          const std::u16string& short_name,
+                                          const std::string& url,
+                                          int prepopulate_id = 0,
+                                          int starter_pack_id = 0) {
+    TemplateURLData data;
+    data.SetShortName(short_name);
+    data.SetKeyword(keyword);
+    data.SetURL(url);
+    data.prepopulate_id = prepopulate_id;
+    data.starter_pack_id = starter_pack_id;
+    return test_util_->model()->Add(std::make_unique<TemplateURL>(data));
+  }
+
+  TemplateURL* AddExtensionSearchEngine(
+      const std::u16string& keyword,
+      const std::string& url,
+      const std::string& extension_id,
+      TemplateURL::Type type = TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
+    TemplateURLData data;
+    data.SetShortName(keyword);
+    data.SetKeyword(keyword);
+    data.SetURL(url);
+    return test_util_->model()->Add(std::make_unique<TemplateURL>(
+        data, type, extension_id, base::Time::Now(),
+        /*wants_to_be_default_engine=*/false));
   }
 
   TemplateURL* AddSearchEngine(const std::u16string& short_name,
@@ -478,6 +512,289 @@ TEST_F(SearchIntegrityTest, Histograms_CustomPopulatedDefault) {
 
   histogram_tester.ExpectUniqueSample("Search.Integrity.CustomPopulatedDefault",
                                       true, 1);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_SingleDuplicateCluster) {
+  // One keyword duplicated across 2 entries; another keyword is unique.
+  AddSearchEngineWithKeyword(u"foo", u"Foo 1",
+                             "https://foo1.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"foo", u"Foo 2",
+                             "https://foo2.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"bar", u"Bar", "https://bar.com?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_THAT(report.entries_per_duplicated_keyword, testing::ElementsAre(2));
+  EXPECT_FALSE(report.has_trivial_duplicates);
+  EXPECT_FALSE(report.has_extension_only_duplicate);
+  EXPECT_FALSE(report.has_mixed_extension_duplicate);
+  EXPECT_FALSE(report.has_starter_pack_duplicate);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_MultipleClustersDistribution) {
+  // Multiple duplicate keywords with varying cluster sizes.
+  // Cluster of 2:
+  AddSearchEngineWithKeyword(u"two", u"Two A",
+                             "https://two-a.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"two", u"Two B",
+                             "https://two-b.com?q={searchTerms}");
+
+  // Cluster of 4:
+  AddSearchEngineWithKeyword(u"four", u"Four A",
+                             "https://four-a.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"four", u"Four B",
+                             "https://four-b.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"four", u"Four C",
+                             "https://four-c.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"four", u"Four D",
+                             "https://four-d.com?q={searchTerms}");
+
+  // Cluster of 3:
+  AddSearchEngineWithKeyword(u"three", u"Three A",
+                             "https://three-a.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"three", u"Three B",
+                             "https://three-b.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"three", u"Three C",
+                             "https://three-c.com?q={searchTerms}");
+
+  // Unique engine (should not be counted in duplicate metrics):
+  AddSearchEngineWithKeyword(u"single", u"Single",
+                             "https://single.com?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 3);
+  EXPECT_THAT(report.entries_per_duplicated_keyword,
+              testing::UnorderedElementsAre(2, 3, 4));
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_FullyTrivialDuplicates) {
+  // Trivial duplicates have identical URLs across all entries in the cluster
+  // (likely indicating sync issues).
+  // Keyword "sync1" has 2 identical entries.
+  AddSearchEngineWithKeyword(u"sync1", u"Sync 1A",
+                             "https://example.com/search?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"sync1", u"Sync 1B",
+                             "https://example.com/search?q={searchTerms}");
+
+  // Keyword "sync2" has 3 identical entries.
+  AddSearchEngineWithKeyword(u"sync2", u"Sync 2A",
+                             "https://test.com/search?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"sync2", u"Sync 2B",
+                             "https://test.com/search?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"sync2", u"Sync 2C",
+                             "https://test.com/search?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 2);
+  EXPECT_THAT(report.entries_per_duplicated_keyword,
+              testing::UnorderedElementsAre(2, 3));
+  EXPECT_TRUE(report.has_trivial_duplicates);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_PartiallyTrivialDuplicates) {
+  // Keyword has some identical URLs and some distinct URLs.
+  // It has trivial duplicates, but is NOT fully trivial.
+  AddSearchEngineWithKeyword(u"mixed_url", u"Site A1",
+                             "https://site.com/search?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"mixed_url", u"Site A2",
+                             "https://site.com/search?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"mixed_url", u"Site B",
+                             "https://different.com/search?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_THAT(report.entries_per_duplicated_keyword, testing::ElementsAre(3));
+  EXPECT_TRUE(report.has_trivial_duplicates);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_ExtensionOnlyDuplicates) {
+  // Keywords where ONLY extensions exist from multiple distinct extensions
+  // (count >= 2).
+  AddExtensionSearchEngine(
+      u"ext_pair", "chrome-extension://ext1/search?q={searchTerms}", "ext1");
+  AddExtensionSearchEngine(
+      u"ext_pair", "chrome-extension://ext2/search?q={searchTerms}", "ext2");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_TRUE(report.has_extension_only_duplicate);
+  EXPECT_FALSE(report.has_mixed_extension_duplicate);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_MixedExtensionDuplicates) {
+  // Keywords where non-extension + extension(s) exist.
+  AddSearchEngineWithKeyword(u"mixed_single", u"Site",
+                             "https://site.com?q={searchTerms}");
+  AddExtensionSearchEngine(u"mixed_single",
+                           "chrome-extension://ext1/search?q={searchTerms}",
+                           "ext1");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_TRUE(report.has_mixed_extension_duplicate);
+  EXPECT_FALSE(report.has_extension_only_duplicate);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywordReport_StarterPackDuplicate) {
+  // Starter pack / @-keyword collision (b/344666739).
+  // @gemini is already present as a built-in starter pack engine.
+  // Add a colliding search engine using the same keyword:
+  AddSearchEngineWithKeyword(u"@gemini", u"Fake Gemini",
+                             "https://imposter.com?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_TRUE(report.has_starter_pack_duplicate);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_NoStarterPackDuplicate_NormalDuplicates) {
+  // Regular duplicate keywords without starter pack engines or @-keywords.
+  AddSearchEngineWithKeyword(u"normal", u"Site 1",
+                             "https://site1.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"normal", u"Site 2",
+                             "https://site2.com?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_FALSE(report.has_starter_pack_duplicate);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywordReport_EmptyKeywordsIgnored) {
+  // Search engines with whitespace-only keywords (which normalize to empty)
+  // should NOT form a duplicate cluster.
+  AddSearchEngineWithKeyword(u" ", u"Empty 1",
+                             "https://empty1.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"  ", u"Empty 2",
+                             "https://empty2.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"valid", u"Valid",
+                             "https://valid.com?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 0);
+  EXPECT_THAT(report.entries_per_duplicated_keyword, testing::IsEmpty());
+  EXPECT_FALSE(report.has_trivial_duplicates);
+}
+
+TEST_F(SearchIntegrityTest,
+       CheckDuplicateKeywordReport_CustomAtKeywordDuplicate) {
+  // Two custom search engines sharing a keyword starting with '@' (without
+  // starter_pack_id) should also trigger has_starter_pack_duplicate.
+  AddSearchEngineWithKeyword(u"@custom", u"Custom At 1",
+                             "https://custom1.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"@custom", u"Custom At 2",
+                             "https://custom2.com?q={searchTerms}");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 1);
+  EXPECT_TRUE(report.has_starter_pack_duplicate);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywordReport_Comprehensive) {
+  // Profile with all duplicate types simultaneously:
+  // Trivial duplicate: identical URLs
+  AddSearchEngineWithKeyword(u"trivial", u"Triv 1",
+                             "https://trivial.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"trivial", u"Triv 2",
+                             "https://trivial.com?q={searchTerms}");
+
+  // Extension only duplicate
+  AddExtensionSearchEngine(
+      u"ext_kw", "chrome-extension://ext1/search?q={searchTerms}", "ext1");
+  AddExtensionSearchEngine(
+      u"ext_kw", "chrome-extension://ext2/search?q={searchTerms}", "ext2");
+
+  // Mixed extension duplicate
+  AddSearchEngineWithKeyword(u"mixed_kw", u"Mixed Site",
+                             "https://mixed.com?q={searchTerms}");
+  AddExtensionSearchEngine(
+      u"mixed_kw", "chrome-extension://ext3/search?q={searchTerms}", "ext3");
+
+  // Starter pack duplicate: @gemini is already present as a built-in starter
+  // pack engine. Adding a colliding search engine creates a duplicate starter
+  // pack cluster of size 2.
+  AddSearchEngineWithKeyword(u"@gemini", u"Gemini Alt",
+                             "https://gemini-alt.com?q={searchTerms}");
+
+  // Unique non-duplicated engines (normal and extension)
+  AddSearchEngineWithKeyword(u"unique_norm", u"Unique",
+                             "https://unique.com?q={searchTerms}");
+  AddExtensionSearchEngine(
+      u"unique_ext", "chrome-extension://ext4/search?q={searchTerms}", "ext4");
+
+  DuplicateKeywordDetailedReport report = CheckDuplicateKeywordReport();
+
+  EXPECT_EQ(report.distinct_duplicated_keywords_count, 4);
+  EXPECT_THAT(report.entries_per_duplicated_keyword,
+              testing::UnorderedElementsAre(2, 2, 2, 2));
+  EXPECT_TRUE(report.has_trivial_duplicates);
+  EXPECT_TRUE(report.has_extension_only_duplicate);
+  EXPECT_TRUE(report.has_mixed_extension_duplicate);
+  EXPECT_TRUE(report.has_starter_pack_duplicate);
+}
+
+TEST_F(SearchIntegrityTest, Histograms_DuplicateKeyword) {
+  base::HistogramTester histogram_tester;
+
+  // Trivial duplicate: identical URLs
+  AddSearchEngineWithKeyword(u"trivial", u"Triv 1",
+                             "https://trivial.com?q={searchTerms}");
+  AddSearchEngineWithKeyword(u"trivial", u"Triv 2",
+                             "https://trivial.com?q={searchTerms}");
+
+  // Extension only duplicate
+  AddExtensionSearchEngine(
+      u"ext_kw", "chrome-extension://ext1/search?q={searchTerms}", "ext1");
+  AddExtensionSearchEngine(
+      u"ext_kw", "chrome-extension://ext2/search?q={searchTerms}", "ext2");
+
+  // Mixed extension duplicate
+  AddSearchEngineWithKeyword(u"mixed_kw", u"Mixed Site",
+                             "https://mixed.com?q={searchTerms}");
+  AddExtensionSearchEngine(
+      u"mixed_kw", "chrome-extension://ext3/search?q={searchTerms}", "ext3");
+
+  // Starter pack duplicate: @gemini built-in engine collided with custom engine
+  AddSearchEngineWithKeyword(u"@gemini", u"Gemini Alt",
+                             "https://gemini-alt.com?q={searchTerms}");
+
+  // Unique non-duplicated engine
+  AddSearchEngineWithKeyword(u"unique", u"Unique",
+                             "https://unique.com?q={searchTerms}");
+
+  TriggerAllowlistInitialized();
+
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.DuplicateKeyword.DuplicatedKeywordsCount", 4, 1);
+  histogram_tester.ExpectBucketCount(
+      "Search.Integrity.DuplicateKeyword.EntriesPerDuplicatedKeyword", 2, 4);
+  histogram_tester.ExpectTotalCount(
+      "Search.Integrity.DuplicateKeyword.EntriesPerDuplicatedKeyword", 4);
+
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.DuplicateKeyword.HasExtensionOnlyDuplicate", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.DuplicateKeyword.HasMixedExtensionDuplicate", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.DuplicateKeyword.HasStarterPackDuplicate", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.DuplicateKeyword.HasTrivialDuplicates", true, 1);
 }
 
 TEST(SearchEngineAllowlistTest, LoadHistoricalUrls) {

@@ -16,6 +16,8 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -110,6 +112,24 @@ bool IsObfuscatedUrl(const std::string& url_str) {
   return percent_count >= kObfuscatedUrlPercentThreshold;
 }
 
+// Returns true if the search engine is controlled or added by an extension.
+bool IsExtensionEngine(const TemplateURL* turl) {
+  if (!turl) {
+    return false;
+  }
+  return turl->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
+         turl->type() == TemplateURL::OMNIBOX_API_EXTENSION ||
+         turl->GetExtensionInfo() != nullptr;
+}
+
+// Returns the extension ID if the search engine was added by an extension.
+std::string GetExtensionId(const TemplateURL* turl) {
+  if (turl && turl->GetExtensionInfo()) {
+    return turl->GetExtensionInfo()->extension_id;
+  }
+  return "";
+}
+
 }  // namespace
 
 SearchIntegrity::SearchIntegrity(TemplateURLService* template_url_service,
@@ -200,6 +220,10 @@ void SearchIntegrity::OnTemplateURLServiceLoaded() {
                             site_report.has_cross_domain_search);
   base::UmaHistogramBoolean("Search.Integrity.ExtensionUrlSearch",
                             site_report.has_extension_url_search);
+
+  DuplicateKeywordDetailedReport duplicate_report =
+      CheckDuplicateKeywordReport();
+  LogDuplicateKeywordMetrics(duplicate_report);
 }
 
 void SearchIntegrity::LogEnterpriseMetrics(
@@ -218,6 +242,40 @@ void SearchIntegrity::LogEnterpriseMetrics(
         "Search.Integrity.Enterprise.Referral.ParameterFound",
         report.referral_param_found.value());
   }
+}
+
+void SearchIntegrity::LogDuplicateKeywordMetrics(
+    const DuplicateKeywordDetailedReport& report) {
+  if (report.distinct_duplicated_keywords_count == 0) {
+    return;
+  }
+
+  const bool is_enterprise = enterprise_util::IsBrowserManaged(profile_);
+  const std::string prefix =
+      is_enterprise ? "Search.Integrity.Enterprise.DuplicateKeyword."
+                    : "Search.Integrity.DuplicateKeyword.";
+
+  base::UmaHistogramCounts100(base::StrCat({prefix, "DuplicatedKeywordsCount"}),
+                              report.distinct_duplicated_keywords_count);
+
+  const std::string entries_histogram_name =
+      base::StrCat({prefix, "EntriesPerDuplicatedKeyword"});
+  for (int count : report.entries_per_duplicated_keyword) {
+    base::UmaHistogramCounts100(entries_histogram_name, count);
+  }
+
+  base::UmaHistogramBoolean(base::StrCat({prefix, "HasExtensionOnlyDuplicate"}),
+                            report.has_extension_only_duplicate);
+
+  base::UmaHistogramBoolean(
+      base::StrCat({prefix, "HasMixedExtensionDuplicate"}),
+      report.has_mixed_extension_duplicate);
+
+  base::UmaHistogramBoolean(base::StrCat({prefix, "HasStarterPackDuplicate"}),
+                            report.has_starter_pack_duplicate);
+
+  base::UmaHistogramBoolean(base::StrCat({prefix, "HasTrivialDuplicates"}),
+                            report.has_trivial_duplicates);
 }
 
 SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
@@ -431,6 +489,83 @@ SiteSearchIntegrityReport SearchIntegrity::CheckSiteSearchReport() {
     } else {
       // Keyword and search have different domains even when eTLD is stripped.
       report.has_cross_domain_search = true;
+    }
+  }
+
+  return report;
+}
+
+DuplicateKeywordDetailedReport SearchIntegrity::CheckDuplicateKeywordReport() {
+  DuplicateKeywordDetailedReport report;
+  if (!template_url_service_) {
+    return report;
+  }
+
+  const TemplateURLService::TemplateURLVector template_urls =
+      template_url_service_->GetTemplateURLs();
+
+  // Bucket all TemplateURLs by normalized keyword
+  std::map<std::u16string, std::vector<const TemplateURL*>> keyword_clusters;
+  for (const TemplateURL* turl : template_urls) {
+    if (!turl) {
+      continue;
+    }
+    std::u16string normalized_kw = base::i18n::ToLower(turl->keyword());
+    if (normalized_kw.empty()) {
+      continue;
+    }
+    keyword_clusters[normalized_kw].push_back(turl);
+  }
+
+  // Inspect clusters that have duplicates
+  for (const auto& [keyword, cluster] : keyword_clusters) {
+    if (cluster.size() <= 1) {
+      continue;
+    }
+
+    report.distinct_duplicated_keywords_count++;
+    report.entries_per_duplicated_keyword.push_back(
+        static_cast<int>(cluster.size()));
+
+    // Trivial Duplicates (identical URLs) and Starter Pack check
+    if (!keyword.empty() && keyword[0] == u'@') {
+      report.has_starter_pack_duplicate = true;
+    }
+    std::set<std::string> unique_urls;
+    for (const TemplateURL* turl : cluster) {
+      unique_urls.insert(turl->url());
+      if (turl->starter_pack_id() !=
+          template_url_starter_pack_data::StarterPackId::kNone) {
+        report.has_starter_pack_duplicate = true;
+      }
+    }
+    if (unique_urls.size() < cluster.size()) {
+      report.has_trivial_duplicates = true;
+    }
+
+    // Extension collisions
+    std::set<std::string> extension_ids;
+    bool has_non_extension = false;
+    int unknown_ext_idx = 0;
+
+    for (const TemplateURL* turl : cluster) {
+      if (IsExtensionEngine(turl)) {
+        std::string ext_id = GetExtensionId(turl);
+        if (!ext_id.empty()) {
+          extension_ids.insert(ext_id);
+        } else {
+          extension_ids.insert(base::StrCat(
+              {"unknown_ext_", base::NumberToString(++unknown_ext_idx)}));
+        }
+      } else {
+        has_non_extension = true;
+      }
+    }
+
+    if (!extension_ids.empty() && has_non_extension) {
+      report.has_mixed_extension_duplicate = true;
+    } else if (extension_ids.size() >= 2 && !has_non_extension) {
+      report.has_extension_only_duplicate = true;
     }
   }
 
