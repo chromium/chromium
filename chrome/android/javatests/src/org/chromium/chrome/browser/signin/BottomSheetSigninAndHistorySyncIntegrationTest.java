@@ -119,10 +119,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
-// TODO(crbug.com/428281174): Test content is blocked by system UI on B+.
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-        message = "crbug.com/428281174")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
 @Restriction(DeviceFormFactor.PHONE)
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
@@ -964,6 +960,10 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    // TODO(crbug.com/428281174): Re-enable when activity recreation issue on Android 16+ is fixed.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428281174")
     public void testWithExistingAccount_signInWithAddedAccount_activityKilled() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -1089,6 +1089,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testWithNoAccount_noSignIn() {
+        mBaseActivityTestRule.startOnBlankPage();
         launchActivity(
                 NoAccountSigninMode.NO_SIGNIN,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
