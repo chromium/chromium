@@ -11,15 +11,14 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -44,7 +43,6 @@ AtMemoryQueryServiceFactory::AtMemoryQueryServiceFactory()
   DependsOn(autofill::AutofillLogRouterFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
-  DependsOn(GoogleGroupsManagerFactory::GetInstance());
   DependsOn(PersonalContextServiceFactory::GetInstance());
   DependsOn(PersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
@@ -56,8 +54,7 @@ AtMemoryQueryServiceFactory::~AtMemoryQueryServiceFactory() = default;
 std::unique_ptr<KeyedService>
 AtMemoryQueryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!autofill::IsAtMemoryFeatureEnabled(
-          GoogleGroupsManagerFactory::GetForBrowserContext(context))) {
+  if (!base::FeatureList::IsEnabled(autofill::features::kAutofillAtMemory)) {
     return nullptr;
   }
 
