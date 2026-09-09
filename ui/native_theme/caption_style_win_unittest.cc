@@ -4,7 +4,7 @@
 
 #include "ui/native_theme/caption_style.h"
 
-#include <string>
+#include <string_view>
 
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -62,7 +62,21 @@ void SetCurrentSelectedTheme(const wchar_t* guid) {
   ASSERT_EQ(key.WriteValue(L"CurrentSelectedTheme", guid), ERROR_SUCCESS);
 }
 
-class CaptionStyleWinTest : public ::testing::Test {
+struct CaptionThemeTestCase {
+  const wchar_t* guid;
+  bool expect_important;
+};
+
+constexpr CaptionThemeTestCase kCaptionThemeTestCases[] = {
+    // The Default theme should allow page styles to override caption styles.
+    {kDefaultThemeGuid, false},
+    // A non-Default theme is a user preference that should override page
+    // styles with !important.
+    {kCustomThemeGuid, true},
+};
+
+class CaptionStyleWinTest
+    : public ::testing::TestWithParam<CaptionThemeTestCase> {
  protected:
   void SetUp() override {
     // Redirect HKCU to a scratch hive so the test never touches the real user
@@ -80,61 +94,40 @@ class CaptionStyleWinTest : public ::testing::Test {
 
 }  // namespace
 
-// When the Windows Default caption theme is selected, FromSystemSettings()
-// should return a CaptionStyle whose populated fields do NOT contain
-// !important. The OS-reported defaults serve as UA styles that HTML author
-// ::cue rules can override.
-TEST_F(CaptionStyleWinTest, TestWinCaptionStyleDefault) {
+TEST_P(CaptionStyleWinTest, TestWinCaptionStyle) {
+  const CaptionThemeTestCase& test_case = GetParam();
+
   ASSERT_NO_FATAL_FAILURE(SeedCaptionPropertyRegistryValues());
-  ASSERT_NO_FATAL_FAILURE(SetCurrentSelectedTheme(kDefaultThemeGuid));
+  ASSERT_NO_FATAL_FAILURE(SetCurrentSelectedTheme(test_case.guid));
 
   std::optional<ui::CaptionStyle> caption_style =
       ui::CaptionStyle::FromSystemSettings();
   ASSERT_TRUE(caption_style.has_value());
 
-  // No field may carry !important under the Default theme — author ::cue
-  // styles must remain free to override the UA defaults.
-  EXPECT_EQ(caption_style->background_color.find("!important"),
-            std::string::npos)
-      << "Value: " << caption_style->background_color;
-  EXPECT_EQ(caption_style->font_family.find("!important"), std::string::npos)
-      << "Value: " << caption_style->font_family;
-  EXPECT_EQ(caption_style->font_variant.find("!important"), std::string::npos)
-      << "Value: " << caption_style->font_variant;
-  EXPECT_EQ(caption_style->text_color.find("!important"), std::string::npos)
-      << "Value: " << caption_style->text_color;
-  EXPECT_EQ(caption_style->text_shadow.find("!important"), std::string::npos)
-      << "Value: " << caption_style->text_shadow;
-  EXPECT_EQ(caption_style->text_size.find("!important"), std::string::npos)
-      << "Value: " << caption_style->text_size;
-  EXPECT_EQ(caption_style->window_color.find("!important"), std::string::npos)
-      << "Value: " << caption_style->window_color;
+  auto check_property = [&test_case](std::string_view property_name,
+                                     std::string_view value) {
+    SCOPED_TRACE(property_name);
+    EXPECT_FALSE(value.empty());
+    EXPECT_EQ(value.find("!important") != std::string_view::npos,
+              test_case.expect_important)
+        << "Value: " << value;
+  };
+
+  check_property("background_color", caption_style->background_color);
+  check_property("font_family", caption_style->font_family);
+  check_property("font_variant", caption_style->font_variant);
+  check_property("text_color", caption_style->text_color);
+  check_property("text_shadow", caption_style->text_shadow);
+  check_property("text_size", caption_style->text_size);
+  check_property("window_color", caption_style->window_color);
 }
 
-// When a non-default caption theme is selected, FromSystemSettings() should
-// return a CaptionStyle whose populated fields contain !important so the
-// user's accessibility preference overrides author ::cue styles.
-TEST_F(CaptionStyleWinTest, TestWinCaptionStyleNonDefault) {
-  ASSERT_NO_FATAL_FAILURE(SeedCaptionPropertyRegistryValues());
-  ASSERT_NO_FATAL_FAILURE(SetCurrentSelectedTheme(kCustomThemeGuid));
-
-  std::optional<ui::CaptionStyle> caption_style =
-      ui::CaptionStyle::FromSystemSettings();
-  ASSERT_TRUE(caption_style.has_value());
-
-  EXPECT_NE(caption_style->background_color.find("!important"),
-            std::string::npos)
-      << "Value: " << caption_style->background_color;
-  EXPECT_NE(caption_style->font_family.find("!important"), std::string::npos)
-      << "Value: " << caption_style->font_family;
-  EXPECT_NE(caption_style->text_color.find("!important"), std::string::npos)
-      << "Value: " << caption_style->text_color;
-  EXPECT_NE(caption_style->text_shadow.find("!important"), std::string::npos)
-      << "Value: " << caption_style->text_shadow;
-  EXPECT_NE(caption_style->text_size.find("!important"), std::string::npos)
-      << "Value: " << caption_style->text_size;
-  EXPECT_NE(caption_style->window_color.find("!important"), std::string::npos)
-      << "Value: " << caption_style->window_color;
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptionStyleWinTest,
+    ::testing::ValuesIn(kCaptionThemeTestCases),
+    [](const ::testing::TestParamInfo<CaptionThemeTestCase>& info) {
+      return info.param.expect_important ? "NonDefault" : "Default";
+    });
 
 }  // namespace ui
