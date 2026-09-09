@@ -410,6 +410,8 @@ cc_component("cc") {
     "trees/effect_node.h",
     "trees/frame_data.cc",
     "trees/frame_data.h",
+    "trees/hit_test_data_builder.cc",
+    "trees/hit_test_data_builder.h",
     "trees/image_animation_controller.cc",
     "trees/image_animation_controller.h",
     "trees/latency_info_swap_promise.cc",
