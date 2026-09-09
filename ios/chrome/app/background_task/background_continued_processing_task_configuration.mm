@@ -5,6 +5,7 @@
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
 
 namespace {
 
@@ -32,6 +33,18 @@ constexpr int64_t kDefaultTotalUnits = 100;
     }
   }
   return self;
+}
+
+#pragma mark - Properties
+
+- (void)setTitle:(NSString*)title {
+  CHECK(title.length > 0);
+  _title = [title copy];
+}
+
+- (void)setTotalUnits:(int64_t)totalUnits {
+  CHECK_GT(totalUnits, 0);
+  _totalUnits = totalUnits;
 }
 
 @end

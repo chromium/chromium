@@ -22,19 +22,19 @@
 
 // Callback invoked when the system expires the task or the user cancels it from
 // the Live Activity interface. Guaranteed to run on the main/UI thread.
-@property(nonatomic, copy) ProceduralBlock expirationHandler;
+@property(nonatomic, readonly, copy) ProceduralBlock expirationHandler;
 
 // (Optional) Total units of work for progress tracking. Defaults to 100.
 @property(nonatomic) int64_t totalUnits;
 
 // (Optional) The submission strategy for the scheduler to abide by. Defaults to
-// BGContinuedProcessingTaskRequestSubmissionStrategyQueue.
+// `BGContinuedProcessingTaskRequestSubmissionStrategyQueue`.
 @property(nonatomic)
     BGContinuedProcessingTaskRequestSubmissionStrategy strategy API_AVAILABLE(
         ios(26.0));
 
 // (Optional) Special system resources required for the task. Defaults to
-// BGContinuedProcessingTaskRequestResourcesDefault.
+// `BGContinuedProcessingTaskRequestResourcesDefault`.
 @property(nonatomic)
     BGContinuedProcessingTaskRequestResources requiredResources API_AVAILABLE(
         ios(26.0));

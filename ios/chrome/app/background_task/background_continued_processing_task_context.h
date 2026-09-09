@@ -20,10 +20,6 @@
 // The formatted system task identifier.
 @property(nonatomic, readonly, copy) NSString* taskIdentifier;
 
-// The underlying NSProgress object tracking progress. Live Activity progress is
-// updated via `incrementProgressByUnits:` or `setCompletedUnits:`.
-@property(nonatomic, readonly) NSProgress* progress;
-
 // Title displayed in the system-provided Live Activity. Setting this property
 // immediately updates the cached title and propagates the update to the system.
 @property(nonatomic, copy) NSString* title;
@@ -38,11 +34,6 @@
 
 // Whether the task has already been completed or expired.
 @property(nonatomic, readonly, getter=isCompleted) BOOL completed;
-
-// Dynamic expiration handler that can be set or updated by the consumer.
-// Guaranteed to be invoked on the main UI thread upon system expiration or
-// user cancellation.
-@property(nonatomic, copy) ProceduralBlock expirationHandler;
 
 // Updates both the title and subtitle simultaneously in the system-provided
 // Live Activity.

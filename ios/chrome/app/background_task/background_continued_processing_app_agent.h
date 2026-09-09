@@ -17,7 +17,7 @@
 // to callers for tracking progress, system-provided Live Activity updates, and
 // expiration handling. `requestTaskWithIdentifier:configuration:` must be
 // called from an active foreground state.
-@interface BackgroundContinuedProcessingAppAgent : SceneObservingAppAgent
+@interface BackgroundContinuedProcessingAppAgent : ObservingAppAgent
 
 // Requests a continued processing task with the given identifier and
 // configuration. MUST be invoked while the application is in an active

@@ -1162,7 +1162,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
                                           initWithAppState:self.appState]];
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-  [_appState addAgent:[[BackgroundContinuedProcessingAppAgent alloc] init]];
+  [appState addAgent:[[BackgroundContinuedProcessingAppAgent alloc] init]];
 #endif
 
   // TODO(crbug.com/355142171): Remove the DiscoverFeedAppAgent.
