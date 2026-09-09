@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.OnImageLoadedCallback;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -193,8 +194,10 @@ public class NtpThemeMediator {
      * Handles clicks on the 'Chrome default' theme section or when the daily update feature is
      * cancelled.
      */
-    private void resetCustomizedTheme() {
-        updateForChoosingDefaultOrChromeColorOption(DEFAULT);
+    @VisibleForTesting
+    void resetCustomizedTheme() {
+        updateTrailingIconVisibilityForSectionType(DEFAULT);
+        mNtpThemeCollectionManager.resetCustomBackgroundInfo();
 
         @NtpBackgroundType
         int currentBackgroundType = mNtpCustomizationConfigManager.getBackgroundType();
@@ -245,13 +248,16 @@ public class NtpThemeMediator {
     }
 
     /**
-     * Reset custom background info and update trailing icon visibility when the user selects the
-     * default background or a Chrome color.
+     * Updates trailing icon visibility and sets the Chrome color on the theme collection manager
+     * when the user selects a Chrome color.
+     *
+     * @param colorId The {@link NtpThemeColorId} of the selected Chrome color.
      */
     @VisibleForTesting
-    void updateForChoosingDefaultOrChromeColorOption(@NtpBackgroundType int sectionType) {
-        updateTrailingIconVisibilityForSectionType(sectionType);
-        mNtpThemeCollectionManager.resetCustomBackground();
+    void onChromeColorSelected(@NtpThemeColorId int colorId) {
+        updateTrailingIconVisibilityForSectionType(CHROME_COLOR);
+        assert colorId > NtpThemeColorId.DEFAULT && colorId < NtpThemeColorId.NUM_ENTRIES;
+        mNtpThemeCollectionManager.setChromeColor(colorId);
     }
 
     /**

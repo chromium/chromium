@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -53,7 +54,7 @@ public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
     private final PropertyModel mPropertyModel;
     private final int mItemWidth;
     private final int mSpacing;
-    private final Runnable mOnChromeColorSelectedCallback;
+    private final Callback<Integer> mOnChromeColorSelectedCallback;
 
     // The color info when the Chrome color bottom sheet is created. We compare it with the newly
     // selected one to see if recreate() is necessary when the bottom sheet is closed. This color
@@ -76,7 +77,9 @@ public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
      * @param onChromeColorSelectedCallback The callback to run when a color is selected.
      */
     public NtpChromeColorsCoordinator(
-            Context context, BottomSheetDelegate delegate, Runnable onChromeColorSelectedCallback) {
+            Context context,
+            BottomSheetDelegate delegate,
+            Callback<Integer> onChromeColorSelectedCallback) {
         mContext = context;
         mDelegate = delegate;
         mOnChromeColorSelectedCallback = onChromeColorSelectedCallback;
@@ -201,7 +204,7 @@ public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundDataChanged(mContext, backgroundData);
 
-        mOnChromeColorSelectedCallback.run();
+        mOnChromeColorSelectedCallback.onResult(ntpThemeColorInfo.id);
         mLastClickedColorInfo = ntpThemeColorInfo;
     }
 

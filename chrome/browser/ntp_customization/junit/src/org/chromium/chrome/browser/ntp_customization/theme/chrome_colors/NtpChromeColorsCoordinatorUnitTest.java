@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
@@ -45,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -72,7 +72,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
-    @Mock private Runnable mOnChromeColorSelectedCallback;
+    @Mock private Callback<Integer> mOnChromeColorSelectedCallback;
     @Mock private View.OnClickListener mOnClickListener;
     @Mock private TextWatcher mTextWatcher;
 
@@ -324,7 +324,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         adapter.getOnItemClickedCallbackForTesting().onResult(adapter.getColorsForTesting().get(0));
 
         // Verify the callback is called.
-        verify(mOnChromeColorSelectedCallback).run();
+        verify(mOnChromeColorSelectedCallback).onResult(adapter.getColorsForTesting().get(0).id);
     }
 
     @Test
@@ -338,7 +338,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         mCoordinator.onItemClicked(colorInfo);
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mOnChromeColorSelectedCallback).run();
+        verify(mOnChromeColorSelectedCallback).onResult(colorInfo.id);
     }
 
     @Test
@@ -362,16 +362,16 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 colorInfo.primaryColorResId,
                 mCoordinator.getPrimaryColorInfoForTesting().primaryColorResId);
         clearInvocations(mBottomSheetDelegate);
-        clearInvocations(mOnChromeColorSelectedCallback);
+        clearInvocations((Object) mOnChromeColorSelectedCallback);
 
         mCoordinator.onItemClicked(colorInfo);
         verify(mBottomSheetDelegate).onNewColorSelected(eq(false));
-        verify(mOnChromeColorSelectedCallback).run();
+        verify(mOnChromeColorSelectedCallback).onResult(colorId);
         assertEquals(colorId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
 
         mCoordinator.onItemClicked(colorInfo1);
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mOnChromeColorSelectedCallback, times(2)).run();
+        verify(mOnChromeColorSelectedCallback).onResult(colorId1);
         assertEquals(colorId1, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
     }
 
@@ -387,7 +387,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         mCoordinator.onItemClicked(colorInfo);
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mOnChromeColorSelectedCallback).run();
+        verify(mOnChromeColorSelectedCallback).onResult(colorInfo.id);
         assertEquals(
                 backgroundColor, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(-1));
         assertEquals(

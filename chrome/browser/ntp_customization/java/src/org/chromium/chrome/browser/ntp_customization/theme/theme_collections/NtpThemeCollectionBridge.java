@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -219,11 +220,23 @@ public class NtpThemeCollectionBridge {
                 .selectLocalBackgroundImage(mNativeNtpThemeCollectionBridge);
     }
 
-    /** Resets the custom background. */
-    public void resetCustomBackground() {
+    /**
+     * Sets the New Tab Page theme to a specific Chrome color.
+     *
+     * @param colorId The ID of the Chrome color.
+     */
+    public void setChromeColor(@NtpThemeColorId int colorId) {
         if (mNativeNtpThemeCollectionBridge == 0) return;
 
-        NtpThemeCollectionBridgeJni.get().resetCustomBackground(mNativeNtpThemeCollectionBridge);
+        NtpThemeCollectionBridgeJni.get().setChromeColor(mNativeNtpThemeCollectionBridge, colorId);
+    }
+
+    /** Resets the New Tab Page theme to default. */
+    public void resetCustomBackgroundInfo() {
+        if (mNativeNtpThemeCollectionBridge == 0) return;
+
+        NtpThemeCollectionBridgeJni.get()
+                .resetCustomBackgroundInfo(mNativeNtpThemeCollectionBridge);
     }
 
     /**
@@ -291,7 +304,9 @@ public class NtpThemeCollectionBridge {
 
         void selectLocalBackgroundImage(long nativeNtpThemeCollectionBridge);
 
-        void resetCustomBackground(long nativeNtpThemeCollectionBridge);
+        void setChromeColor(long nativeNtpThemeCollectionBridge, @NtpThemeColorId int colorId);
+
+        void resetCustomBackgroundInfo(long nativeNtpThemeCollectionBridge);
 
         void updateThemeCollectionBackgroundColor(
                 long nativeNtpThemeCollectionBridge, GURL backgroundUrl, int primaryColor);

@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -160,14 +161,6 @@ public class NtpThemeCollectionManagerUnitTest {
     }
 
     @Test
-    public void testResetCustomBackground() {
-        mNtpThemeCollectionManager =
-                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
-        mNtpThemeCollectionManager.resetCustomBackground();
-        verify(mNatives).resetCustomBackground(anyLong());
-    }
-
-    @Test
     public void testSetThemeCollectionImage() {
         mNtpThemeCollectionManager =
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
@@ -196,6 +189,23 @@ public class NtpThemeCollectionManagerUnitTest {
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
         mNtpThemeCollectionManager.selectLocalBackgroundImage();
         verify(mNatives).selectLocalBackgroundImage(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
+    }
+
+    @Test
+    public void testSetChromeColor() {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
+        mNtpThemeCollectionManager.setChromeColor(colorId);
+        verify(mNatives).setChromeColor(NATIVE_NTP_THEME_COLLECTION_BRIDGE, colorId);
+    }
+
+    @Test
+    public void testResetCustomBackgroundInfo() {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        mNtpThemeCollectionManager.resetCustomBackgroundInfo();
+        verify(mNatives).resetCustomBackgroundInfo(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
     }
 
     @Test
@@ -295,7 +305,7 @@ public class NtpThemeCollectionManagerUnitTest {
     public void
             testOnCustomBackgroundImageUpdated_whenDailyRefreshAfterResetBackground_thenIgnoresTheme() {
         selectDailyRefreshOptionForThemeCollection();
-        mNtpThemeCollectionManager.resetCustomBackground();
+        mNtpThemeCollectionManager.resetCustomBackgroundInfo();
         CustomBackgroundInfo info = createBackgroundInfo(/* isDailyRefresh= */ true);
 
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
@@ -344,7 +354,7 @@ public class NtpThemeCollectionManagerUnitTest {
     public void
             testOnCustomBackgroundImageUpdated_whenUrlMismatchesAfterResetBackground_thenIgnoresTheme() {
         selectThemeCollectionImage();
-        mNtpThemeCollectionManager.resetCustomBackground();
+        mNtpThemeCollectionManager.resetCustomBackgroundInfo();
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(JUnitTestGURLs.URL_2, "collectionId", false, false);
 
@@ -388,7 +398,7 @@ public class NtpThemeCollectionManagerUnitTest {
     public void
             testOnCustomBackgroundImageUpdated_whenUrlMatchesAfterResetBackground_thenIgnoresTheme() {
         CollectionImage selectedImage = selectThemeCollectionImage();
-        mNtpThemeCollectionManager.resetCustomBackground();
+        mNtpThemeCollectionManager.resetCustomBackgroundInfo();
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
                         selectedImage.imageUrl, selectedImage.collectionId, false, false);

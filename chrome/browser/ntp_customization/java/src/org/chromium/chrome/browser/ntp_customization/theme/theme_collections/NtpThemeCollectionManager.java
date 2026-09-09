@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
@@ -133,10 +134,21 @@ public class NtpThemeCollectionManager {
         mOtherBackgroundTypeSelected = true;
     }
 
-    /** Resets the custom background. */
-    public void resetCustomBackground() {
+    /**
+     * Sets the New Tab Page theme to a specific Chrome color.
+     *
+     * @param colorId The ID of the Chrome color.
+     */
+    public void setChromeColor(@NtpThemeColorId int colorId) {
         resetSelectionState();
-        mNtpThemeCollectionBridge.resetCustomBackground();
+        mNtpThemeCollectionBridge.setChromeColor(colorId);
+        mOtherBackgroundTypeSelected = true;
+    }
+
+    /** Resets the New Tab Page theme to default. */
+    public void resetCustomBackgroundInfo() {
+        resetSelectionState();
+        mNtpThemeCollectionBridge.resetCustomBackgroundInfo();
         mOtherBackgroundTypeSelected = true;
     }
 

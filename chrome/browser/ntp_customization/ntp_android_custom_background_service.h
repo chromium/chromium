@@ -34,6 +34,9 @@ namespace ntp_customization {
 class NtpAndroidThemeSyncBridge;
 }  // namespace ntp_customization
 
+// Key for storing the Chrome color ID in kNtpAndroidChromeColorDict.
+inline constexpr char kNtpAndroidThemeColorIdKey[] = "theme_color_id";
+
 // Android-specific service for managing custom backgrounds on the NTP.
 class NtpAndroidCustomBackgroundService
     : public NtpCustomBackgroundServiceBase {
@@ -75,6 +78,10 @@ class NtpAndroidCustomBackgroundService
 
   // Callback invoked when incoming theme changes are received from Chrome Sync.
   void OnThemeChangedFromSync(const sync_pb::ThemeAndroidSpecifics& specifics);
+
+  // Sets the Chrome color ID, clears any custom background image, and notifies
+  // the sync bridge.
+  void SetChromeColor(int color_id);
 
  protected:
   void NotifyAboutBackgrounds() override;

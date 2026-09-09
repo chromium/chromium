@@ -1621,6 +1621,10 @@ inline constexpr char kNtpAndroidCustomBackgroundDict[] =
 // Boolean pref for whether the custom background is local to device.
 inline constexpr char kNtpAndroidCustomBackgroundLocalToDevice[] =
     "ntp.android_custom_background_local_to_device";
+
+// Dictionary pref for the selected Chrome color information.
+inline constexpr char kNtpAndroidChromeColorDict[] =
+    "ntp.android_chrome_color_dict";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Keeps track of which sessions are collapsed in the Other Devices menu.

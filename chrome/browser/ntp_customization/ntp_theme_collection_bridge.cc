@@ -245,7 +245,15 @@ void NtpThemeCollectionBridge::SelectLocalBackgroundImage(JNIEnv* env) {
   ntp_custom_background_service_->SelectLocalBackgroundImage(base::FilePath());
 }
 
-void NtpThemeCollectionBridge::ResetCustomBackground(JNIEnv* env) {
+void NtpThemeCollectionBridge::SetChromeColor(JNIEnv* env, int color_id) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+
+  ntp_custom_background_service_->SetChromeColor(color_id);
+}
+
+void NtpThemeCollectionBridge::ResetCustomBackgroundInfo(JNIEnv* env) {
   if (!ntp_custom_background_service_) {
     return;
   }

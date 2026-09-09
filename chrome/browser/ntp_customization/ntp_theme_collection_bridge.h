@@ -87,8 +87,11 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
   // local device.
   void SelectLocalBackgroundImage(JNIEnv* env);
 
-  // Resets the New Tab Page background to the default theme.
-  void ResetCustomBackground(JNIEnv* env);
+  // Sets the Chrome color ID on the custom background service.
+  void SetChromeColor(JNIEnv* env, int color_id);
+
+  // Resets the theme to default on the custom background service.
+  void ResetCustomBackgroundInfo(JNIEnv* env);
 
   // Updates the theme collection background's primary color and notifies the
   // sync bridge.
