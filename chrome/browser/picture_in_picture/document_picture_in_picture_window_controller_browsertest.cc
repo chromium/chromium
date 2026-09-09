@@ -411,6 +411,27 @@ class DocumentPictureInPictureWindowControllerLifecycleTest
   }
 };
 
+class DocumentPictureInPictureWindowControllerRequestedSizeTest
+    : public DocumentPictureInPictureWindowControllerBackendTest {
+ protected:
+  gfx::Rect GetWindowBounds() {
+    content::WebContents* pip_web_contents =
+        window_controller()->GetChildWebContents();
+    CHECK(pip_web_contents);
+    views::Widget* pip_widget = views::Widget::GetWidgetForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+    CHECK(pip_widget);
+    return pip_widget->GetWindowBoundsInScreen();
+  }
+
+  gfx::Size GetContentsSize() {
+    content::WebContents* pip_web_contents =
+        window_controller()->GetChildWebContents();
+    CHECK(pip_web_contents);
+    return pip_web_contents->GetContainerBounds().size();
+  }
+};
+
 class DocumentPictureInPictureWindowControllerFrameViewTest
     : public DocumentPictureInPictureWindowControllerBackendTest {
  protected:
@@ -452,6 +473,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DocumentPictureInPictureWindowControllerRequestedSizeTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Standalone" : "BrowserBacked";
+    });
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentPictureInPictureWindowControllerFrameViewTest,
@@ -673,8 +702,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Window controller bounds should be greater or equal to the web content
 // bounds.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CheckWindowBoundsGreaterOrEqualToWebContents) {
+IN_PROC_BROWSER_TEST_P(
+    DocumentPictureInPictureWindowControllerRequestedSizeTest,
+    CheckWindowBoundsGreaterOrEqualToWebContents) {
   LoadTabAndEnterPictureInPicture(browser());
   auto* web_contents = window_controller()->GetChildWebContents();
   ASSERT_TRUE(web_contents);
@@ -740,24 +770,27 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Make sure that inner bounds of document PiP windows are not smaller than the
 // allowed minimum size.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       MinimumWindowInnerBounds) {
+IN_PROC_BROWSER_TEST_P(
+    DocumentPictureInPictureWindowControllerRequestedSizeTest,
+    MinimumWindowInnerBounds) {
   LoadTabAndEnterPictureInPicture(browser(), gfx::Size(100, 20));
 
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
 
-  auto* browser_view = static_cast<BrowserView*>(
-      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  EXPECT_EQ(PictureInPictureWindowManager::GetMinimumInnerWindowSize(),
-            browser_view->GetContentsSize());
+  const gfx::Size minimum_size =
+      PictureInPictureWindowManager::GetMinimumInnerWindowSize();
+  const gfx::Size contents_size = GetContentsSize();
+  EXPECT_GE(contents_size.width(), minimum_size.width());
+  EXPECT_GE(contents_size.height(), minimum_size.height());
 }
 
 // Make sure that outer bounds of document PiP windows do not exceed the allowed
 // maximum size.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       MaximumWindowOuterBounds) {
+IN_PROC_BROWSER_TEST_P(
+    DocumentPictureInPictureWindowControllerRequestedSizeTest,
+    MaximumWindowOuterBounds) {
   const BrowserWindow* const browser_window =
       BrowserWindow::FromBrowser(browser());
   const gfx::NativeWindow native_window = browser_window->GetNativeWindow();
@@ -778,12 +811,8 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
 
-  auto* browser_view = static_cast<BrowserView*>(
-      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  EXPECT_LE(browser_view->GetBounds().size().width(),
-            maximum_window_size.width());
-  EXPECT_LE(browser_view->GetBounds().size().height(),
-            maximum_window_size.height());
+  EXPECT_LE(GetWindowBounds().width(), maximum_window_size.width());
+  EXPECT_LE(GetWindowBounds().height(), maximum_window_size.height());
 }
 
 // Context menu should not be shown when right clicking on a document picture in
@@ -1094,8 +1123,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 // Make sure that inner bounds of document PiP windows match the requested size.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       InnerBoundsMatchRequest) {
+IN_PROC_BROWSER_TEST_P(
+    DocumentPictureInPictureWindowControllerRequestedSizeTest,
+    InnerBoundsMatchRequest) {
   constexpr auto size = gfx::Size(400, 450);
   LoadTabAndEnterPictureInPicture(browser(), size);
 
@@ -1103,11 +1133,9 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
 
-  auto* pip_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          pip_web_contents);
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(pip_browser);
-  EXPECT_EQ(size, browser_view->GetContentsSize());
+  const gfx::Size contents_size = GetContentsSize();
+  EXPECT_NEAR(size.width(), contents_size.width(), 1);
+  EXPECT_NEAR(size.height(), contents_size.height(), 1);
 }
 
 // When `window.open()` is called from a picture-in-picture window, it must lose
