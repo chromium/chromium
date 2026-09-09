@@ -74,7 +74,8 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}},
                               {omnibox::internal::kWebUIOmniboxSimplification,
                                {{omnibox::kShowLensSearchChip.name, "true"}}}},
-        /*disabled_features*/ {});
+        // TODO (crbug.com/555239052) - Fix tests when AskG is launched.
+        /*disabled_features*/ {omnibox::kWebUIOmniboxAskGAboutThisPage});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
