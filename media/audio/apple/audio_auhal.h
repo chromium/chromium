@@ -30,11 +30,12 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/audio/apple/audio_manager_apple.h"
+#include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
-#include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
@@ -141,6 +142,8 @@ class AUHALStream : public AudioOutputStream {
 
   // Sends a log message to the registered log callback.
   void SendLogMessage(const std::string& message);
+
+  const base::UnguessableToken id_;
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerApple> manager_;

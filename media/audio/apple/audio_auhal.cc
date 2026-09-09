@@ -203,7 +203,8 @@ AUHALStream::AUHALStream(AudioManagerApple* manager,
                          const AudioParameters& params,
                          AudioDeviceID device,
                          const AudioManager::LogCallback& log_callback)
-    : manager_(manager),
+    : id_(base::UnguessableToken::Create()),
+      manager_(manager),
       params_(params),
       source_(nullptr),
       device_(device),
@@ -230,8 +231,8 @@ AUHALStream::~AUHALStream() {
 
 void AUHALStream::SendLogMessage(const std::string& message) {
   if (!log_callback_.is_null()) {
-    log_callback_.Run(
-        base::StringPrintf("AUHAL[%p]::%s", this, message.c_str()));
+    log_callback_.Run(base::StringPrintf(
+        "AUHAL[id=%s]::%s", id_.ToString().c_str(), message.c_str()));
   }
 }
 

@@ -47,6 +47,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/apple/glitch_helper.h"
 #include "media/audio/audio_io.h"
@@ -200,6 +201,8 @@ class MEDIA_EXPORT AUAudioInputStream
   // Verifies that Open(), Start(), Stop() and Close() are all called on the
   // creating thread which is the main browser thread (CrBrowserMain) on Mac.
   THREAD_CHECKER(thread_checker_);
+
+  const base::UnguessableToken id_;
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerApple> manager_;

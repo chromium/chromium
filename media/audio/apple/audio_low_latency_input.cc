@@ -168,7 +168,8 @@ AUAudioInputStream::AUAudioInputStream(
     const AudioParameters& input_params,
     AudioDeviceID audio_device_id,
     const AudioManager::LogCallback& log_callback)
-    : manager_(manager),
+    : id_(base::UnguessableToken::Create()),
+      manager_(manager),
       input_params_(input_params),
       input_device_id_(audio_device_id),
       fifo_(input_params.channels(),
@@ -1436,14 +1437,16 @@ void AUAudioInputStream::UpmixMonoToStereoInPlace(AudioBuffer* audio_buffer,
 
 void AUAudioInputStream::SendLog(const std::string& message, OSStatus result) {
   if (result != noErr) {
-    OSSTATUS_VLOG(1, result) << "AU in: " << message;
-    log_callback_.Run(
-        base::StringPrintf("AU in: [this=%p] %s (OSStatus error %d: %s)", this,
-                           message.c_str(), static_cast<int>(result),
-                           logging::DescriptionFromOSStatus(result).c_str()));
+    OSSTATUS_VLOG(1, result)
+        << "AU in: [id=" << id_.ToString() << "] " << message;
+    log_callback_.Run(base::StringPrintf(
+        "AU in: [id=%s] %s (OSStatus error %d: %s)", id_.ToString().c_str(),
+        message.c_str(), static_cast<int>(result),
+        logging::DescriptionFromOSStatus(result).c_str()));
   } else {
-    VLOG(1) << "AU in: [this=" << this << "] " << message;
-    log_callback_.Run(base::StringPrintf("AU in: [this=%p] ", this) + message);
+    VLOG(1) << "AU in: [id=" << id_.ToString() << "] " << message;
+    log_callback_.Run(
+        base::StrCat({"AU in: [id=", id_.ToString(), "] ", message}));
   }
 }
 
