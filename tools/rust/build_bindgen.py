@@ -64,15 +64,8 @@ EXE = '.exe' if sys.platform == 'win32' else ''
 
 # TODO(crbug.com/558838938) Not all tests pass.
 EXCLUDED_TESTS = [
-    'emit_depfile',
-    'header_allowlist_file_hpp',
-    'header_blocklist_file_hpp',
-    'header_constified_enum_module_overflow_hpp',
-    'header_issue_544_stylo_creduce_2_hpp',
     'header_issue_753_h',
     'header_macro_fallback_include_builtin_h',
-    'header_nsbasehashtable_hpp',
-    'header_typedef_pointer_overlap_h',
 ]
 
 
