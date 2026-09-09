@@ -49,6 +49,12 @@ class ScopedScreenOverride {
   raw_ptr<display::Screen> old_screen_;
 };
 
+#if BUILDFLAG(IS_MAC)
+constexpr int kExpectedTopMargin = 56;
+#else
+constexpr int kExpectedTopMargin = 28;
+#endif
+
 }  // namespace
 
 class OmniboxEverywhereRegionSelectOverlayTest : public ChromeViewsTestBase {
@@ -267,8 +273,11 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
        MultiDisplayVirtualDesktop_SpansAllDisplays) {
-  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
-               display::Display(2, gfx::Rect(800, 0, 1024, 768))});
+  // Use non-zero origin (100, 100) away from edges to avoid OS menu bar
+  // clamping on macOS (where y=0 at the top of the display is adjusted down to
+  // y=30 for frameless top-level windows).
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 800, 600)),
+               display::Display(2, gfx::Rect(900, 100, 1024, 768))});
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -277,14 +286,17 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
   EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
-            gfx::Rect(0, 0, 1824, 768));
+            gfx::Rect(100, 100, 1824, 768));
 }
 
 // Verifies that when a specific display is requested but cannot be found (e.g.
 // disconnected), GetOverlayBoundsForSource falls back to the primary display.
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
        ForDisplay_DisconnectedDisplayFallsBackToPrimary) {
-  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600))});
+  // Use non-zero origin (100, 100) away from edges to avoid OS menu bar
+  // clamping on macOS (where y=0 at the top of the display is adjusted down to
+  // y=30 for frameless top-level windows).
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 800, 600))});
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -293,13 +305,13 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
   EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
-            gfx::Rect(0, 0, 800, 600));
+            gfx::Rect(100, 100, 800, 600));
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
        SingleDisplayMatch_MatchesTargetDisplay) {
-  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
-               display::Display(2, gfx::Rect(800, 0, 1024, 768))});
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 800, 600)),
+               display::Display(2, gfx::Rect(900, 100, 1024, 768))});
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -308,14 +320,14 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
   EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
-            gfx::Rect(800, 0, 1024, 768));
+            gfx::Rect(900, 100, 1024, 768));
 }
 
 // Verifies that RegionCaptureSource::ForDisplay correctly targets and scales to
 // a display in portrait orientation.
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
        ForDisplay_MatchesPortraitDisplayBounds) {
-  SetDisplays({display::Display(1, gfx::Rect(0, 0, 1080, 1920))});
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 1080, 1920))});
 
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -324,7 +336,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
   ASSERT_TRUE(overlay->widget());
   EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
-            gfx::Rect(0, 0, 1080, 1920));
+            gfx::Rect(100, 100, 1080, 1920));
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -545,7 +557,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   // Toast chip is visible and positioned at the top of the display.
   EXPECT_TRUE(toast_chip->GetVisible());
   EXPECT_GT(toast_chip->width(), 0);
-  EXPECT_EQ(toast_chip->y(), 28);
+  EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
   EXPECT_EQ(toast_chip->x(),
             (overlay->widget()->GetWindowBoundsInScreen().width() -
              toast_chip->width()) /
@@ -620,7 +632,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   contents_view->OnMouseMoved(move_display2);
 
   EXPECT_TRUE(toast_chip->GetVisible());
-  EXPECT_EQ(toast_chip->y(), 28);
+  EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -654,7 +666,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
     ASSERT_TRUE(toast_chip);
 
     EXPECT_TRUE(toast_chip->GetVisible());
-    EXPECT_EQ(toast_chip->y(), 28);
+    EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
     EXPECT_EQ(toast_chip->x(), (1440 - toast_chip->width()) / 2);
   }
 
@@ -675,7 +687,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
     ASSERT_TRUE(toast_chip2);
 
     EXPECT_TRUE(toast_chip2->GetVisible());
-    EXPECT_EQ(toast_chip2->y(), 864 + 28);
+    EXPECT_EQ(toast_chip2->y(), 864 + kExpectedTopMargin);
 
     // Secondary display width in overlay window coordinates:
     // base::ClampRound(2048 * 1.25 / 1.5) = 1707.
@@ -720,7 +732,7 @@ TEST_F(
   ASSERT_TRUE(toast_chip);
 
   EXPECT_TRUE(toast_chip->GetVisible());
-  EXPECT_EQ(toast_chip->y(), 28);
+  EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
   // Allowed bounds are intersected with canvas [0, 0, 2000, 1000], giving
   // [1000, 0, 1000, 1000]. Toast right edge must not exceed canvas width 2000.
   EXPECT_LE(toast_chip->x() + toast_chip->width(), contents_view->width());
