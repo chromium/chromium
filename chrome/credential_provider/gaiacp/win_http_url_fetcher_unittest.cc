@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <windows.h>
+
+#include <winhttp.h>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "chrome/credential_provider/gaiacp/scoped_handle.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 
 namespace credential_provider {
@@ -170,6 +175,38 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GcpWinHttpUrlFetcherTest,
                          ::testing::Combine(::testing::Values(0, 1, 2, 3),
                                             ::testing::Values(0, 1, 3)));
+
+TEST(GcpWinHttpUrlFetcherHandleTest, AutologonPolicySetOnRequestHandle) {
+  ScopedWinHttpHandle session;
+  session.Set(::WinHttpOpen(L"GaiaCP/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY,
+                            WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+  ASSERT_TRUE(session.is_valid());
+
+  DWORD autologon_policy = WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH;
+
+  ScopedWinHttpHandle connect;
+  connect.Set(
+      ::WinHttpConnect(session.get(), L"127.0.0.1", INTERNET_DEFAULT_PORT, 0));
+  ASSERT_TRUE(connect.is_valid());
+
+  ScopedWinHttpHandle request;
+  request.Set(::WinHttpOpenRequest(
+      connect.get(), L"GET", L"/", nullptr, WINHTTP_NO_REFERER,
+      WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE));
+  ASSERT_TRUE(request.is_valid());
+
+  // Setting WINHTTP_OPTION_AUTOLOGON_POLICY on a request handle must succeed.
+  EXPECT_TRUE(::WinHttpSetOption(request.get(), WINHTTP_OPTION_AUTOLOGON_POLICY,
+                                 &autologon_policy, sizeof(autologon_policy)));
+
+  DWORD queried_policy = 0;
+  DWORD policy_size = sizeof(queried_policy);
+  EXPECT_TRUE(::WinHttpQueryOption(request.get(),
+                                   WINHTTP_OPTION_AUTOLOGON_POLICY,
+                                   &queried_policy, &policy_size));
+  EXPECT_EQ(static_cast<DWORD>(WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH),
+            queried_policy);
+}
 
 }  // namespace testing
 }  // namespace credential_provider
