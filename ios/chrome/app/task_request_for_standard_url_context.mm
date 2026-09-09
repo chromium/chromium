@@ -27,6 +27,17 @@ NSString* const kExternalActionOpenNTP = @"OpenNTP";
 NSString* const kExternalActionAppStoreGeminiPromo = @"appstoregeminipromo";
 NSString* const kExternalActionAppSwitcherTesting = @"appswitchertesting";
 
+// Returns the single path component of `url` if it has the format
+// "/<component>", or nil if the path is invalid or has multiple segments.
+NSString* ExtractSinglePathComponent(NSURL* url) {
+  NSArray<NSString*>* path_components = url.pathComponents;
+  if ([path_components count] != 2 ||
+      ![path_components[0] isEqualToString:@"/"]) {
+    return nil;
+  }
+  return path_components[1];
+}
+
 // Records metrics and user actions for external action URLs.
 void RecordExternalActionMetrics(NSURL* url) {
   base::RecordAction(base::UserMetricsAction("MobileExternalActionURLOpened"));
@@ -36,11 +47,7 @@ void RecordExternalActionMetrics(NSURL* url) {
   base::UmaHistogramEnumeration(kAppLaunchSource,
                                 AppLaunchSource::EXTERNAL_ACTION);
 
-  NSArray<NSString*>* pathComponents = url.pathComponents;
-  NSString* path = nil;
-  if ([pathComponents count] == 2 && [pathComponents[0] isEqualToString:@"/"]) {
-    path = pathComponents[1];
-  }
+  NSString* path = ExtractSinglePathComponent(url);
   IOSExternalAction action = IOSExternalAction::ACTION_INVALID;
   if ([path isEqualToString:kExternalActionOpenNTP]) {
     base::RecordAction(
@@ -132,7 +139,22 @@ void RecordExternalActionMetrics(NSURL* url) {
   NSString* host = url.host;
 
   if ([host isEqualToString:kExternalActionURLHost]) {
-    // TODO(crbug.com/493816082): Add implementation.
+    NSString* path = ExtractSinglePathComponent(url);
+
+    if ([path isEqualToString:kExternalActionOpenNTP]) {
+      // TODO(crbug.com/493816082): Add implementation.
+    } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
+      // TODO(crbug.com/493816082): Add implementation.
+    } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
+      // TODO(crbug.com/493816082): Add implementation.
+    } else if (IsAppSwitcherAISummarizationEnabled() &&
+               [path isEqualToString:kExternalActionAppSwitcherTesting]) {
+      // TODO(crbug.com/493816082): Add implementation.
+    } else {
+      // An unrecognized or invalid external action is discarded without opening
+      // a tab.
+      return;
+    }
   } else if (externalGURL.SchemeIsFile()) {
     GURL::Replacements replacements;
     std::string filename = externalGURL.ExtractFileName();
