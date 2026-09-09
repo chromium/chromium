@@ -325,9 +325,12 @@ export class OmniboxEverywhereOmniboxElement extends
     return !this.$.input.getInputValue().trim();
   }
 
-  protected showVoiceAndLensButtons_(isEnabled: boolean): boolean {
-    return isEnabled && this.isInputEmpty() &&
-        !(this.dropdownIsVisible && this.composeButtonEnabled);
+  protected showVoiceSearchButton_(): boolean {
+    return this.searchboxVoiceSearchEnabled_ && this.isInputEmpty();
+  }
+
+  protected showLensSearchButton_(): boolean {
+    return this.isFuseboxEnabled && this.searchboxLensSearchEnabled_;
   }
 
   protected computePlaceholderText_(): string {
