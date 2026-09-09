@@ -87,7 +87,7 @@ if (enable_extensions) {
     "socket.idl",
     "sockets_tcp_server.webidl",
     "sockets_tcp.webidl",
-    "sockets_udp.idl",
+    "sockets_udp.webidl",
     "system_storage.webidl",
   ]
   extensions_types_only_schema_files_ += [
