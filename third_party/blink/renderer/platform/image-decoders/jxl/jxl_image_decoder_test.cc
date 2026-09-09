@@ -143,8 +143,19 @@ TEST_F(JXLImageDecoderTest, DecodeCmykWithIccProfile) {
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_TRUE(frame->HasAlpha());
+  EXPECT_FALSE(frame->HasAlpha());
   EXPECT_FALSE(decoder->Failed());
+
+  const auto expect_color_near = [&frame](int x, int y, SkColor expected) {
+    const SkColor actual = frame->Bitmap().getColor(x, y);
+    EXPECT_NEAR(SkColorGetR(actual), SkColorGetR(expected), 9);
+    EXPECT_NEAR(SkColorGetG(actual), SkColorGetG(expected), 9);
+    EXPECT_NEAR(SkColorGetB(actual), SkColorGetB(expected), 9);
+    EXPECT_EQ(SkColorGetA(actual), SkColorGetA(expected));
+  };
+  expect_color_near(192, 64, SkColorSetRGB(34, 31, 33));
+  expect_color_near(192, 192, SkColorSetRGB(236, 27, 68));
+  expect_color_near(320, 320, SkColorSetRGB(0, 182, 178));
 }
 
 // Test grayscale+alpha fixture carrying an embedded ICC profile.

@@ -89,6 +89,10 @@ bool JXLImageDecoder::MatchesJXLSignature(
 // Shared basic-info processing
 // ---------------------------------------------------------------------------
 
+bool JXLImageDecoder::HasBlackChannel() const {
+  return basic_info_.has_value() && basic_info_->has_black_channel;
+}
+
 bool JXLImageDecoder::SetPixelFormat(JxlRsDecoder* decoder) {
   CHECK(basic_info_.has_value());
   bool decode_to_half_float =
@@ -107,6 +111,24 @@ bool JXLImageDecoder::SetPixelFormat(JxlRsDecoder* decoder) {
       decode_to_half_float ? JxlRsPixelFormat::RgbaF16 : kNativePixelFormat;
   return decoder->set_pixel_format(pixel_format,
                                    basic_info_->num_extra_channels);
+}
+
+void JXLImageDecoder::ApplyColorTransform(ImageFrame& frame) {
+  if (!HasBlackChannel()) {
+    return;
+  }
+
+  CHECK(cmyk_color_profile_);
+  SkPixmap pixmap;
+  CHECK(frame.Bitmap().peekPixels(&pixmap));
+  // skcms expects interleaved C,M,Y,K samples in RGBA channel order.
+  const SkIRect rect = SkIRect::MakeWH(pixmap.width(), pixmap.height());
+  if (frame.GetPixelFormat() == ImageFrame::PixelFormat::kRGBA_F16) {
+    cmyk_color_profile_->TransformInPlace(pixmap, rect);
+  } else {
+    CHECK_EQ(frame.GetPixelFormat(), ImageFrame::PixelFormat::kN32);
+    cmyk_color_profile_->TransformInPlace(pixmap, rect, kRGBA_8888_SkColorType);
+  }
 }
 
 bool JXLImageDecoder::SetBasicInfo() {
@@ -130,11 +152,17 @@ bool JXLImageDecoder::SetBasicInfo() {
 
   // Extract ICC color profile.
   rust::Slice<const uint8_t> icc_data = (*scanner_)->get_icc_profile();
-  if (!IgnoresColorSpace() && !icc_data.empty()) {
-    auto profile = skia::ColorProfile::Make(icc_data);
-    if (profile) {
-      SetEmbeddedColorProfile(std::move(profile));
+  sk_sp<skia::ColorProfile> profile = skia::ColorProfile::Make(icc_data);
+  if (HasBlackChannel()) {
+    // A Black extra channel without a valid CMYK ICC profile is invalid.
+    if (!profile || !profile->IsCMYK()) {
+      SetFailed();
+      return false;
     }
+    cmyk_color_profile_ = profile;
+  }
+  if (!IgnoresColorSpace() && profile) {
+    SetEmbeddedColorProfile(std::move(profile));
   }
 
   // Record bpp information only for 8-bit, color, still images without
@@ -288,7 +316,8 @@ void JXLImageDecoder::InitializeNewFrame(wtf_size_t index) {
   }
 
   frame.SetPremultiplyAlpha(premultiply_alpha_);
-  frame.SetHasAlpha(basic_info_.has_value() && basic_info_->has_alpha);
+  frame.SetHasAlpha(basic_info_.has_value() && basic_info_->has_alpha &&
+                    !HasBlackChannel());
   frame.SetOriginalFrameRect(gfx::Rect(Size()));
   frame.SetRequiredPreviousFrameIndex(kNotFound);
 
@@ -423,7 +452,9 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
         }
       }
 
-      frame.SetHasAlpha(basic_info_->has_alpha);
+      // CMYK uses the fourth frame-buffer channel for K; the color transform
+      // replaces it with opaque alpha.
+      frame.SetHasAlpha(basic_info_->has_alpha && !HasBlackChannel());
 
       // Get direct access to the frame buffer's backing store.
       const SkBitmap& bitmap = frame.Bitmap();
@@ -501,6 +532,7 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
       }
       case DecoderState::kHaveFrameHeader: {
         ImageFrame& frame = frame_buffer_cache_[next_frame_to_decode_];
+        ApplyColorTransform(frame);
         frame.SetPixelsChanged(true);
         frame.SetStatus(ImageFrame::kFrameComplete);
 

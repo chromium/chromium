@@ -82,6 +82,8 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // Sets the pixel format that the decoder uses. Should only be called when
   // basic info is available.
   bool SetPixelFormat(jxl_rs::JxlRsDecoder* decoder);
+  bool HasBlackChannel() const;
+  void ApplyColorTransform(ImageFrame& frame);
 
   // Process basic info after it has been parsed by either the scanner or
   // decoder. Sets size, bit depth, color profile, etc. Returns false on
@@ -107,6 +109,7 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
 
   // Cached metadata.
   std::optional<jxl_rs::JxlRsBasicInfo> basic_info_;
+  sk_sp<skia::ColorProfile> cmyk_color_profile_;
 
   // Per-frame info populated by the scanner. frame_infos_ stores the Rust
   // struct directly (seek offsets, keyframe flag, etc.); frame_timings_ stores

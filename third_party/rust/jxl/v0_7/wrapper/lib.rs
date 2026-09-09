@@ -36,6 +36,7 @@ mod ffi {
         height: u32,
         bits_per_sample: u32,
         num_extra_channels: u32,
+        has_black_channel: bool,
         has_alpha: bool,
         alpha_premultiplied: bool,
         have_animation: bool,
@@ -268,7 +269,10 @@ fn jxl_rs_signature_check(data: &[u8]) -> bool {
 
 impl JxlRsDecoder {
     fn set_pixel_format(&mut self, format: JxlRsPixelFormat, num_extra_channels: u32) -> bool {
-        let pixel_format = match format {
+        let has_black_channel = self.decoder.basic_info().is_some_and(|info| {
+            info.extra_channels.iter().any(|ec| matches!(ec.ec_type, ExtraChannel::Black))
+        });
+        let mut pixel_format = match format {
             JxlRsPixelFormat::Rgba8 => JxlPixelFormat {
                 color_type: JxlColorType::Rgba,
                 color_data_format: Some(JxlDataFormat::U8 { bit_depth: 8 }),
@@ -303,6 +307,9 @@ impl JxlRsDecoder {
                 extra_channel_format: vec![None; num_extra_channels as usize],
             },
         };
+        if has_black_channel {
+            pixel_format.color_type = JxlColorType::Cmyk;
+        }
         if self.decoder.set_pixel_format(pixel_format.clone()).is_err() {
             return false;
         }
@@ -451,6 +458,8 @@ impl From<&JxlBasicInfo> for JxlRsBasicInfo {
     fn from(info: &JxlBasicInfo) -> Self {
         let has_alpha =
             info.extra_channels.iter().any(|ec| matches!(ec.ec_type, ExtraChannel::Alpha));
+        let has_black_channel =
+            info.extra_channels.iter().any(|ec| matches!(ec.ec_type, ExtraChannel::Black));
         let (loop_count, tps_num, tps_den) = info
             .animation
             .as_ref()
@@ -461,6 +470,7 @@ impl From<&JxlBasicInfo> for JxlRsBasicInfo {
             height: info.size.1 as u32,
             bits_per_sample: info.bit_depth.bits_per_sample(),
             num_extra_channels: info.extra_channels.len() as u32,
+            has_black_channel,
             has_alpha,
             alpha_premultiplied: false,
             have_animation: info.animation.is_some(),
