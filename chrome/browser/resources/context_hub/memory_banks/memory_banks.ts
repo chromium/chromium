@@ -13,7 +13,9 @@ import '//resources/cr_elements/icons.html.js';
 import './memory_banks_edit_dialog.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, EntryType} from '../context_hub.mojom-webui.js';
 import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
@@ -21,7 +23,8 @@ import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 import {getCss} from './memory_banks.css.js';
 import {getHtml} from './memory_banks.html.js';
 import type {EntryAnnotationsUpdatedDetail} from './memory_banks_edit_dialog.js';
-import {matchesMemoryBankEntry, parseSearchQuery} from './memory_banks_search.js';
+import {computeSuggestions, matchesMemoryBankEntry, parseSearchQuery} from './memory_banks_search.js';
+import type {SearchSuggestion} from './memory_banks_search.js';
 
 function downloadFile(filename: string, content: string) {
   if (!content) {
@@ -70,6 +73,8 @@ export class MemoryBanksElement extends CrLitElement {
       isAskingGemini_: {type: Boolean, state: true},
       showGeminiPanel_: {type: Boolean, state: true},
       editingEntry_: {type: Object, state: true},
+      searchSuggestions_: {type: Array, state: true},
+      highlightedSuggestionIndex_: {type: Number, state: true},
     };
   }
 
@@ -81,11 +86,23 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
   protected accessor editingEntry_: MemoryBankEntry|null = null;
+  protected accessor searchSuggestions_: SearchSuggestion[] = [];
+  protected accessor highlightedSuggestionIndex_: number = -1;
   private activeMenuEntry_: MemoryBankEntry|null = null;
+  private availableCollections_: string[] = [];
+  private availableTags_: string[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
     this.fetchEntries();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('entries')) {
+      this.availableCollections_ = this.computeAvailableCollections_();
+      this.availableTags_ = this.computeAvailableTags_();
+    }
   }
 
   private async fetchEntries() {
@@ -95,6 +112,14 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected getAvailableCollections_(): string[] {
+    return this.availableCollections_;
+  }
+
+  protected getAvailableTags_(): string[] {
+    return this.availableTags_;
+  }
+
+  private computeAvailableCollections_(): string[] {
     const set = new Set<string>();
     for (const entry of this.entries) {
       if (entry.collection) {
@@ -104,7 +129,7 @@ export class MemoryBanksElement extends CrLitElement {
     return Array.from(set).sort();
   }
 
-  protected getAvailableTags_(): string[] {
+  private computeAvailableTags_(): string[] {
     const set = new Set<string>();
     for (const entry of this.entries) {
       if (entry.tags) {
@@ -261,8 +286,103 @@ export class MemoryBanksElement extends CrLitElement {
     }
   }
 
+  private get searchField_(): CrSearchFieldElement|null {
+    return this.shadowRoot?.querySelector<CrSearchFieldElement>(
+               '#search-field') ??
+        null;
+  }
+
+  protected updateSuggestions_(input: string = this.searchQuery) {
+    this.searchSuggestions_ = computeSuggestions(
+        input, this.getAvailableTags_(), this.getAvailableCollections_());
+    this.highlightedSuggestionIndex_ = -1;
+  }
+
+  private closeSuggestions_() {
+    this.searchSuggestions_ = [];
+    this.highlightedSuggestionIndex_ = -1;
+  }
+
+  protected onSearchFocusin_() {
+    this.updateSuggestions_();
+  }
+
+  protected onSearchFocusout_(e: FocusEvent) {
+    const relatedTarget = e.relatedTarget as Node | null;
+    if (relatedTarget && this.shadowRoot?.contains(relatedTarget)) {
+      return;
+    }
+    this.closeSuggestions_();
+  }
+
   protected onSearchChanged_(e: CustomEvent<string>) {
     this.searchQuery = e.detail;
+    this.selectedIds = new Set();
+    this.updateSuggestions_(this.searchQuery);
+  }
+
+  protected onSearchKeydown_(e: KeyboardEvent) {
+    if (this.searchSuggestions_.length === 0) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        this.updateSuggestions_();
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      // Highlight the next suggestion. If unselected (-1), highlights the first
+      // item (0). If at the bottom, wraps back to the top.
+      this.highlightedSuggestionIndex_ =
+          (this.highlightedSuggestionIndex_ + 1) %
+          this.searchSuggestions_.length;
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      // Highlight the previous suggestion. If unselected (-1) or already at
+      // the top (0), wraps around to the last item.
+      this.highlightedSuggestionIndex_ = this.highlightedSuggestionIndex_ <= 0 ?
+          this.searchSuggestions_.length - 1 :
+          this.highlightedSuggestionIndex_ - 1;
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      const selected =
+          this.searchSuggestions_[this.highlightedSuggestionIndex_];
+      if (selected) {
+        e.preventDefault();
+        this.applySuggestion_(selected);
+      } else if (e.key === 'Enter') {
+        this.closeSuggestions_();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.closeSuggestions_();
+    }
+  }
+
+  protected async applySuggestion_(suggestion: SearchSuggestion) {
+    this.setSearchQuery_(suggestion.query);
+    if (suggestion.query.trim().endsWith(':')) {
+      this.updateSuggestions_(suggestion.query);
+    } else {
+      this.closeSuggestions_();
+    }
+
+    await this.updateComplete;
+    this.searchField_?.getSearchInput().focus();
+  }
+
+  protected onSuggestionMousedown_(e: MouseEvent) {
+    e.preventDefault();
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const suggestion = this.searchSuggestions_[index];
+    if (suggestion) {
+      this.applySuggestion_(suggestion);
+    }
+  }
+
+  private setSearchQuery_(newQuery: string) {
+    this.searchQuery = newQuery;
+    this.searchField_?.setValue(newQuery, /*noEvent=*/ true);
     this.selectedIds = new Set();
   }
 

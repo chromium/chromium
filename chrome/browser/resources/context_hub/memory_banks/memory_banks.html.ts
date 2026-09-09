@@ -13,13 +13,53 @@ export function getHtml(this: MemoryBanksElement) {
         <section>
             <div class="header-container">
               <h1>Memory banks</h1>
-              ${this.entries.length > 0 ? html`
-                <cr-search-field
-                    id="search-field"
-                    label="Search memory (e.g. tag:recipes, collection:Work)"
-                    @search-changed="${this.onSearchChanged_}">
-                </cr-search-field>
-              ` : ''}
+              ${
+      this.entries.length > 0 ?
+          html`
+                <div class="search-container"
+                    @focusin="${this.onSearchFocusin_}"
+                    @focusout="${this.onSearchFocusout_}"
+                    @keydown="${this.onSearchKeydown_}">
+                  <cr-search-field
+                      id="search-field"
+                      label="Search memory (e.g. tag:recipes, collection:Work)"
+                      @search-changed="${this.onSearchChanged_}">
+                  </cr-search-field>
+                  ${
+              this.searchSuggestions_.length > 0 ?
+                  html`
+                    <div class="search-suggestions" role="listbox">
+                      ${
+                      this.searchSuggestions_.map(
+                          (suggestion, index) => html`
+                        <div class="suggestion-item ${
+                              index === this.highlightedSuggestionIndex_ ?
+                                  'highlighted' :
+                                  ''}"
+                            role="option"
+                            data-index="${index}"
+                            aria-selected="${
+                              index === this.highlightedSuggestionIndex_}"
+                            @mousedown="${this.onSuggestionMousedown_}">
+                          <div class="suggestion-content">
+                            <span class="suggestion-label">${
+                              suggestion.label}</span>
+                            ${
+                              suggestion.description ?
+                                  html`
+                              <span class="suggestion-desc">${
+                                      suggestion.description}</span>
+                            ` :
+                                  ''}
+                          </div>
+                        </div>
+                      `)}
+                    </div>
+                  ` :
+                  ''}
+                </div>
+              ` :
+          ''}
             </div>
 
             ${

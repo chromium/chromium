@@ -37,6 +37,68 @@ export interface ParsedSearchQuery {
 }
 
 /**
+ * Represents an auto-complete suggestion displayed in the search dropdown.
+ */
+export interface SearchSuggestion {
+  /** The query string to set or append to the search box when chosen. */
+  query: string;
+  /** The text displayed in the suggestion list item. */
+  label: string;
+  /** Informational description shown alongside or below the label. */
+  description?: string;
+}
+
+/**
+ * Configuration for a search qualifier token supported by the search UI.
+ */
+interface QualifierDef {
+  /** The primary prefix string (e.g. 'tag:'). */
+  prefix: string;
+  /** Human-readable explanation shown in the suggestions menu. */
+  description: string;
+}
+
+/**
+ * All recognized search qualifiers displayed in autocomplete suggestions.
+ */
+const QUALIFIERS: readonly QualifierDef[] = [
+  {
+    prefix: 'tag:',
+    description: 'Filter by tag (e.g. tag:recipes)',
+  },
+  {
+    prefix: 'collection:',
+    description: 'Filter by collection (e.g. collection:Work)',
+  },
+  {
+    prefix: 'type:',
+    description: 'Filter by type (tab / selected_text)',
+  },
+  {
+    prefix: 'title:',
+    description: 'Filter by page title (e.g. title:"Wikipedia")',
+  },
+  {
+    prefix: 'url:',
+    description: 'Filter by URL or domain (e.g. url:github.com)',
+  },
+  {
+    prefix: 'note:',
+    description: 'Filter within notes (e.g. note:"todo")',
+  },
+  {
+    prefix: 'text:',
+    description: 'Filter by saved text snippet (e.g. text:"summary")',
+  },
+];
+
+/** Maximum number of suggestions to display in the dropdown. */
+const MAX_SUGGESTIONS = 10;
+
+/** Candidate values suggested for "type:". */
+const TYPE_CANDIDATES: readonly string[] = ['tab', 'selected_text'];
+
+/**
  * Parses a raw search query string into structured filter fields.
  *
  * Supports qualifiers (e.g. `tag:recipes`, `collection:"My Project"`,
@@ -70,10 +132,10 @@ export function parseSearchQuery(rawQuery: string): ParsedSearchQuery {
       continue;
     }
 
-    const colonIndex = token.indexOf(':');
-    if (colonIndex > 0) {
-      const qualifier = token.slice(0, colonIndex).toLowerCase();
-      const val = token.slice(colonIndex + 1).trim();
+    const parsedToken = splitQualifier(token);
+    if (parsedToken) {
+      const {qualifier, value} = parsedToken;
+      const val = value.trim();
       if (val) {
         switch (qualifier) {
           case 'tag':
@@ -149,6 +211,120 @@ export function matchesMemoryBankEntry(
 }
 
 /**
+ * Computes auto-complete search suggestions based on the user's current input.
+ *
+ * Suggestion behaviors:
+ * 1. Empty or trailing-space input: suggests all qualifier prefixes (e.g.
+ * "tag:", "type:").
+ * 2. Token without colon: suggests matching qualifier prefixes (e.g. "ta" ->
+ * "tag:").
+ * 3. Token with qualifier prefix (e.g. "tag:", "collection:", "type:",
+ * "title:"): suggests matching values for that qualifier or retains format
+ * guidance.
+ *
+ * @param input The current search field input.
+ * @param allTags Unique tags present across memory bank entries.
+ * @param allCollections Unique collection names present across memory bank
+ *     entries.
+ * @return Up to MAX_SUGGESTIONS matching suggestions for the current token.
+ */
+export function computeSuggestions(
+    input: string, allTags: string[],
+    allCollections: string[]): SearchSuggestion[] {
+  const lastBoundary = getLastTokenBoundary(input);
+  const base = lastBoundary >= 0 ? input.slice(0, lastBoundary + 1) : '';
+  const token = lastBoundary >= 0 ? input.slice(lastBoundary + 1) : input;
+
+  const parsedToken = splitQualifier(token);
+  if (parsedToken) {
+    const {qualifier, value} = parsedToken;
+    const cleanValue = value.replaceAll('"', '').trim();
+    const qualifierDef = QUALIFIERS.find(q => q.prefix === `${qualifier}:`);
+
+    if (!qualifierDef) {
+      return [];
+    }
+
+    let candidates: readonly string[];
+    switch (qualifier) {
+      case 'tag':
+        candidates = allTags;
+        break;
+      case 'collection':
+        candidates = allCollections;
+        break;
+      case 'type':
+        candidates = TYPE_CANDIDATES;
+        break;
+      default:
+        // Free-text qualifiers (title:, url:, note:, text:) retain format
+        // guidance while empty so the suggestions menu remains helpful.
+        if (cleanValue === '') {
+          return [{
+            query: `${base}${qualifierDef.prefix}`,
+            label: qualifierDef.prefix,
+            description: qualifierDef.description,
+          }];
+        }
+        return [];
+    }
+
+    return findMatches(candidates, cleanValue, MAX_SUGGESTIONS)
+        .map(match => ({
+               query: `${base}${qualifier}:${quoteIfSpaced(match)} `,
+               label: `${qualifier}:${match}`,
+               description: `Filter by ${qualifier} "${match}"`,
+             }));
+  }
+
+  // Suggest matching qualifier prefixes (or all if token is empty).
+  const lower = token.toLowerCase();
+  return QUALIFIERS.filter(q => q.prefix.startsWith(lower))
+      .map(q => ({
+             query: `${base}${q.prefix}`,
+             label: q.prefix,
+             description: q.description,
+           }));
+}
+
+/**
+ * Finds the index of the whitespace separating the base query from the active
+ * token being typed, ignoring spaces inside matching quotes.
+ *
+ * For example, in `collection:"Work Projects" tag:`, the space inside
+ * `"Work Projects"` is ignored, and the index of the space after the closing
+ * quote is returned.
+ */
+function getLastTokenBoundary(input: string): number {
+  let lastBoundary = -1;
+  let inQuotes = false;
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] === '"' && (i === 0 || input[i - 1] !== '\\')) {
+      inQuotes = !inQuotes;
+    } else if ((input[i] === ' ' || input[i] === '\t') && !inQuotes) {
+      lastBoundary = i;
+    }
+  }
+  return lastBoundary;
+}
+
+/**
+ * Splits a token into qualifier prefix and value if it contains a colon.
+ * Returns null if the token does not contain a qualifier prefix.
+ */
+function splitQualifier(token: string): {qualifier: string, value: string}|
+    null {
+  const colonIndex = token.indexOf(':');
+  if (colonIndex <= 0) {
+    return null;
+  }
+  return {
+    qualifier: token.slice(0, colonIndex).toLowerCase(),
+    value: token.slice(colonIndex + 1),
+  };
+}
+
+/**
  * Performs a case-insensitive substring match against a string.
  */
 function matches(value: string|null|undefined, query: string): boolean {
@@ -169,4 +345,35 @@ function matchesAny(queries: string[], value: string|null|undefined): boolean {
  */
 function getEntryTypeName(type: EntryType): string {
   return type === EntryType.kTab ? 'tab' : 'selected_text';
+}
+
+/**
+ * Encloses a suggested value in quotes if it contains spaces (e.g.
+ * `collection:"Work Projects"` instead of `collection:Work Projects`).
+ *
+ * This ensures that when a user selects a multi-word suggestion (such as a tag
+ * or collection name with spaces), the search parser treats the entire string
+ * as a single qualifier value rather than splitting subsequent words into
+ * freeform search terms.
+ */
+function quoteIfSpaced(val: string): string {
+  return val.includes(' ') ? `"${val}"` : val;
+}
+
+/**
+ * Finds items starting with a query string up to a given limit.
+ */
+function findMatches(
+    items: readonly string[], query: string, limit: number): string[] {
+  const q = query.toLowerCase();
+  const results: string[] = [];
+  for (const item of items) {
+    if (!q || item.toLowerCase().startsWith(q)) {
+      results.push(item);
+      if (results.length >= limit) {
+        break;
+      }
+    }
+  }
+  return results;
 }
