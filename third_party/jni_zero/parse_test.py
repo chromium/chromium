@@ -58,12 +58,13 @@ def _parsed_file_to_string(parsed_file):
   return sb.to_string()
 
 
-def _parse_java_file_data(filename, contents):
+def _parse_java_file_data(filename, contents, enable_safe_pointers=False):
   return parse.parse_java_file_data(filename,
                                     contents,
                                     package_prefix=None,
                                     package_prefix_filter=None,
-                                    allow_private_called_by_natives=False)
+                                    allow_private_called_by_natives=False,
+                                    enable_safe_pointers=enable_safe_pointers)
 
 
 class TestParse(unittest.TestCase):
@@ -359,6 +360,346 @@ public class MyClass {
 """
     parsed_file = _parse_java_file_data('MyClass.java', contents)
     self._assert_golden(expected, parsed_file)
+
+  def testParseSafePointers(self):
+    contents = """
+package org.jni_zero;
+@JniType("::foo::Outer")
+public class SafePtrTest {
+  @JniType("::foo::Bar")
+  public interface NativeBar extends JniTypeToken {}
+
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @JniType("::foo::Baz")
+  public interface NativeBaz extends JniTypeToken {}
+
+  @CalledByNative
+  public static void foo(JniPtr<NativeFoo> ptr) {}
+
+  @CalledByNative
+  public static void baz(JniRawPtr<NativeBaz> ptr) {}
+}
+"""
+    expected = """\
+public class SafePtrTest {
+  public static void baz(@Nullable JniRawPtr<SafePtrTest.NativeBaz> ptr);
+  public static void foo(@Nullable JniPtr<SafePtrTest.NativeFoo> ptr);
+}
+"""
+    parsed_file = _parse_java_file_data('SafePtrTest.java',
+                                        contents,
+                                        enable_safe_pointers=True)
+    self._assert_golden(expected, parsed_file)
+
+    cbn_class = parsed_file.classes_with_jni[0]
+    baz_method = cbn_class.called_by_natives[0]
+    foo_method = cbn_class.called_by_natives[1]
+
+    self.assertTrue(
+        baz_method.signature.param_list[0].java_type.is_safe_pointer())
+    self.assertTrue(
+        foo_method.signature.param_list[0].java_type.is_safe_pointer())
+
+    self.assertEqual(
+        'org/jni_zero/JniRawPtr', baz_method.signature.param_list[0].java_type.
+        java_class.full_name_with_slashes)
+    self.assertEqual(
+        'org/jni_zero/JniPtr', foo_method.signature.param_list[0].java_type.
+        java_class.full_name_with_slashes)
+
+    self.assertIn('org/jni_zero/SafePtrTest', parsed_file.type_tokens)
+    self.assertIn('org/jni_zero/SafePtrTest$NativeBar', parsed_file.type_tokens)
+    self.assertEqual('::foo::Outer',
+                     parsed_file.type_tokens['org/jni_zero/SafePtrTest'])
+    self.assertEqual(
+        '::foo::Bar',
+        parsed_file.type_tokens['org/jni_zero/SafePtrTest$NativeBar'])
+
+    baz_type = baz_method.signature.param_list[0].java_type
+    self.assertEqual('jlong', baz_type.to_boundary_cpp_type())
+    self.assertEqual('::jni_zero::JniRawPtr<::foo::Baz>',
+                     baz_type.to_backend_cpp_type())
+
+    foo_type = foo_method.signature.param_list[0].java_type
+    self.assertEqual('jlong', foo_type.to_boundary_cpp_type())
+    self.assertEqual('::foo::Foo*', foo_type.to_backend_cpp_type())
+
+  def testParseSafePointerFlagDisabled(self):
+    contents = """
+package org.jni_zero;
+public class FlagTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @CalledByNative
+  public static void foo(JniPtr<NativeFoo> ptr) {}
+}
+"""
+    with self.assertRaisesRegex(parse.ParseError,
+                                "Safe JNI pointers are not enabled"):
+      _parse_java_file_data('FlagTest.java',
+                            contents,
+                            enable_safe_pointers=False)
+
+  def testParseRawSafePointerError(self):
+    contents = """
+package org.jni_zero;
+public class RawSafePtrTest {
+  @CalledByNative
+  public static void foo(JniPtr ptr) {}
+}
+"""
+    with self.assertRaises(parse.ParseError):
+      _parse_java_file_data('RawSafePtrTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseSafePointerMissingJniTypeError(self):
+    contents = """
+package org.jni_zero;
+public class MissingJniTypeTest {
+  public interface NativeFoo extends JniTypeToken {}
+
+  @CalledByNative
+  public static void foo(JniPtr<NativeFoo> ptr) {}
+}
+"""
+    with self.assertRaises(parse.ParseError):
+      _parse_java_file_data('MissingJniTypeTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseMaliciousGenerics(self):
+    contents = """
+package org.jni_zero;
+public class MaliciousGenericsTest {
+  @CalledByNative
+  public static void foo(JniUniquePtr<? extends JniTypeToken> ptr) {}
+}
+"""
+    with self.assertRaisesRegex(parse.ParseError,
+                                "does not resolve to a C\\+\\+ type"):
+      _parse_java_file_data('MaliciousGenericsTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseSafePointerPrimitiveInnerError(self):
+    contents = """
+package org.jni_zero;
+public class PrimitiveInnerTest {
+  @CalledByNative
+  public static void foo(JniUniquePtr<int> ptr) {}
+}
+"""
+    with self.assertRaises(parse.ParseError):
+      _parse_java_file_data('PrimitiveInnerTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseProxyNativeShortBorrowReturnError(self):
+    contents = """
+package org.jni_zero;
+public class ProxyReturnTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @NativeMethods
+  interface Natives {
+    JniPtr<NativeFoo> get();
+  }
+}
+"""
+    with self.assertRaises(parse.ParseError):
+      _parse_java_file_data('ProxyReturnTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseCalledByNativeSafePointerReturn(self):
+    contents = """
+package org.jni_zero;
+public class ProxyReturnTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @CalledByNative
+  public static JniUniquePtr<NativeFoo> get() { return null; }
+}
+"""
+    parsed_file = _parse_java_file_data('ProxyReturnTest.java',
+                                        contents,
+                                        enable_safe_pointers=True)
+    cbn_class = parsed_file.classes_with_jni[0]
+    get_method = cbn_class.called_by_natives[0]
+    self.assertTrue(get_method.signature.return_type.is_safe_pointer())
+
+  def testParseWithCatalog(self):
+    contents = """
+package org.jni_zero;
+public class CatalogTest {
+  @CalledByNative
+  public static void foo(JniPtr<MyType> ptr) {}
+}
+"""
+    catalog = {'org/jni_zero/MyType': '::my::cpp::Type'}
+    parsed_file = parse.parse_java_file_data(
+        'CatalogTest.java',
+        contents,
+        enable_safe_pointers=True,
+        package_prefix=None,
+        package_prefix_filter=None,
+        allow_private_called_by_natives=False,
+        type_catalog=catalog)
+
+    cbn_class = parsed_file.classes_with_jni[0]
+    foo_method = cbn_class.called_by_natives[0]
+    param_type = foo_method.signature.param_list[0].java_type
+
+    self.assertTrue(param_type.is_safe_pointer())
+    my_type = param_type.generics[0]
+    self.assertEqual('::my::cpp::Type', my_type.converted_type)
+
+    self.assertEqual('jlong', param_type.to_boundary_cpp_type())
+    self.assertEqual('::my::cpp::Type*', param_type.to_backend_cpp_type())
+
+  def testParseSafePointerArrayError(self):
+    contents = """
+package org.jni_zero;
+public class SafePointerArrayTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @CalledByNative
+  public static void foo(JniPtr<NativeFoo>[] ptrs) {}
+}
+"""
+    with self.assertRaisesRegex(parse.ParseError,
+                                "Arrays of safe pointers .* are not supported"):
+      _parse_java_file_data('SafePointerArrayTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseSafePointerArrayVariantsError(self):
+    wrappers = ['JniPtr', 'JniUniquePtr', 'JniRawPtr']
+    dimensions = ['[]', '[][]']
+    for wrapper in wrappers:
+      for dim in dimensions:
+        contents_cbn_param = f"""
+package org.jni_zero;
+public class TestClass {{
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {{}}
+  @CalledByNative
+  public static void foo({wrapper}<NativeFoo>{dim} ptrs) {{}}
+}}
+"""
+        with self.assertRaisesRegex(
+            parse.ParseError, r"Arrays of safe pointers .* are not supported"):
+          _parse_java_file_data('TestClass.java',
+                                contents_cbn_param,
+                                enable_safe_pointers=True)
+
+        contents_cbn_ret = f"""
+package org.jni_zero;
+public class TestClass {{
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {{}}
+  @CalledByNative
+  public static {wrapper}<NativeFoo>{dim} foo() {{ return null; }}
+}}
+"""
+        with self.assertRaisesRegex(
+            parse.ParseError, r"Arrays of safe pointers .* are not supported"):
+          _parse_java_file_data('TestClass.java',
+                                contents_cbn_ret,
+                                enable_safe_pointers=True)
+
+        contents_native_param = f"""
+package org.jni_zero;
+public class TestClass {{
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {{}}
+  @NativeMethods
+  interface Natives {{
+    void foo({wrapper}<NativeFoo>{dim} ptrs);
+  }}
+}}
+"""
+        with self.assertRaisesRegex(
+            parse.ParseError, r"Arrays of safe pointers .* are not supported"):
+          _parse_java_file_data('TestClass.java',
+                                contents_native_param,
+                                enable_safe_pointers=True)
+
+        contents_native_ret = f"""
+package org.jni_zero;
+public class TestClass {{
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {{}}
+  @NativeMethods
+  interface Natives {{
+    {wrapper}<NativeFoo>{dim} foo();
+  }}
+}}
+"""
+        with self.assertRaisesRegex(
+            parse.ParseError, r"Arrays of safe pointers .* are not supported"):
+          _parse_java_file_data('TestClass.java',
+                                contents_native_ret,
+                                enable_safe_pointers=True)
+
+  def testParseProxyNativeUniquePtrParamError(self):
+    contents = """
+package org.jni_zero;
+public class ProxyParamTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @NativeMethods
+  interface Natives {
+    void set(JniUniquePtr<NativeFoo> ptr);
+  }
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError, r'@NativeMethods parameters must use JniPtr<T>'):
+      _parse_java_file_data('ProxyParamTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseProxyNativeRawPtrParamError(self):
+    contents = """
+package org.jni_zero;
+public class ProxyParamTest {
+  @JniType("::foo::Foo")
+  public interface NativeFoo extends JniTypeToken {}
+
+  @NativeMethods
+  interface Natives {
+    void set(JniRawPtr<NativeFoo> ptr);
+  }
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError, r'@NativeMethods parameters must use JniPtr<T>'):
+      _parse_java_file_data('ProxyParamTest.java',
+                            contents,
+                            enable_safe_pointers=True)
+
+  def testParseNonTemplatizedVectorError(self):
+    contents = """
+package org.jni_zero;
+public class VectorTest {
+  @CalledByNative
+  public static void foo(@JniType("std::vector") String str) {}
+}
+"""
+    with self.assertRaisesRegex(
+        parse.ParseError, r'Found non-templatized @JniType\("std::vector"\)'):
+      _parse_java_file_data('VectorTest.java',
+                            contents,
+                            enable_safe_pointers=True)
 
 
 if __name__ == '__main__':

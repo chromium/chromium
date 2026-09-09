@@ -25,6 +25,13 @@ _ROOT_DIR = posixpath.dirname(posixpath.dirname(_THIS_DIR))
 def _add_io_args(parser, *, is_final=False, is_javap=False):
   inputs = parser.add_argument_group(title='Inputs')
   outputs = parser.add_argument_group(title='Outputs')
+  inputs.add_argument('--type-catalog',
+                      action='append',
+                      dest='type_catalogs',
+                      help='Path to input type catalog JSON files.')
+  inputs.add_argument(
+      '--type-catalogs-file',
+      help='JSON file containing a list of paths to type catalog JSON files.')
   if is_final:
     inputs.add_argument(
         '--java-sources-file',
@@ -95,11 +102,13 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         ' hash is enabled).')
     outputs.add_argument('--jni-pickle',
                          help='Path to write intermediate .jni.pickle file.')
+    outputs.add_argument('--output-type-catalog',
+                         help='Path to output type catalog JSON file.')
   if is_final:
     outputs.add_argument('--impl-path',
                          help='Path to output C++ implementation file.')
-    outputs.add_argument(
-        '--depfile', help='Path to depfile (for use with ninja build system)')
+  outputs.add_argument('--depfile',
+                       help='Path to depfile (for use with ninja build system)')
 
 
 def _add_codegen_args(parser, *, is_final=False, is_javap=False):
@@ -177,6 +186,10 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         '--enable-jni-multiplexing',
         action='store_true',
         help='Enables JNI multiplexing for Java native methods')
+    group.add_argument(
+        '--enable-safe-pointers',
+        action='store_true',
+        help='Enables parsing and generation of safe JNI pointers.')
     group.add_argument(
         '--package-prefix',
         help='Adds a prefix to the classes fully qualified-name. Effectively '

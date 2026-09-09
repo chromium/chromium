@@ -61,6 +61,7 @@ class ParsedClass:
   type_resolver: java_types.TypeResolver
   _start_idx: int
   _end_idx: int
+  jni_type: Optional[str] = None
   called_by_natives: List[ParsedCalledByNative] = (dataclasses.field(
       default_factory=list))
   fields: List[ParsedField] = dataclasses.field(default_factory=list)
@@ -74,6 +75,7 @@ class ParsedFile:
   outer_class: ParsedClass
   classes_with_jni: List[ParsedClass]  # ParsedCalledByNative or CalledByNative
   proxy_methods: List[ParsedNative]
+  type_tokens: dict = dataclasses.field(default_factory=dict)
   proxy_interface: Optional[java_types.JavaClass] = None
   proxy_visibility: Optional[str] = None
   jni_namespace: Optional[str] = None  # E.g. @JNINamespace("content")
@@ -175,7 +177,9 @@ def _parse_java_classes(contents,
                         expected_name,
                         package_prefix=None,
                         package_prefix_filter=None,
-                        is_javap=False):
+                        is_javap=False,
+                        type_catalog=None,
+                        enable_safe_pointers=False):
   package = _parse_package(contents, require=not is_javap)
   null_marked = False
   parsed_classes = []
@@ -221,7 +225,9 @@ def _parse_java_classes(contents,
           java_class,
           null_marked=null_marked,
           package_prefix=package_prefix,
-          package_prefix_filter=package_prefix_filter)
+          package_prefix_filter=package_prefix_filter,
+          type_catalog=type_catalog,
+          enable_safe_pointers=enable_safe_pointers)
       if not is_javap:
         for c in _parse_imports(contents, m.end()):
           type_resolver.add_import(c)
@@ -239,10 +245,13 @@ def _parse_java_classes(contents,
     if generics_str:
       type_resolver.type_params = _parse_type_params(type_resolver,
                                                      generics_str[1:-1])
+    annotations, _ = _parse_annotations(preamble)
+    jni_type = annotations.get('JniType')
     parsed_classes.append(
         ParsedClass(_start_idx=class_keyword_start,
                     _end_idx=end_idx,
-                    type_resolver=type_resolver))
+                    type_resolver=type_resolver,
+                    jni_type=jni_type))
 
   if parsed_classes:
     parsed_classes[0].type_resolver.nested_classes.sort()
@@ -309,6 +318,32 @@ def _split_by_delimiter(value, delimiter):
   return ret
 
 
+def _validate_safe_pointer(type_resolver, value, parsed_value, java_class,
+                           generics, array_dimensions):
+  if array_dimensions > 0:
+    raise ParseError(
+        f'Arrays of safe pointers ({parsed_value}) are not supported: '
+        f'{value}')
+  if not type_resolver.enable_safe_pointers:
+    raise ParseError(f'Safe JNI pointers are not enabled. Did you forget '
+                     f'--enable-safe-pointers for {value}?')
+  if not generics or len(generics) != 1:
+    raise ParseError(
+        f'Safe pointer type "{parsed_value}" must have exactly one generic '
+        f'type parameter: {value}')
+  inner = generics[0]
+  if inner.primitive_name or inner.array_dimensions:
+    raise ParseError(
+        f'Safe pointer inner type must be a JniTypeToken interface, not '
+        f'"{inner.non_array_full_name_with_slashes}": {value}')
+  if not inner.converted_type:
+    raise ParseError(
+        f'Safe pointer inner type "{inner.non_array_full_name_with_slashes}" '
+        f'does not resolve to a C++ type. Annotate its JniTypeToken '
+        f'interface with @JniType("::your::CppType") (or provide it via '
+        f'the type catalog): {value}')
+
+
 def _parse_type(type_resolver, value):
   """Parses a string into a JavaType."""
   # E.g. List<?>, List<? extends Foo>
@@ -341,15 +376,23 @@ def _parse_type(type_resolver, value):
       generics = tuple(
           _parse_type(type_resolver, g)
           for g in _split_by_delimiter(generics_str, ','))
+
+    java_class = type_resolver.resolve(parsed_value)
+    if generics and not java_class.is_safe_pointer():
       if any(t.converted_type for t in generics):
         raise ParseError('@JniType not allowed within generics: ' + value)
 
-    java_class = type_resolver.resolve(parsed_value)
     primitive_name = None
-    if java_class == java_types.CLASS_CLASS:
+    if java_class.is_safe_pointer():
+      _validate_safe_pointer(type_resolver, value, parsed_value, java_class,
+                             generics, array_dimensions)
+    elif java_class == java_types.CLASS_CLASS:
       generics = None
 
   converted_type = annotations.get('JniType', None)
+  if not converted_type and java_class:
+    fqn = java_class.class_without_prefix.full_name_with_slashes
+    converted_type = type_resolver.type_catalog.get(fqn, None)
   if converted_type == 'std::vector':
     # Allow "std::vector" as shorthand for types that can be inferred:
     if array_dimensions == 1 and primitive_name:
@@ -360,9 +403,9 @@ def _parse_type(type_resolver, value):
       # std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
       converted_type += '<jni_zero::ScopedJavaLocalRef<jobject>>'
     else:
-      raise Error('Found non-templatized @JniType("std::vector") on '
-                  f'non-array, non-Collection type: {java_class} '
-                  f'(when parsing {value}')
+      raise ParseError('Found non-templatized @JniType("std::vector") on '
+                       f'non-array, non-Collection type: {java_class} '
+                       f'(when parsing {value})')
 
   if primitive_name and array_dimensions == 0:
     nullable = False
@@ -406,15 +449,16 @@ def _parse_param_list(type_resolver, value) -> java_types.JavaParamList:
   params = []
   value = _FINAL_REGEX.sub('', value)
 
-  # Split by commas that are not inside generics or quotes.
-  param_strs = _split_by_delimiter(value, ',')
+  # Split parameter list by commas that are not nested inside generics (e.g. Map<K, V>).
+  param_strs = [p for p in _split_by_delimiter(value, ',') if p]
 
   for i, param_str in enumerate(param_strs):
-    if not param_str:
-      continue
-
-    parts = _split_by_delimiter(param_str, ' ')
+    # Split by spaces outside generics to separate annotations, type, and optional param name.
+    # We must not split on spaces within generics (e.g. Comparator<? super E>).
+    normalized_param = re.sub(r'\s+', ' ', param_str)
+    parts = [x for x in _split_by_delimiter(normalized_param, ' ') if x]
     if len(parts) == 1:
+      # In javap output or interface declarations without param names, parts has only the type.
       param_name = f'p{i}'
       param_str = parts[0]
     else:
@@ -422,7 +466,6 @@ def _parse_param_list(type_resolver, value) -> java_types.JavaParamList:
       param_str = ' '.join(parts[:-1])
 
     # Handle varargs.
-
     if param_str.endswith('...'):
       param_str = param_str[:-3] + '[]'
 
@@ -462,6 +505,19 @@ def _parse_proxy_natives(type_resolver, contents):
     annotations, _ = _parse_annotations(preamble)
     params = _parse_param_list(type_resolver, params_part)
     return_type = _parse_type(type_resolver, preamble)
+    if return_type.java_class == java_types.JNI_PTR_CLASS:
+      raise ParseError(
+          f'Method "{name}" returns JniPtr, but a short-borrow pointer is '
+          f'auto-invalidated after the call and cannot be returned. Use '
+          f'JniUniquePtr or JniRawPtr to hand ownership to Java.')
+    for p in params:
+      if (p.java_type.is_safe_pointer()
+          and p.java_type.java_class != java_types.JNI_PTR_CLASS):
+        raise ParseError(
+            f'Method "{name}" parameter "{p.name}" has type '
+            f'{p.java_type.java_class.name}, but @NativeMethods parameters '
+            f'must use JniPtr<T>. (JniUniquePtr and JniRawPtr implement '
+            f'JniPtr and can be passed as arguments).')
     signature = java_types.JavaSignature.from_params(return_type, params)
     ret.methods.append(
         ParsedNative(
@@ -563,6 +619,7 @@ def _parse_called_by_natives_or_javap(contents,
       return_type = java_types.VOID
       name = '<init>'
 
+
     params = _parse_param_list(type_resolver, match.group('params'))
     signature = java_types.JavaSignature.from_params(return_type, params)
     if natives_only:
@@ -655,17 +712,44 @@ def _sort_jni(parsed_classes):
     c.non_proxy_methods.sort()
 
 
-def parse_java_file_data(filename, contents, *, package_prefix,
+def _extract_type_catalog(parsed_classes, type_catalog=None):
+  merged_catalog = {}
+  if type_catalog:
+    merged_catalog.update(type_catalog)
+  type_tokens = {}
+  for parsed_class in parsed_classes:
+    if parsed_class.jni_type:
+      fqn = parsed_class.type_resolver.java_class.class_without_prefix.full_name_with_slashes
+      merged_catalog[fqn] = parsed_class.jni_type
+      type_tokens[fqn] = parsed_class.jni_type
+  for parsed_class in parsed_classes:
+    parsed_class.type_resolver.type_catalog = merged_catalog
+  return type_tokens
+
+
+def parse_java_file_data(filename,
+                         contents,
+                         *,
+                         package_prefix,
                          package_prefix_filter,
-                         allow_private_called_by_natives):
+                         allow_private_called_by_natives,
+                         type_catalog=None,
+                         enable_safe_pointers=False):
   contents = _remove_comments(contents)
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
-  parsed_classes = _parse_java_classes(contents, expected_name, package_prefix,
-                                       package_prefix_filter)
+  parsed_classes = _parse_java_classes(
+      contents,
+      expected_name,
+      package_prefix,
+      package_prefix_filter,
+      type_catalog=type_catalog,
+      enable_safe_pointers=enable_safe_pointers)
 
   if not parsed_classes:
     raise ParseError('No classes found.')
+
+  type_tokens = _extract_type_catalog(parsed_classes, type_catalog)
 
   outer_class = parsed_classes[0]
   type_resolver = outer_class.type_resolver
@@ -685,6 +769,7 @@ def parse_java_file_data(filename, contents, *, package_prefix,
   ret = ParsedFile(filename=filename,
                    outer_class=outer_class,
                    classes_with_jni=classes_with_jni,
+                   type_tokens=type_tokens,
                    jni_namespace=jni_namespace,
                    proxy_methods=[])
 
@@ -702,7 +787,9 @@ def parse_java_file(filename,
                     *,
                     package_prefix=None,
                     package_prefix_filter=None,
-                    allow_private_called_by_natives=False):
+                    allow_private_called_by_natives=False,
+                    type_catalog=None,
+                    enable_safe_pointers=False):
   try:
     assert not filename.endswith('.kt'), (
         f'Found {filename}, but Kotlin is not supported by JNI generator.')
@@ -713,7 +800,9 @@ def parse_java_file(filename,
         contents,
         package_prefix=package_prefix,
         package_prefix_filter=package_prefix_filter,
-        allow_private_called_by_natives=allow_private_called_by_natives)
+        allow_private_called_by_natives=allow_private_called_by_natives,
+        type_catalog=type_catalog,
+        enable_safe_pointers=enable_safe_pointers)
   except Exception as e:
     if _last_match:
       common.add_note(e, f'in match {_last_match}')

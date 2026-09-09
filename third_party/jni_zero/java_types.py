@@ -171,6 +171,9 @@ class JavaClass:
   def is_nested(self):
     return '$' in self.name
 
+  def is_safe_pointer(self):
+    return self in SAFE_POINTER_CLASSES
+
   def get_outer_class(self):
     return JavaClass(f'{self.package_with_slashes}/{self.outer_class_name}',
                      self._prefix)
@@ -291,8 +294,35 @@ class JavaType:
     return CPP_UNDERLYING_TYPE_BY_JAVA_TYPE.get(
         self.non_array_full_name_with_slashes, 'jobject')
 
+  def to_boundary_cpp_type(self):
+    if self.is_safe_pointer():
+      return 'jlong'
+    return self.to_cpp()
+
+  def to_backend_cpp_type(self):
+    if not self.is_safe_pointer():
+      if self.converted_type:
+        return self.converted_type
+      return self.to_cpp()
+
+    assert self.generics and len(self.generics) == 1
+    inner_type = self.generics[0]
+    inner_cpp = inner_type.converted_type
+    assert inner_cpp, f'Missing C++ mapping for safe pointer: {inner_type}'
+
+    if self.java_class == JNI_PTR_CLASS:
+      return f'{inner_cpp}*'
+    if self.java_class == JNI_UNIQUE_PTR_CLASS:
+      return f'::jni_zero::JniUniquePtr<{inner_cpp}>'
+    if self.java_class == JNI_RAW_PTR_CLASS:
+      return f'::jni_zero::JniRawPtr<{inner_cpp}>'
+    raise ValueError(f'Unknown safe pointer type: {self.java_class}')
+
   def is_collection(self):
     return not self.is_array() and self.java_class in COLLECTION_CLASSES
+
+  def is_safe_pointer(self):
+    return bool(self.java_class and self.java_class.is_safe_pointer())
 
   def is_void(self):
     return self.primitive_name == 'void'
@@ -375,6 +405,8 @@ class JavaType:
 
   def enable_mirror(self):
     """Whether to use a jobject subclass e.g. JMyClass."""
+    if self.is_safe_pointer():
+      return False
     return (((self.java_class and self.java_class.enable_mirror())
              or self.array_dimensions > 0) and not self.converted_type)
 
@@ -493,7 +525,9 @@ class TypeResolver:
                parent_resolver=None,
                null_marked=False,
                package_prefix=None,
-               package_prefix_filter=None):
+               package_prefix_filter=None,
+               type_catalog=None,
+               enable_safe_pointers=False):
     self.java_class = java_class
     self.type_params = type_params or EMPTY_TYPE_PARAM_LIST
     self.parent_resolver = parent_resolver
@@ -502,7 +536,15 @@ class TypeResolver:
     self.nested_classes = []
     self.package_prefix = package_prefix
     self.package_prefix_filter = package_prefix_filter
+    self.enable_safe_pointers = (parent_resolver.enable_safe_pointers
+                                 if parent_resolver else enable_safe_pointers)
     self._cache = {}
+    if type_catalog is not None:
+      self.type_catalog = type_catalog
+    elif parent_resolver:
+      self.type_catalog = parent_resolver.type_catalog
+    else:
+      self.type_catalog = {}
 
     assert self.java_class == self._maybe_prefix(
         self.java_class.class_without_prefix)
@@ -644,6 +686,17 @@ OBJECT_CLASS = JavaClass('java/lang/Object')
 STRING_CLASS = JavaClass('java/lang/String')
 LIST_CLASS = JavaClass('java/util/List')
 MAP_CLASS = JavaClass('java/util/Map')
+
+JNI_PTR_CLASS = JavaClass('org/jni_zero/JniPtr')
+JNI_PTR_INNER_CLASS = JavaClass('org/jni_zero/JniPtrInner')
+JNI_UNIQUE_PTR_CLASS = JavaClass('org/jni_zero/JniUniquePtr')
+JNI_RAW_PTR_CLASS = JavaClass('org/jni_zero/JniRawPtr')
+
+SAFE_POINTER_CLASSES = (
+    JNI_PTR_CLASS,
+    JNI_UNIQUE_PTR_CLASS,
+    JNI_RAW_PTR_CLASS,
+)
 
 # Collection and types that extend it (for use with toArray()).
 # More can be added here if the need arises.
