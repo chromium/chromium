@@ -492,7 +492,7 @@ TEST_F(MinimumWindowsSupportTest, ChromeExtraDlls) {
       L"d3dcompiler_47.dll",
 #if !defined(ARCH_CPU_ARM64)
       // These are not yet supported for Arm64.
-      L"dxcompiler.dll", L"dxil.dll",
+      L"dxcompiler.dll",
 #endif  // !defined(ARCH_CPU_ARM64
       L"vk_swiftshader.dll", L"vulkan-1.dll"};
   for (const auto& dll : extra_dlls) {

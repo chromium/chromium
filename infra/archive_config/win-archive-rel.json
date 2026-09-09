@@ -12,7 +12,6 @@
                 "chrome_wer.dll",
                 "D3DCompiler_47.dll",
                 "dxcompiler.dll",
-                "dxil.dll",
                 "elevated_tracing_service.exe",
                 "elevation_service.exe",
                 "eventlog_provider.dll",
