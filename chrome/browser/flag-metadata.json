@@ -1131,8 +1131,8 @@
   },
   {
     "name": "autofill-enable-omnibox-autofill",
-    "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 155
+    "owners": [ "osaul@google.com", "ferny@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "autofill-enable-pay-now-pay-later-tabs",
@@ -1186,7 +1186,7 @@
   {
     "name": "autofill-enable-wallet-branding-v2",
     "owners": ["osaul@google.com", "ferny@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 170
   },
   {
     "name": "autofill-enable-wallet-direct-offers",
