@@ -9,11 +9,14 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -114,7 +117,44 @@ void RecordExternalActionMetrics(NSURL* url) {
 }
 
 - (void)handleCommandWithSceneState:(SceneState*)sceneState {
-  // TODO(crbug.com/493816082): Add implementation.
+  NSURL* url = self.URLContext.URL;
+  if (!url) {
+    return;
+  }
+
+  GURL externalGURL = net::GURLWithNSURL(url);
+  GURL virtualGURL;
+  TabOpeningPostOpeningAction postOpeningAction =
+      TabOpeningPostOpeningAction::NO_ACTION;
+  ApplicationModeForTabOpening targetMode =
+      ApplicationModeForTabOpening::UNDETERMINED;
+
+  NSString* host = url.host;
+
+  if ([host isEqualToString:kExternalActionURLHost]) {
+    // TODO(crbug.com/493816082): Add implementation.
+  } else if (externalGURL.SchemeIsFile()) {
+    GURL::Replacements replacements;
+    std::string filename = externalGURL.ExtractFileName();
+    replacements.SetPathStr(filename);
+    replacements.SetSchemeStr(kChromeUIScheme);
+    replacements.SetHostStr(kChromeUIExternalFileHost);
+    virtualGURL = externalGURL.ReplaceComponents(replacements);
+    if (!virtualGURL.is_valid()) {
+      return;
+    }
+    targetMode = ApplicationModeForTabOpening::NORMAL;
+  } else {
+    // Other schemes.
+    // TODO(crbug.com/493816082): Add implementation.
+  }
+
+  [self openTabWithSceneState:sceneState
+                  externalURL:externalGURL
+                   virtualURL:virtualGURL
+                   targetMode:targetMode
+            postOpeningAction:postOpeningAction
+             fromWidgetOrSiri:NO];
 }
 
 @end

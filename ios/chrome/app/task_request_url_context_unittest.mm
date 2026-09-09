@@ -424,3 +424,30 @@ TEST_F(TaskRequestForURLContextTest, TestWidgetURLContextExecution) {
             TabOpeningPostOpeningAction::FOCUS_OMNIBOX);
   EXPECT_TRUE(tab_opener.completionActionExecuted);
 }
+
+// Tests that a file URL execution loads the physical file URL and sets the
+// chrome://external-file/ virtual URL.
+TEST_F(TaskRequestForURLContextTest, TestFileURLContextExecution) {
+  NSURL* url = [NSURL URLWithString:@"file:///path/to/test.pdf"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::NORMAL);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+            GURL("file:///path/to/test.pdf"));
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.virtual_url,
+            GURL("chrome://external-file/test.pdf"));
+  EXPECT_TRUE(tab_opener.dismissOmnibox);
+}

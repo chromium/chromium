@@ -14,8 +14,10 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -26,15 +28,18 @@
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
 #import "ios/chrome/common/x_callback_url.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -206,6 +211,55 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 - (void)handleCommandWithSceneState:(SceneState*)sceneState {
   NOTREACHED()
       << "-handleCommandWithSceneState: must be implemented by sub-classes";
+}
+
+- (ApplicationModeForTabOpening)
+    targetModeForSceneState:(SceneState*)sceneState
+                defaultMode:(ApplicationModeForTabOpening)defaultMode {
+  PrefService* prefService = sceneState.profileState.profile->GetPrefs();
+  if (IsIncognitoModeDisabled(prefService)) {
+    return ApplicationModeForTabOpening::NORMAL;
+  }
+  if (IsIncognitoModeForced(prefService)) {
+    return ApplicationModeForTabOpening::INCOGNITO;
+  }
+  if (_callerApp == CALLER_APP_GOOGLE_CHROME &&
+      defaultMode != ApplicationModeForTabOpening::INCOGNITO) {
+    return ApplicationModeForTabOpening::CURRENT;
+  }
+  return defaultMode;
+}
+
+- (void)openTabWithSceneState:(SceneState*)sceneState
+                  externalURL:(const GURL&)externalURL
+                   virtualURL:(const GURL&)virtualURL
+                   targetMode:(ApplicationModeForTabOpening)targetMode
+            postOpeningAction:(TabOpeningPostOpeningAction)postOpeningAction
+             fromWidgetOrSiri:(BOOL)fromWidgetOrSiri {
+  ApplicationModeForTabOpening resolvedMode =
+      [self targetModeForSceneState:sceneState defaultMode:targetMode];
+
+  UrlLoadParams urlLoadParams =
+      UrlLoadParams::InNewTab(externalURL, virtualURL);
+  urlLoadParams.from_widget_or_siri = fromWidgetOrSiri;
+
+  const BOOL dismissOmnibox =
+      postOpeningAction != TabOpeningPostOpeningAction::FOCUS_OMNIBOX;
+
+  id<TabOpening> tabOpener = sceneState.controller;
+  __weak id<TabOpening> weakTabOpener = tabOpener;
+  ProceduralBlock completion = ^{
+    ProceduralBlock triggerBlock =
+        [weakTabOpener completionBlockForTriggeringAction:postOpeningAction];
+    if (triggerBlock) {
+      triggerBlock();
+    }
+  };
+
+  [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:resolvedMode
+                                      withUrlLoadParams:urlLoadParams
+                                         dismissOmnibox:dismissOmnibox
+                                             completion:completion];
 }
 
 - (void)execute {
