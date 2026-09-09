@@ -95,28 +95,6 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
-    public void testSearchPasswordManager() {
-        searchSettings("password");
-
-        clickSearchResult(R.string.password_manager_settings_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.password_manager_settings_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchPayment() {
-        searchSettings("payment");
-
-        clickSearchResult(R.string.autofill_payments_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.autofill_payments_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
     public void testSearchSaveAndFillPaymentMethods() {
         searchSettings("payment");
 
@@ -153,17 +131,6 @@ public class AutofillSettingsSearchTest {
         searchSettings("delete saved security codes");
 
         assertNoSearchResultsFound();
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchContact() {
-        searchSettings("contact");
-
-        clickSearchResult(R.string.autofill_contact_info_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.autofill_contact_info_title)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -226,17 +193,6 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
-    public void testSearchTravel() {
-        searchSettings("travel");
-
-        clickSearchResult(R.string.autofill_travel_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.autofill_travel_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
     public void testSearchTravelOptIn() {
         searchSettings("travel");
 
@@ -250,17 +206,6 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
-    public void testSearchIdentity() {
-        searchSettings("identity");
-
-        clickSearchResult(R.string.autofill_identity_docs_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.autofill_identity_docs_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
     public void testSearchIdentityDocsOptIn() {
         searchSettings("identity");
 
@@ -270,30 +215,6 @@ public class AutofillSettingsSearchTest {
                 .check(matches(isDisplayed()));
         onView(highlighted(R.string.autofill_identity_docs_opt_in_toggle_label))
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchAutofillSettings() {
-        searchSettings("Autofill settings");
-
-        clickSearchResult(R.string.autofill_settings_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.autofill_settings_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING)
-    public void testSearchShopping_signInPromoNotDismissed() {
-        signInPromoDismissed(false);
-        searchSettings("shopping");
-
-        clickSearchResult(R.string.autofill_shopping_title);
-
-        assertAutofillAndPasswordsOpened();
-        onView(highlighted(R.string.autofill_shopping_title)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -318,8 +239,7 @@ public class AutofillSettingsSearchTest {
 
         searchSettings("find and fill");
 
-        clickSearchResult(
-                R.string.personal_context_autofill_settings_switch_title_android);
+        clickSearchResult(R.string.personal_context_autofill_settings_switch_title_android);
 
         onView(highlighted(R.string.personal_context_autofill_settings_switch_title_android))
                 .check(matches(isDisplayed()));

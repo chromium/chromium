@@ -26,6 +26,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertPreferenceScreenMatchesIndex;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -423,29 +425,6 @@ public class AutofillAndPasswordsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-        ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL
-    })
-    public void testSearchIndexWhenAllEnabled() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER
-                            .updateDynamicPreferences(
-                                    mSettingsTestRule.getActivity(),
-                                    mSearchIndexDataMock,
-                                    mProfileMock);
-                });
-
-        verify(mSearchIndexDataMock)
-                .removeEntry(
-                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                AutofillAndPasswordsFragment.PREF_SIGNIN_PROMO));
-    }
-
-    @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSearchIndexEmptyWhenFeatureDisabled() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -494,6 +473,50 @@ public class AutofillAndPasswordsFragmentTest {
                 .removeEntry(
                         AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 AutofillAndPasswordsFragment.PREF_SIGNIN_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL
+    })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING)
+    public void testPreferenceScreenMatchesSearchIndex_defaultFeatures() {
+        mSettingsTestRule.startSettingsActivity();
+        AutofillAndPasswordsFragment fragment = mSettingsTestRule.getFragment();
+
+        assertPreferenceScreenMatchesIndex(fragment);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL
+    })
+    public void testPreferenceScreenMatchesSearchIndex_allFeaturesEnabled() {
+        mSettingsTestRule.startSettingsActivity();
+        AutofillAndPasswordsFragment fragment = mSettingsTestRule.getFragment();
+
+        assertPreferenceScreenMatchesIndex(fragment);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
+    public void testPreferenceScreenMatchesSearchIndex_dynamicFeaturesDisabled() {
+        mSettingsTestRule.startSettingsActivity();
+        AutofillAndPasswordsFragment fragment = mSettingsTestRule.getFragment();
+
+        assertPreferenceScreenMatchesIndex(fragment);
     }
 
     @Test
@@ -732,29 +755,6 @@ public class AutofillAndPasswordsFragmentTest {
 
         onView(withText(R.string.personal_context_autofill_settings_title_android))
                 .check(doesNotExist());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-    })
-    public void testSearchIndexPersonalContextRemovedWhenCategoryNotVisible() {
-        when(mEntityDataManagerMock.isPersonalContextPreferenceVisible()).thenReturn(false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER
-                            .updateDynamicPreferences(
-                                    mSettingsTestRule.getActivity(),
-                                    mSearchIndexDataMock,
-                                    mProfileMock);
-                });
-
-        verify(mSearchIndexDataMock)
-                .removeEntry(
-                        AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
-                                AutofillAndPasswordsFragment.PREF_AUTOFILL_PERSONAL_CONTEXT));
     }
 
     private static void signInPromoDeclined(boolean value) {
