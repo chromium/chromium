@@ -41,6 +41,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoApiStatus) -->
 
+<!-- LINT.IfChange(IndigoMaybeInvokeGlicResult) -->
+
+<enum name="IndigoMaybeInvokeGlicResult">
+  <int value="0" label="Invoked"/>
+  <int value="1" label="Feature disabled"/>
+  <int value="2" label="Side panel already showing"/>
+  <int value="3" label="No GlicKeyedService"/>
+  <int value="4" label="Existing conversation in progress"/>
+  <int value="5" label="Prompt empty"/>
+  <int value="6" label="Invocation rejected"/>
+  <int value="7" label="No WebContents"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoMaybeInvokeGlicResult) -->
+
 <!-- LINT.IfChange(IndigoPageActionEntryPoint) -->
 
 <enum name="IndigoPageActionEntryPoint">

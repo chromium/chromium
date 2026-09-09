@@ -228,6 +228,7 @@ class IndigoPageActionControllerTest : public testing::Test {
     fake_glic_side_panel_coordinator_.reset();
     tab_interface_.reset();
     mock_optimization_guide_ = nullptr;
+    mock_glic_instance_.reset();
     mock_glic_keyed_service_ = nullptr;
     mock_skills_service_ = nullptr;
     identity_test_env_adaptor_.reset();
@@ -298,6 +299,10 @@ class IndigoPageActionControllerTest : public testing::Test {
               glic::GlicKeyedServiceFactory::GetGlicKeyedService(
                   profile_.get(), /*create=*/true));
       CHECK(mock_glic_keyed_service_);
+      mock_glic_instance_ = std::make_unique<glic::MockGlicInstance>();
+      ON_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(testing::_, testing::_))
+          .WillByDefault(testing::Return(mock_glic_instance_->GetWeakPtr()));
     }
 
     tab_interface_ =
@@ -435,6 +440,7 @@ class IndigoPageActionControllerTest : public testing::Test {
   raw_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<testing::NiceMock<glic::MockGlicKeyedService>>
       mock_glic_keyed_service_ = nullptr;
+  std::unique_ptr<glic::MockGlicInstance> mock_glic_instance_;
   raw_ptr<testing::NiceMock<skills::MockSkillsService>> mock_skills_service_ =
       nullptr;
   std::unique_ptr<TestingProfile> profile_;
@@ -984,7 +990,7 @@ TEST_F(IndigoPageActionControllerTest,
 
   EXPECT_CALL(*mock_glic_keyed_service_,
               InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
-      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+      .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
@@ -994,7 +1000,11 @@ TEST_F(IndigoPageActionControllerTest,
       url, tab_interface_->GetContents());
   navigation->Commit();
 
+  base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  histogram_tester.ExpectUniqueSample(kMaybeInvokeGlicResultHistogramName,
+                                      IndigoMaybeInvokeGlicResult::kInvoked, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -1027,11 +1037,160 @@ TEST_F(IndigoPageActionControllerTest,
   base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 
+  histogram_tester.ExpectUniqueSample(
+      kMaybeInvokeGlicResultHistogramName,
+      IndigoMaybeInvokeGlicResult::kExistingConversation, 1);
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
             1);
   histogram_tester.ExpectUniqueSample(
       "Indigo.Transformation.TriggerSource",
       IndigoTransformationTriggerSource::kPageAction, 1);
+}
+
+TEST_F(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsFeatureDisabled) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(features::kIndigoOpenGlic);
+
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  histogram_tester.ExpectUniqueSample(
+      kMaybeInvokeGlicResultHistogramName,
+      IndigoMaybeInvokeGlicResult::kFeatureDisabled, 1);
+}
+
+TEST_F(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsAlreadyShowing) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  fake_glic_side_panel_coordinator_->SetShowing(true);
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kSuggestionChip);
+
+  histogram_tester.ExpectUniqueSample(
+      kMaybeInvokeGlicResultHistogramName,
+      IndigoMaybeInvokeGlicResult::kAlreadyShowing, 1);
+}
+
+TEST_F(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsPromptEmpty) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(features::kIndigoOpenGlic);
+
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  histogram_tester.ExpectUniqueSample(kMaybeInvokeGlicResultHistogramName,
+                                      IndigoMaybeInvokeGlicResult::kPromptEmpty,
+                                      1);
+}
+
+TEST_F(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsInvokeRejected) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
+      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  histogram_tester.ExpectUniqueSample(
+      kMaybeInvokeGlicResultHistogramName,
+      IndigoMaybeInvokeGlicResult::kInvokeRejected, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            1);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       PanelActuallyShowingOnCallbackRecordsTrueWhenShowing) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  glic::GlicInvokeOptions captured_options(
+      glic::mojom::InvocationSource::kIndigoPageAction);
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
+      .WillOnce([&](glic::InvokeWithAutoSubmitPasskey passkey,
+                    glic::GlicInvokeOptions options) {
+        captured_options = std::move(options);
+        return mock_glic_instance_->GetWeakPtr();
+      });
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::HistogramTester histogram_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  ASSERT_FALSE(captured_options.on_panel_opened.is_null());
+  fake_glic_side_panel_coordinator_->SetShowing(true);
+  std::move(captured_options.on_panel_opened).Run();
+
+  histogram_tester.ExpectUniqueSample(
+      kPanelActuallyShowingOnCallbackHistogramName, true, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -1046,7 +1205,7 @@ TEST_F(IndigoPageActionControllerTest,
   // Glic should only be invoked once, on the second click.
   EXPECT_CALL(*mock_glic_keyed_service_,
               InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
-      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+      .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
   {
     GURL url1("https://example.com/1");
@@ -1136,7 +1295,7 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithProtoPrompt) {
 
   EXPECT_CALL(*mock_glic_keyed_service_,
               InvokeWithAutoSubmit(_, HasGlicPrompt("proto test prompt")))
-      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+      .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
@@ -1167,7 +1326,7 @@ TEST_F(IndigoPageActionControllerTest,
 
   EXPECT_CALL(*mock_glic_keyed_service_,
               InvokeWithAutoSubmit(_, HasGlicPrompt("override prompt")))
-      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+      .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
@@ -1228,7 +1387,7 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithSkill) {
   // Verify Glic is called with the skill prompt
   EXPECT_CALL(*mock_glic_keyed_service_,
               InvokeWithAutoSubmit(_, HasGlicPrompt("skill test prompt")))
-      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+      .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
@@ -1502,7 +1661,7 @@ TEST_F(IndigoPageActionControllerTest, DelayAgentInvokeUntilGlicPanelOpened) {
       .WillOnce([&](glic::InvokeWithAutoSubmitPasskey passkey,
                     glic::GlicInvokeOptions options) {
         captured_options = std::move(options);
-        return base::WeakPtr<glic::GlicInstance>();
+        return mock_glic_instance_->GetWeakPtr();
       });
 
   GURL url("https://example.com");
@@ -1525,6 +1684,9 @@ TEST_F(IndigoPageActionControllerTest, DelayAgentInvokeUntilGlicPanelOpened) {
   // Now execute the panel opened callback.
   ASSERT_FALSE(captured_options.on_panel_opened.is_null());
   std::move(captured_options.on_panel_opened).Run();
+
+  histogram_tester.ExpectUniqueSample(
+      kPanelActuallyShowingOnCallbackHistogramName, false, 1);
 
   // The agent should still not be triggered because of the 500ms delay.
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
@@ -1561,7 +1723,7 @@ TEST_F(IndigoPageActionControllerTest,
       .WillOnce([&](glic::InvokeWithAutoSubmitPasskey passkey,
                     glic::GlicInvokeOptions options) {
         captured_options = std::move(options);
-        return base::WeakPtr<glic::GlicInstance>();
+        return mock_glic_instance_->GetWeakPtr();
       });
 
   GURL url("https://example.com");

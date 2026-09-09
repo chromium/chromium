@@ -21,6 +21,10 @@ inline constexpr char kShownEntryPointHistogram[] =
     "Indigo.PageAction.ShownEntryPoint";
 inline constexpr char kClickedEntryPointHistogram[] =
     "Indigo.PageAction.ClickedEntryPoint";
+inline constexpr char kMaybeInvokeGlicResultHistogramName[] =
+    "Indigo.Glic.MaybeInvokeResult";
+inline constexpr char kPanelActuallyShowingOnCallbackHistogramName[] =
+    "Indigo.Glic.PanelActuallyShowingOnCallback";
 
 inline constexpr char kSuggestionChipShowAction[] =
     "Indigo.PageAction.SuggestionChip.Show";
@@ -60,6 +64,23 @@ enum class IndigoApiStatus {
   kMaxValue = kOtherError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoApiStatus)
+
+// Results of Indigo's MaybeInvokeGlic attempt.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoMaybeInvokeGlicResult)
+enum class IndigoMaybeInvokeGlicResult {
+  kInvoked = 0,
+  kFeatureDisabled = 1,
+  kAlreadyShowing = 2,
+  kNoGlicKeyedService = 3,
+  kExistingConversation = 4,
+  kPromptEmpty = 5,
+  kInvokeRejected = 6,
+  kNoWebContents = 7,
+  kMaxValue = kNoWebContents,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoMaybeInvokeGlicResult)
 
 IndigoApiStatus MapApiErrorCodeToStatus(google_apis::ApiErrorCode code);
 

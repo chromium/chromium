@@ -125,6 +125,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.Glic.MaybeInvokeResult"
+    enum="IndigoMaybeInvokeGlicResult" expires_after="2027-05-13">
+  <owner>rodneyding@google.com</owner>
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Records the outcome of attempting to invoke Glic when the Indigo page action
+    is invoked. Recorded on each invocation attempt in
+    IndigoPageActionController::MaybeInvokeGlic().
+  </summary>
+</histogram>
+
+<histogram name="Indigo.Glic.PanelActuallyShowingOnCallback" enum="Boolean"
+    expires_after="2027-05-13">
+  <owner>rodneyding@google.com</owner>
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Records whether the Glic side panel is actually visible/showing when Glic
+    fires the on_panel_opened callback to trigger Indigo's image replacement.
+    Recorded in IndigoPageActionController::TriggerIndigoAgentWithDelay().
+  </summary>
+</histogram>
+
 <histogram name="Indigo.ImageReplacement.TotalDuration" units="ms"
     expires_after="2027-05-13">
   <owner>baranerf@google.com</owner>

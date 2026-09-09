@@ -312,15 +312,22 @@ void IndigoPageActionController::ContinueInvoke(
 
 bool IndigoPageActionController::MaybeInvokeGlic() {
   if (!base::FeatureList::IsEnabled(features::kIndigoOpenGlic)) {
+    base::UmaHistogramEnumeration(
+        kMaybeInvokeGlicResultHistogramName,
+        IndigoMaybeInvokeGlicResult::kFeatureDisabled);
     return false;
   }
 
   if (glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
+    base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
+                                  IndigoMaybeInvokeGlicResult::kAlreadyShowing);
     return false;
   }
 
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
+    base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
+                                  IndigoMaybeInvokeGlicResult::kNoWebContents);
     return false;
   }
 
@@ -328,11 +335,17 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* glic_keyed_service = glic::GlicKeyedService::Get(profile);
   if (!glic_keyed_service) {
+    base::UmaHistogramEnumeration(
+        kMaybeInvokeGlicResultHistogramName,
+        IndigoMaybeInvokeGlicResult::kNoGlicKeyedService);
     return false;
   }
 
   if (auto* instance = glic_keyed_service->GetInstanceForTab(&tab())) {
     if (instance->conversation_id().has_value()) {
+      base::UmaHistogramEnumeration(
+          kMaybeInvokeGlicResultHistogramName,
+          IndigoMaybeInvokeGlicResult::kExistingConversation);
       return false;
     }
   }
@@ -373,6 +386,8 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
   }
 
   if (prompt.empty()) {
+    base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
+                                  IndigoMaybeInvokeGlicResult::kPromptEmpty);
     return false;
   }
 
@@ -387,9 +402,17 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
                      IndigoTransformationTriggerSource::kPageAction);
 
   options.prompts.push_back(std::move(prompt));
-  glic_keyed_service->InvokeWithAutoSubmit(
+  auto instance = glic_keyed_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options));
+  if (!instance) {
+    base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
+                                  IndigoMaybeInvokeGlicResult::kInvokeRejected);
+    return false;
+  }
+
+  base::UmaHistogramEnumeration(kMaybeInvokeGlicResultHistogramName,
+                                IndigoMaybeInvokeGlicResult::kInvoked);
   return true;
 }
 
@@ -411,6 +434,8 @@ void IndigoPageActionController::TriggerIndigoAgent(
 void IndigoPageActionController::TriggerIndigoAgentWithDelay(
     IndigoTransformationTriggerSource source) {
   CHECK(base::FeatureList::IsEnabled(features::kIndigoOpenGlic));
+  base::UmaHistogramBoolean(kPanelActuallyShowingOnCallbackHistogramName,
+                            glic::GlicSidePanelCoordinator::IsShowing(&tab()));
   delay_agent_invoke_timer_.Start(
       FROM_HERE, features::kIndigoGlicTriggerDelay.Get(),
       base::BindOnce(&IndigoPageActionController::TriggerIndigoAgent,
