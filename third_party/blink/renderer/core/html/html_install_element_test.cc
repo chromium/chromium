@@ -490,6 +490,53 @@ TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAndManifestId) {
   EXPECT_EQ(kResultSuccess, event->result().AsString());
 }
 
+TEST_F(HTMLInstallElementTestBase, ActivationWithRelativeManifest) {
+  GetDocument().SetURL(KURL("https://site.example/store/page.html"));
+  GetDocument().SetBaseURLOverride(KURL("https://app.example/resources/"));
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr,
+                        AtomicString("manifest.json"));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  ASSERT_FALSE(web_install_service_.manifest_options().is_null());
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_url,
+            KURL("https://app.example/resources/manifest.json"));
+  EXPECT_FALSE(
+      web_install_service_.manifest_options()->manifest_id.has_value());
+
+  web_install_service_.RespondManifestWithSuccess();
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultSuccess, event->result().AsString());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithManifestAttributeWithSurroundingWhitespace) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  String manifest = String(" \t\n ") + kExampleSite + " \r\f ";
+  element->setAttribute(html_names::kManifestAttr, AtomicString(manifest));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  web_install_service_.WaitForCall();
+
+  ASSERT_FALSE(web_install_service_.manifest_options().is_null());
+  EXPECT_EQ(web_install_service_.manifest_options()->manifest_url,
+            KURL(kExampleSite));
+
+  web_install_service_.RespondManifestWithSuccess();
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultSuccess, event->result().AsString());
+}
+
 TEST_F(HTMLInstallElementTestBase, ActivationWithManifestAbortError) {
   HTMLInstallElement* element =
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
@@ -547,8 +594,7 @@ TEST_F(HTMLInstallElementTestBase, ManifestIdOnlyReturnsInvalidData) {
 TEST_F(HTMLInstallElementTestBase, InvalidManifestUrlReturnsInvalidData) {
   HTMLInstallElement* element =
       MakeGarbageCollected<HTMLInstallElement>(GetDocument());
-  element->setAttribute(html_names::kManifestAttr,
-                        AtomicString("not a valid url"));
+  element->setAttribute(html_names::kManifestAttr, AtomicString("https://["));
   WaitForElementRegistration(element);
 
   element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
@@ -556,6 +602,24 @@ TEST_F(HTMLInstallElementTestBase, InvalidManifestUrlReturnsInvalidData) {
   InstallResultEvent* event = WaitForInstallResultEvent(element);
   ASSERT_TRUE(event);
   EXPECT_EQ(kResultInvalidData, event->result().AsString());
+  EXPECT_FALSE(web_install_service_.WasCalled());
+}
+
+// TODO(crbug.com/557288876): Define whitespace-only manifest attribute
+// behavior.
+TEST_F(HTMLInstallElementTestBase,
+       ActivationWithWhitespaceOnlyManifestReturnsInvalidData) {
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  element->setAttribute(html_names::kManifestAttr, AtomicString(" \t\n "));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  ASSERT_TRUE(event);
+  EXPECT_EQ(kResultInvalidData, event->result().AsString());
+  EXPECT_FALSE(web_install_service_.WasCalled());
 }
 
 TEST_F(HTMLInstallElementTestBase, PrefixedElementRegistration) {

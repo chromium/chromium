@@ -5,6 +5,7 @@
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/WebInstall/explainer.md
 
 dictionary InstallParams {
+  // Relative URLs are resolved against the current document's base URL.
   required USVString manifest;
   // If present, must be a valid absolute URL. Pass undefined, null, or omit
   // completely if the JSON at `manifest` contains an `id` field.

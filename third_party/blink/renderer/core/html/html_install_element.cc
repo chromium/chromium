@@ -251,7 +251,7 @@ void HTMLInstallElement::OnActivated() {
 
 mojom::blink::ManifestInstallOptionsPtr
 HTMLInstallElement::GetCheckedManifestInstallOptions() {
-  KURL manifest_url = KURL(Manifest());
+  KURL manifest_url = GetNonEmptyURLAttribute(html_names::kManifestAttr);
   if (!manifest_url.IsValid()) {
     return nullptr;
   }

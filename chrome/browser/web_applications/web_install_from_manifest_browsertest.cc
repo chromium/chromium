@@ -483,6 +483,34 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
             ukm::SourceIdType::APP_ID);
 }
 
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       RelativeManifest_Succeeds) {
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+
+  permissions::PermissionRequestObserver observer(web_contents());
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("navigator.install({manifest: $1})"
+                         ".then(result => { webInstallResult = result; })"
+                         ".catch(error => { webInstallError = error; });",
+                         kValidManifestWithId)));
+  observer.Wait();
+
+  EXPECT_TRUE(observer.request_shown());
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
 // When the user denies the Web Install permission prompt, the install is
 // rejected with AbortError.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,

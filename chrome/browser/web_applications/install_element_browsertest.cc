@@ -471,6 +471,36 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithManifestAndId) {
             ukm::SourceIdType::APP_ID);
 }
 
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithRelativeManifest) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
+
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "document.getElementById($1).setAttribute('manifest', $2);",
+          kInstallElementId, "manifest.json")));
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ASSERT_TRUE(ClickElementWithId(kInstallElementId));
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
+
+  WaitForSuccessEvent(kInstallElementId);
+  ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
+
+  const GURL manifest_id =
+      embedded_https_test_server().GetURL(kInstallElementPageId);
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
 // The user declines the install dialog, so no app is installed.
 IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
                        InstallWithManifest_UserDenies) {

@@ -13,9 +13,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_install_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_install_result.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -111,8 +113,8 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallFromParamsImpl(
     return ScriptPromise<WebInstallResult>();
   }
 
-  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
-  if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Unable to install app. This API can only be called shortly after a "
@@ -128,7 +130,11 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallFromParamsImpl(
   // `manifest` is non-nullable, but it could still be invalid.
   CHECK(params);
   CHECK(params->hasManifest());
-  KURL manifest_url(params->manifest());
+  StringView manifest = StripLeadingAndTrailingHtmlSpaces(params->manifest());
+  KURL manifest_url;
+  if (!manifest.empty()) {
+    manifest_url = window->document()->CompleteURL(manifest);
+  }
   if (!manifest_url.IsValid()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), kInvalidManifestUrlErrorDetails));

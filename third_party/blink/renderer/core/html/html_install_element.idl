@@ -11,6 +11,7 @@ interface HTMLInstallElement : HTMLElement {
   attribute EventHandler oninstallresult;
 
   [CEReactions, Reflect, URL] attribute USVString? manifestId;
+  // Relative URLs are resolved against the current document's base URL.
   [CEReactions, Reflect, URL] attribute USVString? manifest;
 };
 
