@@ -387,6 +387,10 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     if (status.IsError()) {
       return status;
     }
+    // Keep a handle to prevent the initial WebView from being disposed if it
+    // detaches while navigating or waiting for navigations.
+    std::unique_ptr<WebViewHolder> scoped_initial_web_view_lock =
+        initial_web_view->GetHolder();
 
     // Navigate the initial page to `about:blank` to align with the html spec:
     // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-a-new-browsing-context
@@ -413,8 +417,15 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     }
 
     // Set the BiDi mapper web view to the new target.
-    session->chrome->GetWebViewById(session->bidi_mapper_web_view_id,
-                                    &bidi_mapper_web_view);
+    status = session->chrome->GetWebViewById(session->bidi_mapper_web_view_id,
+                                             &bidi_mapper_web_view);
+    if (status.IsError()) {
+      return status;
+    }
+    // Keep a handle to prevent the BiDi mapper WebView from being disposed if
+    // it detaches while navigating or communicating with the mapper.
+    std::unique_ptr<WebViewHolder> scoped_bidi_mapper_web_view_lock =
+        bidi_mapper_web_view->GetHolder();
 
     // Wait until the initial navigation is over to prevent the mapper from
     // being evicted by the navigation.
@@ -781,6 +792,10 @@ Status ExecuteBidiSessionEnd(Session* session,
   status = session->chrome->GetWebViewById(session->bidi_mapper_web_view_id,
                                            &web_view);
   if (status.IsOk()) {
+    // Keep a handle to prevent the mapper WebView from being disposed during
+    // event processing.
+    std::unique_ptr<WebViewHolder> scoped_web_view_lock =
+        web_view->GetHolder();
     // Attempting to forward any pending BiDi responses / events.
     status = web_view->HandleReceivedEvents();
   }
@@ -835,45 +850,53 @@ Status ExecuteClose(Session* session,
   if (status.IsError())
     return status;
 
-  status = web_view->HandleReceivedEvents();
-  if (status.IsError())
-    return status;
+  std::string tab_id = web_view->GetTabId();
 
-  if (web_view->IsDialogOpen()) {
-    std::string alert_text;
-    status = web_view->GetDialogMessage(alert_text);
+  {
+    // Keep a handle to prevent the WebView from being disposed if it detaches
+    // during event processing before remaining checks (e.g. dialogs) finish.
+    std::unique_ptr<WebViewHolder> scoped_web_view_lock = web_view->GetHolder();
+
+    status = web_view->HandleReceivedEvents();
     if (status.IsError())
       return status;
 
-    std::string dialog_type;
-    status = web_view->GetTypeOfDialog(dialog_type);
-    if (status.IsError()) {
-      return status;
-    }
+    if (web_view->IsDialogOpen()) {
+      std::string alert_text;
+      status = web_view->GetDialogMessage(alert_text);
+      if (status.IsError())
+        return status;
 
-    PromptHandlerConfiguration prompt_handler_configuration;
-    status = session->unhandled_prompt_behavior.GetConfiguration(
-        dialog_type, prompt_handler_configuration);
-    if (status.IsError()) {
-      return status;
-    }
-
-    if (prompt_handler_configuration.type == PromptHandlerType::kAccept ||
-        prompt_handler_configuration.type == PromptHandlerType::kDismiss) {
-      status = web_view->HandleDialog(
-          prompt_handler_configuration.type == PromptHandlerType::kAccept,
-          session->prompt_text);
+      std::string dialog_type;
+      status = web_view->GetTypeOfDialog(dialog_type);
       if (status.IsError()) {
         return status;
       }
-    }
 
-    if (prompt_handler_configuration.notify) {
-      return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
+      PromptHandlerConfiguration prompt_handler_configuration;
+      status = session->unhandled_prompt_behavior.GetConfiguration(
+          dialog_type, prompt_handler_configuration);
+      if (status.IsError()) {
+        return status;
+      }
+
+      if (prompt_handler_configuration.type == PromptHandlerType::kAccept ||
+          prompt_handler_configuration.type == PromptHandlerType::kDismiss) {
+        status = web_view->HandleDialog(
+            prompt_handler_configuration.type == PromptHandlerType::kAccept,
+            session->prompt_text);
+        if (status.IsError()) {
+          return status;
+        }
+      }
+
+      if (prompt_handler_configuration.notify) {
+        return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
+      }
     }
   }
 
-  status = session->chrome->CloseWebView(web_view->GetTabId());
+  status = session->chrome->CloseWebView(tab_id);
   if (status.IsError())
     return status;
 
@@ -1146,6 +1169,10 @@ Status ExecuteIsLoading(Session* session,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
+
+  // Keep a handle to prevent the WebView from being disposed if it detaches
+  // while checking for pending navigations.
+  std::unique_ptr<WebViewHolder> scoped_web_view_lock = web_view->GetHolder();
 
   bool is_pending;
   status = web_view->IsPendingNavigation(nullptr, &is_pending);
