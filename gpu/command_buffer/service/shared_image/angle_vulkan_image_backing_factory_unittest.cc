@@ -26,7 +26,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
@@ -184,6 +186,67 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Upload) {
   ASSERT_TRUE(shared_image_ref);
 
   VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
+}
+
+// Verify creation with initial pixel data works as expected.
+TEST_P(AngleVulkanImageBackingFactoryTest, InitialData) {
+  auto format = GetFormat();
+  if (!format.is_single_plane()) {
+    GTEST_SKIP() << "Initial pixel data only supported for single-plane";
+  }
+
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(64, 64);
+
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+  auto initial_data = gfx::SkPixmapToSpan(bitmaps[0].pixmap());
+
+  bool supported = backing_factory_->CanCreateSharedImage(
+      kUsage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kVulkan, initial_data);
+  ASSERT_TRUE(supported);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data);
+  ASSERT_TRUE(backing);
+  EXPECT_TRUE(backing->IsCleared());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  ASSERT_TRUE(shared_image_ref);
+
+  VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
+}
+
+// Verify that creation fails if the initial pixel data upload fails so the
+// backing is never marked cleared with uninitialized contents.
+TEST_P(AngleVulkanImageBackingFactoryTest, InitialDataUploadFailure) {
+  auto format = GetFormat();
+  if (!format.is_single_plane()) {
+    GTEST_SKIP() << "Initial pixel data only supported for single-plane";
+  }
+
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(64, 64);
+
+  std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
+  auto initial_data = gfx::SkPixmapToSpan(bitmaps[0].pixmap());
+
+  // Abandon the GrDirectContext so updateBackendTexture() fails. The
+  // VulkanImage allocation still succeeds since it goes directly through the
+  // VulkanDeviceQueue.
+  gr_context()->abandonContext();
+  ASSERT_TRUE(gr_context()->abandoned());
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data);
+  EXPECT_FALSE(backing);
 }
 
 TEST_P(AngleVulkanImageBackingFactoryTest, ReadbackToMemory) {
