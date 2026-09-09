@@ -1407,10 +1407,14 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
     // Note: getting slot_size from the thread cache rather than by
     // `buckets_[bucket_index].slot_size` to avoid touching `buckets_` on the
     // fast path.
-    slot_start = thread_cache->GetFromCache(bucket_index, &slot_size);
+    std::optional<SlotAddressAndSize> maybe_slot_and_size =
+        thread_cache->GetFromCache(bucket_index);
 
     // `[[likely]]`: median hit rate in the thread cache is 95%, from metrics.
-    if (slot_start.value()) [[likely]] {
+    if (maybe_slot_and_size.has_value()) [[likely]] {
+      slot_start = maybe_slot_and_size->slot_start;
+      slot_size = maybe_slot_and_size->size;
+
       // This follows the logic of SlotSpanMetadata::GetExternalUsableSize for
       // small buckets_, which is too expensive to call here. Keep it in sync!
       usable_size = AdjustSizeForExtrasSubtract(slot_size);

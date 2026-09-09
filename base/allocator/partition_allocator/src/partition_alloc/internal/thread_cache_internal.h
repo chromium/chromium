@@ -29,6 +29,7 @@
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/partition_tls.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
+#include "partition_alloc/slot_address_and_size.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/thread_cache.h"
 
@@ -293,12 +294,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
       size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
-  // Returns 0 on failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
-  // handling. Sets |slot_size| to the allocated size upon success.
-  PA_ALWAYS_INLINE UntaggedSlotStart GetFromCache(size_t bucket_index,
-                                                  size_t* slot_size);
+  // handling.
+  PA_ALWAYS_INLINE std::optional<SlotAddressAndSize> GetFromCache(
+      size_t bucket_index);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -498,8 +498,8 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   return bucket.slot_size;
 }
 
-PA_ALWAYS_INLINE UntaggedSlotStart
-ThreadCache::GetFromCache(size_t bucket_index, size_t* slot_size) {
+PA_ALWAYS_INLINE std::optional<SlotAddressAndSize> ThreadCache::GetFromCache(
+    size_t bucket_index) {
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -510,7 +510,7 @@ ThreadCache::GetFromCache(size_t bucket_index, size_t* slot_size) {
   if (bucket_index >= active_bucket_count_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
-    return UntaggedSlotStart();
+    return std::nullopt;
   }
 
   auto& bucket = buckets_[bucket_index];
@@ -526,7 +526,7 @@ ThreadCache::GetFromCache(size_t bucket_index, size_t* slot_size) {
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
     if (!bucket.freelist_head) [[unlikely]] {
-      return UntaggedSlotStart();
+      return std::nullopt;
     }
   }
 
@@ -561,12 +561,14 @@ ThreadCache::GetFromCache(size_t bucket_index, size_t* slot_size) {
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);
   bucket.freelist_head = next;
-  *slot_size = bucket.slot_size;
 
   PA_DCHECK(cached_memory_ >= bucket.slot_size);
   cached_memory_ -= bucket.slot_size;
 
-  return SlotStart::Unchecked(entry).Untag();
+  return SlotAddressAndSize{
+      .slot_start = SlotStart::Unchecked(entry).Untag(),
+      .size = bucket.slot_size,
+  };
 }
 
 PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
