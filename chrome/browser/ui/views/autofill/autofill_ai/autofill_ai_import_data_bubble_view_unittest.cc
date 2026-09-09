@@ -13,6 +13,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -256,10 +257,9 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest,
-       WalletPassDisclosureShownWhenEligible) {
-  EXPECT_CALL(mock_controller(), IsEligibleForWalletPassDisclosure())
-      .WillRepeatedly(Return(true));
-  LegalMessageLines legal_message_lines;
+       WalletPassDisclosureShownWhenLegalMessageLinesNotEmpty) {
+  LegalMessageLines legal_message_lines = {
+      TestLegalMessageLine("Test legal message")};
   EXPECT_CALL(mock_controller(), GetLegalMessageLines())
       .WillRepeatedly(testing::ReturnRef(legal_message_lines));
   CreateViewAndShow();
@@ -268,9 +268,10 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest,
-       WalletPassDisclosureNotShownWhenNotEligible) {
-  EXPECT_CALL(mock_controller(), IsEligibleForWalletPassDisclosure())
-      .WillRepeatedly(Return(false));
+       WalletPassDisclosureNotShownWhenLegalMessageLinesEmpty) {
+  LegalMessageLines legal_message_lines;
+  EXPECT_CALL(mock_controller(), GetLegalMessageLines())
+      .WillRepeatedly(testing::ReturnRef(legal_message_lines));
   CreateViewAndShow();
 
   EXPECT_EQ(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);

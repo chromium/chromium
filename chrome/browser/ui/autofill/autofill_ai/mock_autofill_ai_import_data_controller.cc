@@ -6,8 +6,10 @@
 
 namespace autofill {
 
-MockAutofillAiImportDataController::MockAutofillAiImportDataController() =
-    default;
+MockAutofillAiImportDataController::MockAutofillAiImportDataController() {
+  ON_CALL(*this, GetLegalMessageLines())
+      .WillByDefault(testing::ReturnRef(legal_message_lines_));
+}
 MockAutofillAiImportDataController::~MockAutofillAiImportDataController() =
     default;
 

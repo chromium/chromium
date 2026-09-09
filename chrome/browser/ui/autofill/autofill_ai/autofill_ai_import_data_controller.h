@@ -104,9 +104,6 @@ class AutofillAiImportDataController {
   // Returns the notice string id shown as the footer text.
   virtual int GetNoticeStringId() const = 0;
 
-  // Returns true if the entity is eligible for Wallet pass disclosure.
-  virtual bool IsEligibleForWalletPassDisclosure() const = 0;
-
   // Returns the legal message lines for the disclosure.
   virtual const LegalMessageLines& GetLegalMessageLines() const = 0;
 

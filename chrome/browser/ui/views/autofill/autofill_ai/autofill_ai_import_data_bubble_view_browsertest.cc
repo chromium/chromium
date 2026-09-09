@@ -227,8 +227,6 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(true));
   ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
-  ON_CALL(mock_controller(), IsEligibleForWalletPassDisclosure())
-      .WillByDefault(Return(true));
   LegalMessageLines legal_message_lines = {
       TestLegalMessageLine("Test legal message")};
   ON_CALL(mock_controller(), GetLegalMessageLines())
@@ -265,8 +263,6 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(false));
   ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
-  ON_CALL(mock_controller(), IsEligibleForWalletPassDisclosure())
-      .WillByDefault(Return(false));
   ON_CALL(mock_controller(), GetNoticeStringId())
       .WillByDefault(
           Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));

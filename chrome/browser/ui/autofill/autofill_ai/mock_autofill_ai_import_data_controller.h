@@ -58,7 +58,6 @@ class MockAutofillAiImportDataController
               (AutofillClient::AutofillAiBubbleResult),
               (override));
   MOCK_METHOD(int, GetNoticeStringId, (), (const override));
-  MOCK_METHOD(bool, IsEligibleForWalletPassDisclosure, (), (const override));
   MOCK_METHOD(const LegalMessageLines&,
               GetLegalMessageLines,
               (),
@@ -69,6 +68,7 @@ class MockAutofillAiImportDataController
   }
 
  private:
+  LegalMessageLines legal_message_lines_;
   base::WeakPtrFactory<AutofillAiImportDataController> weak_ptr_factory_{this};
 };
 

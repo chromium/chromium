@@ -50,6 +50,11 @@ bool DidUserExplicitlyAcceptedImportPrompt(
 bool DidUserExplicitlyDeclineImportPrompt(
     AutofillClient::AutofillAiBubbleResult result);
 
+// Returns true if the entity instance is eligible for Wallet pass
+// disclosure and the prompt shown to the user is a save prompt.
+bool IsEligibleForWalletPassDisclosure(bool is_save_prompt,
+                                       const EntityInstance& entity);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_IMPORT_UTIL_H_

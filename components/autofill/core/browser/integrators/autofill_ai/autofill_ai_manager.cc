@@ -506,6 +506,11 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
     }
     const bool is_save_synchronous = !IsSaveAsynchronous(
         candidate_entity.type(), candidate_entity.record_type());
+    // TODO(crbug.com/553442816): If IsEligibleForWalletPassDisclosure() is
+    // true, implement the RPC backend code to fetch
+    // legal message lines, and call `client_->ShowEntityImportBubble` (which
+    // will take `legal_message_lines` as an argument as well) in
+    // `OnGetDetailsForUpsertPassResponse`.
     client_->ShowEntityImportBubble(std::move(candidate_entity),
                                     std::move(old_entity), is_save_synchronous,
                                     std::move(prompt_result_callback));

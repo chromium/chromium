@@ -337,14 +337,6 @@ int AutofillAiImportDataControllerImpl::GetNoticeStringId() const {
                         : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE;
 }
 
-bool AutofillAiImportDataControllerImpl::IsEligibleForWalletPassDisclosure()
-    const {
-  return IsSavePrompt() &&
-         IsEligibleForWalletNotice(GetSaveUpdateState().new_entity) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableWalletDisclosureNoticePublicPass);
-}
-
 const LegalMessageLines&
 AutofillAiImportDataControllerImpl::GetLegalMessageLines() const {
   return GetSaveUpdateState().legal_message_lines;

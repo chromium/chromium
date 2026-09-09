@@ -497,5 +497,66 @@ TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
   }
 }
 
+TEST_F(AutofillAiImportUtilsTest, IsEligibleForWalletPassDisclosure_Eligible) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  EntityInstance vehicle = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_TRUE(IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/true, vehicle));
+}
+
+TEST_F(AutofillAiImportUtilsTest,
+       IsEligibleForWalletPassDisclosure_PrivatePass) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_FALSE(IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/true, passport));
+}
+
+TEST_F(AutofillAiImportUtilsTest,
+       IsEligibleForWalletPassDisclosure_NotWalletable) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  EntityInstance vehicle = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  EXPECT_FALSE(IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/true, vehicle));
+}
+
+TEST_F(AutofillAiImportUtilsTest,
+       IsEligibleForWalletPassDisclosure_UpdatePrompt) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  EntityInstance vehicle = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_FALSE(IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/false, vehicle));
+}
+
+TEST_F(AutofillAiImportUtilsTest, IsEligibleForWalletPassDisclosure_ReadOnly) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  EntityInstance vehicle = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet,
+       .are_attributes_read_only =
+           EntityInstance::AreAttributesReadOnly(true)});
+  EXPECT_FALSE(IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/true, vehicle));
+}
+
+TEST_F(AutofillAiImportUtilsTest,
+       IsEligibleForWalletPassDisclosure_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+  EntityInstance vehicle = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_FALSE(IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/true, vehicle));
+}
+
 }  // namespace
 }  // namespace autofill

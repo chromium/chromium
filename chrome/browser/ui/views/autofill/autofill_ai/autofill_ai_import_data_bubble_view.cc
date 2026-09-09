@@ -109,7 +109,7 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
     attributes_wrapper->AddChildView(BuildEntityAttributeRow(detail));
   }
 
-  if (controller_->IsEligibleForWalletPassDisclosure()) {
+  if (!controller_->GetLegalMessageLines().empty()) {
     main_content_wrapper->AddChildView(GetWalletableEntityDisclosure());
   }
 

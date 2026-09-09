@@ -19,6 +19,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
@@ -39,8 +40,10 @@
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -298,6 +301,13 @@ bool DidUserExplicitlyDeclineImportPrompt(
     case AutofillClient::AutofillAiBubbleResult::kLostFocus:
       return false;
   }
+}
+
+bool IsEligibleForWalletPassDisclosure(bool is_save_prompt,
+                                       const EntityInstance& entity) {
+  return is_save_prompt && IsEligibleForWalletNotice(entity) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableWalletDisclosureNoticePublicPass);
 }
 
 }  // namespace autofill

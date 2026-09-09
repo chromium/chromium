@@ -66,7 +66,6 @@ class AutofillAiImportDataControllerImpl
   bool IsSavePrompt() const override;
   bool CloseOnAccept() const override;
   int GetNoticeStringId() const override;
-  bool IsEligibleForWalletPassDisclosure() const override;
   const LegalMessageLines& GetLegalMessageLines() const override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
 
