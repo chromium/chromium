@@ -70,7 +70,7 @@ Note: WPT tests are very slow, so run only when needed and only the necessary te
 
 ### Fixing the build after a new command is added
 
-When a new command is added to the WebDriver BiDi CDDL (for instance after running `tools/update-bidi-types.sh`), run the following steps to fix the build:
+When a new command is added to the WebDriver BiDi CDDL (for instance after running `tools/update_bidi_types.py`), run the following steps to fix the build:
 
 1.  **Run `autoninja -C ../../out/Default third_party/chromium-bidi:default`**. This will fail with a
     `Switch is not exhaustive` error.

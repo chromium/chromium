@@ -13,7 +13,7 @@
     "e2e:headless": "npm run e2e:new-headless --",
     "e2e:new-headless": "HEADLESS=new npm run e2e --",
     "e2e:old-headless": "HEADLESS=old npm run e2e --",
-    "e2e": "npm run build && ./tools/node.py tools/run-e2e.mjs",
+    "e2e": "npm run build && ./tools/run_e2e.py",
     "format": "npm run format:eslint && npm run format:prettier && npm run format:py && npm run format:keep-sorted",
     "format:eslint": "eslint --cache --fix .",
     "format:keep-sorted": "(git ls-files 2>/dev/null | grep -vE '^(wpt|third_party|playwright|puppeteer|out|node_modules)(/|$)' | xargs -r keep-sorted --mode=fix) || true",
@@ -22,7 +22,7 @@
     "prepare": "npm run build",
     "rdb-e2e": "rdb stream -new -realm chromium:public -- npm run e2e",
     "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
-    "server": "npm run build && ./tools/node.py tools/run-bidi-server.mjs",
+    "server": "npm run build && ./tools/run_bidi_server.py",
     "test": "npm run unit && npm run e2e",
     "unit": "npm run build && ./tools/node.py --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=./tools/unit-resultsink-reporter.mjs --test-reporter-destination=stdout 'out/Default/gen/src/**/*.test.js'",
     "update:notices": "./tools/append_notices.py"

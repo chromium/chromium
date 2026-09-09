@@ -60,6 +60,7 @@ script_test("webdriver_bidi_unittests") {
   ]
 
   data = [
+    "tools/test_runner_utils.py",
     "tools/unit-resultsink-reporter.mjs",
     "//third_party/node/",
     "node_modules/",

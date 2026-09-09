@@ -21,7 +21,7 @@ The server (CDP-BiDi Mapper) can be built and run from `third_party/chromium-bid
 
 ```sh
 autoninja -C ../../out/Default third_party/chromium-bidi:default
-./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 
 ChromeDriver and EdgeDriver can be run by:

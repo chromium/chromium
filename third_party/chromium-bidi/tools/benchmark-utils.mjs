@@ -28,6 +28,14 @@ const {values} = parseArgs({
       type: 'string',
       default: process.env.ITERATIONS || '1000',
     },
+    'browser-bin': {
+      type: 'string',
+      default: process.env.BROWSER_BIN,
+    },
+    'chromedriver-bin': {
+      type: 'string',
+      default: process.env.CHROMEDRIVER_BIN,
+    },
   },
   strict: false,
 });
@@ -386,4 +394,38 @@ export function printCiComparison(prefix, final, baseline, toolName) {
     final.standardErrorP10,
     baseline.standardErrorP10,
   );
+}
+
+/**
+ * Returns the browser binary path from BROWSER_BIN environment variable or --browser-bin argument.
+ */
+export function getChromePath() {
+  const browserBin = values['browser-bin'] || process.env.BROWSER_BIN;
+  if (browserBin) {
+    return browserBin;
+  }
+  throw new Error(
+    'The BROWSER_BIN environment variable or --browser-bin argument must be provided.',
+  );
+}
+
+/**
+ * Returns the ChromeDriver binary path from CHROMEDRIVER_BIN environment variable or --chromedriver-bin argument.
+ */
+export function getChromeDriverPath() {
+  const chromeDriverBin =
+    values['chromedriver-bin'] || process.env.CHROMEDRIVER_BIN;
+  if (chromeDriverBin) {
+    return chromeDriverBin;
+  }
+  throw new Error(
+    'The CHROMEDRIVER_BIN environment variable or --chromedriver-bin argument must be provided.',
+  );
+}
+
+/**
+ * Returns the path to the mapperTab.js file.
+ */
+export function getBidiMapperPath() {
+  return 'out/Default/gen/src/mapperTab.js';
 }

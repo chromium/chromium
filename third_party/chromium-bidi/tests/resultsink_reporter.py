@@ -24,7 +24,7 @@ import urllib.request
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
 )
-from run_unittests import parse_filter_tokens
+from test_runner_utils import parse_filter_tokens
 
 
 def format_test_id(nodeid: str):

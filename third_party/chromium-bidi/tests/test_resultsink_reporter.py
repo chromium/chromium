@@ -14,7 +14,7 @@ from resultsink_reporter import (
 )
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
-from run_unittests import (
+from test_runner_utils import (
     matches_file,
     parse_filter_file,
     parse_filter_pattern,

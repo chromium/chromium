@@ -123,14 +123,14 @@ To run the Puppeteer benchmark locally:
 npm install puppeteer@24.36.0
 npm link
 npm link chromium-bidi
-./tools/node.py tools/benchmark-puppeteer.mjs
+./tools/node.py tools/benchmark.mjs --runner=puppeteer
 ```
 
 You can customize the number of runs and iterations using `--runs` and `--iterations`
 arguments:
 
 ```bash
-./tools/node.py tools/benchmark-puppeteer.mjs --runs=5 --iterations=100
+./tools/node.py tools/benchmark.mjs --runner=puppeteer --runs=5 --iterations=100
 ```
 
 ### Selenium Benchmark
@@ -138,7 +138,7 @@ arguments:
 To run the Selenium benchmark:
 
 ```bash
-./tools/node.py tools/benchmark-selenium.mjs --runs=5 --iterations=100
+./tools/node.py tools/benchmark.mjs --runner=selenium --runs=5 --iterations=100
 ```
 
 ### E2E Benchmark

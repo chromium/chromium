@@ -13,49 +13,87 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from subprocess import PIPE, Popen
+from __future__ import annotations
+
+import http.server
+import threading
+
+
+class _ProxyRequestHandler(http.server.BaseHTTPRequestHandler):
+    server: _ProxyHTTPServer
+
+    def log_message(self, format, *args):
+        # Suppress logging to keep test output clean
+        pass
+
+    def do_GET(self):
+        self._handle_proxy()
+
+    def do_POST(self):
+        self._handle_proxy()
+
+    def do_PUT(self):
+        self._handle_proxy()
+
+    def do_DELETE(self):
+        self._handle_proxy()
+
+    def do_HEAD(self):
+        self._handle_proxy()
+
+    def do_OPTIONS(self):
+        self._handle_proxy()
+
+    def _handle_proxy(self):
+        target_url = self.path
+        self.server.proxied_urls.append(target_url)
+
+        body = b"<html><body>Proxied response</body></html>"
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=UTF-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+
+class _ProxyHTTPServer(http.server.ThreadingHTTPServer):
+    def __init__(self, server_address, RequestHandlerClass):
+        super().__init__(server_address, RequestHandlerClass)
+        self.proxied_urls: list[str] = []
 
 
 class HttpProxyServer:
-    """A wrapper of `tools/http-proxy.mjs` to simplify the usage. Sets
-    up common use cases and provides url for them."""
+    """A pure-Python HTTP proxy server for tests.
+
+    Sets up common test use cases and tracks proxied URLs without requiring
+    an external Node.js subprocess.
+    """
 
     def __init__(self) -> None:
         self._url = ""
+        self._server: _ProxyHTTPServer | None = None
+        self._thread: threading.Thread | None = None
 
-    def start(self):
-        import os
-        import sys
+    def start(self, host: str = "127.0.0.1"):
+        self._server = _ProxyHTTPServer((host, 0), _ProxyRequestHandler)
+        port = self._server.server_address[1]
+        self._url = f"{host}:{port}"
+        self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
+        self._thread.start()
 
-        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-        node_path = os.path.join(repo_root, "tools", "node.py")
-        proxy_script = os.path.join(repo_root, "tools", "http-proxy.mjs")
-        self._process = Popen(
-            [sys.executable, node_path, proxy_script],
-            cwd=repo_root,
-            stdout=PIPE,
-            shell=False,
-        )
-        # Wait for the proxy to start.
-        node_output_line = self._process.stdout.readline().decode("utf-8").strip()
-        # Assert the prefix is present before removing it.
-        assert node_output_line.startswith("Listening on ")
-        self._url = node_output_line.removeprefix("Listening on ").strip()
-
-    def stop(self):
-        """
-        Stops the server and reads all URLs that have been proxied by the server.
-        """
-        lines = []
-        self._process.terminate()
-        while self._process.stdout.peek().decode("utf-8").strip() != "":
-            line = self._process.stdout.readline().decode("utf-8").strip()
-            lines.append(line)
+    def stop(self) -> list[str]:
+        """Stops the server and returns all URLs that have been proxied."""
+        lines: list[str] = []
+        if self._server:
+            lines = list(self._server.proxied_urls)
+            self._server.shutdown()
+            self._server.server_close()
+            self._server = None
+        if self._thread:
+            self._thread.join(timeout=2.0)
+            self._thread = None
         return lines
 
-    def url(self):
-        """
-        Returns the proxy address without protocol prefix. Available after the
-        `start` call has succeeded.
-        """
+    def url(self) -> str:
+        """Returns the proxy address without protocol prefix."""
         return self._url

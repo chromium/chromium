@@ -230,26 +230,26 @@ autoninja -C ../../out/Default third_party/chromium-bidi:default
 Run the server:
 
 ```sh
-./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 
 By default, the server runs on port `8080`. Use the `PORT=` environment variable or `--port=` argument to run it on another port:
 
 ```sh
-PORT=8081 ./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi
-./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081
+PORT=8081 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081
 ```
 
 Use the `DEBUG` environment variable to see debug info:
 
 ```sh
-DEBUG=* ./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+DEBUG=* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 
 Use the `DEBUG_DEPTH` (default: `10`) environment variable to see debug deeply nested objects:
 
 ```sh
-DEBUG_DEPTH=100 DEBUG=* ./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+DEBUG_DEPTH=100 DEBUG=* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 
 Use the `CHANNEL=...` environment variable with one of the following values to run
@@ -259,25 +259,25 @@ downloaded if it is not yet in cache. Otherwise, the requested Chrome version sh
 be installed.
 
 ```sh
-CHANNEL=dev ./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi
+CHANNEL=dev ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 
 Use the CLI argument `--verbose` to have CDP events printed to the console. Note: you have to enable debugging output `bidi:mapper:debug:*` as well.
 
 ```sh
-DEBUG=bidi:mapper:debug:* ./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi --verbose
+DEBUG=bidi:mapper:debug:* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --verbose
 ```
 
 or
 
 ```sh
-DEBUG=* ./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi --verbose
+DEBUG=* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --verbose
 ```
 
 To run the browser in headful mode:
 
 ```sh
-./tools/node.py tools/run-bidi-server.mjs --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081 --headless=false
+./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081 --headless=false
 ```
 
 ## Running
@@ -520,7 +520,7 @@ new command, add it to `_processCommand`, write and call the module processor fo
    ```
 4. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS`:
    ```sh
-   ./tools/update_node_modules.mjs --force
+   ./tools/update_node_modules.py --force
    ```
 5. Upload a CL with `package.json`, `package-lock.json`, `DEPS`, and any updated `README.chromium` / `licenses/` via `git cl upload` and submit for review.
 
@@ -569,8 +569,8 @@ TODO(crbug.com/549520316): Automate the sync process.
 
 Run the following steps from the `third_party/chromium-bidi` directory:
 
-1. (Optional) If you want to add a new specification, add it to the `tools/update-bidi-types.sh` script.
-2. Run the `tools/update-bidi-types.sh` script.
+1. (Optional) If you want to add a new specification, add it to the `tools/update_bidi_types.py` script.
+2. Run the `tools/update_bidi_types.py` script.
 3. Build the project (`autoninja -C ../../out/Default third_party/chromium-bidi:default`). If a new WebDriver BiDi command was added, compilation will fail with `Switch is not exhaustive. Cases not matched ...`.
 4. Add the new BiDi command to `CommandProcessor.#processCommand` in `src/bidiMapper/CommandProcessor.ts`. For now, just have it throw an UnknownErrorException.
 
