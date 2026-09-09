@@ -1167,9 +1167,6 @@ class CORE_EXPORT Element : public ContainerNode {
     SetElementFlag(ElementFlags::kStyleAffectedByEmpty);
   }
 
-  // Determine whether the parent or owner of this element in the flat tree is a
-  // canvas element or in a canvas subtree.
-  bool ComputeIsInCanvasSubtree() const;
   // Recursively sets the IsInCanvasSubtree bit for the element and its subtree.
   void SetIsInCanvasSubtree(bool value);
   // Is in the flat subtree of a canvas element, but not the canvas element

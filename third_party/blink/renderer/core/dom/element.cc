@@ -4227,17 +4227,12 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 
   RecomputeDirectionFromParent();
 
-  // Do not call ComputeIsInCanvasSubtree from here because during
-  // slot assignment it will cause DCHECK failures. If an element is slotted
-  // the checks will be re-run when slot assignment completes.
   auto* parent = ParentOrShadowHostElement();
   if (parent && parent->IsCanvasOrInCanvasSubtree()) {
-    const bool is_light_dom_child_of_shadow_host =
-        parent->GetShadowRoot() && &insertion_point == parent;
     const auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*parent);
     const bool is_inactive_fallback_content =
         slot && !slot->AssignedNodesNoRecalc().empty();
-    if (!is_light_dom_child_of_shadow_host && !is_inactive_fallback_content) {
+    if (!IsChildOfShadowHost() && !is_inactive_fallback_content) {
       SetIsInCanvasSubtree(true);
     }
   } else if (!parent && insertion_point.IsDocumentNode()) {
@@ -4466,12 +4461,16 @@ void Element::SetIsInCanvasSubtree(bool value) {
     for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
       child.SetIsInCanvasSubtree(value);
     }
-  } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
-             slot && !slot->AssignedNodesNoRecalc().empty()) {
+  } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this)) {
     for (Node* node : slot->AssignedNodesNoRecalc()) {
       if (auto* child = DynamicTo<Element>(node)) {
         child->SetIsInCanvasSubtree(value);
       }
+    }
+    // Fallback content
+    for (Element& child : ElementTraversal::ChildrenOf(*this)) {
+      child.SetIsInCanvasSubtree(value &&
+                                 slot->AssignedNodesNoRecalc().empty());
     }
   } else {
     for (Element& child : ElementTraversal::ChildrenOf(*this)) {
@@ -4483,27 +4482,6 @@ void Element::SetIsInCanvasSubtree(bool value) {
       pseudo_element->SetIsInCanvasSubtree(value);
     }
   }
-}
-
-bool Element::ComputeIsInCanvasSubtree() const {
-  auto& document = GetDocument();
-  const Element* parent = nullptr;
-  if (document.IsFlatTreeTraversalForbidden() ||
-      document.IsInSlotAssignmentRecalc()) {
-    parent = GetStyleRecalcParent();
-  } else {
-    parent = FlatTreeTraversal::ParentElementSkippingSlots(*this);
-  }
-  if (parent) {
-    return parent->IsCanvasOrInCanvasSubtree();
-  }
-
-  if (!isConnected() || !IsDocumentElement()) {
-    return false;
-  }
-
-  auto* owner = document.LocalOwner();
-  return owner && owner->IsCanvasOrInCanvasSubtree();
 }
 
 bool Element::IsCanvasOrInCanvasSubtree() const {
