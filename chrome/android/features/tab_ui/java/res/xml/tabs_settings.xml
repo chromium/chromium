@@ -29,4 +29,8 @@ found in the LICENSE file.
         android:key="chrome_suggestions_in_other_apps_switch"
         android:title="@string/chrome_suggestions_in_other_apps_title"
         android:summary="@string/chrome_suggestions_in_other_apps_summary"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="cct_always_open_in_browser"
+        android:title="@string/cct_always_open_in_browser_title"
+        android:summary="@string/cct_always_open_in_browser_summary" />
 </PreferenceScreen>

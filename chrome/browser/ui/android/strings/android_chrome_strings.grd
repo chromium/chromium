@@ -211,6 +211,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
       </message>
+      <message name="IDS_CCT_ALWAYS_OPEN_IN_BROWSER_TITLE" desc="Title for preference toggle in Settings to always open Custom Tabs in Chrome browser. [CHAR_LIMIT=40]">
+        Always open custom tabs in Chrome
+      </message>
+      <message name="IDS_CCT_ALWAYS_OPEN_IN_BROWSER_SUMMARY" desc="Summary for preference toggle in Settings to always open Custom Tabs in Chrome browser. [CHAR_LIMIT=60]">
+        Open web pages in Chrome browser instead of custom tabs
+      </message>
       <message name="IDS_PREFS_NEW_LABEL" desc="The label displayed next to the title of newly added preferences.">
         <ph name="PREF_TITLE">%1$s</ph>  <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>

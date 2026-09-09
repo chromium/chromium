@@ -24,8 +24,10 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonationServiceUtils;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,6 +69,9 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
             "chrome_suggestions_in_other_apps_switch";
 
     @VisibleForTesting
+    static final String PREF_CCT_ALWAYS_OPEN_IN_BROWSER = "cct_always_open_in_browser";
+
+    @VisibleForTesting
     static final String LEARN_MORE_URL = "https://support.google.com/chrome/?p=share_titles_urls";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
@@ -80,6 +85,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         configureAutoOpenSyncedTabGroupsSwitch();
         configureShareTitlesAndUrlsWithOsSwitch();
         configureChromeSuggestionsInOtherAppsSwitch();
+        configureCctAlwaysOpenInBrowserSwitch();
     }
 
     @Override
@@ -212,6 +218,31 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting
     void onLearnMoreClicked(View view) {
         getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
+    }
+
+    private void configureCctAlwaysOpenInBrowserSwitch() {
+        ChromeSwitchPreference cctAlwaysOpenInBrowserSwitch =
+                (ChromeSwitchPreference) findPreference(PREF_CCT_ALWAYS_OPEN_IN_BROWSER);
+        if (cctAlwaysOpenInBrowserSwitch == null) return;
+        if (!ChromeFeatureList.sCctAlwaysOpenInBrowser.isEnabled()) {
+            cctAlwaysOpenInBrowserSwitch.setVisible(false);
+            return;
+        }
+
+        boolean isEnabled =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER, false);
+        cctAlwaysOpenInBrowserSwitch.setChecked(isEnabled);
+        cctAlwaysOpenInBrowserSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    boolean enabled = (boolean) newValue;
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(
+                                    ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER,
+                                    enabled);
+                    return true;
+                });
     }
 
     @Override
