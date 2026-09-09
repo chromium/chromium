@@ -127,18 +127,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PUMA.RegionalCapabilities.Session.TotalDuration.Recorded"
-    enum="Boolean" expires_after="2027-03-17">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <owner>chrome-regionalcapabilities@google.com</owner>
-  <owner>ljjlee@chromium.org</owner>
-  <summary>
-    Recorded when `Session.TotalDuration` is recorded. See the
-    `Session.TotalDuration` description for more details.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

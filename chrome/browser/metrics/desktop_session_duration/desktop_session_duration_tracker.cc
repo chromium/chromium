@@ -14,7 +14,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/activity_reporter/activity_reporter.h"
-#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "ui/events/types/event_type.h"
 
 namespace metrics {
@@ -238,12 +237,6 @@ void DesktopSessionDurationTracker::EndSession(
         "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions",
         interactive_delta);
   }
-
-  // Records true each time Session.TotalDuration is supposed to be recorded
-  // in a PUMA histogram. Allowing for the count to be collected.
-  metrics::private_metrics::PumaHistogramBoolean(
-      metrics::private_metrics::PumaType::kRc,
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
                              base::Milliseconds(1), base::Hours(24), 50);

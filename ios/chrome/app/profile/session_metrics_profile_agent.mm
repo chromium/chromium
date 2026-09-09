@@ -10,7 +10,6 @@
 #import "components/activity_reporter/activity_reporter.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/metrics/private_metrics/puma_histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -123,12 +122,6 @@
                                 base::Milliseconds(1), base::Hours(1), 50);
   base::UmaHistogramCustomTimes("Session.TotalDurationMax1Day", duration,
                                 base::Milliseconds(1), base::Days(1), 50);
-
-  // Records true each time Session.TotalDuration is supposed to be recorded
-  // in a PUMA histogram. Allowing for the count to be collected.
-  metrics::private_metrics::PumaHistogramBoolean(
-      metrics::private_metrics::PumaType::kRc,
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
 
   _sessionStartTimestamp = base::TimeTicks();
   IOSProfileSessionDurationsServiceFactory::GetForProfile(profile)

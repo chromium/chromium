@@ -682,7 +682,6 @@ if (is_android) {
       "//components/media_gallery_util",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
-      "//components/metrics/private_metrics",
       "//components/module_installer/android:native",
       "//components/offline_pages/task",
       "//components/omnibox/browser",

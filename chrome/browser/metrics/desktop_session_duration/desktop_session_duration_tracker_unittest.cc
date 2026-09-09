@@ -115,16 +115,12 @@ TEST_F(DesktopSessionDurationTrackerTest, TestVisibility) {
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", 0);
 
   instance_.OnUserEvent(std::nullopt);
   EXPECT_TRUE(instance_.in_session());
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", 0);
 
   // Even if there is a recent user event visibility change should end the
   // session.
@@ -135,8 +131,6 @@ TEST_F(DesktopSessionDurationTrackerTest, TestVisibility) {
   EXPECT_FALSE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
-  histogram_tester_.ExpectTotalCount(
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", 1);
 
   // For the second time only visibility change should start the session.
   instance_.OnVisibilityChanged(true, kZeroTime);
@@ -144,15 +138,11 @@ TEST_F(DesktopSessionDurationTrackerTest, TestVisibility) {
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
-  histogram_tester_.ExpectTotalCount(
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", 1);
   instance_.OnVisibilityChanged(false, kZeroTime);
   EXPECT_FALSE(instance_.in_session());
   EXPECT_FALSE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 2);
-  histogram_tester_.ExpectTotalCount(
-      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", 2);
 }
 
 TEST_F(DesktopSessionDurationTrackerTest, TestUserEvent) {
