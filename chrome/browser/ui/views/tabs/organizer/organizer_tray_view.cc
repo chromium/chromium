@@ -166,7 +166,8 @@ class OrganizerTrayView::EventObserver : public ui::EventObserver,
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OrganizerTrayView, kTrayElementId);
 
-OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser)
+OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser,
+                                     BrowserView* browser_view)
     : browser_(browser),
       controller_state_subscription_(
           OrganizerPanelStateController::From(&*browser_)
@@ -189,8 +190,7 @@ OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser)
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
 
   // Set up the default background.
-  if (auto* const browser_view =
-          BrowserView::GetBrowserViewForBrowser(&browser)) {
+  if (browser_view) {
     auto background = std::make_unique<CustomCornersBackground>(
         *this, *browser_view, organizer_panel::kOrganizerPanelBackgroundColor,
         organizer_panel::kOrganizerPanelBackgroundColor);
@@ -284,6 +284,7 @@ void OrganizerTrayView::SetIsElevated(bool elevated) {
   if (elevated == elevated_) {
     return;
   }
+  elevated_ = elevated;
   if (auto* const bg = background()->AsA<CustomCornersBackground>()) {
     bg->SetVisible(elevated);
   }

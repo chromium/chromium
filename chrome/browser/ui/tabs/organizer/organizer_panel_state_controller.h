@@ -65,7 +65,7 @@ class OrganizerPanelStateController {
   // based on the Organizer Panel's is_visible_ state.
   void UpdateOrganizerActionItem();
 
-  // Controls whether the OrganizerPanelView is visible.
+  // Controls whether the Organizer Panel is visible.
   bool is_visible_ = false;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -80,6 +80,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
 
   // Sets whether the background should be painted.
   void SetVisible(bool visible);
+  bool is_visible() const { return visible_; }
 
   // Sets the color to paint the primary area of the view.
   void SetPrimaryColor(ColorChoiceWithAlpha primary_color);
@@ -109,8 +110,6 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   //  - Host view has a layer.
   //  - Corners have already been updated for the current frame.
   void SetUseBackgroundBlur(bool use_background_blur);
-
-  bool visible_for_testing() const { return visible_; }
 
   // Takes the inverse of a view with a CustomCornersBackground - i.e. it cuts
   // out the corners, not the background area.

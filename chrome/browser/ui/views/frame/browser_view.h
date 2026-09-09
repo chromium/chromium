@@ -82,7 +82,7 @@ class ExclusiveAccessBubbleViewsContext;
 class InfoBarContainerView;
 class LocationBarView;
 class MultiContentsView;
-class OrganizerPanelView;
+class OrganizerTrayView;
 class ScrimView;
 class SidePanel;
 class SidePanelAnimationContentView;
@@ -275,10 +275,6 @@ class BrowserView : public BrowserWindow,
   VerticalTabStripRegionView* vertical_tab_strip_region_view_for_testing()
       const {
     return vertical_tab_strip_region_view_.get();
-  }
-
-  OrganizerPanelView* organizer_panel_container_for_testing() const {
-    return organizer_panel_container_;
   }
 
   // Accessor for the TabStrip.
@@ -875,8 +871,6 @@ class BrowserView : public BrowserWindow,
   void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);
 
-  void OnOrganizerPanelStateChanged(OrganizerPanelStateController* controller);
-
   // Callback for the loading animation(s) associated with this view.
   void LoadingAnimationTimerCallback();
   void LoadingAnimationCallback(base::TimeTicks timestamp);
@@ -1221,7 +1215,7 @@ class BrowserView : public BrowserWindow,
   raw_ptr<CustomFloatingCorner> vertical_tab_strip_bottom_corner_ = nullptr;
 
   // The view responsible for housing the contents of the organizer panel.
-  raw_ptr<OrganizerPanelView> organizer_panel_container_ = nullptr;
+  raw_ptr<OrganizerTrayView> organizer_tray_ = nullptr;
 
   // Side panel that extends to the height of the page content or toolbar,
   // aligned to the left or the right side of the browser window depending on
@@ -1374,8 +1368,6 @@ class BrowserView : public BrowserWindow,
 
   std::unique_ptr<tabs::VerticalTabStripStateController::ScopedEnableStateLock>
       vertical_tabs_enable_state_lock_;
-
-  base::CallbackListSubscription organizer_panel_subscription_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   base::CallbackListSubscription on_locked_task_subscription_;

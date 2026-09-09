@@ -21,6 +21,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_tracker.h"
 
+class BrowserView;
 class BrowserWindowInterface;
 class OrganizerPanelControlsView;
 class OrganizerPanelStateController;
@@ -39,7 +40,10 @@ class OrganizerTrayView : public views::FlexLayoutView,
   static constexpr base::TimeDelta kPanelHideAnimationDuration =
       base::Milliseconds(200);
 
-  explicit OrganizerTrayView(BrowserWindowInterface& browser);
+  // Construct the tray view. Note that `browser_view` may be null in unit
+  // tests.
+  explicit OrganizerTrayView(BrowserWindowInterface& browser,
+                             BrowserView* browser_view);
   ~OrganizerTrayView() override;
 
   // Sets the area (if any) occupied by the caption buttons at the top leading

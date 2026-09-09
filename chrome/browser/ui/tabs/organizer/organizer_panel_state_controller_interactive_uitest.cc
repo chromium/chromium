@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -25,7 +26,6 @@ class OrganizerPanelStateControllerInteractiveUiTest
  public:
   OrganizerPanelStateControllerInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
-    OrganizerPanelView::disable_animations_for_testing();
   }
   ~OrganizerPanelStateControllerInteractiveUiTest() override = default;
 
@@ -36,6 +36,37 @@ class OrganizerPanelStateControllerInteractiveUiTest
     tabs::VerticalTabStripStateController::From(browser())
         ->SetVerticalTabsEnabled(true);
     RunScheduledLayouts();
+  }
+
+  auto ExpectControllerState(bool open) {
+    return CheckResult(
+               [this]() {
+                 return organizer_panel_state_controller()
+                     ->IsOrganizerPanelVisible();
+               },
+               open)
+        .AddDescriptionPrefix("ExpectControllerState()");
+  }
+
+  auto WaitForPanelShow() {
+    auto steps = Steps(InParallel(
+        RunSubsequence(ExpectControllerState(true)),
+        RunSubsequence(WaitForEvent(OrganizerTrayView::kTrayElementId,
+                                    OrganizerTrayView::kOpenAnimationComplete)),
+        RunSubsequence(WaitForShow(kOrganizerPanelViewElementId))));
+    AddDescriptionPrefix(steps, "WaitForPanelShow()");
+    return steps;
+  }
+
+  auto WaitForPanelHide() {
+    auto steps = Steps(
+        InParallel(RunSubsequence(ExpectControllerState(false)),
+                   RunSubsequence(WaitForEvent(
+                       OrganizerTrayView::kTrayElementId,
+                       OrganizerTrayView::kCloseAnimationComplete)),
+                   RunSubsequence(WaitForHide(kOrganizerPanelViewElementId))));
+    AddDescriptionPrefix(steps, "WaitForPanelHide()");
+    return steps;
   }
 
   OrganizerPanelStateController* organizer_panel_state_controller() {
@@ -54,57 +85,23 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
       // Verify Initial State for Organizer Panel.
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
+      ExpectControllerState(false),
       // Click Tab Search Button and Verify Visibilities.
       EnsurePresent(kTabSearchButtonElementId),
-      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(), WaitForPanelShow(),
       // Click Organizer Panel Button and Verify Visibilities.
       MoveMouseTo(kOrganizerPanelButtonElementId), ClickMouse(),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kOrganizerPanelViewElementId),
-      WaitForHide(kOrganizerPanelButtonElementId));
+      WaitForPanelHide());
 }
 
 // This test checks that clicking the tab search button opens the organizer
 // panel in vertical tabs mode.
 IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
                        VerifyTabSearchButtonInVerticalTabs) {
-  RunTestSequence(WaitForShow(kVerticalTabStripTopContainerElementId),
-                  CheckResult(
-                      [this]() {
-                        return organizer_panel_state_controller()
-                            ->IsOrganizerPanelVisible();
-                      },
-                      false),
-                  EnsurePresent(kTabSearchButtonElementId),
-                  MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
-                  CheckResult(
-                      [this]() {
-                        return organizer_panel_state_controller()
-                            ->IsOrganizerPanelVisible();
-                      },
-                      true),
-                  Do([this]() { RunScheduledLayouts(); }),
-                  WaitForShow(kOrganizerPanelViewElementId));
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      ExpectControllerState(false), EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(), WaitForPanelShow());
 }
 
 }  // namespace base::test

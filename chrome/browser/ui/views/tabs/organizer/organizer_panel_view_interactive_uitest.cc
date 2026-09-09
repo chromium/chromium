@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -23,6 +24,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_id.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/strings/stringprintf.h"
@@ -52,7 +54,6 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
   OrganizerPanelInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
-    OrganizerPanelView::disable_animations_for_testing();
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   }
@@ -75,11 +76,12 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto OpenOrganizerPanel() {
-    return Steps(WaitForShow(kTabSearchButtonElementId),
-                 PressButton(kTabSearchButtonElementId),
-                 Do([this]() { RunScheduledLayouts(); }),
-                 WaitForShow(kOrganizerPanelViewElementId),
-                 Do([this]() { RunScheduledLayouts(); }));
+    return Steps(
+        PressButton(kTabSearchButtonElementId),
+        InParallel(RunSubsequence(
+                       WaitForEvent(OrganizerTrayView::kTrayElementId,
+                                    OrganizerTrayView::kOpenAnimationComplete)),
+                   RunSubsequence(WaitForShow(kOrganizerPanelViewElementId))));
   }
 
   auto ResizeVerticalTabsRegionToWidth(int width) {
@@ -90,26 +92,33 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
     });
   }
 
+  auto CheckControllerState(bool visible) {
+    return CheckResult(
+               [this]() {
+                 return organizer_panel_state_controller()
+                     ->IsOrganizerPanelVisible();
+               },
+               visible)
+        .SetDescription("CheckControllerState");
+  }
+
   auto CheckPanelHasExpectedWidthAndStyling(int expected_width,
                                             bool should_have_rounded_corners) {
-    return Steps(CheckResult(
-                     [this]() {
-                       return browser_view()
-                           ->organizer_panel_container_for_testing()
-                           ->bounds()
-                           .width();
-                     },
-                     expected_width),
-                 CheckResult(
-                     [this]() {
-                       return browser_view()
-                           ->organizer_panel_container_for_testing()
-                           ->content_container_for_testing()
-                           ->layer()
-                           ->rounded_corner_radii()
-                           .IsEmpty();
-                     },
-                     !should_have_rounded_corners));
+    auto steps = Steps(
+        CheckView(
+            kOrganizerPanelViewElementId,
+            [](OrganizerPanelView* panel_view) { return panel_view->width(); },
+            expected_width)
+            .SetDescription("Panel has expected width."),
+        CheckView(
+            kOrganizerPanelViewElementId,
+            [](OrganizerPanelView* panel_view) {
+              return panel_view->layer()->rounded_corner_radii().IsEmpty();
+            },
+            !should_have_rounded_corners)
+            .SetDescription("Panel has expected corners."));
+    AddDescriptionPrefix(steps, "CheckPanelHasExpectedWidthAndStyling");
+    return steps;
   }
 
   OrganizerPanelStateController* organizer_panel_state_controller() {
@@ -131,37 +140,20 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnClickOutside) {
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
       // Verify Initial State for Organizer Panel.
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
+      CheckControllerState(false),
       // Open Organizer Panel and Verify Visibilities.
-      OpenOrganizerPanel(),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true),
+      OpenOrganizerPanel(), CheckControllerState(true),
       // Click on the Omnibox (outside the panel).
       MoveMouseTo(kOmniboxElementId), ClickMouse(),
       // Verify Organizer Panel is hidden.
       Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false));
+      WaitForHide(kOrganizerPanelViewElementId), CheckControllerState(false));
 }
 
 // This test checks that the organizer panel grabs focus when opened.
 IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, GrabsFocusOnOpen) {
   RunTestSequence(OpenOrganizerPanel(),
-                  CheckViewProperty(kOrganizerPanelViewElementId,
+                  CheckViewProperty(OrganizerTrayView::kTrayElementId,
                                     &views::View::HasFocus, true));
 }
 
@@ -173,12 +165,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, ClosesOnFocusLost) {
                   FocusElement(kOmniboxElementId),
                   // Verify Organizer Panel is hidden.
                   WaitForHide(kOrganizerPanelViewElementId),
-                  CheckResult(
-                      [this]() {
-                        return organizer_panel_state_controller()
-                            ->IsOrganizerPanelVisible();
-                      },
-                      false));
+                  CheckControllerState(false));
 }
 
 // This test checks that focus is restored to the last focused element when the
@@ -197,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, RestoresFocusOnClose) {
             ->InvokeAction();
       }),
       WaitForShow(kOrganizerPanelViewElementId),
-      CheckViewProperty(kOrganizerPanelViewElementId, &views::View::HasFocus,
-                        true),
+      CheckViewProperty(OrganizerTrayView::kTrayElementId,
+                        &views::View::HasFocus, true),
       // Close the organizer panel via the toggle action.
       Do([this]() {
         actions::ActionManager::Get()
@@ -220,30 +207,13 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
       // Verify Initial State for Organizer Panel.
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
+      CheckControllerState(false),
       // Open Organizer Panel and Verify Visibilities.
-      OpenOrganizerPanel(),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true),
+      OpenOrganizerPanel(), CheckControllerState(true),
       // Click inside the panel view (background).
       MoveMouseTo(kOrganizerPanelViewElementId), ClickMouse(),
       // Verify Organizer Panel is still shown.
-      Do([this]() { RunScheduledLayouts(); }),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true));
+      Do([this]() { RunScheduledLayouts(); }), CheckControllerState(false));
 }
 
 // This test checks that the organizer panel closes when pressing Esc.
@@ -252,32 +222,15 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnEsc) {
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
       // Verify Initial State for Organizer Panel.
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
+      CheckControllerState(false),
       // Open Organizer Panel and Verify Visibilities.
-      OpenOrganizerPanel(),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true),
+      OpenOrganizerPanel(), CheckControllerState(true),
       // Press Esc.
       Do([this]() { RunScheduledLayouts(); }),
       SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE),
       // Verify Organizer Panel is hidden.
       Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false));
+      WaitForHide(kOrganizerPanelViewElementId), CheckControllerState(false));
 }
 
 // This test checks that the organizer panel matches the width of the
@@ -339,9 +292,6 @@ class OrganizerPanelExtensionInteractiveUiTest
         {organizer_panel::kOrganizerPanel,
          organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel},
         {});
-    OrganizerPanelView::disable_animations_for_testing();
-    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
-        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   }
 
   void SetUpOnMainThread() override {
@@ -362,7 +312,7 @@ class OrganizerPanelExtensionInteractiveUiTest
   const extensions::Extension* LoadExtensionWithSidePanel(
       const std::string& name = "Test Extension") {
     auto dir = std::make_unique<extensions::TestExtensionDir>();
-    constexpr char kManifest[] =
+    constexpr std::string_view kManifest =
         R"({
              "name": "%s",
              "version": "0.1",
@@ -379,6 +329,51 @@ class OrganizerPanelExtensionInteractiveUiTest
     return extension;
   }
 
+  auto WaitForPanelOpen() {
+    return InParallel(RunSubsequence(WaitForEvent(
+                          OrganizerTrayView::kTrayElementId,
+                          OrganizerTrayView::kOpenAnimationComplete)),
+                      RunSubsequence(WaitForShow(kOrganizerPanelViewElementId)))
+        .SetDescription("WaitForPanelOpen()");
+  }
+
+  auto WaitForPanelClose() {
+    return InParallel(RunSubsequence(WaitForEvent(
+                          OrganizerTrayView::kTrayElementId,
+                          OrganizerTrayView::kCloseAnimationComplete)),
+                      RunSubsequence(WaitForHide(kOrganizerPanelViewElementId)))
+        .SetDescription("WaitForPanelClose()");
+  }
+
+  auto CheckControllerState(
+      bool visible,
+      const extensions::ExtensionId& id = extensions::ExtensionId()) {
+    auto steps = Steps(CheckResult(
+        [this]() {
+          return organizer_panel_state_controller()->IsOrganizerPanelVisible();
+        },
+        visible));
+    if (!id.empty()) {
+      steps += CheckResult(
+          [this]() {
+            return organizer_panel_state_controller()->active_extension_id();
+          },
+          id);
+    }
+    AddDescriptionPrefix(steps, "CheckControllerState()");
+    return steps;
+  }
+
+  auto CheckHasWebView() {
+    return CheckView(
+               kOrganizerPanelViewElementId,
+               [](OrganizerPanelView* panel) {
+                 return panel->GetWebViewForTesting();
+               },
+               testing::Ne(nullptr))
+        .SetDescription("CheckHasWebView()");
+  }
+
   OrganizerPanelStateController* organizer_panel_state_controller() {
     return OrganizerPanelStateController::From(browser());
   }
@@ -387,12 +382,7 @@ class OrganizerPanelExtensionInteractiveUiTest
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  OrganizerPanelView* organizer_panel_view() {
-    return browser_view()->organizer_panel_container_for_testing();
-  }
-
  private:
-  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::vector<std::unique_ptr<extensions::TestExtensionDir>> extension_dirs_;
 };
@@ -403,34 +393,12 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
   ASSERT_TRUE(extension);
 
   RunTestSequence(
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
-      Do([this, extension]() {
+      CheckControllerState(false), Do([this, extension]() {
         extensions::side_panel_util::OpenGlobalExtensionSidePanel(
             *browser(), /*web_contents=*/nullptr, extension->id());
       }),
-      WaitForShow(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true),
-      CheckResult(
-          [this, extension]() {
-            return organizer_panel_state_controller()->active_extension_id() ==
-                   extension->id();
-          },
-          true),
-      CheckResult(
-          [this]() {
-            return organizer_panel_view()->web_view_for_testing() != nullptr;
-          },
-          true));
+      WaitForPanelOpen(), CheckControllerState(true, extension->id()),
+      CheckHasWebView());
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
@@ -444,32 +412,13 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
         extensions::side_panel_util::ToggleExtensionSidePanel(browser(),
                                                               extension->id());
       }),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          true),
+      WaitForPanelOpen(), CheckControllerState(true, extension->id()),
       // Toggle to close.
       Do([this, extension]() {
         extensions::side_panel_util::ToggleExtensionSidePanel(browser(),
                                                               extension->id());
       }),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return organizer_panel_state_controller()
-                ->IsOrganizerPanelVisible();
-          },
-          false),
-      CheckResult(
-          [this]() {
-            return organizer_panel_view()->web_view_for_testing() == nullptr;
-          },
-          true));
+      WaitForPanelClose(), CheckControllerState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
@@ -481,24 +430,13 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
                     extensions::side_panel_util::OpenGlobalExtensionSidePanel(
                         *browser(), /*web_contents=*/nullptr, extension->id());
                   }),
-                  WaitForShow(kOrganizerPanelViewElementId),
-                  CheckResult(
-                      [this]() {
-                        return organizer_panel_state_controller()
-                            ->IsOrganizerPanelVisible();
-                      },
-                      true),
+                  WaitForPanelOpen(),
+                  CheckControllerState(true, extension->id()),
                   Do([this, extension]() {
                     extensions::side_panel_util::CloseGlobalExtensionSidePanel(
                         browser(), extension->id());
                   }),
-                  WaitForHide(kOrganizerPanelViewElementId),
-                  CheckResult(
-                      [this]() {
-                        return organizer_panel_state_controller()
-                            ->IsOrganizerPanelVisible();
-                      },
-                      false));
+                  WaitForPanelClose(), CheckControllerState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
@@ -514,29 +452,13 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
         extensions::side_panel_util::OpenGlobalExtensionSidePanel(
             *browser(), /*web_contents=*/nullptr, ext1->id());
       }),
-      WaitForShow(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this, ext1]() {
-            return organizer_panel_state_controller()->active_extension_id() ==
-                   ext1->id();
-          },
-          true),
+      WaitForPanelOpen(), CheckControllerState(true, ext1->id()),
       // Open extension 2 (should switch content seamlessly).
       Do([this, ext2]() {
         extensions::side_panel_util::OpenGlobalExtensionSidePanel(
             *browser(), /*web_contents=*/nullptr, ext2->id());
       }),
-      CheckResult(
-          [this, ext2]() {
-            return organizer_panel_state_controller()->active_extension_id() ==
-                   ext2->id();
-          },
-          true),
-      CheckResult(
-          [this]() {
-            return organizer_panel_view()->web_view_for_testing() != nullptr;
-          },
-          true));
+      CheckControllerState(true, ext2->id()), CheckHasWebView());
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
@@ -549,13 +471,9 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
       Do([this]() {
         organizer_panel_state_controller()->SetOrganizerVisible(true);
       }),
-      WaitForShow(kOrganizerPanelViewElementId),
-      CheckResult(
-          [this]() {
-            return organizer_panel_view()->web_view_for_testing() != nullptr;
-          },
-          true));
+      WaitForPanelOpen(), CheckHasWebView());
 }
-#endif
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace base::test

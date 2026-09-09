@@ -216,6 +216,7 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -1011,15 +1012,12 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   auto* const organizer_panel_state_controller =
       OrganizerPanelStateController::From(browser_);
   if (organizer_panel_state_controller) {
-    auto organizer_panel_container = std::make_unique<OrganizerPanelView>(
+    auto organizer_panel = std::make_unique<OrganizerPanelView>(
         browser_.get(), BrowserActions::From(browser_)->root_action_item(),
         organizer_panel_state_controller);
-    organizer_panel_container_ =
-        AddChildView(std::move(organizer_panel_container));
-    organizer_panel_subscription_ =
-        organizer_panel_state_controller->RegisterOnStateChanged(
-            base::BindRepeating(&BrowserView::OnOrganizerPanelStateChanged,
-                                base::Unretained(this)));
+    organizer_tray_ =
+        AddChildView(std::make_unique<OrganizerTrayView>(*browser_, this));
+    organizer_tray_->SetPanelView(std::move(organizer_panel));
   }
 
   // Create do-nothing view for the sake of controlling the z-order of the find
@@ -1142,7 +1140,7 @@ BrowserView::~BrowserView() {
   vertical_tab_strip_background_blur_backdrop_ = nullptr;
   vertical_tab_strip_top_corner_ = nullptr;
   vertical_tab_strip_bottom_corner_ = nullptr;
-  organizer_panel_container_ = nullptr;
+  organizer_tray_ = nullptr;
   side_panel_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
@@ -1595,12 +1593,6 @@ void BrowserView::OnVerticalTabStripModeChanged(
   GetFrameView()->OnTabStripStateChanged();
 
   UpdateTabSearchBubbleHost();
-  InvalidateLayout();
-}
-
-void BrowserView::OnOrganizerPanelStateChanged(
-    OrganizerPanelStateController* controller) {
-  organizer_panel_container_->OnOrganizerPanelStateChanged(controller);
   InvalidateLayout();
 }
 
@@ -4672,10 +4664,10 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
 
   // See if the mouse pointer is within the bounds of the
   // OrganizerPanelView.
-  if (organizer_panel_container_ && organizer_panel_container_->GetVisible()) {
+  if (organizer_tray_ && organizer_tray_->GetVisible()) {
     gfx::Point test_point(point);
-    if (ConvertedHitTest(parent(), organizer_panel_container_, &test_point)) {
-      if (organizer_panel_container_->IsPositionInWindowCaption(test_point)) {
+    if (ConvertedHitTest(parent(), organizer_tray_, &test_point)) {
+      if (organizer_tray_->IsPositionInWindowCaption(test_point)) {
         return HTCAPTION;
       }
       return HTCLIENT;
@@ -5062,7 +5054,7 @@ void BrowserView::AddedToWidget() {
   layout_views.vertical_tab_strip_bottom_corner =
       vertical_tab_strip_bottom_corner_;
   layout_views.vertical_tab_strip_top_corner = vertical_tab_strip_top_corner_;
-  layout_views.organizer_panel_container = organizer_panel_container_;
+  layout_views.organizer_tray = organizer_tray_;
   layout_views.toolbar = toolbar_;
   layout_views.infobar_container = infobar_container_;
   layout_views.multi_contents_view = multi_contents_view_;

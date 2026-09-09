@@ -40,7 +40,8 @@ class FakeBrowserView : public views::View, public views::LayoutDelegate {
   explicit FakeBrowserView(BrowserWindowInterface& browser) {
     SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
     SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
-    tray_view_ = AddChildView(std::make_unique<OrganizerTrayView>(browser));
+    tray_view_ =
+        AddChildView(std::make_unique<OrganizerTrayView>(browser, nullptr));
   }
 
   ~FakeBrowserView() override = default;
