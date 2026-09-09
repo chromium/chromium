@@ -17,10 +17,6 @@
 
 class PrefService;
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace ash::quick_pair {
 
 class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
@@ -35,7 +31,6 @@ class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
               GetURLLoaderFactory,
               (),
               (override));
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(std::unique_ptr<image_fetcher::ImageFetcher>,
               GetImageFetcher,
               (),

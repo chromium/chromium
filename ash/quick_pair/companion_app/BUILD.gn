@@ -21,7 +21,9 @@ source_set("companion_app") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository",
     "//base",
+    "//chromeos/ash/components/signin:identity_manager_provider",
     "//components/cross_device/logging",
+    "//components/session_manager/core",
     "//url",
   ]
 }
@@ -59,7 +61,13 @@ source_set("unit_tests") {
     "//ash/quick_pair/repository:test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/signin:test_support",
+    "//components/account_id:test_support",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager:test_support",
     "//testing/gtest",
   ]
 }

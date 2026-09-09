@@ -32,10 +32,6 @@ FakeQuickPairBrowserDelegate::GetURLLoaderFactory() {
   return nullptr;
 }
 
-signin::IdentityManager* FakeQuickPairBrowserDelegate::GetIdentityManager() {
-  return identity_manager_;
-}
-
 std::unique_ptr<image_fetcher::ImageFetcher>
 FakeQuickPairBrowserDelegate::GetImageFetcher() {
   return nullptr;
@@ -68,11 +64,6 @@ void FakeQuickPairBrowserDelegate::LaunchCompanionApp(
 
 void FakeQuickPairBrowserDelegate::OpenPlayStorePage(GURL play_store_uri) {
   // Left unimplemented.
-}
-
-void FakeQuickPairBrowserDelegate::SetIdentityManager(
-    signin::IdentityManager* identity_manager) {
-  identity_manager_ = identity_manager;
 }
 
 void FakeQuickPairBrowserDelegate::SetCompanionAppInstalled(

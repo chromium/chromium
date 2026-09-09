@@ -13,14 +13,65 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
+namespace {
+
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@test.test",
+                                            GaiaId::Literal("fake-gaia-id"));
+
+}  // namespace
+
 class NearbyShareDetailedViewImplTest : public AshTestBase {
  public:
+  NearbyShareDetailedViewImplTest() = default;
+
   void SetUp() override {
+    // NearbyShareDetailedViewImpl::GetUserEmail() looks up an
+    // IdentityManagerProvider (see TODO(crbug.com/546860700) at that call
+    // site) via session_manager::SessionManager::GetActiveSession(). Nothing
+    // registers an identity manager for the account below, and
+    // GetUserEmail() doesn't need one for these tests -- but SessionManager
+    // still needs a real active session or GetActiveSession() itself
+    // CHECK-crashes.
+    // Construct the fake provider before AshTestBase::SetUp() (which brings
+    // up Shell and other ash production singletons), matching the order
+    // production initializes IdentityManagerProviderImpl -- before ash
+    // starts up.
+    identity_manager_provider_ =
+        std::make_unique<FakeIdentityManagerProvider>();
+
     AshTestBase::SetUp();
+
+    // Add a user and an active session, since that's what GetUserEmail()
+    // looks up (independent of AshTestHelper's own default
+    // SessionController-only session).
+    user_manager::User* user =
+        user_manager::TestHelper(user_manager::UserManager::Get())
+            .AddRegularUser(kTestAccountId);
+    CHECK(user);
+    // This is a primary login (no user was logged in before), so
+    // UserManagerImpl automatically makes this the active user -- no
+    // separate SwitchActiveUser() call needed.
+    session_manager::SessionManager::Get()->CreateSession(
+        kTestAccountId,
+        user_manager::TestHelper::GetFakeUsernameHash(kTestAccountId),
+        /*new_user=*/false, /*has_active_session=*/true);
+    // Point ash's SessionController at the same account, so it and
+    // session_manager::SessionManager agree on who is logged in rather than
+    // AshTestHelper's default user0@tray.
+    SimulateUserLogin(kTestAccountId);
+
     test_delegate_ = static_cast<TestNearbyShareDelegate*>(
         Shell::Get()->nearby_share_delegate());
     scoped_feature_list_.InitAndEnableFeature(
@@ -32,6 +83,9 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
     widget_.reset();
     test_delegate_ = nullptr;
     AshTestBase::TearDown();
+    // Destroy the fake provider after AshTestBase::TearDown() (which tears
+    // down Shell), for the same reason it's constructed before SetUp() above.
+    identity_manager_provider_.reset();
   }
 
   views::Button* GetSettingsButton() const {
@@ -85,6 +139,7 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
   FakeDetailedViewDelegate detailed_view_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<FakeIdentityManagerProvider> identity_manager_provider_;
 };
 
 TEST_F(NearbyShareDetailedViewImplTest,

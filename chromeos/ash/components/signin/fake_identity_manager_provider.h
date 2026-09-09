@@ -22,6 +22,12 @@ namespace ash {
 // Find() returns a manager only for accounts explicitly registered via
 // SetIdentityManagerForAccount (and nullptr otherwise), so a manager is never
 // handed back for a user that a test has not set up as signed-in.
+//
+// Registered IdentityManagers are held as (non-dangling-annotated) raw_ptrs,
+// so this instance must not outlive them -- e.g. destroy it before the
+// signin::IdentityTestEnvironment that owns them, or clear the entry with
+// SetIdentityManagerForAccount(account_id, nullptr) first. Otherwise the
+// dangling-pointer detector fires when this instance is destroyed.
 class FakeIdentityManagerProvider : public IdentityManagerProvider {
  public:
   FakeIdentityManagerProvider();

@@ -23,10 +23,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace ash::quick_pair {
 
 // Interface for a class which provides browser dependences to classes within
@@ -44,9 +40,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
   // Returns the URL loader factory associated with the active user's profile.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
-
-  // Returns a pointer to the IdentityManager for the active user.
-  virtual signin::IdentityManager* GetIdentityManager() = 0;
 
   virtual std::unique_ptr<image_fetcher::ImageFetcher> GetImageFetcher() = 0;
 

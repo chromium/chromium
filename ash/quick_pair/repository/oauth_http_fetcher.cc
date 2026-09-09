@@ -6,7 +6,12 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/cross_device/logging/logging.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -58,8 +63,16 @@ void OAuthHttpFetcher::StartRequest(const GURL& url,
       << ": Attempted to make an API call, but there is already a "
          "request in progress.";
 
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* const identity_manager =
-      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+      active_session
+          ? IdentityManagerProvider::Get().Find(active_session->account_id())
+          : nullptr;
   CHECK(identity_manager) << __func__ << ": IdentityManager is not available.";
 
   has_call_started_ = true;

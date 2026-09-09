@@ -14,7 +14,10 @@
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/cross_device/logging/logging.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace {
 
@@ -78,8 +81,16 @@ bool CompanionAppBrokerImpl::MaybeShowCompanionAppActions(
       QuickPairBrowserDelegate::Get()->CompanionAppInstalled(
           ash::features::kFastPairPwaCompanionAppId.Get());
 
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* identity_manager =
-      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+      active_session
+          ? IdentityManagerProvider::Get().Find(active_session->account_id())
+          : nullptr;
   bool is_guest =
       !identity_manager ||
       !IsLoggedIn(Shell::Get()->session_controller()->login_status());

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,10 +18,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace ash::quick_pair {
 
@@ -36,11 +31,9 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
 
   static FakeQuickPairBrowserDelegate* Get();
 
-  void SetIdentityManager(signin::IdentityManager* identity_manager);
   void SetCompanionAppInstalled(const std::string& app_id, bool installed);
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  signin::IdentityManager* GetIdentityManager() override;
   std::unique_ptr<image_fetcher::ImageFetcher> GetImageFetcher() override;
   PrefService* GetActivePrefService() override;
   void RequestService(
@@ -50,8 +43,6 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
   void OpenPlayStorePage(GURL play_store_uri) override;
 
  private:
-  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
-      nullptr;
   std::map<std::string, bool> companion_app_installed_ = {};
 };
 

@@ -13,13 +13,24 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-const std::string kUserEmail = "test@test.test";
+constexpr char kUserEmail[] = "test@test.test";
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUserEmail,
+                                            GaiaId::Literal("fake-gaia-id"));
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kValidModelId[] = "6EDAF7";
 constexpr char kInvalidModelId[] = "000000";
@@ -40,7 +51,16 @@ namespace ash::quick_pair {
 class CompanionAppBrokerImplUnitTest : public AshTestBase,
                                        public CompanionAppBroker::Observer {
  public:
+  CompanionAppBrokerImplUnitTest() = default;
+
   void SetUp() override {
+    // Construct the fake provider before AshTestBase::SetUp() (which brings
+    // up Shell and other ash production singletons), matching the order
+    // production initializes IdentityManagerProviderImpl -- before ash starts
+    // up.
+    identity_manager_provider_ =
+        std::make_unique<FakeIdentityManagerProvider>();
+
     AshTestBase::SetUp();
 
     companion_app_broker_ = std::make_unique<CompanionAppBrokerImpl>();
@@ -56,17 +76,59 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
 
   void TearDown() override {
     ClearLogin();
+    // Cleared before AshTestBase::TearDown(), mirroring being set after
+    // AshTestBase::SetUp(). It points into the IdentityManager that
+    // `identity_test_environment_` owns, so it must not outlive it.
+    identity_manager_ = nullptr;
     AshTestBase::TearDown();
+    // Destroyed after AshTestBase::TearDown() (which tears down Shell), for
+    // the same reason it's constructed before SetUp() above. Its map also
+    // holds raw_ptrs into the IdentityManager, so it goes before
+    // `identity_test_environment_`, which member destruction handles.
+    identity_manager_provider_.reset();
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin({kUserEmail, user_type});
+    bool is_guest = user_type == user_manager::UserType::kGuest;
+    // Use the same AccountId for both the SessionController-backed fake
+    // session (via SimulateUserLogin(), which most quick_pair production code
+    // still reads for e.g. login status) and the UserManager/SessionManager
+    // pair now backing IdentityManagerProvider lookups, so both agree on who
+    // the active user is. Guest must use user_manager::GuestAccountId(): it's
+    // the only AccountId TestHelper::AddGuestUser() below will use.
+    AccountId account_id =
+        is_guest ? user_manager::GuestAccountId() : AccountId(kTestAccountId);
+    // For guest, don't also pass kUserEmail as the LoginInfo's display_email:
+    // SimulateUserLogin() CHECKs that it matches account_id's email when both
+    // are given, and GuestAccountId()'s email isn't kUserEmail.
+    LoginInfo login_info = is_guest ? LoginInfo{std::nullopt, user_type}
+                                    : LoginInfo{kUserEmail, user_type};
+
+    // Registration must happen before any login call: TestHelper refuses to
+    // add a user once someone is already logged in.
+    user_manager::TestHelper test_helper(user_manager::UserManager::Get());
+    user_manager::User* user = is_guest
+                                   ? test_helper.AddGuestUser()
+                                   : test_helper.AddRegularUser(account_id);
+    CHECK(user);
+
+    identity_manager_provider_->SetIdentityManagerForAccount(account_id,
+                                                             identity_manager_);
+
+    // AshTestHelper does not respect the real SessionManager via
+    // SimulateUserLogin(). Call it manually here, too, matching
+    // assistant_browser_delegate_impl_unittest.cc. This is a primary login
+    // (no user was logged in before), so UserManagerImpl automatically makes
+    // this the active user -- no separate SwitchActiveUser() call needed.
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false, /*has_active_session=*/true);
+
+    SimulateUserLogin(login_info, account_id);
   }
 
   void SetIdentityManager(signin::IdentityManager* identity_manager) {
-    FakeQuickPairBrowserDelegate* delegate =
-        FakeQuickPairBrowserDelegate::Get();
-    delegate->SetIdentityManager(identity_manager);
+    identity_manager_ = identity_manager;
   }
 
   void SetCompanionAppInstalled(const std::string& app_id, bool installed) {
@@ -90,6 +152,7 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
   std::unique_ptr<CompanionAppBrokerImpl> companion_app_broker_;
   scoped_refptr<Device> test_device_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<FakeIdentityManagerProvider> identity_manager_provider_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   bool install_companion_app_notification_shown_ = false;

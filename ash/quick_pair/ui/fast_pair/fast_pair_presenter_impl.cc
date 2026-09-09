@@ -14,7 +14,6 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -28,7 +27,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/cross_device/logging/logging.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -126,8 +128,16 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
   // detailed user notification, show the guest notification. We don't have to
   // verify opt-in status in this case because Guests will be guaranteed to not
   // have opt-in status.
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* identity_manager =
-      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+      active_session
+          ? IdentityManagerProvider::Get().Find(active_session->account_id())
+          : nullptr;
   if (!identity_manager ||
       !ShouldShowUserEmail(
           Shell::Get()->session_controller()->login_status())) {
@@ -158,10 +168,25 @@ void FastPairPresenterImpl::ShowSubsequentDiscoveryNotification(
   // Since Subsequent Pairing scenario can only happen for a signed in user
   // when a device has already been saved to their account, this should never
   // be null. We cannot get to this scenario in Guest Mode.
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* identity_manager =
-      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+      active_session
+          ? IdentityManagerProvider::Get().Find(active_session->account_id())
+          : nullptr;
   DCHECK(identity_manager);
 
+  // TODO(crbug.com/546860700): This only needs the signed-in user's email,
+  // which active_session->account_id().GetUserEmail() already carries -- and
+  // since the IdentityManager above is used for nothing else, that lookup
+  // could be dropped along with it. Do that once the two are verified to
+  // agree here: AccountId's email is the canonicalized login address,
+  // whereas GetPrimaryAccountInfo().email comes from the Gaia account info,
+  // and they can differ (e.g. capitalization, or a changed primary email).
   const std::string& email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
@@ -197,10 +222,25 @@ void FastPairPresenterImpl::ShowUserDiscoveryNotification(
     DeviceMetadata* device_metadata) {
   // Since we check this in |OnInitialDiscoveryMetadataRetrieved| to determine
   // if we should show the Guest notification, this should never be null.
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* identity_manager =
-      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+      active_session
+          ? IdentityManagerProvider::Get().Find(active_session->account_id())
+          : nullptr;
   DCHECK(identity_manager);
 
+  // TODO(crbug.com/546860700): This only needs the signed-in user's email,
+  // which active_session->account_id().GetUserEmail() already carries -- and
+  // since the IdentityManager above is used for nothing else, that lookup
+  // could be dropped along with it. Do that once the two are verified to
+  // agree here: AccountId's email is the canonicalized login address,
+  // whereas GetPrimaryAccountInfo().email comes from the Gaia account info,
+  // and they can differ (e.g. capitalization, or a changed primary email).
   const std::string& email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
@@ -354,8 +394,25 @@ void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
 
   device->set_version(device_metadata->InferFastPairVersion());
 
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  //
+  // TODO(crbug.com/546860700): This IdentityManager is used for nothing but
+  // the signed-in user's email below, which
+  // active_session->account_id().GetUserEmail() already carries -- so this
+  // lookup could be dropped entirely rather than just re-sourced. Do that
+  // once the two are verified to agree here: AccountId's email is the
+  // canonicalized login address, whereas GetPrimaryAccountInfo().email comes
+  // from the Gaia account info, and they can differ (e.g. capitalization, or
+  // a changed primary email).
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* identity_manager =
-      QuickPairBrowserDelegate::Get()->GetIdentityManager();
+      active_session
+          ? IdentityManagerProvider::Get().Find(active_session->account_id())
+          : nullptr;
   if (!identity_manager) {
     CD_LOG(ERROR, Feature::FP)
         << __func__

@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
-#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_container.h"
@@ -21,6 +21,9 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -57,17 +60,26 @@ void FormatVisibilityRow(ash::HoverHighlightView* visibility_row,
 }
 
 std::u16string GetUserEmail() {
-  auto* quick_pair_browser_delegate =
-      ash::quick_pair::QuickPairBrowserDelegate::Get();
-  if (!quick_pair_browser_delegate) {
-    return std::u16string();
-  }
+  // TODO(crbug.com/546860700): Use a more precise AccountId from the calling
+  // context instead of the active session's, if one becomes available.
+  // GetActiveSession() itself is also only meant as an interim step during
+  // ash's session_manager migration (see its doc comment); revisit its use.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
   signin::IdentityManager* identity_manager =
-      quick_pair_browser_delegate->GetIdentityManager();
+      active_session ? ash::IdentityManagerProvider::Get().Find(
+                           active_session->account_id())
+                     : nullptr;
   if (!identity_manager) {
     return std::u16string();
   }
 
+  // TODO(crbug.com/546860700): This only needs the signed-in user's email,
+  // which active_session->account_id().GetUserEmail() already carries.
+  // Switch to it once the two are verified to agree here -- AccountId's
+  // email is the canonicalized login address, whereas
+  // GetPrimaryAccountInfo().email comes from the Gaia account info, and
+  // they can differ (e.g. capitalization, or a changed primary email).
   return base::ASCIIToUTF16(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email);

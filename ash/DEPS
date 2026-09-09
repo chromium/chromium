@@ -109,6 +109,7 @@ include_rules = [
   "+chromeos/ash/components/osauth",
   "+chromeos/ash/components/peripheral_notification",
   "+chromeos/ash/components/proximity_auth",
+  "+chromeos/ash/components/signin",
   "+chromeos/ash/components/string_matching",
   "+chromeos/ash/components/system",
   "+chromeos/ash/components/system_web_apps",
@@ -178,12 +179,36 @@ specific_include_rules = {
   "ash_prefs\\.cc": [
     "+components/user_manager/user_manager.h",
   ],
-  # TODO(crbug.com/546860700): uses session_manager::SessionManager as an
-  # interim way to get the active session's AccountId while ash's
-  # session_manager migration is in progress; revisit.
+  # TODO(crbug.com/546860700): the entries below use
+  # session_manager::SessionManager as an interim way to get the active
+  # session's AccountId while ash's session_manager migration is in progress;
+  # revisit.
   "capture_mode_controller\\.cc": [
     "+components/session_manager/core/session.h",
     "+components/session_manager/core/session_manager.h",
+  ],
+  "companion_app_broker_impl(_unittest)?\\.cc": [
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+  ],
+  "fast_pair_presenter_impl(_unittest)?\\.cc": [
+    "+chromeos/ash/components/policy/device_local_account",
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+  ],
+  "nearby_share_detailed_view_impl(_unittest)?\\.cc": [
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+  ],
+  "oauth_http_fetcher\\.cc": [
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+  ],
+  # oauth_http_fetcher_unittest.cc isn't an AshTestBase test, so unlike the
+  # three above it can't reuse the UserManager/SessionManager pair that
+  # AshTestHelper sets up; it brings up its own via TestUserSessionManager.
+  "oauth_http_fetcher_unittest\\.cc": [
+    "+components/session_manager/test/test_user_session_manager.h",
   ],
   "root_window_controller\\.(cc|h)": [
     "+ash/host"

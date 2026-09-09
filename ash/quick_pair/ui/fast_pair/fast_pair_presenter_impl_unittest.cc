@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/common/fake_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -24,15 +23,24 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/ash/services/quick_pair/fast_pair_data_parser.h"
 #include "chromeos/ash/services/quick_pair/mock_quick_pair_process_manager.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager_impl.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,7 +49,10 @@
 
 namespace {
 
-const std::string kUserEmail = "test@test.test";
+constexpr char kUserEmail[] = "test@test.test";
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUserEmail,
+                                            GaiaId::Literal("fake-gaia-id"));
 const char kPublicAntiSpoof[] =
     "Wuyr48lD3txnUhGiMF1IfzlTwRxxe+wMB1HLzP+"
     "0wVcljfT3XPoiy1fntlneziyLD5knDVAJSE+RM/zlPRP/Jg==";
@@ -163,6 +174,13 @@ class FastPairPresenterImplTest : public AshTestBase {
   ~FastPairPresenterImplTest() override = default;
 
   void SetUp() override {
+    // Construct the fake provider before AshTestBase::SetUp() (which brings
+    // up Shell and other ash production singletons), matching the order
+    // production initializes IdentityManagerProviderImpl -- before ash
+    // starts up.
+    identity_manager_provider_ =
+        std::make_unique<FakeIdentityManagerProvider>();
+
     AshTestBase::SetUp();
 
     identity_test_environment_ =
@@ -192,14 +210,63 @@ class FastPairPresenterImplTest : public AshTestBase {
 
   void TearDown() override {
     identity_manager_ = nullptr;
-    identity_test_environment_.reset();
     fast_pair_presenter_.reset();
     ClearLogin();
     AshTestBase::TearDown();
+    // Destroy the fake provider after AshTestBase::TearDown() (which tears
+    // down Shell), for the same reason it's constructed before SetUp() above,
+    // but *before* `identity_test_environment_`: the provider holds
+    // raw_ptrs to the IdentityManager that `identity_test_environment_` owns,
+    // so outliving it would leave those pointers dangling.
+    identity_manager_provider_.reset();
+    identity_test_environment_.reset();
   }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin({kUserEmail, user_type});
+    // Only kRegular/kChild get a display_email: SimulateUserLogin() CHECKs
+    // that it matches the account's email when both are given, and the
+    // guest/kiosk AccountIds' emails aren't kUserEmail.
+    std::optional<std::string_view> display_email;
+    user_manager::TestHelper test_helper(user_manager::UserManager::Get());
+    user_manager::User* user = nullptr;
+    switch (user_type) {
+      case user_manager::UserType::kGuest:
+        user = test_helper.AddGuestUser();
+        break;
+      case user_manager::UserType::kKioskChromeApp: {
+        // Kiosk users go through a different UserManagerImpl path that
+        // requires a device-local-account-shaped user id.
+        std::string kiosk_user_id = policy::GenerateDeviceLocalAccountUserId(
+            "test-kiosk-app", policy::DeviceLocalAccountType::kKioskApp);
+        user = test_helper.AddKioskChromeAppUser(kiosk_user_id);
+        break;
+      }
+      case user_manager::UserType::kRegular:
+      case user_manager::UserType::kChild:
+        display_email = kUserEmail;
+        user = user_type == user_manager::UserType::kChild
+                   ? test_helper.AddChildUser(kTestAccountId)
+                   : test_helper.AddRegularUser(kTestAccountId);
+        break;
+      default:
+        NOTREACHED() << "Unsupported user type for this test: " << user_type;
+    }
+    CHECK(user);
+    const AccountId& account_id = user->GetAccountId();
+
+    identity_manager_provider_->SetIdentityManagerForAccount(account_id,
+                                                             identity_manager_);
+
+    // AshTestHelper does not respect the real SessionManager via
+    // SimulateUserLogin(). Call it manually here, too, matching
+    // assistant_browser_delegate_impl_unittest.cc. This is a primary login
+    // (no user was logged in before), so UserManagerImpl automatically makes
+    // this the active user -- no separate SwitchActiveUser() call needed.
+    session_manager::SessionManager::Get()->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false, /*has_active_session=*/true);
+
+    SimulateUserLogin(LoginInfo{display_email, user_type}, account_id);
   }
 
   void OnDiscoveryAction(scoped_refptr<Device> device, DiscoveryAction action) {
@@ -227,14 +294,13 @@ class FastPairPresenterImplTest : public AshTestBase {
   }
 
   void SetIdentityManager(signin::IdentityManager* identity_manager) {
-    FakeQuickPairBrowserDelegate* delegate =
-        FakeQuickPairBrowserDelegate::Get();
-    delegate->SetIdentityManager(identity_manager);
+    identity_manager_ = identity_manager;
   }
 
  protected:
   base::HistogramTester histogram_tester_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<FakeIdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   DiscoveryAction discovery_action_;
