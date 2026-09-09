@@ -194,6 +194,102 @@ TEST_F(FileSelectHelperTest, ZipPackage) {
     EXPECT_TRUE(base::ContentsEqual(orig_file, final_file));
   }
 }
+
+TEST_F(FileSelectHelperTest, ZipPackageSkipsSymlinks) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Set up files outside the package that symlinks will point to.
+  const std::string outside_contents = "outside";
+  base::FilePath outside_file = temp_dir.GetPath().Append("outside_file");
+  ASSERT_TRUE(base::WriteFile(outside_file, outside_contents));
+  base::FilePath outside_dir = temp_dir.GetPath().Append("outside_dir");
+  ASSERT_TRUE(base::CreateDirectory(outside_dir));
+  ASSERT_TRUE(base::WriteFile(outside_dir.Append("secret"), outside_contents));
+
+  // Set up a package containing regular files and symlinks:
+  // - Symlinks pointing to files/dirs outside the package.
+  // - Symlinks pointing to files inside the package.
+  const char app_name[] = "Fake.app";
+  base::FilePath package = temp_dir.GetPath().Append(app_name);
+  base::FilePath contents = package.Append("Contents");
+  ASSERT_TRUE(base::CreateDirectory(contents));
+  const std::string plist_contents = "plist";
+  base::FilePath plist_file = contents.Append("Info.plist");
+  ASSERT_TRUE(base::WriteFile(plist_file, plist_contents));
+
+  // External symlinks (absolute and relative).
+  ASSERT_TRUE(
+      base::CreateSymbolicLink(outside_file, contents.Append("file_link")));
+  ASSERT_TRUE(
+      base::CreateSymbolicLink(base::FilePath("../../outside_file"),
+                               contents.Append("relative_outside_link")));
+  ASSERT_TRUE(
+      base::CreateSymbolicLink(outside_dir, contents.Append("dir_link")));
+  ASSERT_TRUE(
+      base::CreateSymbolicLink(base::FilePath("../../outside_dir"),
+                               contents.Append("relative_outside_dir_link")));
+
+  // Internal symlinks (absolute and relative).
+  ASSERT_TRUE(base::CreateSymbolicLink(plist_file,
+                                       contents.Append("internal_abs_link")));
+  ASSERT_TRUE(base::CreateSymbolicLink(base::FilePath("Info.plist"),
+                                       contents.Append("internal_rel_link")));
+
+  // Zip the package.
+  base::FilePath dest = FileSelectHelper::ZipPackage(package);
+  ASSERT_FALSE(dest.empty());
+  ASSERT_TRUE(base::PathExists(dest));
+
+  // Unzip the package into a temporary directory.
+  base::ScopedTempDir unzip_dir;
+  ASSERT_TRUE(unzip_dir.CreateUniqueTempDir());
+  base::CommandLine cl(base::FilePath("/usr/bin/unzip"));
+  cl.AppendArg(dest.value().c_str());
+  cl.AppendArg("-d");
+  cl.AppendArg(unzip_dir.GetPath().value().c_str());
+  std::string output;
+  EXPECT_TRUE(base::GetAppOutput(cl, &output));
+
+  // The regular file and internal symlinks should be present.
+  base::FilePath unzipped_contents =
+      unzip_dir.GetPath().Append(app_name).Append("Contents");
+  std::string read_contents;
+  ASSERT_TRUE(base::ReadFileToString(unzipped_contents.Append("Info.plist"),
+                                     &read_contents));
+  EXPECT_EQ(plist_contents, read_contents);
+
+  ASSERT_TRUE(base::ReadFileToString(
+      unzipped_contents.Append("internal_abs_link"), &read_contents));
+  EXPECT_EQ(plist_contents, read_contents);
+
+  ASSERT_TRUE(base::ReadFileToString(
+      unzipped_contents.Append("internal_rel_link"), &read_contents));
+  EXPECT_EQ(plist_contents, read_contents);
+
+  // Symlinks pointing outside the package should not be present, neither as
+  // themselves nor as their targets.
+  EXPECT_FALSE(base::PathExists(unzipped_contents.Append("file_link")));
+  EXPECT_FALSE(
+      base::PathExists(unzipped_contents.Append("relative_outside_link")));
+  EXPECT_FALSE(base::PathExists(unzipped_contents.Append("dir_link")));
+  EXPECT_FALSE(
+      base::PathExists(unzipped_contents.Append("dir_link").Append("secret")));
+  EXPECT_FALSE(
+      base::PathExists(unzipped_contents.Append("relative_outside_dir_link")));
+  EXPECT_FALSE(base::PathExists(
+      unzipped_contents.Append("relative_outside_dir_link").Append("secret")));
+
+  // A package that is itself a symlink should be rejected.
+  base::FilePath symlink_package =
+      temp_dir.GetPath().Append("SymlinkPackage.app");
+  ASSERT_TRUE(base::CreateSymbolicLink(outside_dir, symlink_package));
+  EXPECT_TRUE(FileSelectHelper::ZipPackage(symlink_package).empty());
+
+  // A non-existent package should return an empty path.
+  base::FilePath nonexistent = temp_dir.GetPath().Append("Nonexistent.app");
+  EXPECT_TRUE(FileSelectHelper::ZipPackage(nonexistent).empty());
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(FileSelectHelperTest, GetSanitizedFileName) {

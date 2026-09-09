@@ -88,6 +88,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
 
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, IsAcceptTypeValid);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ZipPackage);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ZipPackageSkipsSymlinks);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetSanitizedFileName);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, LastSelectedDirectory);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,

@@ -11,6 +11,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -53,6 +54,28 @@ base::FilePath ZipDestination(const base::FilePath& path) {
 // parent directory.
 std::vector<base::FilePath> RelativePathsForPackage(
     const base::FilePath& package) {
+  // Reject packages where the root itself is a symbolic link.
+  // When a user selects a file or package through the standard file picker
+  // (NSOpenPanel), AppKit's `resolvesAliases` property is enabled by default,
+  // resolving both Finder aliases and symlinks to their target directory before
+  // reaching this code. Therefore, legitimate user selections through the
+  // dialog already have their targets resolved. A raw symlink only arrives here
+  // if the selection bypassed NSOpenPanel (such as via drag-and-drop onto an
+  // <input type="file">). Following a root symlink in that case is dangerous
+  // (e.g. a dropped "Fake.app -> /Users/victim" would cause the entire target
+  // directory to be considered part of the package and zipped).
+  if (base::IsLink(package)) {
+    return {};
+  }
+
+  base::FilePath real_package = base::MakeAbsoluteFilePath(package);
+  // MakeAbsoluteFilePath() uses realpath(3) and returns an empty path if the
+  // package path does not exist on disk, permission is denied, or resolution
+  // fails.
+  if (real_package.empty()) {
+    return {};
+  }
+
   // Get the base directory.
   base::FilePath base_dir = package.DirName();
 
@@ -62,15 +85,27 @@ std::vector<base::FilePath> RelativePathsForPackage(
 
   // Add the components of the package as relative paths.
   base::FileEnumerator file_enumerator(
-      package,
-      true /* recursive */,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+      package, true /* recursive */,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
+    // Only include symlinks whose targets reside inside the package tree.
+    // External symlinks (or broken symlinks) are skipped to prevent file
+    // leakage outside the package. Internal symlinks are preserved by having
+    // their target contents copied into the zip archive, preserving working
+    // bundles.
+    if (S_ISLNK(file_enumerator.GetInfo().stat().st_mode)) {
+      base::FilePath target = base::MakeAbsoluteFilePath(path);
+      if (target.empty() || !real_package.IsParent(target)) {
+        continue;
+      }
+    }
     base::FilePath relative_path;
     bool success = base_dir.AppendRelativePath(path, &relative_path);
-    if (success)
+    if (success) {
       relative_paths.push_back(relative_path);
+    }
   }
 
   return relative_paths;
@@ -91,6 +126,10 @@ base::FilePath FileSelectHelper::ZipPackage(const base::FilePath& path) {
     return base::FilePath();
 
   std::vector<base::FilePath> files_to_zip(RelativePathsForPackage(path));
+  if (files_to_zip.empty()) {
+    return base::FilePath();
+  }
+
   base::FilePath base_dir = path.DirName();
   bool success = zip::ZipFiles(base_dir, files_to_zip, file.GetPlatformFile());
 
