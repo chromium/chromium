@@ -3497,10 +3497,20 @@ void LocalFrameView::UpdateStyleAndLayout() {
   // Second pass: run autosize until it stabilizes.
   if (auto_size_info_) {
     bool should_reset_for_layout = did_layout;
-    while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
-      should_reset_for_layout = false;
+    bool did_run_autosize_layout = false;
+    {
       base::AutoReset<bool> reset(&is_being_auto_sized_, true);
-      did_layout |= UpdateStyleAndLayoutInternal();
+      while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
+        should_reset_for_layout = false;
+        did_layout |= UpdateStyleAndLayoutInternal();
+        did_run_autosize_layout = true;
+      }
+    }
+    // Suppress notifications during scroll-width autosizing, then report any
+    // stable size change.
+    if (did_run_autosize_layout && frame_->IsMainFrame() &&
+        RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled()) {
+      frame_->GetChromeClient().ResizeAfterLayout();
     }
     // We may have a mismatch as we impose an additional min-content constraint
     // while auto-sizing, set the view as needing layout which will then fall
@@ -4061,8 +4071,13 @@ void LocalFrameView::SetCursor(const ui::Cursor& cursor) {
 
 void LocalFrameView::PropagateFrameRects() {
   TRACE_EVENT0("blink", "LocalFrameView::PropagateFrameRects");
-  if (LayoutSizeFixedToFrameSize())
-    SetLayoutSizeInternal(Size());
+  if (LayoutSizeFixedToFrameSize()) {
+    SetLayoutSizeInternal(
+        Size(), {.should_suppress_events =
+                     is_being_auto_sized_ &&
+                     RuntimeEnabledFeatures::
+                         AutoSizeUsesScrollWidthForOverflowEnabled()});
+  }
 
   ForAllChildViewsAndPlugins([](EmbeddedContentView& view) {
     auto* local_frame_view = DynamicTo<LocalFrameView>(view);

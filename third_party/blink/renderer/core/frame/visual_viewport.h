@@ -122,7 +122,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // The size of the Blink viewport area. See size_ for precise
   // definition.
-  void SetSize(const gfx::Size&);
+  void SetSize(const gfx::Size&, bool should_suppress_resize_event = false);
   gfx::Size Size() const { return size_; }
 
   // The area of the layout viewport rect visible in the visual viewport,
