@@ -263,6 +263,20 @@ BASE_FEATURE(kOmniboxAimEvictOnHide, DISABLED);
 // frame when hidden.
 BASE_FEATURE(kOmniboxFullWebUIEvictOnHide, DISABLED);
 
+// When enabled, sizes the AIM popup child WebView bounds directly to its
+// preferred height in RoundedOmniboxResultsFrame and eliminates transient
+// height resets on hide.
+BASE_FEATURE(kOmniboxAimSizeWebViewToPreferredHeight, DISABLED);
+
+// When enabled, sizes the Classic WebUI popup child WebView bounds directly to
+// its preferred height in RoundedOmniboxResultsFrame and eliminates transient
+// height resets on hide.
+BASE_FEATURE(kOmniboxWebUISizeWebViewToPreferredHeight, DISABLED);
+
+// When enabled, sizes the Full WebUI popup child WebView bounds directly to its
+// preferred height in RoundedOmniboxResultsFrame and eliminates transient
+// height resets on hide/tab switch.
+BASE_FEATURE(kOmniboxFullWebUISizeWebViewToPreferredHeight, DISABLED);
 // When enabled, the WebUI searchbox will bypass OmniboxController and
 // OmniboxEditModel.
 BASE_FEATURE(kWebUISearchboxWithoutModelController, DISABLED);
