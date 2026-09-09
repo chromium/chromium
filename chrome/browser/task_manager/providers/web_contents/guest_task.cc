@@ -11,8 +11,10 @@ namespace task_manager {
 
 GuestTask::GuestTask(content::WebContents* web_contents)
     : RendererTask(GetCurrentTitle(web_contents),
-                   GetFaviconFromWebContents(web_contents).get(),
-                   web_contents) {}
+                   /*icon=*/nullptr,
+                   web_contents) {
+  DefaultUpdateFaviconImpl();
+}
 
 GuestTask::~GuestTask() = default;
 

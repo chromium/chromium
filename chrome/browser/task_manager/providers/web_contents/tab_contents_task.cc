@@ -32,9 +32,10 @@ bool HostsExtension(content::WebContents* web_contents) {
 
 TabContentsTask::TabContentsTask(content::WebContents* web_contents)
     : RendererTask(std::u16string(),
-                   RendererTask::GetFaviconFromWebContents(web_contents).get(),
+                   /*icon=*/nullptr,
                    web_contents) {
   set_title(GetCurrentTitle());
+  DefaultUpdateFaviconImpl();
 }
 
 TabContentsTask::~TabContentsTask() = default;

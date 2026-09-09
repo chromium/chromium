@@ -94,11 +94,6 @@ class RendererTask : public Task,
   static std::u16string GetTitleFromWebContents(
       content::WebContents* web_contents);
 
-  // Returns the favicon of the given |web_contents| if any, and returns
-  // |nullptr| otherwise.
-  static std::unique_ptr<gfx::ImageSkia> GetFaviconFromWebContents(
-      content::WebContents* web_contents);
-
   // Prefixes the given renderer |title| with the appropriate string based on
   // whether it's an app, an extension, incognito or a background page or
   // contents.
@@ -107,7 +102,10 @@ class RendererTask : public Task,
                                                   bool is_extension,
                                                   bool is_incognito,
                                                   bool is_background);
-
+  // Sets the icon to the current favicon of web_contents() (see
+  // GetFaviconFromWebContents()). Tasks whose icon is the favicon of their
+  // WebContents use this both to initialize the icon in their constructor and
+  // to refresh it from UpdateFavicon().
   void DefaultUpdateFaviconImpl();
 
  private:
@@ -115,6 +113,11 @@ class RendererTask : public Task,
                const gfx::ImageSkia* icon,
                content::WebContents* web_contents,
                content::RenderProcessHost* render_process_host);
+
+  // Returns the favicon of the given |web_contents| if any, and returns
+  // |nullptr| otherwise.
+  static std::unique_ptr<gfx::ImageSkia> GetFaviconFromWebContents(
+      content::WebContents* web_contents);
 
   // The WebContents of the task this object represents.
   const raw_ptr<content::WebContents> web_contents_;
