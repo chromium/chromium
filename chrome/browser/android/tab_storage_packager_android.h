@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab/android_tab_package.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/tabs/public/tab_interface.h"
@@ -54,26 +53,13 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   std::string GetWindowTag(const TabCollection* collection) const override;
   std::unique_ptr<StoragePackage> Package(const TabInterface* tab) override;
 
-  // Returns a pointer to TabStoragePackage (as a long in Java). The caller is
-  // responsible for managing the lifecycle of the returned object.
-  long ConsolidateTabData(
-      JNIEnv* env,
-      int64_t timestamp_millis,
-      const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
-      int32_t web_contents_state_version,
-      std::optional<std::string> opener_app_id,
-      int32_t theme_color,
-      int64_t last_navigation_committed_timestamp_millis,
-      bool tab_has_sensitive_content,
-      TabAndroid* tab);
-
   // Returns a pointer to an UnmappedTabStripCollectionStorageData (as a long in
   // Java). The caller is responsible for managing the lifecycle of the returned
   // object.
-  long ConsolidateTabStripCollectionData(JNIEnv* env,
-                                         std::string window_tag,
-                                         int32_t j_tab_model_type,
-                                         TabAndroid* active_tab);
+  int64_t ConsolidateTabStripCollectionData(JNIEnv* env,
+                                            std::string window_tag,
+                                            int32_t j_tab_model_type,
+                                            TabAndroid* active_tab);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

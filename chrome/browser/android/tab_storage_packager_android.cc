@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/token.h"
@@ -21,21 +21,51 @@
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_group_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab/android_tab_package.h"
 #include "chrome/browser/tab/payload.h"
 #include "chrome/browser/tab/protocol/tab_group_collection_state.pb.h"
+#include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
+#include "chrome/browser/tab/web_contents_state.h"
 #include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabStoragePackager_jni.h"
 
 namespace tabs {
+
+struct TabStorageMetadata {
+  int64_t timestamp_millis = 0;
+  int32_t theme_color = 0;
+  int64_t last_navigation_committed_timestamp_millis = 0;
+  bool tab_has_sensitive_content = false;
+  std::optional<std::string> opener_app_id;
+};
+
+static void JNI_TabStoragePackager_OnTabStorageMetadataFetched(
+    JNIEnv* env,
+    int64_t metadata_ptr,
+    int64_t timestamp_millis,
+    int32_t theme_color,
+    int64_t last_navigation_committed_timestamp_millis,
+    bool tab_has_sensitive_content,
+    std::optional<std::string> opener_app_id) {
+  auto* metadata = reinterpret_cast<TabStorageMetadata*>(metadata_ptr);
+  metadata->timestamp_millis = timestamp_millis;
+  metadata->theme_color = theme_color;
+  metadata->last_navigation_committed_timestamp_millis =
+      last_navigation_committed_timestamp_millis;
+  metadata->tab_has_sensitive_content = tab_has_sensitive_content;
+  metadata->opener_app_id = std::move(opener_app_id);
+}
+
 // A payload of data representing TabStripCollection.
 class TabStripCollectionStorageData : public Payload {
  public:
@@ -129,13 +159,69 @@ std::string TabStoragePackagerAndroid::GetWindowTag(
 
 std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
     const TabInterface* tab) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(tab);
-  JNIEnv* env = base::android::AttachCurrentThread();
-  long ptr_value = Java_TabStoragePackager_packageTab(
-      env, java_obj_, TabAndroid::FromTabInterface(tab));
-  TabStoragePackage* data = reinterpret_cast<TabStoragePackage*>(ptr_value);
+  const TabAndroid* tab_android = TabAndroid::FromTabInterface(tab);
+  CHECK(tab_android);
 
-  return base::WrapUnique(data);
+  tabs_pb::TabState tab_state;
+  tab_state.set_tab_id(tab_android->GetAndroidId());
+  tab_state.set_parent_id(tab_android->GetParentId());
+  tab_state.set_launch_type_at_creation(
+      tab_android->GetTabLaunchTypeAtCreation());
+  tab_state.set_user_agent(tab_android->GetUserAgent());
+  tab_state.set_is_pinned(tab_android->IsPinned());
+
+  base::Token tab_group_id;
+  if (tab_android->GetGroup().has_value()) {
+    tab_group_id = tab_android->GetGroup()->token();
+  }
+  tabs_pb::Token* proto_tab_group_id = tab_state.mutable_tab_group_id();
+  proto_tab_group_id->set_high(tab_group_id.high());
+  proto_tab_group_id->set_low(tab_group_id.low());
+
+  GURL gurl = tab_android->GetURL();
+  if (gurl.is_valid()) {
+    tab_state.set_url(gurl.spec());
+  }
+
+  if (content::WebContents* web_contents = tab_android->web_contents()) {
+    if (WebContentsState::WriteContentsState(
+            web_contents, tab_state.mutable_web_contents_state_bytes())) {
+      tab_state.set_web_contents_state_version(2);
+    } else {
+      tab_state.clear_web_contents_state_bytes();
+      tab_state.set_web_contents_state_version(-1);
+    }
+  } else {
+    std::unique_ptr<WebContentsStateByteBuffer> byte_buffer =
+        tab_android->GetWebContentsByteBuffer();
+    if (byte_buffer && !byte_buffer->GetBuffer().empty()) {
+      base::span<const uint8_t> buffer_span = byte_buffer->GetBuffer();
+      tab_state.set_web_contents_state_bytes(
+          reinterpret_cast<const char*>(buffer_span.data()),
+          buffer_span.size());
+      tab_state.set_web_contents_state_version(byte_buffer->state_version());
+    } else {
+      tab_state.set_web_contents_state_version(-1);
+    }
+  }
+
+  TabStorageMetadata metadata;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_TabStoragePackager_fetchTabStorageMetadata(
+      env, tab_android, reinterpret_cast<intptr_t>(&metadata));
+
+  tab_state.set_timestamp_millis(metadata.timestamp_millis);
+  tab_state.set_theme_color(metadata.theme_color);
+  tab_state.set_last_navigation_committed_timestamp_millis(
+      metadata.last_navigation_committed_timestamp_millis);
+  tab_state.set_tab_has_sensitive_content(metadata.tab_has_sensitive_content);
+  if (metadata.opener_app_id.has_value()) {
+    tab_state.set_opener_app_id(*metadata.opener_app_id);
+  }
+
+  return std::make_unique<TabStoragePackage>(std::move(tab_state));
 }
 
 std::unique_ptr<Payload>
@@ -151,49 +237,7 @@ TabStoragePackagerAndroid::PackageTabStripCollectionData(
       mapping);
 }
 
-long TabStoragePackagerAndroid::ConsolidateTabData(
-    JNIEnv* env,
-    int64_t timestamp_millis,
-    const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
-    int32_t web_contents_state_version,
-    std::optional<std::string> opener_app_id,
-    int32_t theme_color,
-    int64_t last_navigation_committed_timestamp_millis,
-    bool tab_has_sensitive_content,
-    TabAndroid* tab) {
-  std::optional<std::vector<uint8_t>> web_contents_state_bytes;
-  if (web_contents_state_buffer) {
-    base::span<const uint8_t> span =
-        base::android::JavaByteBufferToSpan(env, web_contents_state_buffer);
-    web_contents_state_bytes.emplace(span.begin(), span.end());
-  }
-
-  base::Token tab_group_id;
-  if (tab->GetGroup().has_value()) {
-    tab_group_id = tab->GetGroup()->token();
-  }
-
-  GURL gurl = tab->GetURL();
-  std::optional<std::string> url_spec;
-  if (gurl.is_valid()) {
-    url_spec = gurl.spec();
-  }
-
-  AndroidTabPackage android_package(
-      web_contents_state_version, tab->GetAndroidId(), tab->GetParentId(),
-      timestamp_millis, std::move(web_contents_state_bytes),
-      std::move(opener_app_id), theme_color,
-      last_navigation_committed_timestamp_millis, tab_has_sensitive_content,
-      tab->GetTabLaunchTypeAtCreation(), std::move(url_spec));
-
-  TabStoragePackage* package_ptr =
-      new TabStoragePackage(tab->GetUserAgent(), std::move(tab_group_id),
-                            tab->IsPinned(), std::move(android_package));
-
-  return reinterpret_cast<long>(package_ptr);
-}
-
-long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
+int64_t TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
     JNIEnv* env,
     std::string window_tag,
     int32_t j_tab_model_type,
@@ -205,7 +249,7 @@ long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
 
   UnmappedTabStripCollectionStorageData* data =
       new UnmappedTabStripCollectionStorageData(active_tab, std::move(state));
-  return reinterpret_cast<long>(data);
+  return reinterpret_cast<intptr_t>(data);
 }
 
 TabStoragePackagerAndroid::~TabStoragePackagerAndroid() = default;

@@ -79,6 +79,12 @@ class WebContentsState {
   static base::android::ScopedJavaLocalRef<jobject>
   GetContentsStateAsByteBuffer(JNIEnv* env, content::WebContents* web_contents);
 
+  // Serializes the WebContents navigation history directly into `output`.
+  // Returns true on success, or false if serialization was not possible
+  // (e.g. if `web_contents` is null or on the initial navigation entry).
+  static bool WriteContentsState(content::WebContents* web_contents,
+                                 std::string* output);
+
   // Returns a new buffer without the navigations matching |predicate|.
   // Returns null if no deletions happened.
   static base::android::ScopedJavaLocalRef<jobject>

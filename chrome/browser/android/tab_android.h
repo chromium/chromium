@@ -393,6 +393,12 @@ inline ScopedJavaLocalRef<jobject> ToJniType<TabAndroid*>(
     TabAndroid* const& tab) {
   return tab ? tab->GetJavaObject() : nullptr;
 }
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<const TabAndroid*>(
+    JNIEnv* env,
+    const TabAndroid* const& tab) {
+  return tab ? tab->GetJavaObject() : nullptr;
+}
 }  // namespace jni_zero
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_ANDROID_H_

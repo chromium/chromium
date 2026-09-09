@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator.getCustomTabsWindowTag;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_TASK_ID;
@@ -21,8 +20,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
-import org.chromium.chrome.browser.tab.TabStateExtractor;
-import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,7 +27,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.tabs.TabStripCollection;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,21 +117,17 @@ public class TabStoragePackager {
     }
 
     @CalledByNative
-    public long packageTab(@JniType("const TabAndroid*") Tab tab) {
-        WebContentsState state = TabStateExtractor.getWebContentsState(tab);
-        int webContentsStateVersion =
-                state == null ? WebContentsState.INVALID_BUFFER_VERSION : state.version();
-        return TabStoragePackagerJni.get()
-                .consolidateTabData(
-                        mNativeTabStoragePackager,
+    public static void fetchTabStorageMetadata(
+            @Nullable @JniType("const TabAndroid*") Tab tab, long metadataPtr) {
+        if (tab == null) return;
+        TabStoragePackagerJni.get()
+                .onTabStorageMetadataFetched(
+                        metadataPtr,
                         tab.getTimestampMillis(),
-                        state == null ? null : state.buffer(),
-                        webContentsStateVersion,
-                        assumeNonNull(TabAssociatedApp.getAppId(tab)),
                         tab.getThemeColor(),
                         tab.getLastNavigationCommittedTimestampMillis(),
                         tab.getTabHasSensitiveContent(),
-                        tab);
+                        TabAssociatedApp.getAppId(tab));
     }
 
     private @Nullable TabModelInfo getTabModelInfo(Profile profile, TabStripCollection collection) {
@@ -276,16 +268,13 @@ public class TabStoragePackager {
 
     @NativeMethods
     interface Natives {
-        long consolidateTabData(
-                long nativeTabStoragePackagerAndroid,
+        void onTabStorageMetadataFetched(
+                long metadataPtr,
                 long timestampMillis,
-                @Nullable ByteBuffer webContentsStateBuffer,
-                int webContentsStateVersion,
-                @Nullable @JniType("std::optional<std::string>") String openerAppId,
                 int themeColor,
                 long lastNavigationCommittedTimestampMillis,
                 boolean tabHasSensitiveContent,
-                @JniType("TabAndroid*") Tab tab);
+                @Nullable @JniType("std::optional<std::string>") String openerAppId);
 
         long consolidateTabStripCollectionData(
                 long nativeTabStoragePackagerAndroid,

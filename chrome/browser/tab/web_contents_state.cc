@@ -144,6 +144,34 @@ ScopedJavaLocalRef<jobject> WriteNavigationsAsByteBuffer(
                                                 serialized, current_entry);
 }
 
+std::optional<base::Pickle> WriteContentsStateAsPickle(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
+
+  content::NavigationController& controller = web_contents->GetController();
+  const int entry_count = controller.GetEntryCount();
+  // Don't try to persist initial NavigationEntry, as it is not actually
+  // associated with any navigation and will just result in about:blank on
+  // session restore.
+  if (!controller.GetLastCommittedEntry() ||
+      controller.GetLastCommittedEntry()->IsInitialEntry()) {
+    return std::nullopt;
+  }
+
+  std::vector<content::NavigationEntry*> navigations(entry_count);
+  for (int i = 0; i < entry_count; ++i) {
+    navigations[i] = controller.GetEntryAtIndex(i);
+  }
+
+  std::vector<sessions::SerializedNavigationEntry> serialized =
+      SerializeNavigations(navigations);
+  return WriteSerializedNavigationsAsPickle(
+      web_contents->GetBrowserContext()->IsOffTheRecord(), serialized,
+      controller.GetLastCommittedEntryIndex());
+}
+
 std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
     BrowserContext* browser_context,
     const std::optional<std::u16string>& title,
@@ -195,30 +223,34 @@ base::span<const uint8_t> WebContentsStateByteBuffer::GetBuffer() const {
       base::android::AttachCurrentThread(), java_buffer_);
 }
 
+// static
+bool WebContentsState::WriteContentsState(content::WebContents* web_contents,
+                                          std::string* output) {
+  CHECK(output);
+  std::optional<base::Pickle> pickle = WriteContentsStateAsPickle(web_contents);
+  if (!pickle.has_value()) {
+    return false;
+  }
+  output->assign(reinterpret_cast<const char*>(pickle->data()), pickle->size());
+  return true;
+}
+
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  if (!web_contents) {
+  std::optional<base::Pickle> pickle = WriteContentsStateAsPickle(web_contents);
+  if (!pickle.has_value()) {
     return ScopedJavaLocalRef<jobject>();
   }
 
-  content::NavigationController& controller = web_contents->GetController();
-  const int entry_count = controller.GetEntryCount();
-  // Don't try to persist initial NavigationEntry, as it is not actually
-  // associated with any navigation and will just result in about:blank on
-  // session restore.
-  if (controller.GetLastCommittedEntry()->IsInitialEntry()) {
-    return ScopedJavaLocalRef<jobject>();
+  ScopedJavaLocalRef<jobject> buffer =
+      CreateByteBufferDirect(env, static_cast<int>(pickle->size()));
+  if (buffer) {
+    base::span<uint8_t> buffer_span =
+        base::android::JavaByteBufferToMutableSpan(env, buffer);
+    buffer_span.copy_from(*pickle);
   }
-
-  std::vector<content::NavigationEntry*> navigations(entry_count);
-  for (int i = 0; i < entry_count; ++i) {
-    navigations[i] = controller.GetEntryAtIndex(i);
-  }
-
-  return WriteNavigationsAsByteBuffer(
-      env, web_contents->GetBrowserContext()->IsOffTheRecord(), navigations,
-      controller.GetLastCommittedEntryIndex());
+  return buffer;
 }
 
 ScopedJavaLocalRef<jobject>
