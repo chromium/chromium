@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(
   RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
                   CheckChipVisible(true),
                   // Type a URL.
-                  EnterText(GetTargetElementId(), u"https://google.com"),
+                  EnterText(kOmniboxElementId, u"https://google.com"),
                   CheckChipVisible(false));
 }
 
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(
   RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
                   CheckChipVisible(true),
                   // Type a URL.
-                  EnterText(GetTargetElementId(), u"https://google.com"),
+                  EnterText(kOmniboxElementId, u"https://google.com"),
                   CheckChipVisible(false));
 }
 

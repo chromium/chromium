@@ -394,6 +394,7 @@ if (!is_android) {
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
       sources = [ "ai_mode_page_action_controller_interactive_uitest.cc" ]
       deps = [
+        ":omnibox",
         "//base/test:test_support",
         "//chrome/browser/autocomplete",
         "//chrome/browser/autocomplete:aim_eligibility_service",
