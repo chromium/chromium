@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_ZOOM_VIEW_H_
 
 #include <optional>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,6 +19,10 @@
 #include "ui/views/layout/box_layout_view.h"
 
 class BrowserWindowInterface;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace views {
 class ActionViewController;
@@ -65,13 +71,29 @@ class ActionAppMenuZoomView : public views::BoxLayoutView,
   std::unique_ptr<views::ImageButton> CreateZoomButton(
       actions::ActionItem* zoom_child);
 
+  // Updates the zoom label text and enables/disables the zoom buttons based on
+  // the current zoom percent.
+  void UpdateZoomControls();
+
+  // Updates the fullscreen button's enabled state, tooltip, and accessible name
+  // based on whether fullscreen is supported and whether the window is in
+  // fullscreen mode.
+  void UpdateFullScreenButton();
+
+  // Returns the active web contents, or nullptr if unavailable.
+  content::WebContents* GetActiveWebContents() const;
+
   // Returns the current zoom percentage for the active web contents.
   int GetCurrentZoomPercent() const;
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<views::Label> zoom_label_ = nullptr;
+  raw_ptr<views::ImageButton> zoom_minus_button_ = nullptr;
+  raw_ptr<views::ImageButton> zoom_plus_button_ = nullptr;
+  raw_ptr<views::ImageButton> zoom_fullscreen_button_ = nullptr;
   base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
       zoom_observation_{this};
+  std::vector<base::CallbackListSubscription> button_subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_ZOOM_VIEW_H_

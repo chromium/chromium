@@ -206,6 +206,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuFooterButtonForegroundHovered] = {ui::kColorSysPrimary};
   mixer[kColorAppMenuFooterButtonBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuZoomButtonBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorAppMenuZoomButtonHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuZoomSeparator] = {ui::kColorSysNeutralOutline};
 
   // Signin bubble colors. Main background color uses the same color as the
   // profle menu background.
