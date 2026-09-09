@@ -10,8 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/debug/debugging_buildflags.h"
-#include "base/timer/lap_timer.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/extended_api.h"
@@ -19,6 +17,7 @@
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/partition_alloc_base/timer/lap_timer.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
@@ -29,14 +28,21 @@
 
 #if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(PA_ARCH_CPU_32_BITS) || \
     PA_BUILDFLAG(IS_FUCHSIA)
-// Some tests allocate many GB of memory, which can cause issues on Android and
-// address-space exhaustion for any 32-bit process.
+// Some tests allocate many GB of memory, practical limit on address space
+// exhaustion for any 32-bit process and Android memory constraints.
 #define MEMORY_CONSTRAINED
 #endif
 
-#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-#include "base/allocator/dispatcher/dispatcher.h"
-#include "base/debug/allocation_trace.h"
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+
+class PartitionAllocPerfTestEnvironment : public testing::Environment {
+ public:
+  void SetUp() override { allocator_shim::ConfigurePartitionsForTesting(); }
+};
+
+testing::Environment* const g_env =
+    testing::AddGlobalTestEnvironment(new PartitionAllocPerfTestEnvironment);
 #endif
 
 namespace partition_alloc::internal {
@@ -45,7 +51,7 @@ namespace {
 
 // Change kTimeLimit to something higher if you need more time to capture a
 // trace.
-constexpr ::base::TimeDelta kTimeLimit = ::base::Seconds(2);
+constexpr base::TimeDelta kTimeLimit = base::Seconds(2);
 constexpr int kWarmupRuns = 10000;
 constexpr int kTimeCheckInterval = 100000;
 constexpr size_t kAllocSize = 40;
@@ -74,9 +80,6 @@ enum class AllocatorType {
   kPartitionAlloc,
   kPartitionAllocWithThreadCache, /* NormalBucketDist */
   kPartitionAllocWithThreadCacheAndDenserBucketDist,
-#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-  kPartitionAllocWithAllocationStackTraceRecorder,
-#endif
 };
 
 class Allocator {
@@ -169,49 +172,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   internal::ThreadCacheProcessScopeForTesting scope_;
 };
 
-#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
- public:
-  explicit PartitionAllocatorWithAllocationStackTraceRecorder(
-      bool register_hooks)
-      : register_hooks_(register_hooks) {
-    if (register_hooks_) {
-      dispatcher_.InitializeForTesting(&recorder_);
-    }
-  }
 
-  ~PartitionAllocatorWithAllocationStackTraceRecorder() override {
-    if (register_hooks_) {
-      dispatcher_.ResetForTesting();
-    }
-  }
-
-  void* Alloc(size_t size) override { return alloc_.Alloc(size); }
-
-  void Free(void* data) override {
-    // Even though it's easy to invoke the fast path with
-    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
-    // more common with PA-E.
-    PartitionRoot::FreeInUnknownRoot<partition_alloc::FreeFlags::kNoHooks>(
-        data);
-  }
-  void FreeWithSize(void* data, size_t size) override {
-    // Even though it's easy to invoke the fast path with
-    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
-    // more common with PA-E.
-    PartitionRoot::FreeInUnknownRoot<FreeFlags::kNoHooks |
-                                     FreeFlags::kWithSizeHint>(data,
-                                                               {.size = size});
-  }
-
- private:
-  bool const register_hooks_;
-  PartitionRoot alloc_{PartitionOptions{}};
-  ::base::allocator::dispatcher::Dispatcher& dispatcher_ =
-      ::base::allocator::dispatcher::Dispatcher::GetInstance();
-  ::base::debug::tracer::AllocationTraceRecorder recorder_;
-};
-#endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 
 class TestLoopThread : public base::PlatformThreadForTesting::Delegate {
  public:
@@ -264,7 +225,7 @@ float SingleBucket(Allocator* allocator) {
       reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(kAllocSize));
   size_t allocated_memory = kAllocSize;
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   MemoryAllocationPerfNode* cur = first;
   do {
     auto* next = reinterpret_cast<MemoryAllocationPerfNode*>(
@@ -297,7 +258,7 @@ float SingleBucketWithFree(Allocator* allocator) {
   // Allocate an initial element to make sure the bucket stays set up.
   void* elem = allocator->Alloc(kAllocSize);
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kAllocSize);
     PA_CHECK(cur != nullptr);
@@ -316,7 +277,7 @@ float MultiBucket(Allocator* allocator) {
   MemoryAllocationPerfNode* cur = first;
   size_t allocated_memory = kAllocSize;
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       size_t size = kMultiBucketMinimumSize + (i * kMultiBucketIncrement);
@@ -358,7 +319,7 @@ float MultiBucketWithFree(Allocator* allocator) {
     elems.push_back(cur);
   }
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       void* cur = allocator->Alloc(kMultiBucketMinimumSize +
@@ -388,7 +349,7 @@ float MultiBucketWithFreeWithSize(Allocator* allocator) {
     elems.push_back(cur);
   }
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       void* cur = allocator->Alloc(kMultiBucketMinimumSize +
@@ -410,7 +371,7 @@ float MultiBucketWithFreeWithSize(Allocator* allocator) {
 float DirectMapped(Allocator* allocator) {
   constexpr size_t kSize = 2 * 1000 * 1000;
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kSize);
     PA_CHECK(cur != nullptr);
@@ -433,11 +394,6 @@ std::unique_ptr<Allocator> CreateAllocator(AllocatorType type) {
     case AllocatorType::kPartitionAllocWithThreadCacheAndDenserBucketDist:
       return std::make_unique<PartitionAllocatorWithThreadCache>(
           /*use_denser_bucket_dist=*/true);
-#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-    case AllocatorType::kPartitionAllocWithAllocationStackTraceRecorder:
-      return std::make_unique<
-          PartitionAllocatorWithAllocationStackTraceRecorder>(true);
-#endif
   }
 }
 
@@ -465,11 +421,6 @@ std::string MakeTestName(int thread_count, AllocatorType alloc_type) {
     case AllocatorType::kPartitionAllocWithThreadCacheAndDenserBucketDist:
       alloc_type_str = "PartitionAllocWithThreadCacheAndDenserBucketDist";
       break;
-#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-    case AllocatorType::kPartitionAllocWithAllocationStackTraceRecorder:
-      alloc_type_str = "PartitionAllocWithAllocationStackTraceRecorder";
-      break;
-#endif
   }
 
   return base::TruncatingStringPrintf("%s_%d", alloc_type_str.c_str(),
@@ -532,12 +483,7 @@ INSTANTIATE_TEST_SUITE_P(
             AllocatorType::kSystem,
             AllocatorType::kPartitionAlloc,
             AllocatorType::kPartitionAllocWithThreadCache,
-            AllocatorType::kPartitionAllocWithThreadCacheAndDenserBucketDist
-#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-            ,
-            AllocatorType::kPartitionAllocWithAllocationStackTraceRecorder
-#endif
-            )),
+            AllocatorType::kPartitionAllocWithThreadCacheAndDenserBucketDist)),
     [](const testing::TestParamInfo<
         PartitionAllocMemoryAllocationPerfTest::ParamType>& info) {
       return MakeTestName(std::get<0>(info.param), std::get<1>(info.param));

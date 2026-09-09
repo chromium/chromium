@@ -3328,15 +3328,6 @@ test("base_perftests") {
     "//third_party/google_benchmark",
   ]
 
-  # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
-  if (use_partition_alloc) {
-    sources += [
-      "allocator/partition_allocator/src/partition_alloc/partition_alloc_perftest.cc",
-      "allocator/partition_allocator/src/partition_alloc/partition_lock_perftest.cc",
-    ]
-    deps += [ "allocator/partition_allocator/src/partition_alloc:test_support" ]
-  }
-
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
@@ -3364,6 +3355,36 @@ test("base_perftests") {
 
   if (build_allocation_stack_trace_recorder) {
     sources += [ "debug/allocation_trace_perftest.cc" ]
+  }
+}
+
+test("partition_alloc_perftests") {
+  deps = [
+    "//base/allocator/partition_allocator/src/partition_alloc:perftests",
+    "//testing/gtest:gtest_main",
+    "//testing/perf",
+  ]
+
+  data_deps = [
+    # Needed for isolate script to execute.
+    "//testing:run_perf_test",
+  ]
+
+  if (is_apple) {
+    frameworks = [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
+  }
+
+  if (is_android) {
+    deps += [ "//testing/android/native_test:native_test_native_code" ]
+    shard_timeout = 600
+  }
+
+  if (is_fuchsia) {
+    # Run these performance tests against the actual system.
+    run_as_chromium_system_test = true
   }
 }
 

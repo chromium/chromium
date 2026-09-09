@@ -6,9 +6,10 @@
 
 #include <vector>
 
-#include "base/timer/lap_timer.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/partition_alloc_base/timer/lap_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -17,7 +18,7 @@ namespace partition_alloc::internal {
 namespace {
 
 constexpr int kWarmupRuns = 1;
-constexpr ::base::TimeDelta kTimeLimit = ::base::Seconds(1);
+constexpr base::TimeDelta kTimeLimit = base::Seconds(1);
 constexpr int kTimeCheckInterval = 100000;
 
 constexpr char kMetricPrefixLock[] = "PartitionLock.";
@@ -61,7 +62,7 @@ class Spin : public base::PlatformThreadForTesting::Delegate {
 
  private:
   Lock* lock_;
-  uint32_t* data_ GUARDED_BY(lock_);
+  uint32_t* data_ PA_GUARDED_BY(lock_);
   std::atomic<bool> should_stop_;
   std::atomic<int> started_count_{0};
 };
@@ -69,7 +70,7 @@ class Spin : public base::PlatformThreadForTesting::Delegate {
 }  // namespace
 
 TEST(PartitionLockPerfTest, Simple) {
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   [[maybe_unused]] uint32_t data = 0;
 
   Lock lock;
@@ -106,7 +107,7 @@ TEST(PartitionLockPerfTest, WithCompetingThreads) {
   while (thread_main.started_count() != kThreads) {
   }
 
-  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     lock.Acquire();
     data += 1;

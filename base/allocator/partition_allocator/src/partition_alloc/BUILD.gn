@@ -1244,6 +1244,24 @@ if (build_with_chromium) {
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
+
+  source_set("perftests") {
+    testonly = true
+    sources = [
+      "partition_alloc_perftest.cc",
+      "partition_lock_perftest.cc",
+    ]
+
+    deps = [
+      ":partition_alloc",
+      ":test_support",
+      "//testing/gtest",
+      "//testing/perf",
+    ]
+
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
+  }
 }
 
 source_set("test_support") {
@@ -1255,6 +1273,8 @@ source_set("test_support") {
     "partition_alloc_base/test/gtest_util.h",
     "partition_alloc_base/test/move_only_int.h",
     "partition_alloc_base/threading/platform_thread_for_testing.h",
+    "partition_alloc_base/timer/lap_timer.cc",
+    "partition_alloc_base/timer/lap_timer.h",
     "partition_alloc_for_testing.h",
     "pointers/raw_ptr_counting_impl_for_test.cc",
     "pointers/raw_ptr_counting_impl_for_test.h",
@@ -1278,6 +1298,10 @@ source_set("test_support") {
   if (is_apple) {
     sources += [
       "partition_alloc_base/threading/platform_thread_apple_for_testing.mm",
+    ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "Foundation.framework",
     ]
   }
   if (is_linux || is_chromeos) {
