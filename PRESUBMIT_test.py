@@ -13,9 +13,18 @@ import enum
 import io
 import os.path
 import subprocess
+import sys
 import textwrap
 import unittest
 from unittest import mock
+_CHECKDEPS_PATH = os.path.join(
+    os.path.dirname(__file__), 'buildtools', 'checkdeps')
+sys.path.insert(0, _CHECKDEPS_PATH)
+try:
+    import checkdeps
+    from rules import Rule
+finally:
+    sys.path.pop(0)
 
 import PRESUBMIT
 
@@ -7076,6 +7085,254 @@ class CheckNoDirectRefToAndroidSidePanelCachedFlagTest(unittest.TestCase):
         }
         results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
         self.assertEqual(1, len(results))
+
+
+class CheckUnwantedDependenciesTest(unittest.TestCase):
+
+    def testNoAddedIncludesOrImports(self):
+        """Files modified without adding #include or import statements should
+        return immediately.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('some/path/foo.cc',
+                     ['int x = 42;', 'void bar() {}']),
+            MockFile('some/path/foo.proto',
+                     ['syntax = "proto3";', 'message Foo {}']),
+            MockFile('some/path/Foo.java',
+                     ['public class Foo {', '  void bar() {}', '}']),
+        ]
+        with mock.patch.object(checkdeps, 'DepsChecker') as mock_checker:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_checker.assert_not_called()
+            self.assertEqual(0, len(results))
+
+    def testJavaFileNoImportsSkipsCheckdeps(self):
+        """Java files modified without adding import statements should not
+        invoke checkdeps.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                'android_webview/glue/java/src/com/android/webview/chromium/'
+                'WebViewChromiumFactoryProvider.java',
+                ['// Modified Java code without import statements',
+                 'class FactoryProvider {}']),
+        ]
+        with mock.patch.object(checkdeps, 'DepsChecker') as mock_checker:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_checker.assert_not_called()
+            self.assertEqual(0, len(results))
+
+    def testNonRelevantFiles(self):
+        """Non C++/Proto/Java files should exit early."""
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('some/path/script.py', ['import os']),
+            MockFile('docs/README.md', ['# Documentation']),
+        ]
+        with mock.patch.object(checkdeps, 'DepsChecker') as mock_checker:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_checker.assert_not_called()
+            self.assertEqual(0, len(results))
+
+    def testDisallowedCppInclude(self):
+        """Adding a disallowed #include statement should still trigger a
+        presubmit error.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.cc',
+                     ['#include "chrome/browser/foo.h"']),
+        ]
+        results = PRESUBMIT.CheckUnwantedDependencies(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+
+    def testIndentedCppInclude(self):
+        """Indented or spaced preprocessor directives should still be
+        detected.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.cc',
+                     ['   #include "chrome/browser/foo.h"',
+                      '   #  include "chrome/browser/bar.h"']),
+        ]
+        results = PRESUBMIT.CheckUnwantedDependencies(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+
+    def testAllowedCppInclude(self):
+        """Adding an allowed #include statement should pass cleanly."""
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.cc',
+                     ['#include "base/memory/raw_ptr.h"']),
+        ]
+        results = PRESUBMIT.CheckUnwantedDependencies(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testAllowedJavaImport(self):
+        """Adding a standard Java import statement should pass cleanly
+        through checkdeps.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/android/java/src/org/chromium/base/Foo.java',
+                     ['import java.util.List;']),
+        ]
+        results = PRESUBMIT.CheckUnwantedDependencies(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testProtoImportQuotes(self):
+        """Proto import statements with single quotes should be recognized
+        and passed to checkdeps.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.proto',
+                     ['import \'chrome/browser/sync_entity.proto\';']),
+        ]
+        disallow_rule = [
+            ('base/foo.proto', Rule.DISALLOW,
+             'Illegal include: chrome/browser/sync_entity.proto')
+        ]
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedProtoImports',
+                               return_value=disallow_rule) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once()
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
+
+    def testIncludeNext(self):
+        """#include_next directives should be recognized as candidate
+        includes and passed to checkdeps.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.cc',
+                     ['#include_next "chrome/browser/foo.h"']),
+        ]
+        disallow_rule = [
+            ('base/foo.cc', Rule.DISALLOW,
+             'Illegal include: chrome/browser/foo.h')
+        ]
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedCppIncludes',
+                               return_value=disallow_rule) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once()
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
+
+    def testProtoImportPublicWithoutSpace(self):
+        """Proto imports without whitespace before quotes (e.g.
+        import public"foo.proto") should match.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.proto',
+                     ['import public"chrome/browser/foo.proto";']),
+        ]
+        disallow_rule = [
+            ('base/foo.proto', Rule.DISALLOW,
+             'Illegal include: chrome/browser/foo.proto')
+        ]
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedProtoImports',
+                               return_value=disallow_rule) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once()
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
+
+    def testProtoImportWithoutSpace(self):
+        """Proto imports without whitespace directly after import (e.g.
+        import"foo.proto") should match.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.proto',
+                     ['import"chrome/browser/foo.proto";']),
+        ]
+        disallow_rule = [
+            ('base/foo.proto', Rule.DISALLOW,
+             'Illegal include: chrome/browser/foo.proto')
+        ]
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedProtoImports',
+                               return_value=disallow_rule) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once()
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
+
+    def testDisallowedProtoImport(self):
+        """Adding a disallowed proto import statement should trigger a
+        presubmit error.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/foo.proto',
+                     ['import "chrome/browser/foo.proto";']),
+        ]
+        results = PRESUBMIT.CheckUnwantedDependencies(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+
+    def testDisallowedJavaImport(self):
+        """Adding a disallowed Java import statement should trigger a
+        presubmit error.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                'android_webview/glue/java/src/com/android/webview/chromium/'
+                'WebViewChromiumFactoryProvider.java',
+                ['import org.chromium.content.app.ContentMain;']),
+        ]
+        results = PRESUBMIT.CheckUnwantedDependencies(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+
+    def testJavaImportWithDollar(self):
+        """Java imports referencing identifiers with $ should be recognized
+        and passed to checkdeps.
+        """
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/android/java/src/org/chromium/base/Foo.java',
+                     ['import org.chromium.chrome.browser.Foo$Bar;',
+                      'import $Inner;']),
+        ]
+        disallow_rule = [
+            ('base/android/java/src/org/chromium/base/Foo.java',
+             Rule.DISALLOW,
+             'Illegal import: org.chromium.chrome.browser.Foo$Bar')
+        ]
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedJavaImports',
+                               return_value=disallow_rule) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once()
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
 
 
 if __name__ == '__main__':

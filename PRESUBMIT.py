@@ -3452,13 +3452,37 @@ def CheckUnwantedDependencies(input_api, output_api):
     change. Breaking - rules is an error, breaking ! rules is a
     warning.
     """
-    # Return early if no relevant file types were modified.
-    for f in input_api.AffectedFiles():
-        path = f.LocalPath()
-        if (_IsCPlusPlusFile(input_api, path) or _IsProtoFile(input_api, path)
-                or _IsJavaFile(input_api, path)):
-            break
-    else:
+    # Gating regexes for directive detection. Note that block comments
+    # preceding a directive on the same line (e.g. /* comment */ #include)
+    # or between tokens (e.g. import/* comment */foo) are not matched
+    # because checkdeps itself uses line-oriented prefix regexes requiring
+    # standard token separation (e.g. r'^import\s+').
+    cpp_include_re = input_api.re.compile(
+        r'^\s*#\s*(?:include(?:_next)?|import)\b')
+    proto_import_re = input_api.re.compile(
+        r'^\s*import\b\s*(?:public\s*|weak\s*)?["\']')
+    java_import_re = input_api.re.compile(
+        r'^\s*import\s+(?:static\s+)?[\w\.\$]+')
+
+    added_includes = []
+    added_imports = []
+    added_java_imports = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        local_path = f.LocalPath()
+        if _IsCPlusPlusFile(input_api, local_path):
+            lines = [line for _, line in f.ChangedContents()]
+            if any(cpp_include_re.search(line) for line in lines):
+                added_includes.append([f.AbsoluteLocalPath(), lines])
+        elif _IsProtoFile(input_api, local_path):
+            lines = [line for _, line in f.ChangedContents()]
+            if any(proto_import_re.search(line) for line in lines):
+                added_imports.append([f.AbsoluteLocalPath(), lines])
+        elif _IsJavaFile(input_api, local_path):
+            lines = [line for _, line in f.ChangedContents()]
+            if any(java_import_re.search(line) for line in lines):
+                added_java_imports.append([f.AbsoluteLocalPath(), lines])
+
+    if not (added_includes or added_imports or added_java_imports):
         return []
 
     import sys
@@ -3477,20 +3501,6 @@ def CheckUnwantedDependencies(input_api, output_api):
         # Restore sys.path to what it was before.
         sys.path = original_sys_path
 
-    added_includes = []
-    added_imports = []
-    added_java_imports = []
-    for f in input_api.AffectedFiles():
-        if _IsCPlusPlusFile(input_api, f.LocalPath()):
-            changed_lines = [line for _, line in f.ChangedContents()]
-            added_includes.append([f.AbsoluteLocalPath(), changed_lines])
-        elif _IsProtoFile(input_api, f.LocalPath()):
-            changed_lines = [line for _, line in f.ChangedContents()]
-            added_imports.append([f.AbsoluteLocalPath(), changed_lines])
-        elif _IsJavaFile(input_api, f.LocalPath()):
-            changed_lines = [line for _, line in f.ChangedContents()]
-            added_java_imports.append([f.AbsoluteLocalPath(), changed_lines])
-
     deps_checker = checkdeps.DepsChecker(input_api.PresubmitLocalPath())
 
     error_descriptions = []
@@ -3498,38 +3508,41 @@ def CheckUnwantedDependencies(input_api, output_api):
     error_subjects = set()
     warning_subjects = set()
 
-    for path, rule_type, rule_description in deps_checker.CheckAddedCppIncludes(
-            added_includes):
-        path = input_api.os_path.relpath(path, input_api.PresubmitLocalPath())
-        description_with_path = '%s\n    %s' % (path, rule_description)
-        if rule_type == Rule.DISALLOW:
-            error_descriptions.append(description_with_path)
-            error_subjects.add('#includes')
-        else:
-            warning_descriptions.append(description_with_path)
-            warning_subjects.add('#includes')
+    if added_includes:
+        for path, rule_type, rule_description in deps_checker.CheckAddedCppIncludes(
+                added_includes):
+            path = input_api.os_path.relpath(path, input_api.PresubmitLocalPath())
+            description_with_path = '%s\n    %s' % (path, rule_description)
+            if rule_type == Rule.DISALLOW:
+                error_descriptions.append(description_with_path)
+                error_subjects.add('#includes')
+            else:
+                warning_descriptions.append(description_with_path)
+                warning_subjects.add('#includes')
 
-    for path, rule_type, rule_description in deps_checker.CheckAddedProtoImports(
-            added_imports):
-        path = input_api.os_path.relpath(path, input_api.PresubmitLocalPath())
-        description_with_path = '%s\n    %s' % (path, rule_description)
-        if rule_type == Rule.DISALLOW:
-            error_descriptions.append(description_with_path)
-            error_subjects.add('imports')
-        else:
-            warning_descriptions.append(description_with_path)
-            warning_subjects.add('imports')
+    if added_imports:
+        for path, rule_type, rule_description in deps_checker.CheckAddedProtoImports(
+                added_imports):
+            path = input_api.os_path.relpath(path, input_api.PresubmitLocalPath())
+            description_with_path = '%s\n    %s' % (path, rule_description)
+            if rule_type == Rule.DISALLOW:
+                error_descriptions.append(description_with_path)
+                error_subjects.add('imports')
+            else:
+                warning_descriptions.append(description_with_path)
+                warning_subjects.add('imports')
 
-    for path, rule_type, rule_description in deps_checker.CheckAddedJavaImports(
-            added_java_imports, _JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS):
-        path = input_api.os_path.relpath(path, input_api.PresubmitLocalPath())
-        description_with_path = '%s\n    %s' % (path, rule_description)
-        if rule_type == Rule.DISALLOW:
-            error_descriptions.append(description_with_path)
-            error_subjects.add('imports')
-        else:
-            warning_descriptions.append(description_with_path)
-            warning_subjects.add('imports')
+    if added_java_imports:
+        for path, rule_type, rule_description in deps_checker.CheckAddedJavaImports(
+                added_java_imports, _JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS):
+            path = input_api.os_path.relpath(path, input_api.PresubmitLocalPath())
+            description_with_path = '%s\n    %s' % (path, rule_description)
+            if rule_type == Rule.DISALLOW:
+                error_descriptions.append(description_with_path)
+                error_subjects.add('imports')
+            else:
+                warning_descriptions.append(description_with_path)
+                warning_subjects.add('imports')
 
     results = []
     if error_descriptions:
