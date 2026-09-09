@@ -48,6 +48,10 @@ bool WtsTerminalMonitor::LookupTerminalId(uint32_t session_id,
     ::WTSFreeMemory(working_directory);
   };
 
+  if (!working_directory || bytes < sizeof(wchar_t)) {
+    return false;
+  }
+
   std::string id;
   if (!base::WideToUTF8(working_directory, (bytes / sizeof(wchar_t)) - 1,
                         &id)) {
