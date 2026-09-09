@@ -115,7 +115,7 @@ MouseEventWithHitTestResults PerformMouseEventHitTest(
 bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
                                       const LocalFrame& frame) {
   // Under certain circumstances, we discard input events to a recently moved
-  // cross-origin iframe:
+  // iframe that is cross-origin to any of its ancestor frames:
   //
   // - If javascript in the frame's context is using
   //   IntersectionObserver V2 to track the visibility of an element, we
@@ -123,7 +123,7 @@ bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
   //   preventing mis-clicks. This behavior was added by:
   //   https://chromium-review.googlesource.com/c/chromium/src/+/1686824
   //
-  // - The feature flag kDiscardEventsToRecentlyMovedFrames expands this
+  // - The feature flag kDiscardInputEventsToRecentlyMovedFrames expands this
   //   behavior to all cross-origin iframes, regardless of whether they are
   //   using IntersectionObserver V2.
   //
@@ -133,9 +133,8 @@ bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
   // event.GetModifiers(). For in-process iframes, frame movement is tracked
   // during lifecycle updates, in FrameView::UpdateViewportIntersection, and
   // propagated via FrameView::RectInParentIsStable.
-
   bool should_discard = false;
-  if (frame.IsCrossOriginToOutermostMainFrame()) {
+  if (frame.HasCrossOriginAncestorFrame()) {
     if (frame.NeedsOcclusionTracking()) {
       should_discard =
           (event.GetModifiers() &

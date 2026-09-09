@@ -180,6 +180,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // See |IsCrossOriginToNearestMainFrame| for important notes.
   bool IsCrossOriginToParentOrOuterDocument() const;
 
+  // Returns true if this frame is cross-origin to any of its ancestors up to
+  // the outermost main frame.
+  bool HasCrossOriginAncestorFrame() const;
+
   FrameOwner* Owner() const;
   void SetOwner(FrameOwner*);
   HTMLFrameOwnerElement* DeprecatedLocalOwner() const;

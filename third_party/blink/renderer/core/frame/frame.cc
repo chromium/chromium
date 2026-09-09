@@ -238,6 +238,26 @@ bool Frame::IsCrossOriginToParentOrOuterDocument() const {
   return !security_origin->CanAccess(parent_security_origin);
 }
 
+bool Frame::HasCrossOriginAncestorFrame() const {
+  DCHECK(GetSecurityContext());
+  if (IsInFencedFrameTree()) {
+    return true;
+  }
+  if (IsMainFrame()) {
+    return false;
+  }
+  const SecurityOrigin* security_origin =
+      GetSecurityContext()->GetSecurityOrigin();
+  for (const Frame* f = this; f; f = f->Tree().Parent()) {
+    const SecurityOrigin* ancestor_security_origin =
+        f->GetSecurityContext()->GetSecurityOrigin();
+    if (!security_origin->CanAccess(ancestor_security_origin)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 HTMLFrameOwnerElement* Frame::DeprecatedLocalOwner() const {
   return DynamicTo<HTMLFrameOwnerElement>(owner_.Get());
 }

@@ -3737,6 +3737,82 @@ TEST_F(EventHandlerSimTest, DiscardEventsToRecentlyMovedIframe) {
               WebFeature::kInputEventToRecentlyMovedIframeMistakenlyDiscarded));
 }
 
+TEST_F(EventHandlerSimTest,
+       DiscardEventsToRecentlyMovedNestedSameOriginIframe) {
+  base::FieldTrialParams field_trial_params;
+  field_trial_params["time_ms"] = "500";
+  field_trial_params["distance_factor"] = "0.5";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kDiscardInputEventsToRecentlyMovedFrames, field_trial_params);
+  // To make the new `time_ms` and `distance_factor` affect the test,
+  // reset the cached values inside FrameVisualProperties.
+  FrameVisualProperties::ResetForTesting();
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest intermediate_resource("https://cross-origin.com/intermediate.html",
+                                   "text/html");
+  SimRequest inner_resource("https://example.com/inner.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0 } iframe { border: none }</style>
+    <iframe id='outer' src='https://cross-origin.com/intermediate.html'
+            style='position:absolute;top:0;left:0;width:500px;height:300px'>
+    </iframe>
+  )HTML");
+  intermediate_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0 } iframe { border: none }</style>
+    <iframe id='inner' src='https://example.com/inner.html'
+            style='position:absolute;top:0;left:0;width:200px;height:100px'>
+    </iframe>
+  )HTML");
+  inner_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Hello, world!</div>
+  )HTML");
+
+  // The first BeginFrame() sets the last known position of each iframe. The
+  // second BeginFrame(), after a delay with no layout changes, will mark the
+  // iframes as having a stable position.
+  Compositor().BeginFrame();
+  GetDocument().GetFrame()->View()->ScheduleAnimation();
+  Compositor().BeginFrame(0.5);
+
+  auto* outer = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("outer")));
+  ASSERT_TRUE(outer);
+  Document* intermediate_document = outer->contentDocument();
+  ASSERT_TRUE(intermediate_document);
+  Element* inner = intermediate_document->getElementById(AtomicString("inner"));
+  ASSERT_TRUE(inner);
+
+  // The inner iframe is same-origin with the main frame, but its parent is
+  // cross-origin. Moving the inner iframe past the threshold should cause
+  // events to be discarded.
+  inner->SetInlineStyleProperty(CSSPropertyID::kLeft, "200px");
+  Compositor().BeginFrame();
+  base::TimeTicks event_time =
+      Compositor().LastFrameTime() + base::Milliseconds(400);
+
+  WebInputEventResult event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseDown, gfx::PointF(250, 50),
+                        gfx::PointF(250, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::Modifiers::kLeftButtonDown, event_time));
+  EXPECT_EQ(event_result, WebInputEventResult::kHandledSuppressed);
+  event_result =
+      GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+          WebMouseEvent(WebInputEvent::Type::kMouseUp, gfx::PointF(250, 50),
+                        gfx::PointF(250, 50),
+                        WebPointerProperties::Button::kLeft, 1,
+                        WebInputEvent::kNoModifiers, event_time));
+  EXPECT_EQ(event_result, WebInputEventResult::kHandledSuppressed);
+}
+
 // Tests that click.pointerId is valid for a gesture tap for which no low-level
 // pointer events (pointerdown, pointermove, pointerup etc) are sent from the
 // browser to the renderer because of absence of relevant event listeners.
