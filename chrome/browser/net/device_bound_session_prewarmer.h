@@ -17,15 +17,18 @@
 #include "url/gurl.h"
 
 // Helper class to proactively refresh (pre-warm) Device Bound Session
-// Credentials (DBSC) cookies for a specific HTTPS URL.
+// Credentials (DBSC) cookies.
 //
 // It triggers the pre-warming process when `Start()` is called.
 // After the first trigger, it uses the Mojo service return value
 // (`earliest_next_refresh_time`) to schedule subsequent pre-warming.
 //
-// If `earliest_next_refresh_time` is null it will not schedule a new
-// pre-warming, unless there are transient errors, in which case it will use
-// the minimum interval.
+// If the URL provider callback returns an empty or invalid URL, it will retry
+// prewarming at a long interval up to a maximum number of consecutive failures.
+//
+// If `earliest_next_refresh_time` is null it will not
+// schedule a new pre-warming, unless there are transient errors, in which case
+// it will use the minimum interval.
 //
 // If `earliest_next_refresh_time` is in the past or shorter than the minimum
 // interval, it will schedule the next pre-warming at the minimum interval to
@@ -38,9 +41,11 @@ class DeviceBoundSessionPrewarmer {
   using SessionManagerProvider =
       base::RepeatingCallback<network::mojom::DeviceBoundSessionManager*()>;
 
-  // `prewarm_url` must be a valid HTTPS URL.
+  // A callback to retrieve the Default Search Engine URL for which to pre-warm
+  // the session.
+  using PrewarmUrlProvider = base::RepeatingCallback<GURL()>;
+
   explicit DeviceBoundSessionPrewarmer(
-      GURL prewarm_url,
       SessionManagerProvider session_manager_provider);
   DeviceBoundSessionPrewarmer(const DeviceBoundSessionPrewarmer&) = delete;
   DeviceBoundSessionPrewarmer& operator=(const DeviceBoundSessionPrewarmer&) =
@@ -49,15 +54,13 @@ class DeviceBoundSessionPrewarmer {
 
   // Starts the pre-warmer. The first execution will be immediate.
   // If the pre-warmer is already running, it will be stopped and restarted.
-  void Start(bool is_startup_prewarm);
+  void Start(PrewarmUrlProvider url_provider_callback, bool is_startup_prewarm);
 
   // Stops the pre-warmer.
   void Stop();
 
-  const GURL& prewarm_url() const { return prewarm_url_; }
-
  private:
-  // Calls the Mojo service if available or retries again after a timeout.
+  // Evaluates the URL provider callback and calls the Mojo interface.
   void DoPrewarm();
 
   // Callback from network service containing prewarming results.
@@ -69,9 +72,10 @@ class DeviceBoundSessionPrewarmer {
   static bool IsTransientError(
       net::device_bound_sessions::RefreshResult result);
 
-  const GURL prewarm_url_;
   const SessionManagerProvider session_manager_provider_;
   base::OneShotTimer timer_;
+  PrewarmUrlProvider url_provider_callback_;
+  int invalid_url_consecutive_retries_ = 0;
 
   // Whether the current pre-warming is the startup pre-warming (from Start())
   // or a subsequent scheduled pre-warming.

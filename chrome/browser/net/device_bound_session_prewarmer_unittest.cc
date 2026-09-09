@@ -41,7 +41,7 @@ class DeviceBoundSessionPrewarmerTest : public testing::Test {
 
 TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaTrue) {
   base::HistogramTester histogram_tester;
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(2)
@@ -52,7 +52,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaTrue) {
         std::move(callback).Run(results, base::Time::Now() + base::Seconds(90));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // First callback runs immediately or on first timer task.
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -76,7 +77,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaTrue) {
 
 TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaFalse) {
   base::HistogramTester histogram_tester;
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(2)
@@ -87,7 +88,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaFalse) {
         std::move(callback).Run(results, base::Time::Now() + base::Seconds(90));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/false);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/false);
 
   // First callback runs immediately or on first timer task.
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -108,7 +110,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsStartupUmaFalse) {
   prewarmer.Stop();
 }
 TEST_F(DeviceBoundSessionPrewarmerTest, InvokesMojoOnTimerTick) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(3)
@@ -120,7 +122,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, InvokesMojoOnTimerTick) {
 
   // Starts recurring timer dynamically. First call happens immediately (or next
   // tick).
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   task_environment_.FastForwardBy(base::Seconds(180));
 
@@ -129,7 +132,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, InvokesMojoOnTimerTick) {
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        SchedulesAfterMinIntervalIfTimeTooSoon) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(2)
@@ -140,7 +143,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
         std::move(callback).Run({}, base::Time::Now() + base::Seconds(10));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/false);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/false);
 
   // Prewarm is invoked at t=0.
   // Fast forward by 10s: Prewarmer should NOT execute yet because it is capped
@@ -152,7 +156,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, StopsInvokingWhenStopped) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   // Only called once before Stop()
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
@@ -163,7 +167,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, StopsInvokingWhenStopped) {
         std::move(callback).Run({}, base::Time::Now() + base::Seconds(60));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // Fast forward by 30 seconds. One invocation happens at t=0.
   task_environment_.FastForwardBy(base::Seconds(30));
@@ -176,7 +181,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, StopsInvokingWhenStopped) {
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        SchedulesAfterDefaultIntervalIfTimeInPast) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(3)
       .WillRepeatedly([&](const GURL& url,
@@ -186,7 +191,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
         std::move(callback).Run({}, base::Time::Now() - base::Seconds(1));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // 120 seconds, expecting t=0, t=60, t=120 (since time is in the past,
   // prewarmer should execute every 60 seconds).
@@ -200,18 +206,18 @@ TEST_F(DeviceBoundSessionPrewarmerTest, GracefulOnMissingSessionManager) {
             return nullptr;
           });
 
-  DeviceBoundSessionPrewarmer prewarmer(target_url_,
-                                        missing_session_manager_provider);
+  DeviceBoundSessionPrewarmer prewarmer(missing_session_manager_provider);
 
   // Prewarmer shouldn't crash.
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // Skip time; this should safely early-return.
   task_environment_.FastForwardBy(base::Seconds(60));
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, CallbackNotInvokedAfterStop) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   network::mojom::DeviceBoundSessionManager::PrewarmSessionsForUrlCallback
       saved_callback;
@@ -224,7 +230,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, CallbackNotInvokedAfterStop) {
         saved_callback = std::move(callback);
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(saved_callback);
   prewarmer.Stop();
@@ -244,7 +251,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, HandlesNetworkServiceDisconnect) {
           [&]() -> network::mojom::DeviceBoundSessionManager* {
             return mock_manager.get();
           });
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, std::move(provider));
+  DeviceBoundSessionPrewarmer prewarmer(std::move(provider));
 
   EXPECT_CALL(*mock_manager, PrewarmSessionsForUrl(target_url_, _))
       .WillOnce([&](const GURL& url,
@@ -255,7 +262,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, HandlesNetworkServiceDisconnect) {
         std::move(callback).Run({}, base::Time::Now() + base::Seconds(90));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
   task_environment_.RunUntilIdle();
 
   // Simulate network service disconnect by destroying the mock manager.
@@ -283,7 +291,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, HandlesNetworkServiceDisconnect) {
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        RescheduleIfRefreshTimeProvidedAndNoTransientErrors) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(2)
@@ -294,7 +302,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
                                 base::Time::Now() + base::Seconds(60));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // Provided time but also no errors in result.
   task_environment_.FastForwardBy(base::Seconds(60));
@@ -303,7 +312,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 TEST_F(
     DeviceBoundSessionPrewarmerTest,
     ReschedulesUsingDefaultIntervalIfNoRefreshTimeProvidedAndTransientError) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(2)
@@ -314,7 +323,8 @@ TEST_F(
                                 std::nullopt);
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // Since a transient error was provided, even without a next refresh time,
   // we should call the prewarmer again after the default interval (60s).
@@ -323,7 +333,7 @@ TEST_F(
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        ReschedulesUsingDefaultIntervalOnTransientErrors) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .Times(2)
@@ -333,7 +343,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
         std::move(callback).Run({RefreshResult::kServerError}, std::nullopt);
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // Since a transient error was provided, even without a next refresh time,
   // we should call the prewarmer again after the default interval (60s).
@@ -342,7 +353,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        DoesNotRescheduleIfNoRefreshTimeAndNoTransientErrors) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .WillOnce([&](const GURL& url,
@@ -351,7 +362,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
         std::move(callback).Run({RefreshResult::kFatalError}, std::nullopt);
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   // No earliest_next_refresh_time provided and no transient errors in result.
   // Prewarmer should not be rescheduled.
@@ -359,7 +371,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, StartTwice) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
 
   network::mojom::DeviceBoundSessionManager::PrewarmSessionsForUrlCallback
       saved_callback_1;
@@ -384,8 +396,10 @@ TEST_F(DeviceBoundSessionPrewarmerTest, StartTwice) {
         // Do nothing in the final callback.
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   task_environment_.RunUntilIdle();
 
@@ -408,7 +422,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, StartTwice) {
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
@@ -420,7 +434,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
                                 base::Time::Now() + base::Seconds(90));
       });
 
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
 
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
@@ -440,7 +455,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        DoesNotRetainStartupModeWhenResultsAreEmpty) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
@@ -460,7 +475,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
       });
 
   // First call (empty results).
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 0);
@@ -477,7 +493,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, LogsMultipleResultsCorrectly) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
@@ -493,7 +509,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsMultipleResultsCorrectly) {
       });
 
   // First call (2 results, both Startup).
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 2);
@@ -521,7 +538,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsMultipleResultsCorrectly) {
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
-  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
@@ -534,7 +551,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
       });
 
   // First Start().
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 1);
@@ -549,7 +567,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 1);
 
   // Restart via Start() again, should reset mode to Startup.
-  prewarmer.Start(/*is_startup_prewarm=*/true);
+  prewarmer.Start(base::BindLambdaForTesting([&]() { return target_url_; }),
+                  /*is_startup_prewarm=*/true);
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Net.DeviceBoundSessions.PrewarmResult.Startup", 2);
@@ -557,19 +576,37 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ResetStartupModeOnRestart) {
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled", 1);
 }
 
-#if GTEST_HAS_DEATH_TEST
-using DeviceBoundSessionPrewarmerDeathTest = DeviceBoundSessionPrewarmerTest;
-TEST_F(DeviceBoundSessionPrewarmerDeathTest, CrashesOnInvalidUrl) {
-  EXPECT_DEATH_IF_SUPPORTED(
-      DeviceBoundSessionPrewarmer(GURL("invalidurl"), GetManagerProvider()),
-      "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      DeviceBoundSessionPrewarmer(GURL("http://google.com"),
-                                  GetManagerProvider()),
-      "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      DeviceBoundSessionPrewarmer(GURL("https://"), GetManagerProvider()), "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      DeviceBoundSessionPrewarmer(GURL(""), GetManagerProvider()), "");
+class DeviceBoundSessionPrewarmerWithInvalidUrlTest
+    : public DeviceBoundSessionPrewarmerTest,
+      public ::testing::WithParamInterface<GURL> {};
+
+INSTANTIATE_TEST_SUITE_P(DeviceBoundSessionPrewarmerWithInvalidUrlInstantiation,
+                         DeviceBoundSessionPrewarmerWithInvalidUrlTest,
+                         ::testing::Values(GURL(""),
+                                           GURL("invalidurl"),
+                                           GURL("http://google.com")));
+
+TEST_P(DeviceBoundSessionPrewarmerWithInvalidUrlTest,
+       RetriesMaxTimesUsingLongIntervalOnInvalidUrl) {
+  DeviceBoundSessionPrewarmer prewarmer(GetManagerProvider());
+
+  // Should not invoke mojo on empty/invalid URL.
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl).Times(0);
+
+  int url_provider_calls = 0;
+  prewarmer.Start(base::BindLambdaForTesting([&]() {
+                    url_provider_calls++;
+                    return GetParam();
+                  }),
+                  /*is_startup_prewarm=*/true);
+
+  // Initial call happens immediately.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(url_provider_calls, 1);
+
+  // Fast forward by 120 minutes should trigger the prewarmer at most
+  // kMaxInvalidUrlRetries + 1 times.
+  task_environment_.FastForwardBy(base::Minutes(120));
+
+  EXPECT_EQ(url_provider_calls, 6);
 }
-#endif

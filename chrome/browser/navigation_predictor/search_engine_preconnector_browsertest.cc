@@ -1570,40 +1570,4 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDeviceBoundSessionBrowserTest,
   preconnector->StopPreconnecting();
   EXPECT_FALSE(preconnector->HasDeviceBoundSessionPrewarmerForTesting());
 }
-
-IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDeviceBoundSessionBrowserTest,
-                       DoesNotPrewarmWhenDseIsHttp) {
-  TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
-  ASSERT_TRUE(model);
-
-  TemplateURLData data;
-  data.SetShortName(u"http_engine");
-  data.SetKeyword(data.short_name());
-  data.SetURL("http://example.com/search?q={searchTerms}");
-  data.preconnect_to_search_url = true;
-
-  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
-  ASSERT_TRUE(template_url);
-  model->SetUserSelectedDefaultSearchProvider(template_url);
-
-  auto mock_manager =
-      std::make_unique<network::MockDeviceBoundSessionManager>();
-  EXPECT_CALL(*mock_manager, PrewarmSessionsForUrl).Times(0);
-
-  auto* preconnector =
-      SearchEnginePreconnectorKeyedServiceFactory::GetForProfile(
-          browser()->GetProfile());
-  ASSERT_TRUE(preconnector);
-  preconnector->StopPreconnecting();
-
-  browser()
-      ->GetProfile()
-      ->GetDefaultStoragePartition()
-      ->OverrideDeviceBoundSessionManagerForTesting(std::move(mock_manager));
-
-  preconnector->StartPreconnecting(/*with_startup_delay=*/false);
-
-  EXPECT_FALSE(preconnector->HasDeviceBoundSessionPrewarmerForTesting());
-}
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
