@@ -26,17 +26,22 @@ bool ParseCertificatesFile(std::string_view certs_input,
                            Pinsets* pinsets,
                            base::Time* timestamp);
 
-// Parses the |hsts_json| and |pins_json| strings; copies the items under the
-// "entries" key to |entries| and the pinsets under the "pinsets" key to
-// |pinsets|.
+// Parses the `hsts_json` string; copies the items under the "entries" key to
+// `entries`.
 //
 // More info on the format can be found in
 // net/http/transport_security_state_static.json
-bool ParseJSON(std::string_view hsts_json,
-               std::string_view pins_json,
-               TransportSecurityStateEntries* entries,
-               PinEntries* pin_entries,
-               Pinsets* pinsets);
+bool ParseHstsJson(std::string_view hsts_json,
+                   TransportSecurityStateEntries* entries);
+
+// Parses the `pins_json` string; copies the pins under the "entries" key to
+// `pin_entries` and the pinsets under the "pinsets" key to `pinsets`.
+//
+// More info on the format can be found in
+// net/http/transport_security_state_static_pins.json
+bool ParsePkpJson(std::string_view pins_json,
+                  PinEntries* pin_entries,
+                  Pinsets* pinsets);
 
 }  // namespace net::transport_security_state
 

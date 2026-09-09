@@ -282,8 +282,8 @@ int main(int argc, char* argv[]) {
   base::Time timestamp;
 
   if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
-      !ParseJSON(hsts_json_input, pins_json_input, &entries, &pin_entries,
-                 &pinsets)) {
+      !ParseHstsJson(hsts_json_input, &entries) ||
+      !ParsePkpJson(pins_json_input, &pin_entries, &pinsets)) {
     LOG(ERROR) << "Error while parsing the input files.";
     return 1;
   }
