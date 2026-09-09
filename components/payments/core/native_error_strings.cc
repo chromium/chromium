@@ -302,5 +302,76 @@ const char kWebAuthnExtensionsNotSupported[] =
     "The \"secure-payment-confirmation\" method does not support the "
     "provided WebAuthn extension(s).";
 
+const char kPaymentMethodManifestNotDictionary[] =
+    "Payment method manifest must be a JSON dictionary.";
+
+const char kWebAppManifestNotDictionary[] =
+    "Web app manifest must be a JSON dictionary.";
+
+const char kManifestMemberNotList[] = "\"$1\" must be a list.";
+
+const char kManifestMemberTooManyEntries[] =
+    "\"$1\" must contain at most $2 entries.";
+
+const char kManifestMemberEntriesNotUtf8[] =
+    "Each entry in \"$1\" must be UTF8 string.";
+
+const char kInvalidDefaultApplicationUrl[] =
+    "\"$1\" entry in \"$2\" is not a valid URL with HTTPS scheme and is not a "
+    "valid localhost URL with HTTP scheme.";
+
+const char kSupportedOriginsNotList[] = "\"$1\" must be a list of origins.";
+
+const char kSupportedOriginEntriesNotUtf8[] =
+    "Each entry in \"$1\" must be UTF8 string that starts with \"$2\" or "
+    "\"$3\" (for localhost).";
+
+const char kInvalidSupportedOrigin[] =
+    "\"$1\" entry in \"$2\" is not a valid origin with HTTPS scheme and is not "
+    "a valid localhost origin with HTTP scheme.";
+
+const char kRelatedApplicationsNotListOfDictionaries[] =
+    "\"$1\" must be a list of dictionaries.";
+
+const char kRelatedApplicationsTooManyEntries[] =
+    "\"$1\" must contain at most $2 entries with \"$3\": \"$4\".";
+
+const char kRelatedApplicationMissingMembers[] =
+    "Each \"$1\": \"$2\" entry in \"$3\" must contain \"$4\", \"$5\", and "
+    "\"$6\".";
+
+const char kManifestMemberNotNonEmptyAsciiString[] =
+    "\"$1\" must be a non-empty ASCII string.";
+
+const char kManifestMemberNotNumberString[] =
+    "\"$1\" must be a string convertible into a number.";
+
+const char kFingerprintsNotNonEmptyList[] =
+    "\"$1\" must be a non-empty list of at most $2 items.";
+
+const char kInvalidFingerprintEntry[] =
+    "Each entry in \"$1\" must be a dictionary with \"type\": \"sha256_cert\" "
+    "and a non-empty ASCII string \"value\".";
+
+const char kServiceWorkerNotDictionary[] =
+    "\"$1\" must be a dictionary in your web app manifest.";
+
+const char kServiceWorkerSrcNotNonEmptyUtf8String[] =
+    "\"$1\".\"$2\" must be a non-empty UTF8 string.";
+
+const char kSupportedDelegationsNotNonEmptyList[] =
+    "\"$1.$2\" must be a non-empty list of at most $3 entries.";
+
+const char kDelegationNotPrintableAsciiString[] =
+    "Entries in delegation list must be printable ASCII strings.";
+
+const char kInvalidDelegationValue[] =
+    "\"$1\" is not a valid value in \"$2\" array.";
+
+const char kPaymentMemberMissingSupportedDelegations[] =
+    "\"$1\" member must have \"$2\" list";
+
+const char kPaymentMemberNotDictionary[] = "\"$1\" member must be a dictionary";
+
 }  // namespace errors
 }  // namespace payments

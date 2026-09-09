@@ -338,6 +338,83 @@ extern const char kInternalError[];
 // WebAuthn extensions.
 extern const char kWebAuthnExtensionsNotSupported[];
 
+// The errors below are reported by PaymentManifestParser. Placeholders are
+// substituted with base::ReplaceStringPlaceholders().
+
+// A payment method manifest that is not a JSON dictionary.
+extern const char kPaymentMethodManifestNotDictionary[];
+
+// A web app manifest that is not a JSON dictionary.
+extern const char kWebAppManifestNotDictionary[];
+
+// $1: the manifest member that must be a list.
+extern const char kManifestMemberNotList[];
+
+// $1: the manifest member, $2: its maximum number of entries.
+extern const char kManifestMemberTooManyEntries[];
+
+// $1: the manifest member whose entries must be UTF8 strings.
+extern const char kManifestMemberEntriesNotUtf8[];
+
+// $1: the invalid entry, $2: the "default_applications" member.
+extern const char kInvalidDefaultApplicationUrl[];
+
+// $1: the "supported_origins" member.
+extern const char kSupportedOriginsNotList[];
+
+// $1: the "supported_origins" member, $2: the HTTPS prefix, $3: the HTTP
+// prefix.
+extern const char kSupportedOriginEntriesNotUtf8[];
+
+// $1: the invalid entry, $2: the "supported_origins" member.
+extern const char kInvalidSupportedOrigin[];
+
+// $1: the "related_applications" member.
+extern const char kRelatedApplicationsNotListOfDictionaries[];
+
+// $1: the "related_applications" member, $2: its maximum number of entries,
+// $3: the "platform" member, $4: the "play" platform.
+extern const char kRelatedApplicationsTooManyEntries[];
+
+// $1: the "platform" member, $2: the "play" platform, $3: the
+// "related_applications" member, $4-$6: the required "id", "min_version" and
+// "fingerprints" members.
+extern const char kRelatedApplicationMissingMembers[];
+
+// $1: the manifest member that must be a non-empty ASCII string.
+extern const char kManifestMemberNotNonEmptyAsciiString[];
+
+// $1: the manifest member that must be a string convertible into a number.
+extern const char kManifestMemberNotNumberString[];
+
+// $1: the "fingerprints" member, $2: its maximum number of items.
+extern const char kFingerprintsNotNonEmptyList[];
+
+// $1: the "fingerprints" member.
+extern const char kInvalidFingerprintEntry[];
+
+// $1: the "serviceworker" member.
+extern const char kServiceWorkerNotDictionary[];
+
+// $1: the "serviceworker" member, $2: its "src" member.
+extern const char kServiceWorkerSrcNotNonEmptyUtf8String[];
+
+// $1: the "payment" member, $2: its "supported_delegations" member, $3: the
+// maximum number of entries.
+extern const char kSupportedDelegationsNotNonEmptyList[];
+
+// An entry in the "supported_delegations" list is not a printable ASCII string.
+extern const char kDelegationNotPrintableAsciiString[];
+
+// $1: the invalid entry, $2: the "supported_delegations" member.
+extern const char kInvalidDelegationValue[];
+
+// $1: the "payment" member, $2: its "supported_delegations" member.
+extern const char kPaymentMemberMissingSupportedDelegations[];
+
+// $1: the "payment" member.
+extern const char kPaymentMemberNotDictionary[];
+
 }  // namespace errors
 }  // namespace payments
 
