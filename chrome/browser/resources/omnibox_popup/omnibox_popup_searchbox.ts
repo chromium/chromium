@@ -351,6 +351,10 @@ export class OmniboxPopupSearchboxElement extends
           this.clearAutocompleteMatches.bind(this)),
       this.popupCallbackRouter_.clearPopup.addListener(
           this.onClearPopup_.bind(this)),
+      this.popupCallbackRouter_.setDefaultSearchProvider.addListener(
+          (defaultIconPath: string) => {
+            this.searchboxIcon_ = defaultIconPath;
+          }),
     ];
     this.eventTracker_.add(
         document, 'selectionchange', this.onSelectionChanged_.bind(this));

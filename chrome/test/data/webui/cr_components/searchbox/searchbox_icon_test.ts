@@ -375,6 +375,97 @@ suite('CrComponentsSearchboxIconTest', () => {
           assertTrue(isVisible(faviconImage));
         });
 
+    test(
+        'renders Google G for search match when `defaultIcon` is ' +
+            '`google_g_gradient`',
+        async () => {
+          icon.defaultIcon =
+              '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
+          const match = createAutocompleteMatch();
+          match.isSearchType = true;
+          match.type = 'search-what-you-typed';
+          match.iconPath = 'search_cr23.svg';
+          icon.match = match;
+
+          await microtasksFinished();
+
+          const faviconImage = icon.$.faviconImage;
+          assertEquals(
+              faviconImage.getAttribute('src'),
+              '//resources/cr_components/searchbox/icons/' +
+                  'google_g_gradient.svg');
+
+          const loadPromise = eventToPromise('load', faviconImage);
+          faviconImage.dispatchEvent(new Event('load'));
+          await loadPromise;
+          await icon.updateComplete;
+
+          assertTrue(isVisible(faviconImage));
+        });
+
+    test(
+        'renders non-Google DSE favicon when `defaultIcon` is a favicon URL',
+        async () => {
+          loadTimeData.overrideValues({
+            isTopChromeSearchbox: true,
+          });
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          icon = document.createElement('cr-searchbox-icon');
+          icon.defaultIcon = 'chrome://favicon2/?iconUrl=' +
+              'https%3A%2F%2Fduckduckgo.com%2Ffavicon.ico&size=16&' +
+              'scaleFactor=1x&forceEmptyDefaultFavicon=1';
+          icon.inSearchbox = true;
+          document.body.appendChild(icon);
+
+          await microtasksFinished();
+
+          const faviconImage = icon.$.faviconImage;
+          assertTrue(faviconImage.getAttribute('src')!.includes(
+              'iconUrl=https%3A%2F%2Fduckduckgo.com%2Ffavicon.ico'));
+
+          const loadPromise = eventToPromise('load', faviconImage);
+          faviconImage.dispatchEvent(new Event('load'));
+          await loadPromise;
+          await icon.updateComplete;
+
+          assertTrue(isVisible(faviconImage));
+        });
+
+    test(
+        'renders non-Google DSE favicon for search match when ' +
+            '`defaultIcon` is a favicon URL',
+        async () => {
+          loadTimeData.overrideValues({
+            isTopChromeSearchbox: true,
+          });
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          icon = document.createElement('cr-searchbox-icon');
+          icon.defaultIcon = 'chrome://favicon2/?iconUrl=' +
+              'https%3A%2F%2Fduckduckgo.com%2Ffavicon.ico&size=16&' +
+              'scaleFactor=1x&forceEmptyDefaultFavicon=1';
+          icon.inSearchbox = true;
+          document.body.appendChild(icon);
+
+          const match = createAutocompleteMatch();
+          match.isSearchType = true;
+          match.type = 'search-what-you-typed';
+          match.iconPath = 'search_cr23.svg';
+          icon.match = match;
+
+          await microtasksFinished();
+
+          const faviconImage = icon.$.faviconImage;
+          assertTrue(faviconImage.getAttribute('src')!.includes(
+              'iconUrl=https%3A%2F%2Fduckduckgo.com%2Ffavicon.ico'));
+
+          const loadPromise = eventToPromise('load', faviconImage);
+          faviconImage.dispatchEvent(new Event('load'));
+          await loadPromise;
+          await icon.updateComplete;
+
+          assertTrue(isVisible(faviconImage));
+        });
+
     test('renders page favicon when pageUrl is set without match', async () => {
       icon.defaultIcon =
           '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
@@ -423,6 +514,73 @@ suite('CrComponentsSearchboxIconTest', () => {
 
           assertFalse(isVisible(icon.$.faviconImage));
           assertTrue(window.getComputedStyle(icon.$.icon)
+                         .webkitMaskImage.includes('search_cr23.svg'));
+        });
+
+    test('reacts to `defaultIcon` property updates dynamically', async () => {
+      loadTimeData.overrideValues({
+        isTopChromeSearchbox: true,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      icon = document.createElement('cr-searchbox-icon');
+      icon.defaultIcon =
+          '//resources/cr_components/searchbox/icons/search_cr23.svg';
+      icon.inSearchbox = true;
+      document.body.appendChild(icon);
+
+      await microtasksFinished();
+
+      // Initially SVG mask icon, so mask image is used.
+      assertFalse(isVisible(icon.$.faviconImage));
+      assertTrue(isVisible(icon.$.icon));
+
+      // Dynamically update defaultIcon to DSE favicon URL.
+      icon.defaultIcon =
+          'chrome://favicon2/?iconUrl=https%3A%2F%2Fbing.com%2Ffavicon.ico&' +
+          'size=16&scaleFactor=1x&forceEmptyDefaultFavicon=1';
+      await microtasksFinished();
+
+      const faviconImage = icon.$.faviconImage;
+      assertTrue(faviconImage.getAttribute('src')!.includes(
+          'iconUrl=https%3A%2F%2Fbing.com%2Ffavicon.ico'));
+
+      const loadPromise = eventToPromise('load', faviconImage);
+      faviconImage.dispatchEvent(new Event('load'));
+      await loadPromise;
+      await icon.updateComplete;
+
+      assertTrue(isVisible(faviconImage));
+    });
+
+    test(
+        'falls back to search mask icon when `defaultIcon` favicon fails ' +
+            'to load',
+        async () => {
+          loadTimeData.overrideValues({
+            isTopChromeSearchbox: true,
+          });
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          icon = document.createElement('cr-searchbox-icon');
+          icon.defaultIcon = 'chrome://favicon2/?iconUrl=' +
+              'https%3A%2F%2Fduckduckgo.com%2Ffavicon.ico&size=16&' +
+              'scaleFactor=1x&forceEmptyDefaultFavicon=1';
+          icon.inSearchbox = true;
+          document.body.appendChild(icon);
+
+          await microtasksFinished();
+
+          const faviconImage = icon.$.faviconImage;
+          const vectorIcon = icon.$.icon;
+
+          // Fail to load favicon.
+          const errorPromise = eventToPromise('error', faviconImage);
+          faviconImage.dispatchEvent(new Event('error'));
+          await errorPromise;
+          await icon.updateComplete;
+
+          assertFalse(isVisible(faviconImage));
+          assertTrue(isVisible(vectorIcon));
+          assertTrue(window.getComputedStyle(vectorIcon)
                          .webkitMaskImage.includes('search_cr23.svg'));
         });
   });

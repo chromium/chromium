@@ -122,4 +122,7 @@ interface Page {
   // Called when the popup is hidden. The page is expected to perform any
   // necessary cleanup and complete the callback.
   ClearPopup() => ();
+
+  // Updates the default search provider's icon path.
+  SetDefaultSearchProvider(string default_icon_path);
 };

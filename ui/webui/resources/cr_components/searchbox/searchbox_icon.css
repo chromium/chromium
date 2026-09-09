@@ -122,8 +122,10 @@
 }
 
 :host([in-searchbox]) #iconImg {
-  height: var(--cr-searchbox-icon-size-in-searchbox);
-  width: var(--cr-searchbox-icon-size-in-searchbox);
+  height: var(--cr-searchbox-icon-size-in-searchbox,
+      var(--cr-searchbox-results-search-icon-size));
+  width: var(--cr-searchbox-icon-size-in-searchbox,
+      var(--cr-searchbox-results-search-icon-size));
 }
 
 :host([has-image_]:not([in-searchbox])) #icon,

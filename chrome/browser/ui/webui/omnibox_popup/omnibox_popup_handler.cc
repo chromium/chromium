@@ -6,9 +6,12 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -21,11 +24,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/search/search.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -45,7 +52,14 @@ OmniboxPopupHandler::OmniboxPopupHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_contents_(web_contents),
-      controller_(controller) {}
+      controller_(controller) {
+  if (controller_ && controller_->client()) {
+    if (auto* turl_service = controller_->client()->GetTemplateURLService()) {
+      template_url_service_observation_.Observe(turl_service);
+    }
+  }
+  NotifyDefaultSearchProviderChanged();
+}
 
 OmniboxPopupHandler::~OmniboxPopupHandler() = default;
 
@@ -173,6 +187,7 @@ void OmniboxPopupHandler::OnPaste(const std::string& text,
 }
 
 void OmniboxPopupHandler::RequestInputState() {
+  NotifyDefaultSearchProviderChanged();
   auto* edit_model = controller_ ? controller_->edit_model() : nullptr;
   auto* popup_view = edit_model ? edit_model->popup_view() : nullptr;
   if (popup_view) {
@@ -241,6 +256,50 @@ void OmniboxPopupHandler::ClearAutocompleteMatches() {
 
 void OmniboxPopupHandler::ClearPopup(base::OnceClosure callback) {
   page_->ClearPopup(std::move(callback));
+}
+
+void OmniboxPopupHandler::OnTemplateURLServiceChanged() {
+  NotifyDefaultSearchProviderChanged();
+}
+
+void OmniboxPopupHandler::OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
+}
+
+std::string GetDefaultSearchProviderIcon(
+    const TemplateURLService* template_url_service) {
+  std::string default_icon_path =
+      features::IsRoundedIconsEnabled()
+          ? "//resources/cr_components/searchbox/icons/search_cr23.svg"
+          : "//resources/cr_components/searchbox/icons/search_cr23_old.svg";
+  if (template_url_service) {
+    bool is_google = false;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    is_google = search::DefaultSearchProviderIsGoogle(template_url_service);
+#endif
+    if (is_google) {
+      default_icon_path =
+          "//resources/cr_components/searchbox/icons/google_g_gradient.svg";
+    } else if (const auto* default_provider =
+                   template_url_service->GetDefaultSearchProvider();
+               default_provider &&
+               !default_provider->favicon_url().is_empty()) {
+      default_icon_path = base::StrCat(
+          {"chrome://favicon2/?iconUrl=",
+           base::EscapeQueryParamValue(default_provider->favicon_url().spec(),
+                                       /*use_plus=*/false),
+           "&size=16&scaleFactor=1x&forceEmptyDefaultFavicon=1"});
+    }
+  }
+  return default_icon_path;
+}
+
+void OmniboxPopupHandler::NotifyDefaultSearchProviderChanged() {
+  if (!page_.is_bound()) {
+    return;
+  }
+  page_->SetDefaultSearchProvider(GetDefaultSearchProviderIcon(
+      template_url_service_observation_.GetSource()));
 }
 
 void OmniboxPopupHandler::LogEscapeAction(

@@ -47,6 +47,7 @@ class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
         /*controller=*/nullptr);
     embedder_ = std::make_unique<TestEmbedder>();
     handler_->set_embedder(embedder_->GetWeakPtr());
+    page_.FlushForTesting();
   }
 
   void TearDown() override {
@@ -129,6 +130,16 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
                           /*is_focused=*/true, permanent_display_text,
                           show_full_url, query_zps,
                           /*keyword_model=*/nullptr);
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProvider) {
+  EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
+  handler_->OnTemplateURLServiceChanged();
+  page_.FlushForTesting();
+
+  EXPECT_CALL(page_, SetDefaultSearchProvider(testing::_));
+  handler_->RequestInputState();
   page_.FlushForTesting();
 }
 

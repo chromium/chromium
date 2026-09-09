@@ -251,9 +251,7 @@ export class SearchboxIconElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
-        changedProperties.has('defaultIcon') ||
-        changedProperties.has('inKeywordMode')) {
+    if (changedProperties.has('match')) {
       // In Lit, setting properties synchronously within `willUpdate()` does not
       // add them to `changedProperties` for the current update cycle. Track
       // loading state transitions directly when computed URLs change.
@@ -279,12 +277,14 @@ export class SearchboxIconElement extends CrLitElement {
       this.isFeaturedEnterpriseSearch =
           this.computeIsFeaturedEnterpriseSearch_();
       this.hasImage_ = this.computeHasImage_();
-      this.maskImage = this.computeMaskImage_();
-    }
-
-    if (changedProperties.has('match')) {
       this.hasIconContainerBackground =
           this.computeHasIconContainerBackground_();
+    }
+
+    if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
+        changedProperties.has('defaultIcon') ||
+        changedProperties.has('inKeywordMode')) {
+      this.maskImage = this.computeMaskImage_();
     }
 
     if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
@@ -382,9 +382,11 @@ export class SearchboxIconElement extends CrLitElement {
     if (this.defaultIcon ===
             '//resources/cr_components/searchbox/icons/google_g.svg' ||
         this.defaultIcon ===
-            '//resources/cr_components/searchbox/icons/google_g_gradient.svg') {
-      // The google_g.svg is a fully colored icon, so it needs to be displayed
-      // as a favicon image as mask images will mask the colors.
+            '//resources/cr_components/searchbox/icons/google_g_gradient.svg' ||
+        (this.inSearchbox && this.isTopChromeSearchbox_ &&
+         this.defaultIcon.startsWith('chrome://favicon2/'))) {
+      // These colored icons need to be displayed as a favicon image as mask
+      // images will mask the colors.
       return this.defaultIcon;
     }
 
@@ -428,13 +430,16 @@ export class SearchboxIconElement extends CrLitElement {
       return `url(${this.match.iconPath})`;
     }
 
-    // When focused on an unedited webpage URL without an active match,
-    // fall back to the generic globe icon (page_cr23.svg).
-    if (this.inSearchbox && this.isTopChromeSearchbox_ && this.pageUrl &&
-        !this.match) {
-      return 'url(//resources/cr_components/searchbox/icons/page_cr23.svg)';
+    if (this.inSearchbox && this.isTopChromeSearchbox_) {
+      // When focused on an unedited webpage URL without an active match,
+      // fall back to the generic globe icon (page_cr23.svg).
+      if (this.pageUrl && !this.match) {
+        return 'url(//resources/cr_components/searchbox/icons/page_cr23.svg)';
+      }
+      if (this.defaultIcon.startsWith('chrome://favicon2/')) {
+        return 'url(//resources/cr_components/searchbox/icons/search_cr23.svg)';
+      }
     }
-
     return `url(${this.defaultIcon})`;
   }
 
@@ -468,7 +473,12 @@ export class SearchboxIconElement extends CrLitElement {
     // URL or non-Google DSE search matches).
     if ((!this.match || this.match.isSearchType) && this.inSearchbox &&
         this.isTopChromeSearchbox_ &&
-        this.faviconImage_.startsWith('chrome://favicon2/')) {
+        (this.faviconImage_.startsWith('chrome://favicon2/') ||
+         this.faviconImage_ ===
+             '//resources/cr_components/searchbox/icons/google_g.svg' ||
+         this.faviconImage_ ===
+             '//resources/cr_components/searchbox/icons/' +
+                 'google_g_gradient.svg')) {
       return true;
     }
 

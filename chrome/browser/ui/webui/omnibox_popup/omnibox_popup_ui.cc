@@ -7,12 +7,11 @@
 #include <atomic>
 #include <string_view>
 
-#include "base/feature_list.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
@@ -140,6 +139,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   source->AddBoolean("isTopChromeSearchbox", true);
   source->AddBoolean("isTouchUi", ui::TouchUiController::Get()->touch_ui());
+  source->AddString("searchboxDefaultIcon",
+                    GetDefaultSearchProviderIcon(
+                        TemplateURLServiceFactory::GetForProfile(profile_)));
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());
   // TODO(b/504670497): Replace this NTP-specific flag with a generic flag.
