@@ -14,7 +14,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/local_set_declaration.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -92,12 +91,11 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
           },
           /*aliases=*/{{c_cctld, c}});
 
-  original.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration::Create(
-          /*set_entries=*/{{a, net::FirstPartySetEntry(
-                                   a, net::SiteType::kPrimary)},
-                           {b, net::FirstPartySetEntry(
-                                   a, net::SiteType::kAssociated)}},
+  original.UnsafeSetManualConfig(
+      net::FirstPartySetsContextConfig::Create(
+          /*entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
+                       {b, net::FirstPartySetEntry(
+                               a, net::SiteType::kAssociated)}},
           /*aliases=*/{{b_cctld, b}})
           .value());
 
@@ -129,12 +127,11 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
           },
           /*aliases=*/{{c_cctld, c}});
 
-  original.ApplyManuallySpecifiedSet(
-      net::LocalSetDeclaration::Create(
-          /*set_entries=*/{{a, net::FirstPartySetEntry(
-                                   a, net::SiteType::kPrimary)},
-                           {b, net::FirstPartySetEntry(
-                                   a, net::SiteType::kAssociated)}},
+  original.UnsafeSetManualConfig(
+      net::FirstPartySetsContextConfig::Create(
+          /*entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
+                       {b, net::FirstPartySetEntry(
+                               a, net::SiteType::kAssociated)}},
           /*aliases=*/{{b_cctld, b}})
           .value());
 

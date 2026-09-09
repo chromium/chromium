@@ -24,7 +24,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/first_party_sets_validator.h"
-#include "net/first_party_sets/local_set_declaration.h"
 
 namespace net {
 
@@ -151,18 +150,6 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
                      : std::nullopt);
 }
 
-void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
-    const LocalSetDeclaration& local_set_declaration) {
-  CHECK(manual_config_.empty());
-  if (local_set_declaration.empty()) {
-    // Nothing to do.
-    return;
-  }
-
-  manual_config_ = ComputeConfig(local_set_declaration.ComputeMutation());
-
-  CHECK(IsValid()) << "Sets must be valid";
-}
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(
     FirstPartySetsContextConfig manual_config) {

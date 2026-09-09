@@ -17,7 +17,6 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/local_set_declaration.h"
 #include "net/first_party_sets/sets_mutation.h"
 
 namespace mojo {
@@ -77,10 +76,6 @@ class NET_EXPORT GlobalFirstPartySets {
       base::optional_ref<const SchemefulSite> top_frame_site,
       const FirstPartySetsContextConfig& fps_context_config) const;
 
-  // Modifies this instance such that it will respect the given
-  // manually-specified set.
-  void ApplyManuallySpecifiedSet(
-      const LocalSetDeclaration& local_set_declaration);
 
   // Directly sets this instance's manual config. This is unsafe, because it
   // assumes that the config was computed by this instance (or one with
