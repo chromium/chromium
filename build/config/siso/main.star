@@ -91,12 +91,6 @@ def init(ctx):
         "rules": [],
         # Allowlist for fail-on-bad-deps feature.
         "bad_deps": {
-            "./android_clang_arm/obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_language_model.o": "crbug.com/558036595",
-            "./android_clang_arm/obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_proofreader.o": "crbug.com/558036595",
-            "./android_clang_arm/obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_rewriter.o": "crbug.com/558036595",
-            "./android_clang_arm/obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_summarizer.o": "crbug.com/558036595",
-            "./android_clang_arm/obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_translator.o": "crbug.com/558036595",
-            "./android_clang_arm/obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_writer.o": "crbug.com/558036595",
             "./gen/third_party/devtools-frontend/src/front_end/panels/application/application.js": "crbug.com/556413211",
             "./gen/third_party/devtools-frontend/src/front_end/panels/sources/sources.js": "crbug.com/556926446",
             "./gen/third_party/devtools-frontend/src/front_end/panels/timeline/timeline.js": "crbug.com/556600964",
@@ -104,12 +98,6 @@ def init(ctx):
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
             "./obj/chrome/browser/ui/views/upgrade_notification_controller/upgrade_notification_controller.o": "crbug.com/555387059",
-            "./obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_language_model.o": "crbug.com/558036595",
-            "./obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_proofreader.o": "crbug.com/558036595",
-            "./obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_rewriter.o": "crbug.com/558036595",
-            "./obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_summarizer.o": "crbug.com/558036595",
-            "./obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_translator.o": "crbug.com/558036595",
-            "./obj/third_party/blink/renderer/bindings/modules/v8/v8/v8_writer.o": "crbug.com/558036595",
         },
         # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
         # This is necessary for cross platform build actions. e.g. node binary for typescript
