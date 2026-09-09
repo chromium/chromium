@@ -133,6 +133,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/tabs/tab",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/views/translate",
+    "//chrome/browser/ui/views/web_apps:web_app_install_dialog_delegate",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/customize_buttons",
     "//chrome/browser/ui/webui/history",

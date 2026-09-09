@@ -122,6 +122,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/web_apps:progress_delay",
+      "//chrome/browser/ui/views/web_apps:web_app_install_flow_dialog_delegate",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
       "//chrome/common:chrome_features",
