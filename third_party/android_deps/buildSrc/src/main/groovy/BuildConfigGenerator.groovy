@@ -112,6 +112,7 @@ class BuildConfigGenerator extends DefaultTask {
             // Use fully-qualified labels here since androidx might refer to them.
             androidx_media3_media3_exoplayer: '//third_party/androidx:exoplayer_java',
             com_google_android_material_material: '//third_party/android_deps:material_design_java',
+            com_google_android_play_app_update: '//third_party/android_deps:playcore_app_update_java',
             com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
             com_google_guava_failureaccess: '//third_party/android_deps:guava_java',
             com_google_guava_guava: '//third_party/android_deps:guava_java',
@@ -123,6 +124,7 @@ class BuildConfigGenerator extends DefaultTask {
     // Targets that are disabled when enable_chrome_android_internal=true.
     static final Map<String, String> CONDITIONAL_LIBS = [
             com_google_android_material_material: '!defined(material_design_target)',
+            com_google_android_play_app_update: '!defined(playcore_app_update_target)',
             com_google_android_play_feature_delivery: '!defined(playcore_target)',
             com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
             com_google_guava_guava: '!defined(guava_android_target)',

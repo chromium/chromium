@@ -109,6 +109,17 @@ if (!limit_android_deps) {
     }
   }
 
+  java_group("playcore_app_update_java") {
+    preferred_dep = true
+    if (defined(playcore_app_update_target)) {
+      deps = [ playcore_app_update_target ]
+    } else {
+      deps = [
+        "//third_party/android_deps:com_google_android_play_app_update_java",
+      ]
+    }
+  }
+
   java_group("mlkit_java") {
     preferred_dep = true
     if (defined(mlkit_target)) {
