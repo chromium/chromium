@@ -282,6 +282,14 @@ cr-policy-indicator {
   margin: 0;
 }
 
+:host([hide-title]) .tile a {
+  border-radius: 50%;
+  height: var(--icon-size);
+  inset: 0;
+  margin: auto;
+  width: var(--icon-size);
+}
+
 .tile.dragging {
   background-color: var(--tile-hover-color);
   transition-property: none;

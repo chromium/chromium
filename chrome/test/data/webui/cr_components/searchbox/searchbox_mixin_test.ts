@@ -2453,6 +2453,28 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     }
   });
 
+  test('Tab allows native focus when dropdown is not visible', async () => {
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'test');
+
+    const matches = [createSearchMatchForTesting({fillIntoEdit: 'test match'})];
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'test',
+      matches: matches,
+    }));
+    await microtasksFinished();
+
+    element.dropdownIsVisible = false;
+    await microtasksFinished();
+
+    const tabEvent = createKeyboardEvent('Tab');
+    mockInput.inputElement.dispatchEvent(tabEvent);
+    await microtasksFinished();
+
+    assertFalse(tabEvent.defaultPrevented);
+  });
+
   test('Enter on focused AIM button fires compose-click event', async () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'aim query');

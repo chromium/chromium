@@ -14,6 +14,7 @@ import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_comp
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -468,6 +469,25 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
         assertFalse(omnibox.isScreenshotMenuOpen);
         assertFalse(lensContainer.classList.contains('menu-open'));
+      });
+
+  test(
+      'stepCyclesSelection returns false to cycle within popup like Omnibox',
+      () => {
+        const match = createSearchMatchForTesting();
+        const result = createAutocompleteResultForTesting({matches: [match]});
+        const selection = {
+          line: 0,
+          state: SelectionLineState.kNormal,
+          actionIndex: 0,
+        };
+
+        assertFalse(omnibox.stepCyclesSelection(
+            result, selection, SelectionDirection.kForward,
+            SelectionStep.kStateOrLine));
+        assertFalse(omnibox.stepCyclesSelection(
+            result, selection, SelectionDirection.kBackward,
+            SelectionStep.kStateOrLine));
       });
 });
 

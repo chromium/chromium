@@ -23,6 +23,7 @@ import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import type {AutocompleteResult, OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {SearchboxSelectionMixin} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -322,6 +323,13 @@ export class OmniboxEverywhereOmniboxElement extends
 
   protected onInputFocusin_() {
     this.pageHandler_.onFocusChanged(true);
+  }
+
+  override stepCyclesSelection(
+      _result: AutocompleteResult|null, _from: OmniboxPopupSelection,
+      _direction: SelectionDirection, _step: SelectionStep): boolean {
+    // In Omnibox, cycle within the popup matches rather than exiting.
+    return false;
   }
 
   isInputEmpty(): boolean {
