@@ -510,8 +510,8 @@ MATCHER(IsErrorRegistrationResult, "") {
       }});
 }
 
-std::optional<std::string> GetRequestChallenge(
-    const test_server::HttpRequest& request) {
+std::optional<std::string> GetJwtClaim(const test_server::HttpRequest& request,
+                                       std::string_view claim_name) {
   auto resp_iter = request.headers.find(kSessionResponseHeaderName);
   if (resp_iter == request.headers.end()) {
     return std::nullopt;
@@ -533,12 +533,12 @@ std::optional<std::string> GetRequestChallenge(
   if (!payload_json.has_value()) {
     return std::nullopt;
   }
-  const std::string* challenge = payload_json->FindString("jti");
-  if (!challenge) {
+  const std::string* claim = payload_json->FindString(claim_name);
+  if (!claim) {
     return std::nullopt;
   }
 
-  return *challenge;
+  return *claim;
 }
 
 std::optional<base::DictValue> Base64UrlEncodedJsonToDict(
@@ -554,13 +554,65 @@ std::optional<base::DictValue> Base64UrlEncodedJsonToDict(
 TEST_F(RegistrationTest, BasicSuccess) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  server_.RegisterRequestHandler(
-      base::BindRepeating([](const test_server::HttpRequest& request) {
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
         auto resp_iter = request.headers.find(kSessionResponseHeaderName);
         EXPECT_TRUE(resp_iter != request.headers.end());
         if (resp_iter != request.headers.end()) {
           EXPECT_TRUE(VerifyEs256Jwt(resp_iter->second));
         }
+        EXPECT_FALSE(GetJwtClaim(request, "aud").has_value());
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const Session& session = callback.outcome().SessionForTesting();
+  proto::Session session_proto = session.ToProto();
+  EXPECT_TRUE(session_proto.session_inclusion_rules().do_include_site());
+  EXPECT_THAT(
+      session_proto.session_inclusion_rules().url_rules(),
+      ElementsAre(
+          EqualsInclusionRule(proto::RuleType::INCLUDE, "trusted.a.test",
+                              "/only_trusted_path"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
+  EXPECT_THAT(
+      session_proto.cookie_cravings(),
+      ElementsAre(EqualsCredential(
+          "auth_cookie", "Domain=.a.test; Path=/; Secure; SameSite=None")));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
+}
+
+TEST_F(RegistrationTest, BasicSuccess_AudienceClaimEnabled) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsIncludeAudienceClaim);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        auto resp_iter = request.headers.find(kSessionResponseHeaderName);
+        EXPECT_TRUE(resp_iter != request.headers.end());
+        if (resp_iter != request.headers.end()) {
+          EXPECT_TRUE(VerifyEs256Jwt(resp_iter->second));
+        }
+        EXPECT_EQ(GetJwtClaim(request, "aud"), GetBaseURL().spec());
         return ReturnResponse(HTTP_OK, kBasicValidJson, request);
       }));
   ASSERT_TRUE(server_.Start());
@@ -801,6 +853,8 @@ TEST_F(RegistrationTest, AttestationKeyGenerationSuccess) {
 }
 
 TEST_F(RegistrationTest, AttestationSuccessWithChallenge) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsIncludeAudienceClaim);
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   std::string outer_jwt;
@@ -813,8 +867,10 @@ TEST_F(RegistrationTest, AttestationSuccessWithChallenge) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
+  GURL endpoint_with_query_and_fragment =
+      GURL(base::StrCat({GetBaseURL().spec(), "?query=param#fragment"}));
   auto param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), /*session_identifier=*/std::nullopt,
+      endpoint_with_query_and_fragment, /*session_identifier=*/std::nullopt,
       std::string(kChallenge),
       /*authorization=*/std::nullopt, AttestationMode::kRequired);
   auto fetcher = RegistrationFetcher::CreateFetcher(
@@ -875,7 +931,10 @@ TEST_F(RegistrationTest, AttestationSuccessWithChallenge) {
   ASSERT_OK_AND_ASSIGN(base::DictValue inner_payload,
                        Base64UrlEncodedJsonToDict(inner_sections[1]));
   EXPECT_THAT(inner_payload,
+              DictionaryHasValue("aud", base::Value(GetBaseURL().spec())));
+  EXPECT_THAT(inner_payload,
               DictionaryHasValue("jti", base::Value(kChallenge)));
+  EXPECT_EQ(*outer_payload.FindString("aud"), *inner_payload.FindString("aud"));
 }
 
 TEST_F(RegistrationTest, AttestationCertificationFailure) {
@@ -2121,8 +2180,65 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
 TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        EXPECT_TRUE(request.headers.find(kSessionResponseHeaderName) !=
+                    request.headers.end());
+        EXPECT_FALSE(GetJwtClaim(request, "aud").has_value());
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+  UnexportableSigningKeyId key = CreateSigningKey();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          request_param, session_service(), unexportable_key_service(),
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+                                     callback.callback());
+  callback.WaitForCall();
+  const auto& session = callback.outcome().SessionForTesting();
+  proto::Session session_proto = session.ToProto();
+  EXPECT_TRUE(session_proto.session_inclusion_rules().do_include_site());
+  EXPECT_THAT(
+      session_proto.session_inclusion_rules().url_rules(),
+      ElementsAre(
+          EqualsInclusionRule(proto::RuleType::INCLUDE, "trusted.a.test",
+                              "/only_trusted_path"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
+  EXPECT_THAT(
+      session_proto.cookie_cravings(),
+      ElementsAre(EqualsCredential(
+          "auth_cookie", "Domain=.a.test; Path=/; Secure; SameSite=None")));
+
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.Refresh.Network.Result", HTTP_OK, 1);
+}
+
+TEST_F(RegistrationTest, BasicSuccessForExistingKey_AudienceClaimEnabled) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsIncludeAudienceClaim);
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        EXPECT_TRUE(request.headers.find(kSessionResponseHeaderName) !=
+                    request.headers.end());
+        EXPECT_EQ(GetJwtClaim(request, "aud"), GetBaseURL().spec());
+        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+      }));
   ASSERT_TRUE(server_.Start());
 
   RecordingNetLogObserver net_log_observer;
@@ -2391,7 +2507,7 @@ TEST_F(RegistrationTest,
           -> std::unique_ptr<test_server::HttpResponse> {
         auto response = std::make_unique<test_server::BasicHttpResponse>();
         const std::optional<std::string> challenge =
-            GetRequestChallenge(request);
+            GetJwtClaim(request, "jti");
         if (!challenge.has_value()) {
           response->set_code(HTTP_FORBIDDEN);
           session->set_cached_challenge("updated_challenge");
@@ -2444,7 +2560,7 @@ TEST_F(RegistrationTest,
           -> std::unique_ptr<test_server::HttpResponse> {
         auto response = std::make_unique<test_server::BasicHttpResponse>();
         const std::optional<std::string> challenge =
-            GetRequestChallenge(request);
+            GetJwtClaim(request, "jti");
         if (*challenge == kChallenge) {
           response->set_code(HTTP_FORBIDDEN);
           session->set_cached_challenge("updated_challenge");

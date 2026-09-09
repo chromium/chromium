@@ -14,10 +14,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "crypto/sign.h"
+#include "net/base/features.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,11 +65,28 @@ base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
 
 }  // namespace
 
-TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
+class SessionBindingUtilsTest : public testing::TestWithParam<bool> {
+ public:
+  SessionBindingUtilsTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kDeviceBoundSessionsIncludeAudienceClaim,
+        IsAudienceClaimEnabled());
+  }
+
+  bool IsAudienceClaimEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, SessionBindingUtilsTest, testing::Bool());
+
+TEST_P(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
       "test_challenge", RSA_PKCS1_SHA256, spki,
+      GURL("https://example.com/register"),
       /*authorization=*/"auth");
   ASSERT_TRUE(result.has_value());
 
@@ -89,17 +108,21 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
   base::DictValue expected_payload = base::DictValue()
                                          .Set("jti", "test_challenge")
                                          .Set("authorization", "auth");
+  if (IsAudienceClaimEnabled()) {
+    expected_payload.Set("aud", "https://example.com/register");
+  }
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest,
-     CreateKeyRegistrationHeaderAndPayloadWithNullAuth) {
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRegistrationHeaderAndPayloadWithNullAuth) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
       "test_challenge", RSA_PKCS1_SHA256, spki,
+      GURL("https://example.com/register"),
       /*authorization=*/std::nullopt);
   ASSERT_TRUE(result.has_value());
 
@@ -120,17 +143,21 @@ TEST(SessionBindingUtilsTest,
                    .value());
   base::DictValue expected_payload =
       base::DictValue().Set("jti", "test_challenge");
+  if (IsAudienceClaimEnabled()) {
+    expected_payload.Set("aud", "https://example.com/register");
+  }
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest,
-     CreateKeyRegistrationHeaderAndPayloadWithNullChallenge) {
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRegistrationHeaderAndPayloadWithNullChallenge) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
-      /*challenge=*/std::nullopt, RSA_PKCS1_SHA256, spki, "authorization");
+      /*challenge=*/std::nullopt, RSA_PKCS1_SHA256, spki,
+      GURL("https://example.com/register"), "authorization");
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -150,14 +177,63 @@ TEST(SessionBindingUtilsTest,
                    .value());
   base::DictValue expected_payload =
       base::DictValue().Set("authorization", "authorization");
+  if (IsAudienceClaimEnabled()) {
+    expected_payload.Set("aud", "https://example.com/register");
+  }
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
-  std::optional<std::string> result =
-      CreateKeyRefreshHeaderAndPayload("test_challenge", RSA_PKCS1_SHA256);
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRegistrationHeaderAndPayloadWithInvalidUrl) {
+  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
+
+  std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
+      "test_challenge", RSA_PKCS1_SHA256, spki, GURL(), "authorization");
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::DictValue expected_payload = base::DictValue()
+                                         .Set("jti", "test_challenge")
+                                         .Set("authorization", "authorization");
+
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRegistrationHeaderAndPayload_StripsQueryAndFragment) {
+  auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
+
+  std::optional<std::string> result = CreateKeyRegistrationHeaderAndPayload(
+      "test_challenge", RSA_PKCS1_SHA256, spki,
+      GURL("https://example.com/register?foo=bar#fragment"), "authorization");
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::DictValue expected_payload = base::DictValue()
+                                         .Set("jti", "test_challenge")
+                                         .Set("authorization", "authorization");
+  if (IsAudienceClaimEnabled()) {
+    expected_payload.Set("aud", "https://example.com/register");
+  }
+
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST_P(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
+  std::optional<std::string> result = CreateKeyRefreshHeaderAndPayload(
+      "test_challenge", RSA_PKCS1_SHA256, GURL("https://example.com/refresh"));
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -172,20 +248,82 @@ TEST(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
       base::DictValue().Set("alg", "RS256").Set("typ", "dbsc+jwt");
   base::DictValue expected_payload =
       base::DictValue().Set("jti", "test_challenge");
+  if (IsAudienceClaimEnabled()) {
+    expected_payload.Set("aud", "https://example.com/refresh");
+  }
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRefreshHeaderAndPayloadWithInvalidUrl) {
+  std::optional<std::string> result = CreateKeyRefreshHeaderAndPayload(
+      "test_challenge", RSA_PKCS1_SHA256, GURL());
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::DictValue expected_payload =
+      base::DictValue().Set("jti", "test_challenge");
+
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST_P(SessionBindingUtilsTest,
+       CreateKeyRefreshHeaderAndPayload_StripsQueryAndFragment) {
+  std::optional<std::string> result = CreateKeyRefreshHeaderAndPayload(
+      "test_challenge", RSA_PKCS1_SHA256,
+      GURL("https://example.com/refresh?query=1#frag"));
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::DictValue expected_payload =
+      base::DictValue().Set("jti", "test_challenge");
+  if (IsAudienceClaimEnabled()) {
+    expected_payload.Set("aud", "https://example.com/refresh");
+  }
+
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST_P(
+    SessionBindingUtilsTest,
+    CreateKeyRefreshHeaderAndPayload_DifferentAudienceProducesDifferentPayload) {
+  std::optional<std::string> result_rp_a = CreateKeyRefreshHeaderAndPayload(
+      "shared_challenge", RSA_PKCS1_SHA256,
+      GURL("https://rp-a.example.com/refresh"));
+  std::optional<std::string> result_rp_b = CreateKeyRefreshHeaderAndPayload(
+      "shared_challenge", RSA_PKCS1_SHA256,
+      GURL("https://rp-b.example.com/refresh"));
+
+  ASSERT_TRUE(result_rp_a.has_value());
+  ASSERT_TRUE(result_rp_b.has_value());
+  if (IsAudienceClaimEnabled()) {
+    EXPECT_NE(*result_rp_a, *result_rp_b);
+  } else {
+    EXPECT_EQ(*result_rp_a, *result_rp_b);
+  }
+}
+
+TEST_P(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", RSA_PKCS1_SHA256,
       /*pubkey_spki=*/{}, std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, "abc.efg.AQID");
 }
 
-TEST(SessionBindingUtilsTest,
-     AppendSignatureToHeaderAndPayloadValidECDSASignature) {
+TEST_P(SessionBindingUtilsTest,
+       AppendSignatureToHeaderAndPayloadValidECDSASignature) {
   constexpr std::string_view kRawSignatureBase64UrlEncoded =
       "dKBvaysOgg4DO26Y_Imc8zC1VtMpibWCM1-dl_tlZJC8te5C4lqHriEY2n5oZTC-5Wk9xV_"
       "VYkU-jQsFGjN5jQ";
@@ -195,22 +333,22 @@ TEST(SessionBindingUtilsTest,
   EXPECT_EQ(result, base::StrCat({"abc.efg.", kRawSignatureBase64UrlEncoded}));
 }
 
-TEST(SessionBindingUtilsTest,
-     AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
+TEST_P(SessionBindingUtilsTest,
+       AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", ECDSA_SHA256, kValidP256Spki,
       /*signature=*/std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
 }
 
-TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayloadInvalidSpki) {
+TEST_P(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayloadInvalidSpki) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", ECDSA_SHA256,
       /*pubkey_spki=*/std::vector<uint8_t>({1, 2, 3}), kValidDerSignature);
   EXPECT_EQ(result, std::nullopt);
 }
 
-TEST(SessionBindingUtilsTest, TestIsSecureUrl) {
+TEST_P(SessionBindingUtilsTest, TestIsSecureUrl) {
   const std::vector<GURL> secure_connection_urls = {
       GURL("https://example.test/"), GURL("https://localhost:8080/"),
       GURL("http://localhost:8080/")};
@@ -227,7 +365,7 @@ TEST(SessionBindingUtilsTest, TestIsSecureUrl) {
   }
 }
 
-TEST(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
+TEST_P(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
   struct Request {
     const base::flat_map<SessionKey, SessionUsage>& device_bound_session_usage()
         const {
@@ -269,7 +407,7 @@ TEST(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
   EXPECT_EQ(request.usage_map[key2], SessionUsage::kInScopeRefreshNotAllowed);
 }
 
-TEST(SessionBindingUtilsTest, CreateAttestationValue_Tpm) {
+TEST_P(SessionBindingUtilsTest, CreateAttestationValue_Tpm) {
   base::DictValue result = CreateAttestationValue(
       {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}});
 
@@ -280,7 +418,7 @@ TEST(SessionBindingUtilsTest, CreateAttestationValue_Tpm) {
   EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
 }
 
-TEST(SessionBindingUtilsTest, CreateAttestationValue_SecureEnclave) {
+TEST_P(SessionBindingUtilsTest, CreateAttestationValue_SecureEnclave) {
   base::DictValue result = CreateAttestationValue({
       .format = kSecureEnclave,
       .statement = {1, 2, 3},
@@ -292,13 +430,15 @@ TEST(SessionBindingUtilsTest, CreateAttestationValue_SecureEnclave) {
   EXPECT_THAT(result.FindString("sig"), Pointee(Eq("BAUG")));
 }
 
-TEST(SessionBindingUtilsTest, CreateOuterRegistrationHeaderAndPayload_Success) {
+TEST_P(SessionBindingUtilsTest,
+       CreateOuterRegistrationHeaderAndPayload_Success) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
   ASSERT_OK_AND_ASSIGN(
       std::string result,
       CreateOuterRegistrationHeaderAndPayload(
-          "inner_jws", RSA_PKCS1_SHA256, spki, "aud",
+          "inner_jws", RSA_PKCS1_SHA256, spki,
+          GURL("https://example.com/register?query=param#fragment"),
           {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}));
 
   ASSERT_OK_AND_ASSIGN((auto [header, payload]),
@@ -314,30 +454,32 @@ TEST(SessionBindingUtilsTest, CreateOuterRegistrationHeaderAndPayload_Success) {
           .Set("jwk",
                base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                    .value());
-  base::DictValue expected_payload = base::DictValue()
-                                         .Set("aud", "aud")
-                                         .Set("jti", "inner_jws")
-                                         .Set("att", CreateAttestationValue({
-                                                         .format = kTpm,
-                                                         .statement = {1, 2, 3},
-                                                         .signature = {4, 5, 6},
-                                                     }));
+  base::DictValue expected_payload =
+      base::DictValue()
+          .Set("aud", "https://example.com/register")
+          .Set("jti", "inner_jws")
+          .Set("att", CreateAttestationValue({
+                          .format = kTpm,
+                          .statement = {1, 2, 3},
+                          .signature = {4, 5, 6},
+                      }));
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest,
-     CreateOuterRegistrationHeaderAndPayload_InvalidSpki) {
+TEST_P(SessionBindingUtilsTest,
+       CreateOuterRegistrationHeaderAndPayload_InvalidSpki) {
   std::vector<uint8_t> invalid_spki = {1, 2, 3};
   EXPECT_EQ(
       CreateOuterRegistrationHeaderAndPayload(
-          "inner_jws", RSA_PKCS1_SHA256, invalid_spki, "aud",
+          "inner_jws", RSA_PKCS1_SHA256, invalid_spki,
+          GURL("https://example.com/register"),
           {.format = kTpm, .statement = {1, 2, 3}, .signature = {4, 5, 6}}),
       std::nullopt);
 }
 
-TEST(SessionBindingUtilsTest, SecFetchSiteForReferringOrigin) {
+TEST_P(SessionBindingUtilsTest, SecFetchSiteForReferringOrigin) {
   // Validate that W3C Sec-Fetch-Site string-literal translation correctly
   // resolves 'same-origin', 'same-site', and 'cross-site' origin relationships,
   // including strictness against unencrypted/HTTP protocol-mismatches.

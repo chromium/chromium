@@ -9,6 +9,7 @@
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -21,6 +22,7 @@
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
+#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -101,11 +103,19 @@ std::optional<std::string> CombineHeaderAndPayload(
                        Base64UrlEncode(*payload_serialized)});
 }
 
+GURL RemoveQueryAndFragment(const GURL& original) {
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  return original.ReplaceComponents(replacements);
+}
+
 // Helper function for the shared functionality of refresh and
 // registration JWTs.
 std::optional<std::string> CreateHeaderAndPayload(
     std::optional<std::string> challenge,
     crypto::sign::SignatureKind algorithm,
+    const GURL& destination_url,
     std::optional<base::DictValue> jwk,
     const std::optional<std::string>& authorization) {
   ASSIGN_OR_RETURN(std::string_view alg, SignatureAlgorithmToString(algorithm));
@@ -115,6 +125,11 @@ std::optional<std::string> CreateHeaderAndPayload(
   }
 
   auto payload = base::DictValue();
+  if (destination_url.is_valid() &&
+      base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsIncludeAudienceClaim)) {
+    payload.Set("aud", RemoveQueryAndFragment(destination_url).spec());
+  }
   if (challenge.has_value()) {
     payload.Set("jti", *challenge);
   }
@@ -150,7 +165,7 @@ std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
     std::string_view inner_jws,
     crypto::sign::SignatureKind aik_algorithm,
     base::span<const uint8_t> aik_pubkey_spki,
-    std::string_view aud,
+    const GURL& destination_url,
     const crypto::AttestationStatement& attestation_stmt) {
   ASSIGN_OR_RETURN(std::string_view alg,
                    SignatureAlgorithmToString(aik_algorithm));
@@ -167,7 +182,7 @@ std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
                     .Set("jwk", std::move(jwk));
 
   auto payload = base::DictValue()
-                     .Set("aud", aud)
+                     .Set("aud", RemoveQueryAndFragment(destination_url).spec())
                      .Set("jti", inner_jws)
                      .Set("att", CreateAttestationValue(attestation_stmt));
 
@@ -178,6 +193,7 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::optional<std::string> challenge,
     crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey_spki,
+    const GURL& destination_url,
     std::optional<std::string> authorization) {
   base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
   if (jwk.empty()) {
@@ -185,14 +201,16 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     return std::nullopt;
   }
 
-  return CreateHeaderAndPayload(challenge, algorithm, std::move(jwk),
-                                std::move(authorization));
+  return CreateHeaderAndPayload(challenge, algorithm, destination_url,
+                                std::move(jwk), std::move(authorization));
 }
 
 std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
     std::optional<std::string> challenge,
-    crypto::sign::SignatureKind algorithm) {
-  return CreateHeaderAndPayload(challenge, algorithm, /*jwk=*/std::nullopt,
+    crypto::sign::SignatureKind algorithm,
+    const GURL& destination_url) {
+  return CreateHeaderAndPayload(challenge, algorithm, destination_url,
+                                /*jwk=*/std::nullopt,
                                 /*authorization=*/std::nullopt);
 }
 

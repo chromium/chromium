@@ -8883,6 +8883,12 @@ inline constexpr char kEnableStandardBoundSessionsGoogleName[] =
 inline constexpr char kEnableStandardBoundSessionsGoogleDescription[] =
     "Enables Device Bound Session Credentials (Standard) to register sessions "
     "on Google sites";
+inline constexpr char kEnableStandardBoundSessionCredentialsAudienceName[] =
+    "Device Bound Session Credentials (Standard) - Audience Claim";
+inline constexpr char
+    kEnableStandardBoundSessionCredentialsAudienceDescription[] =
+        "Enables including the 'aud' (audience) claim in Device Bound "
+        "Session Credentials registration and refresh JWT payloads.";
 
 inline constexpr char kEnableManagementPromotionBannerName[] =
     "Enable Management Promotion Banner";

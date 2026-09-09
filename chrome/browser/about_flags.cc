@@ -10467,6 +10467,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStandardBoundSessionsGoogleDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessionsForRestrictedSites)},
+    {"enable-standard-device-bound-session-credentials-audience",
+     flag_descriptions::kEnableStandardBoundSessionCredentialsAudienceName,
+     flag_descriptions::
+         kEnableStandardBoundSessionCredentialsAudienceDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         net::features::kDeviceBoundSessionsIncludeAudienceClaim)},
 
     {"responsive-iframes", flag_descriptions::kResponsiveIframesName,
      flag_descriptions::kResponsiveIframesDescription, kOsAll,

@@ -123,16 +123,18 @@ unexportable_keys::ServiceErrorOr<std::string> CreateInnerHeaderAndPayload(
     bool is_for_refresh,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     unexportable_keys::UnexportableSigningKeyId key_id,
+    const GURL& destination_url,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization) {
   ASSIGN_OR_RETURN(KeyInfo key_info,
                    GetKeyInfo(unexportable_key_service, key_id));
   return base::OptionalToExpected(
-      is_for_refresh ? CreateKeyRefreshHeaderAndPayload(std::move(challenge),
-                                                        key_info.algorithm)
-                     : CreateKeyRegistrationHeaderAndPayload(
-                           std::move(challenge), key_info.algorithm,
-                           key_info.pubkey, std::move(authorization)),
+      is_for_refresh
+          ? CreateKeyRefreshHeaderAndPayload(
+                std::move(challenge), key_info.algorithm, destination_url)
+          : CreateKeyRegistrationHeaderAndPayload(
+                std::move(challenge), key_info.algorithm, key_info.pubkey,
+                destination_url, std::move(authorization)),
       unexportable_keys::ServiceError::kCryptoApiFailed);
 }
 
@@ -158,6 +160,7 @@ void SignChallengeWithKey(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     unexportable_keys::UnexportableSigningKeyId key_id,
     unexportable_keys::BackgroundTaskPriority priority,
+    const GURL& destination_url,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     base::OnceCallback<void(
@@ -165,7 +168,8 @@ void SignChallengeWithKey(
   ASSIGN_OR_RETURN(std::string header_and_payload,
                    CreateInnerHeaderAndPayload(
                        is_for_refresh, unexportable_key_service, key_id,
-                       std::move(challenge), std::move(authorization)),
+                       destination_url, std::move(challenge),
+                       std::move(authorization)),
                    [&](unexportable_keys::ServiceError error) {
                      RunSessionCallback(std::move(callback),
                                         SessionError::kSigningError,
@@ -191,7 +195,7 @@ struct AttestedTokenSigningState {
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service;
   const unexportable_keys::UnexportableAttestationKeyId attestation_key_id;
   const unexportable_keys::BackgroundTaskPriority priority;
-  const std::string audience;
+  const GURL audience;
   base::OnceCallback<void(
       SessionErrorOr<RegistrationFetcher::RegistrationToken>)>
       callback;
@@ -208,7 +212,7 @@ unexportable_keys::ServiceErrorOr<std::string> CreateOuterHeaderAndPayload(
     unexportable_keys::UnexportableAttestationKeyId attestation_key_id,
     std::string_view inner_jws,
     const crypto::AttestationStatement& attestation_statement,
-    std::string_view audience) {
+    const GURL& audience) {
   ASSIGN_OR_RETURN(KeyInfo aik_info,
                    GetKeyInfo(key_service, attestation_key_id));
   return base::OptionalToExpected(
@@ -275,7 +279,7 @@ void SignChallengeWithAttestationKey(
     unexportable_keys::UnexportableSigningKeyId key_id,
     unexportable_keys::UnexportableAttestationKeyId attestation_key_id,
     unexportable_keys::BackgroundTaskPriority priority,
-    std::string audience,
+    const GURL& destination_url,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     base::OnceCallback<void(
@@ -283,7 +287,8 @@ void SignChallengeWithAttestationKey(
   ASSIGN_OR_RETURN(std::string header_and_payload,
                    CreateInnerHeaderAndPayload(
                        /*is_for_refresh=*/false, unexportable_key_service,
-                       key_id, challenge, std::move(authorization)),
+                       key_id, destination_url, challenge,
+                       std::move(authorization)),
                    [&](unexportable_keys::ServiceError error) {
                      RunSessionCallback(std::move(callback),
                                         SessionError::kSigningError,
@@ -300,7 +305,7 @@ void SignChallengeWithAttestationKey(
       .key_service{unexportable_key_service},
       .attestation_key_id = attestation_key_id,
       .priority = priority,
-      .audience = std::move(audience),
+      .audience = destination_url,
       .callback = std::move(callback),
   });
 
@@ -786,11 +791,11 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       CHECK(!IsForRefreshRequest());
       SignChallengeWithAttestationKey(
           *key_service_, *key_id_, *attestation_key_id_, priority_,
-          fetcher_endpoint_.spec(), current_challenge_, current_authorization_,
+          fetcher_endpoint_, current_challenge_, current_authorization_,
           std::move(callback));
     } else {
       SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
-                           priority_, current_challenge_,
+                           priority_, fetcher_endpoint_, current_challenge_,
                            current_authorization_, std::move(callback));
     }
     // `this` may be deleted.
@@ -1231,7 +1236,7 @@ void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
                              });
             SignChallengeWithKey(
                 /*is_for_refresh=*/false, unexportable_key_service, key_id,
-                unexportable_keys::BackgroundTaskPriority::kBestEffort,
+                unexportable_keys::BackgroundTaskPriority::kBestEffort, GURL(),
                 std::move(challenge), std::move(authorization),
                 std::move(callback));
           },
