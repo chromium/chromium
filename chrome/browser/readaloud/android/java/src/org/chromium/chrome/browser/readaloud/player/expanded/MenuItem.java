@@ -92,11 +92,11 @@ public class MenuItem extends FrameLayout {
         mLabel = label;
         LayoutInflater inflater = LayoutInflater.from(context);
         LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.readaloud_menu_item, null);
-        layout.setOnClickListener(
+        mLayout = layout.findViewById(R.id.readaloud_menu_item_row);
+        mLayout.setOnClickListener(
                 (view) -> {
                     onClick();
                 });
-        mLayout = layout;
         mLayoutSupplier = ObservableSuppliers.createNonNull(mLayout);
         new OneShotCallback<>(mLayoutSupplier, this::onLayoutInflated);
         if (iconId != 0) {
@@ -221,6 +221,7 @@ public class MenuItem extends FrameLayout {
     }
 
     void setItemEnabled(boolean enabled) {
+        mLayout.setEnabled(enabled);
         if (mActionType == Action.TOGGLE) {
             getToggleSwitch().setEnabled(enabled);
         }
@@ -269,6 +270,9 @@ public class MenuItem extends FrameLayout {
     // On click won't be propagated here if the parent layout is not clickable
     private void onClick() {
         assert mMenu != null;
+        if (!mLayout.isEnabled()) {
+            return;
+        }
         if (mActionType == Action.RADIO) {
             getRadioButton().toggle();
         } else if (mActionType == Action.TOGGLE) {

@@ -128,7 +128,7 @@ public class VoiceMenuUnitTest {
 
     @Test
     public void testUserSelectsVoice() {
-        mMenu.getItem(1).getChildAt(0).performClick();
+        mMenu.getItem(1).findViewById(R.id.readaloud_menu_item_row).performClick();
         verify(mInteractionHandler, times(1)).onVoiceSelected(mVoiceCaptor.capture());
 
         PlaybackVoice voice = mVoiceCaptor.getValue();

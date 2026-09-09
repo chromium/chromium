@@ -62,12 +62,16 @@ class OptionsMenuSheetContent extends MenuSheetContent {
                 public void onAnimationEnd(Animator animation) {
                     if (mVoiceMenuState == SHOWING) {
                         mVoiceMenuState = VISIBLE;
+                        focusFirstButton(mVoiceMenu.getMenu());
+                        // Hide offscreen options menu so its items cannot receive keyboard focus.
+                        mOptionsMenu.setVisibility(View.INVISIBLE);
                     } else if (mVoiceMenuState == HIDING) {
                         mVoiceMenuState = GONE;
                         mVoiceMenu.getMenu().setVisibility(View.GONE);
                         if (mHandler != null) {
                             mHandler.onVoiceMenuClosed();
                         }
+                        focusFirstButton(mOptionsMenu);
                     }
                 }
             };
@@ -273,6 +277,8 @@ class OptionsMenuSheetContent extends MenuSheetContent {
             return;
         }
 
+        // Ensure options menu is visible during the slide transition.
+        mOptionsMenu.setVisibility(View.VISIBLE);
         mVoiceMenu.getMenu().setVisibility(View.VISIBLE);
         runVoiceMenuAnimation(SHOWING);
     }
@@ -282,7 +288,18 @@ class OptionsMenuSheetContent extends MenuSheetContent {
             return;
         }
 
+        // Restore options menu visibility so it is rendered while sliding back into view.
+        mOptionsMenu.setVisibility(View.VISIBLE);
         runVoiceMenuAnimation(HIDING);
+    }
+
+    private void focusFirstButton(View menu) {
+        if (!menu.isInTouchMode()) {
+            View backButton = menu.findViewById(R.id.readaloud_menu_back);
+            if (backButton != null) {
+                backButton.requestFocus();
+            }
+        }
     }
 
     private void runVoiceMenuAnimation(@VisibilityState int newState) {
@@ -290,7 +307,11 @@ class OptionsMenuSheetContent extends MenuSheetContent {
         long reversedPlayTimeMs =
                 mVoiceMenuShowAnimation.getTotalDuration()
                         - mVoiceMenuShowAnimation.getCurrentPlayTime();
+        // Temporarily detach listener so cancel() does not synchronously trigger
+        // onAnimationEnd() prematurely when reversing the animation.
+        mVoiceMenuShowAnimation.removeListener(mAnimationListener);
         mVoiceMenuShowAnimation.cancel();
+        mVoiceMenuShowAnimation.addListener(mAnimationListener);
 
         updateAnimationValues(newState);
 

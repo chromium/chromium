@@ -9,4 +9,5 @@ found in the LICENSE file.
     android:id="@+id/toggle_switch"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:focusable="false"
     android:importantForAccessibility="no"/>

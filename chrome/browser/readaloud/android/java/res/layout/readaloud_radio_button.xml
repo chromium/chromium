@@ -10,4 +10,5 @@ found in the LICENSE file.
     android:layout_width="24dp"
     android:layout_height="24dp"
     android:layout_gravity="center_vertical"
+    android:focusable="false"
     android:importantForAccessibility="no"/>

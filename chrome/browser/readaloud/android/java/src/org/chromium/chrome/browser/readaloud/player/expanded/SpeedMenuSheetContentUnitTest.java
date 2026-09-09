@@ -67,17 +67,17 @@ public class SpeedMenuSheetContentUnitTest {
     @Test
     public void testOnClick() {
         mContent.setInteractionHandler(mHandler);
-        assertTrue(mMenu.getItem(0).getChildAt(0).performClick());
+        assertTrue(mMenu.getItem(0).findViewById(R.id.readaloud_menu_item_row).performClick());
         verify(mHandler).onSpeedChange(0.5f);
 
-        assertTrue(mMenu.getItem(7).getChildAt(0).performClick());
+        assertTrue(mMenu.getItem(7).findViewById(R.id.readaloud_menu_item_row).performClick());
         verify(mHandler).onSpeedChange(4.0f);
     }
 
     @Test
     public void testSetInteractionHandler() {
         mContent.setInteractionHandler(mHandler);
-        assertTrue(mMenu.getItem(0).getChildAt(0).performClick());
+        assertTrue(mMenu.getItem(0).findViewById(R.id.readaloud_menu_item_row).performClick());
         verify(mHandler).onSpeedChange(0.5f);
     }
 

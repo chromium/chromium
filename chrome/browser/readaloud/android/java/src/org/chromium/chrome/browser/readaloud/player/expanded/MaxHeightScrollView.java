@@ -34,6 +34,10 @@ public class MaxHeightScrollView extends ScrollView {
     }
 
     private void init(AttributeSet attrs) {
+        // Framework ScrollView constructor calls initScrollView() which unconditionally sets
+        // focusable to true, overriding XML. Explicitly disable focusability so Tab navigation
+        // does not stop on this container before reaching menu items.
+        setFocusable(false);
         TypedArray a =
                 getContext().obtainStyledAttributes(attrs, R.styleable.MaxHeightScrollView, 0, 0);
         mMaxHeight = a.getDimensionPixelSize(R.styleable.MaxHeightScrollView_maxHeight, 0);

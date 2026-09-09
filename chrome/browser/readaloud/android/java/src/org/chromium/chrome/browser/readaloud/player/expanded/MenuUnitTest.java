@@ -22,7 +22,9 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -87,7 +89,7 @@ public class MenuUnitTest {
         item.setToggleHandler(mToggleHandler);
         item.setValue(false);
         // change the value
-        assertTrue(item.getChildAt(0).performClick());
+        assertTrue(item.findViewById(R.id.readaloud_menu_item_row).performClick());
         verify(mToggleHandler).onResult(true);
     }
 
@@ -104,10 +106,10 @@ public class MenuUnitTest {
         // test onClick()
         mMenu.setItemClickHandler(mHandler);
         item.setValue(false);
-        assertTrue(item.getChildAt(0).performClick());
+        assertTrue(item.findViewById(R.id.readaloud_menu_item_row).performClick());
         assertTrue(radioButton.isChecked());
         // clicking a checked radio button should leave it checked.
-        assertTrue(item.getChildAt(0).performClick());
+        assertTrue(item.findViewById(R.id.readaloud_menu_item_row).performClick());
         assertTrue(radioButton.isChecked());
 
         verify(mHandler, times(2)).onResult(1);
@@ -119,7 +121,7 @@ public class MenuUnitTest {
         item.setToggleHandler(mToggleHandler);
         item.setItemEnabled(false);
 
-        item.performClick();
+        item.findViewById(R.id.readaloud_menu_item_row).performClick();
         verify(mToggleHandler, never()).onResult(anyBoolean());
     }
 
@@ -227,5 +229,43 @@ public class MenuUnitTest {
         // accessibility delegate will be null for action items without buttons
         AccessibilityDelegate accessibilityDelegate = layout.getAccessibilityDelegate();
         assertNull(accessibilityDelegate);
+    }
+
+    @Test
+    public void testScrollViewNotFocusable() {
+        assertFalse(mMenu.getScrollView().isFocusable());
+    }
+
+    @Test
+    public void testMenuItemFocusability() {
+        MenuItem toggleItem = mMenu.addItem(1, 0, "toggle", null, Action.TOGGLE);
+        SwitchCompat toggle = toggleItem.findViewById(R.id.toggle_switch);
+        assertFalse(toggle.isFocusable());
+
+        MenuItem radioItem = mMenu.addItem(2, 0, "radio", null, Action.RADIO);
+        RadioButton radio = radioItem.findViewById(R.id.readaloud_radio_button);
+        assertFalse(radio.isFocusable());
+
+        radioItem.addPlayButton();
+        ImageView playButton = radioItem.findViewById(R.id.play_button);
+        assertTrue(playButton.isFocusable());
+
+        ProgressBar spinner = radioItem.findViewById(R.id.spinner);
+        assertFalse(spinner.isFocusable());
+    }
+
+    @Test
+    public void testMenuItemHeaderNotFocusable() {
+        MenuItem item = mMenu.addItem(1, 0, "test item", "Header Text", Action.RADIO);
+        TextView header = item.findViewById(R.id.item_header);
+        assertNotNull(header);
+        assertFalse(header.isFocusable());
+
+        View row = item.findViewById(R.id.readaloud_menu_item_row);
+        assertNotNull(row);
+        assertTrue(row.isFocusable());
+
+        assertFalse(item.isFocusable());
+        assertFalse(item.getChildAt(0).isFocusable());
     }
 }
