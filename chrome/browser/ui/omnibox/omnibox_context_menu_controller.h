@@ -289,6 +289,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   OmniboxEditModel* GetEditModel();
   void OpenAiMode(OmniboxEditModel::AimActivation activation);
   virtual OmniboxPopupUI* GetOmniboxPopupUI() const;
+  virtual bool IsLoomnibox() const;
   virtual ContextualSearchboxHandler* GetContextualSearchboxHandler() const;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle() const;

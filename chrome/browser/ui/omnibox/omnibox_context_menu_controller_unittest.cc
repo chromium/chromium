@@ -67,10 +67,13 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
 
 class TestOmniboxContextMenuController : public OmniboxContextMenuController {
  public:
+  using OmniboxContextMenuController::AddContextualInputItems;
   using OmniboxContextMenuController::BuildMenu;
   using OmniboxContextMenuController::GetIconForInputType;
   using OmniboxContextMenuController::GetIconForModel;
   using OmniboxContextMenuController::GetIconForTool;
+  using OmniboxContextMenuController::input_type_for_command_id_;
+  using OmniboxContextMenuController::IsInputTypeEnabled;
   using OmniboxContextMenuController::OmniboxContextMenuController;
   using OmniboxContextMenuController::OnGetInputState;
   using OmniboxContextMenuController::OnInputStateChanged;
@@ -80,6 +83,10 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
   }
 
   OmniboxPopupUI* GetOmniboxPopupUI() const override { return nullptr; }
+
+  bool IsLoomnibox() const override { return is_loomnibox_; }
+
+  void SetIsLoomnibox(bool is_loomnibox) { is_loomnibox_ = is_loomnibox; }
 
   std::vector<OmniboxContextMenuController::TabInfo> GetRecentTabs()
       const override {
@@ -108,6 +115,7 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs_;
   bool is_content_sharing_enabled_ = true;
   bool is_tab_context_enabled_ = true;
+  bool is_loomnibox_ = false;
 };
 
 class OmniboxContextMenuControllerTest : public testing::Test {
@@ -477,6 +485,68 @@ TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_DriveInputType) {
   controller()->ExecuteCommand(drive_command_id, 0);
 
   // Verify that OpenFileUploadDialog was NOT called.
+  EXPECT_EQ(test_selector->open_file_upload_dialog_calls(), initial_calls);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       IsInputTypeEnabled_DriveDisabledInLoomnibox) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimUsePecApi, omnibox::kComposeboxDriveContextMenuOption}, {});
+
+  controller()->SetIsLoomnibox(false);
+  EXPECT_TRUE(
+      controller()->IsInputTypeEnabled(omnibox::InputType::INPUT_TYPE_DRIVE));
+
+  controller()->SetIsLoomnibox(true);
+  EXPECT_FALSE(
+      controller()->IsInputTypeEnabled(omnibox::InputType::INPUT_TYPE_DRIVE));
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       AddContextualInputItems_DriveOmittedInLoomnibox) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimUsePecApi, omnibox::kComposeboxDriveContextMenuOption}, {});
+
+  omnibox::InputState state;
+  state.allowed_input_types.push_back(omnibox::InputType::INPUT_TYPE_DRIVE);
+  state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+
+  controller()->SetIsLoomnibox(true);
+  controller()->OnGetInputState(state);
+  controller()->AddContextualInputItems();
+
+  // DRIVE should not be added to input_type_for_command_id_ when in Loomnibox.
+  bool drive_found = false;
+  for (const auto& pair : controller()->input_type_for_command_id_) {
+    if (pair.second == omnibox::InputType::INPUT_TYPE_DRIVE) {
+      drive_found = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(drive_found);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       ExecuteCommand_DriveDisabledInLoomnibox) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimUsePecApi, omnibox::kComposeboxDriveContextMenuOption}, {});
+
+  // Simulate a command ID mapped to DRIVE.
+  int drive_command_id = 34000;
+  controller()->input_type_for_command_id_[drive_command_id] =
+      omnibox::InputType::INPUT_TYPE_DRIVE;
+  controller()->SetIsLoomnibox(true);
+
+  TestOmniboxPopupFileSelector* test_selector =
+      static_cast<TestOmniboxPopupFileSelector*>(file_selector_.get());
+  int initial_calls = test_selector->open_file_upload_dialog_calls();
+
+  // Execute command in Loomnibox mode should be a no-op.
+  controller()->ExecuteCommand(drive_command_id, 0);
   EXPECT_EQ(test_selector->open_file_upload_dialog_calls(), initial_calls);
 }
 

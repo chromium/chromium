@@ -295,6 +295,11 @@ void OmniboxContextMenuController::InitializeMenuItemInfo() {
   model_info_.clear();
 
   for (omnibox::InputType input_type : input_state_.allowed_input_types) {
+    // Drive context input is unsupported in Loomnibox (Omnibox Everywhere)
+    // surfaces, so omit it from menu item info.
+    if (input_type == omnibox::InputType::INPUT_TYPE_DRIVE && IsLoomnibox()) {
+      continue;
+    }
     input_type_info_.insert(
         {input_type,
          {/*enabled=*/IsInputTypeEnabled(input_type),
@@ -552,6 +557,11 @@ void OmniboxContextMenuController::AddContextualInputItems() {
     for (const auto input_type : input_state_.allowed_input_types) {
       // BROWSER_TAB input type is handled by `AddRecentTabItems()`.
       if (input_type == omnibox::InputType::INPUT_TYPE_BROWSER_TAB) {
+        continue;
+      }
+      // Drive context input is unsupported in Loomnibox (Omnibox Everywhere)
+      // surfaces, so omit it from the context menu.
+      if (input_type == omnibox::InputType::INPUT_TYPE_DRIVE && IsLoomnibox()) {
         continue;
       }
       auto& menu_item_info = input_type_info_[input_type];
@@ -1218,6 +1228,11 @@ OmniboxContextMenuController::GetInputTypeConfig(
 
 bool OmniboxContextMenuController::IsInputTypeEnabled(
     omnibox::InputType input_type) const {
+  // Drive context input is unsupported in Loomnibox (Omnibox Everywhere)
+  // surfaces, so always report it as disabled.
+  if (input_type == omnibox::InputType::INPUT_TYPE_DRIVE && IsLoomnibox()) {
+    return false;
+  }
   return std::none_of(input_state_.disabled_input_types.begin(),
                       input_state_.disabled_input_types.end(),
                       [&](omnibox::InputType disabled_input_type) {
@@ -1617,6 +1632,11 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != input_type_for_command_id_.end()) {
         const omnibox::InputType input_type = it->second;
         if (input_type == omnibox::InputType::INPUT_TYPE_DRIVE) {
+          // Drive context input is unsupported in Loomnibox (Omnibox
+          // Everywhere) surfaces, so no-op if triggered.
+          if (IsLoomnibox()) {
+            return;
+          }
           if (contextual_searchbox_handler) {
             contextual_searchbox_handler->GetDriveDisclaimerStatus(
                 base::BindOnce(
@@ -2034,6 +2054,10 @@ OmniboxEverywhereUI* OmniboxContextMenuController::GetOmniboxEverywhereUI(
   return webui && webui->GetController()
              ? webui->GetController()->GetAs<OmniboxEverywhereUI>()
              : nullptr;
+}
+
+bool OmniboxContextMenuController::IsLoomnibox() const {
+  return GetOmniboxEverywhereUI(web_contents_.get()) != nullptr;
 }
 
 // static
