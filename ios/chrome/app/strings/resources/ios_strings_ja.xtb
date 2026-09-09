@@ -25,7 +25,7 @@
 <translation id="1063300264396686489">他のデバイスで作成されたタブグループを自動的に開く</translation>
 <translation id="1072476005125066234">興味 / 関心に基づくレビュー</translation>
 <translation id="1072679792409426431">管理者によって無効にされています</translation>
-<translation id="1074827084851510304">{password_count} 件のパスワードと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
+<translation id="1074827084851510304">{password_count} 件のパスワードと、ログイン情報を保存しないよう設定したサイトとアプリの一覧が削除されます。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個のタブ}other{{count} 個のタブ}}</translation>
 <translation id="1082554859195167538">おすすめの商品レビュー</translation>
