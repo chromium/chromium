@@ -17,7 +17,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillPasswordManagerProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetListViewBase;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.ItemDividerBase;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 import java.util.Set;
 
@@ -28,6 +30,12 @@ import java.util.Set;
  */
 @NullMarked
 class TouchToFillPasswordManagerView extends BottomSheetListViewBase {
+
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.TOUCH_TO_FILL_PASSWORD_MANAGER)
+                    .build();
+
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
             super(context);
@@ -67,6 +75,11 @@ class TouchToFillPasswordManagerView extends BottomSheetListViewBase {
 
         setSheetItemListView(getContentView().findViewById(R.id.sheet_item_list));
         getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override

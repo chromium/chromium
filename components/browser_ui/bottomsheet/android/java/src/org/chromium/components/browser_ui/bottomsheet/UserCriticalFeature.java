@@ -28,9 +28,11 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({
     UserCriticalFeature.NONE,
     UserCriticalFeature.TEST,
+    UserCriticalFeature.TOUCH_TO_FILL_PASSWORD_MANAGER,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
     int NONE = 0;
     int TEST = 1;
+    int TOUCH_TO_FILL_PASSWORD_MANAGER = 2;
 }
