@@ -164,6 +164,13 @@ PrivilegedWebContents::~PrivilegedWebContents() {
   web_contents_.reset();
 }
 
+content::KeyboardEventProcessingResult
+PrivilegedWebContents::EmbedderDelegate::PreHandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+}
+
 bool PrivilegedWebContents::EmbedderDelegate::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
@@ -228,6 +235,21 @@ content::WebContents* PrivilegedWebContents::AddNewContents(
   // (ChromeContentBrowserClient::CanCreateWindow), so a new WebContents should
   // never be handed to this delegate. Drop it loudly if it ever is.
   NOTREACHED();
+}
+
+content::KeyboardEventProcessingResult
+PrivilegedWebContents::PreHandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (source != web_contents_.get()) {
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+
+  if (embedder_delegate_) {
+    return embedder_delegate_->PreHandleKeyboardEvent(source, event);
+  }
+
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
 bool PrivilegedWebContents::HandleKeyboardEvent(

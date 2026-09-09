@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
+#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -103,6 +104,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   class EmbedderDelegate {
    public:
     virtual ~EmbedderDelegate() = default;
+    virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+        content::WebContents* source,
+        const input::NativeWebKeyboardEvent& event);
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
         const input::NativeWebKeyboardEvent& event);
@@ -152,6 +156,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   void ContentsZoomChange(bool zoom_in) override;
