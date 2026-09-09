@@ -742,6 +742,19 @@ void OmniboxEverywhereUIManager::OnWidgetUserDragEnded(views::Widget* widget) {
     pending_auto_resize_size_.reset();
     ResizeDueToAutoResize(web_contents(), size);
   }
+  display::Screen* screen = display::Screen::Get();
+  if (widget && screen) {
+    gfx::Rect bounds = widget->GetWindowBoundsInScreen();
+    display::Display display =
+        screen->GetDisplayNearestPoint(bounds.CenterPoint());
+    gfx::Rect work_area = display.work_area();
+    if (!work_area.IsEmpty()) {
+      bounds.AdjustToFit(work_area);
+      if (bounds != widget->GetWindowBoundsInScreen()) {
+        widget->SetBounds(bounds);
+      }
+    }
+  }
 }
 
 void OmniboxEverywhereUIManager::CloseUI() {

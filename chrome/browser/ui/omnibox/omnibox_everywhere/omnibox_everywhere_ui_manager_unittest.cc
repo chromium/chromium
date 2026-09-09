@@ -1558,6 +1558,63 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->Close();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OnWidgetUserDragEndedAdjustsToFitWorkArea \
+  DISABLED_OnWidgetUserDragEndedAdjustsToFitWorkArea
+#else
+#define MAYBE_OnWidgetUserDragEndedAdjustsToFitWorkArea \
+  OnWidgetUserDragEndedAdjustsToFitWorkArea
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_OnWidgetUserDragEndedAdjustsToFitWorkArea) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  display1.set_work_area(gfx::Rect(0, 30, 1920, 1050));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  const gfx::Rect work_area = display1.work_area();
+  const int widget_width = widget->GetWindowBoundsInScreen().width();
+  const int widget_height = widget->GetWindowBoundsInScreen().height();
+
+  // Simulate dragging the widget past the right/bottom edge of the work area.
+  gfx::Rect offscreen_right_bottom(work_area.right() - 50,
+                                   work_area.bottom() - 50, widget_width,
+                                   widget_height);
+  widget->SetBounds(offscreen_right_bottom);
+  EXPECT_FALSE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+
+  // Ending the user drag clamps bounds back within the work area.
+  ui_manager->OnWidgetUserDragStarted(widget);
+  ui_manager->OnWidgetUserDragEnded(widget);
+
+  EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().right(), work_area.right());
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().bottom(), work_area.bottom());
+
+  // Simulate dragging the widget past the top/left edge.
+  gfx::Rect offscreen_top_left(work_area.x() - 100, work_area.y() - 100,
+                               widget_width, widget_height);
+  widget->SetBounds(offscreen_top_left);
+  EXPECT_FALSE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+
+  ui_manager->OnWidgetUserDragStarted(widget);
+  ui_manager->OnWidgetUserDragEnded(widget);
+
+  EXPECT_TRUE(work_area.Contains(widget->GetWindowBoundsInScreen()));
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().origin(), work_area.origin());
+
+  ui_manager->Shutdown();
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest,
        RebuildWidgetOnEphemeralModelPrefChangeWhenVisible) {
   if (g_browser_process && g_browser_process->local_state()) {

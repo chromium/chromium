@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "ui/display/display.h"
@@ -72,9 +73,15 @@ void OmniboxEverywhereEventHandlerAura::OnMouseEvent(ui::MouseEvent* event) {
           event->SetHandled();
           gfx::Vector2d drag_offset =
               widget->GetWindowBoundsInScreen().origin() - cursor_screen;
+          ui_manager_->OnWidgetUserDragStarted(widget);
+          base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
+          auto weak_this = weak_factory_.GetWeakPtr();
           widget->RunMoveLoop(drag_offset,
                               views::Widget::MoveLoopSource::kMouse,
                               views::Widget::MoveLoopEscapeBehavior::kDontHide);
+          if (weak_this && weak_widget) {
+            ui_manager_->OnWidgetUserDragEnded(weak_widget.get());
+          }
         }
       }
       break;

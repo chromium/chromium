@@ -238,6 +238,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void set_is_context_menu_open_for_testing(bool open) {
     is_context_menu_open_ = open;
   }
+  bool is_dragging_for_testing() const { return is_dragging_; }
   void OnContextMenuClosedForTesting() { OnContextMenuClosed(); }
   const ui::SimpleMenuModel* context_menu_model_for_testing() const {
     return context_menu_model_.get();

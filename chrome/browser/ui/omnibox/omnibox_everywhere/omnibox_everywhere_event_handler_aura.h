@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
@@ -42,6 +43,8 @@ class OmniboxEverywhereEventHandlerAura : public ui::EventHandler {
   // drag. Null if a drag is not eligible (e.g. a mouse-released event happened
   // recently).
   std::optional<gfx::Point> drag_init_point_screen_;
+
+  base::WeakPtrFactory<OmniboxEverywhereEventHandlerAura> weak_factory_{this};
 };
 
 }  // namespace omnibox_everywhere
