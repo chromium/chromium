@@ -124,3 +124,6 @@ crbug.com/557276970 [ iPhone Simulator ] PinnedTabsGenericConsistencyTestCase/te
 
 # Gardening suppression 2026-09-08
 crbug.com/556842646 [ Simulator ] AutofillAIEGTest/testWalletFailureShowsErrorDialog [ Pass Failure ]
+
+# Gardening suppression 2026-09-09
+crbug.com/559221484 TabGroupsTestCase/testGroupCreationFromAnotherGroupInSelectionMode [ Pass Failure ]
