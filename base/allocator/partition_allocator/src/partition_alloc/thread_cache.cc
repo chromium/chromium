@@ -637,9 +637,6 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   int count = std::max(
       1, bucket.limit.load(std::memory_order_relaxed) / kBatchFillRatio);
 
-  size_t usable_size;
-  bool is_already_zeroed;
-
   PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets_[bucket_index].CanStoreRawSize()));
   PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets_[bucket_index].is_direct_mapped()));
 
@@ -665,31 +662,26 @@ void ThreadCache::FillBucket(size_t bucket_index) {
       // |raw_size| is set to the slot size, as we don't know it. However, it is
       // only used for direct-mapped allocations and single-slot ones anyway,
       // which are not handled here.
-      size_t ret_slot_size;
-      // `AllocFromBucket()` sets an output argument to show whether
-      // the slot can store its raw size. Slots handled by the thread
-      // cache, by definition, can not.
-      bool unused;
-      UntaggedSlotStart slot_start =
+      std::optional<PartitionRoot::RawAllocResult> raw_alloc_result =
           root_->AllocFromBucket<AllocFlags::kFastPathOrReturnNull |
                                  AllocFlags::kReturnNull>(
               &PA_UNSAFE_TODO(root_->buckets_[bucket_index]),
               PA_UNSAFE_TODO(root_->buckets_[bucket_index])
                   .slot_size /* raw_size */,
-              internal::PartitionPageSize(), &usable_size, &ret_slot_size,
-              &is_already_zeroed, &unused);
+              internal::PartitionPageSize());
       // Either the previous allocation would require a slow path allocation, or
       // the central allocator is out of memory. If the bucket was filled with
       // some objects, then the allocation will be handled normally. Otherwise,
       // this goes to the central allocator, which will service the allocation,
       // return nullptr or crash.
-      if (!slot_start) {
+      if (!raw_alloc_result.has_value()) {
         break;
       }
-      PA_UNSAFE_TODO(
-          PA_DCHECK(ret_slot_size == root_->buckets_[bucket_index].slot_size));
+      PA_DCHECK(raw_alloc_result->slot_and_size.size ==
+                root_->buckets_[bucket_index].slot_size);
 
-      slot_starts[allocated_slots++] = slot_start;
+      slot_starts[allocated_slots++] =
+          raw_alloc_result->slot_and_size.slot_start;
     }
   }
 

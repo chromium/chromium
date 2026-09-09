@@ -44,6 +44,7 @@
 #include "partition_alloc/partition_alloc_allocation_data.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/optional.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
@@ -53,6 +54,7 @@
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/slot_address_and_size.h"
+#include "partition_alloc/slot_start.h"
 #include "partition_alloc/thread_cache.h"
 
 // When a memory tool is replacing malloc to keep aligned behaviour working we
@@ -201,6 +203,20 @@ class alignas(internal::kPartitionCachelineSize)
   using FreeListEntry = internal::FreelistEntry;
   using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
   using DirectMapExtent = internal::PartitionDirectMapExtent;
+
+  struct RawAllocResult {
+    SlotAddressAndSize slot_and_size = {};
+    size_t usable_size = 0;
+    bool is_already_zeroed = false;
+    bool can_store_raw_size = false;
+  };
+
+  struct AllocInternalResult {
+    void* object = nullptr;
+    // Optional: if the memory tool override or the allocation
+    // hook takes control, there's nothing here.
+    std::optional<RawAllocResult> raw_alloc_result = std::nullopt;
+  };
 
   enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 
@@ -848,39 +864,29 @@ class alignas(internal::kPartitionCachelineSize)
   // alignment, otherwise a sub-optimal allocation strategy is used to
   // guarantee the higher-order alignment.
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInternal(size_t requested_size,
-                                                    size_t alignment,
-                                                    const char* type_name);
+  PA_ALWAYS_INLINE AllocInternalResult AllocInternal(size_t requested_size,
+                                                     size_t alignment,
+                                                     const char* type_name);
 
   // Same as |AllocInternal()|, but don't handle allocation hooks.
   template <AllocFlags flags = AllocFlags::kNone>
-  PA_ALWAYS_INLINE PA_MALLOC_FN void* AllocInternalNoHooks(
-      size_t requested_size,
-      size_t slot_span_alignment);
+  PA_ALWAYS_INLINE AllocInternalResult
+  AllocInternalNoHooks(size_t requested_size, size_t slot_span_alignment);
   // Allocates a memory slot, without initializing extras.
   //
   // - |flags| are as in Alloc().
   // - |raw_size| accommodates for extras on top of Alloc()'s
   //   |requested_size|.
-  // - |usable_size|, |slot_size| and |is_already_zeroed| are output only.
+  // - |usable_size|, |slot_and_size| and |is_already_zeroed| are returned in
+  //   |RawAllocResult|.
   //   Note, |usable_size| is guaranteed to be no smaller than Alloc()'s
-  //   |requested_size|, and no larger than |slot_size|.
+  //   |requested_size|, and no larger than |slot_and_size.size|.
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE UntaggedSlotStart RawAlloc(Bucket* bucket,
-                                              size_t raw_size,
-                                              size_t slot_span_alignment,
-                                              size_t* usable_size,
-                                              size_t* slot_size,
-                                              bool* is_already_zeroed,
-                                              bool* stored_raw_size);
+  PA_ALWAYS_INLINE std::optional<RawAllocResult>
+  RawAlloc(Bucket* bucket, size_t raw_size, size_t slot_span_alignment);
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE UntaggedSlotStart AllocFromBucket(Bucket* bucket,
-                                                     size_t raw_size,
-                                                     size_t slot_span_alignment,
-                                                     size_t* usable_size,
-                                                     size_t* slot_size,
-                                                     bool* is_already_zeroed,
-                                                     bool* stored_raw_size)
+  PA_ALWAYS_INLINE std::optional<RawAllocResult>
+  AllocFromBucket(Bucket* bucket, size_t raw_size, size_t slot_span_alignment)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max

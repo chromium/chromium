@@ -2101,7 +2101,8 @@ PA_NOINLINE PA_MALLOC_FN void* PartitionRoot::Alloc(size_t requested_size,
                                                     const char* type_name) {
   static_assert(!ContainsFlags(flags, AllocFlags::kAlignedAlloc));
   return AllocInternal<flags>(requested_size, internal::PartitionPageSize(),
-                              type_name);
+                              type_name)
+      .object;
 }
 
 template <AllocFlags alloc_flags, FreeFlags free_flags>
