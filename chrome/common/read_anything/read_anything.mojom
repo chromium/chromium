@@ -195,6 +195,7 @@ enum ReadAnythingOpenTrigger {
   kKeyboardShortcut = 7,
   kListenToThisPageContextMenu = 8,
   kUnknown = 9,
+  kPdfTranslation = 10,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
 

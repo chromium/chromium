@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
@@ -1373,6 +1372,23 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
     read_anything::mojom::DistillationStatus status,
     int word_count) {
+#if BUILDFLAG(ENABLE_PDF)
+  if (last_open_trigger_ == ReadAnythingOpenTrigger::kPdfTranslation &&
+      status == read_anything::mojom::DistillationStatus::kSuccess) {
+    // Target main_observer_'s WebContents because ContentTranslateDriver is
+    // attached to the outer primary tab WebContents, not the inner GuestView
+    // WebContents (pdf_observer_).
+    content::WebContents* web_contents =
+        main_observer_ ? main_observer_->web_contents() : nullptr;
+    if (web_contents) {
+      auto* driver =
+          translate::ContentTranslateDriver::FromWebContents(web_contents);
+      if (driver) {
+        driver->MaybeTriggerPendingPdfTranslation();
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
   if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip) {
     if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
       last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;

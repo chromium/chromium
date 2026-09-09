@@ -67,6 +67,8 @@ inline SidePanelOpenTrigger ReadAnythingToSidePanelOpenTrigger(
       return SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
     case ReadAnythingOpenTrigger::kUnknown:
       return SidePanelOpenTrigger::kReadAnythingUnknown;
+    case ReadAnythingOpenTrigger::kPdfTranslation:
+      return SidePanelOpenTrigger::kPdfTranslation;
   }
 }
 
@@ -93,6 +95,8 @@ inline ReadAnythingOpenTrigger SidePanelToReadAnythingOpenTrigger(
       return ReadAnythingOpenTrigger::kKeyboardShortcut;
     case SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu:
       return ReadAnythingOpenTrigger::kListenToThisPageContextMenu;
+    case SidePanelOpenTrigger::kPdfTranslation:
+      return ReadAnythingOpenTrigger::kPdfTranslation;
     case SidePanelOpenTrigger::kReadAnythingUnknown:
     case SidePanelOpenTrigger::kSideSearchPageAction:
     case SidePanelOpenTrigger::kNotesInPageContextMenu:
@@ -114,7 +118,6 @@ inline ReadAnythingOpenTrigger SidePanelToReadAnythingOpenTrigger(
 #endif
     case SidePanelOpenTrigger::kGlicOpened:
     case SidePanelOpenTrigger::kContextualTasks:
-    case SidePanelOpenTrigger::kPdfTranslation:
     case SidePanelOpenTrigger::kUnknown:
       return ReadAnythingOpenTrigger::kUnknown;
   }

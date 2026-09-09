@@ -25242,6 +25242,7 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Opened via keyboard shortcut"/>
   <int value="8" label="Opened from Listen to this page context menu"/>
   <int value="9" label="Unknown"/>
+  <int value="10" label="Opened from PDF translation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:ReadAnythingOpenTrigger) -->
