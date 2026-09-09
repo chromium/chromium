@@ -130,7 +130,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   /* Preserves 2px border width parity with omnibox-everywhere-omnibox and
    * composebox. */
   border: 2px solid transparent;
-  border-radius: 28px;
+  border-radius: 16px;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
   display: flex;

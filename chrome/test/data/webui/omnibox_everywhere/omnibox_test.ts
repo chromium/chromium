@@ -552,7 +552,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         omnibox.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
     assertTrue(!!inputWrapper);
     const wrapperStyle = window.getComputedStyle(inputWrapper);
-    assertEquals('28px', wrapperStyle.borderRadius);
+    assertEquals('16px', wrapperStyle.borderRadius);
     assertEquals('6px', wrapperStyle.paddingTop);
 
     const bottomControls =
