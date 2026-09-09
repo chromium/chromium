@@ -45,7 +45,9 @@
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -1756,6 +1758,124 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
 
   ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DismissBypassedDuringScreenshareDisclosure) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Show screenshare disclosure dialog.
+  ui_manager->ShowScreenshotDisclosureDialog(base::DoNothing());
+  EXPECT_TRUE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  views::Widget* disclosure_widget =
+      ui_manager->disclosure_dialog_widget_for_testing();
+  ASSERT_TRUE(disclosure_widget);
+
+  // Simulating deactivation while screenshare disclosure dialog is open
+  // should NOT destroy or hide the widget.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Closing screenshare disclosure restores active state.
+  views::test::WidgetDestroyedWaiter waiter(disclosure_widget);
+  disclosure_widget->Close();
+  waiter.Wait();
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  bool accepted = false;
+  bool cancelled = false;
+  ui_manager->ShowScreenshotDisclosureDialog(
+      base::BindOnce([](bool* a) { *a = true; }, &accepted),
+      base::BindOnce([](bool* c) { *c = true; }, &cancelled));
+
+  views::Widget* disclosure_widget =
+      ui_manager->disclosure_dialog_widget_for_testing();
+  ASSERT_TRUE(disclosure_widget);
+  views::DialogDelegate* delegate =
+      disclosure_widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(delegate);
+
+  views::test::WidgetDestroyedWaiter waiter(disclosure_widget);
+  delegate->AcceptDialog();
+  waiter.Wait();
+
+  EXPECT_TRUE(accepted);
+  EXPECT_FALSE(cancelled);
+  EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  bool accepted = false;
+  bool cancelled = false;
+  ui_manager->ShowScreenshotDisclosureDialog(
+      base::BindOnce([](bool* a) { *a = true; }, &accepted),
+      base::BindOnce([](bool* c) { *c = true; }, &cancelled));
+
+  views::Widget* disclosure_widget =
+      ui_manager->disclosure_dialog_widget_for_testing();
+  ASSERT_TRUE(disclosure_widget);
+  EXPECT_TRUE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_EQ(disclosure_widget->GetZOrderLevel(), widget->GetZOrderLevel());
+  views::DialogDelegate* delegate =
+      disclosure_widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(delegate);
+
+  views::test::WidgetDestroyedWaiter waiter(disclosure_widget);
+  delegate->CancelDialog();
+  waiter.Wait();
+
+  EXPECT_FALSE(accepted);
+  EXPECT_TRUE(cancelled);
+  EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ScreenshareDisclosure_ShutdownWhileOpen) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+
+  bool accepted = false;
+  bool cancelled = false;
+  ui_manager->ShowScreenshotDisclosureDialog(
+      base::BindOnce([](bool* a) { *a = true; }, &accepted),
+      base::BindOnce([](bool* c) { *c = true; }, &cancelled));
+
+  EXPECT_TRUE(ui_manager->disclosure_dialog_widget_for_testing());
+
+  ui_manager->Shutdown();
+
+  EXPECT_FALSE(accepted);
+  EXPECT_FALSE(cancelled);
+  EXPECT_FALSE(ui_manager->widget());
+  EXPECT_FALSE(ui_manager->disclosure_dialog_widget_for_testing());
+  EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
