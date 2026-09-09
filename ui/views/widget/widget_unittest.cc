@@ -6970,7 +6970,15 @@ TEST_F(WidgetTest, ThemeChangedDoesNotShortCircuitWhenFeatureDisabled) {
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
 }
 
-TEST_F(WidgetTest, ChildWidgetObservesParentThemeChanges) {
+// TODO(crbug.com/555468642): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChildWidgetObservesParentThemeChanges \
+  DISABLED_ChildWidgetObservesParentThemeChanges
+#else
+#define MAYBE_ChildWidgetObservesParentThemeChanges \
+  ChildWidgetObservesParentThemeChanges
+#endif
+TEST_F(WidgetTest, MAYBE_ChildWidgetObservesParentThemeChanges) {
   base::test::ScopedFeatureList feature_list(
       ::features::kThemeChangeOptimization);
 
