@@ -591,7 +591,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="331080746368555063">非公開サイトには、会社のイントラネットなどが含まれます</translation>
 <translation id="3311330810461485557">アプリや日付などで検索します。</translation>
 <translation id="3312300514034250578">セーフ ブラウジング保護強化機能</translation>
-<translation id="3331974543021145906">アプリ情報</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="333863344734218290">安全でない公開サイトと非公開サイトについて警告する</translation>
 <translation id="3339788961947270565">シャットダウンの終了処理中</translation>
@@ -910,6 +909,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4595805675102978678">Google アカウントのエラー</translation>
 <translation id="4599585406846903742">1 ページ表示</translation>
 <translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
+<translation id="4604434672720336227">Chrome を終了する</translation>
 <translation id="4606559747793337066">ページのリンクを非公開でプリロードするように求めるメッセージがサイトまたはアプリに表示された場合、Chrome は Cookie を使用せずに Google サーバーを経由してページを暗号化し、プリロードします。その結果、プリロードされたサイトでユーザーの ID が非表示になります。</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
@@ -1432,6 +1432,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6669390930482049506">通知する</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
 <translation id="6672697278890207089">パスフレーズの入力</translation>
+<translation id="6675622031235530028">終了するには Ctrl+Q キーを押します</translation>
 <translation id="6676927815633975364">このサイトと Chrome にログインします</translation>
 <translation id="6684262542644248484">ウェブサイトにログインします</translation>
 <translation id="6684809838922667136">Chrome の品質を向上</translation>

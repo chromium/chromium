@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obavijesti</translation>
+<translation id="1195433173321863960">Slike će ponovno biti dostupne kad se vaša kvota obnovi <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Napiši kratak sažetak ove stranice</translation>
 <translation id="1199631150313925648">Unesi ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
@@ -172,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS klijent</translation>
 <translation id="1508263560970797965">Nastavite anonimno</translation>
 <translation id="1509486075633541495">Prijavite se na web-lokaciju</translation>
+<translation id="1509922846321012406">Istražite više načina za poboljšanje privatnosti i sigurnosti</translation>
 <translation id="1513858653616922153">Izbriši zaporku</translation>
 <translation id="1517166097004694782">Sakrij stavku Nastavi s ovom karticom</translation>
 <translation id="1520027731907768768">Primajte upozorenja o padu cijena za proizvode koje pratite.</translation>
@@ -604,6 +606,7 @@
 <translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2893791155497534382">Zaporke i druge aktivnosti mogu se izbrisati u postavkama za upravljanje</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
+<translation id="2897858638449756400">Istražite više načina za pretraživanje</translation>
 <translation id="2902312830803030883">Druge radnje</translation>
 <translation id="2904788871580817212">Sniženje cijene na otvorenoj kartici, s <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Imate višestruko korištene zaporke (<ph name="NUMBER_OF_PASSWORDS" />) koje bi mogle ugroziti vašu sigurnost.</translation>
@@ -1248,6 +1251,7 @@
 <translation id="5055551113846164633">Time se brišu adrese spremljene na ovom uređaju. Brišu se i adrese spremljene na vašem Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Poteškoće su pronađene <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Izradi sliku</translation>
+<translation id="5058813911021873087">Istražite više načina da se organizirate i uštedite vrijeme</translation>
 <translation id="5059136629401106827">U redu</translation>
 <translation id="5061202435354361813">Poboljšajte svoje pregledavanje</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
@@ -1880,6 +1884,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="6987201788018524855">Istražite korisne značajke koje ste propustili</translation>
 <translation id="6989636517316575338">Postavite pitanje o bilo kojoj stranici</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Svi zadaci</translation>
 <translation id="6998251471716094661">Pratite cijene proizvoda i primajte upozorenja kad se cijena snizi na bilo kojoj web-lokaciji</translation>
 <translation id="7004032350256606903">Vaša organizacija zahtijeva da pregledavate privatno.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

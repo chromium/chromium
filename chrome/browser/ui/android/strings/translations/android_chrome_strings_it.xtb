@@ -591,7 +591,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="331080746368555063">I siti privati potrebbero includere elementi come l'intranet della tua azienda</translation>
 <translation id="3311330810461485557">Cerca per app, data e altro ancora.</translation>
 <translation id="3312300514034250578">Navigazione sicura avanzata</translation>
-<translation id="3331974543021145906">Informazioni app</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="333863344734218290">Ti avvisa in caso di siti pubblici e privati non sicuri</translation>
 <translation id="3339788961947270565">Completamento dell'arresto in corso…</translation>
@@ -910,6 +909,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4595805675102978678">Errore dell'Account Google</translation>
 <translation id="4599585406846903742">Visualizzazione a pagina singola</translation>
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
+<translation id="4604434672720336227">Esci da Chrome</translation>
 <translation id="4606559747793337066">Quando un sito o un'app richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4624065194742029982">Modalità Incognito di Chrome</translation>
@@ -1432,6 +1432,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6669390930482049506">Avvisami</translation>
 <translation id="6671495933530132209">Copia immagine</translation>
 <translation id="6672697278890207089">Inserisci la passphrase</translation>
+<translation id="6675622031235530028">Tieni premuto Ctrl+Q per uscire</translation>
 <translation id="6676927815633975364">Accedi a questo sito e a Chrome</translation>
 <translation id="6684262542644248484">Accedi a un sito web</translation>
 <translation id="6684809838922667136">Migliora Chrome</translation>

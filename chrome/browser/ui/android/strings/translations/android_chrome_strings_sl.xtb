@@ -591,7 +591,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="331080746368555063">Zasebna spletna mesta lahko vključujejo stvari, kot je intranet podjetja</translation>
 <translation id="3311330810461485557">Iščite po aplikaciji, datumu in drugih možnostih.</translation>
 <translation id="3312300514034250578">Izboljšano varno brskanje</translation>
-<translation id="3331974543021145906">Podatki o aplikaciji</translation>
 <translation id="3334729583274622784">Želite spremeniti pripono datoteke?</translation>
 <translation id="333863344734218290">Prikaz opozorila za javna in zasebna spletna mesta, ki niso varna</translation>
 <translation id="3339788961947270565">Dokončanje zaustavitve</translation>
@@ -910,6 +909,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4595805675102978678">Napaka računa Google</translation>
 <translation id="4599585406846903742">Enostranski pogled</translation>
 <translation id="4601095002996233687">Poglobljeni pregledi za sumljive prenose.</translation>
+<translation id="4604434672720336227">Zapri Chrome</translation>
 <translation id="4606559747793337066">Ko spletno mesto ali aplikacija zahteva zasebno vnaprejšnje nalaganje povezav na strani, Chrome šifrira in vnaprej naloži strani prek Googlovih strežnikov brez piškotkov. S tem je skrita vaša identiteta na vnaprej naloženem mestu.</translation>
 <translation id="4619615317237390068">Zavihki iz drugih naprav</translation>
 <translation id="4624065194742029982">Anonimni način v Chromu</translation>
@@ -1432,6 +1432,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6669390930482049506">Obvesti me</translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6672697278890207089">Vnesite geslo</translation>
+<translation id="6675622031235530028">Pridržite Ctrl + Q, če želite zapreti</translation>
 <translation id="6676927815633975364">Prijavite se na tem spletnem mestu in v Chrome.</translation>
 <translation id="6684262542644248484">Prijavite se na spletnem mestu</translation>
 <translation id="6684809838922667136">Izboljšajte Chrome</translation>

@@ -591,7 +591,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="331080746368555063">Os sitios privados poden incluír, por exemplo, a intranet da túa empresa</translation>
 <translation id="3311330810461485557">Fai buscas por aplicación e data, entre outras características.</translation>
 <translation id="3312300514034250578">Goza dunha navegación segura mellorada</translation>
-<translation id="3331974543021145906">Información da aplicación</translation>
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
 <translation id="333863344734218290">Recibir avisos dos sitios públicos e privados pouco seguros</translation>
 <translation id="3339788961947270565">Finalizando apagado</translation>
@@ -910,6 +909,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4595805675102978678">Produciuse un erro na Conta de Google</translation>
 <translation id="4599585406846903742">Vista dunha soa páxina</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
+<translation id="4604434672720336227">Saír de Chrome</translation>
 <translation id="4606559747793337066">Cando un sitio ou aplicación solicita precargar ligazóns da súa páxina de forma privada, Chrome encripta e precarga as páxinas correspondentes a través dos servidores de Google sen cookies. Deste xeito, ocúltaselle a túa identidade ao sitio precargado.</translation>
 <translation id="4619615317237390068">Pestanas doutros dispositivos</translation>
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
@@ -1432,6 +1432,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6669390930482049506">Recibir notificación</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6672697278890207089">Introduce a frase de acceso</translation>
+<translation id="6675622031235530028">Mantén premido Control + Q para saír</translation>
 <translation id="6676927815633975364">Inicia sesión neste sitio e en Chrome</translation>
 <translation id="6684262542644248484">Inicia sesión nun sitio web</translation>
 <translation id="6684809838922667136">Mellora Chrome</translation>

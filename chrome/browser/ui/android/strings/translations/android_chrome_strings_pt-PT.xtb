@@ -591,7 +591,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="331080746368555063">Os sites privados podem incluir elementos como a intranet da sua empresa</translation>
 <translation id="3311330810461485557">Pesquise por app, data e muito mais.</translation>
 <translation id="3312300514034250578">Navegação segura melhorada</translation>
-<translation id="3331974543021145906">Informações da aplicação</translation>
 <translation id="3334729583274622784">Quer alterar a extensão de ficheiro?</translation>
 <translation id="333863344734218290">Envia-lhe avisos sobre sites públicos e privados inseguros</translation>
 <translation id="3339788961947270565">A finalizar o encerramento</translation>
@@ -910,6 +909,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4595805675102978678">Erro da Conta Google</translation>
 <translation id="4599585406846903742">Vista de página única</translation>
 <translation id="4601095002996233687">Análises detalhadas de transferências suspeitas.</translation>
+<translation id="4604434672720336227">Sair do Chrome</translation>
 <translation id="4606559747793337066">Quando um site ou uma app pede para pré-carregar links de forma privada na respetiva página, o Chrome encripta e pré-carrega as páginas através dos servidores da Google sem cookies. Isto oculta a sua identidade no site pré-carregado.</translation>
 <translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4624065194742029982">Navegação anónima do Chrome</translation>
@@ -1432,6 +1432,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6669390930482049506">Notificar-me</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6672697278890207089">Introduza a frase de acesso</translation>
+<translation id="6675622031235530028">Mantenha premidas as teclas Ctrl + Q para sair</translation>
 <translation id="6676927815633975364">Inicie sessão neste site e no Chrome</translation>
 <translation id="6684262542644248484">Inicie sessão num Website</translation>
 <translation id="6684809838922667136">Melhore o Chrome</translation>

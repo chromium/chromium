@@ -649,7 +649,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1499948601784722399">Yêu cầu đối với trang web</translation>
 <translation id="1500297251995790841">Thiết bị không xác định [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Tìm hiểu thêm về ứng dụng Chrome không được hỗ trợ</translation>
-<translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="1501480321619201731">Xoá nhóm</translation>
 <translation id="150411034776756821">Xóa <ph name="SITE" /></translation>
 <translation id="1504253885059472207">Ghim chế độ xem phân tách</translation>
 <translation id="1505494256539862015">xuất mật khẩu</translation>
@@ -1323,6 +1323,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2006638907958895361">Mở đường liên kết trong <ph name="APP" /></translation>
 <translation id="2007404777272201486">Báo cáo sự cố...</translation>
 <translation id="200781997903833896">Để dùng tính năng Đọc to, hãy giải phóng dung lượng trên thiết bị</translation>
+<translation id="2009047848105043829">Quản lý thiết bị của bạn</translation>
 <translation id="2010501376126504057">Thiết bị tương thích</translation>
 <translation id="2010636492623189611">Đã chọn.</translation>
 <translation id="2012935757369720523">Xoá tệp</translation>
@@ -6662,6 +6663,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6126601353087978360">Vui lòng nhập ý kiến phản hồi của bạn tại đây:</translation>
 <translation id="6127292407256937949">Âm lượng đang bật. Tắt âm lượng.</translation>
 <translation id="6127598727646973981">Kết nối bảo mật</translation>
+<translation id="6129686474468159207">Xem những trang web nơi bạn thực hiện cuộc gọi và thời điểm camera hoặc micrô của bạn được sử dụng</translation>
 <translation id="6129691635767514872">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Nhận xét về Chứng chỉ Netscape</translation>
 <translation id="6129953537138746214">Phím cách</translation>

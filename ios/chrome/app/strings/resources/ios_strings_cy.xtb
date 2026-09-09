@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Cleient RCS MLS</translation>
 <translation id="1508263560970797965">Parhau yn y modd Anhysbys</translation>
 <translation id="1509486075633541495">Mewngofnodi i'r wefan</translation>
+<translation id="1509922846321012406">Archwiliwch fwy o ffyrdd o roi hwb i'ch preifatrwydd a'ch diogelwch</translation>
 <translation id="1513858653616922153">Dileu'r cyfrinair</translation>
 <translation id="1517166097004694782">Cuddio "Parhau gyda'r tab hwn"</translation>
 <translation id="1520027731907768768">Derbyn hysbysiadau gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Porwr diofyn</translation>
 <translation id="2893791155497534382">Gellir dileu cyfrineiriau a gweithgarwch arall yn eu gosodiadau rheoli</translation>
 <translation id="2894757982205307093">Mae tab newydd yn y grŵp</translation>
+<translation id="2897858638449756400">Archwiliwch ragor o ffyrdd o chwilio</translation>
 <translation id="2902312830803030883">Rhagor o gamau gweithredu</translation>
 <translation id="2904788871580817212">Gostyngiad pris ar eich tab agored, o <ph name="PREVIOUS_PRICE" /> i <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Mae gennych <ph name="NUMBER_OF_PASSWORDS" /> o gyfrineiriau sydd wedi cael eu hailddefnyddio a allai beryglu eich diogelwch.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Mae hyn yn dileu cyfeiriadau sydd wedi'u cadw ar y ddyfais hon. Mae hefyd yn dileu cyfeiriadau sydd wedi'u cadw yn eich Cyfrif Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Canfuwyd problem <ph name="TIME" /></translation>
 <translation id="5056587122125565772">Creu llun</translation>
+<translation id="5058813911021873087">Archwiliwch ragor o ffyrdd o drefnu ac arbed amser</translation>
 <translation id="5059136629401106827">Iawn</translation>
 <translation id="5061202435354361813">Gwella'ch pori</translation>
 <translation id="5062321486222145940">Gosod Google Drive</translation>
@@ -1881,6 +1884,7 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="6987201788018524855">Archwilio nodweddion defnyddiol rydych wedi'u methu</translation>
 <translation id="6989636517316575338">Gofyn am unrhyw dudalen</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Pob Tasg</translation>
 <translation id="6998251471716094661">Olrhain prisiau cynhyrchion a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="7004032350256606903">Mae eich sefydliad yn gofyn i chi bori'n breifat.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>

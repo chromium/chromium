@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">Dein Speicher ist voll</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1190609913194133056">Benachrichtigungscenter</translation>
+<translation id="1195433173321863960">Bilder sind wieder verfügbar, sobald dein Limit am <ph name="RESET_TIME" /> zurückgesetzt wird</translation>
 <translation id="1196534270480620381">Gib mir eine kurze Zusammenfassung dieser Seite</translation>
 <translation id="1199631150313925648">Manuell eingeben</translation>
 <translation id="1199963004393929848">Grünes Design</translation>
@@ -1955,6 +1956,9 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
+<translation id="72961285530871072">Dadurch wird dein Level-Up-Fortschritt endgültig gelöscht und die Daten zur Nutzung der Level-Up-Funktion werden für dein Profil nicht mehr an Google gesendet.
+
+Du kannst es jederzeit wieder aktivieren.</translation>
 <translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312823817809783355">Meine Aufgaben</translation>

@@ -1313,6 +1313,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="2006638907958895361">Abrir enlace en <ph name="APP" /></translation>
 <translation id="2007404777272201486">Notificar un problema...</translation>
 <translation id="200781997903833896">Para usar Leer en voz alta, libera espacio en tu dispositivo</translation>
+<translation id="2009047848105043829">Gestionar tus dispositivos</translation>
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
 <translation id="2010636492623189611">Seleccionado.</translation>
 <translation id="2012935757369720523">Eliminar archivo</translation>
@@ -4086,7 +4087,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4094647278880271855">Estás usando una variable de entorno no admitida: <ph name="BAD_VAR" />. La estabilidad y la seguridad se verán afectadas.</translation>
 <translation id="4095264805865317199">Abrir la interfaz de usuario de la activación de datos móviles</translation>
 <translation id="4095425503313512126">La navegación y la búsqueda son más rápidas</translation>
-<translation id="4095483462103784441">Crear nuevo grupo de pestañas</translation>
+<translation id="4095483462103784441">Crear grupo de pestañas</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096421352214844684">Conecta automáticamente con el punto de acceso de tu teléfono.</translation>
 <translation id="4096797685681362305">Visto la semana pasada</translation>
@@ -6647,6 +6648,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6126601353087978360">Escribe tus comentarios aquí:</translation>
 <translation id="6127292407256937949">El volumen está activado. Desactiva el volumen.</translation>
 <translation id="6127598727646973981">Conexiones seguras</translation>
+<translation id="6129686474468159207">Consulta desde qué sitios llamas y cuándo se usa tu cámara o micrófono</translation>
 <translation id="6129691635767514872">Los datos seleccionados se han quitado de Chrome y de los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros tipos de historial de navegación, como búsquedas o actividad de otros servicios de Google, en la página <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario del certificado de Netscape</translation>
 <translation id="6129953537138746214">Espacio</translation>
@@ -8328,7 +8330,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7410852728357935715">Enviar a un dispositivo</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7412226954991670867">Memoria de la GPU</translation>
-<translation id="7413479411124130610">Mostrar pestañas en horizontal</translation>
+<translation id="7413479411124130610">Mostrar pestañas horizontalmente</translation>
 <translation id="741370456693729525">Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado.</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7414622565840501288">Cerrar vista izquierda</translation>
@@ -9383,7 +9385,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8230134520748321204">¿Quieres guardar la contraseña de <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Eliminar <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">No permitir que los sitios muestren imágenes</translation>
-<translation id="8231438895476693774">Añadir pestaña a la nueva vista dividida</translation>
+<translation id="8231438895476693774">Añadir pestaña a nueva vista dividida</translation>
 <translation id="823226567613548870">eliminar tus datos de <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Abrir ahora</translation>
 <translation id="8234795456569844941">Ayuda a nuestros ingenieros a solucionar este problema. Indícanos lo que ha ocurrido justo antes de que apareciera el mensaje de error del perfil:</translation>
@@ -9394,7 +9396,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8239932336306009582">Sin permiso para enviar notificaciones</translation>
 <translation id="8241040075392580210">Nublado</translation>
 <translation id="8241338426526905580">No hay certificados</translation>
-<translation id="8241650983304689286">Añadir pestaña a la nueva vista dividida</translation>
+<translation id="8241650983304689286">Añadir pestaña a nueva vista dividida</translation>
 <translation id="8241868517363889229">Leer y modificar tus marcadores</translation>
 <translation id="8242273718576931540">Tu dispositivo no puede conectarse a esta red. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Habilitar Play Store</translation>
@@ -10125,7 +10127,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8805385115381080995">La navegación es más rápida porque es menos probable que un sitio te pida que verifiques que eres una persona real</translation>
 <translation id="8807588541160250261">Cuando no haya ningún dispositivo conectado</translation>
 <translation id="8807632654848257479">Estable</translation>
-<translation id="8808478386290700967">Chrome Web Store</translation>
+<translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8809147117840417135">Turquesa claro</translation>
 <translation id="8811862054141704416">Acceso a micrófono en Crostini</translation>

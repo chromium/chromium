@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">Доступ к этим USB-устройствам</translation>
 <translation id="1038462104119736705">Для Linux рекомендуется как минимум <ph name="INSTALL_SIZE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
 <translation id="1038643060055067718">Строк:</translation>
+<translation id="1039216421321079051">Отключено другим расширением.</translation>
 <translation id="1039337018183941703">Файл поврежден или недействителен</translation>
 <translation id="1040761927998636252">Закладка без названия: <ph name="URL" /></translation>
 <translation id="1041175011127912238">Страница не отвечает</translation>
@@ -4236,6 +4237,7 @@
 <translation id="4226303886821889519">Версия обновления: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Это расширение запрещено}one{Некоторые расширения запрещены}few{Некоторые расширения запрещены}many{Некоторые расширения запрещены}other{Некоторые расширения запрещены}}</translation>
 <translation id="4229538146709970028">Чтобы выполнить аутентификацию на хосте <ph name="HOST_NAME" /> с сертификатом, разблокируйте устройство "<ph name="TOKEN_NAME" />".</translation>
+<translation id="4230659518013393045">Чтобы сделать ответы точнее, заголовок, URL и содержимое текущей вкладки передаются в Google. Вы можете добавлять и удалять вкладки при использовании браузера.</translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
 <translation id="4232376164796433044">Пароли и автозаполнение</translation>
 <translation id="4233739489690259993">Ваше устройство Chromebook больше не получает обновления системы безопасности и программного обеспечения. Рекомендуем перейти на более новую модель. Для предложения действуют специальные условия.</translation>
@@ -5790,6 +5792,7 @@
 <translation id="5436510242972373446">Искать на <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> окно, ширина – <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> панель, ширина – <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Найти &amp;расширения</translation>
+<translation id="5440240650630588012">Чтобы сосредоточиться на тексте, используйте строку или окно чтения. Нажмите ⌥L или перейдите в настройки.</translation>
 <translation id="5440425659852470030">Закрыть боковую панель</translation>
 <translation id="544083962418256601">Создать ярлык…</translation>
 <translation id="5441133529460183413">Веб-приложение установлено через браузер Chrome</translation>
@@ -5976,6 +5979,7 @@
 <translation id="5576472948015790634">Теперь вы можете управлять группами вкладок и чатами с Gemini на одной панели. Вы можете открепить ее в любое время.</translation>
 <translation id="5578059481725149024">Автоматический вход</translation>
 <translation id="5578387000057347457">Создавайте изображения, вводя запросы или выделяя текст</translation>
+<translation id="557893471177655572">Попробуйте выделение строки</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 объект доступен только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте его в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}one{{ITEM_COUNT} объект доступен только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}few{{ITEM_COUNT} объекта доступны только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}many{{ITEM_COUNT} объектов доступны только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}other{{ITEM_COUNT} объекта доступны только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}}</translation>
 <translation id="5579225964082017560">Удалить сайт <ph name="SITE" /> из списка "<ph name="SECTION_HEADER" />".</translation>
 <translation id="5581031802689147441">Параллельный просмотр</translation>
@@ -9997,6 +10001,7 @@
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699296325072357994">Содержимое страниц с паролями и сопутствующая информация отправляются в Google и проверяются специалистами. Пароли зашифрованы и видны только вам. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">Клавиша панели запуска + Backspace</translation>
+<translation id="8701058912406466818">Чтобы сосредоточиться на тексте, используйте строку или окно чтения. Нажмите Alt + L или перейдите в настройки.</translation>
 <translation id="8702278591052316269">Меню со скрытыми сохраненными группами вкладок</translation>
 <translation id="8703346390800944767">Пропустить</translation>
 <translation id="8703372953981978786">Ссылка не работает</translation>
@@ -10759,6 +10764,7 @@
 <translation id="983192555821071799">Закрыть все вкладки</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />, включена запись с камеры и микрофона</translation>
 <translation id="984705303330760860">Добавить языки проверки правописания</translation>
+<translation id="986994187171579118">Отключено расширением "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="987264212798334818">Общие</translation>
 <translation id="987574372967138078">Сайт <ph name="WEBSITE_ORIGIN" /> запрашивает доступ к информации на мобильном устройстве.</translation>
 <translation id="988320949174893488">С внезапными остановками</translation>

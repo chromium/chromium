@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">Document simple</translation>
 <translation id="254524874071906077">Définir Chrome comme navigateur par défaut</translation>
 <translation id="2546283357679194313">Témoins et données des sites</translation>
+<translation id="254672217349157196">Valider automatiquement votre adresse courriel</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> a envoyé une réponse non valide.</translation>
 <translation id="2551608178605132291">Adresse : <ph name="ADDRESS" /></translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Vous pouvez désormais trouver et remplir des informations à partir de Gmail et plus encore.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation pour parcourir les actions offertes, puis sur Entrée pour exécuter l'action sélectionnée.</translation>
 <translation id="3010991137650052245">Pour utiliser votre <ph name="PERMISSION" /> sur ce site, accordez l'accès à <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Adresse courriel vérifiée</translation>
 <translation id="3014726756341138577">Fonctionnalités avancées de l'imprimante</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre emplacement</translation>
@@ -2016,7 +2018,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4377869186417956230">Passez à toutes les cartes de fidélité sous cette option de menu.</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4378221908737133050">Crée une liste pour le grand ménage de ma maison</translation>
-<translation id="4379357028567121852">De <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Vous pouvez reprendre là où vous vous étiez arrêté ou créer de nouveaux groupes d'onglets en déplacement</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Dorénavant, enregistrez vos fichiers dans un espace de stockage infonuagique.</translation>

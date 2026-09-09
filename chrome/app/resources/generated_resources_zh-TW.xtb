@@ -1313,6 +1313,7 @@
 <translation id="2006638907958895361">在「<ph name="APP" />」中開啟連結</translation>
 <translation id="2007404777272201486">回報問題...</translation>
 <translation id="200781997903833896">如要使用「朗讀內容」功能，請釋出裝置空間</translation>
+<translation id="2009047848105043829">管理裝置</translation>
 <translation id="2010501376126504057">相容裝置</translation>
 <translation id="2010636492623189611">已選取。</translation>
 <translation id="2012935757369720523">刪除檔案</translation>
@@ -2555,7 +2556,7 @@
 <translation id="2960950037335552881">用手機掃描這個 QR code，隨時隨地存取書籤、密碼等資訊</translation>
 <translation id="2961040541145689181">新對話</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (擴充功能已提供)</translation>
-<translation id="2961695502793809356">按一下到下一頁，按住可查看記錄</translation>
+<translation id="2961695502793809356">按一下可前往下一頁，按住可查看記錄</translation>
 <translation id="29618148602069201">主題</translation>
 <translation id="2963151496262057773">下列外掛程式無回應：<ph name="PLUGIN_NAME" /> 您要停止執行嗎？</translation>
 <translation id="2964193600955408481">停用 WiFi</translation>
@@ -5699,7 +5700,7 @@
 <translation id="5375517140689139594">閱讀模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">網站可協助確認你不是機器人</translation>
 <translation id="5376094717770783089">要求存取權</translation>
-<translation id="5376169624176189338">按一下回上一頁，按住可查看記錄</translation>
+<translation id="5376169624176189338">按一下可返回上一頁，按住可查看記錄</translation>
 <translation id="5376931455988532197">檔案過大</translation>
 <translation id="5377367976106153749">要允許存取攝影機嗎？</translation>
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
@@ -5728,7 +5729,7 @@
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="539882584649709174">協助在網路上撰寫評論等簡短內容</translation>
 <translation id="5400196580536813396">不得尋找或使用能存取你裝置的印表機</translation>
-<translation id="5400836586163650660">灰</translation>
+<translation id="5400836586163650660">灰色</translation>
 <translation id="5400933848253186401">運用 Gemini 摘錄重點</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
@@ -6124,7 +6125,7 @@
 <translation id="5720729194423017301">網站和搜尋引擎的捷徑</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色與白色</translation>
-<translation id="572328651809341494">最近開啟的分頁</translation>
+<translation id="572328651809341494">最近關閉的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
 <translation id="5724723163580775373">聚焦範圍：大</translation>
 <translation id="5725112283692663422">請提供你對「使用 AI 建立主題」的意見</translation>
@@ -6637,6 +6638,7 @@
 <translation id="6126601353087978360">請在這裡提供意見：</translation>
 <translation id="6127292407256937949">音量已開啟。關閉音量。</translation>
 <translation id="6127598727646973981">安全連線</translation>
+<translation id="6129686474468159207">查看你從哪些網站撥打電話，以及攝影機或麥克風的使用時間</translation>
 <translation id="6129691635767514872">系統已將所選資料從 Chrome 和其他同步的裝置中移除。你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="6129938384427316298">Netscape 憑證評論</translation>
 <translation id="6129953537138746214">空格鍵</translation>
@@ -8059,7 +8061,7 @@
 <translation id="7219473482981809164">我們發現多個可供下載的設定檔。請先選取你要下載的設定檔再繼續。</translation>
 <translation id="7220019174139618249">無法將密碼匯出到「<ph name="FOLDER" />」</translation>
 <translation id="722099540765702221">電源</translation>
-<translation id="7221869452894271364">重新載入此頁</translation>
+<translation id="7221869452894271364">重新載入此網頁</translation>
 <translation id="7222232353993864120">電子郵件地址</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
@@ -8091,7 +8093,7 @@
 <translation id="7249764475759804559">開啟檔案時，將這個應用程式列為選項</translation>
 <translation id="7250616558727237648">你要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
-<translation id="725310308981256997">詢問這個網頁的內容？</translation>
+<translation id="725310308981256997">詢問關於本頁的問題？</translation>
 <translation id="7253521419891527137">瞭解詳情(&amp;L)</translation>
 <translation id="725497546968438223">書籤資料夾按鈕</translation>
 <translation id="7255935316994522020">套用</translation>
@@ -10089,7 +10091,7 @@
 <translation id="8779720597365936419">是，請將我的個人資料與工作資料分開 (建議)</translation>
 <translation id="8780123805589053431">從 Google 取得圖片說明</translation>
 <translation id="8780443667474968681">語音搜尋功能已停用。</translation>
-<translation id="8781834595282316166">在群組中新增分頁</translation>
+<translation id="8781834595282316166">在群組新增分頁</translation>
 <translation id="8781980678064919987">蓋上機蓋時關機</translation>
 <translation id="8783171585655659524">包括螢幕截圖</translation>
 <translation id="8785622406424941542">觸控筆</translation>

@@ -1548,6 +1548,7 @@
 <translation id="3634530185120165534">מגש 5</translation>
 <translation id="3634567936866541746">‏הזנת כרגע את הסיסמה שלך באתר מטעה. כדי להגן על החשבונות שלך, ההמלצה של Chrome היא לבדוק את הסיסמאות השמורות.</translation>
 <translation id="3638102297696182302">‏חזרה לעזרה בכתיבה. לפתיחה מקישים על Tab ואז על Enter</translation>
+<translation id="3639626391482300575">‏מספר ה-IBAN הזה נשמר ב-Google Wallet, כך שאפשר להשתמש בו בכל מוצרי Google.</translation>
 <translation id="3642196846309122856">רוצה לנסות שוב להוריד את הקבצים?</translation>
 <translation id="3642638418806704195">אפליקציה:</translation>
 <translation id="3647286794400715637">‏כל רשומת מחרוזת של כתובות URL חייבת להכיל כתובת URL אחת או שתיים.</translation>
@@ -2015,7 +2016,6 @@
 <translation id="4377869186417956230">מעבר לדף עם כל כרטיסי מועדון הלקוחות שמוצעים באפשרות הזו בתפריט.</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4378221908737133050">תיצור רשימת משימות לניקוי יסודי של הבית</translation>
-<translation id="4379357028567121852">מתוך <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">אפשר להמשיך מהמקום שבו הפסקת או ליצור קבוצות חדשות של כרטיסיות תוך כדי תנועה</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">מעכשיו עליך לשמור את הקבצים באחסון בענן</translation>
@@ -3308,6 +3308,7 @@ Del</translation>
 <translation id="6578434528542148658">מזהה התוסף לא תקין.</translation>
 <translation id="658230438113661756">‏תוקפים באתר שבו ניסית לבקר עשויים להתקין תוכנות מזיקות שגונבות או מוחקות פריטים כמו הסיסמאות, התמונות, ההודעות או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">‏מאוחסן ב-Google Wallet</translation>
+<translation id="6585589684832019248">‏הכרטיס הזה נשמר ב-Google Wallet, כך שאפשר להשתמש בו בכל מוצרי Google</translation>
 <translation id="6587893660316489419">‏מעטפה – B5</translation>
 <translation id="6587923378399804057">קישור שהעתקת</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> זה אינו מנוהל</translation>

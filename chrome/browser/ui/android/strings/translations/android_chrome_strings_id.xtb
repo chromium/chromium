@@ -591,7 +591,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="331080746368555063">Situs pribadi mungkin mencakup hal-hal seperti intranet perusahaan Anda</translation>
 <translation id="3311330810461485557">Telusuri menurut aplikasi, tanggal, dan lainnya.</translation>
 <translation id="3312300514034250578">Safe Browsing yang Disempurnakan</translation>
-<translation id="3331974543021145906">Info aplikasi</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="333863344734218290">Memperingatkan Anda tentang situs publik &amp; pribadi yang tidak aman</translation>
 <translation id="3339788961947270565">Menyelesaikan proses mematikan</translation>
@@ -910,6 +909,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4595805675102978678">Terjadi kesalahan pada Akun Google</translation>
 <translation id="4599585406846903742">Tampilan satu halaman</translation>
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
+<translation id="4604434672720336227">Keluar dari Chrome</translation>
 <translation id="4606559747793337066">Saat sebuah situs atau aplikasi meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan mengenkripsi dan melakukan pramuat halaman melalui server Google tanpa cookie. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat.</translation>
 <translation id="4619615317237390068">Tab dari perangkat lain</translation>
 <translation id="4624065194742029982">Mode Samaran Chrome</translation>
@@ -1432,6 +1432,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6669390930482049506">Beri tahu saya</translation>
 <translation id="6671495933530132209">Salin gambar</translation>
 <translation id="6672697278890207089">Masukkan frasa sandi Anda</translation>
+<translation id="6675622031235530028">Tahan Ctrl+Q untuk keluar</translation>
 <translation id="6676927815633975364">Login ke situs ini dan Chrome</translation>
 <translation id="6684262542644248484">Login ke situs</translation>
 <translation id="6684809838922667136">Buat Chrome menjadi lebih baik</translation>

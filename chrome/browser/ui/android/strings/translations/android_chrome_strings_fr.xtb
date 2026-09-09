@@ -591,7 +591,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="331080746368555063">Les sites privés peuvent inclure l'intranet de votre entreprise, par exemple</translation>
 <translation id="3311330810461485557">Recherchez par appli, par date, etc.</translation>
 <translation id="3312300514034250578">Navigation sécurisée avec protection renforcée</translation>
-<translation id="3331974543021145906">Infos sur l'appli</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
 <translation id="333863344734218290">Vous avertit pour les sites publics et privés non sécurisés</translation>
 <translation id="3339788961947270565">Finalisation de l'arrêt</translation>
@@ -910,6 +909,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4595805675102978678">Erreur liée au compte Google</translation>
 <translation id="4599585406846903742">Vue sur une page</translation>
 <translation id="4601095002996233687">Analyses approfondies pour les téléchargements suspects.</translation>
+<translation id="4604434672720336227">Quitter Chrome</translation>
 <translation id="4606559747793337066">Quand un site ou une appli demandent de précharger en mode privé des liens sur leur page, Chrome chiffre et précharge les pages via les serveurs de Google sans cookies. Le site préchargé ne sait alors rien de votre identité.</translation>
 <translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4624065194742029982">Navigation privée dans Chrome</translation>
@@ -1432,6 +1432,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6669390930482049506">M'avertir</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6672697278890207089">Saisir votre phrase secrète</translation>
+<translation id="6675622031235530028">Appuyer de manière prolongée sur Ctrl+Q pour quitter</translation>
 <translation id="6676927815633975364">Connectez-vous à ce site et à Chrome</translation>
 <translation id="6684262542644248484">Connectez-vous à un site Web</translation>
 <translation id="6684809838922667136">Améliorer Chrome</translation>

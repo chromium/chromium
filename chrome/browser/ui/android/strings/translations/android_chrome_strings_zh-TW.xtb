@@ -591,7 +591,6 @@
 <translation id="331080746368555063">私人網站可能會包含貴公司的內部網路等項目</translation>
 <translation id="3311330810461485557">依應用程式、日期等條件搜尋。</translation>
 <translation id="3312300514034250578">安全瀏覽強化防護功能</translation>
-<translation id="3331974543021145906">應用程式資訊</translation>
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
 <translation id="333863344734218290">在你造訪不安全的公開和私人網站時發出警告</translation>
 <translation id="3339788961947270565">即將關閉程式</translation>
@@ -910,6 +909,7 @@
 <translation id="4595805675102978678">Google 帳戶錯誤</translation>
 <translation id="4599585406846903742">單頁檢視模式</translation>
 <translation id="4601095002996233687">提供深入掃描功能，檢查是否有可疑的下載內容。</translation>
+<translation id="4604434672720336227">退出 Chrome</translation>
 <translation id="4606559747793337066">網站或應用程式要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器加密網頁並預先載入，且不會使用 Cookie。這麼做可在預先載入網站中隱藏你的身分。</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
@@ -1176,7 +1176,7 @@
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> 要求與序列埠連線</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
-<translation id="572328651809341494">最近開啟的分頁</translation>
+<translation id="572328651809341494">最近關閉的分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />，已固定的無痕分頁，正在播放音訊</translation>
 <translation id="5744751019568455640">你可以在這裡挑選讓我朗讀網頁內容的聲音。如果你喜歡這個聲音，只要輕觸語音名稱即可繼續使用。</translation>
@@ -1432,6 +1432,7 @@
 <translation id="6669390930482049506">通知我</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6672697278890207089">請輸入通關密語</translation>
+<translation id="6675622031235530028">按住 Ctrl + Q 鍵即可退出</translation>
 <translation id="6676927815633975364">登入這個網站和 Chrome</translation>
 <translation id="6684262542644248484">登入網站</translation>
 <translation id="6684809838922667136">讓 Chrome 更臻完美</translation>
@@ -1599,7 +1600,7 @@
 <translation id="7203150201908454328">已展開</translation>
 <translation id="7207760545532569765">將 <ph name="TAB_COUNT" /> 個分頁還原為新的背景分頁。</translation>
 <translation id="7217781228893594884">系統會在你離開 Chrome 後鎖定無痕分頁</translation>
-<translation id="7221869452894271364">重新載入此頁</translation>
+<translation id="7221869452894271364">重新載入此網頁</translation>
 <translation id="722681077040152344">已取消訂閱 <ph name="COUNT" /> 個網站</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載作業仍待處理}other{# 項下載作業仍待處理}}</translation>
 <translation id="7237724030342645845">Google 密碼管理工具已停止運作</translation>

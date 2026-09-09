@@ -27,7 +27,7 @@
 <translation id="1063300264396686489">Ouvrir automatiquement les groupes d'onglets d'autres appareils</translation>
 <translation id="1072476005125066234">Avis basés sur vos centres d'intérêt</translation>
 <translation id="1072679792409426431">Désactivé par votre administrateur</translation>
-<translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
+<translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mot(s) de passe et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="1081948304372277788">Désactiver Level Up</translation>
@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">Votre espace de stockage est plein</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
+<translation id="1195433173321863960">Les images seront de nouveau disponibles lorsque votre limite sera réinitialisée, le <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Résume brièvement cette page</translation>
 <translation id="1199631150313925648">Saisir manuellement</translation>
 <translation id="1199963004393929848">Thème vert</translation>
@@ -468,7 +469,7 @@
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2451607499823206582">Suivi</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} élément d'historique}one{{count} élément d'historique}other{{count} éléments d'historique}}</translation>
-<translation id="2461070143328828326">Paramètres de mot de passe</translation>
+<translation id="2461070143328828326">Paramètres des mots de passe</translation>
 <translation id="2462736546165239215">Vous pouvez consulter ici votre historique de navigation complet.</translation>
 <translation id="2466518891828668184">Enregistrez vos mots de passe pour vous connecter facilement à des sites et applis.</translation>
 <translation id="2468132863574325555">Drive</translation>

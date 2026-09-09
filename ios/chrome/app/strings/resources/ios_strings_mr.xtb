@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS क्लायंट</translation>
 <translation id="1508263560970797965">गुप्त मोडमध्ये पुढे सुरू ठेवा</translation>
 <translation id="1509486075633541495">वेबसाइटवर साइन इन करा</translation>
+<translation id="1509922846321012406">तुमची गोपनीयता आणि सुरक्षितता वाढवण्याचे आणखी मार्ग एक्सप्लोर करा</translation>
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
 <translation id="1517166097004694782">"या टॅबवर पुढे सुरू ठेवा" हे लपवा</translation>
 <translation id="1520027731907768768">तुम्ही ट्रॅक करत असलेल्या उत्पादनांसाठी किमतीमध्ये घट झाल्याच्या सूचना मिळवा.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">डीफॉल्ट ब्राउझर</translation>
 <translation id="2893791155497534382">पासवर्ड आणि इतर ॲक्टिव्हिटी त्यांच्या व्यवस्थापन सेटिंग्जमध्ये हटवता येऊ शकते</translation>
 <translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
+<translation id="2897858638449756400">शोधण्याचे आणखी मार्ग एक्सप्लोर करा</translation>
 <translation id="2902312830803030883">आणखी क्रिया</translation>
 <translation id="2904788871580817212">तुमच्या उघड्या असलेल्या टॅबवरील किमतीमध्ये <ph name="PREVIOUS_PRICE" /> वरून <ph name="PRICE" /> वर घट झाली आहे, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">तुमच्याकडे ज्यांमुळे तुमची सुरक्षा धोक्यात येऊ शकते असे पुन्हा वापरलेले <ph name="NUMBER_OF_PASSWORDS" /> पासवर्ड आहेत.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">यामुळे या डिव्हाइसवर सेव्ह केलेले पत्ते हटवले जातात. यामुळे <ph name="USER_EMAIL" /> या तुमचे Google खाते यामधील पत्तेदेखील हटवले जातात.</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> समस्या आढळल्या.</translation>
 <translation id="5056587122125565772">इमेज तयार करा</translation>
+<translation id="5058813911021873087">संगतवार लावण्याचे आणि वेळ वाचवण्याचे आणखी मार्ग एक्सप्लोर करा</translation>
 <translation id="5059136629401106827">ओके</translation>
 <translation id="5061202435354361813">तुमचे ब्राउझिंग लेव्हल अप करा</translation>
 <translation id="5062321486222145940">Google ड्राइव्ह इंस्टॉल करा</translation>
@@ -1882,6 +1885,7 @@
 <translation id="6987201788018524855">तुमच्याकडून राहून गेलेली उपयुक्त वैशिष्‍ट्ये एक्सप्लोर करा</translation>
 <translation id="6989636517316575338">कोणत्याही पेजबद्दल विचारा</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">सर्व टास्क</translation>
 <translation id="6998251471716094661">उत्पादनांच्या किमती ट्रॅक करा आणि कोणत्याही साइटवर किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="7004032350256606903">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

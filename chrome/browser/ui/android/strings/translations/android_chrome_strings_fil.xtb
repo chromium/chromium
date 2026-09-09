@@ -591,7 +591,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="331080746368555063">Puwedeng magsama ang mga pribadong site ng mga bagay tulad ng intranet ng iyong kumpanya</translation>
 <translation id="3311330810461485557">Maghanap ayon sa app, petsa, at higit pa.</translation>
 <translation id="3312300514034250578">Pinahusay na Ligtas na Pag-browse</translation>
-<translation id="3331974543021145906">Impormasyon ng app</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="333863344734218290">Binabalaan ka para sa mga hindi secure na pampubliko at pribadong site</translation>
 <translation id="3339788961947270565">Tinatapos ang pag-shut down</translation>
@@ -910,6 +909,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4595805675102978678">Error sa Google Account</translation>
 <translation id="4599585406846903742">Isang page na view</translation>
 <translation id="4601095002996233687">Mga detalyadong pag-scan para sa mga kahina-hinalang pag-download.</translation>
+<translation id="4604434672720336227">Umalis sa Chrome</translation>
 <translation id="4606559747793337066">Kapag hiniling ng isang site o app na pribadong mag-preload ng mga link sa page nito, mag-e-encrypt at magpi-preload ng mga page ang Chrome sa pamamagitan ng mga server ng Google nang walang cookies. Iha-hide nito ang iyong pagkakakilanlan sa na-preload na site.</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4624065194742029982">Incognito sa Chrome</translation>
@@ -1432,6 +1432,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6669390930482049506">Abisuhan ako</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6672697278890207089">Ipasok ang iyong passphrase</translation>
+<translation id="6675622031235530028">I-hold ang Ctrl+Q para umalis</translation>
 <translation id="6676927815633975364">Mag-sign in sa site na ito at sa Chrome</translation>
 <translation id="6684262542644248484">Mag-sign in sa isang website</translation>
 <translation id="6684809838922667136">Pahusayin ang Chrome</translation>

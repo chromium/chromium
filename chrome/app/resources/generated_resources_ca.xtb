@@ -1313,6 +1313,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2006638907958895361">Obre l'enllaç a <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informa d'un problema...</translation>
 <translation id="200781997903833896">Per utilitzar la funció Llegeix en veu alta, allibera espai al dispositiu</translation>
+<translation id="2009047848105043829">Gestiona els teus dispositius</translation>
 <translation id="2010501376126504057">Dispositius compatibles</translation>
 <translation id="2010636492623189611">Seleccionat.</translation>
 <translation id="2012935757369720523">Suprimeix el fitxer</translation>
@@ -6643,6 +6644,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6126601353087978360">Introdueix el suggeriment aquí:</translation>
 <translation id="6127292407256937949">El volum està activat. Desactiva'l.</translation>
 <translation id="6127598727646973981">Connexions segures</translation>
+<translation id="6129686474468159207">Consulta des de quins llocs web truques i quan s'utilitza la càmera o el micròfon</translation>
 <translation id="6129691635767514872">Les dades seleccionades s'han suprimit de Chrome i dels dispositius sincronitzats. És possible que el teu compte de Google tingui altres formes de l'historial de navegació, com ara les cerques i l'activitat d'altres serveis de Google a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentari de certificat de Netscape</translation>
 <translation id="6129953537138746214">Espai</translation>

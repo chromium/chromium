@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">Клиент RCS с поддержкой MLS</translation>
 <translation id="1508263560970797965">Продолжить в режиме инкогнито</translation>
 <translation id="1509486075633541495">Войдите в аккаунт</translation>
+<translation id="1509922846321012406">Узнайте, как повысить конфиденциальность и безопасность</translation>
 <translation id="1513858653616922153">Удалить пароль</translation>
 <translation id="1517166097004694782">Скрыть "Снова открыть эту вкладку"</translation>
 <translation id="1520027731907768768">Уведомления о скидках на отслеживаемые товары</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Браузер по умолчанию</translation>
 <translation id="2893791155497534382">Пароли и информацию о действиях можно удалить в их настройках</translation>
 <translation id="2894757982205307093">Добавить вкладку в группу</translation>
+<translation id="2897858638449756400">Попробуйте новые способы поиска</translation>
 <translation id="2902312830803030883">Другие действия</translation>
 <translation id="2904788871580817212">На одной из открытых вкладок появилась скидка. Цена снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" />. Товар: "<ph name="PRODUCT_NAME" />". Домен: <ph name="DOMAIN" />.</translation>
 <translation id="2905479111267140204">Повторяющихся паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Адреса, сохраненные на этом устройстве и в аккаунте Google <ph name="USER_EMAIL" />, будут удалены</translation>
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Создать изображение</translation>
+<translation id="5058813911021873087">Узнайте, как организовать работу и сэкономить время</translation>
 <translation id="5059136629401106827">ОК</translation>
 <translation id="5061202435354361813">Пользуйтесь браузером эффективнее</translation>
 <translation id="5062321486222145940">Установить Google Диск</translation>
@@ -1881,6 +1884,7 @@
 <translation id="6987201788018524855">Узнайте о новых полезных функциях</translation>
 <translation id="6989636517316575338">Задавайте вопросы о веб-страницах</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Все задачи</translation>
 <translation id="6998251471716094661">Отслеживайте цены товаров и получайте оповещения о скидках на сайтах.</translation>
 <translation id="7004032350256606903">Согласно правилам вашей организации, использовать режим инкогнито обязательно.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

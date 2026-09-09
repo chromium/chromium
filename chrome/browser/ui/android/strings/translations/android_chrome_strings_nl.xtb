@@ -591,7 +591,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="331080746368555063">Privésites kunnen bijvoorbeeld het intranet van je bedrijf zijn</translation>
 <translation id="3311330810461485557">Zoek bijvoorbeeld op app of datum.</translation>
 <translation id="3312300514034250578">Uitgebreide versie van Safe Browsing</translation>
-<translation id="3331974543021145906">App-informatie</translation>
 <translation id="3334729583274622784">Bestandsextensie wijzigen?</translation>
 <translation id="333863344734218290">Waarschuwt je voor niet-beveiligde openbare en privésites</translation>
 <translation id="3339788961947270565">Uitzetten afronden</translation>
@@ -910,6 +909,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4595805675102978678">Fout met Google-account</translation>
 <translation id="4599585406846903742">Weergave met één pagina</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
+<translation id="4604434672720336227">Chrome afsluiten</translation>
 <translation id="4606559747793337066">Als een site of app vraagt om links op de sitepagina privé vooraf te laden, versleutelt en laadt Chrome de pagina's vooraf via Google-servers zonder cookies. Hierdoor wordt je identiteit voor de vooraf geladen site verborgen.</translation>
 <translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
 <translation id="4624065194742029982">Chrome-incognitomodus</translation>
@@ -1432,6 +1432,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6669390930482049506">Melding sturen</translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
 <translation id="6672697278890207089">Je wachtwoordzin invoeren</translation>
+<translation id="6675622031235530028">Houd Ctrl+Q ingedrukt om af te sluiten</translation>
 <translation id="6676927815633975364">Log in bij deze site en Chrome</translation>
 <translation id="6684262542644248484">Log in bij een website</translation>
 <translation id="6684809838922667136">Chrome verbeteren</translation>

@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">ລູກຂ່າຍ RCS MLS</translation>
 <translation id="1508263560970797965">ສືບຕໍ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1509486075633541495">ເຂົ້າສູ່ລະບົບເວັບໄຊ</translation>
+<translation id="1509922846321012406">ສຳຫຼວດວິທີເພີ່ມເຕີມໃນການເພີ່ມຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຂອງທ່ານ</translation>
 <translation id="1513858653616922153">ລຶບລະຫັດຜ່ານ</translation>
 <translation id="1517166097004694782">ເຊື່ອງ "ສືບຕໍ່ໃຊ້ແຖບນີ້"</translation>
 <translation id="1520027731907768768">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຜະລິດຕະພັນທີ່ທ່ານຕິດຕາມຕ່ຳລົງ.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">ບຣາວ​ເຊີມາດຕະຖານ</translation>
 <translation id="2893791155497534382">ທ່ານສາມາດລຶບລະຫັດຜ່ານ ແລະ ການເຄື່ອນໄຫວອື່ນໆໄດ້ໃນການຕັ້ງຄ່າການຈັດການ</translation>
 <translation id="2894757982205307093">ແຖບໃໝ່ໃນກຸ່ມ</translation>
+<translation id="2897858638449756400">ສຳຫຼວດວິທີອື່ນໆໃນການຊອກຫາ</translation>
 <translation id="2902312830803030883">ການດຳເນີນການເພີ່ມເຕີມ</translation>
 <translation id="2904788871580817212">ລາຄາຕ່ຳລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ, ຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">ທ່ານມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ <ph name="NUMBER_OF_PASSWORDS" /> ລາຍການທີ່ອາດເຮັດໃຫ້ການຮັກສາຄວາມປອດໄພຂອງທ່ານຕົກຢູ່ໃນຄວາມສ່ຽງ.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">ສິ່ງນີ້ຈະລຶບທີ່ຢູ່ທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ. ນອກຈາກນັ້ນ, ມັນຍັງລຶບທີ່ຢູ່ທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google <ph name="USER_EMAIL" /> ຂອງທ່ານນຳ.</translation>
 <translation id="5056446788882570708">ພົບ <ph name="TIME" /> ບັນຫາ.</translation>
 <translation id="5056587122125565772">ສ້າງຮູບ</translation>
+<translation id="5058813911021873087">ສຳຫຼວດວິທີອື່ນໆໃນການຈັດລະບຽບ ແລະ ປະຢັດເວລາ</translation>
 <translation id="5059136629401106827">ຕົກລົງ</translation>
 <translation id="5061202435354361813">ຍົກລະດັບການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="5062321486222145940">ຕິດ​ຕັ້ງ Google Drive</translation>
@@ -1881,6 +1884,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6987201788018524855">ສຳຫຼວດຄຸນສົມບັດທີ່ເປັນປະໂຫຍດທີ່ທ່ານພາດໄປ</translation>
 <translation id="6989636517316575338">ຖາມກ່ຽວກັບໜ້າຕ່າງໆ</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">ໜ້າວຽກທັງໝົດ</translation>
 <translation id="6998251471716094661">ຕິດຕາມລາຄາຜະລິດຕະພັນ ແລະ ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຕ່ຳລົງຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="7004032350256606903">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານທ່ອງເວັບແບບເປັນສ່ວນຕົວ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

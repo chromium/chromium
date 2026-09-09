@@ -173,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS mijozi</translation>
 <translation id="1508263560970797965">Inkognito rejimda davom etish</translation>
 <translation id="1509486075633541495">Saytga kirish</translation>
+<translation id="1509922846321012406">Maxfiylik va xavfsizlikni kuchaytirishning yanada koʻproq imkoniyatlari bilan tanishing</translation>
 <translation id="1513858653616922153">Parolni o‘chirish</translation>
 <translation id="1517166097004694782">"Shu varaqda davom etish" modulini yopish</translation>
 <translation id="1520027731907768768">Kuzatuvdagi mahsulotlar narxi tushganda xabar olish.</translation>
@@ -605,6 +606,7 @@
 <translation id="2893168226686371498">Standart brauzer</translation>
 <translation id="2893791155497534382">Parollar va boshqa faoliyatni ularning boshqaruv sozlamalari orqali oʻchirish mumkin</translation>
 <translation id="2894757982205307093">Joriy guruhda yangi varaq ochish</translation>
+<translation id="2897858638449756400">Qidiruvning yangi imkoniyatlarini kashf qiling</translation>
 <translation id="2902312830803030883">Boshqa amallar</translation>
 <translation id="2904788871580817212">Ochiq varaqda narx pasaydi: <ph name="PREVIOUS_PRICE" />dan <ph name="PRICE" />ga, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Xavfsizlikka tahdid qilishi mumkin <ph name="NUMBER_OF_PASSWORDS" /> ta qayta ishlatilgan parol bor.</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5055551113846164633">Bunda mazkur qurilmada saqlangan manzillar oʻchib ketadi. Shuningdek, Google hisobingizda (<ph name="USER_EMAIL" />) saqlangan manzillar ham oʻchiriladi.</translation>
 <translation id="5056446788882570708">Muammolar aniqlandi <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Rasm yaratish</translation>
+<translation id="5058813911021873087">Ishlarni tartibga solish va vaqtni tejashning yangi imkoniyatlarini kashf qiling</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5061202435354361813">Internetni kezishni yangi bosqichga olib chiqing</translation>
 <translation id="5062321486222145940">Google Drive’ni o‘rnatish</translation>
@@ -1881,6 +1884,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="6987201788018524855">Hali koʻrilmagan foydali funksiyalar bilan tanishing</translation>
 <translation id="6989636517316575338">Istalgan sahifa haqida savol bering</translation>
 <translation id="6990519590575500580">Facetime</translation>
+<translation id="6998236305642926573">Barcha vazifalar</translation>
 <translation id="6998251471716094661">Mahsulotlar narxini kuzating va saytlarda narx tushganda bildirishnoma oling</translation>
 <translation id="7004032350256606903">Tashkilotingiz internetni pinhona kezishni talab qiladi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>

@@ -1324,6 +1324,7 @@
 <translation id="2006638907958895361"><ph name="APP" />에서 링크 열기</translation>
 <translation id="2007404777272201486">문제 신고...</translation>
 <translation id="200781997903833896">소리 내어 읽어주기를 사용하려면 기기의 저장공간을 확보하세요</translation>
+<translation id="2009047848105043829">기기 관리</translation>
 <translation id="2010501376126504057">호환 기기</translation>
 <translation id="2010636492623189611">선택되었습니다.</translation>
 <translation id="2012935757369720523">파일 삭제</translation>
@@ -6661,6 +6662,7 @@
 <translation id="6126601353087978360">여기에 의견을 입력해 주세요.</translation>
 <translation id="6127292407256937949">볼륨이 켜져 있습니다. 볼륨을 끕니다.</translation>
 <translation id="6127598727646973981">보안 연결</translation>
+<translation id="6129686474468159207">어떤 사이트에서 전화를 거는지, 언제 카메라 또는 마이크가 사용되는지 확인합니다.</translation>
 <translation id="6129691635767514872">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -9407,7 +9409,7 @@
 <translation id="8239932336306009582">알림 전송이 허용되지 않음</translation>
 <translation id="8241040075392580210">해와 구름</translation>
 <translation id="8241338426526905580">인증서 없음</translation>
-<translation id="8241650983304689286">새 분할 보기에 탭 추가</translation>
+<translation id="8241650983304689286">새 분할 뷰에 탭 추가</translation>
 <translation id="8241868517363889229">북마크 조회 및 변경</translation>
 <translation id="8242273718576931540">기기를 이 네트워크에 연결할 수 없습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Play 스토어 사용</translation>

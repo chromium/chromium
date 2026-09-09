@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obavještenja</translation>
+<translation id="1195433173321863960">Slike će ponovo biti dostupne kada se ograničenje poništi na dan <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Daj mi kratki sažetak ove stranice</translation>
 <translation id="1199631150313925648">Unesite ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
@@ -172,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS klijent</translation>
 <translation id="1508263560970797965">Nastavi u anonimnom načinu rada</translation>
 <translation id="1509486075633541495">Prijava na web lokaciju</translation>
+<translation id="1509922846321012406">Istražite više načina za poboljšanje privatnosti i sigurnosti</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
 <translation id="1517166097004694782">Sakrivanje "Nastavi s ovom karticom"</translation>
 <translation id="1520027731907768768">Primajte obavještenja o padu cijene za proizvode koje pratite.</translation>
@@ -604,6 +606,7 @@
 <translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2893791155497534382">Lozinke i druga aktivnost se mogu izbrisati u postavkama upravljanja</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
+<translation id="2897858638449756400">Istražite više načina za pretraživanje</translation>
 <translation id="2902312830803030883">Više radnji</translation>
 <translation id="2904788871580817212">Pad cijene na otvorenoj kartici sa <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">Imate ovoliko već korištenih lozinki koje mogu ugroziti sigurnost: <ph name="NUMBER_OF_PASSWORDS" />.</translation>
@@ -1248,6 +1251,7 @@
 <translation id="5055551113846164633">Ovo briše adrese sačuvane na ovom uređaju. Briše i adrese sačuvane na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Pronađeni su problemi <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Kreiraj sliku</translation>
+<translation id="5058813911021873087">Istražite više načina da se organizirate i uštedite vrijeme</translation>
 <translation id="5059136629401106827">UREDU</translation>
 <translation id="5061202435354361813">Poboljšajte pregledanje</translation>
 <translation id="5062321486222145940">Instaliraj Google Disk</translation>
@@ -1880,6 +1884,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="6987201788018524855">Istražite korisne funkcije koje ste propustili</translation>
 <translation id="6989636517316575338">Postavljajte pitanja o bilo kojoj stranici</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Svi zadaci</translation>
 <translation id="6998251471716094661">Pratite cijene proizvoda i dobijte obavještenja kada cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="7004032350256606903">Vaša organizacija zahtijeva da pregledate privatno.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

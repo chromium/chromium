@@ -591,7 +591,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="331080746368555063">Private sites might include things like your company's intranet</translation>
 <translation id="3311330810461485557">Search by app, date and more.</translation>
 <translation id="3312300514034250578">Enhanced Safe Browsing</translation>
-<translation id="3331974543021145906">App info</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
 <translation id="333863344734218290">Warns you for insecure public and private sites</translation>
 <translation id="3339788961947270565">Finishing shut down</translation>
@@ -910,6 +909,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4595805675102978678">Google Account error</translation>
 <translation id="4599585406846903742">Single-page view</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
+<translation id="4604434672720336227">Quit Chrome</translation>
 <translation id="4606559747793337066">When a site or app asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
@@ -1432,6 +1432,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6669390930482049506">Notify me</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
+<translation id="6675622031235530028">Hold Ctrl+Q to quit</translation>
 <translation id="6676927815633975364">Sign in to this site and Chrome</translation>
 <translation id="6684262542644248484">Sign in to a website</translation>
 <translation id="6684809838922667136">Make Chrome better</translation>
@@ -1836,7 +1837,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="813082847718468539">View site information</translation>
 <translation id="8135406045838672858">Downloaded PDFs automatically open with <ph name="APP_NAME" /></translation>
 <translation id="8136382224326893">{NUM_TABS,plural, =1{Link received}other{# links received}}</translation>
-<translation id="8137562778192957619">You won’t need to remember this password. It will be saved to Google Password Manager.</translation>
+<translation id="8137562778192957619">You won't need to remember this password. It will be saved to Google Password Manager.</translation>
 <translation id="8151185429379586178">Developer tools</translation>
 <translation id="8152331954420209374">Go to Lens</translation>
 <translation id="8153206878708357851">Toggle Caret Browsing</translation>

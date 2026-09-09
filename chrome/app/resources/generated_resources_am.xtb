@@ -1320,6 +1320,7 @@
 <translation id="2006638907958895361">አገናኝን በ<ph name="APP" /> ውስጥ ይክፈቱ</translation>
 <translation id="2007404777272201486">ችግር ሪፖርት አድርግ...</translation>
 <translation id="200781997903833896">ጮክ ብለህ አንብብን ለመጠቀም በመሣሪያዎ ላይ ቦታ ክፍት ያድርጉ</translation>
+<translation id="2009047848105043829">መሣሪያዎችዎን ያስተዳድሩ</translation>
 <translation id="2010501376126504057">ተኳኋኝ መሣሪያዎች</translation>
 <translation id="2010636492623189611">ተመርጧል።</translation>
 <translation id="2012935757369720523">ፋይልን ሰርዝ</translation>
@@ -1437,7 +1438,7 @@
 <translation id="2111670510994270194">በቀኝ በኩል አዲስ ትር</translation>
 <translation id="2111778868023567359">በዚህ ገፅ ላይ እንደገና የትር ቡድኖችን አይመለከቱም</translation>
 <translation id="2112554630428445878">እንኳን በደህና መጡ <ph name="USERNAME" /></translation>
-<translation id="2113314491145966441">ከmacOS የመጡ የዕውቅና ማረጋገጫዎችን አሳይ</translation>
+<translation id="2113314491145966441">ከmacOS የመጡ የዕውቅና ማረጋገጫዎችን ይመልከቱ</translation>
 <translation id="21133533946938348">ትር አጣብቅ</translation>
 <translation id="2113479184312716848">&amp;ፋይል ክፈት…</translation>
 <translation id="2114326799768592691">&amp;ክፈፍን ዳግም ጫን</translation>
@@ -6655,6 +6656,7 @@
 <translation id="6126601353087978360">እባክዎ የእርስዎን ግብረመልስ እዚህ ያስገቡ፦</translation>
 <translation id="6127292407256937949">የድምፅ መጠን በርቷል። ድምፅ ያጥፉ።</translation>
 <translation id="6127598727646973981">የተመሰጠሩ ግንኙነቶች</translation>
+<translation id="6129686474468159207">ከየትኛዎቹ ጣቢያዎች እንደሚደውሉ እና የእርስዎ ካሜራ ወይም ማይክሮፎን መቼ ጥቅም ላይ እንደሚውል ይመልከቱ</translation>
 <translation id="6129691635767514872">የተመረጠው ውሂብ ከChrome እና የሰመሩ መሣሪያዎች ተወግዷል። የGoogle መለያዎ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ እንደ የሌሎች Google አገልግሎቶች ፍለጋዎች እና እንቅስቃሴ ያለ ሌሎች የአሰሳ ታሪክ ዓይነት ሊኖረው ይችላል።</translation>
 <translation id="6129938384427316298">የNetscape ሰርቲፊኬት አስተያየት</translation>
 <translation id="6129953537138746214">ክፍተት</translation>

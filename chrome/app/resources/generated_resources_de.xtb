@@ -1313,6 +1313,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2006638907958895361">Link in <ph name="APP" /> öffnen</translation>
 <translation id="2007404777272201486">Problem melden...</translation>
 <translation id="200781997903833896">Wenn du die Funktion „Vorlesen“ verwenden möchtest, musst du Speicherplatz auf deinem Gerät freigeben</translation>
+<translation id="2009047848105043829">Geräte verwalten</translation>
 <translation id="2010501376126504057">Kompatible Geräte</translation>
 <translation id="2010636492623189611">Ausgewählt.</translation>
 <translation id="2012935757369720523">Datei löschen</translation>
@@ -4778,6 +4779,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4652921642122345344">Sprechgeschwindigkeit: <ph name="RATE" />‑fach</translation>
 <translation id="4654236001025007561">Du kannst Dateien ganz einfach mit Chromebooks und Android-Geräten in der Nähe teilen</translation>
 <translation id="4654801841330730814">Alle</translation>
+<translation id="4656949320553787832">Drag and Drop für geteilte Ansicht am linken, rechten oder unteren Fensterrand zulassen</translation>
 <translation id="4657724094180965385">Kein Interesse</translation>
 <translation id="4657810666108475055">Tab-Suche</translation>
 <translation id="4657914796247705218">TrackPoint-Geschwindigkeit</translation>
@@ -6641,6 +6643,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6126601353087978360">Bitte gib dein Feedback hier ein:</translation>
 <translation id="6127292407256937949">Ton ist an. Ton ausschalten.</translation>
 <translation id="6127598727646973981">Sichere Verbindungen</translation>
+<translation id="6129686474468159207">Einsehen, von welchen Websites aus du Anrufe tätigst und wann deine Kamera oder dein Mikrofon verwendet wird</translation>
 <translation id="6129691635767514872">Die ausgewählten Daten wurden aus Chrome und von synchronisierten Geräten entfernt. Dein Google-Konto weist möglicherweise andere Formen von Browserverläufen wie Suchanfragen und Aktivitäten von anderen Google-Diensten unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> auf.</translation>
 <translation id="6129938384427316298">Kommentar zu Netscape-Zertifikaten</translation>
 <translation id="6129953537138746214">Leertaste</translation>
@@ -7295,6 +7298,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="663569763553406962">Erweiterungen, die eine Website lesen oder ändern können</translation>
 <translation id="6636258750460740634">Verlauf</translation>
 <translation id="6636623428211296678">Weitere Einstellungen ansehen oder jetzt beenden</translation>
+<translation id="6639343220434368353">Menü durchsuchen oder Aktion eingeben</translation>
 <translation id="6639405694338292402">Die Funktion „Skills“ ist derzeit deaktiviert. Aktualisiere deine Chrome-Einstellungen, um loszulegen.</translation>
 <translation id="6639554308659482635">SQLite-Speicher</translation>
 <translation id="6640268266988685324">Geöffneter Tab</translation>

@@ -2016,7 +2016,6 @@
 <translation id="4377869186417956230">變更這個選單項目下的所有會員卡。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4378221908737133050">幫我列出居家大掃除檢查清單</translation>
-<translation id="4379357028567121852">來源：<ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">你可以從上次中斷的地方接著看，也能隨時建立新的分頁群組</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">從現在起，請將檔案儲存至雲端儲存空間</translation>
@@ -2603,7 +2602,7 @@
 <translation id="5397794290049113714">你</translation>
 <translation id="5398461103557553443">將 IBAN 儲存到 Google 錢包，下次就會自動填入</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
-<translation id="5400836586163650660">灰</translation>
+<translation id="5400836586163650660">灰色</translation>
 <translation id="5402715318763077894">要允許存取區域網路嗎？</translation>
 <translation id="540949333488055151">塑膠 (彩色)</translation>
 <translation id="540969355065856584">這個伺服器無法證明所屬網域為 <ph name="DOMAIN" />；其安全憑證目前無效。這可能是因為設定錯誤，或是有攻擊者攔截您的連線所致。</translation>
@@ -2803,7 +2802,7 @@
 <translation id="5721147290164931316">掃描即可使用手機登入</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 個}other{{website_1}、{website_2} 和另外 {more_count} 個}}</translation>
 <translation id="5722778418591961221">規劃居家健身計畫，協助我達成目標</translation>
-<translation id="572328651809341494">最近開啟的分頁</translation>
+<translation id="572328651809341494">最近關閉的分頁</translation>
 <translation id="5723873695528696965">控制 MIDI 裝置及重設程式</translation>
 <translation id="5725297205162868298">搜尋捷徑的開頭不得為 @ 字元：「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="5725797473946373607">下次不要顯示這個對話方塊</translation>

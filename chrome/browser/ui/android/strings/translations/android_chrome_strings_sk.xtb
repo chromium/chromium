@@ -591,7 +591,6 @@
 <translation id="331080746368555063">Súkromné weby môžu zahŕňať rôzny obsah, napríklad intranet vašej firmy</translation>
 <translation id="3311330810461485557">Vyhľadávajte podľa aplikácie, dátumu a ďalších kritérií.</translation>
 <translation id="3312300514034250578">Zlepšené bezpečné prehliadanie</translation>
-<translation id="3331974543021145906">Informácie o aplikácii</translation>
 <translation id="3334729583274622784">Chcete zmeniť príponu súboru?</translation>
 <translation id="333863344734218290">Upozorňuje vás na nezabezpečené verejné a súkromné weby</translation>
 <translation id="3339788961947270565">Dokončuje sa vypínanie</translation>
@@ -910,6 +909,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4595805675102978678">Chyba účtu Google</translation>
 <translation id="4599585406846903742">Zobrazenie jednej strany</translation>
 <translation id="4601095002996233687">Hĺbkové kontroly s cieľom nájsť podozrivé stiahnuté súbory.</translation>
+<translation id="4604434672720336227">Ukončiť Chrome</translation>
 <translation id="4606559747793337066">Keď nejaký web alebo aplikácia požiada o súkromné prednačítanie odkazov na svojej stránke, Chrome zašifruje a prednačíta stránky prostredníctvom serverov Googlu bez súborov cookie. Tým sa skryje vaša totožnosť pred prednačítavaným webom.</translation>
 <translation id="4619615317237390068">Karty z iných zariadení</translation>
 <translation id="4624065194742029982">Režim inkognito Chromu</translation>
@@ -1432,6 +1432,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6669390930482049506">Upozorňovať</translation>
 <translation id="6671495933530132209">Kopírovať obrázok</translation>
 <translation id="6672697278890207089">Zadajte svoju prístupovú frázu</translation>
+<translation id="6675622031235530028">Pridržaním klávesov Ctrl + Q ukončíte</translation>
 <translation id="6676927815633975364">Prihlásiť sa na tomto webe a v Chrome</translation>
 <translation id="6684262542644248484">Prihláste sa na webe.</translation>
 <translation id="6684809838922667136">Zlepšite Chrome</translation>

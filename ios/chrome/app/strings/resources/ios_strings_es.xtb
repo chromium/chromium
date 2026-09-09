@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">Tu almacenamiento está lleno</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
+<translation id="1195433173321863960">Las imágenes volverán a estar disponibles cuando se restablezca tu límite el <ph name="RESET_TIME" />.</translation>
 <translation id="1196534270480620381">Hazme un breve resumen de esta página</translation>
 <translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -941,7 +942,7 @@
 <translation id="4070132839822635162">No iniciar sesión</translation>
 <translation id="4072473499345702662">Ir a Subir de nivel</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
-<translation id="4095483462103784441">Crear nuevo grupo de pestañas</translation>
+<translation id="4095483462103784441">Crear grupo de pestañas</translation>
 <translation id="4099756562043439968">Crear recordatorio</translation>
 <translation id="4108998448622696017">Detecta y te advierte de los eventos peligrosos cuando suceden.</translation>
 <translation id="4111985840824673503">Marcar todo como leído</translation>

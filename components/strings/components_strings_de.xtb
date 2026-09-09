@@ -1548,6 +1548,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3634530185120165534">Fach 5</translation>
 <translation id="3634567936866541746">Du hast dein Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, deine gespeicherten Passwörter zu überprüfen, um deine Konten besser zu schützen.</translation>
 <translation id="3638102297696182302">„Formuliere für mich“ fortsetzen. Zum Öffnen Tabulator- und Eingabetaste drücken</translation>
+<translation id="3639626391482300575">Diese IBAN wurde in Google Wallet gespeichert, damit du sie auch in anderen Google-Produkten verwenden kannst.</translation>
 <translation id="3642196846309122856">Versuche noch einmal, deine Dateien herunterzuladen</translation>
 <translation id="3642638418806704195">Anwendung:</translation>
 <translation id="3647286794400715637">Jeder URL-Stringeintrag muss eine oder zwei URLs enthalten.</translation>
@@ -2015,7 +2016,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4377869186417956230">Unter diesem Menüpunkt kannst du zu allen Kundenkarten wechseln.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4378221908737133050">Erstelle eine Checkliste für einen gründlichen Hausputz</translation>
-<translation id="4379357028567121852">Aus <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Du kannst dort weitermachen, wo du aufgehört hast, oder unterwegs neue Tabgruppen erstellen</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Speichere deine Dateien in Zukunft im Cloud-Speicher</translation>
@@ -3303,6 +3303,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6578434528542148658">Ungültige Erweiterungs-ID.</translation>
 <translation id="658230438113661756">Auf dieser Website besteht die Gefahr, dass Angreifer Schadsoftware installieren, mit der beispielsweise Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden können. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">In Google Wallet gespeichert</translation>
+<translation id="6585589684832019248">Diese Karte wurde in Google Wallet gespeichert, damit du sie auch in anderen Google-Produkten verwenden kannst</translation>
 <translation id="6587893660316489419">Umschlag B5</translation>
 <translation id="6587923378399804057">Von dir kopierter Link</translation>
 <translation id="6591833882275308647">Dein <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>

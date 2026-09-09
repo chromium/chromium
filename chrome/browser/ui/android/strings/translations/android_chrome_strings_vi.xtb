@@ -138,7 +138,7 @@
 <translation id="1485343711570311792">Mở trong <ph name="NATIVE_APP_NAME" /> • Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Quay lại thẻ</translation>
 <translation id="1496514951988037011">tên người dùng</translation>
-<translation id="1501480321619201731">Xóa nhóm</translation>
+<translation id="1501480321619201731">Xoá nhóm</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
 <translation id="1515901671075971249">Phím tắt điều hướng thẻ</translation>
@@ -591,7 +591,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="331080746368555063">Các trang web riêng tư có thể bao gồm những nội dung như mạng nội bộ của công ty bạn</translation>
 <translation id="3311330810461485557">Tìm kiếm theo ứng dụng, ngày, v.v.</translation>
 <translation id="3312300514034250578">Duyệt web an toàn có tăng cường bảo vệ</translation>
-<translation id="3331974543021145906">Thông tin ứng dụng</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="333863344734218290">Cảnh báo bạn về các trang web công khai và riêng tư không an toàn</translation>
 <translation id="3339788961947270565">Đang hoàn tất quá trình tắt</translation>
@@ -910,6 +909,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4595805675102978678">Lỗi Tài khoản Google</translation>
 <translation id="4599585406846903742">Chế độ xem một trang</translation>
 <translation id="4601095002996233687">Quét kỹ càng để tìm nội dung tải xuống đáng ngờ.</translation>
+<translation id="4604434672720336227">Thoát Chrome</translation>
 <translation id="4606559747793337066">Khi một trang web hoặc ứng dụng yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, thì Chrome sẽ mã hoá và tải trước những trang này thông qua các máy chủ của Google mà không có cookie. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước.</translation>
 <translation id="4619615317237390068">Thẻ trên các thiết bị khác</translation>
 <translation id="4624065194742029982">Chế độ ẩn danh trên Chrome</translation>
@@ -1432,6 +1432,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6669390930482049506">Thông báo cho tôi</translation>
 <translation id="6671495933530132209">Sao chép ảnh</translation>
 <translation id="6672697278890207089">Nhập cụm mật khẩu của bạn</translation>
+<translation id="6675622031235530028">Giữ Ctrl+Q để thoát</translation>
 <translation id="6676927815633975364">Đăng nhập vào trang web này và Chrome</translation>
 <translation id="6684262542644248484">Đăng nhập vào một trang web</translation>
 <translation id="6684809838922667136">Cải thiện Chrome</translation>

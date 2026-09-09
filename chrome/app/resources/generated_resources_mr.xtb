@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">यापैकी कोणतीही USB डिव्हाइस ॲक्सेस करा</translation>
 <translation id="1038462104119736705">Linux साठी किमान <ph name="INSTALL_SIZE" /> जागेची शिफारस केली जाते. मोकळी जागा वाढवण्यासाठी, तुमच्या डिव्हाइसमधून फाइल हटवा.</translation>
 <translation id="1038643060055067718">रेखा:</translation>
+<translation id="1039216421321079051">दुसऱ्या एक्स्टेंशनने एक्स्टेंशन बंद केले आहे</translation>
 <translation id="1039337018183941703">चुकीची किंवा दूषित फाइल</translation>
 <translation id="1040761927998636252"><ph name="URL" /> साठी नाव नसलेला बुकमार्क</translation>
 <translation id="1041175011127912238">हे पेज प्रतिसाद देत नाही</translation>
@@ -3477,6 +3478,7 @@
 <translation id="3641456520301071208">साइट तुमचे स्थान विचारू शकतात</translation>
 <translation id="3642070413432681490">वर्तुळाकार कर्सर</translation>
 <translation id="3643962751030964445">हे डिव्हाइस <ph name="DEVICE_MANAGER" /> द्वारे व्यवस्थापित आहे. <ph name="DEVICE_MANAGER" /> द्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
+<translation id="3644128856494356630">CppGC मेमरी</translation>
 <translation id="3645372836428131288">फिंगरप्रिंटचा वेगळा भाग कॅप्चर करण्यासाठी बोट किंचित हलवा.</translation>
 <translation id="3645951915068244649">हे बुकमार्क फोल्डर असलेला टॅब गट आधीच तयार केला आहे. तुम्हाला नवीन टॅब गट तयार करायचा आहे की सद्य टॅब गट बदलायचा आहे?</translation>
 <translation id="3646789916214779970">डीफॉल्ट थीमवर रीसेट करा</translation>
@@ -4247,6 +4249,7 @@
 <translation id="4226303886821889519">अपडेटरची आवृत्ती: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला अनुमती नाही}other{काही एक्स्टेंशनला अनुमती नाही}}</translation>
 <translation id="4229538146709970028">कृपया तुमच्या प्रमाणपत्रासह <ph name="HOST_NAME" /> चे ऑथेंटिकेशन करण्यासाठी <ph name="TOKEN_NAME" /> अनलॉक करा.</translation>
+<translation id="4230659518013393045">तुम्हाला अधिक सुसंबद्ध उत्तरे देण्यासाठी, तुमच्या सद्य टॅबच्या पेजचे शीर्षक, URL आणि आशय Google सोबत शेअर केला जातो. तुम्ही ब्राउझ करत असताना टॅब जोडू किंवा काढून टाकू शकता.</translation>
 <translation id="4232375817808480934">Kerberos कॉन्फिगर करा</translation>
 <translation id="4232376164796433044">पासवर्ड आणि ऑटोफिल</translation>
 <translation id="4233739489690259993">तुमच्या Chromebook ला आता सुरक्षा आणि सॉफ्टवेअर अपडेट मिळत नाहीत. नवीनतम सुरक्षेसाठी आणि नवीन वैशिष्ट्यांसाठी तुमचे डिव्हाइस अपग्रेड करा. ऑफर अटी लागू.</translation>
@@ -5115,6 +5118,7 @@
 <translation id="488785315393301722">तपशील दर्शवा</translation>
 <translation id="488862352499217187">नवीन फोल्डर तयार करा</translation>
 <translation id="4888715715847020167">सेटिंग्जवर जा</translation>
+<translation id="4888899258150891194">CppGC मेमरी</translation>
 <translation id="4890292359366636311">चित्रात-चित्र आपोआप एंटर करा, जेणेकरून तुम्हाला ते इतर टॅब आणि विंडोच्या वरती वापरता येईल.</translation>
 <translation id="4890399733764921729">कनेक्ट करू शकत नाही. दुसऱ्या मोबाइल पुरवठादाराने लॉक केले आहे.</translation>
 <translation id="4890585766056792498">धोकादायक साइटपासून संरक्षण मिळवा</translation>
@@ -5802,6 +5806,7 @@
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> शोधा:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> विंडो आता <ph name="WINDOW_SIZE_PERCENT" /> रूंद आहे, <ph name="PANE_SIDE" /> पेन आता <ph name="PANE_SIZE_PERCENT" /> रूंद आहे.</translation>
 <translation id="5438060324827306856">शोधा आणि एक्स्टेंशन</translation>
+<translation id="5440240650630588012">फोकस करण्यात मदत व्हावी, यासाठी वाचनाची ओळ किंवा विंडो लागू करा. ⌥L प्रेस करा किंवा सेटिंग्ज वर जा.</translation>
 <translation id="5440425659852470030">साइड पॅनल बंद करा</translation>
 <translation id="544083962418256601">शॉर्टकट तयार करा...</translation>
 <translation id="5441133529460183413">Chrome ब्राउझरवरून वेब अ‍ॅप इंस्टॉल केले</translation>
@@ -5988,6 +5993,7 @@
 <translation id="5576472948015790634">तुम्ही आता एकाच ठिकाणी तुमचे टॅब गट आणि Gemini चॅट व्यवस्थापित करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="5578059481725149024">स्वयं साइन-इन</translation>
 <translation id="5578387000057347457">इमेज तयार करण्यासाठी कस्टम प्रॉम्प्ट एंटर करा किंवा मजकूर हायलाइट करा</translation>
+<translation id="557893471177655572">ओळीनुसार फोकस वापरून पहा</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{१ आयटम फक्त या डिव्हाइसवर सेव्ह केला आहे. तो इतर डिव्हाइसवर वापरण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये सेव्ह करणे<ph name="END_LINK" /> हे करा.}other{{ITEM_COUNT} आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="BEGIN_LINK" />Google खाते मध्ये सेव्ह करणे<ph name="END_LINK" /> हे करा.}}</translation>
 <translation id="5579225964082017560"><ph name="SECTION_HEADER" /> सूचीमधून <ph name="SITE" /> काढून टाका</translation>
 <translation id="5581031802689147441">विभाजित दृश्य</translation>
@@ -10006,6 +10012,7 @@ I feel - विटांची इमारत</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699296325072357994">पासवर्ड पेजवरील आशय आणि संबंधित माहिती Google ला पाठवली जाते आणि त्याचे माणसांकडून पुनरावलोकन केले जाते. तुमचा पासवर्ड एन्क्रिप्ट केलेला आहे आणि तो कधीच कोणालाही दिसत नाही. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">launcher + backspace</translation>
+<translation id="8701058912406466818">फोकस करण्यात मदत व्हावी, यासाठी वाचनाची ओळ किंवा विंडो लागू करा. Alt+L प्रेस करा किंवा सेटिंग्ज वर जा.</translation>
 <translation id="8702278591052316269">लपवलेले सेव्ह केलेले टॅब गट असलेला मेनू</translation>
 <translation id="8703346390800944767">जाहिरात वगळा</translation>
 <translation id="8703372953981978786">ही लिंक काम करत नाही</translation>
@@ -10768,6 +10775,7 @@ I feel - विटांची इमारत</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - कॅमेरा आणि मायक्रोफोन रेकॉर्डिंग</translation>
 <translation id="984705303330760860">स्पेल चेकसाठी भाषा जोडा</translation>
+<translation id="986994187171579118"><ph name="EXTENSION_NAME" /> ने एक्स्टेंशन बंद केले आहे</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ला तुमच्या मोबाइल डिव्हाइसवरून माहिती मिळवायची आहे</translation>
 <translation id="988320949174893488">अधूनमधून थांबतो</translation>

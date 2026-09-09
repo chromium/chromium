@@ -591,7 +591,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="331080746368555063">Puede que los sitios privados incluyan cosas como la intranet de tu empresa</translation>
 <translation id="3311330810461485557">Busca por aplicación, fecha y más.</translation>
 <translation id="3312300514034250578">Navegación segura mejorada</translation>
-<translation id="3331974543021145906">Información de la app</translation>
 <translation id="3334729583274622784">¿Cambiar la extensión del archivo?</translation>
 <translation id="333863344734218290">Te avisa de los sitios públicos y privados no seguros</translation>
 <translation id="3339788961947270565">Finalizando cierre</translation>
@@ -774,7 +773,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> (<ph name="BEGIN_DEEMPHASIZED" />ofrecida por Google<ph name="END_DEEMPHASIZED" />)</translation>
 <translation id="4092709865241032354">Para ayudar al Gestor de contraseñas de Google a guardar tu información de inicio de sesión, añade tu nombre de usuario para este sitio</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
-<translation id="4095483462103784441">Crear nuevo grupo de pestañas</translation>
+<translation id="4095483462103784441">Crear grupo de pestañas</translation>
 <translation id="4105527135143631701">Actualización del Gestor de contraseñas de Google abierta</translation>
 <translation id="4107207375883769436">Es posible que tu organización necesite ver y gestionar los datos de navegación de tu perfil de trabajo, como el historial de navegación y las contraseñas</translation>
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
@@ -910,6 +909,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4595805675102978678">Error de cuenta de Google</translation>
 <translation id="4599585406846903742">Vista de una sola página</translation>
 <translation id="4601095002996233687">Análisis exhaustivos para detectar descargas sospechosas.</translation>
+<translation id="4604434672720336227">Salir de Chrome</translation>
 <translation id="4606559747793337066">Cuando un sitio o una aplicación te pregunta si quieres precargar de forma privada los enlaces de su página, Chrome cifra y precarga las páginas mediante los servidores de Google sin cookies. De esta manera, se oculta tu identidad en el sitio precargado.</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
@@ -1432,6 +1432,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6669390930482049506">Notificarme</translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6672697278890207089">Introduce tu frase de contraseña</translation>
+<translation id="6675622031235530028">Mantén pulsado Ctrl + Q para salir</translation>
 <translation id="6676927815633975364">Inicia sesión en este sitio y en Chrome</translation>
 <translation id="6684262542644248484">Inicia sesión en un sitio web</translation>
 <translation id="6684809838922667136">Mejorar Chrome</translation>

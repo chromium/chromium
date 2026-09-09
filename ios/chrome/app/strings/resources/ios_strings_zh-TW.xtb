@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">儲存空間已滿</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1195433173321863960">用量額度在 <ph name="RESET_TIME" /> 重設後，就能再次生成圖像</translation>
 <translation id="1196534270480620381">提供這個頁面的簡短摘要</translation>
 <translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199963004393929848">綠色主題</translation>
@@ -700,7 +701,7 @@
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">月</translation>
 <translation id="3245744387817103524">無法儲存變更。</translation>
-<translation id="3254806613790954367">你在所有裝置上最後開啟的分頁</translation>
+<translation id="3254806613790954367">你在所有裝置最後開啟的分頁</translation>
 <translation id="325717987950204592">輕觸「隱私權和安全性」</translation>
 <translation id="3259451381796379533">這個帳戶無法使用 Gemini，請登入其他 Google 帳戶。</translation>
 <translation id="3265736395246760288">在已同步的任一裝置上快速登入。</translation>
@@ -1106,7 +1107,7 @@
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4634633632339959267">我們會查看及使用對話內容來改良 Google AI。<ph name="BEGIN_LINK" />瞭解可用選項<ph name="END_LINK" />。<ph name="BEGIN_LINK" />您的位置資訊<ph name="END_LINK" />也會儲存在活動記錄中。</translation>
 <translation id="4636930964841734540">資訊</translation>
-<translation id="4641425577292284174">確認設定是否安全無虞，或有任何項目需要檢查</translation>
+<translation id="4641425577292284174">確認是否採用最安全的設定，或有任何項目需要檢查</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4645575059429386691">這個瀏覽器是由家長管理</translation>
 <translation id="4647758699119474035">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。Google 帳戶錯誤。開啟帳戶選單。</translation>
@@ -1456,7 +1457,7 @@
 <translation id="57094364128775171">建議高強度密碼…</translation>
 <translation id="5718049162805123412">建議你立即變更密碼</translation>
 <translation id="5721040778297053709">信用卡不能超出這個方框</translation>
-<translation id="572328651809341494">最近開啟的分頁</translation>
+<translation id="572328651809341494">最近關閉的分頁</translation>
 <translation id="5724590854763964497">根據預設，展開新對話時，系統會分享目前的分頁。分享分頁時，系統會將內容和網址傳送給 Google，但不會用來改善生成式 AI 模型。你隨時可以變更這項設定。</translation>
 <translation id="5724941645893276623">如要以私密模式瀏覽網頁，請開啟新分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
@@ -2438,7 +2439,7 @@
 <translation id="8763613688786959833">前往下一個分頁</translation>
 <translation id="8766790350274092814">系統會刪除 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密碼，但不會刪除你的帳戶。</translation>
 <translation id="8775144690796719618">網址無效</translation>
-<translation id="8781834595282316166">在群組中新增分頁</translation>
+<translation id="8781834595282316166">在群組新增分頁</translation>
 <translation id="8783445328207519872">針對這個主題建立常見問題</translation>
 <translation id="8784653774976848206">選擇檔案</translation>
 <translation id="8786100550345425552">編輯權限</translation>

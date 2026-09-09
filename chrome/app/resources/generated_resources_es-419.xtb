@@ -1313,6 +1313,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="2006638907958895361">Abrir vínculo en <ph name="APP" /></translation>
 <translation id="2007404777272201486">Informar de un problema...</translation>
 <translation id="200781997903833896">Para usar Leer en voz alta, libera espacio en tu dispositivo</translation>
+<translation id="2009047848105043829">Administrar tus dispositivos</translation>
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
 <translation id="2010636492623189611">Seleccionado.</translation>
 <translation id="2012935757369720523">Borrar archivo</translation>
@@ -2555,7 +2556,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2960950037335552881">Escanea este código con tu teléfono para acceder a tus favoritos, contraseñas y mucho más estés donde estés</translation>
 <translation id="2961040541145689181">Nuevo chat</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensión proporcionada)</translation>
-<translation id="2961695502793809356">Haz clic para ir adelante o mantén presionado para ver el historial</translation>
+<translation id="2961695502793809356">Hacer clic para ir adelante o mantener presionado para ver el historial</translation>
 <translation id="29618148602069201">Asunto</translation>
 <translation id="2963151496262057773">El siguiente complemento no responde: <ph name="PLUGIN_NAME" /> ¿Quieres detenerlo?</translation>
 <translation id="2964193600955408481">Desactivar Wi-Fi</translation>
@@ -5708,7 +5709,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5375517140689139594">Modo de lectura (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Los sitios pueden ayudar a verificar que no eres un bot</translation>
 <translation id="5376094717770783089">Solicita acceso</translation>
-<translation id="5376169624176189338">Haz clic para volver atrás o mantén presionado para ver el historial</translation>
+<translation id="5376169624176189338">Hacer clic para volver atrás o mantener presionado para ver el historial</translation>
 <translation id="5376931455988532197">Archivo demasiado grande</translation>
 <translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
 <translation id="5379140238605961210">Seguir bloqueando el acceso al micrófono</translation>
@@ -6649,6 +6650,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6126601353087978360">Ingresa tus comentarios aquí:</translation>
 <translation id="6127292407256937949">El volumen está encendido. Desactivar el volumen.</translation>
 <translation id="6127598727646973981">Conexiones seguras</translation>
+<translation id="6129686474468159207">Ver desde qué sitios llamas y cuándo se usa la cámara o el micrófono</translation>
 <translation id="6129691635767514872">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Comentario sobre el certificado Netscape</translation>
 <translation id="6129953537138746214">Espacio</translation>

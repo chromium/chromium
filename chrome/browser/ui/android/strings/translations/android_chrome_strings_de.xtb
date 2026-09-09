@@ -591,7 +591,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="331080746368555063">Eine private Website kann beispielsweise das Intranet deines Unternehmens sein</translation>
 <translation id="3311330810461485557">Du kannst nach App, Datum und mehr suchen.</translation>
 <translation id="3312300514034250578">Erweitertes Safe Browsing</translation>
-<translation id="3331974543021145906">App-Info</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="333863344734218290">Warnt dich vor unsicheren öffentlichen und privaten Websites</translation>
 <translation id="3339788961947270565">Herunterfahren wird abgeschlossen</translation>
@@ -910,6 +909,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4595805675102978678">Google-Kontofehler</translation>
 <translation id="4599585406846903742">Einzelseitenansicht</translation>
 <translation id="4601095002996233687">Umfangreiche Scans nach verdächtigen Downloads.</translation>
+<translation id="4604434672720336227">Chrome beenden</translation>
 <translation id="4606559747793337066">Wenn eine Website oder App anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die Seiten und lädt sie ohne Cookies über Google-Server vorab. Dadurch wird deine Identität vor der vorab geladenen Website oder App verborgen.</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
@@ -1432,6 +1432,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6669390930482049506">Benachrichtigen</translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
 <translation id="6672697278890207089">Passphrase eingeben</translation>
+<translation id="6675622031235530028">Zum Beenden Strg + Q gedrückt halten</translation>
 <translation id="6676927815633975364">Auf dieser Website und in Chrome anmelden</translation>
 <translation id="6684262542644248484">Melde dich auf einer Website an</translation>
 <translation id="6684809838922667136">Chrome verbessern</translation>

@@ -252,6 +252,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1984087999855033707">numéro de téléphone</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1986685561493779662">Ce nom existe déjà</translation>
+<translation id="1992244793717364584">L'appli a été désinstallée</translation>
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé avec son désactivé</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
@@ -590,7 +591,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="331080746368555063">Les sites privés peuvent inclure des éléments comme l'intranet de votre entreprise</translation>
 <translation id="3311330810461485557">Recherchez par appli, par date et plus encore.</translation>
 <translation id="3312300514034250578">Navigation sécurisée améliorée</translation>
-<translation id="3331974543021145906">Détails de l'appli</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
 <translation id="333863344734218290">Vous avertit des sites publics et privés non sécurisés</translation>
 <translation id="3339788961947270565">Finalisation de l'arrêt en cours…</translation>
@@ -738,6 +738,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="395377504920307820">Utiliser sans compte</translation>
 <translation id="3955353672249727801">Pages ajoutées à la liste de lecture</translation>
+<translation id="3958283758104508528">L'appli <ph name="APP_NAME" /> a été désinstallée</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera la page lorsque l'appareil sera en ligne}one{Chrome chargera la page lorsque l'appareil sera en ligne}other{Chrome chargera les pages lorsque l'appareil sera en ligne}}</translation>
 <translation id="3969142555815019568">Chrome ne peut pas vérifier vos mots de passe</translation>
 <translation id="3969863827134279083">Déplacer vers le haut</translation>
@@ -908,6 +909,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4595805675102978678">Erreur de compte Google</translation>
 <translation id="4599585406846903742">Affichage d'une seule page</translation>
 <translation id="4601095002996233687">Analyses approfondies des téléchargements suspects.</translation>
+<translation id="4604434672720336227">Quitter Chrome</translation>
 <translation id="4606559747793337066">Lorsqu'un site ou une appli demande de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par le biais de serveurs Google sans témoins. Cela permet de masquer votre identité auprès du site préchargé.</translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4624065194742029982">Navigation privée de Chrome</translation>
@@ -1430,6 +1432,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6669390930482049506">Me prévenir</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6672697278890207089">Entrer votre phrase de passe</translation>
+<translation id="6675622031235530028">Maintenez les touches Ctrl+Q enfoncées pour quitter</translation>
 <translation id="6676927815633975364">Connectez-vous à ce site et à Chrome</translation>
 <translation id="6684262542644248484">Connectez-vous à un site Web</translation>
 <translation id="6684809838922667136">Améliorer Chrome</translation>
@@ -1955,6 +1958,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8580435650274205305">Date d'expiration, requise</translation>
 <translation id="8582529315803410153">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
 <translation id="8585103689515290060">Services de remplissage automatique</translation>
+<translation id="8586116786993312006">Touchez pour supprimer les données de navigation dans Chrome</translation>
 <translation id="859046281437143747">Suivez le prix à partir du bouton Plus d'options</translation>
 <translation id="859064343657890103">Groupe d'onglets <ph name="TAB_GROUP_TITLE" /> supprimé</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>

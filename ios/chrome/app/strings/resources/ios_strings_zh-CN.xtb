@@ -27,7 +27,7 @@
 <translation id="1063300264396686489">自动打开其他设备的标签页分组</translation>
 <translation id="1072476005125066234">根据您的兴趣推荐的评价</translation>
 <translation id="1072679792409426431">已被管理员停用</translation>
-<translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
+<translation id="1074827084851510304">您即将删除 {password_count} 个密码，以及您选择一律不保存登录信息的网站和应用列表。您为这些网站和应用创建的账号不会被删除。</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="1081948304372277788">关闭 Level Up</translation>
@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">存储空间已满</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1195433173321863960">用量限额将于 <ph name="RESET_TIME" />重置，届时就能再次生成图片</translation>
 <translation id="1196534270480620381">简要总结此页面的内容</translation>
 <translation id="1199631150313925648">手动输入</translation>
 <translation id="1199963004393929848">绿色主题</translation>
@@ -264,7 +265,7 @@
 <translation id="1779354709911146450">身份验证错误</translation>
 <translation id="1780152987505130652">关闭分组</translation>
 <translation id="178400879184240105">不存在密码重复使用的情况</translation>
-<translation id="17906873777101817">主动询问是否保存密码和通行密钥</translation>
+<translation id="17906873777101817">询问是否保存密码和通行密钥</translation>
 <translation id="1794893174442046596">标签页分组</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
 <translation id="1809929083618343438">此操作会将所选信息从 Chrome 中移除，但不会将其从您的 Google 账号中删除。</translation>
@@ -527,7 +528,8 @@
 <translation id="264215785133931186">刚刚检查过</translation>
 <translation id="2647434099613338025">添加语言</translation>
 <translation id="2648812801228676606">您已使用 <ph name="NAME_OR_EMAIL" /> 的身份登录</translation>
-<translation id="2649592894792404568">您即将删除 Google 密码管理工具数据</translation>
+<translation id="2649592894792404568">即将删除 Google 密码管理
+工具数据</translation>
 <translation id="2652129567809778422">选择密码</translation>
 <translation id="2658056020748144467">无法打开文件</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />，<ph name="STATE" />，仅在该设备上，<ph name="URL" /></translation>
@@ -985,7 +987,7 @@
 <translation id="4232817129213135694">为此设备设置通行密钥</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">保存已知旅客编号</translation>
-<translation id="4241893428331130998">尚未保存任何密码或通行密钥</translation>
+<translation id="4241893428331130998">未保存密码和通行密钥</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4250432749243022864">{count,plural, =0{打开 {count} 个标签页}=1{打开 {count} 个标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="4250680216510889253">否</translation>
@@ -2176,7 +2178,7 @@
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="798299424881500862">橙色主题</translation>
-<translation id="7987685713885608670">为提升安全性，请先在设备上将密码加密，然后再保存到 Google 密码管理工具中</translation>
+<translation id="7987685713885608670">为提升安全性，您可以先在设备端将密码加密，之后再保存到 Google 密码管理工具中</translation>
 <translation id="798991908416757345">标签页分组不可用</translation>
 <translation id="7993170188789685695">点按两次即可关闭此通知。</translation>
 <translation id="7996239959906074962">设置…</translation>

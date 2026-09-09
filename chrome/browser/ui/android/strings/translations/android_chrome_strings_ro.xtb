@@ -591,7 +591,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="331080746368555063">Site-urile private pot să includă rețeaua intranet a companiei tale</translation>
 <translation id="3311330810461485557">Caută după aplicație, dată și altele.</translation>
 <translation id="3312300514034250578">Navigare sigură îmbunătățită</translation>
-<translation id="3331974543021145906">Informații despre aplicație</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="333863344734218290">Te avertizează cu privire la site-urile publice și private nesigure</translation>
 <translation id="3339788961947270565">Se finalizează închiderea</translation>
@@ -910,6 +909,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4595805675102978678">Eroare de Cont Google</translation>
 <translation id="4599585406846903742">Afișare cu o pagină</translation>
 <translation id="4601095002996233687">Scanări detaliate pentru descărcările suspecte.</translation>
+<translation id="4604434672720336227">Închide Chrome</translation>
 <translation id="4606559747793337066">Când un site sau o aplicație îți solicită să preîncarci în mod privat linkuri pe pagină, Chrome criptează și preîncarcă paginile prin serverele Google fără cookie-uri. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat.</translation>
 <translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4624065194742029982">Modul incognito din Chrome</translation>
@@ -1432,6 +1432,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6669390930482049506">Doresc să primesc notificări</translation>
 <translation id="6671495933530132209">Copiați imaginea</translation>
 <translation id="6672697278890207089">Introduceți expresia de acces</translation>
+<translation id="6675622031235530028">Ține apăsat Ctrl+Q pentru a ieși</translation>
 <translation id="6676927815633975364">Conectează-te la acest site și la Chrome</translation>
 <translation id="6684262542644248484">Conectează-te la un site</translation>
 <translation id="6684809838922667136">Contribuie la îmbunătățirea Chrome</translation>

@@ -64,6 +64,7 @@
 <translation id="1179890706672152411">Жад толған</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1190609913194133056">Хабарландыру орталығы</translation>
+<translation id="1195433173321863960">Сізге қойылған шек <ph name="RESET_TIME" /> уақытында бастапқы қалпына келгенде, суреттер қайта қолжетімді болады.</translation>
 <translation id="1196534270480620381">Осы бетті қысқаша мазмұнда</translation>
 <translation id="1199631150313925648">Қолмен енгізу</translation>
 <translation id="1199963004393929848">Жасыл тақырып</translation>
@@ -172,6 +173,7 @@
 <translation id="1506733063065214205">RCS MLS клиенті</translation>
 <translation id="1508263560970797965">Инкогнито контентінің құлпын ашу</translation>
 <translation id="1509486075633541495">Веб-сайтқа кіру</translation>
+<translation id="1509922846321012406">Құпиялық пен қауіпсіздікті арттырудың басқа жолдарын зерттеңіз</translation>
 <translation id="1513858653616922153">Құпия сөзді жою</translation>
 <translation id="1517166097004694782">"Осы қойындымен жалғастыру" модулін жасыру</translation>
 <translation id="1520027731907768768">Бақылап жүрген өнімдеріңіздің бағасы түскен кезде, хабарландырулар алыңыз.</translation>
@@ -604,6 +606,7 @@
 <translation id="2893168226686371498">Әдепкі браузер</translation>
 <translation id="2893791155497534382">Құпия сөздер мен басқа әрекеттер тарихын олардың басқару параметрлерінен жоюға болады.</translation>
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
+<translation id="2897858638449756400">Іздеудің басқа жолдарын зерттеңіз</translation>
 <translation id="2902312830803030883">Қосымша әрекеттер</translation>
 <translation id="2904788871580817212">Ашық қойындыда баға төмендеді: <ph name="PREVIOUS_PRICE" /> &gt; <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
 <translation id="2905479111267140204">Қауіпсіздігіңізге қауіп төндіруі мүмкін <ph name="NUMBER_OF_PASSWORDS" /> бұрын қолданылған құпия сөзіңіз бар.</translation>
@@ -1248,6 +1251,7 @@
 <translation id="5055551113846164633">Бұл жағдайда осы құрылғыға сақталған мекенжайлар жойылады. Google аккаунтыңызға (<ph name="USER_EMAIL" />) сақталған мекенжайлар да жойылады.</translation>
 <translation id="5056446788882570708">Ақаулар анықталған уақыт: <ph name="TIME" />.</translation>
 <translation id="5056587122125565772">Сурет жасау</translation>
+<translation id="5058813911021873087">Жұмысты ретке келтіріп, уақыт үнемдеудің басқа жолдарын зерттеңіз</translation>
 <translation id="5059136629401106827">Жарайды</translation>
 <translation id="5061202435354361813">Браузерді пайдалану деңгейін көтеріңіз</translation>
 <translation id="5062321486222145940">Google Drive орнату</translation>
@@ -1880,6 +1884,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6987201788018524855">Өзіңіз өткізіп алған пайдалы функцияларды зерттеңіз.</translation>
 <translation id="6989636517316575338">Кез келген бет туралы сұраңыз</translation>
 <translation id="6990519590575500580">FaceTime</translation>
+<translation id="6998236305642926573">Барлық тапсырма</translation>
 <translation id="6998251471716094661">Тауарлардың бағаларын бақылауға және кез келген сайтта баға түскен кезде, хабарландырулар алуға болады.</translation>
 <translation id="7004032350256606903">Ұйымыңыз интернетті құпия шарлау арқылы пайдалануыңызды талап етеді.
 <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>

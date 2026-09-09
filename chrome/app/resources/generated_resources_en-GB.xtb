@@ -1323,6 +1323,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2006638907958895361">Open Link in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Report an Issue...</translation>
 <translation id="200781997903833896">To use Read Aloud, clear space on your device</translation>
+<translation id="2009047848105043829">Manage your devices</translation>
 <translation id="2010501376126504057">Compatible devices</translation>
 <translation id="2010636492623189611">Selected.</translation>
 <translation id="2012935757369720523">Delete file</translation>
@@ -3968,7 +3969,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3983769721878416534">Delay before click</translation>
 <translation id="3984135167056005094">Do not include email address</translation>
 <translation id="3984536049089846927">Next page</translation>
-<translation id="398477389655464998">Copy Link to Highlight</translation>
+<translation id="398477389655464998">Copy link to highlight</translation>
 <translation id="3984862166739904574">Quick Answers definition</translation>
 <translation id="3986813315215454677">ChromeOS Bluetooth</translation>
 <translation id="3987307536043958493">Block and leave</translation>
@@ -6076,7 +6077,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5643321261065707929">Metered network</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
-<translation id="564670806635578888">Search Google for “<ph name="SEARCH_TERMS" />”</translation>
+<translation id="564670806635578888">Search Google for '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="5647989922796038257">Also share all audio outputs</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
@@ -6662,6 +6663,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6126601353087978360">Please enter your feedback here:</translation>
 <translation id="6127292407256937949">Volume is on. Turn off volume.</translation>
 <translation id="6127598727646973981">Secure connections</translation>
+<translation id="6129686474468159207">See which sites you call from and when your camera or microphone is used</translation>
 <translation id="6129691635767514872">The selected data has been removed from Chrome and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Space</translation>

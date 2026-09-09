@@ -1312,6 +1312,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="2006638907958895361">Otwórz link w aplikacji <ph name="APP" /></translation>
 <translation id="2007404777272201486">Zgłaszanie problemu...</translation>
 <translation id="200781997903833896">Aby użyć funkcji Czytaj na głos, zwolnij miejsce na urządzeniu</translation>
+<translation id="2009047848105043829">Zarządzaj urządzeniami</translation>
 <translation id="2010501376126504057">Zgodne urządzenia</translation>
 <translation id="2010636492623189611">Wybrano.</translation>
 <translation id="2012935757369720523">Usuń plik</translation>
@@ -6634,6 +6635,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6126601353087978360">Wpisz swoją opinię tutaj:</translation>
 <translation id="6127292407256937949">Dźwięk jest włączony. Wyłącz go.</translation>
 <translation id="6127598727646973981">Bezpieczne połączenia</translation>
+<translation id="6129686474468159207">Sprawdzaj, z jakich stron dzwonisz oraz kiedy używana jest kamera lub mikrofon</translation>
 <translation id="6129691635767514872">Wybrane dane zostały usunięte z Chrome i synchronizowanych urządzeń. Inne rodzaje historii przeglądania, takie jak wyszukiwania i aktywność w innych usługach Google, mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Komentarz do certyfikatu firmy Netscape</translation>
 <translation id="6129953537138746214">Spacja</translation>

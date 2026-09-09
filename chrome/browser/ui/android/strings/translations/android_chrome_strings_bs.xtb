@@ -591,7 +591,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="331080746368555063">Privatne web lokacije mogu uključivati stvari kao što je intranet vaše kompanije</translation>
 <translation id="3311330810461485557">Pretražujte prema aplikaciji, datumu i drugo.</translation>
 <translation id="3312300514034250578">Poboljšano Sigurno pregledanje</translation>
-<translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3334729583274622784">Promijeniti ekstenziju fajla?</translation>
 <translation id="333863344734218290">Upozorava vas na nesigurne javne i privatne web lokacije</translation>
 <translation id="3339788961947270565">Završavanje isključivanja</translation>
@@ -910,6 +909,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4595805675102978678">Greška u vezi s Google računom</translation>
 <translation id="4599585406846903742">Prikaz na jednoj stranici</translation>
 <translation id="4601095002996233687">Detaljna skeniranja radi provjere sumnjivih preuzimanja.</translation>
+<translation id="4604434672720336227">Napuštanje Chromea</translation>
 <translation id="4606559747793337066">Kada web lokacija ili aplikacija zatraži da privatno predučita linkove na svojim stranicama, Chrome će šifrirati i predučitati stranice putem Googleovih servera bez kolačića. Ovim se sakriva vaš identitet na predučitanoj web lokaciji.</translation>
 <translation id="4619615317237390068">Kartice iz drugih uređaja</translation>
 <translation id="4624065194742029982">Anonimni način rada u Chromeu</translation>
@@ -1432,6 +1432,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6669390930482049506">Obavještavaj me</translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6672697278890207089">Unesite svoju zaporku</translation>
+<translation id="6675622031235530028">Zadržite Ctrl+Q da izađete</translation>
 <translation id="6676927815633975364">Prijavite se na ovu web lokaciju i u Chrome</translation>
 <translation id="6684262542644248484">Prijavite se na web lokaciju</translation>
 <translation id="6684809838922667136">Poboljšajte Chrome</translation>

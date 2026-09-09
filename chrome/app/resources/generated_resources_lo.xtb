@@ -61,6 +61,7 @@
 <translation id="1036511912703768636">ເຂົ້າ​ຫາ​ອຸ​ປະ​ກອນ USB ເຫຼົ່າ​ນີ້​ອັນ​ໃດ​ອັນ​ໜຶ່ງ</translation>
 <translation id="1038462104119736705">ຂໍແນະນຳພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ <ph name="INSTALL_SIZE" /> ສຳລັບ Linux. ເພື່ອເພີ່ມພື້ນທີ່ຫວ່າງ, ກະລຸນາລຶບໄຟລ໌ຕ່າງໆອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="1038643060055067718">ເສັ້ນ:</translation>
+<translation id="1039216421321079051">ສ່ວນຂະຫຍາຍຖືກປິດການນຳໃຊ້ໂດຍສ່ວນຂະຫຍາຍອື່ນ</translation>
 <translation id="1039337018183941703">ໄຟລ໌ເສຍຫາຍ ຫຼື ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="1040761927998636252">ບຸກມາກທີ່ບໍ່ມີຊື່ສຳລັບ <ph name="URL" /></translation>
 <translation id="1041175011127912238">ໜ້ານີ້ບໍ່ຕອບສະໜອງ</translation>
@@ -3476,6 +3477,7 @@
 <translation id="3641456520301071208">ເວັບໄຊສາມາດຂໍສະຖານທີ່ຂອງທ່ານໄດ້</translation>
 <translation id="3642070413432681490">ເຄີເຊີວົງມົນ</translation>
 <translation id="3643962751030964445">ອຸປະກອນນີ້ຖືກຈັດການໂດຍ <ph name="DEVICE_MANAGER" />. ຕ້ອງໃຊ້ໂປຣໄຟລ໌ໃໝ່ສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /> ໂດຍ <ph name="DEVICE_MANAGER" /></translation>
+<translation id="3644128856494356630">ໜ່ວຍຄວາມຈຳ CppGC</translation>
 <translation id="3645372836428131288">ຍ້າຍຊ້າໆເພື່ອບັນທຶກເອົາສ່ວນຕ່າງໆຂອງລາຍນິ້ວມື.</translation>
 <translation id="3645951915068244649">ມີການສ້າງກຸ່ມແຖບດ້ວຍໂຟນເດີບຸກມາກນີ້ຢູ່ກ່ອນແລ້ວ. ທ່ານຕ້ອງການສ້າງກຸ່ມແຖບໃໝ່ ຫຼື ປ່ຽນແທນກຸ່ມແຖບທີ່ມີຢູ່ບໍ?</translation>
 <translation id="3646789916214779970">ຕັ້ງຄ່າເປັນເທມມາດຕະຖານຄືນໃໝ່</translation>
@@ -4248,6 +4250,7 @@
 <translation id="4226303886821889519">ເວີຊັນໂປຣແກຣມອັບເດດ: <ph name="VERSION" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍນີ້}other{ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍບາງອັນ}}</translation>
 <translation id="4229538146709970028">ກະລຸນາປົດລັອກ <ph name="TOKEN_NAME" /> ເພື່ອພິສູດຢືນຢັນກັບ <ph name="HOST_NAME" /> ດ້ວຍໃບຮັບຮອງຂອງທ່ານ.</translation>
+<translation id="4230659518013393045">ລະບົບຈະແບ່ງປັນຊື່ໜ້າ, URL ແລະ ເນື້ອຫາຂອງແຖບປັດຈຸບັນຂອງທ່ານກັບ Google ເພື່ອໃຫ້ຄຳຕອບທີ່ກ່ຽວຂ້ອງແກ່ທ່ານຫຼາຍຂຶ້ນ. ທ່ານສາມາດເພີ່ມ ຫຼື ລຶບແຖບອອກໄດ້ໃນລະຫວ່າງທີ່ທ່ານເລືອກເບິ່ງ.</translation>
 <translation id="4232375817808480934">ກຳນົດຄ່າ Kerberos</translation>
 <translation id="4232376164796433044">ລະຫັດຜ່ານ ແລະ ການຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="4233739489690259993">Chromebook ຂອງທ່ານບໍ່ໄດ້ຮັບການອັບເດດຄວາມປອດໄພ ແລະ ຊອບແວອີກຕໍ່ໄປ. ອັບເກຣດອຸປະກອນຂອງທ່ານເພື່ອຮັບການຮັກສາຄວາມປອດໄພ ແລະ ຄຸນສົມບັດໃໝ່ຫຼ້າສຸດ. ໂດຍເປັນໄປຕາມຂໍ້ກຳນົດຂອງຂໍ້ສະເໜີ.</translation>
@@ -5116,6 +5119,7 @@
 <translation id="488785315393301722">ສະແດງລາຍລະອຽດ</translation>
 <translation id="488862352499217187">ສ້າງໂຟນເດີໃໝ່</translation>
 <translation id="4888715715847020167">ເຂົ້າໄປການຕັ້ງຄ່າ</translation>
+<translation id="4888899258150891194">ໜ່ວຍຄວາມຈຳ CppGC</translation>
 <translation id="4890292359366636311">ເຂົ້າໂໝດການສະແດງຜົນຊ້ອນກັນໂດຍອັດຕະໂນມັດ, ເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ມັນຢູ່ເໜືອແຖບ ແລະ ໜ້າຈໍອື່ນໆໄດ້.</translation>
 <translation id="4890399733764921729">ບໍ່ສາມາດເຊື່ອມຕໍ່ໄດ້. ລັອກໂດຍຜູ້ໃຫ້ບໍລິການມືຖືອື່ນ.</translation>
 <translation id="4890585766056792498">ຮັບການປົກປ້ອງຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ</translation>
@@ -5802,6 +5806,7 @@
 <translation id="5436510242972373446">ຊອກຫາ <ph name="SITE_NAME" /> :</translation>
 <translation id="5438014818441491616">ຕອນນີ້ໜ້າຈໍ <ph name="WINDOW_SIDE" /> ກວ້າງ <ph name="WINDOW_SIZE_PERCENT" />, ແຖບ <ph name="PANE_SIDE" /> ກວ້າງ <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">ສ່ວນຂະຫຍາຍການຊອກຫາ</translation>
+<translation id="5440240650630588012">ນຳໃຊ້ເສັ້ນ ຫຼື ໜ້າຈໍການອ່ານເພື່ອຊ່ວຍໃນການໂຟກັສ. ກົດ ⌥L ຫຼື ເຂົ້າໄປການຕັ້ງຄ່າ.</translation>
 <translation id="5440425659852470030">ປິດແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="544083962418256601">ສ້າງ​ທາງ​ລັດ...</translation>
 <translation id="5441133529460183413">ຕິດຕັ້ງເວັບແອັບຈາກໂປຣແກຣມທ່ອງເວັບ Chrome ແລ້ວ</translation>
@@ -5988,6 +5993,7 @@
 <translation id="5576472948015790634">ຕອນນີ້ທ່ານສາມາດຈັດການກຸ່ມແຖບ ແລະ ການສົນທະນາ Gemini ຂອງທ່ານໄດ້ໃນບ່ອນດຽວແລ້ວ. ຖອນໝຸດສິ່ງນີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="5578059481725149024">ເຂົ້າສູ່ລະບົບອັດຕະໂນມັດ</translation>
 <translation id="5578387000057347457">ລະບຸພຣອມທີ່ກຳນົດເອງ ຫຼື ໄຮໄລ້ຂໍ້ຄວາມເພື່ອສ້າງຮູບ</translation>
+<translation id="557893471177655572">ລອງໃຊ້ໂຟກັສເສັ້ນ</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{ລະບົບຈະບັນທຶກຂໍ້ມູນ 1 ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ<ph name="END_LINK" />.}other{ລະບົບຈະບັນທຶກຂໍ້ມູນ {ITEM_COUNT} ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560">ລຶບ <ph name="SITE" /> ອອກຈາກລາຍຊື່ <ph name="SECTION_HEADER" /></translation>
 <translation id="5581031802689147441">ມຸມມອງແຍກ</translation>
@@ -10002,6 +10008,7 @@
 <translation id="869891660844655955">ວັນ​ຫມົດ​ອາ​ຍຸ</translation>
 <translation id="8699296325072357994">ລະບົບຈະສົ່ງເນື້ອຫາຈາກໜ້າທີ່ມີລະຫັດຜ່ານ ແລະ ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງໃຫ້ Google ແລ້ວທີມງານຈະກວດສອບເນື້ອຫາດັ່ງກ່າວ. ລະຫັດຜ່ານຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້ ແລະ ຈະບໍ່ມີໃຜເບິ່ງເຫັນໄດ້. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8700416429250425628">ຕົວເປີດໃຊ້ + ປຸ່ມ backspace</translation>
+<translation id="8701058912406466818">ນຳໃຊ້ເສັ້ນ ຫຼື ໜ້າຈໍການອ່ານເພື່ອຊ່ວຍໃນການໂຟກັສ. ກົດ Alt+L ຫຼື ເຂົ້າໄປການຕັ້ງຄ່າ.</translation>
 <translation id="8702278591052316269">ເມນູມີກຸ່ມແຖບທີ່ບັນທຶກໄວ້ທີ່ເຊື່ອງໄວ້</translation>
 <translation id="8703346390800944767">ຂ້າມໂຄສະນາ</translation>
 <translation id="8703372953981978786">ລິ້ງນີ້ໃຊ້ບໍ່ໄດ້</translation>
@@ -10764,6 +10771,7 @@
 <translation id="983192555821071799">ປິດ​ທຸກແຖບ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ການບັນທຶກກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="984705303330760860">ເພີ່ມພາສາການກວດຄຳຜິດ</translation>
+<translation id="986994187171579118">ສ່ວນຂະຫຍາຍຖືກປິດການນຳໃຊ້ໂດຍ <ph name="EXTENSION_NAME" /></translation>
 <translation id="987264212798334818">ທົ່ວໄປ</translation>
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ຕ້ອງການຮັບຂໍ້ມູນຈາກອຸປະກອນມືຖືຂອງທ່ານ</translation>
 <translation id="988320949174893488">ກະຕຸກເປັນບາງເທື່ອ</translation>

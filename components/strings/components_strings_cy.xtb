@@ -1095,6 +1095,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2859806420264540918">Mae'r wefan hon yn dangos hysbysebion ymwthiol neu gamarweiniol.</translation>
 <translation id="2873317327342476681">Gêm Dino, tapiwch y dino neu pwyswch Space i chwarae</translation>
 <translation id="287387905105155974">Swigen help</translation>
+<translation id="2875109558992200904">Pan fydd digwyddiadau diogelwch yn cael eu nodi gan Chrome, anfonir data perthnasol am y digwyddiadau at eich gweinyddwr. Gall hyn gynnwys cyfeiriadau URL a theitlau tudalennau rydych yn ymweld â nhw yn Chrome, cyfeiriadau URL tudalennau y gwnaethoch gopïo data ohonynt, enwau ffeiliau neu fetaddata, cyfeiriadau IP, chwalfeydd porwr neu dab a'r enw defnyddiwr rydych yn ei ddefnyddio i fewngofnodi i apiau ar-lein, i'ch dyfais ac i Chrome.</translation>
 <translation id="2876489322757410363">Wrthi'n gadael y modd Anhysbys i dalu drwy ap allanol. Parhau?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli eich Pori'n Ddiogel a rhagor yng ngosodiadau Chrome</translation>
 <translation id="2878197950673342043">Plyg poster</translation>
@@ -1943,6 +1944,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4265635050210404830">Eich cardiau teyrngarwch</translation>
 <translation id="4265872034478892965">Wedi'i ganiatáu gan eich gweinyddwr</translation>
 <translation id="4267590181863312380">I gael eich hanes o'ch dyfeisiau eraill, mewngofnodwch a chysoni hanes. Byddwch hefyd yn cael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
+<translation id="4267837382000002014">Anfonir URL a theitlau tudalennau rydych yn ymweld â nhw at Google Cloud neu drydydd partïon i'w dadansoddi, a gallant fod yn weladwy i'ch gweinyddwr. Er enghraifft, mae'n bosib y byddant yn cael eu sganio i ganfod gwefannau anniogel neu hidlo gwefannau yn seiliedig ar reolau a osodwyd gan y gweinyddwr.</translation>
 <translation id="4268025649754414643">Amgryptio drwy Allwedd</translation>
 <translation id="4269599248168651462">Rhoddir tystysgrif y gweinydd i enw nad yw'n unigryw.</translation>
 <translation id="4270541775497538019">Pentyrrwr 6</translation>
@@ -2018,7 +2020,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4377869186417956230">Newid i bob cerdyn teyrngarwch o dan yr eitem ddewislen hon.</translation>
 <translation id="4378154925671717803">Ffôn</translation>
 <translation id="4378221908737133050">Gwneud restr wirio glanhau dwfn ar gyfer fy nghartref</translation>
-<translation id="4379357028567121852">O <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Gallwch ailgychwyn lle gwnaethoch adael neu greu grwpiau tabiau newydd wrth fynd</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">O hyn ymlaen, cadw eich ffeiliau i storfa'r cwmwl</translation>

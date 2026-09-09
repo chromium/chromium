@@ -2539,7 +2539,7 @@
 <translation id="8237964652943995219">다음 데스크는 <ph name="DESK_NAME" />입니다. 데스크 <ph name="DESK_COUNT" />개 중 <ph name="DESK_INDEX" />번째입니다.</translation>
 <translation id="8238817965863339552"><ph name="PRODUCT_NAME" />을 사용하는 방법을 간단히 둘러보세요. 5단계 만에 간편하게 설정하고 시작할 수 있습니다.</translation>
 <translation id="8239034820133090126">오른쪽 데스크를 활성화합니다.</translation>
-<translation id="8241650983304689286">새 분할 보기에 탭 추가</translation>
+<translation id="8241650983304689286">새 분할 뷰에 탭 추가</translation>
 <translation id="8244201515061746038">자동 수정 자세히 알아보기 버튼입니다. 자동 수정 설정 페이지로 이동합니다. 활성화하려면 Enter를, 닫으려면 Esc를 누르세요.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 휴대전화 배터리 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">OEM 폴더</translation>

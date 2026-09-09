@@ -1323,6 +1323,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="2006638907958895361">Atidaryti nuorodą programoje „<ph name="APP" />“</translation>
 <translation id="2007404777272201486">Pranešti apie problemą...</translation>
 <translation id="200781997903833896">Jei norite naudoti funkciją „Perskaityk garsiai“, atlaisvinkite vietos įrenginyje</translation>
+<translation id="2009047848105043829">Tvarkyti įrenginius</translation>
 <translation id="2010501376126504057">Suderinami įrenginiai</translation>
 <translation id="2010636492623189611">Pasirinkta.</translation>
 <translation id="2012935757369720523">Ištrinti failą</translation>
@@ -3476,6 +3477,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3641456520301071208">Svetainės gali klausti jūsų vietovės</translation>
 <translation id="3642070413432681490">Apskritimo žymeklis</translation>
 <translation id="3643962751030964445">Šį įrenginį tvarko <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> turi sukurti naują paskyros <ph name="USER_EMAIL_ADDRESS" /> profilį</translation>
+<translation id="3644128856494356630">„CppGC“ atmintis</translation>
 <translation id="3645372836428131288">Truputį pajudinkite pirštą, kad būtų užfiksuota kita piršto antspaudo dalis.</translation>
 <translation id="3645951915068244649">Skirtukų grupė jau sukurta naudojant šį žymių aplanką. Norite sukurti naują skirtukų grupę ar pakeisti esamą?</translation>
 <translation id="3646789916214779970">Iš naujo nustatyti numatytąją temą</translation>
@@ -5116,6 +5118,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="488785315393301722">Rodyti išsamią informaciją</translation>
 <translation id="488862352499217187">Kurti naują aplanką</translation>
 <translation id="4888715715847020167">eikite į nustatymus</translation>
+<translation id="4888899258150891194">„CppGC“ atmintis</translation>
 <translation id="4890292359366636311">Automatiškai įjunkite vaizdo vaizde režimą, kad galėtumėte jį naudoti virš kitų skirtukų ir langų.</translation>
 <translation id="4890399733764921729">Nepavyko prisijungti. Užrakino kitas mobiliojo ryšio operatorius.</translation>
 <translation id="4890585766056792498">Pasinaudokite apsauga nuo pavojingų svetainių</translation>
@@ -6663,6 +6666,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6126601353087978360">Atsiliepimą įveskite čia:</translation>
 <translation id="6127292407256937949">Garsumas įjungtas. Išjunkite garsumą.</translation>
 <translation id="6127598727646973981">Saugūs ryšiai</translation>
+<translation id="6129686474468159207">Peržiūrėkite, iš kurių svetainių skambinate ir kada naudojama vaizdo kamera arba mikrofonas</translation>
 <translation id="6129691635767514872">Pasirinkti duomenys pašalinti iš „Chrome“ ir sinchronizuojamų įrenginių. „Google“ paskyroje galite būti kitų formų naršymo istorijos, pvz., paieškų ir veiklos iš kitų „Google“ paslaugų, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">„Netscape“ sertifikato komentaras</translation>
 <translation id="6129953537138746214">Tarpo klavišas</translation>

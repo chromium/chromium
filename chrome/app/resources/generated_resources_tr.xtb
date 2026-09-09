@@ -1313,6 +1313,7 @@
 <translation id="2006638907958895361">Bağlantıyı <ph name="APP" /> uygulamasında aç</translation>
 <translation id="2007404777272201486">Sorun Bildirin...</translation>
 <translation id="200781997903833896">Sesli Oku özelliğini kullanmak için cihazınızda yer açın.</translation>
+<translation id="2009047848105043829">Cihazlarınızı Yönetin</translation>
 <translation id="2010501376126504057">Uyumlu cihazlar</translation>
 <translation id="2010636492623189611">Seçildi.</translation>
 <translation id="2012935757369720523">Dosyayı sil</translation>
@@ -4470,7 +4471,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" />, ebeveyniniz tarafından engellendi. Bu uygulamayı kullanmak için ebeveyninizden izin isteyin.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Klasöre taşı…</translation>
-<translation id="4405580203042711503">Aşağıdaki yeni sekme</translation>
+<translation id="4405580203042711503">Aşağıya Yeni Sekme</translation>
 <translation id="4405781821077215583">Metinler dahil olmak üzere ekranınızdaki öğeleri küçültün veya büyütün</translation>
 <translation id="4406308048672435032">Bu sekmeyi devre dışı bırakabilir veya tam listeyi tekrar görmek için sayfayı yenileyebilirsiniz</translation>
 <translation id="4406881185911439342">Grubu odakla</translation>
@@ -6007,7 +6008,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5609231933459083978">Uygulamanın geçersiz olduğu görülüyor.</translation>
 <translation id="5610867721023328944">Tekrar deneyin veya aşağıdaki mevcut temalardan birini seçin.</translation>
 <translation id="5611398002774823980">Hesaba kaydet</translation>
-<translation id="5611474372949142946">Aşağıdaki sekmeleri kapat</translation>
+<translation id="5611474372949142946">Aşağıdaki Sekmeleri Kapat</translation>
 <translation id="5614553682702429503">Şifre kaydedilsin mi?</translation>
 <translation id="5614947000616625327">iCloud Anahtar Zinciri</translation>
 <translation id="5616571005307953937">En eski</translation>
@@ -6647,6 +6648,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6126601353087978360">Lütfen geri bildiriminizi buraya girin:</translation>
 <translation id="6127292407256937949">Ses açık. Sesi kapat.</translation>
 <translation id="6127598727646973981">Güvenli bağlantılar</translation>
+<translation id="6129686474468159207">Hangi sitelerden arama yaptığınızı ve kameranızın veya mikrofonunuzun ne zaman kullanıldığını görün</translation>
 <translation id="6129691635767514872">Seçilen veriler Chrome'dan ve senkronize edilen cihazlardan kaldırıldı. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde, diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google Hesabınızla ilişkili başka biçimlerde tarama geçmişi bulunabilir.</translation>
 <translation id="6129938384427316298">Netscape Sertifikası Yorumu</translation>
 <translation id="6129953537138746214">Boşluk</translation>

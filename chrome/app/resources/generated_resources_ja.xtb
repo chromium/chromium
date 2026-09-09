@@ -1312,6 +1312,7 @@
 <translation id="2006638907958895361"><ph name="APP" /> でリンクを開く</translation>
 <translation id="2007404777272201486">問題の報告...</translation>
 <translation id="200781997903833896">読み上げ機能を使用するには、デバイスの空き容量を増やしてください</translation>
+<translation id="2009047848105043829">デバイスを管理</translation>
 <translation id="2010501376126504057">対応デバイス</translation>
 <translation id="2010636492623189611">選択しました。</translation>
 <translation id="2012935757369720523">ファイルを削除</translation>
@@ -6642,6 +6643,7 @@
 <translation id="6126601353087978360">フィードバックの内容をご記入ください。</translation>
 <translation id="6127292407256937949">音量はオンになっています。音量をオフにします。</translation>
 <translation id="6127598727646973981">安全な接続</translation>
+<translation id="6129686474468159207">どのサイトから呼び出しが行われ、カメラやマイクがいつ使用されたかを確認できます</translation>
 <translation id="6129691635767514872">選択したデータが Chrome から削除され、同期されたデバイスからも削除されました。他の Google サービスでの検索や操作など、Google アカウントの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="6129938384427316298">Netscape 証明書コメント</translation>
 <translation id="6129953537138746214">Space</translation>
