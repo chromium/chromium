@@ -29,7 +29,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertCenterAligned, assertNotStyle, assertStyle, createBackgroundImage, createTheme, getCenter, getTextCenter, installMock, queryShadowPath} from './test_support.js';
+import {assertCenterAligned, assertEffectiveBorderRadiiCloseTo, assertNotStyle, assertStyle, createBackgroundImage, createTheme, getCenter, getEffectiveBorderRadii, getTextCenter, installMock, queryShadowPath} from './test_support.js';
 
 const VOICE_ACTIONS_METRIC = 'NewTabPage.VoiceActions';
 
@@ -1876,6 +1876,49 @@ suite('NewTabPageAppTest', () => {
               assertEquals(
                   searchboxWrapperRect.width, composeboxRect.width,
                   'Initial composebox width should match searchbox width to prevent layout jump');
+            });
+
+        test(
+            'effective border radii of expanded composebox and searchbox are the same',
+            async () => {
+              await recreateApp();
+              await microtasksFinished();
+
+              const searchboxWrapper =
+                  queryShadowPath(app, '#searchbox', '#inputWrapper');
+              assertTrue(!!searchboxWrapper, 'Searchbox wrapper should exist');
+              const searchboxRadii = getEffectiveBorderRadii(searchboxWrapper);
+
+              // Arrange: dispatch open-composebox event.
+              const searchbox = $$(app, '#searchbox');
+              assertTrue(!!searchbox, 'Searchbox should exist');
+              searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                detail: {text: '', files: []},
+              }));
+              await microtasksFinished();
+
+              // Expand composebox by setting inToolMode = true.
+              const composebox =
+                  app.shadowRoot.querySelector<NtpComposeboxElement>(
+                      '#composebox')!;
+              assertTrue(!!composebox, 'Composebox should exist');
+              composebox.inToolMode = true;
+              composebox.requestUpdate();
+              await composebox.updateComplete;
+              await microtasksFinished();
+
+              const composeboxContainer =
+                  queryShadowPath(app, '#composebox', '#composebox');
+              assertTrue(
+                  !!composeboxContainer, 'Composebox container should exist');
+              const composeboxRadii =
+                  getEffectiveBorderRadii(composeboxContainer);
+
+              // Assert that all 4 corner radii match within 0.01px tolerance to
+              // prevent visual curvature jump.
+              assertEffectiveBorderRadiiCloseTo(
+                  searchboxRadii, composeboxRadii, 0.01,
+                  'Effective border radii must match between searchbox and expanded composebox');
             });
 
         test('+ button alignment matches', async () => {
