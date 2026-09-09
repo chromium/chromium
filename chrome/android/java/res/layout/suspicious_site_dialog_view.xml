@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/suspicious_site_dialog_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Frame 1: Scrollable Header/Body and Close 'X' Button Container
+         (width: fill 300, gap: 12dp) -->
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/header_and_body_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="top">
+
+            <!-- Header and Body Vertical Frame (width: 256, gap: 8dp) -->
+            <LinearLayout
+                android:id="@+id/text_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- Header / Title (fill 256, hug 24, Google Sans 18sp/24sp
+                     leading, #1F1F1F) -->
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textAppearance=
+                        "@style/TextAppearance.Headline2Thick.Primary"
+                    android:textAlignment="viewStart" />
+
+                <!-- Body Message (fill 256, hug 60, Google Sans Text 14sp/20sp
+                     leading, #1F1F1F) -->
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance=
+                        "@style/TextAppearance.TextMedium.Primary"
+                    android:textAlignment="viewStart" />
+
+            </LinearLayout>
+
+            <!-- Close 'X' Button.
+                 TODO(b/552482499): Migrate to centralized framework
+                 close button in Phase 2. -->
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/close_button"
+                android:layout_width="@dimen/small_icon_background_size"
+                android:layout_height="@dimen/small_icon_background_size"
+                android:layout_marginStart="12dp"
+                android:layout_gravity="top"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/small_icon_background"
+                android:src="@drawable/material_ic_close_24dp"
+                app:tint="@color/default_icon_color_secondary_tint_list"
+                android:contentDescription="@string/close" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Button Group -->
+    <LinearLayout
+        android:id="@+id/button_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Top "Mark as safe" Button -->
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/negative_button"
+            style="@style/FilledTonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:layout_marginBottom="4dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            app:rippleCornerRadiusTopStart="16dp"
+            app:rippleCornerRadiusTopEnd="16dp"
+            app:rippleCornerRadiusBottomStart="4dp"
+            app:rippleCornerRadiusBottomEnd="4dp"
+            app:verticalInset="0dp" />
+
+        <!-- Bottom "Back to safety" Button -->
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/positive_button"
+            style="@style/FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            app:rippleCornerRadiusTopStart="4dp"
+            app:rippleCornerRadiusTopEnd="4dp"
+            app:rippleCornerRadiusBottomStart="16dp"
+            app:rippleCornerRadiusBottomEnd="16dp"
+            app:verticalInset="0dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

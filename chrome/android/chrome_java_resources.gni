@@ -608,6 +608,7 @@ chrome_java_resources = [
   "java/res/layout/status_indicator_container.xml",
   "java/res/layout/suggestions_tile_view_condensed.xml",
   "java/res/layout/suspended_tab.xml",
+  "java/res/layout/suspicious_site_dialog_view.xml",
   "java/res/layout/sync_custom_passphrase.xml",
   "java/res/layout/sync_enter_passphrase.xml",
   "java/res/layout/sync_passphrase_types.xml",
