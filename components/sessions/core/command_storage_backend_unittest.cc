@@ -129,7 +129,10 @@ class CommandStorageBackendTest : public testing::Test {
       CommandStorageBackend* backend) {
     // Force `last_session_info_` to be updated.
     backend->InitIfNecessary();
-    return backend->last_session_info_;
+    if (!backend->last_session_info_) {
+      return std::nullopt;
+    }
+    return *backend->last_session_info_;
   }
 
   std::unique_ptr<base::File> OpenAndWriteHeader(CommandStorageBackend* backend,
@@ -576,6 +579,18 @@ class CommandStorageBackendParamTest
         GetParam().encrypted);
   }
 
+  base::FilePath WriteValidSessionFile(uint64_t time_delta_microseconds) {
+    base::SimpleTestClock test_clock;
+    test_clock.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(time_delta_microseconds)));
+    scoped_refptr<CommandStorageBackend> backend = CreateBackend(&test_clock);
+    backend->AppendCommands({}, true, base::DoNothing());
+    base::FilePath expected_path = GetFilePath(time_delta_microseconds);
+    EXPECT_EQ(expected_path, backend->current_path_for_testing());
+    backend.reset();
+    return expected_path;
+  }
+
   std::string GetHistogramName(std::string_view operation,
                                std::string_view slice,
                                std::string_view metric) {
@@ -929,6 +944,33 @@ TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionInvalid) {
   ASSERT_FALSE(last_session_info);
 }
 
+// Test that a file with an invalid header won't be used.
+TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionInvalidHeader) {
+  const auto invalid_header_path = GetFilePath(9999);
+  const char kInvalidHeader[] = "INVALID_HEADER";
+  ASSERT_TRUE(base::WriteFile(invalid_header_path, kInvalidHeader));
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  auto last_session_info = GetLastSessionInfo(backend.get());
+  ASSERT_FALSE(last_session_info);
+}
+
+// Test that an older valid file is selected if the newer file is invalid.
+TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionLatestValid) {
+  // Newer file is invalid.
+  const auto invalid_header_path = GetFilePath(9999);
+  const char kInvalidHeader[] = "";
+  ASSERT_TRUE(base::WriteFile(invalid_header_path, kInvalidHeader));
+
+  // But older file is valid.
+  const base::FilePath older_valid = WriteValidSessionFile(8888);
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  auto last_session_info = GetLastSessionInfo(backend.get());
+  ASSERT_TRUE(last_session_info);
+  EXPECT_EQ(older_valid, last_session_info->path);
+}
+
 TEST_P(CommandStorageBackendParamTest, IsValidFileWithInvalidFiles) {
   bool encrypted = GetParam().encrypted;
   const auto file_path = sessions_dir(encrypted).AppendASCII("Session_123");
@@ -1156,39 +1198,33 @@ TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionEmpty) {
 // Test that the previous session is selected correctly when a file is
 // present.
 TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionSingle) {
-  const auto prev_path = GetFilePath(13235178308836991);
-  ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
-  ASSERT_TRUE(base::WriteFile(prev_path, ""));
+  const base::FilePath prev_path = WriteValidSessionFile(13235178308836991);
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   auto last_session_info = GetLastSessionInfo(backend.get());
   ASSERT_TRUE(last_session_info);
-  ASSERT_EQ(prev_path, last_session_info->path);
+  EXPECT_EQ(prev_path, last_session_info->path);
 }
 
 // Test that the previous session is selected correctly when multiple session
 // files are present.
 TEST_P(CommandStorageBackendParamTest, DeterminePreviousSessionMultiple) {
-  base::FilePath prev_path = GetFilePath(13235178308836991);
-  base::FilePath old_path_1 = GetFilePath(13235178308548874);
-  base::FilePath old_path_2 = GetFilePath(0);
-  ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
-  ASSERT_TRUE(base::WriteFile(prev_path, ""));
-  ASSERT_TRUE(base::WriteFile(old_path_1, ""));
-  ASSERT_TRUE(base::WriteFile(old_path_2, ""));
+  const base::FilePath prev_path = WriteValidSessionFile(13235178308836991);
+  const base::FilePath old_path_1 = GetFilePath(13235178308548874);
+  const base::FilePath old_path_2 = GetFilePath(0);
+  ASSERT_TRUE(base::CopyFile(prev_path, old_path_1));
+  ASSERT_TRUE(base::CopyFile(prev_path, old_path_2));
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   auto last_session_info = GetLastSessionInfo(backend.get());
   ASSERT_TRUE(last_session_info);
-  ASSERT_EQ(prev_path, last_session_info->path);
+  EXPECT_EQ(prev_path, last_session_info->path);
 }
 
 // Tests that MoveCurrentSessionToLastSession deletes the last session file.
 TEST_P(CommandStorageBackendParamTest,
        MoveCurrentSessionToLastDeletesLastSession) {
-  base::FilePath last_session = GetFilePath(13235178308836991);
-  ASSERT_TRUE(base::CreateDirectory(last_session.DirName()));
-  ASSERT_TRUE(base::WriteFile(last_session, ""));
+  const base::FilePath last_session = WriteValidSessionFile(13235178308836991);
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   char buffer[1];
@@ -1345,7 +1381,10 @@ TEST_P(CommandStorageBackendParamTest,
   base::HistogramTester histogram_tester;
   backend = CreateBackend(&test_clock);
   ReadCommandsResult result = backend->ReadLastSessionCommands();
-  EXPECT_FALSE(result.error_reading);
+
+  // The files were read, but no valid marker was found, so the result is an
+  // error.
+  EXPECT_TRUE(result.error_reading);
   EXPECT_TRUE(result.commands.empty());
 
   histogram_tester.ExpectUniqueSample(

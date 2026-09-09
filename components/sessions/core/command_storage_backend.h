@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
@@ -235,8 +236,9 @@ class SESSIONS_EXPORT CommandStorageBackend
   WriteStatus AppendCommandToFile(base::File* file,
                                   const sessions::SessionCommand& command);
 
-  // Gets data for the last session file.
-  std::optional<SessionInfo> FindLastSessionFile() const;
+  // Gets data for the last session file, or the reason no usable file was
+  // found.
+  base::expected<SessionInfo, ReadStatus> FindLastSessionFile() const;
 
   // Attempt to delete all sessions besides the current and last. This is a
   // best effort operation.
@@ -256,9 +258,6 @@ class SESSIONS_EXPORT CommandStorageBackend
                                            const SessionInfo& b) {
     return b.timestamp < a.timestamp;
   }
-
-  // Returns true if `path` can be used for the last session.
-  bool CanUseFileForLastSession(const base::FilePath& path) const;
 
   // Used in testing to emulate an error in writing to the file. The value is
   // automatically reset after the failure.
@@ -304,8 +303,9 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Timestamp when this session was started.
   base::Time timestamp_;
 
-  // Data for the last session.
-  std::optional<SessionInfo> last_session_info_;
+  // Data for the last session, or the reason no usable file was found.
+  base::expected<SessionInfo, ReadStatus> last_session_info_ =
+      base::unexpected(ReadStatus::kUnknown);
 
   // Paths of the two most recently written files with a valid marker (the
   // first of which may be the currently open file). When a new file is
