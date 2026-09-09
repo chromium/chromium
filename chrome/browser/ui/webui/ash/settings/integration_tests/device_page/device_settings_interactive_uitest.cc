@@ -979,15 +979,7 @@ class AmbientLightSensorStateObserver
   bool ambient_light_sensor_enabled_;
 };
 
-class DeviceSettingsBrightnessInteractiveUiTest
-    : public DeviceSettingsInteractiveUiTest {
- public:
-  DeviceSettingsBrightnessInteractiveUiTest() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        {features::kEnableBrightnessControlInSettings}, {});
-  }
-};
+using DeviceSettingsBrightnessInteractiveUiTest = DeviceSettingsInteractiveUiTest;
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
                        ToggleDisplayAutoBrightness) {

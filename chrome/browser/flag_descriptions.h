@@ -7731,12 +7731,6 @@ inline constexpr char kDriveFsShowCSEFilesDescription[] =
     "Enable listing of CSE files in DriveFS, which will result in these files "
     "being visible in the Files App's Google Drive item.";
 
-inline constexpr char kEnableBrightnessControlInSettingsName[] =
-    "Enable brightness controls in Settings";
-inline constexpr char kEnableBrightnessControlInSettingsDescription[] =
-    "Enables brightness slider and auto-brightness toggle for internal display "
-    "in Settings";
-
 inline constexpr char kEnableDisplayPerformanceModeName[] =
     "Enable Display Performance Mode";
 inline constexpr char kEnableDisplayPerformanceModeDescription[] =

@@ -1660,9 +1660,6 @@ void DeviceSection::AddDeviceDisplayStrings(
   html_source->AddBoolean("isDisplayPerformanceSupported",
                           IsDisplayPerformanceSupported());
 
-  html_source->AddBoolean("enableDisplayBrightnessControlInSettings",
-                          features::IsBrightnessControlInSettingsEnabled());
-
   html_source->AddBoolean("opsDisplayScaleFactorEnabled",
                           IsOpsDisplayScaleFactorEnabled());
 }

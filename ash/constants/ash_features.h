@@ -265,8 +265,6 @@ BASE_DECLARE_FEATURE(kEcheSWADisableStunServer);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEcheSWACheckAndroidNetworkInfo);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEnableBrightnessControlInSettings);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableExternalKeyboardsInDiagnostics);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableFilesAppCopyImage);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1031,7 +1029,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCourseWorkMaterialApiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingTeacherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaScreenSharingStudentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaReceiverCustomPollingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeOnDeviceOcrEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryPolicyEnabled();

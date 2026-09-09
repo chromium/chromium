@@ -38,7 +38,6 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isDisplayBrightnessControlInSettingsEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import type {SettingsSliderElement} from '../controls/settings_slider.js';
@@ -953,15 +952,14 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns true if display brightness controls should be shown for |display|.
    */
   private showBrightnessControls_(display: DisplayUnitInfo): boolean {
-    return isDisplayBrightnessControlInSettingsEnabled() && display.isInternal;
+    return display.isInternal;
   }
 
   /**
    * Returns true if the auto-brightness toggle should be shown.
    */
   private showAutoBrightnessToggle_(): boolean {
-    return isDisplayBrightnessControlInSettingsEnabled() &&
-        this.hasAmbientLightSensor_;
+    return this.hasAmbientLightSensor_;
   }
 
   /**
@@ -1250,10 +1248,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Handles the event when the display brightness slider changes value.
    */
   private onDisplayBrightnessSliderChanged_(): void {
-    if (!isDisplayBrightnessControlInSettingsEnabled()) {
-      return;
-    }
-
     const brightnessSliderValue =
         strictQuery('#brightnessSlider', this.shadowRoot, CrSliderElement)
             .value;
@@ -1269,10 +1263,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Handles the event when the auto-brightness toggle changes value.
    */
   private onAutoBrightnessToggleChange_(): void {
-    if (!isDisplayBrightnessControlInSettingsEnabled()) {
-      return;
-    }
-
     const isAutoBrightnessToggleChecked: boolean =
         strictQuery('#autoBrightnessToggle', this.shadowRoot, CrToggleElement)
             .checked;

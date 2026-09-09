@@ -54,10 +54,6 @@ export function isExternalStorageEnabled(): boolean {
   return loadTimeData.getBoolean('isExternalStorageEnabled');
 }
 
-export function isDisplayBrightnessControlInSettingsEnabled(): boolean {
-  return loadTimeData.getBoolean('enableDisplayBrightnessControlInSettings');
-}
-
 export function isSkyVaultEnabled(): boolean {
   return loadTimeData.getBoolean('enableSkyVault');
 }

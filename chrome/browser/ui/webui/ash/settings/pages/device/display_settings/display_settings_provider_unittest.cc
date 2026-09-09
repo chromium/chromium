@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
@@ -12,7 +11,6 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -239,8 +237,6 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    feature_list_.InitAndDisableFeature(
-        features::kEnableBrightnessControlInSettings);
     provider_ = std::make_unique<DisplaySettingsProvider>();
     brightness_control_delegate_ =
         std::make_unique<FakeBrightnessControlDelegate>();
@@ -259,7 +255,6 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
   std::unique_ptr<DisplaySettingsProvider> provider_;
   std::unique_ptr<FakeBrightnessControlDelegate> brightness_control_delegate_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test the behavior when the tablet mode status has changed. The tablet mode is
@@ -610,46 +605,8 @@ TEST_F(DisplaySettingsProviderTest, DisplayBrightnessSettingsObservation) {
   EXPECT_EQ(brightness_percent, fake_observer.current_brightness());
 }
 
-// Test the behavior when setting the internal display screen brightness (when
-// the feature flag is disabled).
-TEST_F(DisplaySettingsProviderTest,
-       SetInternalDisplayScreenBrightness_FeatureDisabled) {
-  // No histograms should have been recorded yet.
-  histogram_tester_.ExpectTotalCount(
-      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
-      /*expected_count=*/0);
-
-  // Set the brightness with a sentinel value, so we can test that the
-  // brightness doesn't change if the feature flag is disabled.
-  double brightness_before_setting = 50.0;
-  brightness_control_delegate_->SetBrightnessPercent(
-      brightness_before_setting,
-      /*gradual=*/false, /*source=*/
-      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
-
-  provider_->SetBrightnessControlDelegateForTesting(
-      brightness_control_delegate_.get());
-
-  double new_brightness_percent = 33.3;
-  provider_->SetInternalDisplayScreenBrightness(new_brightness_percent);
-
-  // When feature flag is disabled, setting the brightness has no effect.
-  EXPECT_EQ(brightness_before_setting,
-            brightness_control_delegate_->brightness_percent());
-
-  // No histograms should have been recorded, because the feature is disabled.
-  histogram_tester_.ExpectTotalCount(
-      "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
-      /*expected_count=*/0);
-}
-
-// Test the behavior when setting the internal display screen brightness (when
-// the feature flag is enabled).
-TEST_F(DisplaySettingsProviderTest,
-       SetInternalDisplayScreenBrightness_FeatureEnabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
+// Test the behavior when setting the internal display screen brightness.
+TEST_F(DisplaySettingsProviderTest, SetInternalDisplayScreenBrightness) {
   provider_->SetBrightnessControlDelegateForTesting(
       brightness_control_delegate_.get());
 
@@ -699,49 +656,8 @@ TEST_F(DisplaySettingsProviderTest,
       /*expected_count=*/1);
 }
 
-// Test the behavior when setting the internal display screen brightness (when
-// the feature flag is disabled).
-TEST_F(DisplaySettingsProviderTest,
-       SetAmbientLightSensorEnabled_FeatureDisabled) {
-  // No histograms should have been recorded.
-  histogram_tester_.ExpectTotalCount(
-      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
-      /*expected_count=*/0);
-
-  // Set the ambient_light_sensor_enabled with a sentinel value, so we can test
-  // that the value doesn't change if the feature flag is disabled.
-  bool initial_sensor_enabled = true;
-  brightness_control_delegate_->SetAmbientLightSensorEnabled(
-      initial_sensor_enabled,
-      BrightnessControlDelegate::AmbientLightSensorEnabledChangeSource::
-          kSettingsApp);
-
-  provider_->SetBrightnessControlDelegateForTesting(
-      brightness_control_delegate_.get());
-
-  bool expected_sensor_enabled = false;
-  provider_->SetInternalDisplayAmbientLightSensorEnabled(
-      expected_sensor_enabled);
-
-  // When feature flag is disabled, setting the ambient light sensor value has
-  // no effect, and the value should be equal to the initial value.
-  EXPECT_EQ(initial_sensor_enabled,
-            brightness_control_delegate_->is_ambient_light_sensor_enabled());
-
-  // When the feature flag is disabled, metrics should not be recorded either.
-  histogram_tester_.ExpectTotalCount(
-      "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
-      /*expected_count=*/0);
-}
-
-// Test the behavior when setting the internal display screen brightness (when
-// the feature flag is enabled).
-TEST_F(DisplaySettingsProviderTest,
-       SetAmbientLightSensorEnabled_FeatureEnabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
-
+// Test the behavior when setting the internal display ambient light sensor.
+TEST_F(DisplaySettingsProviderTest, SetAmbientLightSensorEnabled) {
   // No histograms should have been recorded yet.
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
@@ -795,9 +711,8 @@ TEST_F(DisplaySettingsProviderTest,
 // Test that the ambient light sensor observer returns the correct information
 // when the ambient light sensor status changes.
 TEST_F(DisplaySettingsProviderTest, AmbientLightSensorObservation) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
+  provider_->SetBrightnessControlDelegateForTesting(
+      brightness_control_delegate_.get());
 
   FakeAmbientLightSensorObserver fake_observer;
   base::test::TestFuture<bool> future;
@@ -875,10 +790,6 @@ TEST_F(DisplaySettingsProviderTest, HasAmbientLightSensor) {
 }
 
 TEST_F(DisplaySettingsProviderTest, RecordUserInitiatedALSDisabledCause) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
-
   // No histograms should have been recorded yet.
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.UserInitiated."

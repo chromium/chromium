@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_data_dispatcher.h"
@@ -17,7 +16,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -149,7 +147,6 @@ class BrightnessControllerChromeosTest : public AshTestBase {
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::RunLoop run_loop_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   void AdvanceClock(base::TimeDelta time) {
     task_environment()->AdvanceClock(time);
@@ -894,9 +891,6 @@ TEST_P(BrightnessControllerChromeosTest_NonApplicableSessionStates,
 
 TEST_F(BrightnessControllerChromeosTest,
        HistogramTest_SetBrightnessAfterSystemRestoration) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
   // Start on the login screen.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
@@ -1002,11 +996,7 @@ TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabled_Cause) {
           SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE);
 }
 
-TEST_F(BrightnessControllerChromeosTest,
-       RestoreBrightnessSettingsFromPref_FlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
+TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettingsFromPref) {
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1149,104 +1139,7 @@ TEST_F(BrightnessControllerChromeosTest,
 }
 
 TEST_F(BrightnessControllerChromeosTest,
-       RestoreBrightnessSettingsFromPref_FlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnableBrightnessControlInSettings);
-
-  // Set initial ALS status and brightness level.
-  power_manager::SetAmbientLightSensorEnabledRequest request;
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetAmbientLightSensorEnabled(request);
-  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
-  run_loop_.RunUntilIdle();
-
-  // Clear user sessions and reset to the primary login screen.
-  ClearLogin();
-
-  // On the login screen, focus the first user.
-  AccountId first_account = AccountId::FromUserEmail(kUserEmail);
-  LoginScreenFocusAccount(first_account);
-  ExpectAmbientLightSensorEnabled(
-      true, "ALS should be enabled for first user by default.");
-  ExpectBrightnessPercent(
-      kInitialBrightness,
-      "Brightness should be unchanged for first user after initial focus.");
-
-  // Then, focus the second user.
-  AccountId second_account = AccountId::FromUserEmail(kUserEmailSecondary);
-  LoginScreenFocusAccount(second_account);
-  ExpectAmbientLightSensorEnabled(
-      true, "ALS should be enabled for second user by default.");
-  ExpectBrightnessPercent(
-      kInitialBrightness,
-      "Brightness should be unchanged for second user after initial focus.");
-
-  // Switch back to the first user, then disable ALS by changing the brightness.
-  LoginScreenFocusAccount(first_account);
-  const double brightness_change_percent = 12.0;
-  brightness_control_delegate()->SetBrightnessPercent(
-      brightness_change_percent, /*gradual=*/false,
-      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
-  // Wait for callbacks to finish executing.
-  run_loop_.RunUntilIdle();
-  ExpectAmbientLightSensorEnabled(
-      false, "ALS should be disabled for first user after brightness change.");
-  ExpectBrightnessPercent(brightness_change_percent,
-                          "Brightness should be equal to the previously-set "
-                          "value for the first user.");
-
-  LoginScreenFocusAccount(second_account);
-  ExpectAmbientLightSensorEnabled(
-      false,
-      "ALS should be disabled for second user because the ALS value is not "
-      "being restored from prefs.");
-  ExpectBrightnessPercent(brightness_change_percent,
-                          "After switching to the second user, the previous "
-                          "brightness should not be restored.");
-
-  LoginScreenFocusAccount(first_account);
-  ExpectAmbientLightSensorEnabled(false,
-                                  "ALS should be disabled for first user after "
-                                  "switching back from second user.");
-  ExpectBrightnessPercent(brightness_change_percent,
-                          "After switching back to the first user, the "
-                          "previous brightness should not be restored.");
-
-  // Simulate a reboot, which resets the value of the ambient light sensor and
-  // the screen brightness.
-  ClearLogin();
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetAmbientLightSensorEnabled(request);
-  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
-
-  LoginScreenFocusAccount(first_account);
-  ExpectAmbientLightSensorEnabled(
-      true, "After reboot, ALS should be enabled for first user by default.");
-  ExpectBrightnessPercent(kInitialBrightness,
-                          "After reboot, the brightness level should be equal "
-                          "to the initial brightness for the first user.");
-
-  LoginScreenFocusAccount(second_account);
-  ExpectAmbientLightSensorEnabled(
-      true, "After reboot, ALS should be enabled for second user by default.");
-  ExpectBrightnessPercent(kInitialBrightness,
-                          "After reboot, the brightness level should be equal "
-                          "to the initial brightness for the second user.");
-
-  LoginScreenFocusAccount(first_account);
-  ExpectAmbientLightSensorEnabled(
-      true, "After reboot, ALS should be enabled for first user by default.");
-  ExpectBrightnessPercent(kInitialBrightness,
-                          "After reboot, the brightness level should be equal "
-                          "to the initial brightness for the first user (after "
-                          "switching from the second user).");
-}
-
-TEST_F(BrightnessControllerChromeosTest,
        ReenableAmbientLightSensor_Reboot_DisabledFromSettingsApp) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1309,9 +1202,6 @@ TEST_F(BrightnessControllerChromeosTest,
 }
 TEST_F(BrightnessControllerChromeosTest,
        ReenableAmbientLightSensor_Reboot_DisabledFromBrightnessKey) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1373,9 +1263,6 @@ TEST_F(BrightnessControllerChromeosTest,
 
 TEST_F(BrightnessControllerChromeosTest,
        BrightnessSettingsUnchanged_DeviceLocked) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1414,11 +1301,7 @@ TEST_F(BrightnessControllerChromeosTest,
                           "Brightness should remain unchanged.");
 }
 
-TEST_F(BrightnessControllerChromeosTest,
-       RestoreAutoBrightnessForNewUser_FlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
+TEST_F(BrightnessControllerChromeosTest, RestoreAutoBrightnessForNewUser) {
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1518,110 +1401,7 @@ TEST_F(BrightnessControllerChromeosTest,
 }
 
 TEST_F(BrightnessControllerChromeosTest,
-       RestoreAutoBrightnessForNewUser_FlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnableBrightnessControlInSettings);
-
-  // Set initial ALS status and brightness level.
-  power_manager::SetAmbientLightSensorEnabledRequest request;
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetAmbientLightSensorEnabled(request);
-  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
-  run_loop_.RunUntilIdle();
-
-  // Clear user sessions and reset to the primary login screen.
-  ClearLogin();
-
-  // On the login screen, select and login with an existing user.
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-  login_data_dispatcher()->NotifyFocusPod(account_id);
-  LoginScreenFocusAccount(account_id);
-  SimulateUserLogin({kUserEmail});
-
-  // The ambient light sensor should be enabled by default.
-  ExpectAmbientLightSensorEnabled(
-      true, "Ambient light sensor should be enabled by default.");
-
-  // Verify that the synced ambient light sensor profile pref value has a
-  // default value of true.
-  EXPECT_TRUE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kDisplayAmbientLightSensorLastEnabled));
-  // There should not be a KnownUser pref set initially because there hasn't
-  // been a change to the ambient light sensor status yet.
-  user_manager::KnownUser known_user(local_state());
-  EXPECT_FALSE(
-      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
-
-  // Disable the ambient light sensor by manually changing the brightness.
-  brightness_control_delegate()->HandleBrightnessDown();
-  // Wait for AmbientLightSensorEnabledChange observer to be notified.
-  run_loop_.RunUntilIdle();
-
-  ExpectAmbientLightSensorEnabled(
-      false,
-      "Ambient light sensor should be disabled for first user after manually "
-      "changing the brightness.");
-
-  // After the ambient light sensor status is disabled, the KnownUser pref
-  // should be stored with the correct value (false).
-  EXPECT_TRUE(
-      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
-  EXPECT_FALSE(
-      GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
-  // The synced profile pref should also have the correct value (false).
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kDisplayAmbientLightSensorLastEnabled));
-
-  // Simulate a reboot, which resets the value of the ambient light sensor and
-  // the screen brightness.
-  ClearLogin();
-  request.set_sensor_enabled(true);
-  power_manager_client()->SetAmbientLightSensorEnabled(request);
-  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
-
-  // Simulate a login with a second user, as if it's that user's first time
-  // logging in on this device.
-  SimulateNewUserFirstLogin(kUserEmailSecondary);
-
-  // The value of the synced profile pref for the ambient light sensor should be
-  // true by default, and the ambient light sensor should be enabled.
-  EXPECT_TRUE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kDisplayAmbientLightSensorLastEnabled));
-  ExpectAmbientLightSensorEnabled(
-      true, "Ambient light sensor should be enabled for new users.");
-
-  // Before logging in the first user, manually set the synced pref to false to
-  // simulate the pref finishing syncing to the new device.
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  pref_service->SetBoolean(prefs::kDisplayAmbientLightSensorLastEnabled, false);
-
-  // Now, login the first user again, as if it's that user's first time
-  // logging in on this device.
-  SimulateNewUserFirstLogin(kUserEmail);
-
-  // The value of the synced profile pref for the ambient light sensor should be
-  // false, because on the "other device" that value was set to false.
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          prefs::kDisplayAmbientLightSensorLastEnabled));
-  // However, because the brightness-control flag is disabled, the ambient light
-  // sensor preference will not be restored, and thus the ambient light sensor
-  // should be disabled.
-  ExpectAmbientLightSensorEnabled(
-      true,
-      "Ambient light sensor should be enabled for first user after logging in "
-      "from a new device.");
-}
-
-TEST_F(BrightnessControllerChromeosTest,
        RestoreBrightnessSettings_ScreenBrightnessPercentPolicySet) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1659,9 +1439,6 @@ TEST_F(BrightnessControllerChromeosTest,
 
 TEST_F(BrightnessControllerChromeosTest,
        RestoreBrightnessSettings_ScreenBrightnessPercentPolicyUnset) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
-
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(true);
@@ -1713,8 +1490,6 @@ TEST_F(BrightnessControllerChromeosTest,
 
 TEST_F(BrightnessControllerChromeosTest,
        RecordStartupAmbientLightSensorStatus) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Display.Startup.AmbientLightSensorEnabled", 0);
 
@@ -1742,8 +1517,6 @@ TEST_F(BrightnessControllerChromeosTest,
 TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_NoSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // When the device has no sensor. ALS should not be re-enabled after login.
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
 
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;
@@ -1794,8 +1567,6 @@ TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_NoSensor) {
 TEST_F(BrightnessControllerChromeosTest, RestoreBrightnessSettings_HasSensor) {
   // Test case: Disable ALS via brightness key and restore brightness settings.
   // When the device has a sensor. ALS should be re-enabled after login.
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableBrightnessControlInSettings);
 
   // Set initial ALS status and brightness level.
   power_manager::SetAmbientLightSensorEnabledRequest request;

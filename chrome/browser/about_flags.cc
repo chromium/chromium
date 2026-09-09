@@ -5398,13 +5398,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableCancelAllTouchesName,
      flag_descriptions::kDisableCancelAllTouchesDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kDisableCancelAllTouches)},
-    {
-        "enable-brightness-control-in-settings",
-        flag_descriptions::kEnableBrightnessControlInSettingsName,
-        flag_descriptions::kEnableBrightnessControlInSettingsDescription,
-        kOsCrOS,
-        FEATURE_VALUE_TYPE(ash::features::kEnableBrightnessControlInSettings),
-    },
     {"enable-edid-based-display-ids",
      flag_descriptions::kEnableEdidBasedDisplayIdsName,
      flag_descriptions::kEnableEdidBasedDisplayIdsDescription, kOsCrOS,

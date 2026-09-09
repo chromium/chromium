@@ -1081,34 +1081,7 @@ suite('<settings-display>', () => {
     assertTrue(displaySettingsProvider.getShinyPerformance());
   });
 
-  test('Display brightness, flag disabled', async () => {
-    loadTimeData.overrideValues(
-        {enableDisplayBrightnessControlInSettings: false});
-    await initPage();
-
-    // Set up a single display.
-    addDisplay(1);
-    fakeSystemDisplay.onDisplayChanged.callListeners();
-    await fakeSystemDisplay.getInfoCalled.promise;
-    await fakeSystemDisplay.getLayoutCalled.promise;
-    assertEquals(1, displayPage.displays.length);
-
-    // Brightness slider should not be present when the flag is disabled.
-    const displayBrightnessWrapper =
-        displayPage.shadowRoot!.querySelector<HTMLElement>(
-            '#brightnessSliderWrapper');
-    assertFalse(!!displayBrightnessWrapper);
-
-    // Auto-brightness toggle should not be present when the flag is disabled.
-    const displayAutoBrightnessToggle =
-        displayPage.shadowRoot!.querySelector<CrToggleElement>(
-            '#autoBrightnessToggle');
-    assertFalse(!!displayAutoBrightnessToggle);
-  });
-
-  test('Display brightness, flag enabled on internal display', async () => {
-    loadTimeData.overrideValues(
-        {enableDisplayBrightnessControlInSettings: true});
+  test('Display brightness on internal display', async () => {
     await initPage();
 
     // Set up the internal display.
@@ -1119,24 +1092,20 @@ suite('<settings-display>', () => {
     assertEquals(1, displayPage.displays.length);
     flush();
 
-    // Display brightness slider should be present on the internal display when
-    // the flag is enabled.
+    // Display brightness slider should be present on the internal display.
     const displayBrightnessWrapper =
         displayPage.shadowRoot!.querySelector<HTMLElement>(
             '#brightnessSliderWrapper');
     assertTrue(!!displayBrightnessWrapper);
 
-    // Auto-brightness toggle should be present on the internal display when the
-    // flag is enabled.
+    // Auto-brightness toggle should be present on the internal display.
     const displayAutoBrightnessToggle =
         displayPage.shadowRoot!.querySelector<CrToggleElement>(
             '#autoBrightnessToggle');
     assertTrue(!!displayAutoBrightnessToggle);
   });
 
-  test('Display brightness, flag enabled on external display', async () => {
-    loadTimeData.overrideValues(
-        {enableDisplayBrightnessControlInSettings: true});
+  test('Display brightness on external display', async () => {
     await initPage();
 
     // Set up the internal display.
@@ -1185,8 +1154,6 @@ suite('<settings-display>', () => {
   test(
       'Display brightness, slider updates when brightness changes',
       async () => {
-        loadTimeData.overrideValues(
-            {enableDisplayBrightnessControlInSettings: true});
         await initPage();
 
         // Set up the internal display.
@@ -1247,10 +1214,7 @@ suite('<settings-display>', () => {
       });
 
   test(
-      'Display brightness set pref value from slider, flag enabled',
-      async () => {
-        loadTimeData.overrideValues(
-            {enableDisplayBrightnessControlInSettings: true});
+      'Display brightness set pref value from slider', async () => {
         await initPage();
 
         // Set up the internal display.
@@ -1366,10 +1330,7 @@ suite('<settings-display>', () => {
       });
 
   test(
-      'Auto brightness toggle updates DisplaySettingsProvider, flag enabled',
-      async () => {
-        loadTimeData.overrideValues(
-            {enableDisplayBrightnessControlInSettings: true});
+      'Auto brightness toggle updates DisplaySettingsProvider', async () => {
         await initPage();
 
         // Set up the internal display.
@@ -1435,11 +1396,8 @@ suite('<settings-display>', () => {
       });
 
   test(
-      'Auto brightness toggle updates DisplaySettingsProvider, flag enabled',
+      'Auto brightness toggle updates from DisplaySettingsProvider',
       async () => {
-        loadTimeData.overrideValues(
-            {enableDisplayBrightnessControlInSettings: true});
-
         // Set auto-brightness to initially be disabled.
         const initialAutoBrightnessEnabled = false;
         displaySettingsProvider.setInternalDisplayAmbientLightSensorEnabled(

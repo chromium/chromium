@@ -591,10 +591,6 @@ BASE_FEATURE(kEcheSWADisableStunServer, base::FEATURE_DISABLED_BY_DEFAULT);
 // network information to provide more context on connection errors.
 BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables settings to control internal display brightness and auto-brightness.
-BASE_FEATURE(kEnableBrightnessControlInSettings,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables external keyboard testers in the diagnostics app.
 BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",
@@ -2377,10 +2373,6 @@ bool IsBocaReceiverCustomPollingEnabled() {
 
 bool IsOnTaskStatusCheckEnabled() {
   return base::FeatureList::IsEnabled(kOnTaskStatusCheck);
-}
-
-bool IsBrightnessControlInSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kEnableBrightnessControlInSettings);
 }
 
 bool IsCaptureModeEducationEnabled() {

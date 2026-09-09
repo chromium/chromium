@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/display/cros_display_config.h"
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/display/display_prefs.h"
@@ -124,12 +123,10 @@ DisplaySettingsProvider::DisplaySettingsProvider()
     Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
     Shell::Get()->display_manager()->AddDisplayObserver(this);
   }
-  if (features::IsBrightnessControlInSettingsEnabled()) {
-    chromeos::PowerManagerClient* power_manager_client =
-        chromeos::PowerManagerClient::Get();
-    if (power_manager_client) {
-      power_manager_client->AddObserver(this);
-    }
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
+  if (power_manager_client) {
+    power_manager_client->AddObserver(this);
   }
 }
 
@@ -141,12 +138,10 @@ DisplaySettingsProvider::~DisplaySettingsProvider() {
     Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
     Shell::Get()->display_manager()->RemoveDisplayObserver(this);
   }
-  if (features::IsBrightnessControlInSettingsEnabled()) {
-    chromeos::PowerManagerClient* power_manager_client =
-        chromeos::PowerManagerClient::Get();
-    if (power_manager_client) {
-      power_manager_client->RemoveObserver(this);
-    }
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
+  if (power_manager_client) {
+    power_manager_client->RemoveObserver(this);
   }
 }
 
@@ -395,10 +390,6 @@ void DisplaySettingsProvider::AmbientLightSensorEnabledChanged(
 
 void DisplaySettingsProvider::SetInternalDisplayScreenBrightness(
     double percent) {
-  if (!features::IsBrightnessControlInSettingsEnabled()) {
-    return;
-  }
-
   if (!brightness_control_delegate_) {
     LOG(ERROR) << "DisplaySettingsProvider: Expected BrightnessControlDelegate "
                   "to be non-null when setting the internal display screen "
@@ -424,10 +415,6 @@ void DisplaySettingsProvider::RecordBrightnessSliderAdjusted() {
 
 void DisplaySettingsProvider::SetInternalDisplayAmbientLightSensorEnabled(
     bool enabled) {
-  if (!features::IsBrightnessControlInSettingsEnabled()) {
-    return;
-  }
-
   brightness_control_delegate_->SetAmbientLightSensorEnabled(
       enabled, BrightnessControlDelegate::
                    AmbientLightSensorEnabledChangeSource::kSettingsApp);

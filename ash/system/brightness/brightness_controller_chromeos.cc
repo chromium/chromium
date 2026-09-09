@@ -7,12 +7,10 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login_status.h"
-#include "ash/public/cpp/session/session_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/brightness_control_delegate.h"
@@ -291,8 +289,7 @@ void BrightnessControllerChromeos::OnSessionStateChanged(
 
 void BrightnessControllerChromeos::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
-  if (!features::IsBrightnessControlInSettingsEnabled() ||
-      IsInitialBrightnessSetByPolicy()) {
+  if (IsInitialBrightnessSetByPolicy()) {
     return;
   }
 
@@ -374,12 +371,6 @@ void BrightnessControllerChromeos::MaybeRestoreBrightnessSettings() {
 }
 
 void BrightnessControllerChromeos::RestoreBrightnessSettingsOnFirstLogin() {
-  // Don't restore the ambient light sensor value if the relevant flag is
-  // disabled.
-  if (!features::IsBrightnessControlInSettingsEnabled()) {
-    return;
-  }
-
   if (!active_pref_service_) {
     return;
   }
@@ -410,12 +401,6 @@ void BrightnessControllerChromeos::RestoreBrightnessSettingsOnFirstLogin() {
 void BrightnessControllerChromeos::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   active_pref_service_ = pref_service;
-
-  // Don't restore the ambient light sensor value if the relevant flag is
-  // disabled.
-  if (!features::IsBrightnessControlInSettingsEnabled()) {
-    return;
-  }
 
   // Only restore the profile-synced ambient light sensor setting if it's a
   // user's first time logging in to a new device.
