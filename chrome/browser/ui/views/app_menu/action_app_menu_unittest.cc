@@ -1029,7 +1029,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
+TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   FaviconServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
                                               -> std::unique_ptr<KeyedService> {
@@ -1087,7 +1087,7 @@ TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
   EXPECT_EQ(downloads_item->GetContentStart(), 16);
 
-  // 3. Section headers directly under root.
+  // 3. Headers directly under root.
   std::vector<views::MenuItemView*> root_titles;
   for (views::MenuItemView* item : submenu->GetMenuItems()) {
     if (item->GetType() == views::MenuItemView::Type::kTitle) {
@@ -1096,7 +1096,7 @@ TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
   }
   ASSERT_GE(root_titles.size(), 2u);
 
-  // First section header ("Your Chrome"):
+  // First header ("Your Chrome"):
   // - Starts flush with the card (0dp insets, content start 0)
   // - Standard top margin (8dp).
   EXPECT_EQ(root_titles[0]->GetParentMenuItem(), root);
@@ -1105,7 +1105,7 @@ TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(root_titles[0]->GetContentStart(), 0);
   EXPECT_EQ(root_titles[0]->GetTopMargin(), 8);
 
-  // Second section header ("Tools and Actions"):
+  // Second header ("Tools and Actions"):
   // - Starts flush with the card (0dp insets, content start 0)
   // - Doubled top margin (16dp).
   EXPECT_EQ(root_titles[1]->GetParentMenuItem(), root);
@@ -1114,7 +1114,7 @@ TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(root_titles[1]->GetContentStart(), 0);
   EXPECT_EQ(root_titles[1]->GetTopMargin(), 16);
 
-  // 4. Section headers in submenus (not under root).
+  // 4. Headers in submenus (not under root).
   views::MenuItemView* tab_groups_item =
       root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
   ASSERT_TRUE(tab_groups_item);
@@ -1132,20 +1132,20 @@ TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
   views::SubmenuView* group_submenu = group_item->GetSubmenu();
   ASSERT_TRUE(group_submenu);
 
-  views::MenuItemView* submenu_section_header = nullptr;
+  views::MenuItemView* submenu_header = nullptr;
   for (views::MenuItemView* item : group_submenu->GetMenuItems()) {
     if (item->GetType() == views::MenuItemView::Type::kTitle) {
-      submenu_section_header = item;
+      submenu_header = item;
       break;
     }
   }
-  ASSERT_NE(submenu_section_header, nullptr);
-  EXPECT_NE(submenu_section_header->GetParentMenuItem(), root);
-  EXPECT_EQ(submenu_section_header->GetParentMenuItem(), group_item);
+  ASSERT_NE(submenu_header, nullptr);
+  EXPECT_NE(submenu_header->GetParentMenuItem(), root);
+  EXPECT_EQ(submenu_header->GetParentMenuItem(), group_item);
   // Submenu headers do NOT receive the empty border or doubled top margin.
-  EXPECT_EQ(submenu_section_header->GetBorder(), nullptr);
-  EXPECT_NE(submenu_section_header->GetContentStart(), 0);
-  EXPECT_EQ(submenu_section_header->GetTopMargin(), 8);
+  EXPECT_EQ(submenu_header->GetBorder(), nullptr);
+  EXPECT_NE(submenu_header->GetContentStart(), 0);
+  EXPECT_EQ(submenu_header->GetTopMargin(), 8);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

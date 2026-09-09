@@ -199,11 +199,12 @@ class AppMenuBuilder {
     return *this;
   }
 
-  AppMenuBuilder& AddSectionHeader(int string_id) {
-    auto section_item = ActionAppMenuManager::CreateSectionHeaderActionItem(
+  // Adds a header item to the current parent without modifying the parent.
+  AppMenuBuilder& AddHeader(int string_id) {
+    auto header_item = ActionAppMenuManager::CreateHeaderActionItem(
         l10n_util::GetStringUTF16(string_id), bg_color_);
     if (parent_) {
-      parent_ = parent_->AddChild(std::move(section_item));
+      parent_->AddChild(std::move(header_item));
     }
     return *this;
   }
@@ -247,7 +248,7 @@ class AppMenuBuilder {
       return *this;
     }
     auto* item_ptr = parent_->AddChild(std::move(item));
-    AppMenuBuilder section_builder(item_ptr, section_bg_color, display_type);
+    AppMenuBuilder section_builder(item_ptr, section_bg_color);
     build_section(section_builder);
     return *this;
   }
@@ -335,20 +336,20 @@ ActionAppMenuManager::CreateSectionActionItem(
   return section_item;
 }
 
-// Creates the Action Item for the headers of each section in the app menu
+// Creates the Action Item for the headers of each section in the app menu.
 std::unique_ptr<actions::ActionItem>
-ActionAppMenuManager::CreateSectionHeaderActionItem(
+ActionAppMenuManager::CreateHeaderActionItem(
     std::u16string text,
     std::optional<ui::ColorId> container_color) {
-  auto section_item = actions::ActionItem::Builder().SetText(text).Build();
+  auto header_item = actions::ActionItem::Builder().SetText(text).Build();
 
-  section_item->SetProperty(kDisplayTypeKey, DisplayType::kSection);
+  header_item->SetProperty(kDisplayTypeKey, DisplayType::kHeader);
 
   if (container_color.has_value()) {
-    section_item->SetProperty(kContainerColorKey, container_color.value());
+    header_item->SetProperty(kContainerColorKey, container_color.value());
   }
 
-  return section_item;
+  return header_item;
 }
 
 std::unique_ptr<actions::ActionItem>
@@ -440,343 +441,366 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
 }
 
 void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
-  auto builder = AppMenuBuilder(root, kColorAppMenuYourChromeBackground);
-  builder.AddSectionHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
+  AppMenuBuilder(root, kColorAppMenuYourChromeBackground)
+      .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
+        section.AddHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
 
-  Profile* profile = browser_window_interface_->GetProfile();
+        Profile* profile = browser_window_interface_->GetProfile();
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  std::u16string profile_name = GetProfileName(profile);
-  builder.AddSubmenu(
-      kActionProfileSubmenu,
-      [profile](AppMenuBuilder& sub) {
-        if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
-            !profile->IsIncognitoProfile() &&
-            !profile->IsEnterpriseIsolatedModeProfile()) {
-          sub.AddAction(kActionManageGoogleAccount);
+        std::u16string profile_name = GetProfileName(profile);
+        section.AddSubmenu(
+            kActionProfileSubmenu,
+            [profile](AppMenuBuilder& sub) {
+              if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
+                  !profile->IsIncognitoProfile() &&
+                  !profile->IsEnterpriseIsolatedModeProfile()) {
+                sub.AddAction(kActionManageGoogleAccount);
+              }
+            },
+            DisplayType::kRow,
+            /*text_override=*/profile_name.empty()
+                ? std::nullopt
+                : std::make_optional(std::move(profile_name)));
+#endif
+
+        if (!profile->IsGuestSession()) {
+          section.AddSubmenu(kActionPasswordsAndAutofillSubmenu,
+                             [](AppMenuBuilder& sub) {
+                               sub.AddAction(kActionShowPasswordManager)
+                                   .AddAction(kActionShowPaymentMethods)
+                                   .AddAction(kActionShowContactInfo)
+                                   .AddAction(kActionShowIdentityDocs)
+                                   .AddAction(kActionShowTravel);
+                             });
         }
-      },
-      DisplayType::kRow,
-      /*text_override=*/profile_name.empty()
-          ? std::nullopt
-          : std::make_optional(std::move(profile_name)));
-#endif
 
-  if (!profile->IsGuestSession()) {
-    builder.AddSubmenu(kActionPasswordsAndAutofillSubmenu,
-                       [](AppMenuBuilder& sub) {
-                         sub.AddAction(kActionShowPasswordManager)
-                             .AddAction(kActionShowPaymentMethods)
-                             .AddAction(kActionShowContactInfo)
-                             .AddAction(kActionShowIdentityDocs)
-                             .AddAction(kActionShowTravel);
-                       });
-  }
+        if (!profile->IsOffTheRecord()) {
+          section.AddDynamicSubmenu(
+              kActionRecentTabsSubmenu,
+              base::BindRepeating(
+                  &RecentTabsDynamicMenu::BuildRecentTabsActions,
+                  recent_tabs_menu_->GetWeakPtr()));
+        }
 
-  if (!profile->IsOffTheRecord()) {
-    builder.AddDynamicSubmenu(
-        kActionRecentTabsSubmenu,
-        base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
-                            recent_tabs_menu_->GetWeakPtr()));
-  }
+        section.AddAction(kActionShowDownloads);
 
-  builder.AddAction(kActionShowDownloads);
+        if (!profile->IsGuestSession()) {
+          section.AddDynamicSubmenu(
+              kActionBookmarksSubmenu,
+              base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
+                                  bookmarks_menu_->GetWeakPtr()),
+              [this](AppMenuBuilder& sub_builder) {
+                if (CanBookmarkCurrentTab(browser_window_interface_.get())) {
+                  sub_builder.AddAction(kActionBookmarkThisTab)
+                      .AddAction(kActionBookmarkAllTabs)
+                      .AddDivider();
+                }
 
-  if (!profile->IsGuestSession()) {
-    builder.AddDynamicSubmenu(
-        kActionBookmarksSubmenu,
-        base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
-                            bookmarks_menu_->GetWeakPtr()),
-        [this](AppMenuBuilder& sub_builder) {
-          if (CanBookmarkCurrentTab(browser_window_interface_.get())) {
-            sub_builder.AddAction(kActionBookmarkThisTab)
-                .AddAction(kActionBookmarkAllTabs)
-                .AddDivider();
-          }
+                if (base::FeatureList::IsEnabled(
+                        ntp_features::kNtpSimplificationBookmarkBar)) {
+                  sub_builder.AddSubmenu(
+                      kActionBookmarkBarSubmenu, [](AppMenuBuilder& bar_sub) {
+                        bar_sub.AddAction(kActionBookmarkBarSubmenuAlwaysHide)
+                            .AddAction(kActionBookmarkBarSubmenuAlwaysShow)
+                            .AddAction(kActionBookmarkBarSubmenuOnlyOnNtp);
+                      });
+                } else {
+                  Profile* profile = browser_window_interface_->GetProfile();
+                  const int bookmark_bar_string_id =
+                      profile->GetPrefs()->GetBoolean(
+                          bookmarks::prefs::kShowBookmarkBar)
+                          ? IDS_HIDE_BOOKMARK_BAR
+                          : IDS_SHOW_BOOKMARK_BAR;
+                  sub_builder.AddAction(
+                      kActionShowBookmarkBar, /*type=*/std::nullopt,
+                      /*text_override=*/
+                      l10n_util::GetStringUTF16(bookmark_bar_string_id));
+                }
 
-          if (base::FeatureList::IsEnabled(
-                  ntp_features::kNtpSimplificationBookmarkBar)) {
-            sub_builder.AddSubmenu(
-                kActionBookmarkBarSubmenu, [](AppMenuBuilder& bar_sub) {
-                  bar_sub.AddAction(kActionBookmarkBarSubmenuAlwaysHide)
-                      .AddAction(kActionBookmarkBarSubmenuAlwaysShow)
-                      .AddAction(kActionBookmarkBarSubmenuOnlyOnNtp);
-                });
-          } else {
-            Profile* profile = browser_window_interface_->GetProfile();
-            const int bookmark_bar_string_id =
-                profile->GetPrefs()->GetBoolean(
-                    bookmarks::prefs::kShowBookmarkBar)
-                    ? IDS_HIDE_BOOKMARK_BAR
-                    : IDS_SHOW_BOOKMARK_BAR;
-            sub_builder.AddAction(
-                kActionShowBookmarkBar, /*type=*/std::nullopt,
-                /*text_override=*/
-                l10n_util::GetStringUTF16(bookmark_bar_string_id));
-          }
+                sub_builder.AddAction(
+                    kActionSidePanelShowBookmarks, /*type=*/std::nullopt,
+                    /*text_override=*/
+                    l10n_util::GetStringUTF16(IDS_SHOW_BOOKMARK_SIDE_PANEL));
 
-          sub_builder.AddAction(
-              kActionSidePanelShowBookmarks, /*type=*/std::nullopt,
-              /*text_override=*/
-              l10n_util::GetStringUTF16(IDS_SHOW_BOOKMARK_SIDE_PANEL));
-
-          const int bookmark_manager_string_id =
-              features::IsMenuSimplificationEnabled() ? IDS_BOOKMARK_MANAGER_V2
-                                                      : IDS_BOOKMARK_MANAGER;
-          sub_builder.AddAction(
-              kActionShowBookmarkManager, /*type=*/std::nullopt,
-              /*text_override=*/
-              l10n_util::GetStringUTF16(bookmark_manager_string_id));
+                const int bookmark_manager_string_id =
+                    features::IsMenuSimplificationEnabled()
+                        ? IDS_BOOKMARK_MANAGER_V2
+                        : IDS_BOOKMARK_MANAGER;
+                sub_builder.AddAction(
+                    kActionShowBookmarkManager, /*type=*/std::nullopt,
+                    /*text_override=*/
+                    l10n_util::GetStringUTF16(bookmark_manager_string_id));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-          sub_builder.AddAction(kActionImportSettings);
+                sub_builder.AddAction(kActionImportSettings);
 #endif
 
-          sub_builder.AddDivider();
+                sub_builder.AddDivider();
 
-          sub_builder.AddSubmenu(
-              kActionReadingListSubmenu, [](AppMenuBuilder& reading_list_sub) {
-                reading_list_sub.AddAction(kActionReadingListMenuAddTab)
-                    .AddAction(kActionSidePanelShowReadingList,
-                               /*type=*/std::nullopt,
-                               /*text_override=*/
-                               l10n_util::GetStringUTF16(
-                                   IDS_READING_LIST_MENU_SHOW_UI));
+                sub_builder.AddSubmenu(
+                    kActionReadingListSubmenu,
+                    [](AppMenuBuilder& reading_list_sub) {
+                      reading_list_sub.AddAction(kActionReadingListMenuAddTab)
+                          .AddAction(kActionSidePanelShowReadingList,
+                                     /*type=*/std::nullopt,
+                                     /*text_override=*/
+                                     l10n_util::GetStringUTF16(
+                                         IDS_READING_LIST_MENU_SHOW_UI));
+                    });
               });
+        }
 
-          sub_builder.AddDivider();
-        });
-  }
-
-  if (profile->IsRegularProfile()) {
-    builder.AddDynamicSubmenu(
-        kActionSavedTabGroupsSubmenu,
-        base::BindRepeating(&TabGroupDynamicMenu::BuildTabGroupsAction,
-                            tab_groups_menu_->GetWeakPtr()),
-        [](AppMenuBuilder& sub) { sub.AddAction(kActionCreateNewTabGroup); });
-  }
+        if (profile->IsRegularProfile()) {
+          section.AddDynamicSubmenu(
+              kActionSavedTabGroupsSubmenu,
+              base::BindRepeating(&TabGroupDynamicMenu::BuildTabGroupsAction,
+                                  tab_groups_menu_->GetWeakPtr()),
+              [](AppMenuBuilder& sub) {
+                sub.AddAction(kActionCreateNewTabGroup);
+              });
+        }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (ArePromotionsEnabled() &&
-      base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
-      !extensions::ui_util::HasManageableExtensions(profile)) {
-    builder.AddAction(kActionFindExtensions);
-  } else {
-    builder.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {
-      sub.AddAction(kActionExtensionsSubmenuManageExtensions)
-          .AddAction(kActionExtensionsSubmenuVisitChromeWebStore);
-    });
-  }
+        if (ArePromotionsEnabled() &&
+            base::FeatureList::IsEnabled(
+                features::kExtensionsCollapseMainMenu) &&
+            !extensions::ui_util::HasManageableExtensions(profile)) {
+          section.AddAction(kActionFindExtensions);
+        } else {
+          section.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {
+            sub.AddAction(kActionExtensionsSubmenuManageExtensions)
+                .AddAction(kActionExtensionsSubmenuVisitChromeWebStore);
+          });
+        }
 #endif
 
-  builder.AddAction(kActionClearBrowsingData);
+        section.AddAction(kActionClearBrowsingData);
+      });
 }
 
 void ActionAppMenuManager::AddToolsAndActionsActions(
     actions::ActionItem* root) {
-  AppMenuBuilder builder(root, kColorAppMenuToolsAndActionsBackground);
-  builder.AddSectionHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
-      .AddSubmenu(
-          kActionZoomSubmenu,
-          [](AppMenuBuilder& sub) {
-            sub.AddAction(kActionZoomMinus)
-                .AddAction(kActionZoomPlus)
-                .AddAction(kActionFullscreen);
-          },
-          DisplayType::kCustom)
-      .AddAction(kActionPrint);
+  AppMenuBuilder(root, kColorAppMenuToolsAndActionsBackground)
+      .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
+        section.AddHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
+            .AddSubmenu(
+                kActionZoomSubmenu,
+                [](AppMenuBuilder& sub) {
+                  sub.AddAction(kActionZoomMinus)
+                      .AddAction(kActionZoomPlus)
+                      .AddAction(kActionFullscreen);
+                },
+                DisplayType::kCustom)
+            .AddAction(kActionPrint);
 
-  Profile* profile = browser_window_interface_->GetProfile();
-
-  if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
-    builder.AddAction(kActionOpenGlic);
-  }
-
-  if (auto* controller = lens::LensOverlayEntryPointController::From(
-          browser_window_interface_);
-      controller && controller->IsEnabled()) {
-    builder.AddAction(kActionShowLensOverlayFromAppMenu);
-  }
-
-  builder.AddAction(kActionShowTranslate);
-
-  builder.AddSubmenu(kActionFindAndEditSubmenu, [](AppMenuBuilder& sub) {
-    sub.AddAction(kActionFind)
-        .AddDivider()
-        .AddAction(actions::kActionCut)
-        .AddAction(actions::kActionCopy)
-        .AddAction(actions::kActionPaste);
-  });
-
-  const int save_and_share_string_id = media_router::MediaRouterEnabled(profile)
-                                           ? IDS_CAST_SAVE_AND_SHARE_MENU
-                                           : IDS_SAVE_AND_SHARE_MENU;
-
-  builder.AddSubmenu(
-      kActionSaveAndShareSubmenu,
-      [this](AppMenuBuilder& sub) {
         Profile* profile = browser_window_interface_->GetProfile();
-        if (media_router::MediaRouterEnabled(profile)) {
-          sub.AddAction(kActionRouteMedia).AddDivider();
+
+        if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
+          section.AddAction(kActionOpenGlic);
         }
 
-        sub.AddAction(kActionSavePage).AddDivider();
+        if (auto* controller = lens::LensOverlayEntryPointController::From(
+                browser_window_interface_);
+            controller && controller->IsEnabled()) {
+          section.AddAction(kActionShowLensOverlayFromAppMenu);
+        }
 
-        if (std::u16string install_item =
-                web_app::GetInstallPWALabel(browser_window_interface_.get());
-            !install_item.empty()) {
-          sub.AddAction(
-              kActionInstallPwa, /*type=*/std::nullopt,
-              /*text_override=*/install_item,
-              /*icon_override=*/
-              web_app::GetInstallPWAIcon(browser_window_interface_.get()));
-        } else if (std::u16string open_item = web_app::GetOpenPWALabel(
-                       browser_window_interface_.get());
-                   !open_item.empty()) {
-          sub.AddAction(
-              kActionOpenInPwaWindow, /*type=*/std::nullopt,
-              /*text_override=*/open_item,
+        section.AddAction(kActionShowTranslate);
+
+        section.AddSubmenu(kActionFindAndEditSubmenu, [](AppMenuBuilder& sub) {
+          sub.AddAction(kActionFind)
+              .AddDivider()
+              .AddAction(actions::kActionCut)
+              .AddAction(actions::kActionCopy)
+              .AddAction(actions::kActionPaste);
+        });
+
+        const int save_and_share_string_id =
+            media_router::MediaRouterEnabled(profile)
+                ? IDS_CAST_SAVE_AND_SHARE_MENU
+                : IDS_SAVE_AND_SHARE_MENU;
+
+        section.AddSubmenu(
+            kActionSaveAndShareSubmenu,
+            [this](AppMenuBuilder& sub) {
+              Profile* profile = browser_window_interface_->GetProfile();
+              if (media_router::MediaRouterEnabled(profile)) {
+                sub.AddHeader(IDS_SAVE_AND_SHARE_MENU_CAST)
+                    .AddAction(kActionRouteMedia)
+                    .AddDivider();
+              }
+
+              sub.AddHeader(IDS_SAVE_AND_SHARE_MENU_SAVE)
+                  .AddAction(kActionSavePage)
+                  .AddDivider();
+
+              if (std::u16string install_item = web_app::GetInstallPWALabel(
+                      browser_window_interface_.get());
+                  !install_item.empty()) {
+                sub.AddAction(kActionInstallPwa, /*type=*/std::nullopt,
+                              /*text_override=*/install_item,
+                              /*icon_override=*/
+                              web_app::GetInstallPWAIcon(
+                                  browser_window_interface_.get()));
+              } else if (std::u16string open_item = web_app::GetOpenPWALabel(
+                             browser_window_interface_.get());
+                         !open_item.empty()) {
+                sub.AddAction(kActionOpenInPwaWindow, /*type=*/std::nullopt,
+                              /*text_override=*/open_item,
+                              /*icon_override=*/
+                              ui::ImageModel::FromVectorIcon(
+                                  features::IsRoundedIconsEnabled()
+                                      ? kDesktopWindowsIcon
+                                      : kDesktopWindowsChromeRefreshOldIcon,
+                                  ui::kColorMenuIcon,
+                                  ui::SimpleMenuModel::kDefaultIconSize));
+              }
+
+              sub.AddAction(kActionCreateShortcut);
+
+              if (!sharing_hub::SharingIsDisabledByPolicy(profile) ||
+                  sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
+                sub.AddDivider();
+                sub.AddHeader(IDS_SAVE_AND_SHARE_MENU_SHARE);
+                if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
+                  sub.AddAction(kActionCopyUrl);
+
+                  content::WebContents* web_contents =
+                      browser_window_interface_->GetTabStripModel()
+                          ? browser_window_interface_->GetTabStripModel()
+                                ->GetActiveWebContents()
+                          : nullptr;
+                  std::optional<send_tab_to_self::EntryPointDisplayReason>
+                      reason =
+                          web_contents
+                              ? send_tab_to_self::GetEntryPointDisplayReason(
+                                    web_contents)
+                              : std::nullopt;
+
+                  if (web_contents &&
+                      base::FeatureList::IsEnabled(
+                          send_tab_to_self::
+                              kSendTabToSelfEnhancedDesktopUIv2) &&
+                      reason == send_tab_to_self::EntryPointDisplayReason::
+                                    kOfferFeature) {
+                    sub.AddDynamicSubmenu(
+                        kActionSendTabToSelf,
+                        base::BindRepeating(
+                            &SendTabToSelfDynamicMenu::
+                                BuildSendTabToSelfActions,
+                            send_tab_to_self_menu_->GetWeakPtr()));
+                  } else {
+                    sub.AddAction(kActionSendTabToSelf);
+                  }
+
+                  sub.AddAction(kActionQrCodeGenerator);
+                }
+                if (sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
+                  sub.AddAction(kActionSharingHubScreenshot);
+                }
+              }
+            },
+            /*type=*/std::nullopt,
+            /*text_override=*/
+            l10n_util::GetStringUTF16(save_and_share_string_id));
+
+#if BUILDFLAG(IS_CHROMEOS)
+        if (display::Screen::Get()->InTabletMode()) {
+          section.AddAction(
+              kActionToggleRequestTabletSite, /*type=*/std::nullopt,
+              /*text_override=*/
+              l10n_util::GetStringUTF16(IDS_TOGGLE_REQUEST_TABLET_SITE),
               /*icon_override=*/
               ui::ImageModel::FromVectorIcon(
-                  features::IsRoundedIconsEnabled()
-                      ? kDesktopWindowsIcon
-                      : kDesktopWindowsChromeRefreshOldIcon,
+                  IsRequestingTabletSite(browser_window_interface_.get())
+                      ? (features::IsRoundedIconsEnabled()
+                             ? kMobileCheckIcon
+                             : kRequestMobileSiteCheckedOldIcon)
+                      : (features::IsRoundedIconsEnabled()
+                             ? kMobileIcon
+                             : kRequestMobileSiteUncheckedOldIcon),
                   ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
         }
-
-        sub.AddAction(kActionCreateShortcut);
-
-        if (!sharing_hub::SharingIsDisabledByPolicy(profile) ||
-            sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
-          sub.AddDivider();
-          if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
-            sub.AddAction(kActionCopyUrl);
-
-            content::WebContents* web_contents =
-                browser_window_interface_->GetTabStripModel()
-                    ? browser_window_interface_->GetTabStripModel()
-                          ->GetActiveWebContents()
-                    : nullptr;
-            std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-                web_contents
-                    ? send_tab_to_self::GetEntryPointDisplayReason(web_contents)
-                    : std::nullopt;
-
-            if (web_contents &&
-                base::FeatureList::IsEnabled(
-                    send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2) &&
-                reason ==
-                    send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
-              sub.AddDynamicSubmenu(
-                  kActionSendTabToSelf,
-                  base::BindRepeating(
-                      &SendTabToSelfDynamicMenu::BuildSendTabToSelfActions,
-                      send_tab_to_self_menu_->GetWeakPtr()));
-            } else {
-              sub.AddAction(kActionSendTabToSelf);
-            }
-
-            sub.AddAction(kActionQrCodeGenerator);
-          }
-          if (sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
-            sub.AddAction(kActionSharingHubScreenshot);
-          }
-        }
-      },
-      /*type=*/std::nullopt,
-      /*text_override=*/l10n_util::GetStringUTF16(save_and_share_string_id));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (display::Screen::Get()->InTabletMode()) {
-    builder.AddAction(
-        kActionToggleRequestTabletSite, /*type=*/std::nullopt,
-        /*text_override=*/
-        l10n_util::GetStringUTF16(IDS_TOGGLE_REQUEST_TABLET_SITE),
-        /*icon_override=*/
-        ui::ImageModel::FromVectorIcon(
-            IsRequestingTabletSite(browser_window_interface_.get())
-                ? (features::IsRoundedIconsEnabled()
-                       ? kMobileCheckIcon
-                       : kRequestMobileSiteCheckedOldIcon)
-                : (features::IsRoundedIconsEnabled()
-                       ? kMobileIcon
-                       : kRequestMobileSiteUncheckedOldIcon),
-            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
-  }
 #endif
 
-  builder.AddSubmenu(kActionDeveloperSubmenu, [this](AppMenuBuilder& sub) {
+        section.AddSubmenu(kActionDeveloperSubmenu, [this](
+                                                        AppMenuBuilder& sub) {
 #if BUILDFLAG(IS_CHROMEOS)
-    const bool is_tablet_mode = display::Screen::Get()->InTabletMode();
+          const bool is_tablet_mode = display::Screen::Get()->InTabletMode();
 #else
-    const bool is_tablet_mode = false;
+              const bool is_tablet_mode = false;
 #endif
-    if (!is_tablet_mode) {
-      sub.AddAction(kActionTabSearch);
-    }
+          if (!is_tablet_mode) {
+            sub.AddAction(kActionTabSearch);
+          }
 
-    sub.AddAction(kActionNameWindow);
+          sub.AddAction(kActionNameWindow);
 
-    if (auto* controller = tabs::VerticalTabStripStateController::From(
-            browser_window_interface_.get())) {
-      if (controller->ShouldDisplayVerticalTabs()) {
-        sub.AddAction(
-            kActionToggleVerticalTabs, /*type=*/std::nullopt,
-            /*text_override=*/
-            l10n_util::GetStringUTF16(IDS_SWITCH_TO_HORIZONTAL_TAB),
-            /*icon_override=*/
-            ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kToolbarIcon
-                                                  : kToolbarOldIcon,
-                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
-      } else {
-        sub.AddAction(
-            kActionToggleVerticalTabs, /*type=*/std::nullopt,
-            /*text_override=*/
-            l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB),
-            /*icon_override=*/
-            ui::ImageModel::FromVectorIcon(
-                base::i18n::IsRTL()
-                    ? (features::IsRoundedIconsEnabled() ? kDockToLeftIcon
-                                                         : kDockToRightOldIcon)
-                    : (features::IsRoundedIconsEnabled() ? kDockToRightIcon
-                                                         : kDockToLeftOldIcon),
-                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
-      }
-    }
+          if (auto* controller = tabs::VerticalTabStripStateController::From(
+                  browser_window_interface_.get())) {
+            if (controller->ShouldDisplayVerticalTabs()) {
+              sub.AddAction(
+                  kActionToggleVerticalTabs, /*type=*/std::nullopt,
+                  /*text_override=*/
+                  l10n_util::GetStringUTF16(IDS_SWITCH_TO_HORIZONTAL_TAB),
+                  /*icon_override=*/
+                  ui::ImageModel::FromVectorIcon(
+                      features::IsRoundedIconsEnabled() ? kToolbarIcon
+                                                        : kToolbarOldIcon,
+                      ui::kColorMenuIcon,
+                      ui::SimpleMenuModel::kDefaultIconSize));
+            } else {
+              sub.AddAction(
+                  kActionToggleVerticalTabs, /*type=*/std::nullopt,
+                  /*text_override=*/
+                  l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB),
+                  /*icon_override=*/
+                  ui::ImageModel::FromVectorIcon(
+                      base::i18n::IsRTL() ? (features::IsRoundedIconsEnabled()
+                                                 ? kDockToLeftIcon
+                                                 : kDockToRightOldIcon)
+                                          : (features::IsRoundedIconsEnabled()
+                                                 ? kDockToRightIcon
+                                                 : kDockToLeftOldIcon),
+                      ui::kColorMenuIcon,
+                      ui::SimpleMenuModel::kDefaultIconSize));
+            }
+          }
 
-    Profile* profile = browser_window_interface_->GetProfile();
-    if (CustomizeChromePageHandler::IsSupported(
-            NtpCustomBackgroundServiceFactory::GetForProfile(profile),
-            profile)) {
-      sub.AddAction(kActionSidePanelShowCustomizeChrome);
-    }
+          Profile* profile = browser_window_interface_->GetProfile();
+          if (CustomizeChromePageHandler::IsSupported(
+                  NtpCustomBackgroundServiceFactory::GetForProfile(profile),
+                  profile)) {
+            sub.AddAction(kActionSidePanelShowCustomizeChrome);
+          }
 
-    sub.AddDivider()
-        .AddAction(kActionShowReadingModeSidePanel)
-        .AddDivider()
-        .AddAction(kActionPerformance)
-        .AddAction(kActionTaskManagerAppMenu);
+          sub.AddDivider()
+              .AddAction(kActionShowReadingModeSidePanel)
+              .AddDivider()
+              .AddAction(kActionPerformance)
+              .AddAction(kActionTaskManagerAppMenu);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    sub.AddAction(kActionTakeScreenshot);
+          sub.AddAction(kActionTakeScreenshot);
 #endif
 
-    sub.AddDivider().AddAction(kActionDevTools);
+          sub.AddDivider().AddAction(kActionDevTools);
 
-    if (base::debug::IsProfilingSupported()) {
-      sub.AddDivider().AddAction(kActionProfilingEnabled);
-    }
+          if (base::debug::IsProfilingSupported()) {
+            sub.AddDivider().AddAction(kActionProfilingEnabled);
+          }
 
-    if (IsChromeLabsEnabled()) {
-      UpdateChromeLabsNewBadgePrefs(profile);
-      if (ShouldShowChromeLabsUI(profile) &&
-          profile->GetPrefs()->GetBoolean(
-              chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy)) {
-        sub.AddDivider().AddAction(kActionShowChromeLabs);
-      }
-    }
-  });
+          if (IsChromeLabsEnabled()) {
+            UpdateChromeLabsNewBadgePrefs(profile);
+            if (ShouldShowChromeLabsUI(profile) &&
+                profile->GetPrefs()->GetBoolean(
+                    chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy)) {
+              sub.AddDivider().AddAction(kActionShowChromeLabs);
+            }
+          }
+        });
+      });
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

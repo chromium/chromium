@@ -69,6 +69,10 @@ void TabGroupDynamicMenu::BuildTabGroupsAction(
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
+  if (!group_ids.empty()) {
+    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+  }
+
   for (const base::Uuid& uuid : group_ids) {
     const std::optional<tab_groups::SavedTabGroup> group =
         tab_group_service->GetGroup(uuid);
@@ -260,7 +264,7 @@ void TabGroupDynamicMenu::BuildTabGroupData(
     std::optional<tab_groups::SavedTabGroup> group,
     favicon::FaviconService* favicon_service,
     actions::ActionItem* parent_item) {
-  auto header_item = ActionAppMenuManager::CreateSectionHeaderActionItem(
+  auto header_item = ActionAppMenuManager::CreateHeaderActionItem(
       l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU));
   parent_item->AddChild(std::move(header_item));
 

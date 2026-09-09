@@ -19,9 +19,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
@@ -47,20 +49,31 @@ void BookmarksDynamicMenu::BuildBookmarksActions(
   BookmarkParentFolderChildren children =
       service->GetChildren(BookmarkParentFolder::BookmarkBarFolder());
 
-  for (const auto* node : children) {
-    if (node) {
-      AddBookmarkNodeAction(parent_item, node, service);
+  if (children.size() > 0) {
+    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+    parent_item->AddChild(ActionAppMenuManager::CreateHeaderActionItem(
+        l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE)));
+
+    for (const auto* node : children) {
+      if (node) {
+        AddBookmarkNodeAction(parent_item, node, service);
+      }
     }
   }
 
   BookmarkParentFolder other_folder = BookmarkParentFolder::OtherFolder();
-  if (service->GetChildrenCount(other_folder) > 0) {
-    AddBookmarkFolderAction(parent_item, other_folder, service);
-  }
-
   BookmarkParentFolder mobile_folder = BookmarkParentFolder::MobileFolder();
-  if (service->GetChildrenCount(mobile_folder) > 0) {
-    AddBookmarkFolderAction(parent_item, mobile_folder, service);
+  const bool has_other = service->GetChildrenCount(other_folder) > 0;
+  const bool has_mobile = service->GetChildrenCount(mobile_folder) > 0;
+
+  if (has_other || has_mobile) {
+    parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
+    if (has_other) {
+      AddBookmarkFolderAction(parent_item, other_folder, service);
+    }
+    if (has_mobile) {
+      AddBookmarkFolderAction(parent_item, mobile_folder, service);
+    }
   }
 }
 
