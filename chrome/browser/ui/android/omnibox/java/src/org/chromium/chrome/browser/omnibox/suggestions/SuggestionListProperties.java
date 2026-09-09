@@ -106,8 +106,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     /** The resource provider for omnibox suggestions. */
-    WritableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
-            new WritableObjectPropertyKey<>();
+    ReadableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
+            new ReadableObjectPropertyKey<>();
 
     WritableBooleanPropertyKey ROUND_TOP_CORNERS = new WritableBooleanPropertyKey();
 
