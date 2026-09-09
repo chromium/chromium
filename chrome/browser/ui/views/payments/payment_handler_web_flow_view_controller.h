@@ -72,7 +72,8 @@ class PaymentHandlerWebFlowViewController
   // |payment_request_web_contents| is the page that initiated the
   // PaymentRequest. It is used in two ways:
   // - Its web developer console is used to print error messages.
-  // - Its WebContentModalDialogHost is lent to the payment handler for the
+  // - When kPaymentHandlerModalDialogHost is disabled, its
+  //   WebContentsModalDialogHost is lent to the payment handler for the
   //   display of modal dialogs initiated from the payment handler's web
   //   content.
   // |profile| is the browser context used to create the new payment handler

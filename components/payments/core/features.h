@@ -114,6 +114,11 @@ BASE_DECLARE_FEATURE(kSPCLocaleValidation);
 // Used to control whether 3D-Secure telemetry is collected.
 BASE_DECLARE_FEATURE(kThreeDSecureTelemetry);
 
+// Used to control whether modal dialogs triggered from a web-based payment
+// handler are parented to the Payment Request dialog widget native view
+// instead of the browser tab.
+BASE_DECLARE_FEATURE(kPaymentHandlerModalDialogHost);
+
 }  // namespace features
 }  // namespace payments
 

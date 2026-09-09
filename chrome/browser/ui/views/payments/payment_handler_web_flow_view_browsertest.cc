@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -35,6 +36,7 @@
 #include "components/payments/core/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
@@ -45,13 +47,16 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace payments {
 
@@ -238,6 +243,212 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
   // There should be no scroll view.
   EXPECT_EQ(nullptr, GetChildByDialogViewID(
                          top_view, DialogViewID::PAYMENT_SHEET_SCROLL_VIEW));
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
+                       WebModalDialogParentedToPaymentHandlerWidget) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  views::Widget* payment_dialog_widget = dialog_view()->GetWidget();
+  ASSERT_NE(nullptr, payment_dialog_widget);
+
+  // Show a web-modal dialog on the payment handler's WebContents.
+  auto dialog_model = ui::DialogModel::Builder()
+                          .SetTitle(u"Test Modal")
+                          .AddOkButton(base::DoNothing())
+                          .Build();
+  views::Widget* modal_widget = constrained_window::ShowWebModal(
+      std::move(dialog_model), payment_handler_contents);
+  ASSERT_NE(nullptr, modal_widget);
+
+  // The modal dialog should be visible and positioned relative to the payment
+  // handler widget.
+  EXPECT_TRUE(modal_widget->IsVisible());
+  gfx::Rect modal_bounds = modal_widget->GetWindowBoundsInScreen();
+  gfx::Rect payment_bounds = payment_dialog_widget->GetWindowBoundsInScreen();
+  EXPECT_TRUE(payment_bounds.Intersects(modal_bounds));
+
+  // The modal dialog host's host view should match the payment dialog widget's
+  // native view.
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+  ASSERT_NE(nullptr, manager->delegate());
+  web_modal::WebContentsModalDialogHost* host =
+      manager->delegate()->GetWebContentsModalDialogHost(
+          payment_handler_contents);
+  ASSERT_NE(nullptr, host);
+  EXPECT_EQ(payment_dialog_widget->GetNativeView(), host->GetHostView());
+
+  // Close the payment request dialog and wait for child modal widget teardown.
+  views::test::WidgetDestroyedWaiter waiter(modal_widget);
+  dialog_view()->CloseDialog();
+  waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
+                       WebModalDialogPositionClampedAtTop) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+  ASSERT_NE(nullptr, manager->delegate());
+  web_modal::WebContentsModalDialogHost* host =
+      manager->delegate()->GetWebContentsModalDialogHost(
+          payment_handler_contents);
+  ASSERT_NE(nullptr, host);
+
+  views::View* host_view = dialog_view();
+  const gfx::Size host_size = host_view->size();
+  ASSERT_FALSE(host_size.IsEmpty());
+
+  // 1. Dialog smaller than host view: centered vertically (y > 0).
+  const gfx::Size small_size(host_size.width() / 2, host_size.height() / 2);
+  gfx::Point small_pos = host->GetDialogPosition(small_size);
+  views::View::ConvertPointFromWidget(host_view, &small_pos);
+  EXPECT_EQ((host_size.height() - small_size.height()) / 2, small_pos.y());
+  EXPECT_GT(small_pos.y(), 0);
+  EXPECT_EQ((host_size.width() - small_size.width()) / 2, small_pos.x());
+
+  // 2. Dialog exact same height as host view: boundary condition (y == 0).
+  const gfx::Size exact_size(host_size.width() / 2, host_size.height());
+  gfx::Point exact_pos = host->GetDialogPosition(exact_size);
+  views::View::ConvertPointFromWidget(host_view, &exact_pos);
+  EXPECT_EQ(0, exact_pos.y());
+  EXPECT_EQ((host_size.width() - exact_size.width()) / 2, exact_pos.x());
+
+  // 3. Dialog taller than host view: y clamped to 0 (preventing negative y).
+  const gfx::Size tall_size(host_size.width() / 2, host_size.height() + 200);
+  gfx::Point tall_pos = host->GetDialogPosition(tall_size);
+  views::View::ConvertPointFromWidget(host_view, &tall_pos);
+  EXPECT_EQ(0, tall_pos.y());
+  EXPECT_EQ((host_size.width() - tall_size.width()) / 2, tall_pos.x());
+}
+
+class PaymentHandlerModalDialogHostDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentHandlerModalDialogHostDisabledTest() {
+    feature_list_.InitWithFeatures(
+        {features::kPaymentRequestMandatoryPaymentAppUi},
+        {features::kPaymentHandlerModalDialogHost});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerModalDialogHostDisabledTest,
+                       WebModalDialogParentedToBrowserTabWhenFlagDisabled) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  views::Widget* payment_dialog_widget = dialog_view()->GetWidget();
+  ASSERT_NE(nullptr, payment_dialog_widget);
+
+  // Show a web-modal dialog on the payment handler's WebContents.
+  auto dialog_model = ui::DialogModel::Builder()
+                          .SetTitle(u"Test Modal")
+                          .AddOkButton(base::DoNothing())
+                          .Build();
+  views::Widget* modal_widget = constrained_window::ShowWebModal(
+      std::move(dialog_model), payment_handler_contents);
+  ASSERT_NE(nullptr, modal_widget);
+
+  // When the flag is disabled, the modal dialog host's host view should match
+  // the browser window's native view rather than the payment dialog widget.
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+  ASSERT_NE(nullptr, manager->delegate());
+  web_modal::WebContentsModalDialogHost* host =
+      manager->delegate()->GetWebContentsModalDialogHost(
+          payment_handler_contents);
+  ASSERT_NE(nullptr, host);
+  EXPECT_NE(payment_dialog_widget->GetNativeView(), host->GetHostView());
+
+  dialog_view()->CloseDialog();
 }
 
 class PaymentHandlerWebFlowViewUseInitiatorInUrlLoadEnabledTest

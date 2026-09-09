@@ -190,7 +190,7 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
                                                  content::kMaxURLDisplayChars)),
       first_navigation_complete_callback_(
           std::move(first_navigation_complete_callback)),
-      dialog_manager_delegate_(payment_request_web_contents) {}
+      dialog_manager_delegate_(dialog.get(), payment_request_web_contents) {}
 
 PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   if (web_contents()) {
