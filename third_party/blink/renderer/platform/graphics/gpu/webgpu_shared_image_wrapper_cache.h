@@ -43,6 +43,26 @@ class WebGpuSharedImageWrapperLease;
 class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
     : public CanvasMemoryDumpClient {
  public:
+  struct PLATFORM_EXPORT Resource {
+    Resource(scoped_refptr<gpu::ClientSharedImage> shared_image,
+             const gpu::SyncToken& sync_token,
+             bool is_cleared,
+             base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                 context_provider_wrapper,
+             unsigned int timer_id,
+             size_t resource_size);
+    Resource(Resource&& that) noexcept;
+    ~Resource();
+
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
+    gpu::SyncToken sync_token_;
+    bool is_cleared_ = false;
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper_;
+    unsigned int timer_id_;
+    size_t resource_size_;
+  };
+
   explicit WebGpuSharedImageWrapperCache(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -93,26 +113,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
   // kCleanUpDelayInSeconds.
   static constexpr int kTimerIdDeltaForDeletion =
       kCleanUpDelayInSeconds / kTimerDurationInSeconds;
-
-  struct PLATFORM_EXPORT Resource {
-    Resource(scoped_refptr<gpu::ClientSharedImage> shared_image,
-             const gpu::SyncToken& sync_token,
-             bool is_cleared,
-             base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-                 context_provider_wrapper,
-             unsigned int timer_id,
-             size_t resource_size);
-    Resource(Resource&& that) noexcept;
-    ~Resource();
-
-    scoped_refptr<gpu::ClientSharedImage> shared_image_;
-    gpu::SyncToken sync_token_;
-    bool is_cleared_ = false;
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper_;
-    unsigned int timer_id_;
-    size_t resource_size_;
-  };
 
   using DequeSharedImageWrapper = Deque<Resource>;
 
