@@ -113,11 +113,11 @@ public class PinnedTabStripItemView extends FrameLayout {
     }
 
     /**
-     * Sets the size of the tab grid card.
+     * Sets the size of the pinned tab strip item.
      *
-     * @param size The {@link Size} of the tab grid card.
+     * @param size The {@link Size} of the pinned tab strip item.
      */
-    void setGridCardSize(@Nullable Size size) {
+    void setItemSize(@Nullable Size size) {
         if (size == null) return;
 
         updateHeight(size.getHeight());

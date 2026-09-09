@@ -5,17 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ALL_KEYS_TAB_GRID;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.FAVICON_FETCHER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.GRID_CARD_SIZE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_PINNED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_SELECTED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ACTION_BUTTON_DATA;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CONTEXT_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.PINNED_STRIP_ITEM_SIZE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
-import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.IS_VISIBLE;
 
@@ -42,9 +34,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
-import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewRectUpdater;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
@@ -52,10 +41,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetC
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -96,19 +83,6 @@ public class PinnedTabStripMediator {
 
     private final Callback<TabModel> mOnTabModelChanged =
             new ValueChangedCallback<>(this::onTabModelChanged);
-    private final TabActionListener mContextClickTabItemEventListener =
-            new TabActionListener() {
-                @Override
-                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                    onLongPress(tabId, view);
-                }
-
-                @Override
-                public void run(
-                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
-                    // No-op.
-                }
-            };
 
     /**
      * The current width of a tab list item in the main tab grid. This is used to calculate the
@@ -182,18 +156,6 @@ public class PinnedTabStripMediator {
         mTabGridListModel.addObserver(mTabGridListObserver);
         mTabModelObserver =
                 new TabModelObserver() {
-                    @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
-                        int oldIndex = mPinnedTabsModelList.indexFromTabId(lastId);
-                        if (oldIndex != TabModel.INVALID_TAB_INDEX) {
-                            mPinnedTabsModelList.get(oldIndex).model.set(IS_SELECTED, false);
-                        }
-                        int newIndex = mPinnedTabsModelList.indexFromTabId(tab.getId());
-                        if (newIndex != TabModel.INVALID_TAB_INDEX) {
-                            mPinnedTabsModelList.get(newIndex).model.set(IS_SELECTED, true);
-                        }
-                    }
-
                     @Override
                     public void onTabClosePending(
                             List<Tab> tabs, boolean isAllTabs, int closingSource) {
@@ -303,7 +265,7 @@ public class PinnedTabStripMediator {
                         continue;
                     }
                 }
-                newPinnedTabs.add(createPinnedTabListItem(model));
+                newPinnedTabs.add(item);
             }
         }
         return newPinnedTabs;
@@ -351,34 +313,6 @@ public class PinnedTabStripMediator {
     private boolean isTabItem(PropertyModel model) {
         return model.get(TabListModel.CardProperties.CARD_TYPE)
                 == TabListModel.CardProperties.ModelType.TAB;
-    }
-
-    /**
-     * Creates a new ListItem for the pinned tabs strip from a PropertyModel.
-     *
-     * @param model The PropertyModel of the tab in the main grid.
-     * @return A new ListItem for the pinned tabs strip.
-     */
-    private ListItem createPinnedTabListItem(PropertyModel model) {
-        // The view will animate to its final size, so we can set a default width here.
-        // The correct width will be set in resizePinnedTabCards.
-        Size pinnedTabSize = new Size(mTabListItemCurrentWidth, mPinnedTabListItemHeight);
-
-        PropertyModel newModel =
-                new PropertyModel.Builder(ALL_KEYS_TAB_GRID)
-                        .with(TAB_ID, model.get(TAB_ID))
-                        .with(TITLE, model.get(TITLE))
-                        .with(FAVICON_FETCHER, model.get(FAVICON_FETCHER))
-                        .with(IS_SELECTED, model.get(IS_SELECTED))
-                        .with(GRID_CARD_SIZE, pinnedTabSize)
-                        .with(TAB_CLICK_LISTENER, model.get(TAB_CLICK_LISTENER))
-                        .with(
-                                TAB_ACTION_BUTTON_DATA,
-                                new TabActionButtonData(TabActionButtonType.PIN, null))
-                        .with(TAB_CONTEXT_CLICK_LISTENER, mContextClickTabItemEventListener)
-                        .with(IS_INCOGNITO, model.get(IS_INCOGNITO))
-                        .build();
-        return new ListItem(UiType.TAB, newModel);
     }
 
     /**
@@ -453,7 +387,7 @@ public class PinnedTabStripMediator {
         int newWidth = Math.round(mTabListItemCurrentWidth * widthPercentage);
         Size newSize = new Size(max(minAllowedWidth, newWidth), mPinnedTabListItemHeight);
         for (ListItem item : mPinnedTabsModelList) {
-            item.model.set(GRID_CARD_SIZE, newSize);
+            item.model.set(PINNED_STRIP_ITEM_SIZE, newSize);
         }
     }
 

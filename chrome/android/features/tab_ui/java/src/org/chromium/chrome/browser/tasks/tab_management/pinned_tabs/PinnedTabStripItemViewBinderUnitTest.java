@@ -87,12 +87,12 @@ public final class PinnedTabStripItemViewBinderUnitTest {
     }
 
     @Test
-    public void testBindGridCardSize() {
+    public void testBindPinnedStripItemSize() {
         final Size size = new Size(1, 1);
-        mModel.set(TabProperties.GRID_CARD_SIZE, size);
+        mModel.set(TabProperties.PINNED_STRIP_ITEM_SIZE, size);
         PinnedTabStripItemViewBinder.bind(
-                mModel, mPinnedTabStripItemView, TabProperties.GRID_CARD_SIZE);
-        verify(mPinnedTabStripItemView).setGridCardSize(eq(size));
+                mModel, mPinnedTabStripItemView, TabProperties.PINNED_STRIP_ITEM_SIZE);
+        verify(mPinnedTabStripItemView).setItemSize(eq(size));
     }
 
     @Test

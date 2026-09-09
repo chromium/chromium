@@ -174,6 +174,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<Size> GRID_CARD_SIZE =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<Size> PINNED_STRIP_ITEM_SIZE =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
@@ -266,6 +269,7 @@ public class TabProperties {
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 GRID_CARD_SIZE,
+                PINNED_STRIP_ITEM_SIZE,
                 THUMBNAIL_FETCHER,
                 SHOW_THUMBNAIL_SPINNER,
                 TITLE,
