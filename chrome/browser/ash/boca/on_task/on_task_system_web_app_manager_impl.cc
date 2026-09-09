@@ -121,8 +121,6 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
     window_tracker->InitializeBrowserInfoForTracking(nullptr);
   }
   if (browser) {
-    // Skips the tab unload process so that browser closes immediately.
-    browser->SetSkipWarningUserOnClose(true);
     browser->Close();
   }
 }

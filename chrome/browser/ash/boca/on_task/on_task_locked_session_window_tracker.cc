@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -375,20 +374,6 @@ void LockedSessionWindowTracker::OnTabWillBeRemoved(tabs::TabInterface* tab,
   for (auto& observer : observers_) {
     observer.OnTabRemoved(tab_id);
   }
-}
-
-void LockedSessionWindowTracker::WillCloseAllTabs(
-    TabStripModel* tab_strip_model) {
-  CHECK(tab_strip_model);
-
-  // Force browser to skip tab unload so we can proceed with the close
-  // operation.
-  // TODO (crbug.com/372362860): Add browser tests to test tab unload.
-  BrowserWindowInterface* const browser =
-      tab_strip_model->delegate()->GetBrowserWindowInterface();
-  ash::BrowserController::GetInstance()
-      ->GetDelegate(browser)
-      ->SetSkipWarningUserOnClose(true);
 }
 
 // ash::BrowserController::Observer Implementation
