@@ -101,6 +101,10 @@ public final class ApkInfo {
         return getInstance().mIApkInfo.packageVersionCode;
     }
 
+    public static long getPackageVersionCodeAsLong() {
+        return Long.parseLong(getPackageVersionCode());
+    }
+
     public static String getPackageVersionName() {
         return getInstance().mIApkInfo.packageVersionName;
     }
