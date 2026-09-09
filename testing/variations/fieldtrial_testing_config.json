@@ -2196,45 +2196,6 @@
             ]
         }
     ],
-    "AutofillEnableAiBasedAmountExtractionAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableAiBasedAmountExtraction",
-                        "AutofillPreferBuyNowPayLaterBlocklists"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableBuyNowPayLaterAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledSansKlarna_20260612",
-                    "enable_features": [
-                        "AutofillEnableAmountExtraction",
-                        "AutofillEnableBuyNowPayLater",
-                        "AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString",
-                        "AutofillEnableTouchToFillReshowForBnpl",
-                        "AutofillTouchToFillShowManualFillForVcnFix"
-                    ],
-                    "disable_features": [
-                        "AutofillEnableBuyNowPayLaterForExternallyLinked",
-                        "AutofillEnableBuyNowPayLaterForKlarna"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableExpandIbanRegexPattern": [
         {
             "platforms": [
@@ -2298,9 +2259,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Tabs_20260904",
                     "enable_features": [
-                        "AutofillEnablePayNowPayLaterTabs"
+                        "AutofillEnableAiBasedAmountExtraction",
+                        "AutofillEnableAmountExtraction",
+                        "AutofillEnableBuyNowPayLater",
+                        "AutofillEnablePayNowPayLaterTabs",
+                        "AutofillEnableTouchToFillReshowForBnpl"
                     ]
                 }
             ]
