@@ -148,11 +148,17 @@ int GetChildOverlap(const views::View* prev_child,
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
 
+  const auto* prev_group = views::AsViewClass<TabGroupView>(prev_child);
   const auto* next_group = views::AsViewClass<TabGroupView>(next_child);
+  // When the previous group is collapsed and the next child is a tab group,
+  // both adjacent elements are header chips. A negative overlap is returned to
+  // provide padding between them.
+  if (prev_group && prev_group->IsCollapsed() && next_group) {
+    return -TabGroupStyle::GetPaddingBetweenCollapsedHeaders();
+  }
   if (next_group) {
     return header_overlap;
   }
-  const auto* prev_group = views::AsViewClass<TabGroupView>(prev_child);
   if (prev_group && prev_group->IsCollapsed()) {
     return header_overlap;
   }

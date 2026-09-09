@@ -16,6 +16,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -650,6 +651,68 @@ TEST_P(TabGroupHeaderViewTest, HoverCardAccessibilityText_CollapsedGroup) {
 #endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_NamedGroup) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  EXPECT_CALL(delegate, GetGroupContentString())
+      .WillRepeatedly(testing::Return(u"1 tab"));
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  header->OnDataChanged(data);
+
+  const gfx::Size preferred_size = header->CalculatePreferredSize({});
+  EXPECT_EQ(preferred_size.height(), TabGroupStyle::GetEmptyChipSize());
+  EXPECT_GE(preferred_size.width(), TabGroupStyle::GetEmptyChipSize());
+}
+
+TEST_P(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"", tab_groups::TabGroupColorId::kBlue, false);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  EXPECT_CALL(delegate, GetGroupContentString())
+      .WillRepeatedly(testing::Return(u"1 tab"));
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  header->OnDataChanged(data);
+
+  const gfx::Size preferred_size = header->CalculatePreferredSize({});
+  // An unnamed group header should match legacy tab strip empty chip size
+  // (20x20).
+  EXPECT_EQ(preferred_size, gfx::Size(TabGroupStyle::GetEmptyChipSize(),
+                                      TabGroupStyle::GetEmptyChipSize()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

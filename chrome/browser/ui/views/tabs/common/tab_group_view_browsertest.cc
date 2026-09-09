@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/data_sharing/public/features.h"
@@ -713,6 +714,137 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
            1;
   }));
   EXPECT_GT(grouped_tab_view->width(), 50);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       HeaderBoundsAndSizingMatchesLegacy) {
+  AppendTab();
+  AppendTab();
+  tab_groups::TabGroupId group_id = GetTabStripModel()->AddToNewGroup({1, 2});
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  ASSERT_NE(base_region_view, nullptr);
+
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(base_region_view->GetTabStripView());
+  ASSERT_NE(tab_strip_view, nullptr);
+
+  auto* group_node = root_node()->GetNodeForHandle(GetTabStripModel()
+                                                       ->group_model()
+                                                       ->GetTabGroup(group_id)
+                                                       ->GetCollectionHandle());
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  auto* header_view = group_view->group_header();
+  ASSERT_NE(header_view, nullptr);
+
+  // Unnamed group header chip height and width should match legacy chip size
+  // (20x20).
+  EXPECT_EQ(header_view->bounds().height(), TabGroupStyle::GetEmptyChipSize());
+  EXPECT_EQ(header_view->bounds().width(), TabGroupStyle::GetEmptyChipSize());
+  // Header should be vertically centered.
+  EXPECT_EQ(header_view->bounds().y(), TabGroupStyle::GetTitleChipOffset().y());
+
+  // Set a title.
+  GetTabStripModel()->ChangeTabGroupVisuals(
+      group_id,
+      tab_groups::TabGroupVisualData(u"Group Title",
+                                     tab_groups::TabGroupColorId::kBlue),
+      false);
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Named group header chip height should remain 20 DIPs, vertically centered,
+  // and width should expand to fit the label.
+  EXPECT_EQ(header_view->bounds().height(), TabGroupStyle::GetEmptyChipSize());
+  EXPECT_GT(header_view->bounds().width(), TabGroupStyle::GetEmptyChipSize());
+  EXPECT_EQ(header_view->bounds().y(), TabGroupStyle::GetTitleChipOffset().y());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       PaddingBetweenCollapsedHeadersMatchesLegacy) {
+  // Tabs layout:
+  // Tab 0: ungrouped (keeps active tab outside collapsed groups)
+  // Tab 1, 2: Group 1
+  // Tab 3, 4: Group 2
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  GetTabStripModel()->ActivateTabAt(0);
+
+  tab_groups::TabGroupId group_id1 = GetTabStripModel()->AddToNewGroup({1, 2});
+  tab_groups::TabGroupId group_id2 = GetTabStripModel()->AddToNewGroup({3, 4});
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  ASSERT_NE(base_region_view, nullptr);
+
+  auto* tab_strip_view =
+      views::AsViewClass<TabStripView>(base_region_view->GetTabStripView());
+  ASSERT_NE(tab_strip_view, nullptr);
+
+  auto* group_node1 =
+      root_node()->GetNodeForHandle(GetTabStripModel()
+                                        ->group_model()
+                                        ->GetTabGroup(group_id1)
+                                        ->GetCollectionHandle());
+  ASSERT_NE(group_node1, nullptr);
+  auto* group_view1 = views::AsViewClass<TabGroupView>(group_node1->view());
+  ASSERT_NE(group_view1, nullptr);
+
+  auto* group_node2 =
+      root_node()->GetNodeForHandle(GetTabStripModel()
+                                        ->group_model()
+                                        ->GetTabGroup(group_id2)
+                                        ->GetCollectionHandle());
+  ASSERT_NE(group_node2, nullptr);
+  auto* group_view2 = views::AsViewClass<TabGroupView>(group_node2->view());
+  ASSERT_NE(group_view2, nullptr);
+
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Collapse both groups.
+  group_view1->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  group_view2->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return group_view1->IsCollapsed() && group_view2->IsCollapsed();
+  }));
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  const int expected_padding =
+      TabGroupStyle::GetPaddingBetweenCollapsedHeaders();
+  EXPECT_EQ(expected_padding, 14);
+
+  // Verify padding between group views.
+  EXPECT_EQ(group_view2->bounds().x() - group_view1->bounds().right(),
+            expected_padding);
+
+  // Verify visual padding between header views in screen coordinates.
+  auto* header_view1 = group_view1->group_header();
+  auto* header_view2 = group_view2->group_header();
+  ASSERT_NE(header_view1, nullptr);
+  ASSERT_NE(header_view2, nullptr);
+  EXPECT_EQ(header_view2->GetBoundsInScreen().x() -
+                header_view1->GetBoundsInScreen().right(),
+            expected_padding);
+
+  // When group 2 is uncollapsed, its leading child is still header 2, so the
+  // padding between header chips should remain 14 DIPs.
+  group_view2->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !group_view2->IsCollapsed(); }));
+  tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(group_view2->bounds().x() - group_view1->bounds().right(),
+            expected_padding);
+  EXPECT_EQ(header_view2->GetBoundsInScreen().x() -
+                header_view1->GetBoundsInScreen().right(),
+            expected_padding);
 }
 
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group

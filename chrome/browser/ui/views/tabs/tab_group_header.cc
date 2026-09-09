@@ -758,9 +758,9 @@ void TabGroupHeader::CreateHeaderWithTitle() {
       sync_icon_width + padding_between_label_sync_icon + text_width +
       attention_indicator_width + attention_indicator_padding;
   const gfx::Insets title_chip_insets = group_style_->GetInsetsForHeaderChip();
-  const int title_chip_width = std::max(
-      group_style_->GetEmptyChipSize(),
-      static_cast<float>(total_content_width + title_chip_insets.width()));
+  const int title_chip_width =
+      std::max(group_style_->GetEmptyChipSize(),
+               total_content_width + title_chip_insets.width());
 
   const int chip_height = GetChipHeight();
   const int chip_y = GetChipY();

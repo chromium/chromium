@@ -197,11 +197,8 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
   // Place the group header.
   int header_width = 0;
   if (tab_group_view->group_header_) {
-    const int header_height =
-        GetLayoutConstant(LayoutConstant::kTabHeight) -
-        GetLayoutConstant(LayoutConstant::kTabStripPadding) -
-        GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
-    const int header_y = GetLayoutConstant(LayoutConstant::kTabStripPadding);
+    const int header_height = TabGroupStyle::GetEmptyChipSize();
+    const int header_y = TabGroupStyle::GetTitleChipOffset().y();
     header_width = tab_group_view->group_header_
                        ->GetPreferredSize(views::SizeBounds({}, header_height))
                        .width();

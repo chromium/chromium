@@ -31,6 +31,8 @@ constexpr int kAttentionIndicatorWidth = 8;
 // The size of the empty chip.
 constexpr int kEmptyChipSize = 20;
 constexpr int kCornerRadius = 6;
+constexpr int kVerticalCornerRadius = 8;
+constexpr int kVerticalHeaderChipHorizontalInset = 8;
 constexpr int kTabGroupOverlapAdjustment = 2;
 
 }  // namespace
@@ -38,6 +40,18 @@ constexpr int kTabGroupOverlapAdjustment = 2;
 // static
 int TabGroupStyle::GetTabGroupOverlapAdjustment() {
   return kTabGroupOverlapAdjustment;
+}
+
+// static
+int TabGroupStyle::GetChipCornerRadius(TabStripOrientation orientation) {
+  return orientation == TabStripOrientation::kHorizontal
+             ? kCornerRadius
+             : kVerticalCornerRadius;
+}
+
+// static
+int TabGroupStyle::GetPaddingBetweenCollapsedHeaders() {
+  return TabStyle::Get()->GetTabOverlap() - 2 * GetTabGroupOverlapAdjustment();
 }
 
 TabGroupStyle::TabGroupStyle(const TabGroupViews& tab_group_views)
@@ -92,8 +106,8 @@ gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(
                    GetEmptyChipSize());
 }
 
-gfx::Point TabGroupStyle::GetTitleChipOffset(
-    std::optional<int> text_height) const {
+// static
+gfx::Point TabGroupStyle::GetTitleChipOffset(std::optional<int> text_height) {
   const int total_space =
       GetLayoutConstant(LayoutConstant::kTabStripHeight) - GetEmptyChipSize() -
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
@@ -110,8 +124,12 @@ int TabGroupStyle::GetHighlightPathGeneratorCornerRadius(
   return GetChipCornerRadius();
 }
 
-gfx::Insets TabGroupStyle::GetInsetsForHeaderChip() const {
-  return gfx::Insets::VH(kHeaderChipVerticalInset, kCornerRadius);
+// static
+gfx::Insets TabGroupStyle::GetInsetsForHeaderChip(
+    TabStripOrientation orientation) {
+  return orientation == TabStripOrientation::kHorizontal
+             ? gfx::Insets::VH(kHeaderChipVerticalInset, kCornerRadius)
+             : gfx::Insets::VH(0, kVerticalHeaderChipHorizontalInset);
 }
 
 int TabGroupStyle::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
@@ -121,7 +139,8 @@ int TabGroupStyle::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
   return kTitleAdjustmentForNonEmptyHeader;
 }
 
-float TabGroupStyle::GetEmptyChipSize() const {
+// static
+int TabGroupStyle::GetEmptyChipSize() {
   return kEmptyChipSize;
 }
 
@@ -131,10 +150,6 @@ float TabGroupStyle::GetSyncIconWidth() const {
 
 float TabGroupStyle::GetAttentionIndicatorWidth() const {
   return kAttentionIndicatorWidth;
-}
-
-int TabGroupStyle::GetChipCornerRadius() const {
-  return kCornerRadius;
 }
 
 int TabGroupStyle::GetTabGroupViewOverlap() const {

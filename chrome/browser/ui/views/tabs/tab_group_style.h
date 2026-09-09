@@ -8,16 +8,27 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "tab_group_header.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
+class TabGroupHeader;
 class TabGroupViews;
 
 // Default styling of tab groups.
 class TabGroupStyle {
  public:
   static int GetTabGroupOverlapAdjustment();
+  static int GetChipCornerRadius(
+      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
+  static int GetEmptyChipSize();
+  static gfx::Point GetTitleChipOffset(
+      std::optional<int> text_height = std::nullopt);
+  static gfx::Insets GetInsetsForHeaderChip(
+      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
+  // Returns the horizontal padding between adjacent tab group headers when
+  // collapsed.
+  static int GetPaddingBetweenCollapsedHeaders();
 
   explicit TabGroupStyle(const TabGroupViews& tab_group_views);
   TabGroupStyle(const TabGroupStyle&) = delete;
@@ -35,9 +46,6 @@ class TabGroupStyle {
   // Returns the bounds of a title chip without any text.
   virtual gfx::Rect GetEmptyTitleChipBounds(const TabGroupHeader* header) const;
 
-  // Returns the starting y coordinate of the title chip from the `tabstrip`.
-  virtual gfx::Point GetTitleChipOffset(std::optional<int> text_height) const;
-
   // Returns the background of a title chip without any text.
   virtual std::unique_ptr<views::Background> GetEmptyTitleChipBackground(
       SkColor color) const;
@@ -47,25 +55,16 @@ class TabGroupStyle {
   virtual int GetHighlightPathGeneratorCornerRadius(
       const views::View* title) const;
 
-  // Returns the insets for a header chip that has text.
-  virtual gfx::Insets GetInsetsForHeaderChip() const;
-
   // While calculating desired width of a tab group an adjustment value is added
   // for the distance between the tab group header and the right tab.
   virtual int GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
       std::u16string title) const;
-
-  // Returns the size of an empty chip without any text.
-  virtual float GetEmptyChipSize() const;
 
   // Returns the sync icon width.
   virtual float GetSyncIconWidth() const;
 
   // Returns the attention indicator icon width.
   virtual float GetAttentionIndicatorWidth() const;
-
-  // The radius of the tab group header chip
-  virtual int GetChipCornerRadius() const;
 
   // Overlap between the tab group view and neighbor tab slot
   virtual int GetTabGroupViewOverlap() const;

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -49,8 +50,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kGroupHeaderCornerRadius = 8;
-constexpr int kGroupHeaderHorizontalInset = 8;
 constexpr int kIconSize = 16;
 constexpr int kFocusRingInset = 2;
 constexpr int kAttentionIndicatorWidth = 8;
@@ -172,7 +171,7 @@ TabGroupHeaderView::TabGroupHeaderView(
           &TabGroupHeaderView::OnBubbleClosed, base::Unretained(this)));
 
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  SetInteriorMargin(gfx::Insets::VH(0, kGroupHeaderHorizontalInset));
+  SetInteriorMargin(gfx::Insets::VH(0, GetHorizontalInset()));
   SetDefault(views::kFlexBehaviorKey,
              views::FlexSpecification(
                  views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
@@ -220,7 +219,7 @@ TabGroupHeaderView::TabGroupHeaderView(
   // Rounds the corners of the focus ring to match the header's shape
   views::HighlightPathGenerator::Install(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                gfx::Insets(kFocusRingInset), kGroupHeaderCornerRadius));
+                gfx::Insets(kFocusRingInset), GetCornerRadius()));
 }
 
 TabGroupHeaderView::~TabGroupHeaderView() = default;
@@ -251,7 +250,7 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
     non_label_width += attention_indicator_->GetPreferredSize().width() +
                        (margins ? margins->width() : 0);
   }
-  non_label_width += 2 * kGroupHeaderHorizontalInset;
+  non_label_width += 2 * GetHorizontalInset();
 
   int label_width =
       group_header_label_ ? group_header_label_->GetPreferredSize().width() : 0;
@@ -262,7 +261,9 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
                              sync_icon_width_with_margin;
   label_width = std::min(label_width, text_max_width);
 
-  size.set_width(non_label_width + label_width);
+  const int empty_chip_size = TabGroupStyle::GetEmptyChipSize();
+  size.set_width(std::max(empty_chip_size, non_label_width + label_width));
+  size.set_height(empty_chip_size);
   return size;
 }
 
@@ -573,7 +574,7 @@ void TabGroupHeaderView::OnDataChanged(
 
     // Update background.
     SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                     kGroupHeaderCornerRadius));
+                                                     GetCornerRadius()));
     UpdateAttentionState(
         data_sharing::features::IsDataSharingFunctionalityEnabled() &&
         tab_group_data.needs_attention);
@@ -736,6 +737,14 @@ void TabGroupHeaderView::ShowEditorBubble() {
 
   editor_bubble_tracker_.Opened(delegate_->ShowGroupEditorBubble(
       /*stop_context_menu_propagation=*/false));
+}
+
+int TabGroupHeaderView::GetCornerRadius() const {
+  return TabGroupStyle::GetChipCornerRadius(orientation_);
+}
+
+int TabGroupHeaderView::GetHorizontalInset() const {
+  return TabGroupStyle::GetInsetsForHeaderChip(orientation_).left();
 }
 
 BEGIN_METADATA(TabGroupHeaderView)

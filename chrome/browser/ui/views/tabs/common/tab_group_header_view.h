@@ -137,6 +137,9 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   void UpdateIsCollapsed();
   void UpdateAttentionState(bool needs_attention);
 
+  int GetCornerRadius() const;
+  int GetHorizontalInset() const;
+
   SkColor GetForegroundColor() const;
 
   tab_groups::TabGroupVisualData tab_group_visual_data_;
