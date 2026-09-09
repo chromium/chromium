@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/media_log.h"
 #include "media/base/video_types.h"
 #include "media/gpu/mac/vt_config_util.h"
@@ -158,14 +159,17 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     return false;
   }
 
+  const int bit_depth = pic->frame_hdr->bit_depth;
+
   // If the parameters have changed, generate a new format.
   if (color_space != active_color_space_ || profile != active_profile_ ||
-      coded_size != active_coded_size_) {
+      coded_size != active_coded_size_ ||
+      bit_depth != active_bit_depth_) {
     active_format_.reset();
 
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
         CreateFormatExtensions(kCMVideoCodecType_VP9, profile,
-                               pic->frame_hdr->bit_depth, color_space,
+                               bit_depth, color_space,
                                std::nullopt);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
@@ -187,10 +191,12 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     active_color_space_ = color_space;
     active_profile_ = profile;
     active_coded_size_ = coded_size;
+    active_bit_depth_ = bit_depth;
 
     session_metadata_ = VideoToolboxDecompressionSessionMetadata{
         /*allow_software_decoding=*/false,
-        /*bit_depth=*/pic->frame_hdr->bit_depth,
+        /*bit_depth=*/
+        base::checked_cast<uint8_t>(bit_depth),
         /*chroma_sampling=*/VideoChromaSampling::k420,
         /*has_alpha=*/false,
         /*visible_rect=*/pic->visible_rect()};
