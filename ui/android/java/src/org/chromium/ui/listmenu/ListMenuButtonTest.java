@@ -130,6 +130,43 @@ public class ListMenuButtonTest {
                 () -> !button.isPressed(), "Button should not be pressed after menu is dismissed.");
     }
 
+    @Test
+    @SmallTest
+    public void testMenuOpenDoesNotSetPressedStateWhenDisabled() {
+        ListMenuButton button = createListMenuButton();
+        button.setMaintainPressedStateWhenMenuOpen(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            "Button should not be pressed initially.", button.isPressed());
+                    button.showMenu();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> !button.isPressed(),
+                "Button should not be pressed when menu is open and maintain pressed state is"
+                        + " disabled.");
+    }
+
+    @Test
+    @SmallTest
+    public void testMenuOpenMaintainsFocusStateByDefault() {
+        ListMenuButton button = createListMenuButton();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    button.setFocusable(true);
+                    button.setFocusableInTouchMode(true);
+                    button.requestFocus();
+                    Assert.assertTrue("Button should be focused.", button.isFocused());
+                    button.showMenu();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> button.isFocused(), "Button should remain focused when menu is open.");
+    }
+
     private ListMenuButton createListMenuButton() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {

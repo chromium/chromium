@@ -30,6 +30,8 @@ public class ListMenuButton extends ChromeImageButton {
     private final ListMenuHost mListMenuHost;
     private final Handler mHandler;
     private boolean mIsActive;
+    private boolean mMaintainPressedStateWhenMenuOpen = true;
+    private boolean mMaintainFocusStateWhenMenuOpen = true;
 
     private boolean mIsAttachedToWindowForTesting;
 
@@ -101,21 +103,53 @@ public class ListMenuButton extends ChromeImageButton {
         mListMenuHost.showMenu();
     }
 
+    /**
+     * Sets whether the button should maintain a pressed visual state while the menu popup is open.
+     * Defaults to true.
+     *
+     * @param maintain Whether to maintain the pressed state while open.
+     */
+    public void setMaintainPressedStateWhenMenuOpen(boolean maintain) {
+        mMaintainPressedStateWhenMenuOpen = maintain;
+        if (!maintain && mIsActive) {
+            setIsPressed(false);
+        }
+    }
+
+    /**
+     * Sets whether the button should maintain keyboard focus while the menu popup is open.
+     * Defaults to true.
+     *
+     * @param maintain Whether to maintain the focus state while open.
+     */
+    public void setMaintainFocusStateWhenMenuOpen(boolean maintain) {
+        mMaintainFocusStateWhenMenuOpen = maintain;
+        if (!maintain && mIsActive) {
+            clearFocus();
+        }
+    }
+
     /** Store the active state to set 'pressed' style to the button when the menu is open. */
     public void setIsPressed(boolean active) {
-        mIsActive = active;
+        mIsActive = mMaintainPressedStateWhenMenuOpen && active;
+        if (!mMaintainFocusStateWhenMenuOpen && active) {
+            clearFocus();
+        }
         mHandler.post(
                 new Runnable() {
                     @Override
                     public void run() {
-                        setPressed(active);
+                        if (!mMaintainFocusStateWhenMenuOpen && active) {
+                            clearFocus();
+                        }
+                        setPressed(mIsActive);
                     }
                 });
     }
 
     @Override
     public void setPressed(boolean pressed) {
-        super.setPressed(mIsActive || pressed);
+        super.setPressed((mMaintainPressedStateWhenMenuOpen && mIsActive) || pressed);
     }
 
     /**

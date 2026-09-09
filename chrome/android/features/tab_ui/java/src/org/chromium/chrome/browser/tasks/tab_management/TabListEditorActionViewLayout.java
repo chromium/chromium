@@ -83,6 +83,8 @@ public class TabListEditorActionViewLayout extends LinearLayout {
         super.onFinishInflate();
         mMenuButton = findViewById(R.id.list_menu_button);
         mMenuButton.tryToFitLargestItem(true);
+        mMenuButton.setMaintainPressedStateWhenMenuOpen(false);
+        mMenuButton.setMaintainFocusStateWhenMenuOpen(false);
         mDoneButton = findViewById(R.id.done_button);
     }
 
