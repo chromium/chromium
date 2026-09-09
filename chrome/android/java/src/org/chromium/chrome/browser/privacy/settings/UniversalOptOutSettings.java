@@ -93,7 +93,8 @@ public class UniversalOptOutSettings extends ChromeBaseSettingsFragment {
     }
 
     public static boolean shouldShowUniversalOptOutSettings(Profile profile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT)) {
             return false;
         }
 

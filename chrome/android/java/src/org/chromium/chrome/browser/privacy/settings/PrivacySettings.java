@@ -395,14 +395,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             : R.string.text_off);
         }
 
-        if (shouldShowUniversalOptOutSettings(getProfile())) {
-            Preference universalOptOutPref = findPreference(PREF_UNIVERSAL_OPT_OUT);
-            if (universalOptOutPref != null) {
-                universalOptOutPref.setSummary(
-                        UserPrefs.get(getProfile()).getBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED)
-                                ? R.string.text_on
-                                : R.string.text_off);
-            }
+        Preference universalOptOutPref = findPreference(PREF_UNIVERSAL_OPT_OUT);
+        if (universalOptOutPref != null) {
+            universalOptOutPref.setSummary(
+                    UserPrefs.get(getProfile()).getBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED)
+                            ? R.string.text_on
+                            : R.string.text_off);
         }
 
         Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
