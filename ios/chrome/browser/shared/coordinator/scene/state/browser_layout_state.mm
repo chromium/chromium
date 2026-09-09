@@ -31,6 +31,8 @@
   if (_toolbarPosition == toolbarPosition) {
     return;
   }
+  [_observers browserLayoutState:self
+       willChangeToolbarPosition:toolbarPosition];
   _toolbarPosition = toolbarPosition;
   [_observers browserLayoutState:self didChangeToolbarPosition:toolbarPosition];
 }

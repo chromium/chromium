@@ -1263,7 +1263,7 @@ inline LayoutStateToolbarPassKey PassKey() {
 #pragma mark - BrowserLayoutStateObserver
 
 - (void)browserLayoutState:(BrowserLayoutState*)layoutState
-    didChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
+    willChangeToolbarPosition:(ToolbarPosition)toolbarPosition {
   [self updateLayoutForToolbarPosition:toolbarPosition];
 }
 

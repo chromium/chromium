@@ -22,6 +22,10 @@ enum class ToolbarPosition {
 
 @optional
 
+// Called before the toolbar position changes for this browser.
+- (void)browserLayoutState:(BrowserLayoutState*)layoutState
+    willChangeToolbarPosition:(ToolbarPosition)newPosition;
+
 // Called when the toolbar position changes for this browser.
 - (void)browserLayoutState:(BrowserLayoutState*)layoutState
     didChangeToolbarPosition:(ToolbarPosition)toolbarPosition;
