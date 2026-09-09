@@ -5,17 +5,18 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/safe_browsing/buildflags.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
+#include "components/safe_browsing/buildflags.h"
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1703,7 +1704,13 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, OmniboxIconPixelTest) {
                              /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, BubblePixelTest) {
+// TODO(crbug.com/558994551): Failing on Linux UBSan.
+#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#define MAYBE_BubblePixelTest DISABLED_BubblePixelTest
+#else
+#define MAYBE_BubblePixelTest BubblePixelTest
+#endif
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, MAYBE_BubblePixelTest) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
@@ -1724,7 +1731,14 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, BubblePixelTest) {
           /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, BubbleWithPolicyPixelTest) {
+// TODO(crbug.com/558994551): Failing on Linux UBSan.
+#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#define MAYBE_BubbleWithPolicyPixelTest DISABLED_BubbleWithPolicyPixelTest
+#else
+#define MAYBE_BubbleWithPolicyPixelTest BubbleWithPolicyPixelTest
+#endif
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest,
+                       MAYBE_BubbleWithPolicyPixelTest) {
   EnableEnterprisePolicy();
 
   ASSERT_TRUE(content::NavigateToURL(
