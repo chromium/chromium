@@ -9,8 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
@@ -32,13 +34,14 @@ class Profile;
 namespace web_app {
 
 // Loads the manifest from the bundle and assembles `WebAppInstallInfo`.
-class PrepareInstallInfoJob {
+class PrepareInstallInfoJob : public ProfileObserver {
  public:
   enum class Error {
     kCantLoadInstallUrl = 1,
     kAppIsNotInstallable = 2,
     kCantValidateManifest = 3,
     kCantRetrieveIcons = 4,
+    kProfileWillBeDestroyed = 5,
   };
 
   struct Failure {
@@ -59,7 +62,7 @@ class PrepareInstallInfoJob {
       std::unique_ptr<webapps::WebAppUrlLoader> loader,
       ResultCallback callback);
 
-  ~PrepareInstallInfoJob();
+  ~PrepareInstallInfoJob() override;
 
   PrepareInstallInfoJob(const PrepareInstallInfoJob&) = delete;
   PrepareInstallInfoJob& operator=(const PrepareInstallInfoJob&) = delete;
@@ -101,7 +104,8 @@ class PrepareInstallInfoJob {
 
   void ReportFailure(Error error, const std::string& message);
 
-  Profile* profile() { return &*profile_; }
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   void LoadInstallUrl(base::OnceClosure next_step_callback);
   void OnLoadInstallUrl(base::OnceClosure next_step_callback,
@@ -129,7 +133,7 @@ class PrepareInstallInfoJob {
 
   void FinishJob(WebAppInstallInfo info);
 
-  const raw_ref<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   const IwaSourceWithMode source_;
   const IwaOperation operation_;

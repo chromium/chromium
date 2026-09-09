@@ -216,5 +216,41 @@ TEST_F(SignedWebBundleMetadataTest, ProfileDestroyedDuringFetchDoesNotCrash) {
                             testing::HasSubstr("Profile is shutting down")));
 }
 
+TEST_F(SignedWebBundleMetadataTest,
+       ProfileDestroyedDuringPrepareInstallInfoDoesNotCrash) {
+  TestingProfile* temp_profile =
+      profile_manager().CreateTestingProfile("temp_profile");
+  test::AwaitStartWebAppProviderAndSubsystems(temp_profile);
+  auto* temp_provider = FakeWebAppProvider::Get(temp_profile);
+
+  IsolatedWebAppUrlInfo url_info = WriteBundleToDiskForProfile(temp_profile);
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
+
+  FakeWebContentsManager& fake_web_contents_manager =
+      static_cast<FakeWebContentsManager&>(
+          temp_provider->web_contents_manager());
+  MockIconAndPageState(fake_web_contents_manager, url_info);
+
+  GURL url(
+      base::StrCat({webapps::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    test::GetDefaultEd25519WebBundleId().id(),
+                    "/.well-known/_generated_install_page.html"}));
+  auto& page_state = fake_web_contents_manager.GetOrCreatePageState(url);
+  page_state.on_manifest_fetch = base::BindLambdaForTesting(
+      [&]() { profile_manager().DeleteTestingProfile("temp_profile"); });
+
+  base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
+      metadata_future;
+
+  SignedWebBundleMetadata::Create(temp_profile, temp_provider, url_info,
+                                  bundle_source_for_profile(temp_profile),
+                                  metadata_future.GetCallback());
+
+  base::expected<SignedWebBundleMetadata, std::string> metadata =
+      metadata_future.Get();
+  EXPECT_THAT(metadata, base::test::ErrorIs(
+                            testing::HasSubstr("Profile is shutting down")));
+}
+
 }  // namespace
 }  // namespace web_app

@@ -66,12 +66,12 @@ PrepareInstallInfoJob::PrepareInstallInfoJob(
     std::optional<IwaVersion> expected_version,
     IsolatedWebAppUrlInfo url_info,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : profile_(profile),
-      source_(std::move(source)),
+    : source_(std::move(source)),
       operation_(std::move(operation)),
       expected_version_(std::move(expected_version)),
       url_info_(std::move(url_info)),
       data_retriever_(std::move(data_retriever)) {
+  profile_observation_.Observe(&profile);
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(&profile));
   webapps::InstallableManager::CreateForWebContents(web_contents_.get());
@@ -96,11 +96,24 @@ void PrepareInstallInfoJob::Start(
   // clang-format on
 }
 
+void PrepareInstallInfoJob::OnProfileWillBeDestroyed(Profile* profile) {
+  weak_factory_.InvalidateWeakPtrs();
+  profile_observation_.Reset();
+  manifest_to_install_info_job_.reset();
+  data_retriever_.reset();
+  url_loader_.reset();
+  web_contents_.reset();
+  ReportFailure(Error::kProfileWillBeDestroyed, "Profile is shutting down.");
+}
+
 void PrepareInstallInfoJob::ReportFailure(Error error,
                                           const std::string& message) {
+  profile_observation_.Reset();
   url_loader_.reset();
-  std::move(callback_).Run(
-      base::unexpected(Failure{.error = error, .message = message}));
+  if (callback_) {
+    std::move(callback_).Run(
+        base::unexpected(Failure{.error = error, .message = message}));
+  }
 }
 
 void PrepareInstallInfoJob::LoadInstallUrl(
@@ -293,6 +306,7 @@ void PrepareInstallInfoJob::OnGettingInstallInfoFromManifest(
 void PrepareInstallInfoJob::FinishJob(WebAppInstallInfo info) {
   CHECK(!expected_version_ ||
         *expected_version_ == info.isolated_web_app_version());
+  profile_observation_.Reset();
   url_loader_.reset();
   std::move(callback_).Run(std::move(info));
 }

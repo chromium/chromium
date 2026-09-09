@@ -375,6 +375,11 @@ void InstallIsolatedWebAppCommand::ProcessInstallInfoResultAndProceed(
             web_app_error =
                 webapps::InstallResultCode::kNotValidManifestForWebApp;
             break;
+          case PrepareInstallInfoJob::Error::kProfileWillBeDestroyed:
+            iwa_error = InstallIwaError::kCantLoadInstallUrl;
+            web_app_error = webapps::InstallResultCode::
+                kCancelledOnWebAppProviderShuttingDown;
+            break;
         }
         ReportFailure(iwa_error, web_app_error, failure.message);
       });
