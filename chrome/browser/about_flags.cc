@@ -4869,7 +4869,6 @@ const FeatureEntry::Choice kChildProcessSecurityPolicyRustChoices[] = {
      "ChildProcessSecurityPolicyRustProcessState"},
 };
 
-
 const FeatureEntry::FeatureParam kCanvasAccessibilityBasic[] = {
     {"CanvasAccessibilityMode", "Basic"}};
 const FeatureEntry::FeatureParam kCanvasAccessibilityAdvanced[] = {
@@ -6953,7 +6952,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAimImageDownscalingName,
      flag_descriptions::kOmniboxAimImageDownscalingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxAimImageDownscaling)},
-
 
     {"omnibox-disable-tabs-for-canvas",
      flag_descriptions::kOmniboxDisableTabsForCanvasName,
@@ -10198,7 +10196,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
 
-
     {"ash-picker-gifs", flag_descriptions::kAshPickerGifsName,
      flag_descriptions::kAshPickerGifsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPickerGifs)},
@@ -11263,13 +11260,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterprisePublishedSkillsPolicyEnabledDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEnterprisePublishedSkillsPolicyEnabled)},
-    {"privileged-web-contents", flag_descriptions::kPrivilegedWebContentsName,
-     flag_descriptions::kPrivilegedWebContentsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(pwc::mojom::features::kPrivilegedWebContents)},
     {"skills", flag_descriptions::kSkillsEnabledName,
      flag_descriptions::kSkillsEnabledDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSkillsEnabled)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"privileged-web-contents", flag_descriptions::kPrivilegedWebContentsName,
+     flag_descriptions::kPrivilegedWebContentsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(pwc::mojom::features::kPrivilegedWebContents)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"default-browser-promo-entry-point",
