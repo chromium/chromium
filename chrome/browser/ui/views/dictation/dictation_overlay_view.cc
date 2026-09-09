@@ -214,7 +214,7 @@ void DictationOverlayView::OnStartedStream(content::GlobalDOMNodeId target_id) {
     return;
   }
 
-  last_target_document_ = target_id.document;
+  last_target_node_id_ = target_id;
 
   focus_selection_bounds_changed_subscription_ =
       web_contents->RegisterFocusSelectionBoundsChanged(base::BindRepeating(
@@ -227,7 +227,7 @@ void DictationOverlayView::OnStartedStream(content::GlobalDOMNodeId target_id) {
 void DictationOverlayView::OnFocusSelectionBoundsChanged(
     content::RenderWidgetHostView* render_widget_host_view) {
   content::RenderFrameHost* target_rfh =
-      last_target_document_.AsRenderFrameHostIfValid();
+      last_target_node_id_.document.AsRenderFrameHostIfValid();
   if (!target_rfh || target_rfh->GetView() != render_widget_host_view) {
     return;
   }
@@ -249,10 +249,11 @@ void DictationOverlayView::UpdatePosition(
     return;
   }
 
-  if (widget_ && !web_contents->IsFocusedElementEditable()) {
-    // If the user's selection changed to something that isn't editable, leave
-    // the icon where it is. Since the last editable is where new text will go
-    // for a new stream.
+  if (widget_ && (web_contents->GetFocusedFrame() != target_rfh ||
+                  target_rfh->GetFocusedDOMNodeId() !=
+                      last_target_node_id_.target_element_dom_id)) {
+    // If the targeted editable node lost focus, leave the icon where it is, as
+    // that's where the text is going to be committed.
     return;
   }
 

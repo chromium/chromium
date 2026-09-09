@@ -65,7 +65,7 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
   void UpdatePosition(content::RenderFrameHost* target_rfh);
 
   base::CallbackListSubscription focus_selection_bounds_changed_subscription_;
-  content::WeakDocumentPtr last_target_document_;
+  content::GlobalDOMNodeId last_target_node_id_;
 
   std::unique_ptr<views::Widget> widget_;
   UiState state_ = UiState::kInactive;
