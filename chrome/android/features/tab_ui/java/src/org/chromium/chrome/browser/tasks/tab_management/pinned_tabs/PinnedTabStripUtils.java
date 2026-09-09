@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
 import android.content.res.Resources;
 
@@ -81,8 +81,9 @@ public class PinnedTabStripUtils {
                 switch (rowCount) {
                     case 2 -> R.dimen.pinned_tab_strip_item_width_percentage_multiplier_2_rows;
                     case 3 -> R.dimen.pinned_tab_strip_item_width_percentage_multiplier_3_rows;
-                    default -> R.dimen
-                            .pinned_tab_strip_item_width_percentage_multiplier_more_than_3_rows;
+                    default ->
+                            R.dimen
+                                    .pinned_tab_strip_item_width_percentage_multiplier_more_than_3_rows;
                 };
         return ResourcesCompat.getFloat(res, dimenId);
     }

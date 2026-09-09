@@ -4,7 +4,7 @@ Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripItemView
+<org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/pinned_tab_strip_item_container"
@@ -63,4 +63,4 @@ found in the LICENSE file.
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripItemView>
+</org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripItemView>

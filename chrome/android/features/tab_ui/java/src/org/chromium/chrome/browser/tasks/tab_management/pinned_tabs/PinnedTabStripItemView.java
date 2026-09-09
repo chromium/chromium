@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
-import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripAnimationManager.ItemState;
+import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripAnimationManager.ItemState;
 import org.chromium.ui.animation.AnimationHandler;
 
 /** View for a pinned tab strip item. */

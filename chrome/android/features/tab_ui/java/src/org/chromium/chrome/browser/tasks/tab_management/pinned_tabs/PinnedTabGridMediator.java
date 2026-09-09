@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
@@ -19,12 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Mediator for Static Pinned Tabs. Observes the main TabListModel and TabModel to mirror pinned
- * tabs into a dedicated ModelList. It shares the exact same PropertyModel instances with the main
- * list so that state updates (such as titles and favicons) propagate automatically.
+ * Mediator for Static Pinned Tabs (Vertical Tabs). Observes the main TabListModel and TabModel to
+ * mirror pinned tabs into a dedicated ModelList. It shares the exact same PropertyModel instances
+ * with the main list so that state updates (such as titles and favicons) propagate automatically.
  */
 @NullMarked
-public class StaticPinnedTabsMediator {
+public class PinnedTabGridMediator {
     private @Nullable TabModel mTabModel;
     private final TabListModel mMainModelList;
     private final TabListModel mPinnedModelList;
@@ -39,7 +41,7 @@ public class StaticPinnedTabsMediator {
      * @param pinnedModelList The ModelList representing the pinned tabs strip.
      * @param onVisibilityChanged Callback triggered when the pinned tabs strip changes visibility.
      */
-    public StaticPinnedTabsMediator(
+    public PinnedTabGridMediator(
             @Nullable TabModel tabModel,
             TabListModel mainModelList,
             TabListModel pinnedModelList,

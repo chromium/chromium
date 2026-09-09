@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ALL_KEYS_TAB_GRID;
@@ -16,8 +16,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CONTEXT_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.IS_VISIBLE;
 
 import static java.lang.Math.max;
 

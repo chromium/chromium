@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.ANIMATION_MANAGER;
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER;
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.SCROLL_TO_POSITION;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.ANIMATION_MANAGER;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripProperties.SCROLL_TO_POSITION;
 
 import androidx.recyclerview.widget.RecyclerView;
 

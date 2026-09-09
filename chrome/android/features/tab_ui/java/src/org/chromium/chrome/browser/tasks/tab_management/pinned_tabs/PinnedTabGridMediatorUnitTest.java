@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,12 +26,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Unit tests for {@link StaticPinnedTabsMediator}. */
+/** Unit tests for {@link PinnedTabGridMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class StaticPinnedTabsMediatorUnitTest {
+public class PinnedTabGridMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModel mTabModel;
@@ -44,7 +46,7 @@ public class StaticPinnedTabsMediatorUnitTest {
 
     private TabListModel mMainModelList;
     private TabListModel mPinnedModelList;
-    private StaticPinnedTabsMediator mMediator;
+    private PinnedTabGridMediator mMediator;
     private TabModelObserver mTabModelObserver;
 
     @Before
@@ -77,7 +79,7 @@ public class StaticPinnedTabsMediatorUnitTest {
         when(mTabModel.getTabById(3)).thenReturn(mTab3);
 
         mMediator =
-                new StaticPinnedTabsMediator(
+                new PinnedTabGridMediator(
                         mTabModel, mMainModelList, mPinnedModelList, mOnVisibilityChanged);
 
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -101,8 +103,8 @@ public class StaticPinnedTabsMediatorUnitTest {
         mMainModelList.add(item3);
 
         // Create mediator with pre-populated main list.
-        StaticPinnedTabsMediator initialMediator =
-                new StaticPinnedTabsMediator(
+        PinnedTabGridMediator initialMediator =
+                new PinnedTabGridMediator(
                         mTabModel, mMainModelList, mPinnedModelList, mOnVisibilityChanged);
 
         // Verify pre-populated items are mirrored.

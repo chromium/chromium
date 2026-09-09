@@ -173,7 +173,7 @@ android_library("unit_device_javatests") {
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogViewTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListViewHolderTest.java",
-    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripItemViewTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs/PinnedTabStripItemViewTest.java",
   ]
 
   deps = [
