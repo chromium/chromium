@@ -1667,9 +1667,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isOverflowMenuNTPRefactorEnabled];
 }
 
-- (BOOL)isChromeNextShareIconVisible {
-  return [ChromeEarlGreyAppInterface isChromeNextShareIconVisible];
-}
 
 #pragma mark - ContentSettings
 

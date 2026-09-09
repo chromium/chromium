@@ -385,11 +385,7 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccount) {
   [button layoutIfNeeded];
 
   UIButtonConfiguration* config = button.configuration;
-  if (IsAppBarLabelsHidden()) {
-    EXPECT_EQ(config.title, nil);
-  } else {
-    EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN));
-  }
+  EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN));
   EXPECT_NE(config.image, nil);
 }
 
@@ -415,11 +411,7 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccountWithAvatar) {
   [button layoutIfNeeded];
 
   UIButtonConfiguration* config = button.configuration;
-  if (IsAppBarLabelsHidden()) {
-    EXPECT_EQ(config.title, nil);
-  } else {
-    EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
-  }
+  EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
   ASSERT_NE(config.image, nil);
   EXPECT_EQ(config.image.size.width, 23);
   EXPECT_EQ(config.image.size.height, 23);
@@ -493,12 +485,7 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateLens) {
   [button layoutIfNeeded];
 
   UIButtonConfiguration* config = button.configuration;
-  if (IsAppBarLabelsHidden()) {
-    EXPECT_EQ(config.title, nil);
-  } else {
-    EXPECT_NSEQ(config.title,
-                l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME));
-  }
+  EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME));
   EXPECT_NE(config.image, nil);
 
   // Set the view width to a very small size to force truncation.
@@ -512,12 +499,8 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateLens) {
   [button layoutIfNeeded];
 
   config = button.configuration;
-  if (IsAppBarLabelsHidden()) {
-    EXPECT_EQ(config.title, nil);
-  } else {
-    EXPECT_NSEQ(config.title,
-                l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED));
-  }
+  EXPECT_NSEQ(config.title,
+              l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED));
 }
 
 // Tests that assistant button has correct accessibility label in portrait and
@@ -545,31 +528,6 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonAccessibilityLabel) {
               l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI));
 }
 
-// Tests that when kAppBarHideLabels is enabled, viewWillLayoutSubviews does not
-// cause infinite re-entrancy or crashes due to title updaters repeatedly
-// modifying button configurations.
-TEST_F(AppBarViewControllerTest, TestIdempotentTitleUpdatesWithHiddenLabels) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAppBarHideLabels);
-
-  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                highlighted:NO
-                                    enabled:YES
-                                     avatar:nil
-                                   signedIn:NO];
-  // Trigger multiple layout passes to verify idempotency and absence of
-  // infinite recursion.
-  [view_controller_.view setNeedsLayout];
-  [view_controller_.view layoutIfNeeded];
-
-  UIButton* assistantButton = [view_controller_ valueForKey:@"assistantButton"];
-  EXPECT_EQ(assistantButton.configuration.title, nil);
-
-  [view_controller_.view setNeedsLayout];
-  [view_controller_.view layoutIfNeeded];
-
-  EXPECT_EQ(assistantButton.configuration.title, nil);
-}
 
 using AppBarViewControllerTestManual = PlatformTest;
 
@@ -656,9 +614,6 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMetricsIncognito) {
 // Tests that updateForFullscreenProgress updates the button title alpha.
 TEST_F(AppBarViewControllerTest,
        TestUpdateForFullscreenProgressUpdatesTitleAlpha) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAppBarHideInFullscreen);
-
   [view_controller_ updateForFullscreenProgress:0.5];
   NSNumber* buttonsTitleAlpha =
       [view_controller_ valueForKey:@"buttonsTitleAlpha"];

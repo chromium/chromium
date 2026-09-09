@@ -444,16 +444,6 @@ void FocusFakebox() {
 
 @implementation LocationBarSteadyStateTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  if ([self isRunningTest:@selector(testShareButtonInContextMenu)]) {
-    config.features_enabled_and_params.push_back(
-        {kChromeNextIa, {{"chrome_next_ia_share_icon_visible", "false"}}});
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -497,13 +487,6 @@ void FocusFakebox() {
   [self openPage1];
 
   if ([ChromeEarlGrey isCompactWidth]) {
-    // Under Chrome Next IA, the share button is not visible on the steady state
-    // location bar by default.
-    if ([ChromeEarlGrey isChromeNextEnabled]) {
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-          assertWithMatcher:grey_notVisible()];
-      return;
-    }
     [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
@@ -741,30 +724,6 @@ void FocusFakebox() {
 // Checks that the location bar is currently in edit state.
 - (void)checkLocationBarEditState {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the Share button is visible in the context menu of the location
-// bar.
-- (void)testShareButtonInContextMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Share is not in the menu on iPad.");
-  }
-
-  [self openPage1];
-
-  // Long pressing should allow copying and sharing.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_longPress()];
-
-  // Verify that the Share button is displayed.
-  id<GREYMatcher> shareButton =
-      grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE),
-                 grey_accessibilityTrait(UIAccessibilityTraitButton),
-                 grey_hidden(NO), nil);
-
-  [[EarlGrey selectElementWithMatcher:shareButton]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

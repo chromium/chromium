@@ -515,9 +515,9 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ShareThisPageLocation) -->
 
 <enum name="ShareThisPageLocation">
-  <int value="0" label="Omnibox Long Press"/>
-  <int value="1" label="Overflow Menu"/>
-  <int value="2" label="Omnibox Verbatim Match"/>
+  <int value="0" label="(Obsolete) Omnibox Long Press"/>
+  <int value="1" label="(Obsolete) Overflow Menu"/>
+  <int value="2" label="(Obsolete) Omnibox Verbatim Match"/>
   <int value="3" label="Location bar"/>
 </enum>
 

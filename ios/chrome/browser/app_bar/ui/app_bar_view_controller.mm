@@ -255,30 +255,26 @@ UIColor* AssistantHighlightBackgroundColor() {
   // Synchronize titles (which may set them to nil when labels are hidden).
   // This replicates the behavior previously handled by
   // didChangeGeminiFloatyInvoked:.
-  if (IsAppBarHiddenInFullscreen()) {
-    [self updateAssistantButtonTitleIfNeeded];
-    [self updateOpenNewTabButtonTitleIfNeeded];
-    [self updateTabGridButtonTitleIfNeeded];
+  [self updateAssistantButtonTitleIfNeeded];
+  [self updateOpenNewTabButtonTitleIfNeeded];
+  [self updateTabGridButtonTitleIfNeeded];
 
-    // Trigger configurations update for all buttons so that vertical insets
-    // recalculate.
-    [_assistantButton setNeedsUpdateConfiguration];
-    [_openNewTabButton setNeedsUpdateConfiguration];
-    [_tabGridButton setNeedsUpdateConfiguration];
-  }
+  // Trigger configurations update for all buttons so that vertical insets
+  // recalculate.
+  [_assistantButton setNeedsUpdateConfiguration];
+  [_openNewTabButton setNeedsUpdateConfiguration];
+  [_tabGridButton setNeedsUpdateConfiguration];
 
   [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
 
-  if (IsAppBarHiddenInFullscreen()) {
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kAppBarAnimationDuration
-                     animations:^{
-                       [weakSelf updateHeightConstraintForCurrentOrientation];
-                     }];
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kAppBarAnimationDuration
+                   animations:^{
+                     [weakSelf updateHeightConstraintForCurrentOrientation];
+                   }];
 
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-  }
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 - (void)layoutState:(SceneLayoutState*)layoutState
@@ -709,9 +705,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
 
-  CGFloat minHeight =
-      IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
-  CGFloat totalMove = [self currentAppBarHeightPortrait] - minHeight;
+  CGFloat totalMove = [self currentAppBarHeightPortrait];
   if (totalMove <= 0) {
     _stackView.transform = CGAffineTransformIdentity;
     _stackView.alpha = 1.0;
@@ -1603,9 +1597,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 }
 
 - (BOOL)shouldHideButtonLabels {
-  return IsAppBarLabelsHidden() ||
-         (_geminiFloatyInvoked && IsAppBarHiddenInFullscreen()) ||
-         self.layoutState.assistantContainerInvoked;
+  return _geminiFloatyInvoked || self.layoutState.assistantContainerInvoked;
 }
 
 @end

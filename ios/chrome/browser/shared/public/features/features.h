@@ -681,18 +681,8 @@ bool IsComposeboxPlusButtonBottomSheet();
 // Enables the ChromeNextIa feature.
 BASE_DECLARE_FEATURE(kChromeNextIa);
 
-// Parameters for kChromeNextIa.
-extern const base::FeatureParam<bool> kChromeNextIaLensIconVisible;
-extern const base::FeatureParam<bool> kChromeNextIaShareIconVisible;
-
 // Returns true if the ChromeNextIa feature is enabled.
 bool IsChromeNextIaEnabled();
-
-// Returns true if Lens icon should be visible in ChromeNextIa.
-bool IsChromeNextIaLensIconVisible();
-
-// Returns true if Share icon should be visible in ChromeNextIa.
-bool IsChromeNextIaShareIconVisible();
 
 // Enables the EnableNewStartupFlow feature.
 BASE_DECLARE_FEATURE(kEnableNewStartupFlow);
@@ -903,11 +893,6 @@ BASE_DECLARE_FEATURE(kIOSPhishGuardPasteShortcutDetection);
 // Returns true if kIOSPhishGuardPasteShortcutDetection is enabled.
 bool IsIOSPhishGuardPasteShortcutDetectionEnabled();
 
-// Feature to hide the labels for the buttons in the App Bar.
-BASE_DECLARE_FEATURE(kAppBarHideLabels);
-
-// Returns true if the App Bar labels should be hidden.
-bool IsAppBarLabelsHidden();
 
 // Enables Google One deep link support on startup.
 BASE_DECLARE_FEATURE(kSupportGoogleOneDeepLink);
@@ -933,11 +918,6 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kDiscoverFeedBackgroundRefreshMinBuffer;
 
-// Feature to completely hide the App Bar when in fullscreen.
-BASE_DECLARE_FEATURE(kAppBarHideInFullscreen);
-
-// Returns true if the App Bar should be completely hidden when in fullscreen.
-bool IsAppBarHiddenInFullscreen();
 
 // Enables the DefaultBottomOmniboxOnIOS feature.
 BASE_DECLARE_FEATURE(kDefaultBottomOmniboxOnIOS);

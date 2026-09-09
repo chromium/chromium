@@ -1435,9 +1435,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsOverflowMenuNTPRefactorEnabled();
 }
 
-+ (BOOL)isChromeNextShareIconVisible {
-  return IsChromeNextIaShareIconVisible();
-}
 
 #pragma mark - ContentSettings
 

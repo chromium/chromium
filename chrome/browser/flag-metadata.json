@@ -668,16 +668,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "app-bar-hide-in-fullscreen",
-    "owners": [ "thegreenfrog@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "app-bar-hide-labels",
-    "owners": [ "thegreenfrog@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "app-menu-glow-up",
     "owners": [
       "emshack@chromium.org",

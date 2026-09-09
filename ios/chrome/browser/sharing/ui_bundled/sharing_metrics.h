@@ -8,9 +8,9 @@
 // Enum for the location where the "Share This Page" button is shown or used.
 // LINT.IfChange(ShareThisPageLocation)
 enum class ShareThisPageLocation {
-  kOmniboxLongPress = 0,
-  kOverflowMenu = 1,
-  kOmniboxVerbatimMatch = 2,
+  kOmniboxLongPress = 0,      // Obsolete M155.
+  kOverflowMenu = 1,          // Obsolete M155.
+  kOmniboxVerbatimMatch = 2,  // Obsolete.
   kLocationBar = 3,
   kMaxValue = kLocationBar,
 };

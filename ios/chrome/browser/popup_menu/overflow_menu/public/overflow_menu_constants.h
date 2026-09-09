@@ -61,7 +61,7 @@ enum class ActionType {
   AskBWG = 20,
   // HideToolbars = 21, Deprecated in M154.
   // TabGroup = 22, Deprecated in M150.
-  ShareThisPage = 23,
+  // ShareThisPage = 23, Deprecated in M155.
   // Signin = 24, Deprecated in M152.
   Identity = 25,
   CustomizeHomePage = 26,

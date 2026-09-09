@@ -819,22 +819,8 @@ bool IsComposeboxPlusButtonBottomSheet() {
 
 BASE_FEATURE(kChromeNextIa, base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool> kChromeNextIaLensIconVisible{
-    &kChromeNextIa, "chrome_next_ia_lens_icon_visible", false};
-
-constexpr base::FeatureParam<bool> kChromeNextIaShareIconVisible{
-    &kChromeNextIa, "chrome_next_ia_share_icon_visible", false};
-
 bool IsChromeNextIaEnabled() {
   return base::FeatureList::IsEnabled(kChromeNextIa);
-}
-
-bool IsChromeNextIaLensIconVisible() {
-  return IsChromeNextIaEnabled() && kChromeNextIaLensIconVisible.Get();
-}
-
-bool IsChromeNextIaShareIconVisible() {
-  return IsChromeNextIaEnabled() && kChromeNextIaShareIconVisible.Get();
 }
 
 NSString* const kNewStartupFlowKey = @"IsEnableNewStartupFlowEnabled";
@@ -1087,11 +1073,6 @@ bool IsIOSPhishGuardPasteShortcutDetectionEnabled() {
   return base::FeatureList::IsEnabled(kIOSPhishGuardPasteShortcutDetection);
 }
 
-BASE_FEATURE(kAppBarHideLabels, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAppBarLabelsHidden() {
-  return base::FeatureList::IsEnabled(kAppBarHideLabels);
-}
 
 BASE_FEATURE(kSupportGoogleOneDeepLink, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1121,11 +1102,6 @@ const base::FeatureParam<base::TimeDelta>
                                             "discover_refresh_min_buffer",
                                             base::Minutes(15)};
 
-BASE_FEATURE(kAppBarHideInFullscreen, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAppBarHiddenInFullscreen() {
-  return base::FeatureList::IsEnabled(kAppBarHideInFullscreen);
-}
 
 BASE_FEATURE(kDefaultBottomOmniboxOnIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -896,11 +896,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)setTrailingButtonState:(TrailingButtonState)state {
-  if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
-      state == kShareButton) {
-    state = kNoButton;
-  }
-
   if (_trailingButtonState == state) {
     return;
   }
@@ -1014,29 +1009,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 - (UIMenu*)contextMenuUIMenu:(NSArray<UIMenuElement*>*)suggestedActions {
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof__(self) weakSelf = self;
-
-  if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
-      self.shareButtonEnabled) {
-    base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
-                                  ShareThisPageLocation::kOmniboxLongPress);
-    UIImage* image = SymbolWithPointSize(SymbolShare, kSymbolImagePointSize);
-
-    UIAction* shareThisPageAction =
-        [UIAction actionWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE)
-                            image:image
-                       identifier:nil
-                          handler:^(UIAction* action) {
-                            [weakSelf shareThisPage];
-                          }];
-
-    UIMenu* divider = [UIMenu menuWithTitle:@""
-                                      image:nil
-                                 identifier:nil
-                                    options:UIMenuOptionsDisplayInline
-                                   children:@[ shareThisPageAction ]];
-    [menuElements addObject:divider];
-  }
 
   UIImage* pasteImage = nil;
   if (IsBottomOmniboxAvailable()) {
@@ -1335,12 +1307,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       }));
 }
 
-/// Shows the Share this page sheet.
-- (void)shareThisPage {
-  base::UmaHistogramEnumeration("Mobile.ShareThisPage.Used",
-                                ShareThisPageLocation::kOmniboxLongPress);
-  [self.dispatcher showShareSheetFromShareButton:_locationBarSteadyView];
-}
 
 /// Set the preferred omnibox position to `toolbarType`.
 - (void)moveOmniboxToToolbarType:(ToolbarType)toolbarType {

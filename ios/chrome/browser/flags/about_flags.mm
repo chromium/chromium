@@ -841,31 +841,6 @@ const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
      kBestOfAppFREArm4Upload, nullptr},
 };
 
-const FeatureEntry::FeatureParam kChromeNextIaLensHiddenShareHidden[] = {
-    {"chrome_next_ia_lens_icon_visible", "false"},
-    {"chrome_next_ia_share_icon_visible", "false"}};
-
-const FeatureEntry::FeatureParam kChromeNextIaLensVisibleShareHidden[] = {
-    {"chrome_next_ia_lens_icon_visible", "true"},
-    {"chrome_next_ia_share_icon_visible", "false"}};
-
-const FeatureEntry::FeatureParam kChromeNextIaLensHiddenShareVisible[] = {
-    {"chrome_next_ia_lens_icon_visible", "false"},
-    {"chrome_next_ia_share_icon_visible", "true"}};
-
-const FeatureEntry::FeatureParam kChromeNextIaLensVisibleShareVisible[] = {
-    {"chrome_next_ia_lens_icon_visible", "true"},
-    {"chrome_next_ia_share_icon_visible", "true"}};
-
-const FeatureEntry::FeatureVariation kChromeNextIaVariations[] = {
-    {"Lens Hidden, Share Hidden", kChromeNextIaLensHiddenShareHidden, nullptr},
-    {"Lens Visible, Share Hidden", kChromeNextIaLensVisibleShareHidden,
-     nullptr},
-    {"Lens Hidden, Share Visible", kChromeNextIaLensHiddenShareVisible,
-     nullptr},
-    {"Lens Visible, Share Visible", kChromeNextIaLensVisibleShareVisible,
-     nullptr},
-};
 
 const FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "1"}};
@@ -2216,9 +2191,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kComposeboxPlusButtonBottomSheet)},
     {"chrome-next-ia", flag_descriptions::kChromeNextIaName,
      flag_descriptions::kChromeNextIaDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kChromeNextIa,
-                                    kChromeNextIaVariations,
-                                    "ChromeNextIa")},
+     FEATURE_VALUE_TYPE(kChromeNextIa)},
     {"enable-new-startup-flow", flag_descriptions::kEnableNewStartupFlowName,
      flag_descriptions::kEnableNewStartupFlowDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableNewStartupFlow)},
@@ -2377,9 +2350,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kFullscreenEasedTransitionsName,
      flag_descriptions::kFullscreenEasedTransitionsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kFullscreenEasedTransitions)},
-    {"app-bar-hide-labels", flag_descriptions::kAppBarHideLabelsName,
-     flag_descriptions::kAppBarHideLabelsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAppBarHideLabels)},
     {"autofill-ai-always-show-private-ai-notice",
      flag_descriptions::kAutofillAiAlwaysShowPrivateAiNoticeName,
      flag_descriptions::kAutofillAiAlwaysShowPrivateAiNoticeDescription,
@@ -2624,10 +2594,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ai-avatar-ring-ios", flag_descriptions::kAiAvatarRingIosName,
      flag_descriptions::kAiAvatarRingIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAiSubscriptionAvatarRingIOS)},
-    {"app-bar-hide-in-fullscreen",
-     flag_descriptions::kAppBarHideInFullscreenName,
-     flag_descriptions::kAppBarHideInFullscreenDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAppBarHideInFullscreen)},
     {"gemini-contextual-suggestions-cues",
      flag_descriptions::kGeminiContextualSuggestionsCuesName,
      flag_descriptions::kGeminiContextualSuggestionsCuesDescription,

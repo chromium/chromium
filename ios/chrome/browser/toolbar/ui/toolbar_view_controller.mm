@@ -843,7 +843,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
     locationBarExpandedHeight = kTopLocationBarIPhonePortraitHeight;
   }
   CGFloat collapsedLocationBarHeight = kLocationBarHeightFullscreen;
-  if (IsAppBarHiddenInFullscreen() && !_topPosition) {
+  if (!_topPosition) {
     collapsedLocationBarHeight = ToolbarCollapsedHeight(
         self.traitCollection.preferredContentSizeCategory);
   }

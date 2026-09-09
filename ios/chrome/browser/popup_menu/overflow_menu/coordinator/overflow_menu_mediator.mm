@@ -425,8 +425,6 @@ void GetPresetNTPBackgroundPreview(
 
 @property(nonatomic, strong) OverflowMenuAction* customizeHomepageAction;
 
-@property(nonatomic, strong) OverflowMenuAction* shareAction;
-
 @end
 
 @implementation OverflowMenuMediator
@@ -935,8 +933,6 @@ void GetPresetNTPBackgroundPreview(
 
   self.requestDesktopAction = [self newRequestDesktopAction];
 
-  self.shareAction = [self newShareAction];
-
   NSString* requestMobileHideItemText =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_MOBILE_SITE);
   self.requestMobileAction = [self
@@ -1318,22 +1314,6 @@ void GetPresetNTPBackgroundPreview(
                             hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf requestDesktopSite];
-                                 }];
-}
-
-- (OverflowMenuAction*)newShareAction {
-  __weak __typeof(self) weakSelf = self;
-  return [self
-      createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_SHARE_THIS_PAGE
-                              actionType:overflow_menu::ActionType::
-                                             ShareThisPage
-                              symbolName:kShareSymbol
-                            systemSymbol:YES
-                        monochromeSymbol:YES
-                         accessibilityID:kToolsMenuShareId
-                            hideItemText:nil
-                                 handler:^{
-                                   [weakSelf shareThisPage];
                                  }];
 }
 
@@ -1886,8 +1866,6 @@ void GetPresetNTPBackgroundPreview(
       return self.readerModeAction;
     case overflow_menu::ActionType::AskBWG:
       return self.askBWGAction;
-    case overflow_menu::ActionType::ShareThisPage:
-      return self.shareAction;
     case overflow_menu::ActionType::Identity:
       return self.identityAction;
     case overflow_menu::ActionType::CustomizeHomePage:
@@ -2011,13 +1989,6 @@ void GetPresetNTPBackgroundPreview(
 
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
-
-  if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
-      [self isCurrentURLWebURL]) {
-    base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
-                                  ShareThisPageLocation::kOverflowMenu);
-    [appActions addObject:self.shareAction];
-  }
 
   BOOL showReloadStopAction;
   if (IsChromeNextIaEnabled()) {
@@ -2786,7 +2757,6 @@ void GetPresetNTPBackgroundPreview(
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::DefaultBrowser:
     case overflow_menu::ActionType::EditActions:
-    case overflow_menu::ActionType::ShareThisPage:
     case overflow_menu::ActionType::Identity:
     case overflow_menu::ActionType::CustomizeHomePage:
       NOTREACHED();
@@ -2937,17 +2907,6 @@ void GetPresetNTPBackgroundPreview(
   }
   [self.helpHandler
       presentInProductHelpWithType:InProductHelpType::kDefaultSiteView];
-}
-
-- (void)shareThisPage {
-  base::UmaHistogramEnumeration("Mobile.ShareThisPage.Used",
-                                ShareThisPageLocation::kOverflowMenu);
-  [self dismissMenu];
-
-  UIView* toolMenuView =
-      [_layoutGuideCenter referencedViewUnderName:kToolsMenuGuide];
-
-  [self.activityServiceHandler showShareSheetFromShareButton:toolMenuView];
 }
 
 // Dismisses the menu and requests the mobile version of the current page

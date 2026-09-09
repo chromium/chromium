@@ -149,9 +149,6 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::AskBWG:
         finalExpectedActionType = overflow_menu::ActionType::AskBWG;
         break;
-      case overflow_menu::ActionType::ShareThisPage:
-        finalExpectedActionType = overflow_menu::ActionType::ShareThisPage;
-        break;
       case overflow_menu::ActionType::Identity:
         finalExpectedActionType = overflow_menu::ActionType::Identity;
         break;

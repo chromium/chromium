@@ -2288,8 +2288,7 @@ bool IsFullscreenNextIAEnabled() {
   }
 
   CGFloat height = expandedHeight;
-  if (IsAppBarHiddenInFullscreen() &&
-      self.layoutState.appBarPosition == AppBarPosition::kBottom) {
+  if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
     CGFloat collapsedHeightWithSafeArea = [self collapsedBottomToolbarHeight];
     CGFloat targetHeight =
         collapsedHeightWithSafeArea +
@@ -3056,16 +3055,6 @@ bool IsFullscreenNextIAEnabled() {
   CGFloat keyboardAttachedOffset =
       keyboardHeight +
       self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
-  if (IsChromeNextIaEnabled()) {
-    // When the App Bar is at the bottom (Portrait), the secondary toolbar is
-    // already taller by the height of the App Bar, so we subtract the App Bar
-    // height.
-    if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
-      CGFloat minHeight =
-          IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
-      keyboardAttachedOffset -= minHeight;
-    }
-  }
   CGFloat baseHeight = [self secondaryToolbarHeightWithInset];
   CGFloat offsetRequired = isCollapsed
                                ? keyboardAttachedOffset

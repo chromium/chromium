@@ -725,9 +725,8 @@ inline LayoutStateToolbarPassKey PassKey() {
       return 0.0;
     }
     if ([self isToolbarPositionBottom]) {
-      if (IsAppBarHiddenInFullscreen() &&
-          self.browser->GetSceneState().layoutState.appBarPosition ==
-              AppBarPosition::kBottom) {
+      if (self.browser->GetSceneState().layoutState.appBarPosition ==
+          AppBarPosition::kBottom) {
         CGFloat safeAreaBottom = 0.0;
         if (self.browser->GetSceneState().window) {
           safeAreaBottom =

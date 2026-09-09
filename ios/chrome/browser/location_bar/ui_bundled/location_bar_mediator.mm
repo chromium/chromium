@@ -309,7 +309,7 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Returns whether the Lens overlay is currently available for the web state.
 - (BOOL)isLensOverlayAvailable {
-  if (IsChromeNextIaEnabled() && !IsChromeNextIaLensIconVisible()) {
+  if (IsChromeNextIaEnabled()) {
     return NO;
   }
 

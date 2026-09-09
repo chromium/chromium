@@ -1180,8 +1180,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiLiveUserDidBargeIn) {
 // once the UI appears.
 TEST_F(GeminiBrowserAgentTest, TestFloatyReenablesFullscreenWhenUIAppears) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kChromeNextIa, kAppBarHideInFullscreen},
-                                       {});
+  scoped_feature_list.InitAndEnableFeature(kChromeNextIa);
 
   InitFullscreenCoordinatorIfNeeded();
 

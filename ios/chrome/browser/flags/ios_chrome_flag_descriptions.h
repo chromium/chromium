@@ -82,15 +82,6 @@ inline constexpr char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
-inline constexpr char kAppBarHideInFullscreenName[] =
-    "AppBar Hide in Fullscreen";
-inline constexpr char kAppBarHideInFullscreenDescription[] =
-    "Completely hides the AppBarViewController when in fullscreen.";
-
-inline constexpr char kAppBarHideLabelsName[] = "AppBar Hide Labels";
-inline constexpr char kAppBarHideLabelsDescription[] =
-    "Hides the labels for the buttons in the App Bar.";
-
 inline constexpr char kAppSwitcherAISummarizationName[] =
     "App Switcher AI summarization";
 inline constexpr char kAppSwitcherAISummarizationDescription[] =

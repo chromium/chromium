@@ -115,8 +115,7 @@ void ReloadFromOmnibox() {
     config.features_enabled.push_back(kGeminiKillSwitch);
     config.features_disabled.push_back(kPageActionMenu);
     config.iph_feature_enabled = "IPH_iOSLensOverlayEntrypointTip";
-    config.features_enabled_and_params.push_back(
-        {kChromeNextIa, {{"chrome_next_ia_lens_icon_visible", "true"}}});
+    config.features_disabled.push_back(kChromeNextIa);
   } else {
     config.features_enabled.push_back(kChromeNextIa);
   }

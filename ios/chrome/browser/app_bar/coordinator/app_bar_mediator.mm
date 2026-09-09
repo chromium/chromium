@@ -729,21 +729,19 @@ inline LayoutStateAssistantPassKey PassKey() {
   [self updateAssistantButton];
   [self.layoutState setGeminiFloatyInvoked:isInvoked passKey:PassKey()];
 
-  if (IsAppBarHiddenInFullscreen()) {
-    if (IsFullscreenRefactoringEnabled()) {
-      if (_regularFullscreenBrowserAgent) {
-        _regularFullscreenBrowserAgent->InvalidateInsetRange();
-      }
-      if (_incognitoFullscreenBrowserAgent) {
-        _incognitoFullscreenBrowserAgent->InvalidateInsetRange();
-      }
-    } else {
-      if (_regularFullscreenController) {
-        _regularFullscreenController->ExitFullscreen();
-      }
-      if (_incognitoFullscreenController) {
-        _incognitoFullscreenController->ExitFullscreen();
-      }
+  if (IsFullscreenRefactoringEnabled()) {
+    if (_regularFullscreenBrowserAgent) {
+      _regularFullscreenBrowserAgent->InvalidateInsetRange();
+    }
+    if (_incognitoFullscreenBrowserAgent) {
+      _incognitoFullscreenBrowserAgent->InvalidateInsetRange();
+    }
+  } else {
+    if (_regularFullscreenController) {
+      _regularFullscreenController->ExitFullscreen();
+    }
+    if (_incognitoFullscreenController) {
+      _incognitoFullscreenController->ExitFullscreen();
     }
   }
 }

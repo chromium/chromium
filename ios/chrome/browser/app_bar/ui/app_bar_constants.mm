@@ -15,9 +15,6 @@ const CGFloat kAppBarHeightLandscapeDefault = 69;
 const CGFloat kAppBarHeightFullscreen = 62;
 
 CGFloat AppBarHeightPortrait() {
-  if (IsAppBarLabelsHidden()) {
-    return kAppBarHeightFullscreen;
-  }
   return kAppBarHeightDefault;
 }
 
@@ -27,7 +24,7 @@ CGFloat CurrentAppBarHeightPortrait(BOOL gemini_floaty_invoked,
       app_bar_locked_in_fullscreen) {
     return kAppBarHeightFullscreen;
   }
-  if (gemini_floaty_invoked && IsAppBarHiddenInFullscreen()) {
+  if (gemini_floaty_invoked) {
     return kAppBarHeightFullscreen;
   }
   return AppBarHeightPortrait();

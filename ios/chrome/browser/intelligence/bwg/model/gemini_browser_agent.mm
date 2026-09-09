@@ -950,9 +950,7 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
     if (app_bar_view &&
         scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
       CGFloat portrait_height =
-          (is_floaty_invoked_ && IsAppBarHiddenInFullscreen())
-              ? kAppBarHeightFullscreen
-              : AppBarHeightPortrait();
+          is_floaty_invoked_ ? kAppBarHeightFullscreen : AppBarHeightPortrait();
       max_bottom_inset += portrait_height;
     }
   }
@@ -996,9 +994,7 @@ CGFloat GeminiBrowserAgent::GetFullyExpandedFloatyOffset() {
     if (app_bar_view &&
         scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
       CGFloat portrait_height =
-          (is_floaty_invoked_ && IsAppBarHiddenInFullscreen())
-              ? kAppBarHeightFullscreen
-              : AppBarHeightPortrait();
+          is_floaty_invoked_ ? kAppBarHeightFullscreen : AppBarHeightPortrait();
       max_bottom_inset += portrait_height;
     }
   }

@@ -176,9 +176,7 @@
   AppBarPosition position = self.sceneLayoutState.appBarPosition;
   switch (position) {
     case AppBarPosition::kBottom: {
-      CGFloat minHeight =
-          IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
-      agent->AddObscuredInsetRange(UIRectEdgeBottom, minHeight,
+      agent->AddObscuredInsetRange(UIRectEdgeBottom, 0,
                                    [self appBarHeightPortrait]);
       break;
     }
@@ -200,11 +198,8 @@
   switch (position) {
     case AppBarPosition::kBottom: {
       _fullscreenProgress = agent->bottom_progress();
-      CGFloat minHeight =
-          IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
       CGFloat currentHeight =
-          minHeight +
-          ([self appBarHeightPortrait] - minHeight) * agent->bottom_progress();
+          [self appBarHeightPortrait] * agent->bottom_progress();
       agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
       [self updateLayout];
       // If this is inside an animation, layout immediately.
