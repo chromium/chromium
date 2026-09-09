@@ -43,8 +43,8 @@ namespace {
 
 // Feature to override the size of LevelDB block caches.
 //
-// The SuppressMemoryListeners experiment shows that not purging LevelDB caches
-// on memory pressure causes a statistically significant memory regression
+// The SuppressMemoryListeners experiment showed that not purging LevelDB caches
+// on memory pressure caused a statistically significant memory regression
 // (which makes sense) with no obvious speed regression. Building on this, this
 // feature will allow measuring the speed/memory impact of always keeping the
 // caches smaller.

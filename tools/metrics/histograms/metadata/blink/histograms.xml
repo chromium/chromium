@@ -4386,8 +4386,7 @@ chromium-metrics-reviews@google.com.
   <owner>blink-network-stack@chromium.org</owner>
   <summary>
     Size of the resource strong references saved to the memory cache. Recorded
-    when the user navigates to a newpage under the same origin. Recorded only
-    with feature flag MemoryCacheStrongReference.
+    when the user navigates to a newpage under the same origin.
   </summary>
 </histogram>
 

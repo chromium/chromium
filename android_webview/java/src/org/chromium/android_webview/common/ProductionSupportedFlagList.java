@@ -1241,17 +1241,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_VIZ_DIRECT_COMPOSITOR_THREAD_IPC_FRAME_SINK_MANAGER,
                 "Binds FrameSinkManager as a DirectReceiver, allowing FSM and all mojoms passed"
                         + " through it to receive IPCs directly."),
-
-        // Features for PerfCombined2025_WebView study
-        Flag.baseFeature("ReducePPMs"),
-        Flag.baseFeature("RemoveCancelledScriptedIdleTasks"),
-        Flag.baseFeature("MemoryCacheChangeStrongReferencePruneDelay"),
-        Flag.baseFeature("MemoryCacheStrongReference"),
-        Flag.baseFeature("ReleaseResourceStrongReferencesOnMemoryPressure"),
-        Flag.baseFeature("ReleaseResourceDecodedDataOnMemoryPressure"),
-        Flag.baseFeature("SuppressMemoryListeners"),
-        Flag.baseFeature("SuppressMemoryMonitor"),
-        Flag.baseFeature("CompressParkableStrings"),
         Flag.baseFeature(
                 ContentFeatures.ANDROID_MEDIA_INSERTION,
                 "When enabled, IMEs should be able to insert media content such as images, gifs and"

@@ -15631,34 +15631,6 @@
             ]
         }
     ],
-    "PerfCombined2025": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledConservative",
-                    "enable_features": [
-                        "AvoidUnnecessaryShouldRenderRichAnimation",
-                        "GCOnArrayBufferAllocationFailure",
-                        "MvcUpdateViewWhenModelChanged",
-                        "ReducePPMs",
-                        "ReleaseResourceDecodedDataOnMemoryPressure",
-                        "ReleaseResourceStrongReferencesOnMemoryPressure",
-                        "ReloadTabUiResourcesIfChanged",
-                        "RemoveCancelledScriptedIdleTasks",
-                        "SlimDirectReceiverIpc"
-                    ],
-                    "disable_features": [
-                        "MemoryCacheChangeStrongReferencePruneDelay",
-                        "MemoryCacheStrongReference",
-                        "SuppressMemoryListeners"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionPredictionsGeolocationAccuracy": [
         {
             "platforms": [
