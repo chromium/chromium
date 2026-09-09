@@ -6,6 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -17,6 +19,20 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+bool IsInWebUIToolbar(views::View* view_to_check) {
+  for (views::View* v = view_to_check; v; v = v->parent()) {
+    if (v->GetProperty(views::kElementIdentifierKey) ==
+        kWebUIToolbarElementIdentifier) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 ChromeWebContentsViewFocusHelper::ChromeWebContentsViewFocusHelper(
     content::WebContents* web_contents)
@@ -89,22 +105,20 @@ void ChromeWebContentsViewFocusHelper::StoreFocus() {
     return;
   }
 
-  // Iterate through the focused view's ancestors to check if it's inside the
-  // toolbar. We don't want to store the focus in the toolbar WebContents to
-  // match the behavior in C++ views.
-  // TODO(crbug.com/508632926): this is a temporary fix to differentiate the
-  // focus behavior between normal WebContents and top Chrome WebUI. In the
-  // long term, we should propose a more general fix from the focus system to
-  // avoid doing this special checks against the element identifier. (e.g. the
-  // focus behavior of the WebUI reload button is correct when the user clicks
-  // the button, and the tab-key focus should follow the same way).
-  for (views::View* v = focused_view; v; v = v->parent()) {
-    if (v->GetProperty(views::kElementIdentifierKey) ==
-        kWebUIToolbarElementIdentifier) {
+  // Most things on the toolbar are FocusBehavior::ACCESSIBLE_ONLY, and don't
+  // get focus restored to them on tab switch. When the WebUI toolbar is in use,
+  // those get lumped with things that should get focus, like the location bar,
+  // resulting in undesired restoration (see crbug.com/508632926). So save
+  // webui-toolbar focus only if something in the location bar is focused.
+  // This will get WebView focus restored uniformly, and
+  // WebUIReadOnlyOmnibox::OnTabChanged will take care of element focus.
+  if (IsInWebUIToolbar(focused_view)) {
+    auto* location_bar =
+        location_bar::GetLocationBarForWebContents(&GetWebContents());
+    if (!location_bar || !location_bar->IsFocusWithin()) {
       return;
     }
   }
-
   last_focused_view_tracker_.SetView(focused_view);
 }
 

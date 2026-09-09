@@ -489,6 +489,20 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private onFocusRequest(target: FocusRequestTarget): void {
     this.isHandlingFocusRequest_ = true;
     try {
+      // We handle focus restore separately, as we might not actually have
+      // the state of the input yet.
+      if (target === FocusRequestTarget.kLocationBarFocusRestore) {
+        this.$.textInput.focus();
+        this.inputDelegate_.handleFocusChange(this, {
+          hasFocus: true,
+          requestClearKeyword: false,
+          startZeroSuggest: false,
+          activateDefaultSearch: false,
+          selection: null,
+        });
+        return;
+      }
+
       let isUserInitiated = false;
       let activateDefaultSearch = false;
       switch (target) {
@@ -522,7 +536,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         unelision = this.unelide();
       }
       this.$.textInput.focus();
-      this.switchView_(/*hasFocus=*/ true);
 
       // The following comments are from OmniboxViewViews::SetFocus:
       // If the user initiated the focus, then we always select-all, even if the

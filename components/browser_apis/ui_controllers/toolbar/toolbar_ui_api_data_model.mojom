@@ -96,7 +96,7 @@ struct OmniboxActionFocusChange {
   // `has_focus` = true.
   bool start_zero_suggest = false;
 
-  gfx.mojom.Range selection;
+  gfx.mojom.Range? selection;
 };
 
 struct OmniboxActionTextInput {
@@ -805,6 +805,11 @@ enum FocusRequestTarget {
 
   // Focus the location bar as result of user explicitly asking for it.
   kLocationBarUserInitiated,
+
+  // Focus the location bar as a result of focus restore. This should not
+  // do anything other than restoring the focus (and notifying that it
+  // happened).
+  kLocationBarFocusRestore,
 
   // Focus the location bar and activate the default search provider keyword.
   kSearch,

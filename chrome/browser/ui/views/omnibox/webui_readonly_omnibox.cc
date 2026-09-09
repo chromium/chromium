@@ -109,10 +109,18 @@ void WebUIReadOnlyOmnibox::OnTabChanged(content::WebContents* web_contents) {
     }
   }
 
-  if (state && state->model_state.focus_state == OMNIBOX_FOCUS_VISIBLE) {
-    SetFocus(/*is_user_initiated=*/false);
-  } else if (has_focus_) {
-    OnBlur();
+  // If we need to restore focus (we might not if e.g. switching in a split
+  // view), ChromeWebContentsViewFocusHelper will have given it to our
+  // views::WebView. In that case, make sure to restore it to the right-ish
+  // element --- we sadly don't know what in the location bar was focused
+  // exactly.
+  if (toolbar_delegate_) {  // null in some unit tests.
+    if (toolbar_delegate_->GetInternalWebView()->HasFocus()) {
+      SetFocusWithTarget(
+          toolbar_ui_api::mojom::FocusRequestTarget::kLocationBarFocusRestore);
+    } else {
+      OnBlur();
+    }
   }
 
   RequestUpdateWebUI();
@@ -615,7 +623,9 @@ WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
   if (focus_change.has_focus) {
     has_focus_ = true;
-    selection_ = focus_change.selection;
+    if (focus_change.selection) {
+      selection_ = *focus_change.selection;
+    }
     // TODO(crbug.com/500653057): Key state, though Views impl doesn't have it.
     controller()->edit_model()->OnSetFocus(/*control_down=*/false);
 
