@@ -159,13 +159,29 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
   }
 
   // Export dictionary.
-  private exportDictionary_(): void {
+  private async exportDictionary_(): Promise<void> {
+    const {result} =
+        await UserDataServiceProvider.getRemote().exportJapaneseDictionary(
+            this.dict.id);
+    let bytes: Uint8Array<ArrayBuffer>;
+    if (Array.isArray(result.data.bytes)) {
+      bytes = new Uint8Array(result.data.bytes);
+    } else if (result.data.sharedMemory) {
+      const {bufferHandle, size} = result.data.sharedMemory;
+      const {buffer} = bufferHandle.mapBuffer(0, size);
+      bytes = new Uint8Array(buffer);
+    } else {
+      return;
+    }
+    const blob = new Blob([bytes], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = `jp-export-dictionary/${this.dict.id}`;
+    a.href = url;
     // In case there is no name, use a placeholder name.
     const fileName = this.dict.name || 'unnamed-dictionary';
     a.download = `${fileName}.txt`;
     a.click();
+    URL.revokeObjectURL(url);
   }
 
   // Imports dictionary.
