@@ -1990,12 +1990,24 @@ class TabImpl implements Tab, TabInternal {
         if (!maybeShowNativePage(url.getSpec(), isReload, pdfInfo)) {
             // This is restricted to HTTP(S) URLs specifically, as these are the only schemes that
             // necessitate a PDF re-download.
-            String downloadUrl =
-                    (isPdf
-                                    || (UrlConstants.CHROME_NATIVE_SCHEME.equals(url.getScheme())
-                                            && UrlConstants.PDF_HOST.equals(url.getHost())))
-                            ? PdfUtils.getPdfReDownloadUrl(url.getSpec())
-                            : null;
+            String downloadUrl = null;
+            if (isPdf) {
+                downloadUrl = PdfUtils.getPdfReDownloadUrl(url.getSpec());
+            } else if (UrlConstants.CHROME_NATIVE_SCHEME.equals(url.getScheme())
+                    && UrlConstants.PDF_HOST.equals(url.getHost())) {
+                downloadUrl =
+                        PdfUtils.getPdfReDownloadUrl(url.getSpec());
+                // getPdfReDownloadUrl restricts to HTTP(S). Explicitly allow blob schemes
+                // since they are ephemeral and require re-load.
+                if (downloadUrl == null
+                        && ChromeFeatureList.sAndroidHandlePdfInIframe.isEnabled()) {
+                    String decodedUrl = PdfUtils.decodePdfPageUrl(url.getSpec());
+                    if (decodedUrl != null
+                            && decodedUrl.startsWith(UrlConstants.BLOB_SCHEME + ":")) {
+                        downloadUrl = decodedUrl;
+                    }
+                }
+            }
             if (downloadUrl != null) {
                 // When the download url is not null, we are navigating to a pdf native page which
                 // requires re-download. Load the download url to trigger the re-download.

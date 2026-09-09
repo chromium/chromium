@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
@@ -58,6 +59,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfInfo;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -1224,5 +1226,60 @@ public class TabUnitTest {
         mTab.goForward();
         verify(callback, never()).handleBeforeUnload(any(), any());
         verify(mNavigationController, never()).goForward();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HANDLE_PDF_IN_IFRAME)
+    public void testHandleDidFinishNavigation_PdfBlobUrl_RedownloadTriggered() {
+        mTab.setNativePtrForTesting(1);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.setWebContentsForTesting(mWebContents);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+
+        String blobUrl = "blob:https://example.com/some-uuid";
+        String encodedUrl = PdfUtils.encodePdfPageUrl(blobUrl);
+        handleDidFinishNavigation(mTab, new GURL(encodedUrl));
+
+        verify(mNavigationController).loadUrl(argThat(params -> blobUrl.equals(params.getUrl())));
+    }
+
+    @Test
+    @SmallTest
+    public void testHandleDidFinishNavigation_PdfViewerPath_RedownloadTriggered() {
+        mTab.setNativePtrForTesting(1);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.setWebContentsForTesting(mWebContents);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+
+        String httpUrl = "https://example.com/test.pdf";
+        String encodedUrl =
+                PdfUtils.encodePdfPageUrl(httpUrl)
+                        .replace("chrome-native://pdf/link", "chrome-native://pdf/pdf-viewer/link");
+        handleDidFinishNavigation(mTab, new GURL(encodedUrl));
+
+        verify(mNavigationController).loadUrl(argThat(params -> httpUrl.equals(params.getUrl())));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_HANDLE_PDF_IN_IFRAME,
+        ChromeFeatureList.ANDROID_SETTINGS_URL
+    })
+    public void testHandleDidFinishNavigation_PdfBlobUrl_FeatureDisabled_NoRedownload() {
+        mTab.setNativePtrForTesting(1);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.setWebContentsForTesting(mWebContents);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+
+        String blobUrl = "blob:https://example.com/some-uuid";
+        String encodedUrl = PdfUtils.encodePdfPageUrl(blobUrl);
+        handleDidFinishNavigation(mTab, new GURL(encodedUrl));
+
+        verify(mNavigationController, never()).loadUrl(any());
     }
 }
