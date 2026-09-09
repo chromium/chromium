@@ -7,10 +7,15 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "skia/ext/codec_utils.h"
+#include "src/core/SkFontDescriptor.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+
+#if defined(SK_TYPEFACE_FACTORY_FONTATIONS)
+#include "third_party/skia/include/ports/SkTypeface_fontations.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
@@ -124,6 +129,43 @@ sk_sp<SkTypeface> MakeTypefaceFromName(const char* name, SkFontStyle style) {
   CHECK(fm);
   sk_sp<SkTypeface> face = fm->legacyMakeTypeface(name, style);
   return face;
+}
+
+#if defined(SK_TYPEFACE_FACTORY_FONTATIONS)
+sk_sp<SkTypeface> MakeTypefaceWithFontations(SkStream* stream) {
+  SkFontDescriptor desc;
+  if (!SkFontDescriptor::Deserialize(stream, &desc, /*sanitizer=*/nullptr)) {
+    return nullptr;
+  }
+
+  if (desc.hasStream()) {
+    return SkTypeface_Make_Fontations(desc.detachStream(),
+                                      desc.getFontArguments());
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // On macOS, system fonts with Apple proprietary tables (such as 'hvgl' in
+  // PingFang) are serialized without stream data (kIncludeDataIfLocal) to avoid
+  // CoreText deserialization failures (crbug.com/455517173). These fonts must
+  // be resolved by name from the OS system fonts via CoreText. Because no
+  // untrusted stream data is parsed, this exposes no attack surface to
+  // malformed font bytes.
+  return skia::DefaultFontMgr()->legacyMakeTypeface(desc.getFamilyName(),
+                                                    desc.getStyle());
+#else
+  return nullptr;
+#endif
+}
+#endif  // defined(SK_TYPEFACE_FACTORY_FONTATIONS)
+
+SkFourByteTag GetTypefaceFactoryIdForTesting(const SkTypeface* typeface) {
+  if (!typeface) {
+    return 0;
+  }
+  SkFontDescriptor desc;
+  bool is_local = false;
+  typeface->getFontDescriptor(&desc, &is_local);
+  return desc.getFactoryId();
 }
 
 sk_sp<SkTypeface> DefaultTypeface() {
