@@ -9132,13 +9132,6 @@ crbug.com/540555511 [ Mac ] external/wpt/html/semantics/embedded-content/the-img
 crbug.com/540555511 [ Mac ] external/wpt/html/semantics/embedded-content/the-img-element/sizes/parse-a-sizes-attribute-quirks-mode.html [ Pass Timeout ]
 crbug.com/540555511 [ Mac ] external/wpt/html/semantics/embedded-content/the-img-element/sizes/parse-a-sizes-attribute-width-1000px.html [ Pass Timeout ]
 
-# Cyclic TLA deferred imports should deadlock per spec, see
-# https://github.com/tc39/proposal-defer-import-eval/issues/83. The test
-# checks the spec behavior; V8 currently diverges. Tolerate both results until
-# the V8 fix rolls in, then remove this line and the stale -expected.txt
-# baseline.
-virtual/javascript-defer-phase-imports/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/cyclic-tla-defer-eval.tentative.html [ Failure Pass ]
-
 # Gardener 2026-08-05
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/bidi/browser/create_user_context/accept_insecure_certs.py [ Failure Pass ]
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/bidi/browser/create_user_context/create_user_context.py [ Failure Pass ]
