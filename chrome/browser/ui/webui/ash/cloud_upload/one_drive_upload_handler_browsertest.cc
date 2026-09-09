@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_operation.h"
@@ -62,8 +61,6 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
                                   public NotificationDisplayService::Observer {
  public:
   OneDriveUploadHandlerTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     my_files_dir_ = temp_dir_.GetPath().Append("myfiles");
     read_only_dir_ = temp_dir_.GetPath().Append("readonly");
@@ -542,9 +539,8 @@ class OneDriveUploadHandlerTest_ReauthEnabled
  public:
   OneDriveUploadHandlerTest_ReauthEnabled() {
     feature_list_.Reset();
-    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud,
-                                    features::kOneDriveUploadImmediateReauth},
-                                   {});
+    feature_list_.InitAndEnableFeature(
+        features::kOneDriveUploadImmediateReauth);
   }
 };
 

@@ -9944,14 +9944,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "upload-office-to-cloud",
-    "owners": [
-      "alexbn@chromium.org",
-      "simmonsjosh@google.com"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "use-adhoc-signing-for-web-app-shims",
     "owners": [
       "markrowe@chromium.org",

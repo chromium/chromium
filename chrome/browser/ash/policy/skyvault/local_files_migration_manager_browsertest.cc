@@ -43,7 +43,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -109,8 +108,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kSkyVault,
                               ash::features::kSkyVaultV2,
-                              ash::features::kSkyVaultV3,
-                              chromeos::features::kUploadOfficeToCloud},
+                              ash::features::kSkyVaultV3},
         /*disabled_features=*/{});
   }
   ~LocalFilesMigrationManagerTest() override = default;

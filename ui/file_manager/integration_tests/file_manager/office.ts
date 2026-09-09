@@ -127,37 +127,6 @@ export async function openOfficeWordFromMyFiles() {
   chrome.test.assertEq(1, removedCount);
 }
 
-// Tests that "Upload to Drive" cannot be enabled if the "Upload Office To
-// Cloud" flag is disabled (test setup similar to `openOfficeWordFromMyFiles`).
-export async function uploadToDriveRequiresUploadOfficeToCloudEnabled() {
-  const appId = await remoteCall.setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
-  // Fake chrome.fileManagerPrivate.executeTask to return
-  // chrome.fileManagerPrivate.TaskResult.EMPTY.
-  const fakeData = {
-    'chrome.fileManagerPrivate.executeTask': ['static_fake', ['empty']],
-  };
-  await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
-
-  // Open file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'openFile', appId, [ENTRIES.smallDocx.nameText]));
-
-  // Since the Upload Office To Cloud flag isn't enabled, the Upload to Drive
-  // task should not be available: another task should have been executed
-  // instead (QuickOffice or generic task).
-  const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertFalse(
-      taskDescriptor.actionId === openDocWithDriveDescriptor().actionId);
-  chrome.test.assertFalse(
-      taskDescriptor.actionId === openDocWithDriveDescriptor().actionId);
-
-  // Remove fakes.
-  const removedCount = await remoteCall.callRemoteTestUtil(
-      'removeAllForegroundFakes', appId, []);
-  chrome.test.assertEq(1, removedCount);
-}
-
 export async function openOfficeWordFromDrive() {
   const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);

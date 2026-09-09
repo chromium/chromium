@@ -235,8 +235,7 @@ content::WebContents* LaunchCloudUploadDialogAndGetWebContentsForDialog(
 // Set email (using a domain from |kNonManagedDomainPatterns|) to login a
 // non-managed user. Intended to be used in the override of |SetUpCommandLine|
 // from |InProcessBrowserTest| to ensure
-// |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
-// |IsUploadOfficeToCloudEnabled| in browser tests.
+// |IsEligibleAndEnabledUploadOfficeToCloud| returns true in browser tests.
 void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kLoginUser, "testuser@gmail.com");
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
@@ -264,13 +263,9 @@ auto IsOpenInOfficeTask() {
 // selected on the JS side gets executed.
 class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
  public:
-  FileHandlerDialogBrowserTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud},
-                                   {});
-  }
+  FileHandlerDialogBrowserTest() = default;
 
-  explicit FileHandlerDialogBrowserTest(int num_tasks)
-      : FileHandlerDialogBrowserTest() {
+  explicit FileHandlerDialogBrowserTest(int num_tasks) {
     num_tasks_ = num_tasks;
   }
 
@@ -306,8 +301,7 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
 
  protected:
   // Use a non-managed user in this browser test to ensure
-  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
-  // |IsUploadOfficeToCloudEnabled|.
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns true.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SetUpCommandLineForNonManagedUser(command_line);
   }
@@ -317,9 +311,6 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
   std::vector<file_manager::file_tasks::TaskDescriptor> tasks_;
   std::vector<storage::FileSystemURL> files_;
   base::HistogramTester histogram_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a new Files app window is created if no Files app window exists.
@@ -1237,10 +1228,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
 // cannot change the default task set.
 class FixUpFlowBrowserTest : public InProcessBrowserTest {
  public:
-  FixUpFlowBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kUploadOfficeToCloud);
-  }
+  FixUpFlowBrowserTest() = default;
 
   FixUpFlowBrowserTest(const FixUpFlowBrowserTest&) = delete;
   FixUpFlowBrowserTest& operator=(const FixUpFlowBrowserTest&) = delete;
@@ -1275,15 +1263,11 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
 
  protected:
   // Use a non-managed user in this browser test to ensure
-  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
-  // |IsUploadOfficeToCloudEnabled|.
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns true.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SetUpCommandLineForNonManagedUser(command_line);
   }
   std::vector<storage::FileSystemURL> files_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 using file_manager::file_tasks::kActionIdWebDriveOfficeWord;
@@ -1823,8 +1807,7 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
 
  protected:
   // Use a non-managed user in this browser test to ensure
-  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
-  // |IsUploadOfficeToCloudEnabled|.
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns true.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SetUpCommandLineForNonManagedUser(command_line);
   }

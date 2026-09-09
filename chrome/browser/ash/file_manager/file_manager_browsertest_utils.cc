@@ -126,11 +126,6 @@ TestCase& TestCase::EnableDriveTrash() {
   return *this;
 }
 
-TestCase& TestCase::EnableUploadOfficeToCloud() {
-  options.enable_upload_office_to_cloud = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableArcVm() {
   options.enable_arc_vm = true;
   return *this;

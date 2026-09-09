@@ -324,6 +324,35 @@ FakeDriveFs::FakeDriveFs(const base::FilePath& mount_path)
             mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                         std::move(receiver));
           });
+  ON_CALL(*this, UpdateFromPairedDoc)
+      .WillByDefault(
+          [](const base::FilePath& path,
+             drivefs::mojom::DriveFs::UpdateFromPairedDocCallback callback) {
+            std::move(callback).Run(drive::FILE_ERROR_OK);
+          });
+  ON_CALL(*this, GetItemFromCloudStore)
+      .WillByDefault(
+          [](const base::FilePath& path,
+             drivefs::mojom::DriveFs::GetItemFromCloudStoreCallback callback) {
+            std::move(callback).Run(drive::FILE_ERROR_OK);
+          });
+  ON_CALL(*this, ImmediatelyUpload)
+      .WillByDefault(
+          [](const base::FilePath& path,
+             drivefs::mojom::DriveFs::ImmediatelyUploadCallback callback) {
+            std::move(callback).Run(drive::FILE_ERROR_OK);
+          });
+  ON_CALL(*this, ClearOfflineFiles)
+      .WillByDefault(
+          [](drivefs::mojom::DriveFs::ClearOfflineFilesCallback callback) {
+            std::move(callback).Run(drive::FILE_ERROR_OK);
+          });
+  ON_CALL(*this, GetOfflineFilesSpaceUsage)
+      .WillByDefault(
+          [](drivefs::mojom::DriveFs::GetOfflineFilesSpaceUsageCallback
+                 callback) {
+            std::move(callback).Run(drive::FILE_ERROR_OK, 0);
+          });
 }
 
 FakeDriveFs::~FakeDriveFs() = default;

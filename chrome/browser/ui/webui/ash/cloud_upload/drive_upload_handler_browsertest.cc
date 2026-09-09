@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/network_connection_change_simulator.h"
@@ -74,8 +73,6 @@ class DriveUploadHandlerTest
       public file_manager::io_task::IOTaskController::Observer {
  public:
   DriveUploadHandlerTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     drive_mount_point_ = temp_dir_.GetPath().Append("drivefs");
     drive_root_dir_ = drive_mount_point_.AppendASCII("root");
@@ -384,7 +381,6 @@ class DriveUploadHandlerTest
     drivefs_delegate().FlushForTesting();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::RunLoop> run_loop_;
 

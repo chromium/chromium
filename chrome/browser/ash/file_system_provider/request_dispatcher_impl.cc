@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/event_router.h"
 #include "url/gurl.h"
 
@@ -29,22 +28,18 @@ bool RequestDispatcherImpl::DispatchRequest(
     int request_id,
     std::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    DCHECK(!event->did_dispatch_callback);
-    RequestKey request_key{extension_id_, file_system_id.value_or(""),
-                           request_id};
-    event->did_dispatch_callback =
-        sw_lifetime_manager_->CreateDispatchCallbackForRequest(request_key);
-  }
+  DCHECK(!event->did_dispatch_callback);
+  RequestKey request_key{extension_id_, file_system_id.value_or(""),
+                         request_id};
+  event->did_dispatch_callback =
+      sw_lifetime_manager_->CreateDispatchCallbackForRequest(request_key);
 
   // If ash has a matching extension, forward the event.
   if (event_router_->ExtensionHasEventListener(extension_id_,
                                                event->event_name)) {
     event_router_->DispatchEventToExtension(extension_id_, std::move(event));
-    if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-      sw_lifetime_manager_->StartRequest(
-          {extension_id_, file_system_id.value_or(""), request_id});
-    }
+    sw_lifetime_manager_->StartRequest(
+        {extension_id_, file_system_id.value_or(""), request_id});
     return true;
   }
 
@@ -52,10 +47,8 @@ bool RequestDispatcherImpl::DispatchRequest(
     GURL terminal(ash::kChromeUIUntrustedTerminalURL);
     if (event_router_->URLHasEventListener(terminal, event->event_name)) {
       event_router_->DispatchEventToURL(terminal, std::move(event));
-      if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-        sw_lifetime_manager_->StartRequest(
-            {extension_id_, file_system_id.value_or(""), request_id});
-      }
+      sw_lifetime_manager_->StartRequest(
+          {extension_id_, file_system_id.value_or(""), request_id});
       return true;
     }
   }
@@ -68,9 +61,6 @@ bool RequestDispatcherImpl::DispatchRequest(
 void RequestDispatcherImpl::CancelRequest(
     int request_id,
     std::optional<std::string> file_system_id) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return;
-  }
   // Attempt to cancel. Checking if an extension is listening could lead
   // to a situation where an extension stops listening between the time
   // a request is sent and the time it's cancelled, so cancellation could

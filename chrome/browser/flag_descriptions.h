@@ -8295,9 +8295,6 @@ inline constexpr char kTrafficCountersForWiFiTestingDescription[] =
     "If enabled, data usage will be visible in the Settings UI for WiFi "
     "networks";
 
-inline constexpr char kUploadOfficeToCloudName[] =
-    "Enable Office files upload workflow.";
-
 inline constexpr char kUserMediaElementName[] = "UserMediaElement";
 inline constexpr char kUserMediaElementDescription[] =
     "Enables the <usermedia> element, allowing sites to embed a "

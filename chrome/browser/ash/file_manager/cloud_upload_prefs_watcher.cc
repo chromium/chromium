@@ -10,7 +10,6 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -170,9 +169,6 @@ CloudUploadPrefsWatcherFactory::~CloudUploadPrefsWatcherFactory() = default;
 std::unique_ptr<KeyedService>
 CloudUploadPrefsWatcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return nullptr;
-  }
   auto* profile = Profile::FromBrowserContext(context);
   if (!IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     return nullptr;

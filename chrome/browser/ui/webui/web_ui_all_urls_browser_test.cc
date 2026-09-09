@@ -36,7 +36,6 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #else
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -68,7 +67,6 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS)
   enable_feature(ash::features::kDriveFsMirroring);
   enable_feature(ash::features::kShimlessRMAOsUpdate);
-  enable_feature(chromeos::features::kUploadOfficeToCloud);
 #endif
 
   enable_feature(features::kTabsFromOtherDevicesSidePanel);

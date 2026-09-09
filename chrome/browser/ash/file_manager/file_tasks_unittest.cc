@@ -54,7 +54,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -414,9 +413,7 @@ class FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest
   FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest() {
     // These feature flags are required to make different virtual tasks
     // discoverable.
-    features_.InitWithFeatures({features::kIsolatedWebAppUnmanagedInstall,
-                                chromeos::features::kUploadOfficeToCloud},
-                               {});
+    features_.InitAndEnableFeature(features::kIsolatedWebAppUnmanagedInstall);
   }
 
  private:

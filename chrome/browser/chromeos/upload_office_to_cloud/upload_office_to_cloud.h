@@ -10,12 +10,10 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
-// Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
-// the user of the `profile`.  A user is eligible if:
+// Return True if user of the `profile` is eligible for Office files upload.
+// A user is eligible if:
 // - They are not in Guest mode.
-// - They are not managed.
-// - They are not a child profile and `kUploadOfficeToCloudForEnterprise` is
-// enabled.
+// - They are not a child profile.
 bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile);
 
 namespace cloud_upload {
@@ -34,27 +32,21 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile);
 // false otherwise.
 bool IsMicrosoftOfficeOneDriveIntegrationAutomated(const Profile* profile);
 
-// If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
-// IsEligibleAndEnabledUploadOfficeToCloud() is true.
-// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// Returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
 // and `ash::prefs::kMicrosoftOfficeCloudUpload` is set to `allowed` or
 // `automated`.
 bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile);
 
-// If `kUploadOfficeToCloudForEnterprise` is disabled, returns false.
-// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// Returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
 // and `ash::prefs::kMicrosoftOfficeCloudUpload` is set to `automated`.
 bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile);
 
-// If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
-// IsEligibleAndEnabledUploadOfficeToCloud() is true.
-// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// Returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
 // and `ash::prefs::kGoogleWorkspaceCloudUpload` is set to `allowed` or
 // `automated`.
 bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile);
 
-// If `kUploadOfficeToCloudForEnterprise` is disabled, returns false.
-// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// Returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
 // and `ash::prefs::kGoogleWorkspaceCloudUpload` is set to `automated`.
 bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile);
 

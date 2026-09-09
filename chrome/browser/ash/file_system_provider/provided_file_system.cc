@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/event_router.h"
 
 namespace net {
@@ -65,9 +64,6 @@ constexpr base::TimeDelta kODFSOperationTimeout = base::Seconds(30);
 
 ServiceWorkerLifetimeManager* GetServiceWorkerLifetimeManager(
     Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return nullptr;
-  }
   return ServiceWorkerLifetimeManager::Get(profile);
 }
 
@@ -189,8 +185,7 @@ ProvidedFileSystem::ProvidedFileSystem(
       file_system_info_.provider_id().GetExtensionId(), event_router_,
       GetServiceWorkerLifetimeManager(profile_));
   const ProviderId& provider_id = file_system_info_.provider_id();
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      provider_id.GetExtensionId() == extension_misc::kODFSExtensionId) {
+  if (provider_id.GetExtensionId() == extension_misc::kODFSExtensionId) {
     odfs_metrics_ = std::make_unique<ODFSMetrics>();
   }
   ConstructRequestManager();
@@ -494,10 +489,6 @@ AbortCallback ProvidedFileSystem::WriteFile(
 AbortCallback ProvidedFileSystem::FlushFile(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    std::move(callback).Run(base::File::FILE_OK);
-    return AbortCallback();
-  }
   const auto& provider_id = file_system_info_.provider_id();
   bool is_odfs =
       provider_id.GetType() == ProviderId::EXTENSION &&
@@ -950,8 +941,7 @@ void ProvidedFileSystem::ConstructRequestManager() {
   const extensions::ExtensionId& extension_id =
       file_system_info_.provider_id().GetExtensionId();
   base::TimeDelta operation_timeout = kDefaultOperationTimeout;
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      extension_id == extension_misc::kODFSExtensionId) {
+  if (extension_id == extension_misc::kODFSExtensionId) {
     // Longer timeout for ODFS.
     operation_timeout = kODFSOperationTimeout;
   }
@@ -959,8 +949,7 @@ void ProvidedFileSystem::ConstructRequestManager() {
   request_manager_ = std::make_unique<OperationRequestManager>(
       profile_, extension_id, notification_manager_.get(), operation_timeout);
 
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      extension_id == extension_misc::kODFSExtensionId) {
+  if (extension_id == extension_misc::kODFSExtensionId) {
     request_manager_->AddObserver(odfs_metrics_.get());
   }
 }

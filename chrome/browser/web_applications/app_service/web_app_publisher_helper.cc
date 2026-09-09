@@ -130,7 +130,6 @@
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -719,12 +718,10 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    for (const ScopeExtensionInfo& scope_extension_info :
-         ChromeOsWebAppExperiments::GetScopeExtensions(app.app_id())) {
-      base::Extend(filters, CreateIntentFiltersFromScopeExtensionInfo(
-                                scope_extension_info));
-    }
+  for (const ScopeExtensionInfo& scope_extension_info :
+       ChromeOsWebAppExperiments::GetScopeExtensions(app.app_id())) {
+    base::Extend(filters, CreateIntentFiltersFromScopeExtensionInfo(
+                              scope_extension_info));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -1531,26 +1531,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Office, /* office.ts */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("openOfficeWordFile").EnableUploadOfficeToCloud(),
-        TestCase("openOfficeWordFromMyFiles").EnableUploadOfficeToCloud(),
-        TestCase("uploadToDriveRequiresUploadOfficeToCloudEnabled"),
-        TestCase("openMultipleOfficeWordFromDrive").EnableUploadOfficeToCloud(),
-        TestCase("openOfficeWordFromDrive").EnableUploadOfficeToCloud(),
-        TestCase("openOfficeExcelFromDrive").EnableUploadOfficeToCloud(),
-        TestCase("openOfficePowerPointFromDrive").EnableUploadOfficeToCloud(),
-        TestCase("openOfficeWordFromDriveNotSynced")
-            .EnableUploadOfficeToCloud(),
-        TestCase("openOfficeWordFromMyFilesOffline")
-            .EnableUploadOfficeToCloud()
-            .Offline(),
-        TestCase("openOfficeWordFromDriveOffline")
-            .EnableUploadOfficeToCloud()
-            .Offline()
-        // TODO(b/339102272): Re-enable after resolving flakiness.
-        //            ,
-        //       TestCase("officeShowNudgeGoogleDrive")
-        ));
+    ::testing::Values(TestCase("openOfficeWordFile"),
+                      TestCase("openOfficeWordFromMyFiles"),
+                      TestCase("openMultipleOfficeWordFromDrive"),
+                      TestCase("openOfficeWordFromDrive"),
+                      TestCase("openOfficeExcelFromDrive"),
+                      TestCase("openOfficePowerPointFromDrive"),
+                      TestCase("openOfficeWordFromDriveNotSynced"),
+                      TestCase("openOfficeWordFromMyFilesOffline").Offline(),
+                      TestCase("openOfficeWordFromDriveOffline").Offline()
+                      // TODO(b/339102272): Re-enable after resolving flakiness.
+                      //            ,
+                      //       TestCase("officeShowNudgeGoogleDrive")
+                      ));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.ts */

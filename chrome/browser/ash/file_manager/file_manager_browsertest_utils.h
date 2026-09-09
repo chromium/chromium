@@ -83,8 +83,6 @@ struct TestCase {
 
   TestCase& EnableDriveTrash();
 
-  TestCase& EnableUploadOfficeToCloud();
-
   TestCase& EnableArcVm();
 
   TestCase& EnableMirrorSync();

@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -280,8 +279,6 @@ CloudUploadPromptPrefsHandlerFactory::BuildServiceInstanceForBrowserContext(
   if (!IsProfileEnterpriseManaged(Profile::FromBrowserContext(context))) {
     return nullptr;
   }
-  CHECK(features::IsUploadOfficeToCloudEnabled() &&
-        features::IsUploadOfficeToCloudSyncEnabled());
   return CloudUploadPromptPrefsHandler::Create(
       Profile::FromBrowserContext(context));
 }

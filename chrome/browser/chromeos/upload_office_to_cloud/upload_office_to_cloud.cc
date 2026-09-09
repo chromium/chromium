@@ -12,7 +12,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -34,9 +33,6 @@ bool IsPrefValueSetToAutomated(std::string_view pref_value) {
 }  // namespace
 
 bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return false;
-  }
   if (!profile) {
     return false;
   }
@@ -62,11 +58,9 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile) {
   }
 
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    return chromeos::features::
-               IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
-           std::ranges::contains(
-               std::vector<Mount>{Mount::kAllowed, Mount::kAutomated},
-               chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile));
+    return std::ranges::contains(
+        std::vector<Mount>{Mount::kAllowed, Mount::kAutomated},
+        chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile));
   }
   return true;
 }
@@ -77,18 +71,13 @@ bool IsMicrosoftOfficeOneDriveIntegrationAutomated(const Profile* profile) {
   }
 
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    return chromeos::features::
-               IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
-           chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile) ==
-               Mount::kAutomated;
+    return chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile) ==
+           Mount::kAutomated;
   }
   return true;
 }
 
 bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return IsEligibleAndEnabledUploadOfficeToCloud(profile);
-  }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsMicrosoftOfficeOneDriveIntegrationAllowed(profile) &&
          IsPrefValueSetToAllowed(profile->GetPrefs()->GetString(
@@ -96,9 +85,6 @@ bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
 }
 
 bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return false;
-  }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsMicrosoftOfficeOneDriveIntegrationAllowed(profile) &&
          IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
@@ -106,18 +92,12 @@ bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
 }
 
 bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return IsEligibleAndEnabledUploadOfficeToCloud(profile);
-  }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsPrefValueSetToAllowed(profile->GetPrefs()->GetString(
              ash::prefs::kGoogleWorkspaceCloudUpload));
 }
 
 bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return false;
-  }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
              ash::prefs::kGoogleWorkspaceCloudUpload));

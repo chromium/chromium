@@ -68,7 +68,6 @@
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/components/disks/disks_prefs.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -1215,26 +1214,24 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   // If copying to/from ODFS, mark the provider's request manager
   // as "interacting with user" to prevent long operation warnings when
   // progress UI is already displayed.
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    if (status.IsCompleted()) {
-      office_tasks_->odfs_interactions.erase(status.task_id);
-    } else {
-      auto it = office_tasks_->odfs_interactions.find(status.task_id);
-      if (it == office_tasks_->odfs_interactions.end()) {
-        auto interaction = MaybeStartInteractionWithODFS(
-            status.GetDestinationFolder(), profile_);
-        if (!interaction) {
-          for (const io_task::EntryStatus& entry : status.sources) {
-            interaction = MaybeStartInteractionWithODFS(entry.url, profile_);
-            if (interaction) {
-              break;
-            }
+  if (status.IsCompleted()) {
+    office_tasks_->odfs_interactions.erase(status.task_id);
+  } else {
+    auto it = office_tasks_->odfs_interactions.find(status.task_id);
+    if (it == office_tasks_->odfs_interactions.end()) {
+      auto interaction = MaybeStartInteractionWithODFS(
+          status.GetDestinationFolder(), profile_);
+      if (!interaction) {
+        for (const io_task::EntryStatus& entry : status.sources) {
+          interaction = MaybeStartInteractionWithODFS(entry.url, profile_);
+          if (interaction) {
+            break;
           }
         }
-        if (interaction) {
-          office_tasks_->odfs_interactions[status.task_id] =
-              std::move(interaction);
-        }
+      }
+      if (interaction) {
+        office_tasks_->odfs_interactions[status.task_id] =
+            std::move(interaction);
       }
     }
   }

@@ -82,7 +82,6 @@
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/tabs/public/tab_context_menu_command.h"
 #include "ui/menus/simple_menu_model.h"
 #endif
@@ -552,8 +551,7 @@ std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
+  if (ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
     return std::nullopt;
   }
 
@@ -581,8 +579,7 @@ std::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   std::optional<SkColor> manifest_color = GetResolvedManifestBackgroundColor();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
+  if (ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
     manifest_color = std::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

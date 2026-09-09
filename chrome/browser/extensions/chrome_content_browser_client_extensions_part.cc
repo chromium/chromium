@@ -85,7 +85,6 @@
 #include "ash/constants/ash_extension_constants.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -717,8 +716,7 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Check if the component is the ODFS extension.
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      extension_id == extension_misc::kODFSExtensionId) {
+  if (extension_id == extension_misc::kODFSExtensionId) {
     // Check ODFS was loaded externally.
     const Extension* extension = ExtensionRegistry::Get(browser_context)
                                      ->GetInstalledExtension(extension_id);

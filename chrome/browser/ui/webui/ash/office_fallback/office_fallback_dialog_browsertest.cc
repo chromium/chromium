@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -79,13 +78,7 @@ content::WebContents* LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
 
 class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
  public:
-  OfficeFallbackDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kMicrosoftOneDriveIntegrationForEnterprise},
-        {});
-  }
-
+  OfficeFallbackDialogBrowserTest() = default;
   OfficeFallbackDialogBrowserTest(const OfficeFallbackDialogBrowserTest&) =
       delete;
   OfficeFallbackDialogBrowserTest& operator=(
@@ -109,9 +102,6 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::vector<storage::FileSystemURL> files_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an

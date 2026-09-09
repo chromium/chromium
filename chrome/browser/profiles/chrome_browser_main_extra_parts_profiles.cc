@@ -880,13 +880,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderServiceFactory::GetInstance();
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    chromeos::cloud_upload::CloudUploadPrefsWatcherFactory::GetInstance();
-  }
-  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
-      chromeos::features::IsUploadOfficeToCloudSyncEnabled()) {
-    chromeos::cloud_upload::CloudUploadPromptPrefsHandlerFactory::GetInstance();
-  }
+  chromeos::cloud_upload::CloudUploadPrefsWatcherFactory::GetInstance();
+  chromeos::cloud_upload::CloudUploadPromptPrefsHandlerFactory::GetInstance();
 
 #endif
   ChromePolicyBlocklistServiceFactory::GetInstance();
@@ -904,11 +899,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   multi_capture::MultiCaptureDataServiceFactory::GetInstance();
   multi_capture::MultiCaptureUsageIndicatorServiceFactory::GetInstance();
   multi_capture::MultiCaptureSessionControllerFactory::GetInstance();
-
-  if (chromeos::features::
-          IsMicrosoftOneDriveIntegrationForEnterpriseEnabled()) {
-    chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();
-  }
+  chromeos::cloud_storage::OneDrivePrefObserverFactory::GetInstance();
 #endif
   collaboration::CollaborationServiceFactory::GetInstance();
   collaboration::comments::CommentsServiceFactory::GetInstance();

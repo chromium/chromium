@@ -8,11 +8,9 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -23,23 +21,57 @@ namespace {
 
 constexpr const char* kMicrosoft365ManifestId = "?from=Homescreen";
 
+constexpr const char* const kMicrosoft365ScopeExtensionUrls[] = {
+    // The Office editors (Word, Excel, PowerPoint) are located on the
+    // OneDrive origin.
+    "https://onedrive.live.com/",
+
+    // Links to opening Office editors go via this URL shortener origin.
+    "https://1drv.ms/",
+
+    // The old branding of the Microsoft 365 web app. Many links within
+    // Microsoft 365 still link to the old www.office.com origin.
+    "https://www.office.com/",
+
+    // The new branding for the Microsoft 365 web app.
+    "https://m365.cloud.microsoft/",
+
+    // The current Microsoft 365 web app. The scope of the new Microsoft 365
+    // Copilot web app remains unclear, so this is added for safety.
+    "https://www.microsoft365.com/",
+};
+
+constexpr const char* const kMicrosoft365ScopeExtensionDomains[] = {
+    // The OneDrive Business domain (for the extension to match
+    // https://<customer>-my.sharepoint.com).
+    "https://sharepoint.com",
+
+    // The new branding for Microsoft 365 web apps. Word, PowerPoint and Excel
+    // can be accessed under https://word.cloud.microsoft/,
+    // https://powerpoint.cloud.microsoft/ and https://excel.cloud.microsoft/
+    // respectively.
+    "https://cloud.microsoft",
+};
+
+constexpr const char* const kMicrosoft365ManifestUrls[] = {
+    // The current Microsoft 365 web app.
+    "https://www.microsoft365.com/",
+
+    // The new branding for the Microsoft 365 web app.
+    "https://m365.cloud.microsoft/",
+};
+
 bool g_always_enabled_for_testing = false;
 
 bool IsExperimentEnabled(const webapps::AppId& app_id) {
   return g_always_enabled_for_testing || app_id == ash::kMicrosoft365AppId;
 }
 
-// IsValidScopeExtenion returns whether a url can be successfully turned into
+// IsValidScopeExtension returns whether a url can be successfully turned into
 // a scope extension or not.
 bool IsValidScopeExtension(const GURL& url) {
   return url.is_valid() && url.IsStandard() && url.has_host() &&
          !base::StartsWith(url.GetHost(), ".");
-}
-
-std::vector<std::string> GetListFromFinchParam(const std::string& finch_param) {
-  return base::SplitString(finch_param, ",",
-                           base::WhitespaceHandling::TRIM_WHITESPACE,
-                           base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 std::optional<std::vector<const char*>>&
@@ -53,8 +85,6 @@ GetScopeExtensionsOverrideForTesting() {
 
 ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
     const webapps::AppId& app_id) {
-  DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
-
   ScopeExtensions extensions;
   if (!IsExperimentEnabled(app_id)) {
     return extensions;
@@ -68,30 +98,25 @@ ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
     return extensions;
   }
 
-  const auto microsoft365_scope_extension_urls = GetListFromFinchParam(
-      chromeos::features::kMicrosoft365ScopeExtensionsURLs.Get());
-  for (const auto& url_string : microsoft365_scope_extension_urls) {
+  for (const auto* url_string : kMicrosoft365ScopeExtensionUrls) {
     const GURL url = GURL(url_string);
     if (!IsValidScopeExtension(url)) {
-      LOG(WARNING) << "Skipping invalid M365 scope extension URL from Finch: "
+      LOG(WARNING) << "Skipping invalid M365 scope extension URL: "
                    << url_string;
       continue;
     }
     extensions.insert(
         ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(GURL(url))));
   }
-  const auto microsoft365_scope_extension_domains = GetListFromFinchParam(
-      chromeos::features::kMicrosoft365ScopeExtensionsDomains.Get());
-  for (const auto& url_string : microsoft365_scope_extension_domains) {
+  for (const auto* url_string : kMicrosoft365ScopeExtensionDomains) {
     const GURL url = GURL(url_string);
     if (!IsValidScopeExtension(url)) {
-      LOG(WARNING)
-          << "Skipping invalid M365 scope extension domain from Finch: "
-          << url_string;
+      LOG(WARNING) << "Skipping invalid M365 scope extension domain: "
+                   << url_string;
       continue;
     }
     extensions.insert(ScopeExtensionInfo::CreateForOrigin(
-        url::Origin::Create(GURL(url)), /*has_origin_wildcard*/ true));
+        url::Origin::Create(GURL(url)), /*has_origin_wildcard=*/true));
   }
   return extensions;
 }
@@ -107,8 +132,6 @@ bool ChromeOsWebAppExperiments::ShouldAddLinkPreference(
 int ChromeOsWebAppExperiments::GetExtendedScopeScore(
     const webapps::AppId& app_id,
     std::string_view url_spec) {
-  DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
-
   const GURL url = GURL(url_spec);
   const auto extensions = GetScopeExtensions(app_id);
   int best_score = 0;
@@ -132,7 +155,6 @@ int ChromeOsWebAppExperiments::GetExtendedScopeScore(
 
 bool ChromeOsWebAppExperiments::IgnoreManifestColor(
     const webapps::AppId& app_id) {
-  DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
   return IsExperimentEnabled(app_id);
 }
 
@@ -160,18 +182,11 @@ bool ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
 void ChromeOsWebAppExperiments::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
     blink::mojom::ManifestPtr& manifest) {
-  if (!::chromeos::features::IsMicrosoft365ManifestOverrideEnabled()) {
-    return;
-  }
-
   const auto pwa_start_url_origin = url::Origin::Create(manifest->start_url);
   std::string pwa_start_url_path =
       manifest->start_url.GetWithoutFilename().GetPath();
 
-  const auto microsoft365_manifest_urls = GetListFromFinchParam(
-      chromeos::features::kMicrosoft365ManifestUrls.Get());
-
-  for (const auto& url_string : microsoft365_manifest_urls) {
+  for (const auto* url_string : kMicrosoft365ManifestUrls) {
     GURL microsoft365_manifest_url = GURL(url_string);
 
     if (pwa_start_url_origin.IsSameOriginWith(microsoft365_manifest_url) &&

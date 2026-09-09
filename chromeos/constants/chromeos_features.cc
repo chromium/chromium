@@ -136,76 +136,6 @@ bool IsQuickShareV2Enabled() {
   return base::FeatureList::IsEnabled(kQuickShareV2);
 }
 
-// Enables the Office files upload workflow to improve Office files support.
-BASE_FEATURE(kUploadOfficeToCloud, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables syncing of user's Office files upload workflow preferences for
-// enterprise users, such as whether to ask before moving files to the cloud.
-BASE_FEATURE(kUploadOfficeToCloudSync, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls the use of scope extensions for the Microsoft 365 PWA from finch as
-// a fallback.
-BASE_FEATURE(kMicrosoft365ScopeExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Comma separated list of scope extension URLs for the Microsoft 365 PWA.
-const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs{
-    &kMicrosoft365ScopeExtensions, "m365-scope-extensions-urls",
-    /*default*/
-
-    // The Office editors (Word, Excel, PowerPoint) are located on the
-    // OneDrive origin.
-    "https://onedrive.live.com/,"
-
-    // Links to opening Office editors go via this URL shortener origin.
-    "https://1drv.ms/,"
-
-    // The old branding of the Microsoft 365 web app. Many links within
-    // Microsoft 365 still link to the old www.office.com origin.
-    "https://www.office.com/,"
-
-    // The new branding for the Microsoft 365 web app.
-    "https://m365.cloud.microsoft/,"
-
-    // The current Microsoft 365 web app. The scope of the new Microsoft 365
-    // Copilot web app remains unclear, so this is added for safety.
-    "https://www.microsoft365.com/"};
-
-// Comma separated list of scope extension domains for the Microsoft 365 PWA.
-const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
-    &kMicrosoft365ScopeExtensions, "m365-scope-extensions-domains",
-    /*default*/
-
-    // The OneDrive Business domain (for the extension to match
-    // https://<customer>-my.sharepoint.com).
-    "https://sharepoint.com,"
-
-    // The new branding for Microsoft 365 web apps. Word, PowerPoint and Excel
-    // can be accessed under https://word.cloud.microsoft/,
-    // https://powerpoint.cloud.microsoft/ and https://excel.cloud.microsoft/
-    // respectively.
-    "https://cloud.microsoft"};
-
-// Controls whether the PWA manifest on Microsoft 365 Urls should be overridden
-// with a static PWA manifest id.
-BASE_FEATURE(kMicrosoft365ManifestOverride, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Comma separated list of Urls where the M365 PWA manifest should be
-// overridden.
-const base::FeatureParam<std::string> kMicrosoft365ManifestUrls{
-    &kMicrosoft365ManifestOverride, "m365-manifest-urls",
-    /*default*/
-
-    // The current Microsoft 365 web app.
-    "https://www.microsoft365.com/,"
-
-    // The new branding for the Microsoft 365 web app.
-    "https://m365.cloud.microsoft/"};
-
-// Enables the Microsoft OneDrive integration workflow for enterprise users to
-// cloud integration support.
-BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables CloudFileSystem for FileSystemProvider extensions.
 BASE_FEATURE(kFileSystemProviderCloudFileSystem,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -324,28 +254,6 @@ bool IsQuickAnswersRichCardEnabled() {
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
-}
-
-bool IsUploadOfficeToCloudEnabled() {
-  return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
-}
-
-bool IsUploadOfficeToCloudSyncEnabled() {
-  return base::FeatureList::IsEnabled(kUploadOfficeToCloudSync);
-}
-
-bool IsMicrosoft365ScopeExtensionsEnabled() {
-  return base::FeatureList::IsEnabled(kMicrosoft365ScopeExtensions);
-}
-
-bool IsMicrosoft365ManifestOverrideEnabled() {
-  return base::FeatureList::IsEnabled(kMicrosoft365ManifestOverride);
-}
-
-bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
-  return IsUploadOfficeToCloudEnabled() &&
-         base::FeatureList::IsEnabled(
-             kMicrosoftOneDriveIntegrationForEnterprise);
 }
 
 bool IsRoundedWindowsEnabled() {
