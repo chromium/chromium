@@ -4803,17 +4803,16 @@ inline constexpr char kRefactorMinWidthContextOverrideDescription[] =
     "parent "
     "ChromeBaseAppCompatActivity";
 
-inline constexpr char kAndroidNoCaptureWhenScrollingDisabledOnDesktopName[] =
-    "Toolbar capture on desktop";
-inline constexpr char
-    kAndroidNoCaptureWhenScrollingDisabledOnDesktopDescription[] =
-        "Disables toolbar bitmap capture when scrolling is disabled for top "
-        "controls on Android desktop.";
-
 inline constexpr char kAndroidTabDeclutterArchiveOnDesktopName[] =
     "Android Tab Declutter Archive On Desktop";
 inline constexpr char kAndroidTabDeclutterArchiveOnDesktopDescription[] =
     "Configures tab declutter archiving behavior on Android desktop.";
+
+inline constexpr char kAndroidToolbarCaptureOnDesktopName[] =
+    "Toolbar capture on desktop";
+inline constexpr char kAndroidToolbarCaptureOnDesktopDescription[] =
+    "Enables toolbar bitmap capture when scrolling is disabled for top "
+    "controls on Android desktop.";
 
 inline constexpr char kToolbarCaptureFixForSPAsName[] =
     "Toolbar Capture Fix for SPAs";

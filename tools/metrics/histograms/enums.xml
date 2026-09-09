@@ -11921,6 +11921,7 @@ from previous Chrome versions.
       label="HistoryClustersNavigationContextClustering:enabled"/>
   <int value="-876773120" label="TabbedAppOverflowMenuActionBar:enabled"/>
   <int value="-876148583" label="ArcBootCompletedBroadcast:disabled"/>
+  <int value="-876091997" label="AndroidToolbarCaptureOnDesktop:enabled"/>
   <int value="-875217114"
       label="OmniboxEnableClipboardProviderTextSuggestions:enabled"/>
   <int value="-874602599" label="HorizontalTabSwitcherAndroid:enabled"/>
@@ -18462,8 +18463,6 @@ from previous Chrome versions.
   <int value="1149823105" label="enable-input-ime-api"/>
   <int value="1150102241" label="WebUIOmniboxAskGAboutThisPage:disabled"/>
   <int value="1150622273" label="enable-apps-file-associations"/>
-  <int value="1151436347"
-      label="AndroidNoCaptureWhenScrollingDisabledOnDesktop:disabled"/>
   <int value="1151907729" label="NtpModuleSignInRequirement:enabled"/>
   <int value="1152166164" label="EnableExclusiveAccessManager:disabled"/>
   <int value="1152491093" label="MediaSessionService:disabled"/>
@@ -19359,8 +19358,6 @@ from previous Chrome versions.
       label="AutofillEnableScanCardOptionWhenNoCardsSaved:disabled"/>
   <int value="1419676945" label="ToolbarSnapshotRefactor:disabled"/>
   <int value="1419806576" label="OsFeedback:enabled"/>
-  <int value="1419925608"
-      label="AndroidNoCaptureWhenScrollingDisabledOnDesktop:enabled"/>
   <int value="1419984081"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1420007919" label="SyncTrustedVaultPassphrasePromo:disabled"/>
@@ -21019,6 +21016,7 @@ from previous Chrome versions.
   <int value="1925846639" label="PartitionedPopins:disabled"/>
   <int value="1926334447" label="AccessibilityService:enabled"/>
   <int value="1926524951" label="SystemWebApps:disabled"/>
+  <int value="1926655956" label="AndroidToolbarCaptureOnDesktop:disabled"/>
   <int value="1927218315" label="ShelfNewUi:disabled"/>
   <int value="1927254377" label="MediaAppHandlesAudio:enabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>

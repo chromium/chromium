@@ -6124,18 +6124,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRefactorMinWidthContextOverrideDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(ui::kRefactorMinWidthContextOverride)},
 
-    {"android-no-capture-when-scrolling-disabled-on-desktop",
-     flag_descriptions::kAndroidNoCaptureWhenScrollingDisabledOnDesktopName,
-     flag_descriptions::
-         kAndroidNoCaptureWhenScrollingDisabledOnDesktopDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidNoCaptureWhenScrollingDisabledOnDesktop)},
-
     {"android-tab-declutter-archive-on-desktop",
      flag_descriptions::kAndroidTabDeclutterArchiveOnDesktopName,
      flag_descriptions::kAndroidTabDeclutterArchiveOnDesktopDescription,
      kOsAndroid, MULTI_VALUE_TYPE(kAndroidTabDeclutterArchiveOnDesktopChoices)},
+
+    {"android-toolbar-capture-on-desktop",
+     flag_descriptions::kAndroidToolbarCaptureOnDesktopName,
+     flag_descriptions::kAndroidToolbarCaptureOnDesktopDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidToolbarCaptureOnDesktop)},
 
     {"toolbar-capture-fix-for-spas",
      flag_descriptions::kToolbarCaptureFixForSPAsName,

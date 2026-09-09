@@ -282,8 +282,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_HISTORY_CLUSTERING = "AndroidHistoryClustering";
     public static final String ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE =
             "AndroidKeyboardShortcutOpenFile";
-    public static final String ANDROID_NO_CAPTURE_WHEN_SCROLLING_DISABLED_ON_DESKTOP =
-            "AndroidNoCaptureWhenScrollingDisabledOnDesktop";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE =
@@ -313,6 +311,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_THEME_RESOURCE_PROVIDER = "AndroidThemeResourceProvider";
     public static final String ANDROID_TIPS_NOTIFICATIONS = "AndroidTipsNotifications";
     public static final String ANDROID_TIPS_NOTIFICATIONS_V2 = "AndroidTipsNotificationsV2";
+    public static final String ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP =
+            "AndroidToolbarCaptureOnDesktop";
     public static final String ANDROID_VERTICAL_TABS = "AndroidVerticalTabs";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
     public static final String ANDROID_XR_IMMERSIVE_PLAYER = "AndroidXrImmersivePlayer";
@@ -957,8 +957,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidKeyboardShortcutOpenFile =
             newCachedFlag(ANDROID_KEYBOARD_SHORTCUT_OPEN_FILE, false);
-    public static final CachedFlag sAndroidNoCaptureWhenScrollingDisabledOnDesktop =
-            newCachedFlag(ANDROID_NO_CAPTURE_WHEN_SCROLLING_DISABLED_ON_DESKTOP, false);
     public static final CachedFlag sAndroidOpenIncognitoAsWindow =
             newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW, true);
     public static final CachedFlag sAndroidOpenIncognitoAsWindowRestrictions =
@@ -994,6 +992,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sAndroidTabstripStartupCaptureBugFix =
             newCachedFlag(ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX, true, true);
+    public static final CachedFlag sAndroidToolbarCaptureOnDesktop =
+            newCachedFlag(ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP, true);
     public static final CachedFlag sAndroidVerticalTabs =
             newCachedFlag(
                     ANDROID_VERTICAL_TABS,
@@ -1521,7 +1521,6 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarAim,
                     sAndroidElegantTextHeight,
                     sAndroidKeyboardShortcutOpenFile,
-                    sAndroidNoCaptureWhenScrollingDisabledOnDesktop,
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidOpenIncognitoAsWindowRestrictions,
                     sAndroidPageInfoAsAppMenuItem,
@@ -1533,6 +1532,7 @@ public abstract class ChromeFeatureList {
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidTabstripStartupCaptureBugFix,
+                    sAndroidToolbarCaptureOnDesktop,
                     sAndroidVerticalTabs,
                     sAndroidWindowManagementWebApi,
                     sAndroidXrImmersivePlayer,

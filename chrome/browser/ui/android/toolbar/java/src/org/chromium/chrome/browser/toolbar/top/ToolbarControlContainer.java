@@ -959,7 +959,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         private boolean isCapturingDisabled() {
             return DeviceInfo.isDesktop()
-                    && ChromeFeatureList.sAndroidNoCaptureWhenScrollingDisabledOnDesktop.isEnabled()
+                    && !ChromeFeatureList.sAndroidToolbarCaptureOnDesktop.isEnabled()
                     && mTopControlsStacker.isScrollingDisabled();
         }
 
