@@ -34,6 +34,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.TOUCH_TO_FILL_NO_PASSKEYS,
     UserCriticalFeature.ACKNOWLEDGE_GROUPED_CREDENTIAL,
     UserCriticalFeature.MANDATORY_REAUTH_OPT_IN,
+    UserCriticalFeature.AUTHENTICATOR_INCOGNITO_CONFIRMATION,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -45,4 +46,5 @@ public @interface UserCriticalFeature {
     int TOUCH_TO_FILL_NO_PASSKEYS = 5;
     int ACKNOWLEDGE_GROUPED_CREDENTIAL = 6;
     int MANDATORY_REAUTH_OPT_IN = 7;
+    int AUTHENTICATOR_INCOGNITO_CONFIRMATION = 8;
 }

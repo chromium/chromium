@@ -25,6 +25,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -40,6 +42,12 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 class AuthenticatorIncognitoConfirmationBottomsheet {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserInitiated(true)
+                    .setUserCritical(UserCriticalFeature.AUTHENTICATOR_INCOGNITO_CONFIRMATION)
+                    .build();
+
     private final WebContents mWebContents;
     private @Nullable BottomSheetController mController;
     private @MonotonicNonNull Runnable mPositiveCallback;
@@ -91,6 +99,11 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
 
                 @Override
                 public void destroy() {}
+
+                @Override
+                public BottomSheetType getSheetType() {
+                    return BOTTOM_SHEET_TYPE;
+                }
 
                 @Override
                 public int getPriority() {
