@@ -15,10 +15,12 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.accessibility.hierarchysnapshotter.HierarchySnapshotter;
 import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermissionRequesterImpl;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -48,6 +50,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         // This Impl is only instantiated in the browser process; SplitChromeApplication uses the
         // base Impl for all other processes so that the chrome split is never loaded there.
         assert SplitCompatApplication.isBrowserProcess();
+
+        // Popup creation can be requested before the first ChromeActivity starts.
+        PopupCreatorFactory.setInstance(new PopupCreatorImpl());
 
         FontPreloader.getInstance().load(getApplication());
 
