@@ -160,21 +160,24 @@ PersonalContextPrefetchEntityValidationResult ValidateTtl(
       return ValidateDateWithinTtl(
           entity, AttributeTypeName::kFlightReservationDepartureDate,
           base::Days(90));
+    // The following entity types do not have a TTL or expiration date
+    // requirement for Ambient Autofill.
     case EntityTypeName::kVehicle:
-      return PersonalContextPrefetchEntityValidationResult::kValid;
-    case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
-      // Unsupported by Ambient Autofill.
-      // TODO(crbug.com/558143479): Replace this with a separate check that is
-      // based on the feature parameter for supported entity types.
-      return PersonalContextPrefetchEntityValidationResult::
-          kUnsupportedEntityType;
+    case EntityTypeName::kKnownTravelerNumber:
+      return PersonalContextPrefetchEntityValidationResult::kValid;
   }
   NOTREACHED();
 }
 
 PersonalContextPrefetchEntityValidationResult ValidateAmbientAutofillEntity(
-    const EntityInstance& entity) {
+    const EntityInstance& entity,
+    const DenseSet<EntityType>& supported_types) {
+  if (!supported_types.contains(entity.type())) {
+    return PersonalContextPrefetchEntityValidationResult::
+        kUnsupportedEntityType;
+  }
+
   if (!AttributesMeetImportConstraints(
           entity.type(),
           DenseSet(entity.attributes(), &AttributeInstance::type))) {
@@ -404,6 +407,8 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
                 kResponseParseError));
   }
 
+  const DenseSet<EntityType> supported_types =
+      GetAutofillAmbientAutofillSupportedEntityTypes();
   std::vector<ParsedEntity> entities;
   entities.reserve(response.entities_size());
   for (const personal_context::proto::Entity& entity : response.entities()) {
@@ -416,7 +421,7 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
     } else if (std::optional<EntityInstance> converted =
                    ConvertProtoToEntityInstance(entity, /*mask_spii=*/true)) {
       PersonalContextPrefetchEntityValidationResult validation_result =
-          ValidateAmbientAutofillEntity(*converted);
+          ValidateAmbientAutofillEntity(*converted, supported_types);
       LogPersonalContextPrefetchEntityValidationResult(converted->type(),
                                                        validation_result);
       if (validation_result ==

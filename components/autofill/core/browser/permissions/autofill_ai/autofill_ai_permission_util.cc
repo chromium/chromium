@@ -99,23 +99,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 #endif
 }
 
-// Returns the set of supported entity types configured by the feature parameter
-// for Ambient Autofill.
-DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {
-  const std::string type_list =
-      features::kAutofillAmbientAutofillSupportedEntityTypes.Get();
-
-  const std::vector<std::string_view> type_pieces = base::SplitStringPiece(
-      type_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  DenseSet<EntityType> supported_types;
-  for (std::string_view piece : type_pieces) {
-    if (std::optional<EntityType> type = StringToEntityType(piece)) {
-      supported_types.insert(*type);
-    }
-  }
-  return supported_types;
-}
-
 // Checks whether `country_code` belongs to a country where Wallet is
 // supported.
 [[nodiscard]] bool IsWalletSupportedCountry(
@@ -982,6 +965,21 @@ bool IsAutofillAiDefaultAvailabilityEnabled() {
       GetAutofillAmbientAutofillEligibleTiers().contains(
           subscription_eligibility_service->GetAiSubscriptionTier());
   return tier_eligible || IsAndroidDeviceEligibleForAmbientAutofill();
+}
+
+DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {
+  const std::string type_list =
+      features::kAutofillAmbientAutofillSupportedEntityTypes.Get();
+
+  const std::vector<std::string_view> type_pieces = base::SplitStringPiece(
+      type_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  DenseSet<EntityType> supported_types;
+  for (std::string_view piece : type_pieces) {
+    if (std::optional<EntityType> type = StringToEntityType(piece)) {
+      supported_types.insert(*type);
+    }
+  }
+  return supported_types;
 }
 
 }  // namespace autofill

@@ -11,6 +11,7 @@
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/common/dense_set.h"
 
 class GURL;
 class PrefService;
@@ -220,6 +221,10 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
 [[nodiscard]] bool IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service);
+
+// Returns the set of supported entity types configured by the feature parameter
+// for Ambient Autofill.
+DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes();
 
 }  // namespace autofill
 

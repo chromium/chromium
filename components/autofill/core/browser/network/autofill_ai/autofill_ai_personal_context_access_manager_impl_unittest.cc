@@ -94,6 +94,11 @@ const base::TimeDelta kPrefetchCacheTTL =
 const base::TimeDelta kUnmaskedSpiiCacheTTL =
     features::kAutofillAmbientAutofillUnmaskedSpiiCacheTTL.default_value;
 
+// Supported entity types configured for Ambient Autofill in unit tests.
+constexpr char kSupportedEntityTypes[] =
+    "Passport,Driver's license,Vehicle,National Id Card,Flight "
+    "Reservation,Order,Shipment";
+
 constexpr EntityType kPassportType{EntityTypeName::kPassport};
 constexpr EntityType kOrderType{EntityTypeName::kOrder};
 constexpr EntityType kDriversLicenseType{EntityTypeName::kDriversLicense};
@@ -189,6 +194,10 @@ personal_context::proto::Date TodayWithDelta(
 class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
  public:
   AutofillAiPersonalContextAccessManagerImplTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillAmbientAutofill,
+        {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
+          kSupportedEntityTypes}});
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.registry()->RegisterIntegerPref(
         subscription_eligibility::prefs::kAiSubscriptionTier, 0);
@@ -348,8 +357,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillAmbientAutofill};
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockPersonalContextService mock_personal_context_service_;
@@ -1475,7 +1483,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       features::kAutofillAmbientAutofill,
       {{features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
             .name,
-        "10m"}});
+        "10m"},
+       {features::kAutofillAmbientAutofillSupportedEntityTypes.name,
+        kSupportedEntityTypes}});
 
   // 1. Initial prefetch at T = 0.
   PrefetchMaskedPassportAndGetGuid();

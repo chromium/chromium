@@ -655,6 +655,40 @@ TEST_F(AutofillAiPermissionUtilsTest,
   }
 }
 
+TEST_F(AutofillAiPermissionUtilsTest,
+       GetAutofillAmbientAutofillSupportedEntityTypes) {
+  // Test fixture default configuration.
+  EXPECT_EQ(
+      GetAutofillAmbientAutofillSupportedEntityTypes(),
+      (DenseSet<EntityType>{EntityType(kPassport), EntityType(kDriversLicense),
+                            EntityType(kVehicle), EntityType(kNationalIdCard),
+                            EntityType(kFlightReservation), EntityType(kOrder),
+                            EntityType(kShipment)}));
+
+  // Empty configuration returns an empty set.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillAmbientAutofill,
+        {{features::kAutofillAmbientAutofillSupportedEntityTypes.name, ""}});
+    EXPECT_TRUE(GetAutofillAmbientAutofillSupportedEntityTypes().empty());
+  }
+
+  // Parses valid types, trims whitespace, and ignores unknown types or empty
+  // tokens.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillAmbientAutofill,
+        {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
+          " Passport , UnknownType,  Driver's license ,, Vehicle "}});
+    EXPECT_EQ(GetAutofillAmbientAutofillSupportedEntityTypes(),
+              (DenseSet<EntityType>{EntityType(kPassport),
+                                    EntityType(kDriversLicense),
+                                    EntityType(kVehicle)}));
+  }
+}
+
 TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill) {
   client().set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState::kEligible);
