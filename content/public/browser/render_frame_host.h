@@ -701,18 +701,18 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
 
   // Defines different states the RenderFrameHost can be in during its lifetime,
   // i.e., from the point of creation to deletion. Please see comments in
-  // RenderFrameHostImpl::LifecycleStateImpl for more details.
+  // RenderFrameHostLifecycleStateImpl for more details.
   //
-  // Compared to the internal LifecycleStateImpl, this public LifecycleState has
-  // two main differences. First, it collapses kRunningUnloadHandlers and
-  // kReadyToBeDeleted into a single kPendingDeletion state, since embedders
-  // need not care about the difference between having started and having
-  // finished running unload handlers. Second, it intentionally does not expose
-  // speculative RenderFrameHosts (corresponding to the kSpeculative internal
-  // state): this is a content-internal implementation detail that is planned to
-  // be eventually removed, and //content embedders shouldn't rely on their
-  // existence.
-  // A Java counterpart will be generated for this enum.
+  // Compared to the internal RenderFrameHostLifecycleStateImpl, this public
+  // LifecycleState has two main differences. First, it collapses
+  // kRunningUnloadHandlers and kReadyToBeDeleted into a single kPendingDeletion
+  // state, since embedders need not care about the difference between having
+  // started and having finished running unload handlers. Second, it
+  // intentionally does not expose speculative RenderFrameHosts (corresponding
+  // to the kSpeculative internal state): this is a content-internal
+  // implementation detail that is planned to be eventually removed, and
+  // //content embedders shouldn't rely on their existence. A Java counterpart
+  // will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: (
   //   org.chromium.content_public.browser)
   enum class LifecycleState {

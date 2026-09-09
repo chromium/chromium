@@ -32,7 +32,7 @@ TestRenderFrameHostFactory::CreateRenderFrameHost(
     base::UnguessableToken devtools_frame_token,
     const blink::InitiatorStateToken& initiator_state_token,
     bool renderer_initiated_creation,
-    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
+    RenderFrameHostLifecycleStateImpl lifecycle_state,
     scoped_refptr<BrowsingContextState> browsing_context_state) {
   DCHECK(!renderer_initiated_creation);
   return std::make_unique<TestRenderFrameHost>(

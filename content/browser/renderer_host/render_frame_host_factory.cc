@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
 namespace content {
@@ -29,7 +30,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostFactory::Create(
     base::UnguessableToken devtools_frame_token,
     const blink::InitiatorStateToken& initiator_state_token,
     bool renderer_initiated_creation,
-    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
+    RenderFrameHostLifecycleStateImpl lifecycle_state,
     scoped_refptr<BrowsingContextState> browsing_context_state) {
   if (factory_) {
     return factory_->CreateRenderFrameHost(

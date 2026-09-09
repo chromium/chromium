@@ -2566,23 +2566,7 @@ void RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
 // static
 const char* RenderFrameHostImpl::LifecycleStateImplToString(
     RenderFrameHostImpl::LifecycleStateImpl state) {
-  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
-  switch (state) {
-    case LifecycleStateImpl::kSpeculative:
-      return "Speculative";
-    case LifecycleStateImpl::kPrerendering:
-      return "Prerendering";
-    case LifecycleStateImpl::kPendingCommit:
-      return "PendingCommit";
-    case LifecycleStateImpl::kActive:
-      return "Active";
-    case LifecycleStateImpl::kInBackForwardCache:
-      return "InBackForwardCache";
-    case LifecycleStateImpl::kRunningUnloadHandlers:
-      return "RunningUnloadHandlers";
-    case LifecycleStateImpl::kReadyToBeDeleted:
-      return "ReadyToBeDeleted";
-  }
+  return content::RenderFrameHostLifecycleStateImplToString(state);
 }
 
 // static
@@ -20330,11 +20314,6 @@ void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
 storage::BucketClientInfo RenderFrameHostImpl::GetBucketClientInfo() const {
   return storage::BucketClientInfo{GetProcess()->GetDeprecatedID(),
                                    GetFrameToken(), GetDocumentToken()};
-}
-
-std::ostream& operator<<(std::ostream& o,
-                         const RenderFrameHostImpl::LifecycleStateImpl& s) {
-  return o << RenderFrameHostImpl::LifecycleStateImplToString(s);
 }
 
 net::CookieSettingOverrides RenderFrameHostImpl::GetCookieSettingOverrides() {

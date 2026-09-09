@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_lifecycle_state_impl.h"
 #include "content/browser/webid/delegation/evt_verifier.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/metrics.h"
@@ -83,7 +83,7 @@ AccountParseStatusToRequestResultAndTokenStatus(ParseStatus status);
 
 LifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
-    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
+    RenderFrameHostLifecycleStateImpl lifecycle_state);
 
 // Converts a FederatedApiPermissionStatus to a (FederatedRequestResult,
 // FedCmRequestIdTokenStatus) pair. Should not be invoked with

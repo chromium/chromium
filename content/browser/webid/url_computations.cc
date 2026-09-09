@@ -14,6 +14,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
 namespace content {
