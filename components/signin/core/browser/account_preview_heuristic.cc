@@ -10,9 +10,12 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -44,10 +47,10 @@ struct SyncDataTypeThresholds {
   }
 };
 
-// Returns the list of all relevant sync data types and their respective
-// thresholds for quartile classification, in priority order for tie-breaking.
-const auto& GetDataTypeThresholds() {
-  static const auto kDataTypeThresholds =
+// Returns the list of sync data types and their respective thresholds used for
+// quartile classification when computing sync data score.
+const auto& GetScoreDataTypeThresholds() {
+  static const auto kScoreDataTypeThresholds =
       std::to_array<std::pair<syncer::DataType, SyncDataTypeThresholds>>({
           {syncer::PASSWORDS,
            SyncDataTypeThresholds{
@@ -70,7 +73,33 @@ const auto& GetDataTypeThresholds() {
                .median = switches::kAutofillWalletMetadataMedianThreshold.Get(),
                .q3 = switches::kAutofillWalletMetadataQ3Threshold.Get()}},
       });
-  return kDataTypeThresholds;
+  return kScoreDataTypeThresholds;
+}
+
+// Returns the list of all relevant sync data types and their respective
+// thresholds for quartile classification when determining preferred data
+// types for string personalization.
+std::vector<std::pair<syncer::DataType, SyncDataTypeThresholds>>
+GetPreferredDataTypeThresholds() {
+  auto thresholds = base::ToVector(GetScoreDataTypeThresholds());
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccountFollowup)) {
+    thresholds.emplace_back(
+        syncer::READING_LIST,
+        SyncDataTypeThresholds{
+            .q1 = switches::kReadingListQ1Threshold.Get(),
+            .median = switches::kReadingListMedianThreshold.Get(),
+            .q3 = switches::kReadingListQ3Threshold.Get()});
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    thresholds.emplace_back(
+        syncer::EXTENSIONS,
+        SyncDataTypeThresholds{
+            .q1 = switches::kExtensionsQ1Threshold.Get(),
+            .median = switches::kExtensionsMedianThreshold.Get(),
+            .q3 = switches::kExtensionsQ3Threshold.Get()});
+#endif
+  }
+  return thresholds;
 }
 
 std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
@@ -83,7 +112,7 @@ std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
 
   // Extract data types with counts and calculate median ratios.
   std::vector<DataTypeCandidate> candidates;
-  for (const auto& [type, thresholds] : GetDataTypeThresholds()) {
+  for (const auto& [type, thresholds] : GetPreferredDataTypeThresholds()) {
     auto it = data.counts.find(type);
     if (it != data.counts.end() && it->second > 0) {
       size_t count = it->second;
@@ -175,7 +204,7 @@ struct SyncDataScore {
 // In case of ties, the counts of higher quartiles break the tie.
 SyncDataScore CalculateSyncDataScore(const AccountPreviewData& data) {
   SyncDataScore score;
-  for (const auto& [type, thresholds] : GetDataTypeThresholds()) {
+  for (const auto& [type, thresholds] : GetScoreDataTypeThresholds()) {
     auto it = data.counts.find(type);
     if (it != data.counts.end()) {
       SyncDataQuartile quartile = thresholds.GetQuartileForCount(it->second);

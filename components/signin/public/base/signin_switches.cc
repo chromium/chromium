@@ -388,6 +388,32 @@ BASE_FEATURE_PARAM(
 // enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kReadingListQ1Threshold,
+                   &kEnableAccountPreviewPreferredAccountFollowup,
+                   1);
+BASE_FEATURE_PARAM(size_t,
+                   kReadingListMedianThreshold,
+                   &kEnableAccountPreviewPreferredAccountFollowup,
+                   2);
+BASE_FEATURE_PARAM(size_t,
+                   kReadingListQ3Threshold,
+                   &kEnableAccountPreviewPreferredAccountFollowup,
+                   3);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE_PARAM(size_t,
+                   kExtensionsQ1Threshold,
+                   &kEnableAccountPreviewPreferredAccountFollowup,
+                   2);
+BASE_FEATURE_PARAM(size_t,
+                   kExtensionsMedianThreshold,
+                   &kEnableAccountPreviewPreferredAccountFollowup,
+                   3);
+BASE_FEATURE_PARAM(size_t,
+                   kExtensionsQ3Threshold,
+                   &kEnableAccountPreviewPreferredAccountFollowup,
+                   6);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag controls whether the CCT captures the account name of the 1p app

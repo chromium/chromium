@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -41,6 +42,10 @@ struct DataTypeCountsForTesting {
   size_t bookmarks = 0;
   size_t autofill = 0;
   size_t wallet = 0;
+  size_t reading_list = 0;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  size_t extensions = 0;
+#endif
 };
 
 AccountPreviewData CreatePreviewData(DataTypeCountsForTesting counts = {},
@@ -58,6 +63,14 @@ AccountPreviewData CreatePreviewData(DataTypeCountsForTesting counts = {},
   if (counts.wallet > 0) {
     data.counts[syncer::AUTOFILL_WALLET_METADATA] = counts.wallet;
   }
+  if (counts.reading_list > 0) {
+    data.counts[syncer::READING_LIST] = counts.reading_list;
+  }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (counts.extensions > 0) {
+    data.counts[syncer::EXTENSIONS] = counts.extensions;
+  }
+#endif
   data.devices = std::move(devices);
   return data;
 }
@@ -232,6 +245,90 @@ TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
                   .quartile = SyncDataQuartile::kMedianToQ3}));
   EXPECT_EQ(pref->other_device_form_factor,
             sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE);
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountPreviewPreferenceFollowupDisabledIgnoresNewDataTypes) {
+  AccountPreviewData data = CreatePreviewData({
+      .passwords = switches::kPasswordsMedianThreshold.Get(),
+      .reading_list = 10,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      .extensions = 10,
+#endif
+  });
+
+  auto pref = ComputeAccountPreviewPreference(GaiaId("user1"), data);
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_THAT(pref->preferred_data_types,
+              ElementsAre(PreferredDataTypeInfo{
+                  .data_type = syncer::PASSWORDS,
+                  .quartile = SyncDataQuartile::kMedianToQ3}));
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountPreviewPreferenceFollowupEnabledIncludesNewDataTypes) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFollowup};
+
+  AccountPreviewData data = CreatePreviewData({
+      .reading_list = switches::kReadingListMedianThreshold.Get(),
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      .extensions = switches::kExtensionsMedianThreshold.Get(),
+#endif
+  });
+
+  auto pref = ComputeAccountPreviewPreference(GaiaId("user1"), data);
+  ASSERT_TRUE(pref.has_value());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_THAT(
+      pref->preferred_data_types,
+      ElementsAre(
+          PreferredDataTypeInfo{.data_type = syncer::READING_LIST,
+                                .quartile = SyncDataQuartile::kMedianToQ3},
+          PreferredDataTypeInfo{.data_type = syncer::EXTENSIONS,
+                                .quartile = SyncDataQuartile::kMedianToQ3}));
+#else
+  EXPECT_THAT(pref->preferred_data_types,
+              ElementsAre(PreferredDataTypeInfo{
+                  .data_type = syncer::READING_LIST,
+                  .quartile = SyncDataQuartile::kMedianToQ3}));
+#endif
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputePreferredAccountForPromoScoreIgnoresNewDataTypes) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFollowup};
+
+  // Account A only has reading list and extensions data.
+  AccountPreviewData data_a = CreatePreviewData({
+      .reading_list = 100,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      .extensions = 100,
+#endif
+  });
+  // Account B has a password (Q1 threshold).
+  AccountPreviewData data_b = CreatePreviewData({
+      .passwords = switches::kPasswordsQ1Threshold.Get(),
+  });
+
+  AccountPreviewHeuristicContext account_a{
+      .gaia_id = GaiaId("user_a"),
+      .preview_data = raw_ref(data_a),
+  };
+  AccountPreviewHeuristicContext account_b{
+      .gaia_id = GaiaId("user_b"),
+      .preview_data = raw_ref(data_b),
+  };
+
+  // Account B should win because new data types do not contribute to sync data
+  // score. Account A score is 0.
+  auto result = ComputePreferredAccountForPromo({account_a, account_b});
+  EXPECT_EQ(result.selected_account, GaiaId("user_b"));
+  EXPECT_EQ(result.selection_reason,
+            AccountPreviewSelectionReason::kSyncDataScore);
+  EXPECT_EQ(result.account_scores[GaiaId("user_a")], 0);
+  EXPECT_GT(result.account_scores[GaiaId("user_b")], 0);
 }
 
 TEST_F(AccountPreviewHeuristicTest,
