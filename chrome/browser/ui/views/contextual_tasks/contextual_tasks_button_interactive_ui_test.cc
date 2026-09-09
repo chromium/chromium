@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       ButtonHiddenWhenActiveTaskInZeroState) {
+                       ButtonShowsWhenActiveTaskInZeroState) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -635,24 +635,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
-      // Button should NOT show because the active task has no thread (zero
-      // state).
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
-      // Now update the task with a thread (exiting zero state).
-      Do([&] {
-        tabs::TabInterface* tab =
-            browser()->GetTabStripModel()->GetTabAtIndex(0);
-        std::optional<contextual_tasks::ContextualTask> current_task =
-            GetContextualTasksService()->GetContextualTaskForTab(
-                sessions::SessionTabHelper::IdForTab(tab->GetContents()));
-        ASSERT_TRUE(current_task.has_value());
-        GetContextualTasksService()->UpdateThreadForTask(
-            current_task->GetTaskId(), contextual_tasks::ThreadType::kAiMode,
-            "test_server_id", std::nullopt, "Test Title");
-      }),
-      SimulateOpeningContextualTaskSidePanel(),
-      SimulateClosingContextualTaskSidePanel(),
-      // Button should now show because the task has an active thread.
+      // Button should show when the side panel is closed even if the active
+      // task has no thread (zero state).
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
@@ -718,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest,
-    ButtonHidesWhenOpeningZeroStateFromPinnedButton) {
+    ButtonShowsWhenClosingZeroStateFromPinnedButton) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -735,11 +719,9 @@ IN_PROC_BROWSER_TEST_F(
       PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
       // Closing the side panel leaves tab 0 associated with the zero-state
-      // task.
+      // task. The ephemeral button shows because the side panel was closed.
       SimulateClosingContextualTaskSidePanel(),
-      // The ephemeral button remains hidden because the active thread is in
-      // zero state.
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
