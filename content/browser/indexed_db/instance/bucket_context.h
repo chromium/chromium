@@ -127,7 +127,7 @@ class CONTENT_EXPORT BucketContext
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    base::OnceClosure on_destroyed;
+    base::ScopedClosureRunner on_destroyed;
 
     // Called when the bucket context is ready to be destroyed. After this is
     // called, the bucket context will no longer accept new IDBFactory

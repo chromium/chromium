@@ -144,26 +144,42 @@ class TaskRunnerMap {
 
   // Returns the task runner for the bucket represented by `key`. If there is no
   // task runner, creates one, unless `fallback_task_runner` is provided, in
-  // which case that one is used.
-  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner(
+  // which case that one is used. This also returns a `ScopedClosureRunner`
+  // wrapping a closure that needs to run when the bucket no longer needs the
+  // task runner --- this scoped runner can be held/destroyed on any sequence.
+  std::tuple<scoped_refptr<base::SequencedTaskRunner>,
+             base::ScopedClosureRunner>
+  GetOrCreateTaskRunner(
       Key key,
       scoped_refptr<base::SequencedTaskRunner> fallback_task_runner) {
+    base::ScopedClosureRunner decrement_refcount(base::BindOnce(
+        &TaskRunnerMap::DropTaskRunnerRef, base::Unretained(this), key));
+
     base::AutoLock lock(sequences_for_buckets_lock_);
     auto iter = sequences_for_buckets_.find(key);
     if (iter != sequences_for_buckets_.end()) {
       Value& value = iter->second;
       ++value.ref_count;
-      return value.task_runner;
+      return {value.task_runner, std::move(decrement_refcount)};
     }
     if (!fallback_task_runner) {
       fallback_task_runner =
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
     }
     sequences_for_buckets_[key] = {fallback_task_runner, 1U};
-    return fallback_task_runner;
+    return {fallback_task_runner, std::move(decrement_refcount)};
   }
 
-  void MaybeCleanupTaskRunner(Key key) {
+  // Does not increment the ref count for the returned task runner.
+  scoped_refptr<base::SequencedTaskRunner> LookUpTaskRunner(Key key) {
+    base::AutoLock lock(sequences_for_buckets_lock_);
+    auto iter = sequences_for_buckets_.find(key);
+    CHECK(iter != sequences_for_buckets_.end());
+    return iter->second.task_runner;
+  }
+
+ private:
+  void DropTaskRunnerRef(Key key) {
     base::AutoLock lock(sequences_for_buckets_lock_);
     auto iter = sequences_for_buckets_.find(key);
     CHECK(iter != sequences_for_buckets_.end());
@@ -172,7 +188,6 @@ class TaskRunnerMap {
     }
   }
 
- private:
   base::Lock sequences_for_buckets_lock_;
   // Maps from a bucket to the sequence used for that bucket, if the bucket has
   // a BucketContext. Otherwise, there shouldn't be an entry present in the map
@@ -876,14 +891,11 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
   CHECK(idb_task_runner()->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M158);
 
-  // Invalidate the weak pointers that bind `on_ready_for_destruction` (among
-  // other callbacks) so that `ForceClose()` below doesn't mutate
-  // `bucket_contexts_` while it's being iterated.
+  // Cancel `BackingStore::Delegate` callbacks.
   weak_factory_.InvalidateWeakPtrs();
 
-  base::RepeatingClosure barrier;
   if (shutdown_timer_) {
-    barrier = base::BarrierClosure(
+    base::RepeatingClosure barrier = base::BarrierClosure(
         bucket_contexts_.size(), base::BindOnce(
                                      [](base::ElapsedTimer shutdown_timer) {
                                        base::UmaHistogramTimes(
@@ -891,15 +903,14 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
                                            shutdown_timer.Elapsed());
                                      },
                                      *shutdown_timer_));
-  }
 
-  for (auto& [_, context] : bucket_contexts_) {
-    if (barrier) {
-      context.AsyncCall(&BucketContext::ForceClose)
-          .WithArgs(/*doom=*/false)
-          .Then(barrier);
-    } else {
-      context.AsyncCall(&BucketContext::ForceClose).WithArgs(/*doom=*/false);
+    for (auto& [locator, context] : bucket_contexts_) {
+      base::FilePath bucket_key = GetStoragePaths(locator).front();
+      scoped_refptr<base::SequencedTaskRunner> bucket_task_runner =
+          GetTaskRunnerMap().LookUpTaskRunner(bucket_key);
+      context.Reset();
+      bucket_task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                           barrier);
     }
   }
   bucket_contexts_.clear();
@@ -1219,12 +1230,9 @@ void IndexedDBContextImpl::EnsureBucketContext(
   }
 
   base::FilePath bucket_key = GetStoragePaths(bucket_locator).front();
-  bucket_task_runner = GetTaskRunnerMap().GetTaskRunner(
-      bucket_key, std::move(bucket_task_runner));
-  // Note that this one can run on any sequence.
-  bucket_delegate.on_destroyed =
-      base::BindOnce(&TaskRunnerMap::MaybeCleanupTaskRunner,
-                     base::Unretained(&GetTaskRunnerMap()), bucket_key);
+  std::tie(bucket_task_runner, bucket_delegate.on_destroyed) =
+      GetTaskRunnerMap().GetOrCreateTaskRunner(bucket_key,
+                                               std::move(bucket_task_runner));
 
   const auto& [iter, inserted] = bucket_contexts_.emplace(
       bucket_locator,

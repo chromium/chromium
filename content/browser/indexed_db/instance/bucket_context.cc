@@ -348,11 +348,8 @@ BucketContext::~BucketContext() {
       this);
 
   delegate_.on_ready_for_destruction.Reset();
+  ForceClose(/*doom=*/false);
   ResetBackingStore();
-
-  if (delegate_.on_destroyed) {
-    std::move(delegate_.on_destroyed).Run();
-  }
 }
 
 // static
