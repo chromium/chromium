@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "gpu/config/gpu_finch_features.h"
 
 namespace gpu::webgpu {
 
@@ -22,8 +21,7 @@ std::unique_ptr<DawnWireServer> DawnWireServer::Create(
   descriptor.procs = &procs;
   descriptor.serializer = serializer;
   descriptor.memoryTransferService = memory_transfer_service;
-  descriptor.useSpontaneousCallbacks =
-      features::kWebGPUSpontaneousWireServer.Get();
+  descriptor.useSpontaneousCallbacks = true;
 
   return base::WrapUnique(new DawnWireServer(descriptor));
 }

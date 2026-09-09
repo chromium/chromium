@@ -60,11 +60,6 @@ size_t DawnServiceSerializer::GetMaximumAllocationSize() const {
   return kMaxWireBufferSize - kDawnReturnCmdsOffset;
 }
 
-bool DawnServiceSerializer::NeedsFlush() const {
-  DCHECK(gpu_main_thread_runner_->BelongsToCurrentThread());
-  return main_cmds_.put_offset > kDawnReturnCmdsOffset;
-}
-
 bool DawnServiceSerializer::SetWorkerPending(bool pending) {
   worker_lock_.AssertAcquired();
   if (pending == current_thread_pending_flush) {

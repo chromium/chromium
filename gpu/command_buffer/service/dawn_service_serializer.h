@@ -41,14 +41,6 @@ class DawnServiceSerializer : public dawn::wire::CommandSerializer {
       size_t size) final;
   bool Flush() final;
 
-  // This helper only exists for now to continue supporting the non-spontaneous
-  // wire server mode if the feature flag is toggled off. This should only ever
-  // be called on the main thread (and hence only handles the main thread's
-  // CommandBuffer) and will be removed once we fully migrate to the spontaneous
-  // handling.
-  // TODO(crbug.com/412761856): Remove when spontaneous mode is validated.
-  bool NeedsFlush() const;
-
  private:
   struct CommandBuffer {
     explicit CommandBuffer(size_t size);

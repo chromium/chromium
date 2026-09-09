@@ -202,18 +202,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool HasMoreIdleWork() const override { return false; }
   void PerformIdleWork() override {}
 
-  bool HasPollingWork() const override {
-    return has_polling_work_ ||
-           (!use_spontaneous_wire_server_ && wire_serializer_->NeedsFlush());
-  }
+  bool HasPollingWork() const override { return has_polling_work_; }
 
   void PerformPollingWork() override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WebGPUDecoderImpl::PerformPollingWork");
     if (known_device_metadata_.empty()) {
-      if (!use_spontaneous_wire_server_) {
-        wire_serializer_->Flush();
-      }
       return;
     }
 
@@ -232,9 +226,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       } else {
         ++it;
       }
-    }
-    if (!use_spontaneous_wire_server_) {
-      wire_serializer_->Flush();
     }
   }
 
@@ -431,7 +422,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<std::string> require_disabled_toggles_;
   base::flat_set<std::string> runtime_unsafe_features_;
   bool tiered_adapter_limits_;
-  bool use_spontaneous_wire_server_;
 
   // Isolation key that is necessary for device requests. Optional to
   // differentiate between an empty isolation key, and an unset one.
@@ -1181,7 +1171,6 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
         std::forward<decltype(args)>(args)...);
   };
 
-  use_spontaneous_wire_server_ = features::kWebGPUSpontaneousWireServer.Get();
   wire_server_ = DawnWireServer::Create(
       wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
 
