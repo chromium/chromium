@@ -21,6 +21,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -157,6 +158,23 @@ bool CanCrossIncognito(const Extension* extension,
   CHECK(extension);
   return IsIncognitoEnabled(extension->id(), context) &&
          !IncognitoInfo::IsSplitMode(extension);
+}
+
+bool IsWebContentsInContext(content::WebContents& web_contents,
+                            content::BrowserContext& browser_context,
+                            bool include_incognito) {
+  content::BrowserContext* web_contents_browser_context =
+      web_contents.GetBrowserContext();
+  if (web_contents_browser_context == &browser_context) {
+    return true;
+  }
+
+  if (!include_incognito) {
+    return false;
+  }
+
+  return ExtensionsBrowserClient::Get()->IsSameContext(
+      web_contents_browser_context, &browser_context);
 }
 
 bool IsExtensionIdle(const std::string& extension_id,

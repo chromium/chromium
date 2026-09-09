@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_prompt_data.h"
 #include "extensions/browser/permissions/permissions_updater.h"
@@ -78,30 +79,6 @@ PermissionsRequestFunction::ShowDialogCallback* g_show_dialog_callback =
 PermissionsRequestFunction* g_pending_request_function = nullptr;
 bool ignore_user_gesture_for_tests = false;
 
-// Returns whether `web_contents` belongs to `browser_context`, optionally
-// treating an incognito context as belonging to its original context.
-// TODO(crbug.com/358567092): This could live in an //extensions util file and
-// be used directly by the only other similar helper,
-// ExtensionTabUtil::IsWebContentsInContext() in
-// chrome/browser/extensions/api/web_navigation/web_navigation_api.cc, moving
-// the logic out of ExtensionTabUtil entirely.
-bool IsWebContentsInBrowserContext(content::WebContents* web_contents,
-                                   content::BrowserContext* browser_context,
-                                   bool include_incognito) {
-  content::BrowserContext* web_contents_browser_context =
-      web_contents->GetBrowserContext();
-  if (web_contents_browser_context == browser_context) {
-    return true;
-  }
-
-  if (!include_incognito) {
-    return false;
-  }
-
-  return ExtensionsBrowserClient::Get()->IsSameContext(
-      web_contents_browser_context, browser_context);
-}
-
 // Returns whether `tab_id` is a valid tab. Populates `web_contents` with the
 // ones belonging to the tab , and `error` if tab is invalid.
 bool ValidateTab(int tab_id,
@@ -150,8 +127,8 @@ bool ValidateDocument(const std::string& document_id,
   // BrowserContext. We check for this since we found the RenderFrameHost
   // through a generic lookup.
   *web_contents = content::WebContents::FromRenderFrameHost(frame);
-  if (!IsWebContentsInBrowserContext(*web_contents, browser_context,
-                                     include_incognito_information)) {
+  if (!util::IsWebContentsInContext(**web_contents, *browser_context,
+                                    include_incognito_information)) {
     *error =
         ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
     return false;

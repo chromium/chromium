@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "pdf/buildflags.h"
 
@@ -71,8 +72,8 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
         content::WebContents::FromRenderFrameHost(render_frame_host);
     // We found the RenderFrameHost through a generic lookup so we must test to
     // see if the WebContents is actually in our BrowserContext.
-    if (!ExtensionTabUtil::IsWebContentsInContext(
-            web_contents, browser_context(), include_incognito_information())) {
+    if (!util::IsWebContentsInContext(*web_contents, *browser_context(),
+                                      include_incognito_information())) {
       return RespondNow(WithArguments(base::Value()));
     }
 

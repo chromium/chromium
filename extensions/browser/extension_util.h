@@ -30,6 +30,7 @@ class SiteInstance;
 class StoragePartition;
 class StoragePartitionConfig;
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace download {
@@ -59,6 +60,12 @@ bool IsIncognitoEnabled(const Extension* extension,
 // (incognito to original profile, or vice versa).
 bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
+
+// Returns whether `web_contents` belongs to `browser_context`, optionally
+// treating an incognito context as belonging to its original context.
+bool IsWebContentsInContext(content::WebContents& web_contents,
+                            content::BrowserContext& browser_context,
+                            bool include_incognito);
 
 // Returns true if the extension associated with `extension_id` is idle and it
 // is safe to perform actions such as updating.
