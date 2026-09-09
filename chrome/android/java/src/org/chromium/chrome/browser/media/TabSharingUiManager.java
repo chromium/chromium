@@ -109,17 +109,19 @@ public class TabSharingUiManager {
      * Stops any active sharing session initiated by the specified capturer WebContents.
      *
      * @param capturer The {@link WebContents} performing tab sharing.
+     * @return True if an active bridge was found and stopped; false otherwise.
      */
-    public void stopSharingByCapturerTab(WebContents capturer) {
+    public boolean stopSharingByCapturerTab(WebContents capturer) {
         for (TabSharingUiBridge bridge : mActiveBridges) {
             if (bridge.getCapturer() == capturer) {
                 bridge.stopSharing();
                 // A capturer WebContents can have at most one active tab sharing session at a time
                 // (a 1:1 relationship between bridge and capturer), so returning on first match is
                 // safe.
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     /** Returns whether there are any active tab sharing sessions. */

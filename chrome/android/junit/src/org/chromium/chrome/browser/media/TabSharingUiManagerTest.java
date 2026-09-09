@@ -94,12 +94,12 @@ public class TabSharingUiManagerTest {
         when(mBridge1.getCapturer()).thenReturn(mCapturer1);
         mManager.addBridge(mBridge1);
 
-        // Stopping an unrelated capturer should do nothing.
-        mManager.stopSharingByCapturerTab(mCapturer2);
+        // Stopping an unrelated capturer should return false and do nothing.
+        assertFalse(mManager.stopSharingByCapturerTab(mCapturer2));
         verify(mBridge1, org.mockito.Mockito.never()).stopSharing();
 
-        // Stopping the registered capturer should invoke stopSharing().
-        mManager.stopSharingByCapturerTab(mCapturer1);
+        // Stopping the registered capturer should invoke stopSharing() and return true.
+        assertTrue(mManager.stopSharingByCapturerTab(mCapturer1));
         verify(mBridge1).stopSharing();
     }
 
