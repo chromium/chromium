@@ -102,3 +102,18 @@ static_library("mojolpm") {
   ]
   testonly = true
 }
+
+proto_library("mojolpm_unittest_proto") {
+  sources = [ "mojolpm_unittest.proto" ]
+}
+
+source_set("mojolpm_tests") {
+  testonly = true
+  sources = [ "mojolpm_unittest.cc" ]
+  deps = [
+    ":mojolpm",
+    ":mojolpm_unittest_proto",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

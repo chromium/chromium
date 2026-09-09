@@ -679,6 +679,7 @@ void Testcase<ProtoTestcase, ProtoAction, kMaxActionCount, kMaxActionSize>::Run(
       const auto& action =
           proto_testcase_.actions(action_idx % proto_testcase_.actions_size());
       if (action.ByteSizeLong() <= kMaxActionSize) {
+        ++action_count_;
         RunAction(action, std::move(run_closure));
       } else {
         fuzzer_task_runner->PostTask(FROM_HERE, std::move(run_closure));

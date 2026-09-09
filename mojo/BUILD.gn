@@ -55,6 +55,7 @@ test("mojo_unittests") {
     "//mojo/public/cpp/system/tests",
     "//mojo/public/js/ts/bindings/tests",
     "//mojo/public/rust:tests",
+    "//mojo/public/tools/fuzzers:mojolpm_tests",
   ]
 }
 
