@@ -26,7 +26,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -918,9 +917,6 @@ AutofillAiManager::GetMigratePromptCandidates(
     base::span<const EntityInstance> observed_entities,
     base::span<const EntityInstance> saved_entities,
     const FormStructure& form) const {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Autofill.Ai.Timing.GetEntityUpstreamCandidateFromSubmittedForm");
-
   std::vector<const EntityInstance*> saved_local_entities;
   std::vector<const EntityInstance*> saved_server_entities;
   for (const EntityInstance& entity : saved_entities) {

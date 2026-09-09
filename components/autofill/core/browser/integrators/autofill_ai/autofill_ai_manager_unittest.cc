@@ -2127,29 +2127,6 @@ TEST_F(AutofillAiManagerUpstreamTest, LocalEntity_ShowsMigrationPrompt) {
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
-TEST_F(AutofillAiManagerUpstreamTest,
-       TestGetEntityUpstreamCandidateTimingMetric) {
-  std::unique_ptr<FormStructure> form = CreateTestForm();
-  EntityInstance local_entity = GetVehicleEntityInstance();
-  AddOrUpdateEntityInstance(local_entity);
-
-  form->field(0)->set_value(
-      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
-          ->GetRawInfo(NAME_FULL));
-  form->field(1)->set_value(
-      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
-          ->GetRawInfo(VEHICLE_VIN));
-  form->field(2)->set_value(
-      local_entity
-          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
-          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
-
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Ai.Timing.GetEntityUpstreamCandidateFromSubmittedForm", 1);
-}
-
 // Tests that a migration prompt is not shown for flight reservations.
 TEST_F(AutofillAiManagerUpstreamTest,
        LocalFlightReservationEntity_DoNotShowMigrationPrompt) {
