@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {RenderType, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -171,3 +172,31 @@ export function sanitizeTextForPaste(text: string): string {
   return stripJavascriptSchemas(output);
 }
 // LINT.ThenChange(//components/omnibox/browser/omnibox_text_util.cc:SanitizeTextForPaste)
+
+export interface AriaNotificationOptions {
+  priority: 'normal'|'high';
+}
+
+declare global {
+  interface HTMLElement {
+    // The typescript description for ariaNotify in pending.d.ts is missing the
+    // options argument, so provide a two-argument overload.
+    // See https://www.w3.org/TR/wai-aria-1.3/#ARIANotifyMixin
+    ariaNotify?(message: string, options: AriaNotificationOptions): void;
+  }
+}
+
+/**
+ * Announces a message to screen readers, using ariaNotify if available,
+ * or falling back to cr-a11y-announcer.
+ */
+export function announce(element: HTMLElement, message: string): void {
+  if (!message) {
+    return;
+  }
+  if (element.ariaNotify) {
+    element.ariaNotify(message, {priority: 'high'});
+  } else {
+    getA11yAnnouncer(element).announce(message);
+  }
+}

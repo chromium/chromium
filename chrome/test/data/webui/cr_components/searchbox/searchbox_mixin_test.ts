@@ -13,6 +13,7 @@ import type {SearchboxDropdownElement} from 'chrome://resources/cr_components/se
 import type {SearchboxInputElement} from 'chrome://resources/cr_components/searchbox/searchbox_input.js';
 import type {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import {SearchboxMixin} from 'chrome://resources/cr_components/searchbox/searchbox_mixin.js';
+import type {AriaNotificationOptions} from 'chrome://resources/cr_components/searchbox/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -2508,6 +2509,44 @@ suite('SearchboxMixinVirtualFocusTest', () => {
 
     assertTrue(enterEvent.defaultPrevented);
     assertTrue(composeClicked);
+  });
+
+  test('Virtual focus on AIM button announces its label', async () => {
+    element.virtualFocusEnabledOverride = true;
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'aim query');
+
+    const matches = [createSearchMatchForTesting({fillIntoEdit: 'aim query'})];
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'aim query',
+      matches: matches,
+    }));
+    await microtasksFinished();
+
+    const composeButton =
+        element.shadowRoot.querySelector('cr-searchbox-compose-button');
+    assertTrue(!!composeButton);
+
+    const notifications:
+        Array<{message: string, options?: AriaNotificationOptions}> = [];
+    composeButton.ariaNotify =
+        (message: string, options: AriaNotificationOptions) => {
+          notifications.push({message, options});
+        };
+
+    element.setSelection({
+      line: -1,
+      state: SelectionLineState.kFocusedButtonAim,
+      actionIndex: 0,
+    });
+    await microtasksFinished();
+
+    assertEquals(1, notifications.length);
+    assertEquals(
+        composeButton.a11yLabel || composeButton.labelText,
+        notifications[0]!.message);
+    assertEquals('high', notifications[0]!.options?.priority);
   });
 
   test('Enter on focused action executes action', async () => {

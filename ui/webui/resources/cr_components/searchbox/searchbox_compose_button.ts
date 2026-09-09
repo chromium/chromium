@@ -7,9 +7,11 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './searchbox_compose_button.css.js';
 import {getHtml} from './searchbox_compose_button.html.js';
+import {announce} from './utils.js';
 
 export interface ComposeClickEventDetail {
   button: number;
@@ -159,6 +161,14 @@ export class SearchboxComposeButtonElement extends
           this.$.glowAnimationWrapper.classList.remove('play');
         });
       }
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (this.virtualFocusEnabled && changedProperties.has('hasVirtualFocus') &&
+        this.hasVirtualFocus) {
+      announce(this, this.a11yLabel || this.labelText);
     }
   }
 
