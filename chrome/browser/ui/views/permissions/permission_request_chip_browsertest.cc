@@ -81,19 +81,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        ChipFinalizedWhenInteractingWithOmnibox) {
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
-  auto* animation =
-      views::AsViewClass<PermissionChipView>(
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              PermissionChipView::kPermissionRequestChipElementId,
-              views::ElementTrackerViews::GetContextForView(
-                  BrowserView::GetBrowserViewForBrowser(browser()))))
-          ->animation_for_testing();
-
-  // Animate the chip expand.
-  gfx::AnimationTestApi animation_api(animation);
-  base::TimeTicks now = base::TimeTicks::Now();
-  animation_api.SetStartTime(now);
-  animation_api.Step(now + animation->GetSlideDuration());
+  lb->GetChipController()->chip()->EndAnimationForTesting();
 
   // After animation ended, the chip is expanded and the bubble is shown because
   // the gesture sensitive request feature is enabled.
@@ -319,19 +307,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
                        CallbacksResetWhenInteractingWithOmnibox) {
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
-  auto* animation =
-      views::AsViewClass<PermissionChipView>(
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              PermissionChipView::kPermissionRequestChipElementId,
-              views::ElementTrackerViews::GetContextForView(
-                  BrowserView::GetBrowserViewForBrowser(browser()))))
-          ->animation_for_testing();
-
-  // Animate the chip expand.
-  gfx::AnimationTestApi animation_api(animation);
-  base::TimeTicks now = base::TimeTicks::Now();
-  animation_api.SetStartTime(now);
-  animation_api.Step(now + animation->GetSlideDuration());
+  lb->GetChipController()->chip()->EndAnimationForTesting();
 
   // After animation ended, the chip is expanded and a bubble is shown.
   EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());

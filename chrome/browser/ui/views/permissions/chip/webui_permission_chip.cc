@@ -291,7 +291,8 @@ void WebUIPermissionChip::ExecuteForTesting() {
 }
 
 void WebUIPermissionChip::EndAnimationForTesting() {
-  ResetAnimation(AnimationState::kCollapsed);
+  FinishAnimation(should_collapse_ ? AnimationState::kCollapsed
+                                   : AnimationState::kExpanded);
 }
 
 void WebUIPermissionChip::FinishAnimation(AnimationState state) {
