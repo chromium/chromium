@@ -222,12 +222,15 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
         kCalendarListOAuth2Scope,
         GaiaConstants::kClearCutOAuth2Scope,
         kDocumentsOAuth2Scope,
-        GaiaConstants::kDriveOAuth2Scope,
         kGmailModifyOAuth2Scope,
         GaiaConstants::kLensOAuth2Scope,
         kPeopleReadOnlyOAuth2Scope,
         kSpreadsheetsOAuth2Scope,
     };
+    if (base::FeatureList::IsEnabled(
+            contextual_tasks::kContextualTasksDriveOAuthScope)) {
+      scopes.insert(GaiaConstants::kDriveOAuth2Scope);
+    }
     if (base::FeatureList::IsEnabled(
             contextual_tasks::kContextualTasksExtraOauthScopes)) {
       std::string extra_scopes_str =
