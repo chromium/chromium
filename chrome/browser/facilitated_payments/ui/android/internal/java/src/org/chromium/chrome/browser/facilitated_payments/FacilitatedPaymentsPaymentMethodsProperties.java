@@ -316,5 +316,16 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         };
     }
 
+    /** Properties defined here reflect the visible state of the progress screen. */
+    static class ProgressScreenProperties {
+        /** Message string to be displayed. If empty, the message will be hidden. */
+        static final WritableObjectPropertyKey<String> MESSAGE_TEXT =
+                new WritableObjectPropertyKey<>("message_text");
+
+        static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT};
+
+        private ProgressScreenProperties() {}
+    }
+
     private FacilitatedPaymentsPaymentMethodsProperties() {}
 }

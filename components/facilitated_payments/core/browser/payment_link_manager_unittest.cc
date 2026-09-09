@@ -516,7 +516,7 @@ TEST_F(PaymentLinkManagerTest,
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_CALL(client_, LoadRiskData(testing::_));
-  EXPECT_CALL(client_, ShowProgressScreen());
+  EXPECT_CALL(client_, ShowProgressScreen(ProgressScreenType::kPayment));
 
   test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
@@ -1506,7 +1506,7 @@ TEST_F(PaymentLinkManagerTest, OnPaymentPromptResult_FopSelectorAccepted) {
       ukm::UkmRecorder::GetNewSourceID());
 
   EXPECT_CALL(client_, LoadRiskData(testing::_));
-  EXPECT_CALL(client_, ShowProgressScreen());
+  EXPECT_CALL(client_, ShowProgressScreen(ProgressScreenType::kPayment));
 
   test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);

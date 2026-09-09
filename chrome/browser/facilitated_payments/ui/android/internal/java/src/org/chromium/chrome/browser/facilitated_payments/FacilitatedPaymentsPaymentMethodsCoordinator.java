@@ -70,8 +70,8 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public void showProgressScreen() {
-        mMediator.showProgressScreen();
+    public void showProgressScreen(@ProgressScreenType int type) {
+        mMediator.showProgressScreen(type);
     }
 
     @Override

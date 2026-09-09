@@ -494,7 +494,7 @@ void PixManager::ShowPixPaymentPrompt(
 
 void PixManager::ShowProgressScreen() {
   ui_state_ = UiState::kProgressScreen;
-  client_->ShowProgressScreen();
+  client_->ShowProgressScreen(ProgressScreenType::kPayment);
 }
 
 void PixManager::ShowErrorScreen() {

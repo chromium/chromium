@@ -119,8 +119,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      * the screen being shown. If not, opens a new bottom sheet and shows the progress screen.
      */
     @CalledByNative
-    public void showProgressScreen() {
-        mComponent.showProgressScreen();
+    public void showProgressScreen(@ProgressScreenType int type) {
+        mComponent.showProgressScreen(type);
     }
 
     /**

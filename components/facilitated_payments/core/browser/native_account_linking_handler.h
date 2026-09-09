@@ -60,6 +60,9 @@ class NativeAccountLinkingHandler {
   // Dismisses the prompt UI.
   virtual void DismissPrompt();
 
+  // Transitions the UI to the account linking loading spinner state.
+  virtual void ShowAccountLinkingLoadingScreen();
+
  protected:
   // Hook to get the strike database. Should return nullptr in Incognito.
   virtual strike_database::StrikeDatabaseIntegratorBase*
@@ -116,9 +119,15 @@ class NativeAccountLinkingHandler {
   // Instantiates/retrieves the FacilitatedPaymentsApiClient.
   FacilitatedPaymentsApiClient* GetApiClient();
 
-  // Track if the prompt UI is showing. Subclasses are responsible for updating
-  // this state when they show the prompt.
-  bool is_prompt_showing_ = false;
+  enum class UiState {
+    kHidden,
+    kPrompt,
+    kProgressScreen,
+    kSuccessScreen,
+  };
+
+  // Tracks the current state of the UI managed by this handler.
+  UiState ui_state_ = UiState::kHidden;
 
   // Helper for test APIs to set the cached action token.
   void SetActionTokenForTesting(std::vector<uint8_t> action_token) {

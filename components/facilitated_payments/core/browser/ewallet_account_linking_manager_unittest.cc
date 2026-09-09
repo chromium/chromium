@@ -402,6 +402,9 @@ TEST_F(EwalletAccountLinkingManagerTest, OnDismissed_DoesNotRecordStrike) {
   auto* strike_db = test_api(*manager_).GetStrikeDatabase();
   ASSERT_EQ(strike_db->GetStrikes(), 0);
 
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _));
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
   manager_->OnDismissed();
   EXPECT_EQ(strike_db->GetStrikes(), 0);
   histogram_tester_.ExpectUniqueSample(
@@ -497,6 +500,15 @@ TEST_F(EwalletAccountLinkingManagerTest,
   EXPECT_TRUE(get_api_client_called);
   histogram_tester_.ExpectTotalCount(
       "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason", 0);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       DismissAndCancel_WhenPromptHidden_DoesNotCrash) {
+  // Client is already hidden.
+  EXPECT_CALL(client_, DismissPrompt()).Times(0);
+
+  // Calling it should safely ignore the call (returns early in base class)
+  manager_->DismissAndCancel();
 }
 
 }  // namespace

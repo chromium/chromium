@@ -54,7 +54,10 @@ class MockFacilitatedPaymentsBottomSheetBridge
        std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
            app_suggestions),
       (override));
-  MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void,
+              ShowProgressScreen,
+              (payments::facilitated::ProgressScreenType),
+              (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void, OnDismissed, (), (override));
@@ -144,9 +147,12 @@ TEST_F(FacilitatedPaymentsControllerTest, onBankAccountSelected) {
 
 // Test controller forwards call for showing the progress screen to the view.
 TEST_F(FacilitatedPaymentsControllerTest, ShowProgressScreen) {
-  EXPECT_CALL(*mock_view_, ShowProgressScreen);
+  EXPECT_CALL(
+      *mock_view_,
+      ShowProgressScreen(payments::facilitated::ProgressScreenType::kPayment));
 
-  controller_->ShowProgressScreen();
+  controller_->ShowProgressScreen(
+      payments::facilitated::ProgressScreenType::kPayment);
 }
 
 // Test controller forwards call for showing the progress screen to the view.
@@ -358,10 +364,13 @@ TEST_F(FacilitatedPaymentsControllerTest,
 TEST_F(FacilitatedPaymentsControllerTest,
        ViewIsAbleToProcessBackToBackShowRequests) {
   EXPECT_CALL(*mock_view_, RequestShowContent);
-  EXPECT_CALL(*mock_view_, ShowProgressScreen);
+  EXPECT_CALL(
+      *mock_view_,
+      ShowProgressScreen(payments::facilitated::ProgressScreenType::kPayment));
 
   controller_->Show(bank_accounts_, base::DoNothing());
-  controller_->ShowProgressScreen();
+  controller_->ShowProgressScreen(
+      payments::facilitated::ProgressScreenType::kPayment);
 }
 
 // Test controller forwards call for closing the bottom sheet to the view.

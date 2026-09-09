@@ -222,7 +222,7 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
 TEST_P(PixManagerTestWithAccountLinkingEnabled, OnPixAccountSelected) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(*client_, ShowProgressScreen());
+  EXPECT_CALL(*client_, ShowProgressScreen(ProgressScreenType::kPayment));
   EXPECT_CALL(*client_, LoadRiskData(testing::_));
 
   test_api(*pix_manager_)
@@ -1735,7 +1735,7 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled, ShowProgressScreen) {
 
   // Verify that when the feature wants to show the progress screen, it asks the
   // client.
-  EXPECT_CALL(*client_, ShowProgressScreen);
+  EXPECT_CALL(*client_, ShowProgressScreen(ProgressScreenType::kPayment));
 
   test_api(*pix_manager_).ShowProgressScreen();
 

@@ -87,14 +87,14 @@ void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForPaymentLink(
       env, GetJavaBridge(), std::move(ewallet_vector), j_app_array);
 }
 
-void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen() {
+void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen(
+    ProgressScreenType type) {
   if (!GetJavaBridge()) {
     return;
   }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsPaymentMethodsViewBridge_showProgressScreen(
-      env, GetJavaBridge());
+      env, GetJavaBridge(), static_cast<int>(type));
 }
 
 void FacilitatedPaymentsBottomSheetBridge::ShowErrorScreen() {

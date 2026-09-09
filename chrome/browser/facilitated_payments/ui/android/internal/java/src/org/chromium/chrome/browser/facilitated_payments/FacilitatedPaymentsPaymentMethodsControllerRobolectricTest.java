@@ -49,6 +49,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.MESSAGE_TEXT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -1402,20 +1403,42 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    public void testCreatesModelForProgressScreen() {
-        mCoordinator.showProgressScreen();
+    public void testCreatesModelForProgressScreen_Payment() {
+        mCoordinator.showProgressScreen(ProgressScreenType.PAYMENT);
 
         // Verify that the bottom sheet model is updated to show the progress screen.
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        // Progress screen doesn't have any view properties.
         assertEquals(
-                0,
+                1,
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)
                         .getAllProperties()
                         .size());
+        assertEquals(
+                mContext.getString(R.string.pix_payment_progress_screen_message),
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(MESSAGE_TEXT));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
+    }
+
+    @Test
+    public void testCreatesModelForProgressScreen_AccountLinking() {
+        mCoordinator.showProgressScreen(ProgressScreenType.ACCOUNT_LINKING);
+
+        // Verify that the bottom sheet model is updated to show the progress screen.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
+        assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
+        assertEquals(
+                1,
+                mFacilitatedPaymentsPaymentMethodsModel
+                        .get(SCREEN_VIEW_MODEL)
+                        .getAllProperties()
+                        .size());
+        assertEquals(
+                "",
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(MESSAGE_TEXT));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
     }
 
@@ -1844,15 +1867,15 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         // The bottom sheet is now open.
         Mockito.when(mBottomSheetController.isSheetOpen()).thenReturn(true);
         // Show the progress screen. The FOP selector is still being shown.
-        mCoordinator.showProgressScreen();
+        mCoordinator.showProgressScreen(ProgressScreenType.PAYMENT);
 
         // Verify that the bottom sheet model is updated to show the progress screen.
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(PROGRESS_SCREEN));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        // Progress screen doesn't have any view properties.
+        // Progress screen has exactly one view property (MESSAGE_TEXT).
         assertEquals(
-                0,
+                1,
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)
                         .getAllProperties()
@@ -1866,7 +1889,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Test
     public void testProgressScreenToErrorScreenSwapUpdatesModel() {
         // Show the progress screen.
-        mCoordinator.showProgressScreen();
+        mCoordinator.showProgressScreen(ProgressScreenType.PAYMENT);
 
         // Confirm the progress screen is shown.
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -1897,7 +1920,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testProgressScreenToSuccessScreenSwapUpdatesModel() {
-        mCoordinator.showProgressScreen();
+        mCoordinator.showProgressScreen(ProgressScreenType.PAYMENT);
 
         Mockito.when(mBottomSheetController.isSheetOpen()).thenReturn(true);
         mCoordinator.showPixAccountLinkingSuccessScreen();
@@ -2017,6 +2040,73 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .findFirst()
                 .map(item -> item.model)
                 .orElse(null);
+    }
+
+    @Test
+    public void testShowAccountLinkingPrompt_EwalletCallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
+        FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
+                new FacilitatedPaymentsPaymentMethodsCoordinator();
+
+        java.lang.reflect.Field mediatorField =
+                FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
+        mediatorField.setAccessible(true);
+        mediatorField.set(coordinator, mockMediator);
+
+        coordinator.showAccountLinkingPrompt(FacilitatedPaymentsType.EWALLET, "ChilliPay", 1);
+
+        verify(mockMediator)
+                .showAccountLinkingPrompt(FacilitatedPaymentsType.EWALLET, "ChilliPay", 1);
+    }
+
+    @Test
+    public void testShowAccountLinkingPrompt_PixCallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
+        FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
+                new FacilitatedPaymentsPaymentMethodsCoordinator();
+
+        java.lang.reflect.Field mediatorField =
+                FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
+        mediatorField.setAccessible(true);
+        mediatorField.set(coordinator, mockMediator);
+
+        coordinator.showAccountLinkingPrompt(FacilitatedPaymentsType.PIX, "PixAccount", 2);
+
+        verify(mockMediator).showAccountLinkingPrompt(FacilitatedPaymentsType.PIX, "PixAccount", 2);
+    }
+
+    @Test
+    public void testShowProgressScreen_CallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
+        FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
+                new FacilitatedPaymentsPaymentMethodsCoordinator();
+
+        java.lang.reflect.Field mediatorField =
+                FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
+        mediatorField.setAccessible(true);
+        mediatorField.set(coordinator, mockMediator);
+
+        coordinator.showProgressScreen(ProgressScreenType.PAYMENT);
+        verify(mockMediator).showProgressScreen(ProgressScreenType.PAYMENT);
+    }
+
+    @Test
+    public void testShowErrorScreen_CallsMediator() throws Exception {
+        FacilitatedPaymentsPaymentMethodsMediator mockMediator =
+                mock(FacilitatedPaymentsPaymentMethodsMediator.class);
+        FacilitatedPaymentsPaymentMethodsCoordinator coordinator =
+                new FacilitatedPaymentsPaymentMethodsCoordinator();
+
+        java.lang.reflect.Field mediatorField =
+                FacilitatedPaymentsPaymentMethodsCoordinator.class.getDeclaredField("mMediator");
+        mediatorField.setAccessible(true);
+        mediatorField.set(coordinator, mockMediator);
+
+        coordinator.showErrorScreen();
+        verify(mockMediator).showErrorScreen();
     }
 
     @Test

@@ -588,7 +588,7 @@ void PaymentLinkManager::ShowPaymentLinkPrompt(
 
 void PaymentLinkManager::ShowProgressScreen() {
   ui_state_ = UiState::kProgressScreen;
-  client_->ShowProgressScreen();
+  client_->ShowProgressScreen(ProgressScreenType::kPayment);
 }
 
 void PaymentLinkManager::ShowErrorScreen() {

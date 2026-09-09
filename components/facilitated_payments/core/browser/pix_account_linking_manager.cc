@@ -59,31 +59,27 @@ void PixAccountLinkingManager::DoOnClientTokenReceived(
 
 void PixAccountLinkingManager::DoOnAccountLinkingResult(
     AccountLinkingResult result) {
-  DismissPrompt();
-
   switch (result.error_code) {
     case AccountLinkingResultCode::kResultOk:
-      if (result.is_successful) {
-        LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/true);
-        client()->ShowPixAccountLinkingSuccessScreen();
-      } else {
-        LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
-        client()->ShowAccountLinkingFailureNotification(
-            FacilitatedPaymentsType::kPix);
-      }
+      LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/true);
+      ui_state_ = UiState::kSuccessScreen;
+      client()->ShowPixAccountLinkingSuccessScreen();
       break;
     case AccountLinkingResultCode::kResultCanceled:
+      // TODO(crbug.com/545056667): Update to show error notification on user
+      // cancellation.
+      DismissPrompt();
       LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
       break;
     case AccountLinkingResultCode::kResultError:
+      DismissPrompt();
       LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
       client()->ShowAccountLinkingFailureNotification(
           FacilitatedPaymentsType::kPix);
       break;
     case AccountLinkingResultCode::kCouldNotInvoke:
-      // Default result passed during early exit paths in the base class. The
-      // specific flow exited reason has already been logged by
-      // NativeAccountLinkingHandler.
+      DismissPrompt();
+      // Flow exited reason logged by base class. Don't log failure.
       break;
   }
 }
@@ -111,15 +107,15 @@ void PixAccountLinkingManager::Reset() {
   has_user_returned_to_chrome_ = false;
   has_post_return_delay_passed_ = false;
   is_eligible_for_pix_account_linking_ = std::nullopt;
-  if (is_prompt_showing_) {
+  if (ui_state_ != UiState::kHidden && ui_state_ != UiState::kSuccessScreen) {
     // This should NOT happen as the account linking flow cannot be triggered
     // when the bottom sheet is open.
-    // TODO(crbug.com/427597144): Replace with CHECK(!is_prompt_showing_) in
+    // TODO(crbug.com/427597144): Replace with CHECK(ui_state_ ==
+    // UiState::kHidden || ui_state_ == UiState::kSuccessScreen) in
     // MaybeShowPixAccountLinkingPrompt after M144.
     base::debug::DumpWithoutCrashing();
-    client()->DismissPrompt();
   }
-  is_prompt_showing_ = false;
+  DismissPrompt();
   is_prompt_accepted_ = false;
   pix_payment_page_origin_ = url::Origin();
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -155,7 +151,7 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
   }
 
   // Prevent showing the prompt multiple times if already showing.
-  if (is_prompt_showing_) {
+  if (ui_state_ != UiState::kHidden) {
     return;
   }
 
@@ -183,7 +179,7 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay() {
   client()->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
-  is_prompt_showing_ = true;
+  ui_state_ = UiState::kPrompt;
   int strike_count = 0;
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_count = strike_database->GetStrikes();
@@ -214,31 +210,37 @@ void PixAccountLinkingManager::DoOnAccepted() {
 void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
-      CHECK(is_prompt_showing_);
-      LogPixAccountLinkingPromptShown();
+      CHECK(ui_state_ != UiState::kHidden);
+      if (ui_state_ == UiState::kPrompt) {
+        LogPixAccountLinkingPromptShown();
+      }
       break;
     }
     case UiEvent::kScreenCouldNotBeShown: {
-      CHECK(is_prompt_showing_);
-      LogAccountLinkingFlowExitedReason(
-          kPixFopSuffix, AccountLinkingFlowExitedReason::kScreenNotShown);
-      is_prompt_showing_ = false;
+      CHECK(ui_state_ != UiState::kHidden);
+      if (ui_state_ == UiState::kPrompt) {
+        LogAccountLinkingFlowExitedReason(
+            kPixFopSuffix, AccountLinkingFlowExitedReason::kScreenNotShown);
+      }
+      ui_state_ = UiState::kHidden;
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
-      if (is_prompt_showing_) {
+      if (ui_state_ == UiState::kPrompt) {
         LogAccountLinkingFlowExitedReason(
             kPixFopSuffix,
             AccountLinkingFlowExitedReason::kScreenClosedNotByUser);
       }
-      is_prompt_showing_ = false;
+      ui_state_ = UiState::kHidden;
       break;
     }
     case UiEvent::kScreenClosedByUser: {
-      CHECK(is_prompt_showing_);
-      LogAccountLinkingFlowExitedReason(
-          kPixFopSuffix, AccountLinkingFlowExitedReason::kScreenClosedByUser);
-      is_prompt_showing_ = false;
+      CHECK(ui_state_ != UiState::kHidden);
+      if (ui_state_ == UiState::kPrompt) {
+        LogAccountLinkingFlowExitedReason(
+            kPixFopSuffix, AccountLinkingFlowExitedReason::kScreenClosedByUser);
+      }
+      ui_state_ = UiState::kHidden;
       break;
     }
     default:

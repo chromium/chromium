@@ -74,7 +74,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
                std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
                base::OnceCallback<void(SelectedFopData)>),
               (override));
-  MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void, ShowProgressScreen, (ProgressScreenType), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, DismissPrompt, (), (override));
   MOCK_METHOD(void,

@@ -42,7 +42,10 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
        base::OnceCallback<void(payments::facilitated::SelectedFopData)>
            on_fop_selected),
       (override));
-  MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void,
+              ShowProgressScreen,
+              (payments::facilitated::ProgressScreenType),
+              (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void,
@@ -219,9 +222,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_IframeExpOff) {
 // Test the client forwards call for showing the progress screen to the
 // controller.
 TEST_F(ChromeFacilitatedPaymentsClientTest, ShowProgressScreen) {
-  EXPECT_CALL(controller(), ShowProgressScreen);
+  EXPECT_CALL(
+      controller(),
+      ShowProgressScreen(payments::facilitated::ProgressScreenType::kPayment));
 
-  base_client().ShowProgressScreen();
+  base_client().ShowProgressScreen(
+      payments::facilitated::ProgressScreenType::kPayment);
 }
 
 // Test the client forwards call for showing the error screen to the controller.
@@ -236,10 +242,13 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, ShowErrorScreen) {
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        ControllerIsAbleToProcessBackToBackShowRequests) {
   EXPECT_CALL(controller(), Show);
-  EXPECT_CALL(controller(), ShowProgressScreen);
+  EXPECT_CALL(
+      controller(),
+      ShowProgressScreen(payments::facilitated::ProgressScreenType::kPayment));
 
   base_client().ShowPixPaymentPrompt({}, base::DoNothing());
-  base_client().ShowProgressScreen();
+  base_client().ShowProgressScreen(
+      payments::facilitated::ProgressScreenType::kPayment);
 }
 
 // Test that DismissPrompt is called when the client is destroyed.

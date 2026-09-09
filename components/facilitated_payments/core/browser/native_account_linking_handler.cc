@@ -162,7 +162,7 @@ void NativeAccountLinkingHandler::ShowAccountLinkingPrompt() {
   if (!params) {
     return;
   }
-  is_prompt_showing_ = true;
+  ui_state_ = UiState::kPrompt;
   client()->ShowAccountLinkingPrompt(
       *params,
       base::BindOnce(&NativeAccountLinkingHandler::OnAccepted, GetWeakPtr()),
@@ -171,11 +171,19 @@ void NativeAccountLinkingHandler::ShowAccountLinkingPrompt() {
 }
 
 void NativeAccountLinkingHandler::DismissPrompt() {
-  if (!is_prompt_showing_) {
+  if (ui_state_ == UiState::kHidden) {
     return;
   }
-  is_prompt_showing_ = false;
+  ui_state_ = UiState::kHidden;
   client_->DismissPrompt();
+}
+
+void NativeAccountLinkingHandler::ShowAccountLinkingLoadingScreen() {
+  if (ui_state_ != UiState::kPrompt) {
+    return;
+  }
+  ui_state_ = UiState::kProgressScreen;
+  client_->ShowProgressScreen(ProgressScreenType::kAccountLinking);
 }
 
 FacilitatedPaymentsApiClient* NativeAccountLinkingHandler::GetApiClient() {
@@ -240,7 +248,6 @@ void NativeAccountLinkingHandler::OnAccepted() {
     strike_db->ClearStrikes();
   }
   DoOnAccepted();
-  DismissPrompt();
   if (action_token_.empty()) {
     LogAccountLinkingFlowExitedReason(
         GetHistogramSuffix(),
@@ -255,6 +262,7 @@ void NativeAccountLinkingHandler::OnAccepted() {
     OnAccountLinkingResult(AccountLinkingResult{});
     return;
   }
+  ShowAccountLinkingLoadingScreen();
   InvokeInstrumentManager(account_info.value(), action_token_);
 }
 
@@ -269,9 +277,11 @@ void NativeAccountLinkingHandler::OnDeclined() {
 }
 
 void NativeAccountLinkingHandler::OnDismissed() {
-  LogAccountLinkingFlowExitedReason(
-      GetHistogramSuffix(),
-      AccountLinkingFlowExitedReason::kScreenClosedByUser);
+  if (ui_state_ == UiState::kPrompt) {
+    LogAccountLinkingFlowExitedReason(
+        GetHistogramSuffix(),
+        AccountLinkingFlowExitedReason::kScreenClosedByUser);
+  }
   DismissPrompt();
   OnAccountLinkingResult(AccountLinkingResult{});
 }

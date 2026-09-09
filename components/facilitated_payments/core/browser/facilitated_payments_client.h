@@ -110,9 +110,8 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
       base::OnceCallback<void(SelectedFopData)> on_fop_selected) = 0;
 
-  // Shows a progress bar while users wait for server response after selecting a
-  // payment account.
-  virtual void ShowProgressScreen() = 0;
+  // Shows a progress screen while users wait for server response.
+  virtual void ShowProgressScreen(ProgressScreenType type) = 0;
 
   // Shows an error message if Chrome isn't able to complete transaction after
   // the user has selected a payment account.

@@ -51,9 +51,7 @@ void EwalletAccountLinkingManager::DismissAndCancel() {
   // callbacks triggered by DismissPrompt(), preventing tear-down crashes.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (is_prompt_showing_) {
-    DismissPrompt();
-  }
+  DismissPrompt();
 }
 
 void EwalletAccountLinkingManager::DoOnClientTokenReceived(
@@ -103,6 +101,8 @@ void EwalletAccountLinkingManager::
 
 void EwalletAccountLinkingManager::DoOnAccountLinkingResult(
     AccountLinkingResult result) {
+  DismissPrompt();
+
   // Skip logging early exits to avoid artificially lowering the success rate.
   if (result.error_code != AccountLinkingResultCode::kCouldNotInvoke) {
     LogAccountLinkingResult(GetHistogramSuffix(), result.is_successful);

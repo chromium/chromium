@@ -101,7 +101,7 @@ class ChromeFacilitatedPaymentsClient
           app_suggestions,
       base::OnceCallback<void(payments::facilitated::SelectedFopData)>
           on_fop_selected) final;
-  void ShowProgressScreen() final;
+  void ShowProgressScreen(payments::facilitated::ProgressScreenType type) final;
   void ShowErrorScreen() final;
   void DismissPrompt() final;
   void SetUiEventListener(

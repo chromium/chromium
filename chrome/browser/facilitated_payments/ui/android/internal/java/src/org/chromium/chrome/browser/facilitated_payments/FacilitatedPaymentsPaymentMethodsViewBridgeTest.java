@@ -285,6 +285,50 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
+    public void showProgressScreen_callsControllerRequestShowContent() {
+        mViewBridge.showProgressScreen(ProgressScreenType.PAYMENT);
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void showErrorScreen_callsControllerRequestShowContent() {
+        mViewBridge.showErrorScreen();
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void dismiss_callsControllerHideContent() {
+        mViewBridge.dismiss();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void showAccountLinkingPrompt_callsControllerRequestShowContent() {
+        mViewBridge.showAccountLinkingPrompt(
+                org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType
+                        .EWALLET,
+                "Pix",
+                0);
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
     public void showAccountLinkingFailureNotification_showsSnackbar() {
         mViewBridge.showAccountLinkingFailureNotification(
                 org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType

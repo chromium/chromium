@@ -160,8 +160,9 @@ void ChromeFacilitatedPaymentsClient::ShowPaymentLinkPrompt(
       std::move(on_fop_selected));
 }
 
-void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {
-  facilitated_payments_controller_->ShowProgressScreen();
+void ChromeFacilitatedPaymentsClient::ShowProgressScreen(
+    payments::facilitated::ProgressScreenType type) {
+  facilitated_payments_controller_->ShowProgressScreen(type);
 }
 
 void ChromeFacilitatedPaymentsClient::ShowErrorScreen() {

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "ui/android/window_android.h"
 
 class FacilitatedPaymentsController;
@@ -54,7 +55,7 @@ class FacilitatedPaymentsBottomSheetBridge {
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions);
 
   // Triggers showing the progress screen. Virtual for overriding in tests.
-  virtual void ShowProgressScreen();
+  virtual void ShowProgressScreen(ProgressScreenType type);
 
   // Triggers showing the error screen. Virtual for overriding in tests.
   virtual void ShowErrorScreen();

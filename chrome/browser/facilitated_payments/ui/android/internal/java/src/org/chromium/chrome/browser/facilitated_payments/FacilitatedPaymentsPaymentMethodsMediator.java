@@ -39,6 +39,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.MESSAGE_TEXT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -279,7 +280,8 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         mInputProtector.markShowTime();
     }
 
-    void showProgressScreen() {
+    /** Displays a progress screen in a bottom sheet. */
+    void showProgressScreen(@ProgressScreenType int type) {
         // The {@link VISIBLE_STATE} of {@link SHOWN} has 2 functions:
         // 1. If the bottom sheet is not open, i.e. {@code VISIBLE_STATE = HIDDEN}, setting {@code
         // VISIBLE_STATE = SHOWN} opens and shows a new screen.
@@ -291,6 +293,14 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         // again.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, PROGRESS_SCREEN);
+        String progressText =
+                switch (type) {
+                    case ProgressScreenType.PAYMENT ->
+                            mContext.getString(R.string.pix_payment_progress_screen_message);
+                    case ProgressScreenType.ACCOUNT_LINKING -> "";
+                    default -> "";
+                };
+        mModel.get(SCREEN_VIEW_MODEL).set(MESSAGE_TEXT, progressText);
         mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
     }

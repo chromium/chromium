@@ -56,7 +56,8 @@ class FacilitatedPaymentsController {
 
   // Asks the `view_` to show the progress screen. Virtual for overriding in
   // tests.
-  virtual void ShowProgressScreen();
+  virtual void ShowProgressScreen(
+      payments::facilitated::ProgressScreenType type);
 
   // Asks the `view_` to show the error screen. Virtual for overriding in tests.
   virtual void ShowErrorScreen();

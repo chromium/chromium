@@ -94,6 +94,17 @@ enum class PaymentLinkFopSelectorAction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PaymentLinkFopSelectorAction)
 
+// This enum is used to denote the progress screen type in the Facilitated
+// Payments bottom sheet.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.facilitated_payments)
+enum class ProgressScreenType {
+  kPayment = 0,
+  kAccountLinking = 1,
+  kMaxValue = kAccountLinking,
+};
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UTILS_FACILITATED_PAYMENTS_UI_UTILS_H_

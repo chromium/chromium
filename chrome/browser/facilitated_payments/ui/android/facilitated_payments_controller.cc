@@ -66,8 +66,9 @@ void FacilitatedPaymentsController::ShowForPaymentLink(
   on_fop_selected_ = std::move(on_fop_selected);
 }
 
-void FacilitatedPaymentsController::ShowProgressScreen() {
-  view_->ShowProgressScreen();
+void FacilitatedPaymentsController::ShowProgressScreen(
+    payments::facilitated::ProgressScreenType type) {
+  view_->ShowProgressScreen(type);
 }
 
 void FacilitatedPaymentsController::ShowErrorScreen() {
