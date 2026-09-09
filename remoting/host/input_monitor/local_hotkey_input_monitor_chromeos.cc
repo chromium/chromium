@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform/platform_event_observer.h"
@@ -19,6 +20,10 @@
 namespace remoting {
 
 namespace {
+
+bool IsInjectedByCrd(const ui::PlatformEvent& event) {
+  return event->source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
+}
 
 class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
  public:
@@ -53,11 +58,18 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
 
    private:
     void HandleKeyPressed(const ui::PlatformEvent& event);
+    void HandleKeyReleased(const ui::PlatformEvent& event);
 
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
 
     // Must be called on |caller_task_runner_|.
     base::OnceClosure disconnect_callback_;
+
+    // Track local modifier key presses independently from Ozone/evdev global
+    // session state to prevent remotely injected modifier-release events from
+    // suppressing the emergency disconnect hotkey.
+    int local_control_keys_down_ = 0;
+    int local_alt_keys_down_ = 0;
   };
 
   // Task runner on which ui::events are received.
@@ -109,24 +121,66 @@ void LocalHotkeyInputMonitorChromeos::Core::WillProcessEvent(
 
 void LocalHotkeyInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
+  // Do not process events remotely injected by CRD, as we monitor for local
+  // input only and remote modifier releases must not corrupt local hotkey
+  // detection.
+  if (IsInjectedByCrd(event)) {
+    return;
+  }
+
+  if (!event->IsKeyEvent()) {
+    return;
+  }
+
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::EventType::kKeyPressed) {
     HandleKeyPressed(event);
+  } else if (type == ui::EventType::kKeyReleased) {
+    HandleKeyReleased(event);
   }
 }
 
 void LocalHotkeyInputMonitorChromeos::Core::HandleKeyPressed(
     const ui::PlatformEvent& event) {
+  DCHECK(event->IsKeyEvent());
+  ui::KeyEvent key_event(event);
+  if (key_event.key_code() == ui::VKEY_CONTROL) {
+    if (!key_event.is_repeat()) {
+      ++local_control_keys_down_;
+    }
+  } else if (key_event.key_code() == ui::VKEY_MENU) {
+    if (!key_event.is_repeat()) {
+      ++local_alt_keys_down_;
+    }
+  }
+
   // Ignore input if we've already initiated a disconnect.
   if (!disconnect_callback_) {
     return;
   }
 
-  DCHECK(event->IsKeyEvent());
-  ui::KeyEvent key_event(event);
-  if (key_event.IsControlDown() && key_event.IsAltDown() &&
+  const bool is_control_down =
+      local_control_keys_down_ > 0 || key_event.IsControlDown();
+  const bool is_alt_down = local_alt_keys_down_ > 0 || key_event.IsAltDown();
+
+  if (is_control_down && is_alt_down &&
       key_event.key_code() == ui::VKEY_ESCAPE) {
     caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));
+  }
+}
+
+void LocalHotkeyInputMonitorChromeos::Core::HandleKeyReleased(
+    const ui::PlatformEvent& event) {
+  DCHECK(event->IsKeyEvent());
+  ui::KeyEvent key_event(event);
+  if (key_event.key_code() == ui::VKEY_CONTROL) {
+    if (local_control_keys_down_ > 0) {
+      --local_control_keys_down_;
+    }
+  } else if (key_event.key_code() == ui::VKEY_MENU) {
+    if (local_alt_keys_down_ > 0) {
+      --local_alt_keys_down_;
+    }
   }
 }
 

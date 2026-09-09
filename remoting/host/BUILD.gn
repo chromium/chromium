@@ -1052,6 +1052,7 @@ source_set("unit_tests") {
       "audio_capturer_chromeos_unittest.cc",
       "desktop_display_info_loader_chromeos_unittest.cc",
       "input_injector_chromeos_unittest.cc",
+      "input_monitor/local_hotkey_input_monitor_chromeos_unittest.cc",
       "it2me/it2me_confirmation_dialog_chromeos_unittest.cc",
     ]
     deps += [
