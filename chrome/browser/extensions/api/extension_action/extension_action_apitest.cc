@@ -229,58 +229,11 @@ void FlushStateStore(Profile* profile) {
 
 }  // namespace
 
-class ExtensionActionSetBadgeTextApiTest
-    : public ExtensionApiTest,
-      public base::test::WithFeatureOverride {
- public:
-  ExtensionActionSetBadgeTextApiTest()
-      : base::test::WithFeatureOverride(
-            extensions_features::kApiActionSetBadgeTextByteLimit) {}
-};
-
-// Test that the histogram for determining maximum badge text lengths counts
-// the length of the badge text in each successful call.
-// TODO(crbug.com/491158086, crbug.com/492555224): Remove this histogram test.
-IN_PROC_BROWSER_TEST_P(ExtensionActionSetBadgeTextApiTest,
-                       TextLengthHistogram) {
-  // Propagate kApiActionSetBadgeTextByteLimit feature state to extension
-  // background.
-  SetCustomArg(IsParamFeatureEnabled() ? "true" : "false");
-
-  base::HistogramTester histogram;
-
+// Test that action.setBadgeText() rejects overly long inputs.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ActionBadgeTextLength) {
   // Run extension which modifies the badge text a few times.
   EXPECT_TRUE(RunExtensionTest("extension_action/badge_text")) << message_;
-
-  // Check that every setting of badge text is counted exactly once.
-  histogram.ExpectTotalCount("Extensions.Action.SetBadgeTextLength",
-                             /*expected_count=*/4);
-
-  // Check number of samples in each affected bucket and two empty buckets.
-  histogram.ExpectBucketCount("Extensions.Action.SetBadgeTextLength",
-                              /*sample=*/0,
-                              /*expected_count=*/1);
-  histogram.ExpectBucketCount("Extensions.Action.SetBadgeTextLength",
-                              /*sample=*/1,
-                              /*expected_count=*/1);
-  histogram.ExpectBucketCount("Extensions.Action.SetBadgeTextLength",
-                              /*sample=*/2,
-                              /*expected_count=*/0);
-  histogram.ExpectBucketCount("Extensions.Action.SetBadgeTextLength",
-                              /*sample=*/3,
-                              /*expected_count=*/1);
-  histogram.ExpectBucketCount("Extensions.Action.SetBadgeTextLength",
-                              /*sample=*/4,
-                              /*expected_count=*/0);
-  // Histogram always logs the call, even if it exceeds the limit and fails.
-  histogram.ExpectBucketCount("Extensions.Action.SetBadgeTextLength",
-                              /*sample=*/150,
-                              /*expected_count=*/1);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExtensionActionSetBadgeTextApiTest,
-                         testing::Bool());
 
 // A class that allows for cross-origin navigations with embedded test server.
 class ExtensionActionAPITest : public ExtensionApiTest {

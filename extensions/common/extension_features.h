@@ -37,9 +37,6 @@ namespace extensions_features {
 // NOTE(devlin): If there are consistently enough of these in flux, it might
 // make sense to have their own file.
 
-// Controls the limit for action.setBadgeText() API input.
-BASE_DECLARE_FEATURE(kApiActionSetBadgeTextByteLimit);
-
 // Controls the availability of SplitView Extension APIs.
 BASE_DECLARE_FEATURE(kApiTabsSplitView);
 
