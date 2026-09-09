@@ -1956,9 +1956,6 @@ bool XMLDocumentParser::ShouldMarkScriptAlreadyStarted() const {
     return false;
   }
 
-  // The cases below parse XML documents with "XML scripting support disabled":
-  // See:
-  // https://html.spec.whatwg.org/multipage/xhtml.html#xml-scripting-support-disabled
   return
       // DOMParser.parseFromString parses with XML scripting support disabled:
       // See: https://html.spec.whatwg.org/#dom-domparser-parsefromstring
@@ -1966,7 +1963,13 @@ bool XMLDocumentParser::ShouldMarkScriptAlreadyStarted() const {
       document_->IsDOMParserDocument() ||
       // XMLHTTPRequest.responseXML parses with XML scripting support disabled:
       // See: https://xhr.spec.whatwg.org/#document-response, step 6
-      document_->IsXHRDocument();
+      document_->IsXHRDocument() ||
+      // All XML parse results created as part of XML fragment parsing:
+      // See:
+      // https://html.spec.whatwg.org/multipage/xhtml.html#xml-scripting-support-disabled,
+      // "If the parser was created as part of the XML fragment parsing
+      // algorithm, then the element's already started must be set to true."
+      parsing_fragment_;
 }
 
 void XMLDocumentParser::ExecuteScriptsWaitingForResources() {
