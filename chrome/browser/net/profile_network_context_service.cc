@@ -719,10 +719,6 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
-  // TODO:(https://crbug.com/40224802) Return only single language without
-  // expanding the language list if the DisableReduceAcceptLanguage deprecation
-  // trial ends.
-
   return ComputeAcceptLanguageFromPref(
       content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
           profile_->IsOffTheRecord() ? language::GetIncognitoLanguageList(

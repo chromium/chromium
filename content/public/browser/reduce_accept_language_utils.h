@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_REDUCE_ACCEPT_LANGUAGE_UTILS_H_
 
 #include "content/common/content_export.h"
-#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -73,14 +72,6 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   // TODO(crbug.com/40224802) confirm with CSP sandbox owner if language
   // preferences need to be hidden from sandboxed origins.
   static bool OriginCanReduceAcceptLanguage(const url::Origin& request_origin);
-
-  // Return true if the given `request_origin` opted into the
-  // ReduceAcceptLanguage deprecation origin trial. This method can only be
-  // called on the UI thread.
-  static bool CheckDisableReduceAcceptLanguageOriginTrial(
-      const GURL& request_url,
-      FrameTreeNode* frame_tree_node,
-      OriginTrialsControllerDelegate* origin_trials_delegate);
 
   // Updates the accept-language present in headers and returns the reduced
   // accept language added to accept-language header. This is called when

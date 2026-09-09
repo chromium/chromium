@@ -4301,7 +4301,7 @@ enum WebFeature {
   kZstdContentEncodingForSubFrameNavigation = 5003,
   kZstdContentEncodingForSubresource = 5004,
   kOBSOLETE_EventTimingOrphanPointerupWithClick = 5005,
-  kDisableReduceAcceptLanguage = 5006,
+  kOBSOLETE_DisableReduceAcceptLanguage = 5006,
   kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin = 5007,
   kDeprecatedAIModel = 5008,
   kDeprecatedAICanCreateGenericSession = 5009,

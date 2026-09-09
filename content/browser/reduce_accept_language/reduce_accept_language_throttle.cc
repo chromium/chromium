@@ -7,9 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_utils.h"
 #include "services/network/public/cpp/features.h"
@@ -41,12 +39,8 @@ void LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart status) {
 }  // namespace
 
 ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
-    ReduceAcceptLanguageUtils reduce_accept_language_utils,
-    OriginTrialsControllerDelegate* origin_trials_delegate,
-    FrameTreeNodeId frame_tree_node_id)
-    : reduce_accept_language_utils_(std::move(reduce_accept_language_utils)),
-      origin_trials_delegate_(origin_trials_delegate),
-      frame_tree_node_id_(frame_tree_node_id) {
+    ReduceAcceptLanguageUtils reduce_accept_language_utils)
+    : reduce_accept_language_utils_(std::move(reduce_accept_language_utils)) {
   LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart::kNavigationStarted);
 }
 
@@ -119,14 +113,6 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
   url::Origin last_request_origin = url::Origin::Create(last_request_url_);
   if (!ReduceAcceptLanguageUtils::OriginCanReduceAcceptLanguage(
           last_request_origin)) {
-    return;
-  }
-
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  // Skip if origin opted-in ReduceAcceptLanguage deprecation origin trial.
-  if (ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
-          last_request_url_, frame_tree_node, origin_trials_delegate_)) {
     return;
   }
 

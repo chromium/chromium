@@ -22,8 +22,6 @@ bool IsTrialPersistentToNextResponse(std::string_view trial_name) {
       "FrobulatePersistentExpiryGracePeriod",
       "FrobulatePersistentInvalidOS",
       "FrobulatePersistentThirdPartyDeprecation",
-      // Production persistent origin trials follow below:
-      "DisableReduceAcceptLanguage",
   };
   return std::ranges::contains(kPersistentTrials, trial_name);
 }

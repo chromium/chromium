@@ -104,30 +104,6 @@ bool ReduceAcceptLanguageUtils::OriginCanReduceAcceptLanguage(
 }
 
 // static
-bool ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
-    const GURL& request_url,
-    FrameTreeNode* frame_tree_node,
-    OriginTrialsControllerDelegate* origin_trials_delegate) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!origin_trials_delegate || !frame_tree_node) {
-    return false;
-  }
-
-  url::Origin request_origin = url::Origin::Create(request_url);
-  std::optional<url::Origin> partition_origin =
-      GetOriginForLanguageLookup(request_origin, frame_tree_node);
-  if (request_origin.opaque() || !partition_origin.has_value() ||
-      partition_origin.value().opaque()) {
-    return false;
-  }
-
-  return origin_trials_delegate->IsFeaturePersistedForOrigin(
-      request_origin, partition_origin.value(),
-      blink::mojom::OriginTrialFeature::kDisableReduceAcceptLanguage,
-      base::Time::Now());
-}
-
-// static
 std::string ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
     const std::string& language_list) {
   if (base::FeatureList::IsEnabled(
