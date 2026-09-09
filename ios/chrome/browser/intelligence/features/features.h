@@ -297,10 +297,7 @@ bool IsGeminiActorEnabled();
 // Parameter to enable or disable backgrounding in Gemini Actor.
 extern const char kGeminiActorBackgroundingParam[];
 
-// Returns true if backgrounding for Gemini Actor is enabled. This requires:
-// 1. Compile flag `IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED` is enabled.
-// 2. `IsGeminiActorEnabled()` and `kGeminiActorBackgroundingParam` (default
-// true) are both true.
+// Returns true if backgrounding for Gemini Actor is enabled.
 bool IsGeminiActorBackgroundingEnabled();
 
 // Enables the GeminiUnaryMigration feature.

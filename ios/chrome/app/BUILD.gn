@@ -575,6 +575,7 @@ source_set("app_internal") {
     "//components/signin/internal/identity_manager",
     "//components/sync",
     "//components/web_resource",
+    "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:metrics_mediator",
@@ -698,6 +699,10 @@ source_set("app_internal") {
 
   if (ios_enable_credential_provider_extension) {
     deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
+
+  if (ios_enable_background_continued_processing) {
+    deps += [ "//ios/chrome/app/background_task" ]
   }
 
   if (enable_rlz) {

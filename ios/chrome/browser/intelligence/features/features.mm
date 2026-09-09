@@ -22,7 +22,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_utils.h"
-#import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -646,13 +646,12 @@ bool IsGeminiActorEnabled() {
 }
 
 bool IsGeminiActorBackgroundingEnabled() {
-  bool backgrounding_enabled = false;
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-  backgrounding_enabled = true;
-#endif
-  return backgrounding_enabled && IsGeminiActorEnabled() &&
-         kGeminiActorBackgrounding.Get();
+  if (!IsGeminiActorEnabled() || !IsBackgroundContinuedProcessingEnabled()) {
+    return false;
+  }
+  return kGeminiActorBackgrounding.Get();
 }
+
 BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiUnaryMigrationEnabled() {

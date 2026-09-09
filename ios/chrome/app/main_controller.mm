@@ -50,9 +50,13 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent.h"
 #import "ios/chrome/app/background_refresh/discover_feed_provider.h"
 #import "ios/chrome/app/background_refresh/test_refresher.h"
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
+#endif
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/change_profile_animator.h"
 #import "ios/chrome/app/change_profile_commands.h"
@@ -1156,6 +1160,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
   [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]
                                           initWithAppState:self.appState]];
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  [_appState addAgent:[[BackgroundContinuedProcessingAppAgent alloc] init]];
+#endif
 
   // TODO(crbug.com/355142171): Remove the DiscoverFeedAppAgent.
   [appState addAgent:[[DiscoverFeedAppAgent alloc] init]];

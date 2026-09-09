@@ -1,0 +1,68 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:background_mode_buildflags",
+  ]
+}
+
+source_set("features_unit_tests") {
+  testonly = true
+  sources = [ "features_unittest.mm" ]
+  deps = [
+    ":features",
+    "//base/test:test_support",
+    "//ios/chrome/app:background_mode_buildflags",
+    "//testing/gtest",
+  ]
+}
+
+if (ios_enable_background_continued_processing) {
+  source_set("background_task") {
+    sources = [
+      "background_continued_processing_app_agent.h",
+      "background_continued_processing_app_agent.mm",
+      "background_continued_processing_task_configuration.h",
+      "background_continued_processing_task_configuration.mm",
+      "background_continued_processing_task_context.h",
+      "background_continued_processing_task_context.mm",
+    ]
+    deps = [
+      ":features",
+      "//base",
+      "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    ]
+    frameworks = [
+      "BackgroundTasks.framework",
+      "Foundation.framework",
+      "UIKit.framework",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "background_continued_processing_app_agent_unittest.mm" ]
+    deps = [
+      ":background_task",
+      ":features",
+      "//base/test:test_support",
+      "//ios/chrome/app:background_mode_buildflags",
+      "//testing/gtest",
+      "//third_party/ocmock",
+    ]
+    frameworks = [
+      "BackgroundTasks.framework",
+      "Foundation.framework",
+      "UIKit.framework",
+    ]
+  }
+}
