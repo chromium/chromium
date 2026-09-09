@@ -494,10 +494,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
       {"onboardingAcceptButton",
        IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
-      {"lensSearchTooltipAcceptButton",
-       IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
-      {"lensSearchTooltipTitle", IDS_LENS_COBROWSE_IPH_HEADER},
-      {"lensSearchTooltipBody", IDS_LENS_COBROWSE_IPH_DESCRIPTION},
       {"oauthErrorDialogTitle", IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_TITLE},
       {"oauthErrorDialogBody", IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_BODY},
       {"oauthErrorDialogReloadButton",
@@ -633,14 +629,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       profile->GetPrefs()->GetInteger(
           contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount) <
           contextual_tasks::GetContextualTasksOnboardingTooltipDismissedCap());
-  dict.Set(
-      "isLensSearchTooltipDismissCountBelowCap",
-      profile->GetPrefs()->GetInteger(
-          contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount) <
-          contextual_tasks::GetContextualTasksLensSearchTooltipDismissedCap());
-  dict.Set("lensSearchTooltipSessionImpressionCap",
-           contextual_tasks::
-               GetContextualTasksLensSearchTooltipSessionImpressionCap());
   dict.Set(
       "isAskGTooltipDismissCountBelowCap",
       profile->GetPrefs()->GetInteger(

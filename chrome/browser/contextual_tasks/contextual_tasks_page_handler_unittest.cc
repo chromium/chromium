@@ -1038,17 +1038,6 @@ TEST_F(ContextualTasksPageHandlerTest, OnboardingTooltipDismissed) {
             1);
 }
 
-TEST_F(ContextualTasksPageHandlerTest, LensSearchTooltipDismissed) {
-  PrefService* prefs = profile()->GetPrefs();
-  EXPECT_EQ(prefs->GetInteger(
-                contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount),
-            0);
-  page_handler_->LensSearchTooltipDismissed();
-  EXPECT_EQ(prefs->GetInteger(
-                contextual_tasks::kContextualTasksLensSearchTooltipDismissedCount),
-            1);
-}
-
 TEST_F(ContextualTasksPageHandlerTest, AskGTooltipDismissed) {
   PrefService* prefs = profile()->GetPrefs();
   EXPECT_EQ(prefs->GetInteger(

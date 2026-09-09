@@ -24,7 +24,6 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isUserSignedIn="${this.isUserSignedIn_}"
           .enableOpenInNewTabButton="${this.isAiPage_ && !this.isErrorPageVisible_}"
           .onboardingTooltipShowing="${this.onboardingTooltipShowing_}"
-          .lensSearchTooltipShowing="${this.lensSearchTooltipTarget_ !== null}"
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
     </div>
@@ -54,16 +53,6 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
 <if expr="not is_android">
-    <contextual-tasks-info-tooltip id="lensSearchTooltip"
-        .target="${this.lensSearchTooltipTarget_}"
-        .container="${this.composeboxElement_}"
-        title-text="$i18n{lensSearchTooltipTitle}"
-        body-text="$i18n{lensSearchTooltipBody}"
-        close-button-type="icon"
-        horizontal-align="right"
-        @tooltip-dismissed="${this.onLensSearchTooltipDismissed_}">
-    </contextual-tasks-info-tooltip>
-
     ${this.showSmartTabSharingTryItIph_ ? html`
       <contextual-tasks-banner-promo id="stsTryItPromo"
           style="${this.getBannerPromoBoundsStyles_()}"
@@ -101,8 +90,6 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .isLensOverlayShowing="${this.isLensOverlayShowing_}"
-          .isLensSearchTooltipShowing="${
-              this.lensSearchTooltipTarget_ !== null}"
           .isOverlayOpenForAimVisualSearch="${
               this.isOverlayOpenForAimVisualSearch_}"
           .enableNativeZeroStateSuggestions="${
@@ -129,7 +116,7 @@ export function getHtml(this: ContextualTasksAppElement) {
         title-text="$i18n{askGFirstRunTitle}"
         body-text="$i18n{askGFirstRunBody}"
         close-button-type="text"
-        button-text="$i18n{lensSearchTooltipAcceptButton}"
+        button-text="$i18n{onboardingAcceptButton}"
         link-url="$i18n{askGHelpUrl}"
         link-text="$i18n{learnMore}"
         horizontal-align="left"

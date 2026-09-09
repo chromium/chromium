@@ -179,10 +179,6 @@ interface PageHandler {
   // dismissed.
   OnboardingTooltipDismissed();
 
-  // Increments the counter for how many times the lens search tooltip is
-  // dismissed.
-  LensSearchTooltipDismissed();
-
   // Increments the counter for how many times the AskG tooltip is
   // dismissed.
   AskGTooltipDismissed();

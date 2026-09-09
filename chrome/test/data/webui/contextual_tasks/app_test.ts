@@ -1387,8 +1387,6 @@ suite('ContextualTasksAppTest', function() {
         isAskGTooltipDismissCountBelowCap: true,
         askGTooltipSessionImpressionCap: 10,
         askGCoBrowseEnabled: true,
-        isLensSearchTooltipDismissCountBelowCap: true,
-        lensSearchTooltipSessionImpressionCap: 10,
       });
 
       const result = await createContextualTasksAppElement(
@@ -1504,62 +1502,6 @@ suite('ContextualTasksAppTest', function() {
       assertTrue(!!onboardingTooltip);
       assertTrue(onboardingTooltip.shouldShow);
     });
-
-    test('Lens shows when AskG is dismissed', async () => {
-      loadTimeData.overrideValues({
-        isAskGTooltipDismissCountBelowCap: false,
-      });
-      const result = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
-      appElement = result.appElement;
-      appElement.$.composebox.getComposebox = () => mockCrComposebox;
-      appElement.entryPoint_ = 'omnibox_action';
-      appElement.isShownInTab_ = false;
-
-      appElement.updateTooltipVisibilityForTesting();
-      await microtasksFinished();
-
-      assertTrue(appElement.lensSearchTooltipTarget_ !== null);
-      assertEquals(null, appElement.askGTooltipTarget_);
-      assertTrue(appElement.$.composebox.isLensSearchTooltipShowing);
-    });
-
-    test(
-        'Lens does not show when AskG is dismissed but wrong entry point',
-        async () => {
-          loadTimeData.overrideValues({
-            isAskGTooltipDismissCountBelowCap: false,
-          });
-          const result =
-              await createContextualTasksAppElement(/*url=*/ fixtureUrl);
-          appElement = result.appElement;
-          appElement.$.composebox.getComposebox = () => mockCrComposebox;
-          appElement.entryPoint_ = 'toolbar';  // Ineligible
-          appElement.isShownInTab_ = false;
-
-          appElement.updateTooltipVisibilityForTesting();
-          await microtasksFinished();
-
-          assertEquals(null, appElement.lensSearchTooltipTarget_);
-        });
-
-    test(
-        'Lens does not show when AskG is dismissed but shown in tab',
-        async () => {
-          loadTimeData.overrideValues({
-            isAskGTooltipDismissCountBelowCap: false,
-          });
-          const result =
-              await createContextualTasksAppElement(/*url=*/ fixtureUrl);
-          appElement = result.appElement;
-          appElement.$.composebox.getComposebox = () => mockCrComposebox;
-          appElement.entryPoint_ = 'omnibox_action';
-          appElement.isShownInTab_ = true;  // Ineligible
-
-          appElement.updateTooltipVisibilityForTesting();
-          await microtasksFinished();
-
-          assertEquals(null, appElement.lensSearchTooltipTarget_);
-        });
   });
   // </if>
 });

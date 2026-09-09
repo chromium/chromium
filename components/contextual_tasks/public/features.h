@@ -336,14 +336,6 @@ extern int GetContextualTasksShowOnboardingTooltipSessionImpressionCap();
 // user before it no longer shows up.
 extern int GetContextualTasksOnboardingTooltipDismissedCap();
 
-// The maximum number of times the lens search tooltip can be dismissed by the
-// user before it no longer shows up.
-extern int GetContextualTasksLensSearchTooltipDismissedCap();
-
-// The maximum number of times the lens search tooltip can be shown to the user
-// in a single session before it no longer shows up.
-extern int GetContextualTasksLensSearchTooltipSessionImpressionCap();
-
 // The maximum number of times the AskG tooltip can be dismissed by the
 // user before it no longer shows up.
 extern int GetContextualTasksAskGTooltipDismissedCap();

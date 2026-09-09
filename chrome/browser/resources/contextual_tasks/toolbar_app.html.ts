@@ -16,7 +16,6 @@ export function getHtml(this: ContextualTasksToolbarAppElement) {
         .isUserSignedIn="${this.isUserSignedIn_}"
         .enableOpenInNewTabButton="${this.isAiPage_}"
         .onboardingTooltipShowing="${this.onboardingTooltipShowing_}"
-        .lensSearchTooltipShowing="${this.lensSearchTooltipShowing_}"
         @new-thread-click="${this.onNewThreadClick_}">
     </top-toolbar>
   <!--_html_template_end_-->`;
