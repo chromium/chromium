@@ -20,21 +20,12 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/blink/public/web/web_range.h"
 
-namespace autofill {
-class FieldDataManager;
-}
-
 namespace blink {
 class WebElement;
 class WebKeyboardEvent;
 class WebNode;
 struct RendererPreferences;
 }  // namespace blink
-
-namespace ukm {
-class MojoUkmRecorder;
-class UkmRecorder;
-}  // namespace ukm
 
 namespace autofill {
 
@@ -120,15 +111,6 @@ class AtMemoryHandler {
   std::optional<AskForValuesToFillInfo> ExtractAskForValuesToFill(
       const blink::WebElement& field);
 
-  // Records a UKM event if the user pressed "@" twice in quick succession.
-  void MaybeRecordAtAt(const blink::WebElement& field,
-                       const blink::WebKeyboardEvent& event,
-                       const FieldDataManager& field_data_manager,
-                       const CallTimerState& timer_state,
-                       form_util::ButtonTitlesCache* button_titles_cache);
-
-  ukm::UkmRecorder* GetUkmRecorder();
-
   const raw_ref<AutofillAgent> agent_;
   base::circular_deque<AskForValuesToFillInfo>
       last_at_memory_ask_for_values_to_fills_;
@@ -162,14 +144,6 @@ class AtMemoryHandler {
     // The target of the last keydown event.
     FieldRendererId last_field_id{};
   } ctrl_state_;
-
-  // State for the "@@" UKM metric.
-  struct {
-    base::TimeTicks time;
-    FieldRendererId field;
-  } last_at_key_press_;
-
-  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
   base::WeakPtrFactory<AtMemoryHandler> weak_ptr_factory_{this};
 };

@@ -21,13 +21,9 @@
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/signatures.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -208,11 +204,6 @@ bool AtMemoryHandler::HasTriggerStringNextToCaret(
 
 bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& field,
                                         const WebKeyboardEvent& event) {
-  MaybeRecordAtAt(
-      field, event, agent_->field_data_manager(),
-      agent_->GetCallTimerState(CallTimerState::CallSite::kDidReceiveKeyDown),
-      agent_->button_titles_cache());
-
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     return false;
   }
@@ -579,95 +570,6 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
       .selection_range =
           frame ? frame->GetInputMethodController()->GetSelectionOffsets()
                 : WebRange()});
-}
-
-ukm::UkmRecorder* AtMemoryHandler::GetUkmRecorder() {
-  if (!ukm_recorder_) {
-    mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
-    content::RenderThread::Get()->BindHostReceiver(
-        factory.BindNewPipeAndPassReceiver());
-    ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
-  }
-  return ukm_recorder_.get();
-}
-
-void AtMemoryHandler::MaybeRecordAtAt(
-    const WebElement& field,
-    const WebKeyboardEvent& event,
-    const FieldDataManager& field_data_manager,
-    const CallTimerState& timer_state,
-    form_util::ButtonTitlesCache* button_titles_cache) {
-  // This function is intended only for WebFormControlElements and for
-  // contenteditables that aren't WebFormElement. See
-  // form_util::GetFieldRendererId().
-  if (field.DynamicTo<WebFormElement>()) {
-    return;
-  }
-
-  if (base::IsAsciiControl(event.text[0])) {
-    return;
-  }
-
-  if (event.text[0] != u'@' || event.text[1] != 0 ||
-      (event.GetModifiers() & blink::WebInputEvent::kIsAutoRepeat)) {
-    last_at_key_press_ = {};
-    return;
-  }
-
-  const base::TimeTicks now = base::TimeTicks::Now();
-  if (last_at_key_press_.time.is_null() ||
-      now - last_at_key_press_.time > kCoherentKeyDownThreshold ||
-      last_at_key_press_.field != form_util::GetFieldRendererId(field)) {
-    last_at_key_press_ = {now, form_util::GetFieldRendererId(field)};
-    return;
-  }
-  last_at_key_press_ = {};
-
-  const ukm::SourceId source_id = field && field.GetDocument()
-                                      ? field.GetDocument().GetUkmSourceId()
-                                      : ukm::kInvalidSourceId;
-  ukm::UkmRecorder* recorder = GetUkmRecorder();
-  if (!recorder || source_id == ukm::kInvalidSourceId) {
-    return;
-  }
-
-  ukm::builders::Autofill_AtAtPressed builder(source_id);
-
-  auto set_metrics = [&](const FormData& form_data,
-                         const FormFieldData& field_data) {
-    builder.SetFormSignature(
-        HashFormSignature(CalculateFormSignature(form_data)));
-    builder.SetFieldSignature(
-        HashFieldSignature(CalculateFieldSignatureForField(field_data)));
-    builder.SetFormControlType(
-        std::to_underlying(field_data.form_control_type()));
-    if (WebLocalFrame* frame = field.GetDocument().GetFrame()) {
-      const FieldRendererId field_id = field_data.renderer_id();
-      const blink::LocalFrameToken frame_token = frame->GetLocalFrameToken();
-      builder.SetFieldSessionIdentifier(StrToHash64Bit(
-          base::NumberToString(field_id.value()) + frame_token.ToString()));
-    }
-  };
-
-  if (WebFormControlElement form_control =
-          field.DynamicTo<WebFormControlElement>()) {
-    if (std::optional<form_util::FormAndField> form_and_field =
-            form_util::FindFormAndFieldForFormControlElement(
-                form_control, field_data_manager, timer_state,
-                button_titles_cache,
-                /*form_cache=*/{})) {
-      set_metrics(form_and_field->form, form_and_field->field);
-    }
-  } else if (field && field.IsContentEditable()) {
-    if (std::optional<FormData> form_data =
-            form_util::FindFormForContentEditable(field)) {
-      if (!form_data->fields().empty()) {
-        set_metrics(*form_data, form_data->fields().front());
-      }
-    }
-  }
-
-  builder.Record(recorder);
 }
 
 const RendererPreferences* AtMemoryHandler::GetRendererPreferences() const {
