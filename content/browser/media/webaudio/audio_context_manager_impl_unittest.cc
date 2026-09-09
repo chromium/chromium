@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -25,6 +26,8 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
 
     clock_.SetNowTicks(base::TimeTicks::Now());
 
+    SimulateAudioStreamStarted();
+
     mojo::Remote<blink::mojom::AudioContextManager> service_remote;
     audio_context_manager_ = &AudioContextManagerImpl::CreateForTesting(
         *main_rfh(), service_remote.BindNewPipeAndPassReceiver());
@@ -32,8 +35,26 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    if (web_contents() && main_rfh() &&
+        static_cast<RenderFrameHostImpl*>(main_rfh())
+            ->HasMediaStreams(
+                RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream)) {
+      SimulateAudioStreamStopped();
+    }
     audio_context_manager_ = nullptr;
     RenderViewHostTestHarness::TearDown();
+  }
+
+  void SimulateAudioStreamStarted() {
+    static_cast<RenderFrameHostImpl*>(main_rfh())
+        ->OnMediaStreamAdded(
+            RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream);
+  }
+
+  void SimulateAudioStreamStopped() {
+    static_cast<RenderFrameHostImpl*>(main_rfh())
+        ->OnMediaStreamRemoved(
+            RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream);
   }
 
   AudioContextManagerImpl* audio_context_manager() {
@@ -53,6 +74,7 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(AudioContextManagerImplTest, TimeBelow10SecondsIsRaw) {
+  audio_context_manager()->AudioContextCreated(0);
   // Entry for 42 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
   clock().Advance(base::Milliseconds(42));
@@ -79,6 +101,7 @@ TEST_F(AudioContextManagerImplTest, TimeBelow10SecondsIsRaw) {
 }
 
 TEST_F(AudioContextManagerImplTest, TimeGreater10SecondsIsRoundedDown) {
+  audio_context_manager()->AudioContextCreated(0);
   // Entry for 42 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
   clock().Advance(base::Seconds(42));
@@ -163,6 +186,66 @@ TEST_F(AudioContextManagerImplTest, NoContextsCreated) {
       "WebAudio.AudioContext.ConcurrentAudioContexts",
       /*sample=*/0,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(AudioContextManagerImplTest,
+       AudioContextAudiblePlaybackStoppedWithoutStartedDoesNotCrash) {
+  // Calling stopped for an unstarted context ID should not crash.
+  audio_context_manager()->AudioContextAudiblePlaybackStopped(42);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+}
+
+TEST_F(AudioContextManagerImplTest,
+       AudioContextClosedWithPendingAudiblePlayback) {
+  audio_context_manager()->AudioContextCreated(1);
+  audio_context_manager()->AudioContextAudiblePlaybackStarted(1);
+  clock().Advance(base::Seconds(5));
+
+  // Closing context should flush the pending audible duration to UKM.
+  audio_context_manager()->AudioContextClosed(1);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  EXPECT_EQ(5000, *test_ukm_recorder().GetEntryMetric(
+                      ukm_entries[0], UkmEntry::kAudibleTimeName));
+}
+
+TEST_F(AudioContextManagerImplTest, AudioContextAudiblePlaybackZeroDuration) {
+  audio_context_manager()->AudioContextCreated(1);
+  audio_context_manager()->AudioContextAudiblePlaybackStarted(1);
+  // Stopped in the same clock tick (duration == 0).
+  audio_context_manager()->AudioContextAudiblePlaybackStopped(1);
+
+  // Zero duration should not record to UKM.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+}
+
+TEST_F(AudioContextManagerImplTest,
+       AudioContextAudiblePlaybackStartedIgnoredIfContextNotCreated) {
+  // Started called for a context ID that was never created should be ignored.
+  audio_context_manager()->AudioContextAudiblePlaybackStarted(42);
+  clock().Advance(base::Seconds(5));
+  audio_context_manager()->AudioContextAudiblePlaybackStopped(42);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+}
+
+TEST_F(AudioContextManagerImplTest,
+       AudioContextAudiblePlaybackStartedIgnoredIfNoAudioStream) {
+  // Context is created, but the frame has no active audio output stream.
+  SimulateAudioStreamStopped();
+  audio_context_manager()->AudioContextCreated(1);
+
+  audio_context_manager()->AudioContextAudiblePlaybackStarted(1);
+  clock().Advance(base::Seconds(5));
+  audio_context_manager()->AudioContextAudiblePlaybackStopped(1);
+
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
 }
 
 }  // namespace content
