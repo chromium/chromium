@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -30,7 +29,6 @@ namespace {
 const char kStartOnboardingQueryParam[] = "onboarding";
 const char kStartReceivingQueryParam[] = "receive";
 
-constexpr base::TimeDelta kShutoffTimeoutLegacy = base::Minutes(5);
 constexpr base::TimeDelta kShutoffTimeout = base::Minutes(10);
 
 std::string GetTimestampString() {
@@ -46,8 +44,7 @@ NearbyShareDelegateImpl::NearbyShareDelegateImpl(
       settings_opener_(std::make_unique<SettingsOpener>()),
       shutoff_timer_(
           FROM_HERE,
-          chromeos::features::IsQuickShareV2Enabled() ? kShutoffTimeout
-                                                      : kShutoffTimeoutLegacy,
+          kShutoffTimeout,
           base::BindRepeating(&NearbyShareDelegateImpl::DisableHighVisibility,
                               base::Unretained(this))) {
   ash::SessionController::Get()->AddObserver(this);
@@ -189,10 +186,7 @@ void NearbyShareDelegateImpl::OnHighVisibilityChanged(bool high_visibility_on) {
   is_enable_high_visibility_request_active_ = false;
 
   if (high_visibility_on) {
-    base::TimeDelta shutoff_timeout =
-        chromeos::features::IsQuickShareV2Enabled() ? kShutoffTimeout
-                                                    : kShutoffTimeoutLegacy;
-    shutoff_time_ = base::TimeTicks::Now() + shutoff_timeout;
+    shutoff_time_ = base::TimeTicks::Now() + kShutoffTimeout;
     shutoff_timer_.Reset();
   } else {
     shutoff_timer_.Stop();
@@ -232,12 +226,9 @@ void NearbyShareDelegateImpl::SettingsOpener::ShowSettingsPage(
     query_string += "?" + sub_page + "&time=" + GetTimestampString();
 
     if (sub_page == kStartReceivingQueryParam) {
-      base::TimeDelta shutoff_timeout =
-          chromeos::features::IsQuickShareV2Enabled() ? kShutoffTimeout
-                                                      : kShutoffTimeoutLegacy;
       // Attach high visibility shutoff timeout for display in webui.
       query_string +=
-          "&timeout=" + base::NumberToString(shutoff_timeout.InSeconds());
+          "&timeout=" + base::NumberToString(kShutoffTimeout.InSeconds());
     }
   }
 

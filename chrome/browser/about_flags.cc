@@ -8627,9 +8627,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShimlessRMAHideGoogleSKUName,
      flag_descriptions::kShimlessRMAHideGoogleSKUDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShimlessRMAHideGoogleSKU)},
-    {"quick-share-v2", flag_descriptions::kQuickShareV2Name,
-     flag_descriptions::kQuickShareV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kQuickShareV2)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-experimental-cookie-features",

@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -58,8 +57,7 @@ NearbyShareFeaturePodController::NearbyShareFeaturePodController(
           FROM_HERE,
           kOneSecond,
           base::BindRepeating(&NearbyShareFeaturePodController::UpdateButton,
-                              base::Unretained(this),
-                              /*enabled=*/true)),
+                              base::Unretained(this))),
       tray_controller_(tray_controller),
       nearby_share_delegate_(Shell::Get()->nearby_share_delegate()),
       nearby_share_controller_(Shell::Get()->nearby_share_controller()) {
@@ -75,71 +73,33 @@ NearbyShareFeaturePodController::~NearbyShareFeaturePodController() {
 
 std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
     bool compact) {
-  std::unique_ptr<FeatureTile> tile;
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    tile = std::make_unique<FeatureTile>(
-        base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    tile = std::make_unique<FeatureTile>(
-        base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
-
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                          weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
 
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    const bool target_visibility =
-        nearby_share_delegate_->IsPodButtonVisible() &&
-        session_controller->IsActiveUserSessionStarted() &&
-        session_controller->IsUserPrimary() &&
-        !session_controller->IsUserSessionBlocked();
-    tile_->SetVisible(target_visibility);
-    if (target_visibility) {
-      TrackVisibilityUMA();
-    }
-    tile_->SetLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL));
-    tile_->CreateDecorativeDrillInArrow();
-    tile_->SetIconClickable(true);
-    tile_->SetIconClickCallback(
-        base::BindRepeating(&NearbyShareFeaturePodController::OnIconPressed,
-                            weak_ptr_factory_.GetWeakPtr()));
-
-    // Set tile appearance.
-    UpdateQSv2Button();
-  } else {
-    const bool target_visibility =
-        nearby_share_delegate_->IsPodButtonVisible() &&
-        session_controller->IsActiveUserSessionStarted() &&
-        session_controller->IsUserPrimary() &&
-        !session_controller->IsUserSessionBlocked() &&
-        nearby_share_delegate_->IsEnabled();
-    tile_->SetVisible(target_visibility);
-    if (target_visibility) {
-      TrackVisibilityUMA();
-    }
-    const std::u16string feature_name =
-        nearby_share_delegate_->GetPlaceholderFeatureName();
-    tile_->SetLabel(feature_name.empty()
-                        ? l10n_util::GetStringUTF16(
-                              IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL)
-                        : l10n_util::GetStringFUTF16(
-                              IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH,
-                              feature_name));
-    tile_->SetTooltipText(
-        feature_name.empty()
-            ? l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP)
-            : l10n_util::GetStringFUTF16(
-                  IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP_PH,
-                  feature_name));
-    bool enabled = nearby_share_delegate_->IsHighVisibilityOn();
-    OnHighVisibilityEnabledChanged(enabled);
+  const bool target_visibility =
+      nearby_share_delegate_->IsPodButtonVisible() &&
+      session_controller->IsActiveUserSessionStarted() &&
+      session_controller->IsUserPrimary() &&
+      !session_controller->IsUserSessionBlocked();
+  tile_->SetVisible(target_visibility);
+  if (target_visibility) {
+    TrackVisibilityUMA();
   }
+  tile_->SetLabel(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL));
+  tile_->CreateDecorativeDrillInArrow();
+  tile_->SetIconClickable(true);
+  tile_->SetIconClickCallback(
+      base::BindRepeating(&NearbyShareFeaturePodController::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  // Set tile appearance.
+  UpdateButton();
   return tile;
 }
 
@@ -148,93 +108,47 @@ QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
 }
 
 void NearbyShareFeaturePodController::OnIconPressed() {
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    CHECK(nearby_share_delegate_);
+  CHECK(nearby_share_delegate_);
 
-    if (nearby_share_delegate_->IsOnboardingComplete()) {
-      nearby_share_delegate_->SetEnabled(!nearby_share_delegate_->IsEnabled());
-      UpdateQSv2Button();
-      return;
-    }
-
-    nearby_share_delegate_->ShowOnboardingPage();
+  if (nearby_share_delegate_->IsOnboardingComplete()) {
+    nearby_share_delegate_->SetEnabled(!nearby_share_delegate_->IsEnabled());
+    UpdateButton();
     return;
   }
 
-  TrackToggleUMA(
-      /*target_toggle_state=*/!nearby_share_delegate_->IsHighVisibilityOn());
-  if (nearby_share_delegate_->IsHighVisibilityOn()) {
-    nearby_share_delegate_->DisableHighVisibility();
-  } else {
-    nearby_share_delegate_->EnableHighVisibility();
-  }
+  nearby_share_delegate_->ShowOnboardingPage();
 }
 
 void NearbyShareFeaturePodController::OnLabelPressed() {
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    CHECK(nearby_share_delegate_);
-    if (nearby_share_delegate_->IsOnboardingComplete()) {
-      tray_controller_->ShowNearbyShareDetailedView();
-      return;
-    }
-
-    nearby_share_delegate_->ShowOnboardingPage();
+  CHECK(nearby_share_delegate_);
+  if (nearby_share_delegate_->IsOnboardingComplete()) {
+    tray_controller_->ShowNearbyShareDetailedView();
     return;
   }
 
-  TrackDiveInUMA();
-  nearby_share_delegate_->ShowNearbyShareSettings();
+  nearby_share_delegate_->ShowOnboardingPage();
 }
 
 void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
     bool enabled) {
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    enabled ? countdown_timer_.Reset() : countdown_timer_.Stop();
-    return;
-  }
-
   if (enabled) {
-    shutoff_time_ = nearby_share_delegate_->HighVisibilityShutoffTime();
     countdown_timer_.Reset();
   } else {
     countdown_timer_.Stop();
   }
-  UpdateButton(enabled);
 }
 
 void NearbyShareFeaturePodController::OnNearbyShareEnabledChanged(
     bool enabled) {
-  UpdateQSv2Button();
+  UpdateButton();
 }
 
 void NearbyShareFeaturePodController::OnVisibilityChanged(
     ::nearby_share::mojom::Visibility visibility) {
-  UpdateQSv2Button();
+  UpdateButton();
 }
 
-void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
-  tile_->SetToggled(enabled);
-
-  auto& icon = nearby_share_delegate_->GetIcon(/*on_icon=*/enabled);
-  if (enabled) {
-    tile_->SetVectorIcon(icon.is_empty() ? kQuickSettingsNearbyShareOnIcon
-                                         : icon);
-    tile_->SetSubLabel(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_ON_STATE,
-        RemainingTimeString(RemainingHighVisibilityTime())));
-
-  } else {
-    tile_->SetVectorIcon(icon.is_empty() ? kQuickSettingsNearbyShareOffIcon
-                                         : icon);
-    tile_->SetSubLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_OFF_STATE));
-  }
-}
-
-void NearbyShareFeaturePodController::UpdateQSv2Button() {
-  if (!chromeos::features::IsQuickShareV2Enabled()) {
-    return;
-  }
+void NearbyShareFeaturePodController::UpdateButton() {
   CHECK(nearby_share_delegate_);
 
   nearby_share_delegate_->IsEnabled() ? ToggleTileOn() : ToggleTileOff();
@@ -310,13 +224,9 @@ void NearbyShareFeaturePodController::ToggleTileOff() {
 base::TimeDelta NearbyShareFeaturePodController::RemainingHighVisibilityTime()
     const {
   base::TimeTicks now = base::TimeTicks::Now();
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    const base::TimeTicks shutoff_time =
-        nearby_share_delegate_->HighVisibilityShutoffTime();
-    return shutoff_time > now ? shutoff_time - now : base::Seconds(0);
-  }
-
-  return shutoff_time_ > now ? shutoff_time_ - now : base::Seconds(0);
+  const base::TimeTicks shutoff_time =
+      nearby_share_delegate_->HighVisibilityShutoffTime();
+  return shutoff_time > now ? shutoff_time - now : base::Seconds(0);
 }
 
 }  // namespace ash

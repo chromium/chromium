@@ -46,17 +46,15 @@ class ASH_EXPORT NearbyShareFeaturePodController
       ::nearby_share::mojom::Visibility visibility) override;
 
  private:
-  void UpdateButton(bool enabled);
-  void UpdateQSv2Button();
+  void UpdateButton();
   void ToggleTileOn();
   void ToggleTileOff();
 
   base::TimeDelta RemainingHighVisibilityTime() const;
 
   // Countdown timer fires periodically to update the remaining time until
-  // |shutoff_time_| as displayed by the pod button sub-label.
+  // shutoff as displayed by the pod button sub-label.
   base::RepeatingTimer countdown_timer_;
-  base::TimeTicks shutoff_time_;
 
   const raw_ptr<UnifiedSystemTrayController> tray_controller_;
   const raw_ptr<NearbyShareDelegate> nearby_share_delegate_;

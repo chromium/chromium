@@ -63,7 +63,6 @@
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -361,8 +360,7 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 
 // We will run tests with the following feature flags enabled and disabled in
 // all permutations. To add or a remove a feature you can just update this list.
-const std::vector<base::test::FeatureRef> kTestFeatures = {
-    chromeos::features::kQuickShareV2};
+const std::vector<base::test::FeatureRef> kTestFeatures = {};
 
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;

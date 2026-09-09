@@ -15,8 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -45,7 +43,6 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
   void TearDown() override {
     tile_.reset();
     pod_controller_.reset();
-    scoped_feature_list_.Reset();
     nearby_share_controller_ = nullptr;
     test_delegate_ = nullptr;
     NoSessionAshTestBase::TearDown();
@@ -86,7 +83,6 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
 
   raw_ptr<TestNearbyShareDelegate> test_delegate_ = nullptr;
   raw_ptr<NearbyShareController> nearby_share_controller_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {

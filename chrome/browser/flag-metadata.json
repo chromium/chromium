@@ -8576,11 +8576,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "quick-share-v2",
-    "owners": [ "brandosocarras@google.com", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "read-aloud-native",
     "owners": [
       "andresmolina@google.com",

@@ -572,8 +572,6 @@ class NearbySharingServiceImpl
   bool is_connecting_ = false;
   // The time scanning began.
   base::Time scanning_start_timestamp_;
-  // True when we are advertising with a device name visible to everyone.
-  bool in_high_visibility_ = false;
   // The time attachments are sent after a share target is selected. This is
   // used to time the process from selecting a share target to writing the
   // introduction frame (last frame before receiver gets notified).

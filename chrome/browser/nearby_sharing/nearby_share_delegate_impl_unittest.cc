@@ -18,7 +18,6 @@
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,9 +89,6 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   }
 
   void InitDelegate() {
-    if (delegate_) {
-      delegate_.reset();
-    }
     delegate_ = std::make_unique<NearbyShareDelegateImpl>(&controller_);
 
     EXPECT_CALL(nearby_share_service_, GetSettings())
@@ -132,9 +128,6 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
 };
 
 TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kQuickShareV2);
-  InitDelegate();
   settings()->SetEnabled(true);
 
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
@@ -152,26 +145,6 @@ TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
   FastForward(base::Minutes(1));
 
   // DisableHighVisibility will be called automatically after the timer fires.
-  SetHighVisibilityOn(false);
-}
-
-TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout_Legacy) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kQuickShareV2);
-  InitDelegate();
-  settings()->SetEnabled(true);
-
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
-  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
-
-  delegate_->EnableHighVisibility();
-  SetHighVisibilityOn(true);
-
-  EXPECT_CALL(nearby_share_service_, ClearForegroundReceiveSurfaces());
-  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
-
-  // DisableHighVisibility will be called automatically after the timer fires.
-  FastForward(base::Minutes(10));
   SetHighVisibilityOn(false);
 }
 

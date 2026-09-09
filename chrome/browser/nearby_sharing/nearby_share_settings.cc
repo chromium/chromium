@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -55,10 +54,8 @@ NearbyShareSettings::NearbyShareSettings(
 
   // In Quick Share v2, the 'Selected contacts' visibility is deprecated. Set
   // user visibility, if in 'Selected contacts', to 'Your devices'.
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    if (GetVisibility() == nearby_share::mojom::Visibility::kSelectedContacts) {
-      SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
-    }
+  if (GetVisibility() == nearby_share::mojom::Visibility::kSelectedContacts) {
+    SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
   }
 }
 

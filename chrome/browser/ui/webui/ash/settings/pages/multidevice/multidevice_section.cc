@@ -31,7 +31,6 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -768,8 +767,8 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
 
-  html_source->AddBoolean("isQuickShareV2Enabled",
-                          chromeos::features::IsQuickShareV2Enabled());
+  // TODO(crbug.com/350547931): Remove the feature for WebUI.
+  html_source->AddBoolean("isQuickShareV2Enabled", true);
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

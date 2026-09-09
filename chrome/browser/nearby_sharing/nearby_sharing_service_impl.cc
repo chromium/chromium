@@ -55,7 +55,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/cross_device/nearby/nearby_features.h"
 #include "components/prefs/pref_service.h"
@@ -762,11 +761,7 @@ NearbySharingServiceImpl::ClearForegroundReceiveSurfaces() {
 }
 
 bool NearbySharingServiceImpl::IsInHighVisibility() const {
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    return prefs_->GetBoolean(prefs::kNearbySharingInHighVisibilityPrefName);
-  }
-
-  return in_high_visibility_;
+  return prefs_->GetBoolean(prefs::kNearbySharingInHighVisibilityPrefName);
 }
 
 bool NearbySharingServiceImpl::IsTransferring() const {
@@ -4874,12 +4869,8 @@ void NearbySharingServiceImpl::SetInHighVisibility(
     return;
   }
 
-  if (chromeos::features::IsQuickShareV2Enabled()) {
-    prefs_->SetBoolean(prefs::kNearbySharingInHighVisibilityPrefName,
-                       /*value=*/new_in_high_visibility);
-  } else {
-    in_high_visibility_ = new_in_high_visibility;
-  }
+  prefs_->SetBoolean(prefs::kNearbySharingInHighVisibilityPrefName,
+                     /*value=*/new_in_high_visibility);
 
   for (auto& observer : observers_) {
     observer.OnHighVisibilityChanged(new_in_high_visibility);

@@ -12,7 +12,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
@@ -74,8 +73,6 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
 
     test_delegate_ = static_cast<TestNearbyShareDelegate*>(
         Shell::Get()->nearby_share_delegate());
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kQuickShareV2);
   }
 
   void TearDown() override {
@@ -137,7 +134,6 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
  private:
   raw_ptr<NearbyShareDetailedViewImpl> detailed_view_ = nullptr;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeIdentityManagerProvider> identity_manager_provider_;
 };

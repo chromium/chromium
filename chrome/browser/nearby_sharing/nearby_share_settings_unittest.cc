@@ -19,7 +19,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-test-utils.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -347,13 +346,12 @@ TEST_F(NearbyShareSettingsTest, GetAndSetAllowedContacts) {
 }
 
 TEST_F(NearbyShareSettingsTest, QuickShareV2_SomeContacts_ToYourDevices) {
-  feature_list_.InitAndEnableFeature(chromeos::features::kQuickShareV2);
   pref_service_.SetInteger(
       prefs::kNearbySharingBackgroundVisibilityName,
       static_cast<int>(nearby_share::mojom::Visibility::kSelectedContacts));
 
   // Since some contacts -> your devices occurs in constructor, new
-  // NearbyShareSettings object must be created after QuickShareV2 is enabled.
+  // NearbyShareSettings object must be created.
   NearbyShareSettings nearby_share_settings(&pref_service_,
                                             &local_device_data_manager_);
 

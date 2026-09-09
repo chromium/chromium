@@ -4337,12 +4337,6 @@ inline constexpr char kQuicName[] = "Experimental QUIC protocol";
 inline constexpr char kQuicDescription[] =
     "Enable experimental QUIC protocol support.";
 
-inline constexpr char kQuickShareV2Name[] = "Quick Share v2";
-inline constexpr char kQuickShareV2Description[] =
-    "Enables Quick Share v2, which defaults Quick Share to 'Your Devices' "
-    "visibility, removes the 'Selected Contacts' visibility, removes the Quick "
-    "Share On/Off toggle.";
-
 inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
     "Send Tab To Self enhanced handoff";
 inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =
