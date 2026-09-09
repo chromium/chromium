@@ -312,8 +312,14 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowSuccess_RedirectsToPicker) {
   identity_consent::IframeMessage message;
   message.set_event(identity_consent::Event::DECISION_RESPONSE_EVENT);
   message.mutable_privacy_flow_result()->mutable_flow_completed();
-  message.mutable_privacy_flow_result()->mutable_flow_id()->set_value(
-      omnibox::kComposeboxDriveConsentFlowId.Get());
+  message.mutable_privacy_flow_result()->set_flow_id(
+      static_cast<identity_consent::ConsentFlowId>(
+          omnibox::kComposeboxDriveConsentFlowId.Get()));
+  auto* decision = message.mutable_privacy_flow_result()->add_decision();
+  decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  decision->set_decision(identity_consent::Decision::DECISION_CONSENT);
 
   // Expect ShowDrivePicker to be called next
   base::RunLoop picker_run_loop;
@@ -340,6 +346,132 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowSuccess_RedirectsToPicker) {
       kAccessToken, base::Time::Now() + base::Hours(1));
 
   picker_run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUITest,
+       ConsentKitFlowSuccess_KeepConsent_RedirectsToPicker) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog,
+      result_handler.BindAndGetRemote());
+
+  GURL consent_url;
+  base::RunLoop consent_url_run_loop;
+  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
+      .WillOnce([&consent_url, &consent_url_run_loop](const GURL& url) {
+        consent_url = url;
+        consent_url_run_loop.Quit();
+      });
+
+  controller.TriggerDrivePickerHost(std::move(request));
+  consent_url_run_loop.Run();
+
+  // Initial consent preference should not be kConsent
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  // Construct successful PrivacyFlowResult message with DECISION_KEEP_CONSENT
+  identity_consent::IframeMessage message;
+  message.set_event(identity_consent::Event::DECISION_RESPONSE_EVENT);
+  message.mutable_privacy_flow_result()->mutable_flow_completed();
+  message.mutable_privacy_flow_result()->set_flow_id(
+      static_cast<identity_consent::ConsentFlowId>(
+          omnibox::kComposeboxDriveConsentFlowId.Get()));
+  auto* decision = message.mutable_privacy_flow_result()->add_decision();
+  decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  decision->set_decision(identity_consent::Decision::DECISION_KEEP_CONSENT);
+
+  // Expect ShowDrivePicker to be called next
+  base::RunLoop picker_run_loop;
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(
+          [&picker_run_loop](
+              mojo::PendingRemote<
+                  drive_picker_host::mojom::DrivePickerResultHandler>,
+              drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            picker_run_loop.Quit();
+          });
+
+  // Simulate receiving message from iframe
+  controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
+
+  // Verify consent preference is updated to kConsent
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  // Respond with access token to complete Picker setup
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Now() + base::Hours(1));
+
+  picker_run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUITest, ConsentKitFlowNotCompleted_RelaysCancel) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog,
+      result_handler.BindAndGetRemote());
+
+  base::RunLoop consent_url_run_loop;
+  EXPECT_CALL(mock_bridge, LoadConsentKitUrl(testing::_))
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&consent_url_run_loop]() { consent_url_run_loop.Quit(); }));
+  controller.TriggerDrivePickerHost(std::move(request));
+  consent_url_run_loop.Run();
+
+  // Construct flow_not_completed message with DECISION_ABANDONED.
+  identity_consent::IframeMessage message;
+  message.set_event(identity_consent::Event::DECISION_RESPONSE_EVENT);
+  message.mutable_privacy_flow_result()->mutable_flow_not_completed();
+  message.mutable_privacy_flow_result()->set_flow_id(
+      static_cast<identity_consent::ConsentFlowId>(
+          omnibox::kComposeboxDriveConsentFlowId.Get()));
+  auto* decision = message.mutable_privacy_flow_result()->add_decision();
+  decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  decision->set_decision(identity_consent::Decision::DECISION_ABANDONED);
+
+  base::RunLoop cancel_run_loop;
+  EXPECT_CALL(result_handler, OnCancel())
+      .WillOnce(testing::InvokeWithoutArgs(
+          [&cancel_run_loop]() { cancel_run_loop.Quit(); }));
+
+  controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(message));
+  cancel_run_loop.Run();
+
+  // Preference should remain not kConsent
+  EXPECT_NE(
+      profile()->GetPrefs()->GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
 }
 
 TEST_F(DrivePickerHostUITest, ConsentKitFlowCancel_RelaysCancel) {
