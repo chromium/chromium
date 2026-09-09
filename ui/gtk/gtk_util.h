@@ -6,6 +6,7 @@
 #define UI_GTK_GTK_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -231,6 +232,19 @@ COMPONENT_EXPORT(GTK) void UninstallGtkSettingsInterceptor();
 // `gtk_settings_get_default`) are not exported, preventing direct usage in
 // non-component targets like tests.
 COMPONENT_EXPORT(GTK) GtkSettings* GetDefaultGtkSettings();
+
+// Installs a GLib log writer that intercepts fatal disconnect messages from
+// GDK and triggers the shutdown callback before GDK calls _exit(1).
+COMPONENT_EXPORT(GTK) void InstallGtkLogWriter();
+
+// Sets a callback to be invoked when GDK logs a fatal display disconnect error.
+COMPONENT_EXPORT(GTK) void SetGtkShutdownCb(base::OnceClosure shutdown_cb);
+
+// Returns true if `log_domain` and `message` correspond to a fatal GDK error
+// (such as losing connection to the display server).
+COMPONENT_EXPORT(GTK)
+bool IsGdkFatalErrorMessage(std::string_view log_domain,
+                            std::string_view message);
 
 }  // namespace gtk
 

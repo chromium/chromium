@@ -4,6 +4,7 @@
 
 #include "ui/gtk/gtk_util.h"
 
+#include <glib.h>
 #include <locale.h>
 #include <stddef.h>
 
@@ -16,11 +17,13 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -234,6 +237,7 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
   InstallGtkSettingsInterceptor();
+  InstallGtkLogWriter();
   return GtkInitCheck(argc, argv);
 }
 
@@ -946,6 +950,119 @@ void UninstallGtkSettingsInterceptor() {
 
 GtkSettings* GetDefaultGtkSettings() {
   return gtk_settings_get_default();
+}
+
+namespace {
+
+base::Lock& GetShutdownLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+base::OnceClosure& GetShutdownCb() {
+  static base::NoDestructor<base::OnceClosure> shutdown_cb;
+  return *shutdown_cb;
+}
+
+GLogWriterOutput GtkLogWriter(GLogLevelFlags log_level,
+                              const GLogField* fields,
+                              gsize n_fields,
+                              gpointer user_data) {
+  std::string_view log_domain;
+  std::string_view message;
+  // SAFETY: GLib passes `fields` as an array of `n_fields` elements to the
+  // log writer function.
+  auto fields_span =
+      UNSAFE_BUFFERS(base::span(fields, base::checked_cast<size_t>(n_fields)));
+  for (const auto& field : fields_span) {
+    if (field.key) {
+      std::string_view key(field.key);
+      if (key == "GLIB_DOMAIN") {
+        if (field.value) {
+          const char* val = static_cast<const char*>(field.value);
+          // Per GLib's GLogField specification, length < 0 indicates that value
+          // is a null-terminated string. If length >= 0, the string is not
+          // guaranteed to be null-terminated and length specifies its size.
+          // SAFETY: When `field.length >= 0`, GLib guarantees `field.value`
+          // points to a buffer of at least `field.length` bytes.
+          log_domain = field.length < 0
+                           ? std::string_view(val)
+                           : UNSAFE_BUFFERS(std::string_view(
+                                 val, static_cast<size_t>(field.length)));
+        }
+      } else if (key == "MESSAGE") {
+        if (field.value) {
+          const char* val = static_cast<const char*>(field.value);
+          // Per GLib's GLogField specification, length < 0 indicates that value
+          // is a null-terminated string. If length >= 0, the string is not
+          // guaranteed to be null-terminated and length specifies its size.
+          // SAFETY: When `field.length >= 0`, GLib guarantees `field.value`
+          // points to a buffer of at least `field.length` bytes.
+          message = field.length < 0
+                        ? std::string_view(val)
+                        : UNSAFE_BUFFERS(std::string_view(
+                              val, static_cast<size_t>(field.length)));
+        }
+      }
+    }
+  }
+
+  if (IsGdkFatalErrorMessage(log_domain, message)) {
+    base::OnceClosure cb;
+    {
+      base::AutoLock lock(GetShutdownLock());
+      cb = std::move(GetShutdownCb());
+    }
+    if (cb) {
+      LOG(WARNING) << "GDK lost display connection: \"" << message
+                   << "\"; invoking shutdown callback.";
+      std::move(cb).Run();
+    }
+  }
+
+  return g_log_writer_default(log_level, fields, n_fields, user_data);
+}
+
+}  // namespace
+
+void InstallGtkLogWriter() {
+  static bool installed = false;
+  if (installed) {
+    return;
+  }
+  installed = true;
+  g_log_set_writer_func(GtkLogWriter, nullptr, nullptr);
+}
+
+void SetGtkShutdownCb(base::OnceClosure shutdown_cb) {
+  // A lock is required because `GtkLogWriter()` may be invoked concurrently
+  // from any thread if GLib logs on a worker or driver thread.
+  base::AutoLock lock(GetShutdownLock());
+  GetShutdownCb() = std::move(shutdown_cb);
+}
+
+bool IsGdkFatalErrorMessage(std::string_view log_domain,
+                            std::string_view message) {
+  if (log_domain != "Gdk") {
+    return false;
+  }
+  // Low-level display connection and fatal IO error messages in GDK are
+  // hardcoded English string literals passed directly to g_message() without
+  // gettext localization. Therefore, matching English substrings works across
+  // all locales.
+  constexpr std::string_view kFatalSubstrings[] = {
+      "Lost connection to Wayland compositor",
+      "dispatching to Wayland display",
+      "reading events from display",
+      "flushing display",
+      "Fatal IO error",
+  };
+  for (const auto& substring : kFatalSubstrings) {
+    if (message.contains(substring)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace gtk

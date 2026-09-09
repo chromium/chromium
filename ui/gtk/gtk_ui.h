@@ -92,6 +92,7 @@ class GtkUi : public ui::LinuxUiAndTheme {
   bool PrimaryPasteEnabled() const override;
   int GetWindowDragThresholdPx() const override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;
+  void SetShutdownCb(base::OnceClosure shutdown_cb) override;
 
   // ui::LinuxUiTheme:
   ui::NativeTheme* GetNativeTheme() const override;

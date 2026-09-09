@@ -24,6 +24,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/nix/xdg_util.h"
@@ -314,7 +315,9 @@ std::string GetThemeName() {
 
 GtkUi::GtkUi() : window_frame_actions_() {}
 
-GtkUi::~GtkUi() = default;
+GtkUi::~GtkUi() {
+  SetGtkShutdownCb(base::NullCallback());
+}
 
 bool GtkUi::Initialize() {
   const auto* delegate = ui::LinuxUiDelegate::GetInstance();
@@ -713,6 +716,10 @@ std::vector<std::string> GtkUi::GetCmdLineFlagsForCopy() const {
   return {std::string(switches::kUiToolkitFlag) + "=gtk",
           std::string(switches::kGtkVersionFlag) + "=" +
               base::NumberToString(major_version)};
+}
+
+void GtkUi::SetShutdownCb(base::OnceClosure shutdown_cb) {
+  SetGtkShutdownCb(std::move(shutdown_cb));
 }
 
 void GtkUi::SetDarkTheme(bool dark) {

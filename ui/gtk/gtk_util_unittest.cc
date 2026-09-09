@@ -4,10 +4,14 @@
 
 #include "ui/gtk/gtk_util.h"
 
+#include <glib.h>
+
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_compat.h"
@@ -41,6 +45,60 @@ TEST(GtkUtilTest, GetThemeFallback) {
   EXPECT_STREQ(GetThemeFallback(ThemeProperty::kThemeName), "Adwaita");
   EXPECT_STREQ(GetThemeFallback(ThemeProperty::kCursorThemeName), "Adwaita");
   EXPECT_EQ(GetThemeFallback(ThemeProperty::kKeyThemeName), nullptr);
+}
+
+TEST(GtkUtilTest, IsGdkFatalErrorMessage) {
+  // Fatal Wayland error messages.
+  EXPECT_TRUE(
+      IsGdkFatalErrorMessage("Gdk", "Lost connection to Wayland compositor."));
+  EXPECT_TRUE(IsGdkFatalErrorMessage(
+      "Gdk", "Error 32 (Broken pipe) dispatching to Wayland display."));
+  EXPECT_TRUE(IsGdkFatalErrorMessage(
+      "Gdk", "Error reading events from display: Broken pipe"));
+  EXPECT_TRUE(
+      IsGdkFatalErrorMessage("Gdk", "Error flushing display: Broken pipe"));
+
+  // Fatal X11 error messages.
+  EXPECT_TRUE(IsGdkFatalErrorMessage(
+      "Gdk",
+      "Fatal IO error 11 (Resource temporarily unavailable) on X server :0."));
+
+  // Non-fatal GDK messages.
+  EXPECT_FALSE(IsGdkFatalErrorMessage("Gdk", "Window 0x1234 is not mapped"));
+  EXPECT_FALSE(IsGdkFatalErrorMessage("Gdk", ""));
+
+  // Fatal message strings from other domains must not trigger.
+  EXPECT_FALSE(
+      IsGdkFatalErrorMessage("Gtk", "Lost connection to Wayland compositor."));
+  EXPECT_FALSE(
+      IsGdkFatalErrorMessage("GLib", "Lost connection to Wayland compositor."));
+  EXPECT_FALSE(
+      IsGdkFatalErrorMessage("", "Lost connection to Wayland compositor."));
+}
+
+TEST(GtkUtilTest, GtkLogWriterFatalDisconnectIntercepted) {
+  InstallGtkLogWriter();
+
+  bool shutdown_called = false;
+  SetGtkShutdownCb(base::BindLambdaForTesting([&] { shutdown_called = true; }));
+
+  // Non-fatal GDK message should not trigger the callback.
+  g_log_structured("Gdk", G_LOG_LEVEL_MESSAGE, "MESSAGE",
+                   "Normal non-fatal informational message");
+  EXPECT_FALSE(shutdown_called);
+
+  // Message from another domain should not trigger the callback.
+  g_log_structured("Gtk", G_LOG_LEVEL_MESSAGE, "MESSAGE",
+                   "Lost connection to Wayland compositor.");
+  EXPECT_FALSE(shutdown_called);
+
+  // Fatal GDK message must trigger the shutdown callback.
+  g_log_structured("Gdk", G_LOG_LEVEL_MESSAGE, "MESSAGE",
+                   "Lost connection to Wayland compositor.");
+  EXPECT_TRUE(shutdown_called);
+
+  // Clean up.
+  SetGtkShutdownCb(base::NullCallback());
 }
 
 class GtkUtilInterceptorTest : public testing::Test {

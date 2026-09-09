@@ -42,6 +42,7 @@ class ChromeBrowserMainExtraPartsViewsLinux
 
   // Overridden from ChromeBrowserMainExtraParts:
   void ToolkitInitialized() override;
+  void PostCreateMainMessageLoop() override;
   void PreCreateThreads() override;
 
  private:

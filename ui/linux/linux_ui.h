@@ -232,6 +232,13 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // to have the same toolkit and version as this process.
   virtual std::vector<std::string> GetCmdLineFlagsForCopy() const = 0;
 
+  // Sets a callback to be invoked when the underlying toolkit loses connection
+  // to the display server, allowing the browser to save state before process
+  // termination. Default no-op since abrupt process termination on display
+  // disconnect is specific to GTK; other toolkits (e.g. Qt) or backends
+  // handle this elsewhere or do not call _exit(1).
+  virtual void SetShutdownCb(base::OnceClosure shutdown_cb);
+
  protected:
   struct CmdLineArgs {
     CmdLineArgs();

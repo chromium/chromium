@@ -130,6 +130,8 @@ LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
   return cmd_line;
 }
 
+void LinuxUi::SetShutdownCb(base::OnceClosure shutdown_cb) {}
+
 LinuxUiTheme::LinuxUiTheme() = default;
 
 LinuxUiTheme::~LinuxUiTheme() = default;
