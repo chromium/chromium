@@ -149,6 +149,7 @@ constexpr CGFloat kMarginTrailing = 16.0;
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSLinkAttributeName : @"",
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
   };
   NSString* message = _configuration.message;
   // Convert HTML link tags to BEGIN_LINK/END_LINK delimiters used on iOS.
