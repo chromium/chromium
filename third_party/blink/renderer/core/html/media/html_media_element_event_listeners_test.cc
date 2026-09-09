@@ -71,6 +71,10 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
     ScheduleTimeIncrement();
   }
   void Pause(PauseReason pause_reason) override { playing_ = false; }
+  void Shutdown() override {
+    client_->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
+    EmptyWebMediaPlayer::Shutdown();
+  }
   bool Paused() const override { return !playing_; }
   bool IsEnded() const override { return current_time_ == duration_; }
 
@@ -239,6 +243,58 @@ TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
   // They have been GC'd.
   EXPECT_EQ(weak_persistent_video, nullptr);
   EXPECT_EQ(weak_persistent_controls, nullptr);
+}
+
+TEST_F(HTMLMediaElementEventListenersTest,
+       RemovingFromDocumentWhileRemotingCollectsAll) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<video></video>");
+  Video()->SetSrc(AtomicString("http://example.com"));
+  test::RunPendingTasks();
+  EXPECT_NE(WebMediaPlayer(), nullptr);
+  SimulateNetworkState(HTMLMediaElement::kNetworkIdle);
+  SimulateReadyState(HTMLMediaElement::kHaveCurrentData);
+
+  Video()->MediaRemotingStarted(WebString());
+  EXPECT_TRUE(Video()->IsRemotingInterstitialVisible());
+
+  WeakPersistent<HTMLVideoElement> weak_persistent_video = Video();
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("");
+  UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+
+  // The element is paused, idle, and detached, so it should be collectable.
+  // The player's Shutdown() runs MediaRemotingStopped() on the client which
+  // hides the interstitial; that must not schedule new work on the dying
+  // shadow tree.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(weak_persistent_video, nullptr);
+}
+
+TEST_F(HTMLMediaElementEventListenersTest,
+       MediaRemotingStoppedWhileDisconnectedImmediatelyHides) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<video></video>");
+  Video()->SetSrc(AtomicString("http://example.com"));
+  test::RunPendingTasks();
+  EXPECT_NE(WebMediaPlayer(), nullptr);
+  SimulateNetworkState(HTMLMediaElement::kNetworkIdle);
+  SimulateReadyState(HTMLMediaElement::kHaveCurrentData);
+
+  Video()->MediaRemotingStarted(WebString());
+  EXPECT_TRUE(Video()->IsRemotingInterstitialVisible());
+
+  Persistent<HTMLVideoElement> video_holder = Video();
+  GetDocument().body()->RemoveChild(Video());
+  EXPECT_FALSE(video_holder->isConnected());
+
+  // Stopping remoting while disconnected should immediately hide the
+  // interstitial and reset state without scheduling fade animation timers.
+  video_holder->MediaRemotingStopped(
+      MediaPlayerClient::kMediaRemotingStopNoText);
+  EXPECT_FALSE(video_holder->IsRemotingInterstitialVisible());
+
+  // Run any delayed tasks; the interstitial should remain hidden.
+  test::RunDelayedTasks(base::Seconds(1));
+  EXPECT_FALSE(video_holder->IsRemotingInterstitialVisible());
 }
 
 TEST_F(HTMLMediaElementEventListenersTest,

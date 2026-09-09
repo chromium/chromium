@@ -55,6 +55,7 @@ class MediaRemotingInterstitial final : public HTMLDivElement {
   void DidMoveToNewDocument(Document&) override;
 
   void ToggleInterstitialTimerFired(TimerBase*);
+  void DidHide();
 
   // Indicates whether the interstitial should be visible. It is set/changed
   // when Show()/Hide() is called.

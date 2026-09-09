@@ -496,6 +496,7 @@ void HTMLMediaElement::Dispose() {
   // doesn't get dispatched during the object destruction.
   // See Document::isDelayingLoadEvent().
   // Also see http://crbug.com/275223 for more details.
+  is_disposing_ = true;
   ClearMediaPlayerAndAudioSourceProviderClientWithoutLocking();
 
   progress_event_timer_.Shutdown();

@@ -1068,6 +1068,9 @@ void HTMLVideoElement::MediaRemotingStarted(
 void HTMLVideoElement::MediaRemotingStopped(int error_code) {
   is_remote_rendering_ = false;
   remote_device_friendly_name_.Reset();
+  if (IsDisposing()) {
+    return;
+  }
   OnRemotePlaybackMetadataChange();
   if (remoting_interstitial_) {
     remoting_interstitial_->Hide(error_code);

@@ -85,6 +85,13 @@ void MediaRemotingInterstitial::Hide(int error_code) {
     return;
   if (toggle_interstitial_timer_.IsActive())
     toggle_interstitial_timer_.Stop();
+  if (!isConnected()) {
+    // Nothing is being rendered, so immediately hide the interstitial
+    // without scheduling a fade-out transition timer.
+    state_ = kHidden;
+    DidHide();
+    return;
+  }
   if (error_code == MediaPlayerClient::kMediaRemotingStopNoText) {
     state_ = kHidden;
   } else {
@@ -102,6 +109,11 @@ void MediaRemotingInterstitial::Hide(int error_code) {
   toggle_interstitial_timer_.StartOneShot(kHiddenAnimationDuration, FROM_HERE);
 }
 
+void MediaRemotingInterstitial::DidHide() {
+  SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+  toast_message_->setInnerText(WebString());
+}
+
 void MediaRemotingInterstitial::ToggleInterstitialTimerFired(TimerBase*) {
   toggle_interstitial_timer_.Stop();
   if (IsVisible()) {
@@ -115,8 +127,7 @@ void MediaRemotingInterstitial::ToggleInterstitialTimerFired(TimerBase*) {
     SetInlineStyleProperty(CSSPropertyID::kOpacity, 1,
                            CSSPrimitiveValue::UnitType::kNumber);
   } else if (state_ == kHidden) {
-    SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
-    toast_message_->setInnerText(WebString());
+    DidHide();
   } else {
     // Show |toast_message_| only.
     toast_message_->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
