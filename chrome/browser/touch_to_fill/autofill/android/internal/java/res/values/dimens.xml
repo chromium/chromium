@@ -46,4 +46,7 @@ found in the LICENSE file.
     <!-- Touch to Fill Loyalty Cards Dimensions -->
     <dimen name="ttf_loyalty_card_first_time_use_title_bottom_margin">0dp</dimen>
     <dimen name="ttf_loyalty_card_first_time_use_subtitle_bottom_margin">16dp</dimen>
+    <!-- Touch to Fill Ambient autofill notice properties -->
+    <dimen name="ttf_notice_header_title_bottom_margin">16dp</dimen>
+    <dimen name="ttf_notice_header_subtitle_bottom_margin">0dp</dimen>
 </resources>

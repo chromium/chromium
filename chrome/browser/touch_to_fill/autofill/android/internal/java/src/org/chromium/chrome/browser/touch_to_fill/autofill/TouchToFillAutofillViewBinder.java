@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.autofill;
 
-import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.ACKNOWLEDGE_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.DISMISS_HANDLER;
-import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SETTINGS_LINK_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.VISIBLE;
 
 import org.chromium.build.annotations.NullMarked;
@@ -22,12 +21,10 @@ final class TouchToFillAutofillViewBinder {
     static void bind(PropertyModel model, TouchToFillAutofillView view, PropertyKey propertyKey) {
         if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
-        } else if (propertyKey == ACKNOWLEDGE_HANDLER) {
-            view.setAcknowledgeHandler(model.get(ACKNOWLEDGE_HANDLER));
-        } else if (propertyKey == SETTINGS_LINK_HANDLER) {
-            view.setSettingsLinkHandler(model.get(SETTINGS_LINK_HANDLER));
         } else if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
+        } else if (propertyKey == SHEET_ITEMS) {
+            TouchToFillAutofillCoordinator.setUpSheetItems(model, view);
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

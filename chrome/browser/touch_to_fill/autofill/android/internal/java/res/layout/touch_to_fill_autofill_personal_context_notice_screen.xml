@@ -4,59 +4,12 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sheet_item_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
-    android:paddingTop="24dp"
-    android:paddingBottom="24dp">
-
-    <ImageView
-        android:id="@+id/notice_icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/fre_product_logo" />
-
-    <TextView
-        android:id="@+id/notice_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:gravity="center"
-        android:text="@string/autofill_personal_context_notice_title"
-        android:textAppearance="@style/TextAppearance.Headline.Primary" />
-
-    <TextView
-        android:id="@+id/notice_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:gravity="center"
-        android:text="@string/autofill_personal_context_notice_description"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/notice_acknowledge_button"
-        style="@style/FilledButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="@string/autofill_personal_context_notice_ok_button" />
-
-    <TextView
-        android:id="@+id/notice_manage_settings_link"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:padding="8dp"
-        android:text="@string/autofill_personal_context_notice_settings_link"
-        android:textAppearance="@style/TextAppearance.TextMedium.Link" />
-
-</LinearLayout>
+    android:paddingTop="@dimen/ttf_sheet_margin"
+    android:paddingEnd="@dimen/ttf_sheet_margin"
+    android:paddingStart="@dimen/ttf_sheet_margin"
+    android:clipToPadding="false" />
