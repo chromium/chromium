@@ -1,7 +1,7 @@
 'use strict';
 
-// TODO(crbug.com/146285): Allow more than 4 connected gamepads.
-var MAX_GAMEPADS = 4;
+// Keep in sync with device::Gamepads::kItemsLengthCap.
+var MAX_GAMEPADS = 8;
 
 function disconnectGamepads() {
     // Simulate disconnecting all gamepads.

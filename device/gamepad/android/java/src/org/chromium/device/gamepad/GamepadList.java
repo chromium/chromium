@@ -34,7 +34,8 @@ import org.chromium.build.annotations.RequiresNonNull;
 @JNINamespace("device")
 @NullMarked
 public class GamepadList {
-    private static final int MAX_GAMEPADS = 4;
+    // Keep in sync with device::Gamepads::kItemsLengthCap.
+    private static final int MAX_GAMEPADS = 8;
 
     private final Object mLock = new Object();
 
@@ -164,7 +165,7 @@ public class GamepadList {
     }
 
     private @Nullable GamepadDevice getDevice(int index) {
-        // Maximum 4 Gamepads can be connected at a time starting at index zero.
+        // Gamepads are assigned indices from zero up to MAX_GAMEPADS - 1.
         assert index >= 0 && index < MAX_GAMEPADS;
         return mGamepadDevices[index];
     }

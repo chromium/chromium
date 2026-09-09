@@ -117,6 +117,9 @@ namespace device {
 
 namespace {
 
+// GCControllerPlayerIndex defines four assignable indices. The legacy polling
+// path below uses them as Chromium gamepad slot indices, so it can expose at
+// most four controllers even when Gamepads::kItemsLengthCap is larger.
 const int kGCControllerPlayerIndexCount = 4;
 
 // Returns GameControllerMacOutcome::kSuccess if |controller| should be

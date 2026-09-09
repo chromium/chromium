@@ -17,7 +17,10 @@ namespace device {
 // browser.
 class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepads {
  public:
-  static constexpr size_t kItemsLengthCap = 4;
+  // Maximum number of gamepads Chromium can expose through its shared gamepad
+  // state. This is an implementation limit, not a limit imposed by the
+  // Gamepad API. Individual platform data fetchers may expose fewer gamepads.
+  static constexpr size_t kItemsLengthCap = 8;
 
   // Gamepad data for N separate gamepad devices.
   std::array<Gamepad, kItemsLengthCap> items;
