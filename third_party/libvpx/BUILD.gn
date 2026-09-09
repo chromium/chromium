@@ -125,10 +125,8 @@ executable("decode_encode_profile_test") {
     "source/libvpx/test/init_vpx_test.cc",
     "source/libvpx/test/test_libvpx.cc",
     "source/libvpx/test/test_vectors.cc",
-    "source/libvpx/test/test_vectors.h",
     "source/libvpx/third_party/libwebm/mkvparser/mkvparser.cc",
     "source/libvpx/third_party/libwebm/mkvparser/mkvreader.cc",
-    "source/libvpx/tools_common.h",
     "source/libvpx/webmdec.cc",
     "source/libvpx/y4minput.c",
     "tests/pgo/decode_encode_profile_test.cc",
@@ -179,11 +177,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     if (current_cpu == "x86") {
       sources = libvpx_srcs_x86_mmx
-      deps = [ ":libvpx_x86_headers" ]
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_mmx
-      deps = [ ":libvpx_x86_64_headers" ]
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_sse2") {
@@ -195,11 +192,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     if (current_cpu == "x86") {
       sources = libvpx_srcs_x86_sse2
-      deps = [ ":libvpx_x86_headers" ]
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_sse2
-      deps = [ ":libvpx_x86_64_headers" ]
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_ssse3") {
@@ -211,11 +207,10 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     }
     if (current_cpu == "x86") {
       sources = libvpx_srcs_x86_ssse3
-      deps = [ ":libvpx_x86_headers" ]
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_ssse3
-      deps = [ ":libvpx_x86_64_headers" ]
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_sse4_1") {
@@ -226,12 +221,11 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-msse4.1" ]
     }
     if (current_cpu == "x86") {
-      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_sse4_1
     } else if (current_cpu == "x64") {
-      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_sse4_1
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_avx") {
@@ -244,12 +238,11 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-mavx" ]
     }
     if (current_cpu == "x86") {
-      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_avx
     } else if (current_cpu == "x64") {
-      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_avx
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_avx2") {
@@ -262,12 +255,11 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       cflags = [ "-mavx2" ]
     }
     if (current_cpu == "x86") {
-      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_avx2
     } else if (current_cpu == "x64") {
-      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_avx2
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_avx512") {
@@ -288,12 +280,11 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       ]
     }
     if (current_cpu == "x86") {
-      deps = [ ":libvpx_x86_headers" ]
       sources = libvpx_srcs_x86_avx512
     } else if (current_cpu == "x64") {
-      deps = [ ":libvpx_x86_64_headers" ]
       sources = libvpx_srcs_x86_64_avx512
     }
+    deps = [ ":libvpx_headers" ]
   }
 }
 
@@ -319,18 +310,15 @@ if (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "arm64e") {
     }
     if (cpu_arch_full == "arm-neon") {
       sources = libvpx_srcs_arm_neon_neon
-      deps = [ ":libvpx_arm_neon_headers" ]
     } else if (cpu_arch_full == "arm-neon-highbd") {
       # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
       sources = libvpx_srcs_arm_neon_highbd_neon
-      deps = [ ":libvpx_arm_neon_highbd_headers" ]
     } else if (cpu_arch_full == "arm64") {
       sources = libvpx_srcs_arm64_neon
-      deps = [ ":libvpx_arm64_headers" ]
     } else if (cpu_arch_full == "arm64-highbd") {
       sources = libvpx_srcs_arm64_highbd_neon
-      deps = [ ":libvpx_arm64_highbd_headers" ]
     }
+    deps = [ ":libvpx_headers" ]
   }
 }
 
@@ -345,11 +333,10 @@ if (current_cpu == "arm64" || current_cpu == "arm64e") {
     }
     if (cpu_arch_full == "arm64") {
       sources = libvpx_srcs_arm64_neon_dotprod
-      deps = [ ":libvpx_arm64_headers" ]
     } else if (cpu_arch_full == "arm64-highbd") {
       sources = libvpx_srcs_arm64_highbd_neon_dotprod
-      deps = [ ":libvpx_arm64_highbd_headers" ]
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   source_set("libvpx_intrinsics_neon_i8mm") {
@@ -362,11 +349,10 @@ if (current_cpu == "arm64" || current_cpu == "arm64e") {
     }
     if (cpu_arch_full == "arm64") {
       sources = libvpx_srcs_arm64_neon_i8mm
-      deps = [ ":libvpx_arm64_headers" ]
     } else if (cpu_arch_full == "arm64-highbd") {
       sources = libvpx_srcs_arm64_highbd_neon_i8mm
-      deps = [ ":libvpx_arm64_highbd_headers" ]
     }
+    deps = [ ":libvpx_headers" ]
   }
 
   # SVE is disabled for Windows due to a limitation with clang-cl-18:
@@ -381,11 +367,10 @@ if (current_cpu == "arm64" || current_cpu == "arm64e") {
       cflags = [ "-march=armv8.2-a+dotprod+i8mm+sve" ]
       if (cpu_arch_full == "arm64") {
         sources = libvpx_srcs_arm64_sve
-        deps = [ ":libvpx_arm64_headers" ]
       } else if (cpu_arch_full == "arm64-highbd") {
         sources = libvpx_srcs_arm64_highbd_sve
-        deps = [ ":libvpx_arm64_highbd_headers" ]
       }
+      deps = [ ":libvpx_headers" ]
     }
 
     source_set("libvpx_intrinsics_sve2") {
@@ -396,11 +381,10 @@ if (current_cpu == "arm64" || current_cpu == "arm64e") {
       cflags = [ "-march=armv9-a+sve2" ]
       if (cpu_arch_full == "arm64") {
         sources = libvpx_srcs_arm64_sve2
-        deps = [ ":libvpx_arm64_headers" ]
       } else if (cpu_arch_full == "arm64-highbd") {
         sources = libvpx_srcs_arm64_highbd_sve2
-        deps = [ ":libvpx_arm64_highbd_headers" ]
       }
+      deps = [ ":libvpx_headers" ]
     }
   }
 }
@@ -456,44 +440,38 @@ if (current_cpu == "arm" && arm_assembly_sources != []) {
   }
 }
 
-source_set("libvpx_x86_headers") {
-  sources = libvpx_srcs_x86_headers
-}
-
-source_set("libvpx_x86_64_headers") {
-  sources = libvpx_srcs_x86_64_headers
-}
-
-source_set("libvpx_arm_neon_headers") {
-  sources = libvpx_srcs_arm_neon_headers
-}
-
-source_set("libvpx_arm64_headers") {
-  sources = libvpx_srcs_arm64_headers
-}
-
-source_set("libvpx_arm_neon_highbd_headers") {
-  sources = libvpx_srcs_arm_neon_highbd_headers
-}
-
-source_set("libvpx_arm64_highbd_headers") {
-  sources = libvpx_srcs_arm64_highbd_headers
-}
-
-source_set("libvpx_mips_headers") {
-  sources = libvpx_srcs_mips_headers
-}
-
-source_set("libvpx_loongarch_headers") {
-  sources = libvpx_srcs_loongarch_headers
-}
-
-source_set("libvpx_ppc64_headers") {
-  sources = libvpx_srcs_ppc64_headers
-}
-
-source_set("libvpx_generic_headers") {
-  sources = libvpx_srcs_generic_headers
+source_set("libvpx_headers") {
+  visibility = [ ":*" ]
+  if (current_cpu == "x86") {
+    sources = libvpx_srcs_x86_headers
+  } else if (current_cpu == "x64") {
+    if (is_msan) {
+      sources = libvpx_srcs_generic_headers
+    } else {
+      sources = libvpx_srcs_x86_64_headers
+    }
+  } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
+    sources = libvpx_srcs_mips_headers
+  } else if (current_cpu == "arm") {
+    if (is_chromeos) {
+      # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
+      sources = libvpx_srcs_arm_neon_highbd_headers
+    } else {
+      sources = libvpx_srcs_arm_neon_headers
+    }
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+    if (is_chromeos || is_win || is_mac || is_ios) {
+      sources = libvpx_srcs_arm64_highbd_headers
+    } else {
+      sources = libvpx_srcs_arm64_headers
+    }
+  } else if (current_cpu == "ppc64") {
+    sources = libvpx_srcs_ppc64_headers
+  } else if (current_cpu == "riscv64") {
+    sources = libvpx_srcs_generic_headers
+  } else if (current_cpu == "loong64") {
+    sources = libvpx_srcs_loongarch_headers
+  }
 }
 
 static_library("libvpx") {
@@ -502,46 +480,37 @@ static_library("libvpx") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
+  public_deps = [ ":libvpx_headers" ]
+
   if (current_cpu == "x86") {
     sources = libvpx_srcs_x86
-    public_deps = [ ":libvpx_x86_headers" ]
   } else if (current_cpu == "x64") {
     if (is_msan) {
       sources = libvpx_srcs_generic
-      public_deps = [ ":libvpx_generic_headers" ]
     } else {
       sources = libvpx_srcs_x86_64
-      public_deps = [ ":libvpx_x86_64_headers" ]
     }
   } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
     sources = libvpx_srcs_mips
-    public_deps = [ ":libvpx_mips_headers" ]
   } else if (current_cpu == "arm") {
     if (is_chromeos) {
       # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
       sources = libvpx_srcs_arm_neon_highbd
-      public_deps = [ ":libvpx_arm_neon_highbd_headers" ]
     } else {
       sources = libvpx_srcs_arm_neon
-      public_deps = [ ":libvpx_arm_neon_headers" ]
     }
   } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
     if (is_chromeos || is_win || is_mac || is_ios) {
       sources = libvpx_srcs_arm64_highbd
-      public_deps = [ ":libvpx_arm64_highbd_headers" ]
     } else {
       sources = libvpx_srcs_arm64
-      public_deps = [ ":libvpx_arm64_headers" ]
     }
   } else if (current_cpu == "ppc64") {
     sources = libvpx_srcs_ppc64
-    public_deps = [ ":libvpx_ppc64_headers" ]
   } else if (current_cpu == "riscv64") {
     sources = libvpx_srcs_generic
-    public_deps = [ ":libvpx_generic_headers" ]
   } else if (current_cpu == "loong64") {
     sources = libvpx_srcs_loongarch
-    public_deps = [ ":libvpx_loongarch_headers" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
