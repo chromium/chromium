@@ -135,23 +135,20 @@ BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
 }
 
 void UpdateDarkModePreferenceFromUrl(content::WebContents* wc,
-                                     const GURL& url) {
+                                     const GURL& url,
+                                     Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
+  bool use_dark = contextual_tasks::ShouldUseDarkMode(profile, url);
+#else
   std::optional<bool> is_dark_mode = contextual_tasks::GetDarkModeFromUrl(url);
-  if (is_dark_mode.has_value()) {
-    blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
-    prefs.preferred_color_scheme =
-        is_dark_mode.value() ? blink::mojom::PreferredColorScheme::kDark
-                             : blink::mojom::PreferredColorScheme::kLight;
-    wc->SetWebPreferences(prefs);
-  } else {
-    blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
-    ui::ColorProviderKey::ColorMode browser_color_scheme = wc->GetColorMode();
-    prefs.preferred_color_scheme =
-        browser_color_scheme == ui::ColorProviderKey::ColorMode::kLight
-            ? blink::mojom::PreferredColorScheme::kLight
-            : blink::mojom::PreferredColorScheme::kDark;
-    wc->SetWebPreferences(prefs);
-  }
+  bool use_dark = is_dark_mode.value_or(wc->GetColorMode() ==
+                                        ui::ColorProviderKey::ColorMode::kDark);
+#endif
+  blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
+  prefs.preferred_color_scheme =
+      use_dark ? blink::mojom::PreferredColorScheme::kDark
+               : blink::mojom::PreferredColorScheme::kLight;
+  wc->SetWebPreferences(prefs);
 }
 
 bool IsUserFeedbackAllowed(Profile* profile) {
@@ -372,8 +369,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
     }
   }
 
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
 #if !BUILDFLAG(IS_ANDROID)
-  GURL url = web_ui->GetWebContents()->GetVisibleURL();
   bool is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile, url);
   source->AddBoolean("darkMode", is_dark_mode);
 #else
@@ -381,6 +378,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                       ui::ColorProviderKey::ColorMode::kDark;
   source->AddBoolean("darkMode", is_dark_mode);
 #endif
+  UpdateDarkModePreferenceFromUrl(web_ui->GetWebContents(), url, profile);
 
   // Overwrite searchbox strings with actual session state if composebox is
   // enabled.
@@ -1724,7 +1722,9 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   // settings.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->IsSameDocument()) {
-    UpdateDarkModePreferenceFromUrl(web_contents(), url);
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    UpdateDarkModePreferenceFromUrl(web_contents(), url, profile);
   }
   bool is_url_changed = false;
   bool last_committed_url_was_empty = last_committed_url_.is_empty();
