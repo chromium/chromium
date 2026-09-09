@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "ui/gfx/range/range.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -35,6 +36,8 @@ class PasswordCombinedSelectorController : public PasswordBaseDialogController {
 
   virtual std::u16string GetTitle() const = 0;
   virtual std::u16string GetSubtitle() const = 0;
+  virtual gfx::Range GetSubtitleLinkRange() const = 0;
+  virtual void OnSubtitleLinkClicked() = 0;
   virtual std::u16string GetOkButtonLabel() const = 0;
 
   virtual const FormsVector& GetLocalForms() const = 0;

@@ -51,6 +51,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -107,6 +108,11 @@ std::vector<views::RadioButton*> GetRadioButtons(views::View* parent) {
 views::Label* GetLabelByID(views::View* parent, int id) {
   views::View* view = parent->GetViewByID(id);
   return view ? static_cast<views::Label*>(view) : nullptr;
+}
+
+views::StyledLabel* GetStyledLabelByID(views::View* parent, int id) {
+  views::View* view = parent->GetViewByID(id);
+  return view ? static_cast<views::StyledLabel*>(view) : nullptr;
 }
 
 void GetViewsByID(int id,
@@ -250,10 +256,10 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
     }
     content::WebContents* web_contents =
         target_browser->GetTabStripModel()->GetActiveWebContents();
-    return web_contents ? static_cast<TestManagePasswordsUIController*>(
-                              ManagePasswordsUIController::FromWebContents(
-                                  web_contents))
-                        : nullptr;
+    return web_contents
+               ? static_cast<TestManagePasswordsUIController*>(
+                     ManagePasswordsUIController::FromWebContents(web_contents))
+               : nullptr;
   }
 
   ChromePasswordManagerClient* client() const {
@@ -684,10 +690,16 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     EXPECT_CALL(*remote_actor_mock_controller_, GetTitle())
         .WillRepeatedly(Return(
             u"Allow Gemini Spark to sign in to terracottaand.co for you?"));
+    std::u16string subtitle =
+        u"Spark can use Google Password Manager to sign in "
+        u"for you. Learn how Spark handles your data.";
+    std::u16string link_text = u"Learn how Spark handles your data.";
+    size_t link_start = subtitle.find(link_text);
+    gfx::Range link_range(link_start, link_start + link_text.length());
     EXPECT_CALL(*remote_actor_mock_controller_, GetSubtitle())
-        .WillRepeatedly(
-            Return(u"Spark can use Google Password Manager to sign in "
-                   u"for you. Learn how Spark handles your data"));
+        .WillRepeatedly(Return(subtitle));
+    EXPECT_CALL(*remote_actor_mock_controller_, GetSubtitleLinkRange())
+        .WillRepeatedly(Return(link_range));
     EXPECT_CALL(*remote_actor_mock_controller_, GetOkButtonLabel())
         .WillRepeatedly(Return(u"Allow this time"));
 
@@ -1014,8 +1026,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   waiter.Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
-                       InitialFocusSingleCredential) {
+IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, InitialFocusSingleCredential) {
   if (!IsParamFeatureEnabled()) {
     return;
   }
@@ -1098,6 +1109,8 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
       .WillRepeatedly(Return(expected_title));
   EXPECT_CALL(mock_controller, GetSubtitle())
       .WillRepeatedly(Return(expected_subtitle));
+  EXPECT_CALL(mock_controller, GetSubtitleLinkRange())
+      .WillRepeatedly(Return(gfx::Range()));
   EXPECT_CALL(mock_controller, GetOkButtonLabel())
       .WillRepeatedly(Return(expected_ok_button));
 
@@ -1123,9 +1136,9 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 3. Verify labels and title
   EXPECT_EQ(widget->widget_delegate()->GetWindowTitle(), expected_title);
-  views::Label* subtitle_label =
-      GetLabelByID(widget->GetContentsView(),
-                   PasswordCombinedSelectorView::kSubtitleLabelId);
+  views::StyledLabel* subtitle_label =
+      GetStyledLabelByID(widget->GetContentsView(),
+                         PasswordCombinedSelectorView::kSubtitleLabelId);
   ASSERT_TRUE(subtitle_label);
   EXPECT_EQ(subtitle_label->GetText(), expected_subtitle);
   EXPECT_EQ(view->GetOkButton()->GetText(), expected_ok_button);
@@ -1185,6 +1198,8 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
       .WillRepeatedly(Return(expected_title));
   EXPECT_CALL(mock_controller, GetSubtitle())
       .WillRepeatedly(Return(expected_subtitle));
+  EXPECT_CALL(mock_controller, GetSubtitleLinkRange())
+      .WillRepeatedly(Return(gfx::Range()));
   EXPECT_CALL(mock_controller, GetOkButtonLabel())
       .WillRepeatedly(Return(expected_ok_button));
 
@@ -1216,9 +1231,9 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 3. Verify labels and title
   EXPECT_EQ(widget->widget_delegate()->GetWindowTitle(), expected_title);
-  views::Label* subtitle_label =
-      GetLabelByID(widget->GetContentsView(),
-                   PasswordCombinedSelectorView::kSubtitleLabelId);
+  views::StyledLabel* subtitle_label =
+      GetStyledLabelByID(widget->GetContentsView(),
+                         PasswordCombinedSelectorView::kSubtitleLabelId);
   ASSERT_TRUE(subtitle_label);
   EXPECT_EQ(subtitle_label->GetText(), expected_subtitle);
   EXPECT_EQ(view->GetOkButton()->GetText(), expected_ok_button);
@@ -1293,6 +1308,8 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
       .WillRepeatedly(Return(expected_title));
   EXPECT_CALL(mock_controller, GetSubtitle())
       .WillRepeatedly(Return(expected_subtitle));
+  EXPECT_CALL(mock_controller, GetSubtitleLinkRange())
+      .WillRepeatedly(Return(gfx::Range()));
   EXPECT_CALL(mock_controller, GetOkButtonLabel())
       .WillRepeatedly(Return(expected_ok_button));
 

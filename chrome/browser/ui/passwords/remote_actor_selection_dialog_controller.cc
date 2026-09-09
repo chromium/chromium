@@ -6,11 +6,21 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace password_manager {
+
+namespace {
+
+constexpr char kRemoteActorDataHandlingHelpUrl[] = "https://support.google.com";
+
+}  // namespace
 
 RemoteActorSelectionDialogController::RemoteActorSelectionDialogController(
     content::WebContents* web_contents,
@@ -47,24 +57,48 @@ bool RemoteActorSelectionDialogController::ShouldShowTopIllustration() const {
 }
 
 std::u16string RemoteActorSelectionDialogController::GetTitle() const {
-  // TODO(crbug.com/535945530): Use localized string.
-  return u"Allow Gemini Spark to sign in to " +
-         url_formatter::FormatUrlForSecurityDisplay(
-             GURL(credential_domain_),
-             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC) +
-         u" for you?";
+  // TODO(crbug.com/558163687): Enable translations closer to launch.
+  std::u16string formatted_domain = url_formatter::FormatUrlForSecurityDisplay(
+      GURL(credential_domain_),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  return l10n_util::GetStringFUTF16(IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE,
+                                    formatted_domain);
 }
 
 std::u16string RemoteActorSelectionDialogController::GetSubtitle() const {
-  // TODO(crbug.com/535945530): Use localized string.
-  // TODO(crbug.com/535854168): Make "Learn how Spark handles your data" a link.
-  return u"Spark can use Google Password Manager to sign in for you. Learn how "
-         u"Spark handles your data";
+  // TODO(crbug.com/558163687): Enable translations closer to launch.
+  std::vector<size_t> offsets;
+  std::u16string subtitle = l10n_util::GetStringFUTF16(
+      IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,
+      {std::u16string(), std::u16string()}, &offsets);
+  if (offsets.size() >= 2) {
+    subtitle_link_range_ = gfx::Range(offsets[0], offsets[1]);
+  }
+  return subtitle;
+}
+
+gfx::Range RemoteActorSelectionDialogController::GetSubtitleLinkRange() const {
+  if (subtitle_link_range_.is_empty()) {
+    GetSubtitle();
+  }
+  return subtitle_link_range_;
+}
+
+void RemoteActorSelectionDialogController::OnSubtitleLinkClicked() {
+  if (!web_contents_) {
+    return;
+  }
+  content::OpenURLParams params(
+      GURL(kRemoteActorDataHandlingHelpUrl), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/false);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 std::u16string RemoteActorSelectionDialogController::GetOkButtonLabel() const {
-  // TODO(crbug.com/535945530): Use localized string.
-  return u"Allow this time";
+  // TODO(crbug.com/558163687): Enable translations closer to launch.
+  return l10n_util::GetStringUTF16(
+      IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON);
 }
 
 const PasswordCombinedSelectorController::FormsVector&

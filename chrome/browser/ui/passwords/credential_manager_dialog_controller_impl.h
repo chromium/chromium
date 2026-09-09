@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
+#include "ui/gfx/range/range.h"
 
 class AccountChooserPrompt;
 class AutoSigninFirstRunPrompt;
@@ -61,6 +62,8 @@ class CredentialManagerDialogControllerImpl
   bool ShouldShowTopIllustration() const override;
   std::u16string GetTitle() const override;
   std::u16string GetSubtitle() const override;
+  gfx::Range GetSubtitleLinkRange() const override;
+  void OnSubtitleLinkClicked() override;
   std::u16string GetOkButtonLabel() const override;
 
  private:

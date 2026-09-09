@@ -25,13 +25,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/vector_icons/vector_icons.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,6 +50,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -633,12 +634,24 @@ void PasswordCombinedSelectorView::InitWindow() {
             views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
     auto* subtitle_label =
-        main_view->AddChildView(std::make_unique<views::Label>(
-            subtitle, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4));
-    subtitle_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
-    subtitle_label->SetMultiLine(true);
+        main_view->AddChildView(std::make_unique<views::StyledLabel>());
+    subtitle_label->SetText(subtitle);
+    subtitle_label->SetTextContext(views::style::CONTEXT_LABEL);
+    subtitle_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+    subtitle_label->SetDefaultEnabledColorId(
+        ui::kColorLabelForegroundSecondary);
     subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     subtitle_label->SetID(PasswordCombinedSelectorView::kSubtitleLabelId);
+
+    gfx::Range link_range = controller_->GetSubtitleLinkRange();
+    if (!link_range.is_empty()) {
+      views::StyledLabel::RangeStyleInfo link_style =
+          views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+              &PasswordCombinedSelectorController::OnSubtitleLinkClicked,
+              base::Unretained(controller_.get())));
+      link_style.text_style = views::style::STYLE_LINK_4;
+      subtitle_label->AddStyleRange(link_range, link_style);
+    }
   }
 
   auto list_view = std::make_unique<PasswordCombinedSelectorListView>(

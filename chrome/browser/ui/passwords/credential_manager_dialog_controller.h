@@ -12,6 +12,7 @@
 
 #include "chrome/browser/ui/passwords/password_combined_selector_controller.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "ui/gfx/range/range.h"
 
 namespace password_manager {
 struct PasswordForm;
@@ -69,6 +70,8 @@ class CredentialManagerDialogController : public PasswordCombinedSelectorControl
   bool ShouldShowTopIllustration() const override = 0;
   std::u16string GetTitle() const override = 0;
   std::u16string GetSubtitle() const override = 0;
+  gfx::Range GetSubtitleLinkRange() const override = 0;
+  void OnSubtitleLinkClicked() override = 0;
   std::u16string GetOkButtonLabel() const override = 0;
 
  protected:

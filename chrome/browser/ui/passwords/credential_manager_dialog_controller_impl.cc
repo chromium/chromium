@@ -281,6 +281,12 @@ std::u16string CredentialManagerDialogControllerImpl::GetSubtitle() const {
   return std::u16string();
 }
 
+gfx::Range CredentialManagerDialogControllerImpl::GetSubtitleLinkRange() const {
+  return gfx::Range();
+}
+
+void CredentialManagerDialogControllerImpl::OnSubtitleLinkClicked() {}
+
 std::u16string CredentialManagerDialogControllerImpl::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN);

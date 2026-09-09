@@ -6873,6 +6873,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Sign in as
       </message>
 
+      <!-- Remote Actor Credential Sharing Dialog -->
+      <!-- TODO(crbug.com/558163687): Enable translations closer to launch. -->
+      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE" desc="Title of the dialog asking the user to share credentials with Gemini Spark." translateable="false">
+        Allow Gemini Spark to sign in to <ph name="DOMAIN">$1<ex>example.com</ex></ph> for you?
+      </message>
+      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE" desc="Subtitle of the dialog asking the user to share credentials with Gemini Spark." translateable="false">
+        Spark can use Google Password Manager to sign in for you. <ph name="BEGIN_LINK">$1</ph>Learn how Spark handles your data<ph name="END_LINK">$2</ph>
+      </message>
+      <message name="IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON" desc="Button label to allow password sharing for Gemini Spark this time." translateable="false">
+        Allow this time
+      </message>
+
       <if expr="not use_titlecase">
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_GPM" desc="Text shown next to a generated password describing it as a suggestion.">
           Use strong password

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/range/range.h"
 
 class CredentialManagerDialogControllerMock
     : public CredentialManagerDialogController {
@@ -42,6 +43,8 @@ class CredentialManagerDialogControllerMock
   MOCK_METHOD(bool, ShouldShowTopIllustration, (), (const, override));
   MOCK_METHOD(std::u16string, GetTitle, (), (const, override));
   MOCK_METHOD(std::u16string, GetSubtitle, (), (const, override));
+  MOCK_METHOD(gfx::Range, GetSubtitleLinkRange, (), (const, override));
+  MOCK_METHOD(void, OnSubtitleLinkClicked, (), (override));
   MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
 };
 

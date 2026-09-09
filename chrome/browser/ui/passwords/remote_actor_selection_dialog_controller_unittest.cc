@@ -23,9 +23,9 @@ namespace password_manager {
 namespace {
 
 using testing::ElementsAre;
-using testing::Pointee;
-using testing::Optional;
 using testing::Eq;
+using testing::Optional;
+using testing::Pointee;
 
 const char16_t kUsername[] = u"user1";
 const char16_t kPassword[] = u"password123";
@@ -62,16 +62,37 @@ TEST_F(RemoteActorSelectionDialogControllerTest, Properties) {
   EXPECT_CALL(callback, Run(Eq(std::nullopt)));
 
   RemoteActorSelectionDialogController controller(
-      web_contents(), std::move(credentials), credential_domain_, callback.Get());
+      web_contents(), std::move(credentials), credential_domain_,
+      callback.Get());
 
   EXPECT_EQ(controller.GetDisplayType(),
             PasswordCombinedSelectorController::DisplayType::kRemoteActor);
   EXPECT_TRUE(controller.ShouldShowTopIllustration());
   EXPECT_FALSE(controller.GetTitle().empty());
   EXPECT_FALSE(controller.GetSubtitle().empty());
+  EXPECT_FALSE(controller.GetSubtitleLinkRange().is_empty());
   EXPECT_FALSE(controller.GetOkButtonLabel().empty());
 
   EXPECT_THAT(controller.GetLocalForms(), ElementsAre(Pointee(GetLocalForm())));
+}
+
+TEST_F(RemoteActorSelectionDialogControllerTest,
+       SubtitleLinkClickedOpensHelpUrl) {
+  std::vector<std::unique_ptr<PasswordForm>> credentials;
+  credentials.push_back(std::make_unique<PasswordForm>(GetLocalForm()));
+
+  base::MockCallback<RemoteActorSelectionDialogController::OnResultCallback>
+      callback;
+
+  RemoteActorSelectionDialogController controller(
+      web_contents(), std::move(credentials), credential_domain_,
+      callback.Get());
+
+  gfx::Range range = controller.GetSubtitleLinkRange();
+  EXPECT_FALSE(range.is_empty());
+  EXPECT_LT(range.start(), range.end());
+
+  controller.OnSubtitleLinkClicked();
 }
 
 TEST_F(RemoteActorSelectionDialogControllerTest,
@@ -87,7 +108,8 @@ TEST_F(RemoteActorSelectionDialogControllerTest,
   EXPECT_CALL(callback, Run(Optional(form)));
 
   RemoteActorSelectionDialogController controller(
-      web_contents(), std::move(credentials), credential_domain_, callback.Get());
+      web_contents(), std::move(credentials), credential_domain_,
+      callback.Get());
 
   controller.OnChooseCredentials(
       form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
@@ -105,7 +127,8 @@ TEST_F(RemoteActorSelectionDialogControllerTest,
   EXPECT_CALL(callback, Run(Eq(std::nullopt)));
 
   RemoteActorSelectionDialogController controller(
-      web_contents(), std::move(credentials), credential_domain_, callback.Get());
+      web_contents(), std::move(credentials), credential_domain_,
+      callback.Get());
 
   controller.OnCloseDialog();
 }

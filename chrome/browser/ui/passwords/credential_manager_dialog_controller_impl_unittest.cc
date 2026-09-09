@@ -152,6 +152,7 @@ TEST_F(CredentialManagerDialogControllerTest, PasswordCombinedSelectorController
   EXPECT_FALSE(controller().ShouldShowTopIllustration());
   EXPECT_FALSE(controller().GetTitle().empty());
   EXPECT_TRUE(controller().GetSubtitle().empty());
+  EXPECT_TRUE(controller().GetSubtitleLinkRange().is_empty());
   EXPECT_FALSE(controller().GetOkButtonLabel().empty());
 }
 
