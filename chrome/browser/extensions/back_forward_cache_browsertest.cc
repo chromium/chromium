@@ -31,6 +31,7 @@
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -109,6 +110,15 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     return sessions::SessionTabHelper::IdForTab(web_contents).id();
   }
 
+  // executeScript (in ExpectTitleChangeSuccess) can run before renderers
+  // observe the grant.
+  void GrantActiveTab(const Extension& extension) {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+        ->RunAction(&extension, /*grant_tab_permissions=*/true);
+    waiter.WaitForActiveTabPermissionGranted(extension.id());
+  }
+
   void ExpectTitleChangeSuccess(const Extension& extension, const char* title) {
     static constexpr char kScript[] =
         R"(
@@ -118,7 +128,10 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
             args: ['%s']
           },
           () => {
-            chrome.test.sendScriptResult('done');
+            chrome.test.sendScriptResult(
+                chrome.runtime.lastError
+                    ? chrome.runtime.lastError.message
+                    : 'done');
           });
         )";
     const std::string script =
@@ -1046,16 +1059,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
              "document.getElementById('stage').value;"));
 }
 
-// Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ActiveTabPermissionRevoked DISABLED_ActiveTabPermissionRevoked
-#else
-#define MAYBE_ActiveTabPermissionRevoked ActiveTabPermissionRevoked
-#endif
 // Test that an activeTab permission temporarily granted to an extension for a
 // page does not revive when the BFCache entry is restored.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_ActiveTabPermissionRevoked) {
+                       ActiveTabPermissionRevoked) {
   scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("active_tab"));
@@ -1071,10 +1078,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   content::RenderFrameHostWrapper render_frame_host_a(
       web_contents->GetPrimaryMainFrame());
 
-  // Grant the activeTab permission.
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension.get(), /*grant_tab_permissions=*/true);
-
+  GrantActiveTab(*extension);
   ExpectTitleChangeSuccess(*extension, "changed_title");
 
   // 2) Navigate to B.
@@ -1098,19 +1102,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   ExpectTitleChangeFail(*extension);
 }
 
-// Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ActiveTabPermissionClearedOnBFCacheRestore \
-  DISABLED_ActiveTabPermissionClearedOnBFCacheRestore
-#else
-#define MAYBE_ActiveTabPermissionClearedOnBFCacheRestore \
-  ActiveTabPermissionClearedOnBFCacheRestore
-#endif
 // Test that an activeTab permission granted to an extension for a page is
 // cleared when a cross-origin page activation (restoring a BFCache entry)
 // commits.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_ActiveTabPermissionClearedOnBFCacheRestore) {
+                       ActiveTabPermissionClearedOnBFCacheRestore) {
   scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("active_tab"));
@@ -1134,10 +1130,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  // Grant the activeTab permission on B.
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension.get(), /*grant_tab_permissions=*/true);
-
+  GrantActiveTab(*extension);
   ExpectTitleChangeSuccess(*extension, "changed_title_on_b");
 
   // Go back to A (page activation from BFCache).
