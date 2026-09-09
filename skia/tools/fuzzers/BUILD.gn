@@ -16,10 +16,20 @@ if (is_win && use_fuzzing_engine) {
     sources =
         [ "//skia/tools/fuzzers/fuzzer_environment.cc" ] + skia_base_fuzzer_srcs
 
+    # Fuzzers compile Skia source and tool files directly (outside of
+    # "//skia"). Like "//skia" itself, they require both `skia_config` and
+    # `skia_library_config` to compile Skia internals (which "//skia" does
+    # not re-export to dependents).
     # Use public_deps and public_configs so each fuzzer_test doesn't need to
-    # explicitly depend on "//skia" and "//skia:skia_library_config".
-    public_deps = [ "//skia" ]
-    public_configs = [ "//skia:skia_library_config" ]
+    # explicitly redeclare these dependencies and configurations.
+    public_deps = [
+      "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
+      "//skia",
+    ]
+    public_configs = [
+      "//skia:skia_config",
+      "//skia:skia_library_config",
+    ]
     deps = [ "//base/test:test_support" ]
   }
 
