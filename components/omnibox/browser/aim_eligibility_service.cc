@@ -1155,6 +1155,14 @@ void AimEligibilityService::StartServerEligibilityRequest(
                                configuration_.full_version_list);
   }
 
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled) &&
+      !configuration_.search_capabilities_version.empty()) {
+    request->headers.SetHeader(
+        contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName,
+        configuration_.search_capabilities_version);
+  }
+
   GaiaId pending_request_account = GetActiveAccount();
 
   if (use_oauth) {

@@ -187,9 +187,14 @@ source_set("aim_eligibility_service") {
     "//components/search_engines",
     "//components/variations/service",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//services/network/public/cpp",
     "//third_party/blink/public/common:headers",
   ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (is_android) {
     sources += [ "aim_eligibility_service_factory_android.cc" ]

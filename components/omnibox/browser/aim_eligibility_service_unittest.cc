@@ -809,6 +809,94 @@ TEST_F(AimEligibilityServiceTest, CoBrowseUserAgentSuffix) {
   EXPECT_EQ(*ua_value2, "UA with Suffix");
 }
 
+TEST_F(AimEligibilityServiceTest, SearchCapabilitiesHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled);
+
+  AimEligibilityService::Configuration config;
+  config.search_capabilities_version = "1";
+  CreateService(config);
+
+  // Trigger a request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  std::optional<std::string> header_value = request.headers.GetHeader(
+      contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName);
+  EXPECT_TRUE(header_value.has_value());
+  EXPECT_EQ(*header_value, "1");
+}
+
+TEST_F(AimEligibilityServiceTest, SearchCapabilitiesHeader_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled);
+
+  AimEligibilityService::Configuration config;
+  config.search_capabilities_version = "1";
+  CreateService(config);
+
+  // Trigger a request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_FALSE(request.headers.HasHeader(
+      contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName));
+}
+
+TEST_F(AimEligibilityServiceTest, SearchCapabilitiesHeader_Empty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled);
+
+  AimEligibilityService::Configuration config;
+  config.search_capabilities_version = "";
+  CreateService(config);
+
+  // Trigger a request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_FALSE(request.headers.HasHeader(
+      contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName));
+}
+
+TEST_F(AimEligibilityServiceTest, SearchCapabilitiesHeader_CustomVersion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled);
+
+  AimEligibilityService::Configuration config;
+  config.search_capabilities_version = "2.0";
+  CreateService(config);
+
+  // Trigger a request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  std::optional<std::string> header_value = request.headers.GetHeader(
+      contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName);
+  EXPECT_TRUE(header_value.has_value());
+  EXPECT_EQ(*header_value, "2.0");
+}
+
 TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

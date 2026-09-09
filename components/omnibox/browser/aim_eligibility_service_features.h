@@ -35,6 +35,10 @@ BASE_DECLARE_FEATURE(kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled);
 // Eligibility Service requests.
 BASE_DECLARE_FEATURE(kAimServerEligibilitySendFullVersionListEnabled);
 
+// If enabled, adds the Chrome-Search-Capabilities-Version header to all AIM
+// Eligibility Service requests.
+BASE_DECLARE_FEATURE(kAimServerEligibilitySendSearchCapabilitiesHeaderEnabled);
+
 // If enabled, uses a custom retry policy for the server request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityCustomRetryPolicyEnabled);
 
