@@ -40,6 +40,10 @@ namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
 
+namespace enterprise_net {
+class EnterpriseProxyTabHelper;
+}  // namespace enterprise_net
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace extensions {
 class ExtensionSidePanelManager;
@@ -145,6 +149,8 @@ class TabFeatures {
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_tab_controller_;
+  std::unique_ptr<enterprise_net::EnterpriseProxyTabHelper>
+      enterprise_proxy_tab_helper_;
   std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
       saas_usage_navigation_observer_;
 

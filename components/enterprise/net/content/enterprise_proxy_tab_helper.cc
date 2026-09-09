@@ -5,18 +5,28 @@
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace enterprise_net {
 
+DEFINE_USER_DATA(EnterpriseProxyTabHelper);
+
 EnterpriseProxyTabHelper::EnterpriseProxyTabHelper(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents,
     EnterpriseProxyErrorService* error_service)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<EnterpriseProxyTabHelper>(*web_contents),
-      error_service_(error_service) {}
+      error_service_(error_service),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 EnterpriseProxyTabHelper::~EnterpriseProxyTabHelper() = default;
+
+// static
+EnterpriseProxyTabHelper* EnterpriseProxyTabHelper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void EnterpriseProxyTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -39,7 +49,5 @@ void EnterpriseProxyTabHelper::DidFinishNavigation(
     }
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(EnterpriseProxyTabHelper);
 
 }  // namespace enterprise_net

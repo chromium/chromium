@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/login/enterprise_proxy_login_delegate.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
+#include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
@@ -127,11 +129,27 @@ bool HttpAuthCoordinator::Flow::ForwardToEnterpriseProxy(
     return false;
   }
 
+  // For primary main frame navigations, retrieve the active NavigationID from
+  // the tab's EnterpriseProxyTabHelper to correlate this 407 challenge with the
+  // impending error page commit.
+  //
+  // For subresources, iframes, or background requests, the disguised error is
+  // still intercepted and auth is aborted but without login dialog/top-level
+  // error page. (`navigation_id` defaults to 0)
+  int64_t navigation_id = 0;
+  if (is_request_for_primary_main_frame_navigation_ && web_contents_) {
+    if (auto* tab_helper = enterprise_net::EnterpriseProxyTabHelper::From(
+            tabs::TabInterface::MaybeGetFromContents(web_contents_.get()))) {
+      navigation_id = tab_helper->active_navigation_id();
+    }
+  }
+
+  auto delegate = std::make_unique<EnterpriseProxyLoginDelegate>(
+      web_contents_, is_request_for_primary_main_frame_navigation_);
+
   auto callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
   return error_service->InterceptProxyAuthChallenge(
-      auth_info_, url_, response_headers_,
-      std::make_unique<EnterpriseProxyLoginDelegate>(
-          web_contents_, is_request_for_primary_main_frame_navigation_),
+      auth_info_, url_, response_headers_, navigation_id, std::move(delegate),
       std::move(callback));
 }
 

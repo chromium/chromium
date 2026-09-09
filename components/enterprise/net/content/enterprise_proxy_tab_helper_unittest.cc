@@ -10,6 +10,7 @@
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
@@ -22,24 +23,31 @@ class EnterpriseProxyTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    ON_CALL(mock_tab_, GetContents())
+        .WillByDefault(testing::Return(web_contents()));
     error_service_ =
         std::make_unique<EnterpriseProxyErrorService>(&mock_proxy_service_);
-    EnterpriseProxyTabHelper::CreateForWebContents(web_contents(),
-                                                   error_service_.get());
-    tab_helper_ = EnterpriseProxyTabHelper::FromWebContents(web_contents());
+    tab_helper_ = std::make_unique<EnterpriseProxyTabHelper>(
+        mock_tab_, web_contents(), error_service_.get());
   }
 
   void TearDown() override {
-    tab_helper_ = nullptr;
+    tab_helper_.reset();
     content::RenderViewHostTestHarness::TearDown();
     error_service_.reset();
   }
 
  protected:
+  tabs::MockTabInterface mock_tab_;
   MockEnterpriseProxyService mock_proxy_service_;
   std::unique_ptr<EnterpriseProxyErrorService> error_service_;
-  raw_ptr<EnterpriseProxyTabHelper> tab_helper_ = nullptr;
+  std::unique_ptr<EnterpriseProxyTabHelper> tab_helper_;
 };
+
+TEST_F(EnterpriseProxyTabHelperTest, FromTabInterface) {
+  EXPECT_EQ(EnterpriseProxyTabHelper::From(&mock_tab_), tab_helper_.get());
+  EXPECT_EQ(EnterpriseProxyTabHelper::From(nullptr), nullptr);
+}
 
 TEST_F(EnterpriseProxyTabHelperTest,
        PrimaryMainFrameNavigation_TracksIdAndCleansUpErrorState) {

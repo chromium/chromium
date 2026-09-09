@@ -7,9 +7,18 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace enterprise_net {
 
@@ -23,14 +32,19 @@ class EnterpriseProxyErrorService;
 // Concurrently navigating tabs each have their own WebContents and
 // EnterpriseProxyTabHelper instance with distinct, globally-unique 64-bit
 // NavigationIDs.
-class EnterpriseProxyTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<EnterpriseProxyTabHelper> {
+class EnterpriseProxyTabHelper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(EnterpriseProxyTabHelper);
+
+  EnterpriseProxyTabHelper(tabs::TabInterface& tab,
+                           content::WebContents* web_contents,
+                           EnterpriseProxyErrorService* error_service);
   ~EnterpriseProxyTabHelper() override;
 
   EnterpriseProxyTabHelper(const EnterpriseProxyTabHelper&) = delete;
   EnterpriseProxyTabHelper& operator=(const EnterpriseProxyTabHelper&) = delete;
+
+  static EnterpriseProxyTabHelper* From(tabs::TabInterface* tab);
 
   int64_t active_navigation_id() const { return active_navigation_id_; }
 
@@ -41,13 +55,9 @@ class EnterpriseProxyTabHelper
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  explicit EnterpriseProxyTabHelper(content::WebContents* web_contents,
-                                    EnterpriseProxyErrorService* error_service);
-  friend class content::WebContentsUserData<EnterpriseProxyTabHelper>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
   raw_ptr<EnterpriseProxyErrorService> error_service_ = nullptr;
   int64_t active_navigation_id_ = 0;
+  ui::ScopedUnownedUserData<EnterpriseProxyTabHelper> scoped_unowned_user_data_;
 };
 
 }  // namespace enterprise_net

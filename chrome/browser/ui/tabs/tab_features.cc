@@ -24,6 +24,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_web_contents_observer.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/geic/geic_side_panel_coordinator.h"
@@ -125,6 +126,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
+#include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/payments/core/features.h"
 #include "components/skills/features.h"
@@ -508,6 +510,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   data_protection_tab_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
+
+  enterprise_proxy_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<enterprise_net::EnterpriseProxyTabHelper>(
+              tab, tab, tab.GetContents(),
+              EnterpriseProxyErrorServiceFactory::GetForProfile(profile));
 
   // Create the ReadAnythingController first to ensure it exists before
   // any potential consumers, like the side panel controller.

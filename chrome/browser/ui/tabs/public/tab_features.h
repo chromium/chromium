@@ -113,6 +113,10 @@ namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
 
+namespace enterprise_net {
+class EnterpriseProxyTabHelper;
+}  // namespace enterprise_net
+
 namespace enterprise_reporting {
 class SaasUsageNavigationObserver;
 }  // namespace enterprise_reporting
@@ -472,6 +476,9 @@ class TabFeatures {
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_tab_controller_;
+
+  std::unique_ptr<enterprise_net::EnterpriseProxyTabHelper>
+      enterprise_proxy_tab_helper_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

@@ -12,6 +12,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -45,6 +46,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/data_protection/features.h"
+#include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/payments/core/features.h"
 #include "components/search/ntp_features.h"
@@ -159,6 +161,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     data_protection_tab_controller_ = std::make_unique<
         enterprise_data_protection::DataProtectionNavigationController>(tab);
   }
+
+  enterprise_proxy_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<enterprise_net::EnterpriseProxyTabHelper>(
+              *tab, *tab, web_contents,
+              EnterpriseProxyErrorServiceFactory::GetForProfile(profile));
 
   glic_instance_helper_ =
       GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);

@@ -61,8 +61,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/enterprise/net/content/enterprise_proxy_navigation_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
+#include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
@@ -70,6 +70,7 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "components/grit/components_resources.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -598,26 +599,33 @@ TEST_F(ChromeContentBrowserClientTest,
             EnterpriseProxyServiceFactory::GetForProfile(p));
       }));
 
+  auto* error_service =
+      static_cast<enterprise_net::EnterpriseProxyErrorService*>(
+          EnterpriseProxyErrorServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(error_service);
+
   ChromeContentBrowserClient client;
   content::MockNavigationHandle navigation_handle(
       GURL("https://target.example.com/test"), /*render_frame_host=*/nullptr);
 
-  // Without EnterpriseProxyNavigationErrorData attached, returns nullptr.
+  // Without disguised error recorded, returns nullptr.
   EXPECT_FALSE(client.GetAlternativeErrorPageOverrideInfo(
       navigation_handle, /*render_frame_host=*/nullptr, profile(),
       net::ERR_PROXY_AUTH_REQUESTED));
 
-  // Attach EnterpriseProxyNavigationErrorData.
-  enterprise_net::EnterpriseProxyErrorDataDelegate delegate(&navigation_handle);
-  delegate.AttachDisguisedErrorData(enterprise_net::EnterpriseProxyErrorData(
-      GURL("https://target.example.com/test"),
-      GURL("https://proxy.example.com:443"), 403));
+  // Record disguised error.
+  error_service->RecordDisguisedError(
+      navigation_handle.GetNavigationId(),
+      enterprise_net::EnterpriseProxyErrorData(
+          GURL("https://target.example.com/test"),
+          GURL("https://proxy.example.com:443"), 403));
 
   auto info = client.GetAlternativeErrorPageOverrideInfo(
       navigation_handle, /*render_frame_host=*/nullptr, profile(),
       net::ERR_PROXY_AUTH_REQUESTED);
 
   ASSERT_TRUE(info);
+  EXPECT_EQ(info->resource_id, IDR_ENTERPRISE_PROXY_ERROR_PAGE_HTML);
   auto override_param = info->alternative_error_page_params.FindBool(
       error_page::kOverrideErrorPage);
   ASSERT_TRUE(override_param.has_value());
@@ -628,14 +636,20 @@ TEST_F(ChromeContentBrowserClientTest,
   ASSERT_TRUE(is_enterprise_error.has_value());
   EXPECT_TRUE(*is_enterprise_error);
 
-  const auto* html_content =
-      info->alternative_error_page_params.FindString("error_page_html");
-  ASSERT_TRUE(html_content);
-  EXPECT_NE(html_content->find("https://target.example.com/test"),
-            std::string::npos);
-  EXPECT_NE(html_content->find("https://proxy.example.com/"),
-            std::string::npos);
-  EXPECT_NE(html_content->find("403"), std::string::npos);
+  const auto* destination_url =
+      info->alternative_error_page_params.FindString("destination_url");
+  ASSERT_TRUE(destination_url);
+  EXPECT_EQ(*destination_url, "https://target.example.com/test");
+
+  const auto* proxy_url =
+      info->alternative_error_page_params.FindString("proxy_url");
+  ASSERT_TRUE(proxy_url);
+  EXPECT_EQ(*proxy_url, "https://proxy.example.com/");
+
+  const auto* error_code =
+      info->alternative_error_page_params.FindString("error_code");
+  ASSERT_TRUE(error_code);
+  EXPECT_EQ(*error_code, "403");
 }
 
 TEST_F(
@@ -646,14 +660,33 @@ TEST_F(
       {enterprise_net::kEnableDynamicRouteFetching},
       {enterprise_net::kEnterpriseProxyErrorHandling});
 
+  EnterpriseProxyServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<TestEnterpriseProxyService>();
+      }));
+  EnterpriseProxyErrorServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        Profile* p = Profile::FromBrowserContext(context);
+        return std::make_unique<enterprise_net::EnterpriseProxyErrorService>(
+            EnterpriseProxyServiceFactory::GetForProfile(p));
+      }));
+
+  auto* error_service =
+      static_cast<enterprise_net::EnterpriseProxyErrorService*>(
+          EnterpriseProxyErrorServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(error_service);
+
   ChromeContentBrowserClient client;
   content::MockNavigationHandle navigation_handle(
       GURL("https://target.example.com/test"), /*render_frame_host=*/nullptr);
 
-  enterprise_net::EnterpriseProxyErrorDataDelegate delegate(&navigation_handle);
-  delegate.AttachDisguisedErrorData(enterprise_net::EnterpriseProxyErrorData(
-      GURL("https://target.example.com/test"),
-      GURL("https://proxy.example.com:443"), 403));
+  error_service->RecordDisguisedError(
+      navigation_handle.GetNavigationId(),
+      enterprise_net::EnterpriseProxyErrorData(
+          GURL("https://target.example.com/test"),
+          GURL("https://proxy.example.com:443"), 403));
 
   EXPECT_FALSE(client.GetAlternativeErrorPageOverrideInfo(
       navigation_handle, /*render_frame_host=*/nullptr, profile(),

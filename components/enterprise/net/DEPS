@@ -1,5 +1,7 @@
 include_rules = [
   "+components/error_page/common",
+  "+components/tabs/public",
   "+content/public/browser",
   "+content/public/test",
+  "+ui/base/unowned_user_data",
 ]
