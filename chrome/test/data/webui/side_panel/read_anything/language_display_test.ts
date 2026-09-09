@@ -4,8 +4,10 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {getDisplayName, getNormalizedDisplayName, isLanguageSearchMatch, isSubstring, sortLanguagesByDisplayName, stripDiacritics} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {getDisplayName, getDisplayNameForLocale, getNormalizedDisplayName, isLanguageSearchMatch, isSubstring, sortLanguagesByDisplayName, stripDiacritics} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 suite('LanguageDisplay', () => {
   const localeToDisplayName = {
@@ -70,4 +72,26 @@ suite('LanguageDisplay', () => {
         assertEquals('en-us', langs[1]);
         assertEquals('es-es', langs[2]);
       });
+
+  test('getDisplayNameForLocale resolves voice pack locale', () => {
+    const audioBrowserProxy = new TestAudioBrowserProxy();
+    audioBrowserProxy.localeToDisplayName = {
+      'en-us': 'English (United States)',
+      'es-es': 'Español (España)',
+    };
+
+    assertEquals(
+        'English (United States)',
+        getDisplayNameForLocale('en-US', audioBrowserProxy));
+    assertEquals(
+        'Español (España)',
+        getDisplayNameForLocale('es-ES', audioBrowserProxy));
+    assertEquals(2, audioBrowserProxy.getCallCount('getDisplayNameForLocale'));
+
+    audioBrowserProxy.reset();
+    // Unsupported voice pack locale exits early without querying proxy.
+    assertEquals(
+        '', getDisplayNameForLocale('invalid-lang', audioBrowserProxy));
+    assertEquals(0, audioBrowserProxy.getCallCount('getDisplayNameForLocale'));
+  });
 });

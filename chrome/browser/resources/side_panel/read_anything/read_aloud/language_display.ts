@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+import type {AudioBrowserProxy} from './audio_browser_proxy.js';
+import {convertLangOrLocaleForVoicePackManager} from './voice_language_conversions.js';
 // Strips diacritical combining marks via Unicode NFD normalization.
 export function stripDiacritics(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -21,6 +22,18 @@ export function getDisplayName(
     lang: string, localeToDisplayName: {[locale: string]: string}): string {
   const langLower = lang.toLowerCase();
   return (localeToDisplayName && localeToDisplayName[langLower]) || langLower;
+}
+
+
+// Resolves localized display name for a voice pack language.
+export function getDisplayNameForLocale(
+    language: string,
+    audioBrowserProxy: AudioBrowserProxy,
+    ): string {
+  const voicePackLang = convertLangOrLocaleForVoicePackManager(language);
+  return voicePackLang ?
+      audioBrowserProxy.getDisplayNameForLocale(voicePackLang, voicePackLang) :
+      '';
 }
 
 

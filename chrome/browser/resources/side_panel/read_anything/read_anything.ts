@@ -53,7 +53,7 @@ export type {AccentMenuElement} from './read_aloud/accent_menu.js';
 export type {AudioBrowserProxy} from './read_aloud/audio_browser_proxy.js';
 export {AudioBrowserProxyImpl} from './read_aloud/audio_browser_proxy.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
-export {getDisplayName, getNormalizedDisplayName, isLanguageSearchMatch, isSubstring, sortLanguagesByDisplayName, stripDiacritics} from './read_aloud/language_display.js';
+export {getDisplayName, getDisplayNameForLocale, getNormalizedDisplayName, isLanguageSearchMatch, isSubstring, sortLanguagesByDisplayName, stripDiacritics} from './read_aloud/language_display.js';
 export type {LanguageMenuElement} from './read_aloud/language_menu.js';
 export type {LanguageToastElement} from './read_aloud/language_toast.js';
 export {currentReadHighlightClass, Highlight, MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from './read_aloud/movement.js';
@@ -77,6 +77,8 @@ export type {VoiceLanguageListener} from './read_aloud/voice_language_controller
 export {VoiceLanguageController} from './read_aloud/voice_language_controller.js';
 export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getNotification, getNotificationFor, getVoicePackConvertedLangIfExists, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './read_aloud/voice_language_conversions.js';
 export {VoiceLanguageModel} from './read_aloud/voice_language_model.js';
+export type {BuildVoiceDropdownGroupsParams, BuildVoiceDropdownGroupsResult, VoiceDropdownGroup, VoiceDropdownItem} from './read_aloud/voice_menu_display.js';
+export {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceTitle, isVoicePreviewSpinning, stringToHtmlTestId, voiceQualityRankComparator} from './read_aloud/voice_menu_display.js';
 export type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
 export {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
 export type {VoiceSelectionMenuElement} from './read_aloud/voice_selection_menu.js';

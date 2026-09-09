@@ -27,13 +27,9 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {LanguageMenuElement} from './language_menu.js';
-// clang-format off
-// <if expr="not is_chromeos">
-import {hasGoogleIdentifier} from './voice_language_conversions.js';
-// </if>
-// clang-format on
-
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, hasNaturalIdentifier, NotificationType} from './voice_language_conversions.js';
+import type {NotificationType} from './voice_language_conversions.js';
+import type {VoiceDropdownGroup, VoiceDropdownItem} from './voice_menu_display.js';
+import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, isVoicePreviewSpinning} from './voice_menu_display.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 import type {VoiceNotificationListener} from './voice_notification_manager.js';
 import {getCss} from './voice_selection_menu.css.js';
@@ -44,26 +40,6 @@ export interface VoiceSelectionMenuElement {
     voiceSelectionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     languageMenu: LanguageMenuElement,
   };
-}
-
-interface VoiceDropdownGroup {
-  language: string;
-  voices: VoiceDropdownItem[];
-}
-
-interface VoiceDropdownItem {
-  title: string;
-  voice: SpeechSynthesisVoice;
-  selected: boolean;
-  // If a preview has been initiated on a voice. This may be true before
-  // the speech engine actually starts playing the preview.
-  previewInitiated: boolean;
-  // If a preview has actually begun playing, corresponding to .onstart
-  // being called on the preview in app.ts.
-  previewActuallyPlaying: boolean;
-  // This ID is currently just used for testing purposes and does not ensure
-  // uniqueness
-  id: string;
 }
 
 const VoiceSelectionMenuElementBase = WebUiListenerMixinLit(CrLitElement);
@@ -204,73 +180,16 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     return (groupIndex + voiceIndex) === 0 ? 0 : -1;
   }
 
-  private computeEnabledVoices_(): SpeechSynthesisVoice[] {
-    if (!this.availableVoices || !this.enabledLangs) {
-      return [];
-    }
-    const enablesLangsLowerCase: Set<string> =
-        new Set(this.enabledLangs.map(lang => lang.toLowerCase()));
-    return this.availableVoices.filter(
-        ({lang}) => enablesLangsLowerCase.has(lang.toLowerCase()));
-  }
-
-  private getLangDisplayName(lang: string): string {
-    const langLower = lang.toLowerCase();
-    return this.localeToDisplayName[langLower] || langLower;
-  }
-
   private computeVoiceDropdown_(): VoiceDropdownGroup[] {
-    const enabledVoices = this.computeEnabledVoices_();
-    if (!enabledVoices) {
-      return [];
-    }
-    const languageToVoices =
-        enabledVoices.reduce((languageToDropdownItems, voice) => {
-          const dropdownItem: VoiceDropdownItem = {
-            title: this.getVoiceTitle_(voice),
-            voice,
-            id: this.stringToHtmlTestId_(voice.name),
-            selected: areVoicesEqual(this.selectedVoice, voice),
-            previewActuallyPlaying:
-                areVoicesEqual(this.previewVoicePlaying, voice),
-            previewInitiated: areVoicesEqual(this.previewVoiceInitiated, voice),
-          };
-
-          const lang = this.getLangDisplayName(voice.lang);
-
-          if (languageToDropdownItems[lang]) {
-            languageToDropdownItems[lang].push(dropdownItem);
-          } else {
-            languageToDropdownItems[lang] = [dropdownItem];
-          }
-
-          return languageToDropdownItems;
-        }, {} as {[language: string]: VoiceDropdownItem[]});
-
-    for (const lang of Object.keys(languageToVoices)) {
-      languageToVoices[lang]!.sort(voiceQualityRankComparator);
-    }
-
-    return Object.entries(languageToVoices).map(([
-                                                  language,
-                                                  voices,
-                                                ]) => ({language, voices}));
-  }
-
-  private getVoiceTitle_(voice: SpeechSynthesisVoice): string {
-    let title = voice.name;
-    // <if expr="not is_chromeos">
-    // We only use the system label outside of ChromeOS.
-    if (!hasGoogleIdentifier(voice)) {
-      title = loadTimeData.getString('systemVoiceLabel');
-    }
-    // </if>
-    return title;
-  }
-
-  // This ID does not ensure uniqueness and is just used for testing purposes.
-  private stringToHtmlTestId_(s: string): string {
-    return s.replace(/\s/g, '-').replace(/[()]/g, '');
+    const {groups} = computeVoiceDropdown({
+      availableVoices: this.availableVoices,
+      enabledLangs: this.enabledLangs,
+      selectedVoice: this.selectedVoice,
+      previewVoicePlaying: this.previewVoicePlaying,
+      previewVoiceInitiated: this.previewVoiceInitiated,
+      localeToDisplayName: this.localeToDisplayName,
+    });
+    return groups;
   }
 
   protected onVoiceSelectClick_(e: Event) {
@@ -408,9 +327,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   }
 
   protected hideSpinner_(voiceDropdown: VoiceDropdownItem): boolean {
-    return !(
-        voiceDropdown.previewInitiated &&
-        !voiceDropdown.previewActuallyPlaying);
+    return !isVoicePreviewSpinning(voiceDropdown);
   }
 
   protected voiceLabel_(selected: boolean, voiceName: string) {
@@ -421,9 +338,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   }
 
   protected shouldDisableButton_(voiceDropdown: VoiceDropdownItem) {
-    return (
-        voiceDropdown.previewInitiated &&
-        !voiceDropdown.previewActuallyPlaying);
+    return isVoicePreviewSpinning(voiceDropdown);
   }
 
   protected previewIcon_(previewInitiated: boolean): string {
@@ -448,63 +363,14 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   }
 
   private computeErrorMessages_(): string[] {
-    const allocationErrors = this.computeMessages_(
-        ([_, notification]) => notification === NotificationType.NO_SPACE,
-        'readingModeVoiceMenuNoSpace');
-    const noInternetErrors = this.computeMessages_(
-        ([_, notification]) => notification === NotificationType.NO_INTERNET,
-        'readingModeVoiceMenuNoInternet');
-    return allocationErrors.concat(noInternetErrors);
+    return computeErrorMessages(
+        this.currentNotifications_, this.audioBrowserProxy_);
   }
 
   private computeDownloadingMessages_(): string[] {
-    return this.computeMessages_(
-        ([_, notification]) => notification === NotificationType.DOWNLOADING,
-        'readingModeVoiceMenuDownloading');
+    return computeDownloadingMessages(
+        this.currentNotifications_, this.audioBrowserProxy_);
   }
-
-  private computeMessages_(
-      filterFn: (value: [string, NotificationType]) => boolean,
-      message: string) {
-    // We need to redeclare the type here otherwise the filterFn type
-    // declaration doesn't work.
-    const entries: Array<[string, NotificationType]> =
-        Object.entries(this.currentNotifications_);
-    return entries.filter(filterFn)
-        .map(([lang, _]) => this.getDisplayNameForLocale(lang))
-        .filter(possibleName => possibleName.length > 0)
-        .map(displayName => loadTimeData.getStringF(message, displayName));
-  }
-
-  private getDisplayNameForLocale(language: string): string {
-    const voicePackLang = convertLangOrLocaleForVoicePackManager(language);
-    return voicePackLang ? this.audioBrowserProxy_.getDisplayNameForLocale(
-                               voicePackLang, voicePackLang) :
-                           '';
-  }
-}
-
-function voiceQualityRankComparator(
-    voice1: VoiceDropdownItem,
-    voice2: VoiceDropdownItem,
-    ): number {
-  if (hasNaturalIdentifier(voice1.voice) &&
-      hasNaturalIdentifier(voice2.voice)) {
-    return 0;
-  }
-
-  if (!hasNaturalIdentifier(voice1.voice) &&
-      !hasNaturalIdentifier(voice2.voice)) {
-    return 0;
-  }
-
-  // voice1 is a Natural voice and voice2 is not
-  if (hasNaturalIdentifier(voice1.voice)) {
-    return -1;
-  }
-
-  // voice2 is a Natural voice and voice1 is not
-  return 1;
 }
 
 declare global {
