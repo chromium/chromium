@@ -1782,7 +1782,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
             newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
     public static final MutableFlagWithSafeDefault sHighPrioritySiteNotifications =
-            newMutableFlagWithSafeDefault(HIGH_PRIORITY_SITE_NOTIFICATIONS, false);
+            newMutableFlagWithSafeDefault(HIGH_PRIORITY_SITE_NOTIFICATIONS, true);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sInlinePdfV2 =
