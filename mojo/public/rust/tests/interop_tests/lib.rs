@@ -171,7 +171,7 @@ fn test_interop() {
         n2: Some(5),
         empty: None,
         e: Some(TestEnum::Four),
-        fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
+        fourints: Some(Box::new(FourInts { a: 1, b: 2, c: 3, d: 4 })),
         f1: Some(OrderedFloat(1.0)),
         f2: None,
     };
@@ -182,7 +182,7 @@ fn test_interop() {
     // 11. Nullable Others - This is the last call, so quit the run loop in the
     //     callback.
     let n_others = NullableOthers {
-        u: Some(UnionWithNullables::str(Some("Hello".to_string()))),
+        u: Some(Box::new(UnionWithNullables::str(Some("Hello".to_string())))),
         m: Some(Default::default()),
         str: Some("World".to_string()),
     };

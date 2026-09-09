@@ -115,9 +115,12 @@ def _MojomTypeToRustType(
     return typemap[ty.qualified_name]['typename']
 
   if mojom.IsNullableKind(ty):
+    unnullable = ty.MakeUnnullableKind()
     inner_ty = _MojomTypeToRustType(
-      ty.MakeUnnullableKind(), current_module, source_to_target_map, typemap
+      unnullable, current_module, source_to_target_map, typemap
     )
+    if mojom.IsStructKind(unnullable) or mojom.IsUnionKind(unnullable):
+      return f"Option<Box<{inner_ty}>>"
     return f"Option<{inner_ty}>"
 
   if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):

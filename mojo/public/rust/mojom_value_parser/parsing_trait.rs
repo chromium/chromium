@@ -154,32 +154,6 @@ mojomparse_leaf_impl!(DataPipeConsumerHandle, Handle);
 mojomparse_leaf_impl!(DataPipeProducerHandle, Handle);
 mojomparse_leaf_impl!(SharedBuffer, Handle);
 
-// Implement MojomParse for any type that implements PrimitiveEnum and the other
-// requirements for MojomParse.
-impl<Context, T> MojomParse<Context> for T
-where
-    T: PrimitiveEnum + 'static,
-{
-    fn mojom_type() -> MojomType {
-        MojomType::Enum { is_valid: Predicate::new::<T>(&(Self::is_valid as fn(i32) -> bool)) }
-    }
-
-    fn into_mojom_value(self, _context: &Context) -> MojomValue {
-        MojomValue::Enum(self.into())
-    }
-
-    fn try_from_mojom_value(value: MojomValue, _context: &Context) -> anyhow::Result<Self> {
-        if let MojomValue::Enum(v) = value {
-            Ok(Self::try_from(v)?)
-        } else {
-            ::anyhow::bail!(
-                "Cannot construct a value of type {} from non-enum MojomValue {:?}",
-                std::any::type_name::<Self>(),
-                value
-            )
-        }
-    }
-}
 // Implement MojomParse for arrays and vectors
 // It would be neat to do this more generally, e.g. anything that can be cast
 // to a slice, but rust doesn't have a way for us to prove that the different
@@ -321,5 +295,22 @@ where
                 value
             );
         }
+    }
+}
+
+impl<Context, T> MojomParse<Context> for Box<T>
+where
+    T: MojomParse<Context>,
+{
+    fn mojom_type() -> MojomType {
+        T::mojom_type()
+    }
+
+    fn into_mojom_value(self, context: &Context) -> MojomValue {
+        (*self).into_mojom_value(context)
+    }
+
+    fn try_from_mojom_value(value: MojomValue, context: &Context) -> anyhow::Result<Self> {
+        T::try_from_mojom_value(value, context).map(Box::new)
     }
 }

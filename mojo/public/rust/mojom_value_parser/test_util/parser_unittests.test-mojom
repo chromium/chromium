@@ -295,3 +295,18 @@ struct WithPendingAssociatedTypes {
   pending_associated_receiver<DummyInterface>? rec2;
   pending_associated_remote<DummyInterface>? rem2;
 };
+
+struct RecursiveNode {
+  int32 value;
+  RecursiveNode? next;
+};
+
+struct MutuallyRecursiveA {
+  int32 value;
+  MutuallyRecursiveB? b;
+};
+
+struct MutuallyRecursiveB {
+  int32 value;
+  MutuallyRecursiveA? a;
+};

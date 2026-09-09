@@ -444,6 +444,30 @@ pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::Token
             }
 
             impl PrimitiveEnum for #name {}
+
+            impl<Context> MojomParse<Context> for #name {
+                fn mojom_type() -> MojomType {
+                    MojomType::Enum {
+                        is_valid: Predicate::new::<#name>(&(Self::is_valid as fn(i32) -> bool)),
+                    }
+                }
+
+                fn into_mojom_value(self, _context: &Context) -> MojomValue {
+                    MojomValue::Enum(self.into())
+                }
+
+                fn try_from_mojom_value(value: MojomValue, _context: &Context) -> ::anyhow::Result<Self> {
+                    if let MojomValue::Enum(v) = value {
+                        Ok(Self::try_from(v)?)
+                    } else {
+                        ::anyhow::bail!(
+                            "Cannot construct a value of type {} from non-enum MojomValue {:?}",
+                            std::any::type_name::<Self>(),
+                            value
+                        )
+                    }
+                }
+            }
         };
     };
 
