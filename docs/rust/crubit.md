@@ -22,11 +22,15 @@ following caveats:
     Chromium [uses Crubit](https://crrev.com/c/7749970)
     and ships to mobile and desktop targets.)
 
-*   **2nd-party project limitations:** Projects like PDFium or V8 currently
-    support non-Chromium clients and alternative toolchains that may lack
-    Crubit support. Adopting Crubit in these projects requires either helping
-    their clients adopt Crubit, or making a policy decision to only support
-    clients that have Crubit available.
+*   **2nd-party project limitations:** In principle, Crubit will work in
+    projects like PDFium or V8 as well. However, such projects usually
+    support non-Chromium clients or alternative toolchains that may lack
+    Crubit support. In order to use Crubit in a 2nd-party project, that
+    project must first:
+    * Make a policy decision to only support clients that have Crubit available,
+      and/or help their clients set up Crubit support.
+    * Enable Crubit in their build system by
+      [providing `//build_overrides/crubit.gni`](https://source.chromium.org/chromium/chromium/src/+/main:build/rust/gni_impl/cpp_api_from_rust.gni;l=59-62;drc=51d2448c9b469ac9a7e5fd349a624c71291a7510).
 
 Other notes:
 
