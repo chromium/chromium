@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ode") {
+  sources = [
+    "ios_chrome_on_device_encryption_metrics_reporter_factory.h",
+    "ios_chrome_on_device_encryption_metrics_reporter_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/ode",
+    "//components/sync/service",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model",
+  ]
+}

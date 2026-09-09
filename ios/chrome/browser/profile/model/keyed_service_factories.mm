@@ -139,6 +139,7 @@
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ode/ios_chrome_on_device_encryption_metrics_reporter_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
@@ -378,6 +379,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSChromeInstanceIDProfileServiceFactory::GetInstance();
   IOSChromeLargeIconCacheFactory::GetInstance();
   IOSChromeLargeIconServiceFactory::GetInstance();
+  IOSChromeOnDeviceEncryptionMetricsReporterFactory::GetInstance();
   IOSChromePasswordCheckManagerFactory::GetInstance();
   IOSChromePasswordReceiverServiceFactory::GetInstance();
   IOSChromePasswordReuseManagerFactory::GetInstance();
