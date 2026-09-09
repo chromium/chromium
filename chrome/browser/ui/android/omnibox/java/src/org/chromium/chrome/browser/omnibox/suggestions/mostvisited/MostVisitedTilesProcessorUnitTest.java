@@ -45,12 +45,14 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -82,6 +84,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     private PropertyModel mPropertyModel;
     private MostVisitedTilesProcessor mProcessor;
     private List<AutocompleteMatch> mMatches;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Captor private ArgumentCaptor<Callback<Drawable>> mFavIconCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Drawable>> mGenIconCallbackCaptor;
@@ -124,9 +127,11 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .when(mImageSupplier)
                 .generateFavicon(any(), mGenIconCallbackCaptor.capture());
 
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
                         mContext,
+                        mResourceProvider,
                         mSuggestionHost,
                         mTextProvider,
                         mImageSupplier,
@@ -195,6 +200,13 @@ public final class MostVisitedTilesProcessorUnitTest {
     }
 
     @Test
+    public void createModel_resourceProvider() {
+        var model = mProcessor.createModel();
+
+        assertEquals(mResourceProvider, model.get(SuggestionCommonProperties.RESOURCE_PROVIDER));
+    }
+
+    @Test
     public void populateModel_searchTile() {
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(
@@ -217,6 +229,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
                         mContext,
+                        mResourceProvider,
                         mSuggestionHost,
                         mTextProvider,
                         /* imageSupplier= */ null,

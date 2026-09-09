@@ -36,10 +36,12 @@ public class EntitySuggestionViewBinderUnitTest {
         mView =
                 new BaseSuggestionView<>(
                         ContextUtils.getApplicationContext(), R.layout.omnibox_basic_suggestion);
-        mModel = new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
         OmniboxResourceProvider resourceProvider =
                 new OmniboxResourceProvider(mView.getContext(), BrandedColorScheme.APP_DEFAULT);
-        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, resourceProvider);
+        mModel =
+                new PropertyModel.Builder(EntitySuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, resourceProvider)
+                        .build();
         PropertyModelChangeProcessor.create(mModel, mView, new EntitySuggestionViewBinder());
     }
 

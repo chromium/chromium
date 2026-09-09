@@ -71,9 +71,11 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         mBinder = new BaseCarouselSuggestionViewBinder();
         mTiles = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mTiles);
+        mModel =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider)
+                        .build();
         mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
-        mModel = new PropertyModel(BaseCarouselSuggestionViewProperties.ALL_KEYS);
-        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
         PropertyModelChangeProcessor.create(mModel, mView, mBinder);
     }
 

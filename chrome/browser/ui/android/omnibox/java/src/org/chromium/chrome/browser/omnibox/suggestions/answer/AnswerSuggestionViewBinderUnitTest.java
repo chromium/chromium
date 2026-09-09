@@ -42,10 +42,12 @@ public class AnswerSuggestionViewBinderUnitTest {
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         mBaseView = spy(new BaseSuggestionView<>(new LinearLayout(mContext)));
-        mModel = new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
         OmniboxResourceProvider resourceProvider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, resourceProvider);
+        mModel =
+                new PropertyModel.Builder(AnswerSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, resourceProvider)
+                        .build();
         PropertyModelChangeProcessor.create(mModel, mBaseView, new AnswerSuggestionViewBinder());
     }
 

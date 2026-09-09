@@ -50,10 +50,12 @@ public class TailSuggestionViewBinderUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mTailSuggestionView = spy(new TailSuggestionView(mContext));
-        mBaseView = new BaseSuggestionView<>(mTailSuggestionView);
-        mModel = new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
+        mModel =
+                new PropertyModel.Builder(TailSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider)
+                        .build();
+        mBaseView = new BaseSuggestionView<>(mTailSuggestionView);
         PropertyModelChangeProcessor.create(mModel, mBaseView, new TailSuggestionViewBinder());
     }
 

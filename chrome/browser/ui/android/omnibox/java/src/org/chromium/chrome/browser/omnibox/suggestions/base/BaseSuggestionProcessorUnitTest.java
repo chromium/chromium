@@ -89,7 +89,7 @@ public class BaseSuggestionProcessorUnitTest {
 
         @Override
         public PropertyModel createModel() {
-            return new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
+            return createPropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
         }
 
         @Override

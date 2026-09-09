@@ -274,7 +274,7 @@ class AutocompleteMediator
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(
-                        mSuggestionModels, mContext, mRoundSidesSupplier, mResourceProvider);
+                        mSuggestionModels, mContext, mRoundSidesSupplier);
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         Activity activity = windowAndroid.getActivity().get();

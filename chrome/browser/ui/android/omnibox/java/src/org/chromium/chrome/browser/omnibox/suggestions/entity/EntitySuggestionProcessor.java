@@ -51,7 +51,7 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
 
     @Override
     public PropertyModel createModel() {
-        return new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
+        return createPropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
     }
 
     @Override

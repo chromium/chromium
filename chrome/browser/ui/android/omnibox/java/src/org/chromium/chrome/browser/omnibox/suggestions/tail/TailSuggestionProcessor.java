@@ -43,7 +43,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public PropertyModel createModel() {
-        return new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
+        return createPropertyModel(TailSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override

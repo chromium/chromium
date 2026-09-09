@@ -75,7 +75,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public PropertyModel createModel() {
-        return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
+        return createPropertyModel(SuggestionViewProperties.ALL_KEYS);
     }
 
     @VisibleForTesting

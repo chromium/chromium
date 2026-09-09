@@ -91,9 +91,11 @@ public class BaseSuggestionViewBinderUnitTest {
         mBaseView = spy(new BaseSuggestionView<>(new ImageView(mContext)));
         mIconView = mBaseView.decorationIcon;
 
-        mModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        mModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider);
+        mModel =
+                new PropertyModel.Builder(BaseSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider)
+                        .build();
         mBinder =
                 new TestBaseSuggestionViewBinder<>(
                         (m, v, p) -> {
@@ -429,15 +431,15 @@ public class BaseSuggestionViewBinderUnitTest {
         var state1 = BaseSuggestionViewBinder.getFocusableDrawableStateForTesting();
 
         // Create a second MVP setup. Use Bare context that has no theme data.
-        var newModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
         var viewWithNoContext = spy(new BaseSuggestionView<>(new ImageView(mBareContext)));
         OmniboxResourceProvider bareResourceProvider =
                 new OmniboxResourceProvider(mBareContext, BrandedColorScheme.APP_DEFAULT);
-        newModel.set(SuggestionCommonProperties.RESOURCE_PROVIDER, bareResourceProvider);
+        var newModel =
+                new PropertyModel.Builder(BaseSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, bareResourceProvider)
+                        .build();
         PropertyModelChangeProcessor.create(
-                newModel,
-                viewWithNoContext,
-                new TestBaseSuggestionViewBinder<>((m, v, p) -> {}));
+                newModel, viewWithNoContext, new TestBaseSuggestionViewBinder<>((m, v, p) -> {}));
 
         // Apply the same color scheme to the new model.
         // Observe that we don't crash.

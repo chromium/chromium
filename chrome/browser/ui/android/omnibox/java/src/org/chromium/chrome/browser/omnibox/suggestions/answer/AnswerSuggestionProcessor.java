@@ -47,7 +47,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public PropertyModel createModel() {
-        return new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
+        return createPropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override

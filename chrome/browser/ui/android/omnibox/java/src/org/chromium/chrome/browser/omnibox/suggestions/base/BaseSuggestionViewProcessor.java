@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
@@ -40,6 +41,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -442,5 +444,12 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 /* start= */ 0,
                 /* end= */ text.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    /** Create a PropertyModel for suggestion views. */
+    protected PropertyModel createPropertyModel(PropertyKey[] keys) {
+        return new PropertyModel.Builder(keys)
+                .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mUiContext.resourceProvider)
+                .build();
     }
 }

@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLay
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -107,8 +108,8 @@ public @interface SuggestionCommonProperties {
     WritableIntPropertyKey LAYOUT_DIRECTION = new WritableIntPropertyKey();
 
     /** The provider for omnibox resources. */
-    WritableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
-            new WritableObjectPropertyKey<>();
+    ReadableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
+            new ReadableObjectPropertyKey<>();
 
     /** Whether a divider should be shown at the bottom of the suggestion. */
     WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
