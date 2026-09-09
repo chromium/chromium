@@ -2255,8 +2255,8 @@ bool IsFullscreenNextIAEnabled() {
 // secondary toolbar.
 - (CGFloat)secondaryToolbarHeightDelta {
   if (IsFullscreenRefactoringEnabled()) {
-    return std::max(0.0, _fullscreenBrowserAgent->max_insets().bottom -
-                             _fullscreenBrowserAgent->min_insets().bottom);
+    return std::max(0.0, [self secondaryToolbarHeightWithInset] -
+                             [self collapsedBottomToolbarHeight]);
   }
   CGFloat fullyExpandedHeight =
       self.fullscreenController->GetMaxViewportInsets().bottom;
@@ -2315,6 +2315,11 @@ bool IsFullscreenNextIAEnabled() {
     return;
   }
 
+  // Early return if the toolbar is currently managed by keyboard avoidance.
+  if (_isSecondaryToolbarAboveKeyboard) {
+    return;
+  }
+
   // Don't update the height of the secondary toolbar if it is hidden.
   if (!IsSplitToolbarMode(self)) {
     return;
@@ -2322,7 +2327,7 @@ bool IsFullscreenNextIAEnabled() {
 
   CGFloat expandedToolbarHeight;
   if (IsFullscreenRefactoringEnabled()) {
-    expandedToolbarHeight = _fullscreenBrowserAgent->max_insets().bottom;
+    expandedToolbarHeight = [self secondaryToolbarHeightWithInset];
   } else {
     expandedToolbarHeight =
         self.fullscreenController->GetMaxViewportInsets().bottom;
