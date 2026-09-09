@@ -50,10 +50,8 @@ class ChromeBrowserCloudManagementControllerDesktop
   base::FilePath GetExternalPolicyDir() override;
   NetworkConnectionTrackerGetter CreateNetworkConnectionTrackerGetter()
       override;
-  // TODO(crbug.com/341377023): `InvalidationListener` does not use
-  // `DeviceIdentityProvider` and does not need
-  // `DeviceOAuth2TokenServiceFactory`. Check if any other service needs the
-  // factory inialialized.
+  // TODO(crbug.com/341377023): Check if any other service needs the factory
+  // initialized.
   void InitializeOAuthTokenFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* local_state) override;

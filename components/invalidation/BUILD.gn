@@ -22,32 +22,7 @@ static_library("invalidation") {
     "//base:i18n",
     "//components/gcm_driver",
     "//components/keyed_service/core",
-    "//components/pref_registry",
-    "//components/prefs",
-    "//google_apis",
-  ]
-}
-
-static_library("legacy_topics_cleanup") {
-  sources = [
-    "impl/profile_identity_provider.cc",
-    "impl/profile_identity_provider.h",
-    "public/identity_provider.cc",
-    "public/identity_provider.h",
-  ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//components/keyed_service/core",
-    "//components/pref_registry",
-    "//components/prefs",
-    "//components/signin/public/identity_manager",
-    "//google_apis",
     "//net",
-    "//services/data_decoder/public/cpp",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
   ]
 }
 
@@ -71,13 +46,11 @@ source_set("unit_tests") {
   sources = [ "invalidation_listener_impl_unittest.cc" ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/gcm_driver:test_support",
     "//components/gcm_driver/instance_id:test_support",
     "//components/invalidation",
     "//components/invalidation:test_support",
-    "//components/sync_preferences:test_support",
-    "//google_apis:test_support",
-    "//google_apis/gcm",
     "//testing/gmock",
     "//testing/gtest",
   ]

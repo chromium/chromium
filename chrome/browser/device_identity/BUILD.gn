@@ -6,8 +6,6 @@ assert(!is_android)
 
 source_set("device_identity") {
   sources = [
-    "device_identity_provider.cc",
-    "device_identity_provider.h",
     "device_oauth2_token_service.cc",
     "device_oauth2_token_service.h",
     "device_oauth2_token_service_factory.cc",
@@ -17,7 +15,6 @@ source_set("device_identity") {
 
   public_deps = [
     "//base",
-    "//components/invalidation:legacy_topics_cleanup",
     "//google_apis",
   ]
 
