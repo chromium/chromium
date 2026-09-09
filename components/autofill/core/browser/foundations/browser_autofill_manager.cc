@@ -1357,8 +1357,6 @@ std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
 
   std::vector<Suggestion> address_suggestions =
       extract_vector(FillingProduct::kAddress);
-  std::vector<Suggestion> identity_credentials_suggestions =
-      extract_vector(FillingProduct::kIdentityCredential);
   std::vector<Suggestion> loyalty_card_suggestions =
       extract_vector(FillingProduct::kLoyaltyCard);
   std::vector<Suggestion> autocomplete_suggestions =
@@ -1374,28 +1372,12 @@ std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
                                            std::move(loyalty_card_suggestions));
   }
 
-  if (!identity_credentials_suggestions.empty()) {
-    MergeIdentityCredentialsAndAddressSuggestions(
-        address_suggestions, std::move(identity_credentials_suggestions));
-  }
-
   if (!autocomplete_suggestions.empty() && trigger_field) {
     MergeAutocompleteAndAddressSuggestions(
         address_suggestions, std::move(autocomplete_suggestions),
         trigger_field->Type().GetAddressType());
   }
   return address_suggestions;
-}
-
-void BrowserAutofillManager::MergeIdentityCredentialsAndAddressSuggestions(
-    std::vector<Suggestion>& suggestions,
-    std::vector<Suggestion> identity_credential_suggestions) {
-  // TODO(crbug.com/380367784): figure out what to do when both verified
-  // and unverified suggestions point to the same email address.
-  suggestions.insert(
-      suggestions.begin(),
-      std::make_move_iterator(identity_credential_suggestions.begin()),
-      std::make_move_iterator(identity_credential_suggestions.end()));
 }
 
 void BrowserAutofillManager::MergeAutocompleteAndAddressSuggestions(
@@ -3224,21 +3206,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     default:
       // Skip other filling products.
       break;
-  }
-
-  if (const IdentityCredentialDelegate* identity_credential_delegate =
-          client().GetIdentityCredentialDelegate()) {
-    // Only <input autocomplete="email webidentity"> fields are considered.
-    if (std::optional<AutocompleteParsingResult> autocomplete =
-            ParseAutocompleteAttribute(autofill_field.autocomplete_attribute());
-        autocomplete && autocomplete->webidentity) {
-      std::vector<Suggestion> verified_suggestions =
-          identity_credential_delegate->GetVerifiedAutofillSuggestions(
-              form, &form_structure, field, &autofill_field, client());
-      // Insert verified suggestions above unverified ones.
-      MergeIdentityCredentialsAndAddressSuggestions(
-          suggestions, std::move(verified_suggestions));
-    }
   }
 
   return suggestions;

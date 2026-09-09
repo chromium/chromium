@@ -77,8 +77,7 @@ constexpr FieldTypeSet kCreditCardFieldTypes =
 // more acute if the set below grows further (e.g., to include USERNAME) and the
 // overlap with PWM types grows (the Autofill server may predict
 // EMAIL_ADDRESS and USERNAME for the same field).
-constexpr FieldTypeSet kIdentityCredentialFieldTypes = {
-    NAME_FIRST, NAME_FULL, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER, PASSWORD};
+constexpr FieldTypeSet kIdentityCredentialFieldTypes = {PASSWORD};
 
 // TODO(crbug.com/432645177): Remove `EMAIL_OR_LOYALTY_MEMBERSHIP_ID` and
 // represent it as union of the other three types. That means the getter

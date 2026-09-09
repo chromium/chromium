@@ -48,12 +48,12 @@ class IdentityCredentialSuggestionGeneratorTest : public testing::Test {
   IdentityCredentialSuggestionGeneratorTest() {
     FormData form_data;
     form_data.set_fields({test::CreateTestFormField(
-        "Email", "email", "", FormControlType::kInputEmail)});
+        "Password", "password", "", FormControlType::kInputPassword)});
     form_data.set_main_frame_origin(
         url::Origin::Create(GURL("https://www.example.com")));
     form_structure_ = std::make_unique<FormStructure>(form_data);
     autofill_field_ = form_structure_->field(0);
-    test_api(*form_structure_).SetFieldTypes({EMAIL_ADDRESS});
+    test_api(*form_structure_).SetFieldTypes({PASSWORD});
   }
 
   TestAutofillClient& client() { return autofill_client_; }
@@ -80,11 +80,8 @@ class IdentityCredentialSuggestionGeneratorTest : public testing::Test {
             /*format=*/std::nullopt,
             std::vector<content::IdentityRequestDialogDisclosureField>(),
             /*is_auto_reauthn=*/false);
-    account->identity_provider->format = blink::mojom::Format::kSdJwt;
     account->idp_claimed_login_state =
         content::IdentityRequestAccount::LoginState::kSignIn;
-    account->identity_provider->disclosure_fields = {
-        content::IdentityRequestDialogDisclosureField::kEmail};
     return account;
   }
 
@@ -97,7 +94,7 @@ class IdentityCredentialSuggestionGeneratorTest : public testing::Test {
   raw_ptr<AutofillField> autofill_field_ = nullptr;
 };
 
-// Checks that identity credential suggestion is generated.
+// Checks that identity credential suggestion is generated for password fields.
 TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
@@ -127,14 +124,43 @@ TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
   const Suggestion& suggestion = generated_suggestions.second[0];
   EXPECT_EQ(suggestion.main_text.value, u"john@email.com");
   ASSERT_EQ(suggestion.labels.size(), 1ul);
-  ASSERT_EQ(suggestion.minor_texts.size(), 1ul);
-  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kEmail);
 
   // Expect the payload to be populated properly.
   const Suggestion::IdentityCredentialPayload& payload =
       suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
   EXPECT_EQ(payload.account_id, "id");
   EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
+}
+
+// Checks that non-password fields do not generate suggestions.
+TEST_F(IdentityCredentialSuggestionGeneratorTest,
+       NoSuggestionsForNonPasswordField) {
+  MockFederatedAuthAutofillSource mock;
+
+  IdentityCredentialSuggestionGenerator generator(base::BindLambdaForTesting(
+      [&mock]() -> content::webid::AutofillSource* { return &mock; }));
+
+  EXPECT_CALL(mock, GetAutofillSuggestions).Times(0);
+
+  for (FieldType unsupported_type :
+       {UNKNOWN_TYPE, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER, NAME_FULL,
+        NAME_FIRST, USERNAME_AND_EMAIL_ADDRESS, CREDIT_CARD_NUMBER}) {
+    SCOPED_TRACE(testing::Message() << "Testing FieldType: "
+                                    << FieldTypeToStringView(unsupported_type));
+    base::MockCallback<
+        base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+        suggestions_generated_callback;
+
+    test_api(form()).SetFieldTypes({unsupported_type});
+    EXPECT_CALL(
+        suggestions_generated_callback,
+        Run(testing::Pair(
+            SuggestionGenerator::SuggestionDataSource::kIdentityCredential,
+            testing::IsEmpty())));
+    generator.GenerateSuggestions(form().ToFormData(), field(), &form(),
+                                  &field(), client(),
+                                  suggestions_generated_callback.Get());
+  }
 }
 
 }  // namespace

@@ -6927,70 +6927,7 @@ TEST_F(BrowserAutofillManagerTest,
               Optional(credit_card_form->form_signature()));
 }
 
-class BrowserAutofillManagerIdentityCredentialTest
-    : public BrowserAutofillManagerTest {
- protected:
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-    auto identity_credential_delegate =
-        std::make_unique<NiceMock<MockIdentityCredentialDelegate>>();
-    autofill_client().set_identity_credential_delegate(
-        std::move(identity_credential_delegate));
-  }
 
-  MockIdentityCredentialDelegate& identity_credential_delegate() {
-    return static_cast<MockIdentityCredentialDelegate&>(
-        *autofill_client().GetIdentityCredentialDelegate());
-  }
-};
-
-// Tests that verified fields are shown above unverified fields.
-TEST_F(BrowserAutofillManagerIdentityCredentialTest,
-       CreateVerifiedEmailSuggestionShownBeforeAddressSuggestions) {
-  EXPECT_CALL(identity_credential_delegate(), GetVerifiedAutofillSuggestions)
-      .WillOnce([](const FormData& form, const FormStructure* form_structure,
-                   const FormFieldData& field,
-                   const AutofillField* autofill_field,
-                   const AutofillClient& client) {
-        std::vector<Suggestion> suggestions = {
-            Suggestion(SuggestionType::kIdentityCredential)};
-        return suggestions;
-      });
-
-  // Set up our form data. Notably, the first field is an email address
-  // with webidentity.
-  FormData form = test::GetFormData(
-      {.fields = {{.role = EMAIL_ADDRESS,
-                   .autocomplete_attribute = "email webidentity"}}});
-  FormsSeen({form});
-
-  OnAskForValuesToFill(form, form.fields()[0]);
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(EqualsSuggestion(SuggestionType::kIdentityCredential),
-                          EqualsSuggestion(SuggestionType::kAddressEntry),
-                          EqualsSuggestion(SuggestionType::kAddressEntry),
-                          EqualsSuggestion(SuggestionType::kSeparator),
-                          EqualsSuggestion(SuggestionType::kManageAddress)));
-}
-
-// Tests that verified fields are not shown with the email field alone.
-TEST_F(BrowserAutofillManagerIdentityCredentialTest,
-       EmailFieldAloneDoesNotTriggerIdentityCredentialSuggestion) {
-  EXPECT_CALL(identity_credential_delegate(), GetVerifiedAutofillSuggestions)
-      .Times(0);
-
-  // Set up our form data. Notably, the first field is an email address
-  // without webidentity.
-  FormData form = test::GetFormData(
-      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
-  FormsSeen({form});
-  OnAskForValuesToFill(form, form.fields()[0]);
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      Not(Contains(EqualsSuggestion(SuggestionType::kIdentityCredential))));
-}
 
 // Test that the BAM queries the password delegate as soon as it's present.
 TEST_F(BrowserAutofillManagerTest, QueriesDelegateWhenGeneratingSuggestions) {
@@ -7239,30 +7176,7 @@ TEST_F(BrowserAutofillManagerSuggestionMergingTest, AddressOnly) {
                                      SuggestionType::kManageAddress));
 }
 
-// Tests that address and identity suggestions are merged, with identity
-// suggestions coming first.
-TEST_F(BrowserAutofillManagerSuggestionMergingTest, AddressAndIdentity) {
-  const FormData form = test::GetFormData(
-      {.fields = {{.label = u"Field",
-                   .form_control_type = FormControlType::kInputText}}});
 
-  const std::vector<SuggestionGenerator::ReturnedSuggestions> input = {
-      WithAddressFooter({Suggestion(SuggestionType::kAddressEntry)}),
-      {SuggestionGenerator::SuggestionDataSource::kIdentityCredential,
-       {Suggestion(SuggestionType::kWebauthnCredential)}}};
-
-  test_api(autofill_manager())
-      .OnIndividualSuggestionsGenerated(
-          form, form.fields()[0],
-          AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::TimeTicks::Now(), input);
-
-  EXPECT_THAT(external_delegate()->suggestions(),
-              SuggestionVectorIdsAre(SuggestionType::kWebauthnCredential,
-                                     SuggestionType::kAddressEntry,
-                                     SuggestionType::kSeparator,
-                                     SuggestionType::kManageAddress));
-}
 
 // Tests that address and passkey suggestions can be merged, with address
 // suggestions coming first.

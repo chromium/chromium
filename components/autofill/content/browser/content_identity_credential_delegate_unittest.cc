@@ -116,7 +116,7 @@ TEST_F(ContentIdentityCredentialDelegateTest, NoAccounts) {
 
   EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(std::nullopt));
 
-  test_api(form()).SetFieldTypes({EMAIL_ADDRESS});
+  test_api(form()).SetFieldTypes({PASSWORD});
   std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
       form().ToFormData(), &form(), field(), &field(), client());
   ASSERT_EQ(0ul, suggestions.size());
@@ -135,13 +135,14 @@ TEST_F(ContentIdentityCredentialDelegateTest, EmptyAccounts) {
 
   EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
 
-  test_api(form()).SetFieldTypes({EMAIL_ADDRESS});
+  test_api(form()).SetFieldTypes({PASSWORD});
   std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
       form().ToFormData(), &form(), field(), &field(), client());
   ASSERT_EQ(0ul, suggestions.size());
 }
 
-TEST_F(ContentIdentityCredentialDelegateTest, UnsupportedFieldType) {
+TEST_F(ContentIdentityCredentialDelegateTest,
+       NoSuggestionsForUnsupportedFields) {
   MockAutofillSource mock;
 
   ContentIdentityCredentialDelegate delegate(
@@ -152,204 +153,17 @@ TEST_F(ContentIdentityCredentialDelegateTest, UnsupportedFieldType) {
 
   EXPECT_CALL(mock, GetAutofillSuggestions).Times(0);
 
-  test_api(form()).SetFieldTypes({UNKNOWN_TYPE});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(0ul, suggestions.size());
-}
-
-TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
-  MockAutofillSource mock;
-
-  ContentIdentityCredentialDelegate delegate(
-      base::BindLambdaForTesting([&mock]() {
-        content::webid::AutofillSource* result = &mock;
-        return result;
-      }));
-
-  IdentityRequestAccountPtr account = CreateTestAccount();
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  // Use only "email" in the selective disclosure request.
-  account->identity_provider->disclosure_fields = {
-      content::IdentityRequestDialogDisclosureField::kEmail};
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
-
-  test_api(form()).SetFieldTypes({EMAIL_ADDRESS});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(1ul, suggestions.size());
-
-  Suggestion suggestion = suggestions[0];
-  EXPECT_EQ(suggestion.main_text.value, u"john@email.com");
-  ASSERT_EQ(suggestion.labels.size(), 1ul);
-  ASSERT_EQ(suggestion.minor_texts.size(), 1ul);
-  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kEmail);
-
-  // Expect the payload to be populated properly.
-  Suggestion::IdentityCredentialPayload payload =
-      suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
-  EXPECT_EQ(payload.account_id, "id");
-  EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
-
-  // Expect only one field to be available in the payload.
-  ASSERT_EQ(payload.fields.size(), 1ul);
-
-  // Expect that email is previewed/filled because it was requested in the
-  // conditional request.
-  ASSERT_TRUE(payload.fields.contains(EMAIL_ADDRESS));
-  EXPECT_EQ(payload.fields[EMAIL_ADDRESS], u"john@email.com");
-
-  // Expect that name isn't previewed/filled because it wasn't requested in the
-  // conditional request.
-  EXPECT_FALSE(payload.fields.contains(NAME_FULL));
-}
-
-TEST_F(ContentIdentityCredentialDelegateTest, SuggestPhoneNumbers) {
-  MockAutofillSource mock;
-
-  ContentIdentityCredentialDelegate delegate(
-      base::BindLambdaForTesting([&mock]() {
-        content::webid::AutofillSource* result = &mock;
-        return result;
-      }));
-
-  IdentityRequestAccountPtr account = CreateTestAccount();
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  // Use "email" AND "phone-number" in the selective disclosure request.
-  account->identity_provider->disclosure_fields = {
-      content::IdentityRequestDialogDisclosureField::kPhoneNumber,
-      content::IdentityRequestDialogDisclosureField::kEmail};
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
-
-  test_api(form()).SetFieldTypes({PHONE_HOME_WHOLE_NUMBER});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(1ul, suggestions.size());
-
-  Suggestion suggestion = suggestions[0];
-  EXPECT_EQ(suggestion.main_text.value, u"+1 (234) 567-8910");
-  ASSERT_EQ(suggestion.minor_texts.size(), 1ul);
-
-  // Expect the payload to be populated properly.
-  Suggestion::IdentityCredentialPayload payload =
-      suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
-  EXPECT_EQ(payload.account_id, "id");
-  EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
-
-  // Expect two fields to be available in the payload: emails and usernames.
-  ASSERT_EQ(payload.fields.size(), 2ul);
-
-  // Expect that email is previewed/filled because it was requested in the
-  // conditional request.
-  ASSERT_TRUE(payload.fields.contains(EMAIL_ADDRESS));
-  EXPECT_EQ(payload.fields[EMAIL_ADDRESS], u"john@email.com");
-
-  // Expect that email is previewed/filled because it was requested in the
-  // conditional request.
-  ASSERT_TRUE(payload.fields.contains(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_EQ(payload.fields[PHONE_HOME_WHOLE_NUMBER], u"+1 (234) 567-8910");
-}
-
-TEST_F(ContentIdentityCredentialDelegateTest,
-       GetSuggestionForFieldThatWasntRequested) {
-  MockAutofillSource mock;
-
-  ContentIdentityCredentialDelegate delegate(
-      base::BindLambdaForTesting([&mock]() {
-        content::webid::AutofillSource* result = &mock;
-        return result;
-      }));
-
-  IdentityRequestAccountPtr account = CreateTestAccount();
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  // Use only "email" in the selective disclosure request.
-  account->identity_provider->disclosure_fields = {
-      content::IdentityRequestDialogDisclosureField::kEmail};
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
-
-  test_api(form()).SetFieldTypes({NAME_FULL});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(0ul, suggestions.size());
-}
-
-TEST_F(ContentIdentityCredentialDelegateTest,
-       GetSuggestionForFieldThatRequestedButIsUnavailable) {
-  MockAutofillSource mock;
-
-  ContentIdentityCredentialDelegate delegate(
-      base::BindLambdaForTesting([&mock]() {
-        content::webid::AutofillSource* result = &mock;
-        return result;
-      }));
-
-  IdentityRequestAccountPtr account = CreateTestAccount();
-
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-
-  // Set email to an unavailable string.
-  account->email = "";
-
-  // Use only "email" in the selective disclosure request.
-  account->identity_provider->disclosure_fields = {
-      content::IdentityRequestDialogDisclosureField::kEmail};
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
-
-  test_api(form()).SetFieldTypes({EMAIL_ADDRESS});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(0ul, suggestions.size());
-}
-
-TEST_F(ContentIdentityCredentialDelegateTest,
-       GetSuggestionsForDelegatedCredentialAvailableForSignUp) {
-  MockAutofillSource mock;
-
-  ContentIdentityCredentialDelegate delegate(
-      base::BindLambdaForTesting([&mock]() {
-        content::webid::AutofillSource* result = &mock;
-        return result;
-      }));
-
-  IdentityRequestAccountPtr account = CreateTestAccount();
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  account->idp_claimed_login_state =
-      content::IdentityRequestAccount::LoginState::kSignUp;
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
-
-  test_api(form()).SetFieldTypes({PASSWORD});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(1ul, suggestions.size());
-
-  Suggestion suggestion = suggestions[0];
-  EXPECT_EQ(suggestion.main_text.value, u"john@email.com");
-  EXPECT_EQ(suggestion.labels.size(), 1ul);
-  EXPECT_EQ(suggestion.minor_texts.size(), 0ul);
-
-  // Expect the payload to be populated properly.
-  Suggestion::IdentityCredentialPayload payload =
-      suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
-  EXPECT_EQ(payload.account_id, "id");
-  EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
-
-  // Expect no field to be available in the payload for PASSWORD.
-  EXPECT_TRUE(payload.fields.empty());
+  for (FieldType unsupported_type :
+       {UNKNOWN_TYPE, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER, NAME_FULL,
+        NAME_FIRST, USERNAME_AND_EMAIL_ADDRESS, CREDIT_CARD_NUMBER}) {
+    SCOPED_TRACE(testing::Message() << "Testing FieldType: "
+                                    << FieldTypeToStringView(unsupported_type));
+    test_api(form()).SetFieldTypes({unsupported_type});
+    std::vector<Suggestion> suggestions =
+        delegate.GetVerifiedAutofillSuggestions(form().ToFormData(), &form(),
+                                                field(), &field(), client());
+    EXPECT_TRUE(suggestions.empty());
+  }
 }
 
 TEST_F(ContentIdentityCredentialDelegateTest,
@@ -410,51 +224,6 @@ TEST_F(ContentIdentityCredentialDelegateTest,
 
   // Expect no field to be available in the payload for PASSWORD.
   EXPECT_TRUE(payload.fields.empty());
-}
-
-TEST_F(ContentIdentityCredentialDelegateTest, GetProvidedNameRequest) {
-  MockAutofillSource mock;
-
-  ContentIdentityCredentialDelegate delegate(
-      base::BindLambdaForTesting([&mock]() {
-        content::webid::AutofillSource* result = &mock;
-        return result;
-      }));
-
-  IdentityRequestAccountPtr account = CreateTestAccount();
-  // The delegated flow requires an IdP with a specific format.
-  account->identity_provider->format = blink::mojom::Format::kSdJwt;
-  // Use only "name" in the selective disclosure request.
-  account->identity_provider->disclosure_fields = {
-      content::IdentityRequestDialogDisclosureField::kName};
-  std::vector<IdentityRequestAccountPtr> accounts = {account};
-
-  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
-
-  test_api(form()).SetFieldTypes({NAME_FULL});
-  std::vector<Suggestion> suggestions = delegate.GetVerifiedAutofillSuggestions(
-      form().ToFormData(), &form(), field(), &field(), client());
-  ASSERT_EQ(1ul, suggestions.size());
-
-  Suggestion suggestion = suggestions[0];
-  EXPECT_EQ(suggestion.main_text.value, u"John");
-  EXPECT_EQ(suggestion.labels.size(), 0ul);
-  EXPECT_EQ(suggestion.minor_texts.size(), 1ul);
-  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kAccount);
-
-  // Expect the payload to be populated properly.
-  Suggestion::IdentityCredentialPayload payload =
-      suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
-  EXPECT_EQ(payload.account_id, "id");
-  EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
-
-  // Expect only one field to be available in the payload.
-  ASSERT_EQ(payload.fields.size(), 1ul);
-
-  // Expect that email is previewed/filled because it was requested in the
-  // conditional request.
-  ASSERT_TRUE(payload.fields.contains(NAME_FULL));
-  EXPECT_EQ(payload.fields[NAME_FULL], u"John");
 }
 
 }  // namespace

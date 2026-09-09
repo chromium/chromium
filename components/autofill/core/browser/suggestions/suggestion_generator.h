@@ -93,13 +93,11 @@ class SuggestionGenerator {
        {SuggestionDataSource::kOneTimePassword,
         {SuggestionDataSource::kPasskey}},
        // Address can merge with:
-       // - Verified Identity: To show verified details alongside profiles.
        // - Loyalty Cards: To extend email suggestions.
        // - Autocomplete: To complement non-stored email addresses.
        // - Passkeys: Every SuggestionDataSource can be merged with passkeys.
        {SuggestionDataSource::kAddress,
-        {SuggestionDataSource::kIdentityCredential,
-         SuggestionDataSource::kLoyaltyCard, SuggestionDataSource::kPasskey,
+        {SuggestionDataSource::kLoyaltyCard, SuggestionDataSource::kPasskey,
          SuggestionDataSource::kAutocomplete}},
        {SuggestionDataSource::kIdentityCredential,
         {SuggestionDataSource::kPasskey}},

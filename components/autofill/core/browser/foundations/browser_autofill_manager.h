@@ -545,11 +545,6 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillField* trigger_field,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Combines identity credential suggestions and existing suggestions into a
-  // single list, prioritizing identity credential suggestions first.
-  static void MergeIdentityCredentialsAndAddressSuggestions(
-      std::vector<Suggestion>& suggestions,
-      std::vector<Suggestion> identity_credential_suggestions);
 
   // Combines autocomplete suggestions and existing suggestions into a
   // single list, prioritizing address suggestions and filtering out
