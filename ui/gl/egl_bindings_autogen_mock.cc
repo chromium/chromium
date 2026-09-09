@@ -826,351 +826,250 @@ static void MockEglInvalidFunction() {
 GLFunctionPointerType GL_BINDING_CALL
 MockEGLInterface::GetGLProcAddress(const char* name) {
   std::string_view name_view(name);
-  if (name_view == "eglAcquireExternalContextANGLE") {
+  if (name_view == "eglAcquireExternalContextANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglAcquireExternalContextANGLE);
-  }
-  if (name_view == "eglBindAPI") {
+  if (name_view == "eglBindAPI")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglBindAPI);
-  }
-  if (name_view == "eglBindTexImage") {
+  if (name_view == "eglBindTexImage")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglBindTexImage);
-  }
-  if (name_view == "eglChooseConfig") {
+  if (name_view == "eglChooseConfig")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglChooseConfig);
-  }
-  if (name_view == "eglClientWaitSync") {
+  if (name_view == "eglClientWaitSync")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglClientWaitSync);
-  }
-  if (name_view == "eglClientWaitSyncKHR") {
+  if (name_view == "eglClientWaitSyncKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglClientWaitSyncKHR);
-  }
-  if (name_view == "eglCopyBuffers") {
+  if (name_view == "eglCopyBuffers")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCopyBuffers);
-  }
-  if (name_view == "eglCopyMetalSharedEventANGLE") {
+  if (name_view == "eglCopyMetalSharedEventANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglCopyMetalSharedEventANGLE);
-  }
-  if (name_view == "eglCreateContext") {
+  if (name_view == "eglCreateContext")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateContext);
-  }
-  if (name_view == "eglCreateImage") {
+  if (name_view == "eglCreateImage")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateImage);
-  }
-  if (name_view == "eglCreateImageKHR") {
+  if (name_view == "eglCreateImageKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateImageKHR);
-  }
-  if (name_view == "eglCreatePbufferFromClientBuffer") {
+  if (name_view == "eglCreatePbufferFromClientBuffer")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglCreatePbufferFromClientBuffer);
-  }
-  if (name_view == "eglCreatePbufferSurface") {
+  if (name_view == "eglCreatePbufferSurface")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglCreatePbufferSurface);
-  }
-  if (name_view == "eglCreatePixmapSurface") {
+  if (name_view == "eglCreatePixmapSurface")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreatePixmapSurface);
-  }
-  if (name_view == "eglCreatePlatformPixmapSurface") {
+  if (name_view == "eglCreatePlatformPixmapSurface")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglCreatePlatformPixmapSurface);
-  }
-  if (name_view == "eglCreatePlatformWindowSurface") {
+  if (name_view == "eglCreatePlatformWindowSurface")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglCreatePlatformWindowSurface);
-  }
-  if (name_view == "eglCreateStreamKHR") {
+  if (name_view == "eglCreateStreamKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateStreamKHR);
-  }
-  if (name_view == "eglCreateStreamProducerD3DTextureANGLE") {
+  if (name_view == "eglCreateStreamProducerD3DTextureANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglCreateStreamProducerD3DTextureANGLE);
-  }
-  if (name_view == "eglCreateSync") {
+  if (name_view == "eglCreateSync")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateSync);
-  }
-  if (name_view == "eglCreateSyncKHR") {
+  if (name_view == "eglCreateSyncKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateSyncKHR);
-  }
-  if (name_view == "eglCreateWindowSurface") {
+  if (name_view == "eglCreateWindowSurface")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglCreateWindowSurface);
-  }
-  if (name_view == "eglDebugMessageControlKHR") {
+  if (name_view == "eglDebugMessageControlKHR")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglDebugMessageControlKHR);
-  }
-  if (name_view == "eglDestroyContext") {
+  if (name_view == "eglDestroyContext")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroyContext);
-  }
-  if (name_view == "eglDestroyImage") {
+  if (name_view == "eglDestroyImage")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroyImage);
-  }
-  if (name_view == "eglDestroyImageKHR") {
+  if (name_view == "eglDestroyImageKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroyImageKHR);
-  }
-  if (name_view == "eglDestroyStreamKHR") {
+  if (name_view == "eglDestroyStreamKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroyStreamKHR);
-  }
-  if (name_view == "eglDestroySurface") {
+  if (name_view == "eglDestroySurface")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroySurface);
-  }
-  if (name_view == "eglDestroySync") {
+  if (name_view == "eglDestroySync")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroySync);
-  }
-  if (name_view == "eglDestroySyncKHR") {
+  if (name_view == "eglDestroySyncKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglDestroySyncKHR);
-  }
-  if (name_view == "eglDupNativeFenceFDANDROID") {
+  if (name_view == "eglDupNativeFenceFDANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglDupNativeFenceFDANDROID);
-  }
-  if (name_view == "eglExportDMABUFImageMESA") {
+  if (name_view == "eglExportDMABUFImageMESA")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglExportDMABUFImageMESA);
-  }
-  if (name_view == "eglExportDMABUFImageQueryMESA") {
+  if (name_view == "eglExportDMABUFImageQueryMESA")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglExportDMABUFImageQueryMESA);
-  }
-  if (name_view == "eglExportVkImageANGLE") {
+  if (name_view == "eglExportVkImageANGLE")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglExportVkImageANGLE);
-  }
-  if (name_view == "eglGetCompositorTimingANDROID") {
+  if (name_view == "eglGetCompositorTimingANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetCompositorTimingANDROID);
-  }
-  if (name_view == "eglGetCompositorTimingSupportedANDROID") {
+  if (name_view == "eglGetCompositorTimingSupportedANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetCompositorTimingSupportedANDROID);
-  }
-  if (name_view == "eglGetConfigAttrib") {
+  if (name_view == "eglGetConfigAttrib")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetConfigAttrib);
-  }
-  if (name_view == "eglGetConfigs") {
+  if (name_view == "eglGetConfigs")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetConfigs);
-  }
-  if (name_view == "eglGetCurrentContext") {
+  if (name_view == "eglGetCurrentContext")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetCurrentContext);
-  }
-  if (name_view == "eglGetCurrentDisplay") {
+  if (name_view == "eglGetCurrentDisplay")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetCurrentDisplay);
-  }
-  if (name_view == "eglGetCurrentSurface") {
+  if (name_view == "eglGetCurrentSurface")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetCurrentSurface);
-  }
-  if (name_view == "eglGetDisplay") {
+  if (name_view == "eglGetDisplay")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetDisplay);
-  }
-  if (name_view == "eglGetError") {
+  if (name_view == "eglGetError")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetError);
-  }
-  if (name_view == "eglGetFrameTimestampSupportedANDROID") {
+  if (name_view == "eglGetFrameTimestampSupportedANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetFrameTimestampSupportedANDROID);
-  }
-  if (name_view == "eglGetFrameTimestampsANDROID") {
+  if (name_view == "eglGetFrameTimestampsANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetFrameTimestampsANDROID);
-  }
-  if (name_view == "eglGetMscRateANGLE") {
+  if (name_view == "eglGetMscRateANGLE")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetMscRateANGLE);
-  }
-  if (name_view == "eglGetNativeClientBufferANDROID") {
+  if (name_view == "eglGetNativeClientBufferANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetNativeClientBufferANDROID);
-  }
-  if (name_view == "eglGetNextFrameIdANDROID") {
+  if (name_view == "eglGetNextFrameIdANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetNextFrameIdANDROID);
-  }
-  if (name_view == "eglGetPlatformDisplay") {
+  if (name_view == "eglGetPlatformDisplay")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetPlatformDisplay);
-  }
-  if (name_view == "eglGetProcAddress") {
+  if (name_view == "eglGetProcAddress")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetProcAddress);
-  }
-  if (name_view == "eglGetSyncAttrib") {
+  if (name_view == "eglGetSyncAttrib")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetSyncAttrib);
-  }
-  if (name_view == "eglGetSyncAttribKHR") {
+  if (name_view == "eglGetSyncAttribKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetSyncAttribKHR);
-  }
-  if (name_view == "eglGetSyncValuesCHROMIUM") {
+  if (name_view == "eglGetSyncValuesCHROMIUM")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetSyncValuesCHROMIUM);
-  }
-  if (name_view == "eglHandleGPUSwitchANGLE") {
+  if (name_view == "eglHandleGPUSwitchANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglHandleGPUSwitchANGLE);
-  }
-  if (name_view == "eglImageFlushExternalEXT") {
+  if (name_view == "eglImageFlushExternalEXT")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglImageFlushExternalEXT);
-  }
-  if (name_view == "eglInitialize") {
+  if (name_view == "eglInitialize")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglInitialize);
-  }
-  if (name_view == "eglLabelObjectKHR") {
+  if (name_view == "eglLabelObjectKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglLabelObjectKHR);
-  }
-  if (name_view == "eglLockVulkanQueueANGLE") {
+  if (name_view == "eglLockVulkanQueueANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglLockVulkanQueueANGLE);
-  }
-  if (name_view == "eglMakeCurrent") {
+  if (name_view == "eglMakeCurrent")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglMakeCurrent);
-  }
-  if (name_view == "eglPostSubBufferNV") {
+  if (name_view == "eglPostSubBufferNV")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglPostSubBufferNV);
-  }
-  if (name_view == "eglPresentationTimeANDROID") {
+  if (name_view == "eglPresentationTimeANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglPresentationTimeANDROID);
-  }
-  if (name_view == "eglQueryAPI") {
+  if (name_view == "eglQueryAPI")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryAPI);
-  }
-  if (name_view == "eglQueryContext") {
+  if (name_view == "eglQueryContext")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryContext);
-  }
-  if (name_view == "eglQueryDebugKHR") {
+  if (name_view == "eglQueryDebugKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryDebugKHR);
-  }
-  if (name_view == "eglQueryDeviceAttribEXT") {
+  if (name_view == "eglQueryDeviceAttribEXT")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDeviceAttribEXT);
-  }
-  if (name_view == "eglQueryDeviceStringEXT") {
+  if (name_view == "eglQueryDeviceStringEXT")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDeviceStringEXT);
-  }
-  if (name_view == "eglQueryDevicesEXT") {
+  if (name_view == "eglQueryDevicesEXT")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryDevicesEXT);
-  }
-  if (name_view == "eglQueryDisplayAttribANGLE") {
+  if (name_view == "eglQueryDisplayAttribANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDisplayAttribANGLE);
-  }
-  if (name_view == "eglQueryDisplayAttribEXT") {
+  if (name_view == "eglQueryDisplayAttribEXT")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDisplayAttribEXT);
-  }
-  if (name_view == "eglQueryDmaBufFormatsEXT") {
+  if (name_view == "eglQueryDmaBufFormatsEXT")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDmaBufFormatsEXT);
-  }
-  if (name_view == "eglQueryDmaBufModifiersEXT") {
+  if (name_view == "eglQueryDmaBufModifiersEXT")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQueryDmaBufModifiersEXT);
-  }
-  if (name_view == "eglQueryStreamKHR") {
+  if (name_view == "eglQueryStreamKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamKHR);
-  }
-  if (name_view == "eglQueryStreamu64KHR") {
+  if (name_view == "eglQueryStreamu64KHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamu64KHR);
-  }
-  if (name_view == "eglQueryString") {
+  if (name_view == "eglQueryString")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryString);
-  }
-  if (name_view == "eglQueryStringiANGLE") {
+  if (name_view == "eglQueryStringiANGLE")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStringiANGLE);
-  }
-  if (name_view == "eglQuerySurface") {
+  if (name_view == "eglQuerySurface")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQuerySurface);
-  }
-  if (name_view == "eglQuerySurfacePointerANGLE") {
+  if (name_view == "eglQuerySurfacePointerANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglQuerySurfacePointerANGLE);
-  }
-  if (name_view == "eglReacquireHighPowerGPUANGLE") {
+  if (name_view == "eglReacquireHighPowerGPUANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglReacquireHighPowerGPUANGLE);
-  }
-  if (name_view == "eglReleaseExternalContextANGLE") {
+  if (name_view == "eglReleaseExternalContextANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglReleaseExternalContextANGLE);
-  }
-  if (name_view == "eglReleaseHighPowerGPUANGLE") {
+  if (name_view == "eglReleaseHighPowerGPUANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglReleaseHighPowerGPUANGLE);
-  }
-  if (name_view == "eglReleaseTexImage") {
+  if (name_view == "eglReleaseTexImage")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglReleaseTexImage);
-  }
-  if (name_view == "eglReleaseThread") {
+  if (name_view == "eglReleaseThread")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglReleaseThread);
-  }
-  if (name_view == "eglSetBlobCacheFuncsANDROID") {
+  if (name_view == "eglSetBlobCacheFuncsANDROID")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglSetBlobCacheFuncsANDROID);
-  }
-  if (name_view == "eglSetValidationEnabledANGLE") {
+  if (name_view == "eglSetValidationEnabledANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglSetValidationEnabledANGLE);
-  }
-  if (name_view == "eglStreamAttribKHR") {
+  if (name_view == "eglStreamAttribKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglStreamAttribKHR);
-  }
-  if (name_view == "eglStreamConsumerAcquireKHR") {
+  if (name_view == "eglStreamConsumerAcquireKHR")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglStreamConsumerAcquireKHR);
-  }
-  if (name_view == "eglStreamConsumerGLTextureExternalAttribsNV") {
+  if (name_view == "eglStreamConsumerGLTextureExternalAttribsNV")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglStreamConsumerGLTextureExternalAttribsNV);
-  }
-  if (name_view == "eglStreamConsumerGLTextureExternalKHR") {
+  if (name_view == "eglStreamConsumerGLTextureExternalKHR")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglStreamConsumerGLTextureExternalKHR);
-  }
-  if (name_view == "eglStreamConsumerReleaseKHR") {
+  if (name_view == "eglStreamConsumerReleaseKHR")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglStreamConsumerReleaseKHR);
-  }
-  if (name_view == "eglStreamPostD3DTextureANGLE") {
+  if (name_view == "eglStreamPostD3DTextureANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglStreamPostD3DTextureANGLE);
-  }
-  if (name_view == "eglSurfaceAttrib") {
+  if (name_view == "eglSurfaceAttrib")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglSurfaceAttrib);
-  }
-  if (name_view == "eglSwapBuffers") {
+  if (name_view == "eglSwapBuffers")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglSwapBuffers);
-  }
-  if (name_view == "eglSwapBuffersWithDamageKHR") {
+  if (name_view == "eglSwapBuffersWithDamageKHR")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglSwapBuffersWithDamageKHR);
-  }
-  if (name_view == "eglSwapInterval") {
+  if (name_view == "eglSwapInterval")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglSwapInterval);
-  }
-  if (name_view == "eglTerminate") {
+  if (name_view == "eglTerminate")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglTerminate);
-  }
-  if (name_view == "eglUnlockVulkanQueueANGLE") {
+  if (name_view == "eglUnlockVulkanQueueANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglUnlockVulkanQueueANGLE);
-  }
-  if (name_view == "eglWaitClient") {
+  if (name_view == "eglWaitClient")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitClient);
-  }
-  if (name_view == "eglWaitGL") {
+  if (name_view == "eglWaitGL")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitGL);
-  }
-  if (name_view == "eglWaitNative") {
+  if (name_view == "eglWaitNative")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitNative);
-  }
-  if (name_view == "eglWaitSync") {
+  if (name_view == "eglWaitSync")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitSync);
-  }
-  if (name_view == "eglWaitSyncKHR") {
+  if (name_view == "eglWaitSyncKHR")
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitSyncKHR);
-  }
-  if (name_view == "eglWaitUntilWorkScheduledANGLE") {
+  if (name_view == "eglWaitUntilWorkScheduledANGLE")
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglWaitUntilWorkScheduledANGLE);
-  }
   return reinterpret_cast<GLFunctionPointerType>(&MockEglInvalidFunction);
 }
 

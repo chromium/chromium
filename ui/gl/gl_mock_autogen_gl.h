@@ -286,6 +286,10 @@ MOCK_METHOD6(DrawRangeElements,
                   const void* indices));
 MOCK_METHOD2(EGLImageTargetRenderbufferStorageOES,
              void(GLenum target, GLeglImageOES image));
+MOCK_METHOD3(EGLImageTargetTexStorageEXT,
+             void(GLenum target,
+                  GLeglImageOES image,
+                  const GLint* attrib_list));
 MOCK_METHOD2(EGLImageTargetTexture2DOES,
              void(GLenum target, GLeglImageOES image));
 MOCK_METHOD1(Enable, void(GLenum cap));

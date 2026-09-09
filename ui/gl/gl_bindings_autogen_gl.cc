@@ -387,6 +387,8 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
       gfx::HasExtension(extensions, "GL_CHROMIUM_gles_depth_binding_hack");
   ext.b_GL_CHROMIUM_glgetstringi_hack =
       gfx::HasExtension(extensions, "GL_CHROMIUM_glgetstringi_hack");
+  ext.b_GL_EXT_EGL_image_storage =
+      gfx::HasExtension(extensions, "GL_EXT_EGL_image_storage");
   ext.b_GL_EXT_base_instance =
       gfx::HasExtension(extensions, "GL_EXT_base_instance");
   ext.b_GL_EXT_blend_func_extended =
@@ -819,6 +821,12 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
     fn.glEGLImageTargetRenderbufferStorageOESFn =
         reinterpret_cast<glEGLImageTargetRenderbufferStorageOESProc>(
             get_proc_address("glEGLImageTargetRenderbufferStorageOES"));
+  }
+
+  if (ext.b_GL_EXT_EGL_image_storage || ext.b_GL_OES_EGL_image) {
+    fn.glEGLImageTargetTexStorageEXTFn =
+        reinterpret_cast<glEGLImageTargetTexStorageEXTProc>(
+            get_proc_address("glEGLImageTargetTexStorageEXT"));
   }
 
   if (ext.b_GL_OES_EGL_image) {
@@ -2631,6 +2639,12 @@ void GLApiBase::glDrawRangeElementsFn(GLenum mode,
 void GLApiBase::glEGLImageTargetRenderbufferStorageOESFn(GLenum target,
                                                          GLeglImageOES image) {
   driver_->fn.glEGLImageTargetRenderbufferStorageOESFn(target, image);
+}
+
+void GLApiBase::glEGLImageTargetTexStorageEXTFn(GLenum target,
+                                                GLeglImageOES image,
+                                                const GLint* attrib_list) {
+  driver_->fn.glEGLImageTargetTexStorageEXTFn(target, image, attrib_list);
 }
 
 void GLApiBase::glEGLImageTargetTexture2DOESFn(GLenum target,
@@ -5347,6 +5361,14 @@ void TraceGLApi::glEGLImageTargetRenderbufferStorageOESFn(GLenum target,
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu", "TraceGLAPI::glEGLImageTargetRenderbufferStorageOES");
   gl_api_->glEGLImageTargetRenderbufferStorageOESFn(target, image);
+}
+
+void TraceGLApi::glEGLImageTargetTexStorageEXTFn(GLenum target,
+                                                 GLeglImageOES image,
+                                                 const GLint* attrib_list) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceGLAPI::glEGLImageTargetTexStorageEXT");
+  gl_api_->glEGLImageTargetTexStorageEXTFn(target, image, attrib_list);
 }
 
 void TraceGLApi::glEGLImageTargetTexture2DOESFn(GLenum target,
@@ -8621,6 +8643,15 @@ void LogGLApi::glEGLImageTargetRenderbufferStorageOESFn(GLenum target,
                  << "(" << GLEnums::GetStringEnum(target) << ", " << image
                  << ")");
   gl_api_->glEGLImageTargetRenderbufferStorageOESFn(target, image);
+}
+
+void LogGLApi::glEGLImageTargetTexStorageEXTFn(GLenum target,
+                                               GLeglImageOES image,
+                                               const GLint* attrib_list) {
+  GL_SERVICE_LOG("glEGLImageTargetTexStorageEXT"
+                 << "(" << GLEnums::GetStringEnum(target) << ", " << image
+                 << ", " << static_cast<const void*>(attrib_list) << ")");
+  gl_api_->glEGLImageTargetTexStorageEXTFn(target, image, attrib_list);
 }
 
 void LogGLApi::glEGLImageTargetTexture2DOESFn(GLenum target,
@@ -12199,6 +12230,12 @@ void NoContextGLApi::glEGLImageTargetRenderbufferStorageOESFn(
     GLenum target,
     GLeglImageOES image) {
   NoContextHelper("glEGLImageTargetRenderbufferStorageOES");
+}
+
+void NoContextGLApi::glEGLImageTargetTexStorageEXTFn(GLenum target,
+                                                     GLeglImageOES image,
+                                                     const GLint* attrib_list) {
+  NoContextHelper("glEGLImageTargetTexStorageEXT");
 }
 
 void NoContextGLApi::glEGLImageTargetTexture2DOESFn(GLenum target,

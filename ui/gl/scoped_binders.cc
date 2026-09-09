@@ -72,6 +72,12 @@ ScopedTextureBinder::ScopedTextureBinder(unsigned int target, unsigned int id)
       case GL_TEXTURE_RECTANGLE_ANGLE:
         target_getter = GL_TEXTURE_BINDING_RECTANGLE_ANGLE;
         break;
+      case GL_TEXTURE_3D:
+        target_getter = GL_TEXTURE_BINDING_3D;
+        break;
+      case GL_TEXTURE_2D_ARRAY:
+        target_getter = GL_TEXTURE_BINDING_2D_ARRAY;
+        break;
       default:
         NOTIMPLEMENTED() << " Target not supported.";
     }

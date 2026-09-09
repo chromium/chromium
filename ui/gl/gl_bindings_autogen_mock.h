@@ -406,6 +406,10 @@ static void GL_BINDING_CALL Mock_glDrawRangeElements(GLenum mode,
 static void GL_BINDING_CALL
 Mock_glEGLImageTargetRenderbufferStorageOES(GLenum target, GLeglImageOES image);
 static void GL_BINDING_CALL
+Mock_glEGLImageTargetTexStorageEXT(GLenum target,
+                                   GLeglImageOES image,
+                                   const GLint* attrib_list);
+static void GL_BINDING_CALL
 Mock_glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image);
 static void GL_BINDING_CALL Mock_glEnable(GLenum cap);
 static void GL_BINDING_CALL Mock_glEnableVertexAttribArray(GLuint index);

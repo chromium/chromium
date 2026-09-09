@@ -485,6 +485,11 @@ GL_FUNCTIONS = [
   'names': ['glEGLImageTargetRenderbufferStorageOES'],
   'arguments': 'GLenum target, GLeglImageOES image', },
 { 'return_type': 'void',
+  'versions': [{'name': 'glEGLImageTargetTexStorageEXT',
+                'extensions': ['GL_EXT_EGL_image_storage', 'GL_OES_EGL_image']}],
+  'arguments': ('GLenum target, GLeglImageOES image, '
+                'const GLint* attrib_list'), },
+{ 'return_type': 'void',
   'names': ['glEGLImageTargetTexture2DOES'],
   'arguments': 'GLenum target, GLeglImageOES image', },
 { 'return_type': 'void',

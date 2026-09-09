@@ -367,6 +367,10 @@ typedef void(GL_BINDING_CALL* glDrawRangeElementsProc)(GLenum mode,
 typedef void(GL_BINDING_CALL* glEGLImageTargetRenderbufferStorageOESProc)(
     GLenum target,
     GLeglImageOES image);
+typedef void(GL_BINDING_CALL* glEGLImageTargetTexStorageEXTProc)(
+    GLenum target,
+    GLeglImageOES image,
+    const GLint* attrib_list);
 typedef void(GL_BINDING_CALL* glEGLImageTargetTexture2DOESProc)(
     GLenum target,
     GLeglImageOES image);
@@ -1527,6 +1531,7 @@ struct ExtensionsGL {
   bool b_GL_CHROMIUM_copy_texture;
   bool b_GL_CHROMIUM_gles_depth_binding_hack;
   bool b_GL_CHROMIUM_glgetstringi_hack;
+  bool b_GL_EXT_EGL_image_storage;
   bool b_GL_EXT_base_instance;
   bool b_GL_EXT_blend_func_extended;
   bool b_GL_EXT_clear_texture;
@@ -1682,6 +1687,7 @@ struct ProcsGL {
   glDrawRangeElementsProc glDrawRangeElementsFn;
   glEGLImageTargetRenderbufferStorageOESProc
       glEGLImageTargetRenderbufferStorageOESFn;
+  glEGLImageTargetTexStorageEXTProc glEGLImageTargetTexStorageEXTFn;
   glEGLImageTargetTexture2DOESProc glEGLImageTargetTexture2DOESFn;
   glEnableProc glEnableFn;
   glEnableiOESProc glEnableiOESFn;
@@ -2322,6 +2328,9 @@ class GL_EXPORT GLApi {
   virtual void glEGLImageTargetRenderbufferStorageOESFn(
       GLenum target,
       GLeglImageOES image) = 0;
+  virtual void glEGLImageTargetTexStorageEXTFn(GLenum target,
+                                               GLeglImageOES image,
+                                               const GLint* attrib_list) = 0;
   virtual void glEGLImageTargetTexture2DOESFn(GLenum target,
                                               GLeglImageOES image) = 0;
   virtual void glEnableFn(GLenum cap) = 0;
@@ -3468,6 +3477,8 @@ class GL_EXPORT GLApi {
 #define glDrawRangeElements ::gl::g_current_gl_context->glDrawRangeElementsFn
 #define glEGLImageTargetRenderbufferStorageOES \
   ::gl::g_current_gl_context->glEGLImageTargetRenderbufferStorageOESFn
+#define glEGLImageTargetTexStorageEXT \
+  ::gl::g_current_gl_context->glEGLImageTargetTexStorageEXTFn
 #define glEGLImageTargetTexture2DOES \
   ::gl::g_current_gl_context->glEGLImageTargetTexture2DOESFn
 #define glEnable ::gl::g_current_gl_context->glEnableFn

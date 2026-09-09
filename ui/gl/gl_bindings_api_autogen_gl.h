@@ -314,6 +314,9 @@ void glDrawRangeElementsFn(GLenum mode,
                            const void* indices) override;
 void glEGLImageTargetRenderbufferStorageOESFn(GLenum target,
                                               GLeglImageOES image) override;
+void glEGLImageTargetTexStorageEXTFn(GLenum target,
+                                     GLeglImageOES image,
+                                     const GLint* attrib_list) override;
 void glEGLImageTargetTexture2DOESFn(GLenum target,
                                     GLeglImageOES image) override;
 void glEnableFn(GLenum cap) override;
