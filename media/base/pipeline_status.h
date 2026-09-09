@@ -139,10 +139,9 @@ MEDIA_EXPORT std::string PipelineStatusToString(const PipelineStatus& status);
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& out,
                                       const PipelineStatus& status);
 
-// TODO(crbug.com/40649615): Delete PipelineStatusCB once all callbacks are
-//                          converted to PipelineStatusCallback.
-using PipelineStatusCB = base::RepeatingCallback<void(PipelineStatus)>;
 using PipelineStatusCallback = base::OnceCallback<void(PipelineStatus)>;
+using RepeatingPipelineStatusCallback =
+    base::RepeatingCallback<void(PipelineStatus)>;
 
 // Information on how an audio/video stream is encrypted.
 // Warning: Reported to UKM. Do not reuse or change existing values.

@@ -32,7 +32,7 @@ struct AvPipelineClient {
   base::RepeatingClosure eos_cb;
 
   // Asynchronous playback error notification.
-  ::media::PipelineStatusCB playback_error_cb;
+  ::media::RepeatingPipelineStatusCallback playback_error_cb;
 
   // Callback used to report the playback statistics.
   ::media::StatisticsCB statistics_cb;

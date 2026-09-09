@@ -326,7 +326,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   PipelineStatusCallback create_renderer_done_cb_;
 
   // Called from non-media threads when an error occurs.
-  PipelineStatusCB error_cb_;
+  RepeatingPipelineStatusCallback error_cb_;
 
   base::WeakPtrFactory<RendererWrapper> weak_factory_{this};
 };

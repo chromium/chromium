@@ -56,8 +56,9 @@ class TestMediaSource {
     encrypted_media_init_data_cb_ = encrypted_media_init_data_cb;
   }
 
-  void set_demuxer_failure_cb(const PipelineStatusCB& demuxer_failure_cb) {
-    demuxer_failure_cb_ = demuxer_failure_cb;
+  void set_demuxer_failure_cb(
+      RepeatingPipelineStatusCallback demuxer_failure_cb) {
+    demuxer_failure_cb_ = std::move(demuxer_failure_cb);
   }
 
   void set_do_eos_after_next_append(bool flag) {
@@ -117,7 +118,7 @@ class TestMediaSource {
   std::string mimetype_;
   std::unique_ptr<ChunkDemuxer> owned_chunk_demuxer_;
   raw_ptr<ChunkDemuxer> chunk_demuxer_;
-  PipelineStatusCB demuxer_failure_cb_;
+  RepeatingPipelineStatusCallback demuxer_failure_cb_;
   Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
   base::TimeDelta last_timestamp_offset_;
   base::TimeDelta append_window_start_;
