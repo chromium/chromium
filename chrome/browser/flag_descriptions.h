@@ -2215,12 +2215,6 @@ inline constexpr char kAccessibilityShakeToLocateDescription[] =
     "This option enables the experimental Accessibility feature to make the "
     "mouse cursor more visible when a shake is detected.";
 
-inline constexpr char kAccessibilityReducedAnimationsName[] =
-    "Experimental Reduced Animations";
-inline constexpr char kAccessibilityReducedAnimationsDescription[] =
-    "This option enables the setting to limit movement on the screen.";
-
-
 inline constexpr char kAccessibilityMagnifierFollowsChromeVoxName[] =
     "Magnifier follows ChromeVox focus";
 inline constexpr char kAccessibilityMagnifierFollowsChromeVoxDescription[] =

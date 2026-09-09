@@ -606,10 +606,6 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
   return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
 }
 
-bool IsAccessibilityReducedAnimationsEnabled() {
-  return ::features::IsAccessibilityReducedAnimationsEnabled();
-}
-
 bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
   return ::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled();
 }
@@ -1581,9 +1577,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          ash::external_urls::kTabletModeGesturesLearnMoreURL);
-
-  html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
-                          IsAccessibilityReducedAnimationsEnabled());
 
   html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
                           IsAccessibilityMagnifierFollowsChromeVoxEnabled());

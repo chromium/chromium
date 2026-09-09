@@ -165,32 +165,23 @@ suite('<settings-display-and-magnification-subpage>', () => {
   test('Turns on reduced animations', async () => {
     await initPage();
 
-    if (loadTimeData.getBoolean('isAccessibilityReducedAnimationsEnabled')) {
-      // If the flag is enabled, check that the UI works.
-      assertFalse(
-          page.getPref<boolean>('settings.a11y.reduced_animations.enabled')
-              .value);
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.reduced_animations.enabled')
+            .value);
 
-      const enableReducedAnimationsToggle =
-          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#enableReducedAnimations');
-      assert(enableReducedAnimationsToggle);
-      assertTrue(isVisible(enableReducedAnimationsToggle));
+    const enableReducedAnimationsToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableReducedAnimations');
+    assert(enableReducedAnimationsToggle);
+    assertTrue(isVisible(enableReducedAnimationsToggle));
 
-      enableReducedAnimationsToggle.click();
-      await waitBeforeNextRender(page);
-      flush();
+    enableReducedAnimationsToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
 
-      assertTrue(
-          page.getPref<boolean>('settings.a11y.reduced_animations.enabled')
-              .value);
-    } else {
-      // Toggle shouldn't be available if flag is disabled.
-      const enableReducedAnimationsToggle =
-          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#enableReducedAnimations');
-      assert(!enableReducedAnimationsToggle);
-    }
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.reduced_animations.enabled')
+            .value);
   });
 
   test('Turns on overlay scrollbars', async () => {

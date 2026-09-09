@@ -86,17 +86,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
       },
 
       /**
-       * Whether the reduced animations feature is enabled.
-       */
-      isAccessibilityReducedAnimationsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-            'isAccessibilityReducedAnimationsEnabled');
-        },
-      },
-
-      /**
        * Whether the magnifier following ChromeVox focus feature is
        * enabled.
        */
@@ -159,7 +148,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
       {[key: string]: number};
   declare private screenMagnifierZoomOptions_:
       Array<{value: number, name: string}>;
-  declare private isAccessibilityReducedAnimationsEnabled_: boolean;
   declare private isAccessibilityMagnifierFollowsChromeVoxEnabled_: boolean;
 
   constructor() {

@@ -505,7 +505,6 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition,
-         ::features::kAccessibilityReducedAnimations,
          ::features::kAccessibilityMouseKeys},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
@@ -1879,9 +1878,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
       : disable_animations_(
             gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys},
-        {});
+        {::features::kAccessibilityMouseKeys}, {});
   }
 
   AccessibilityManagerLoginTest(const AccessibilityManagerLoginTest&) = delete;

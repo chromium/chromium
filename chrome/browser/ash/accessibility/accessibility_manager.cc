@@ -997,9 +997,8 @@ void AccessibilityManager::EnableReducedAnimations(bool enabled) {
 }
 
 bool AccessibilityManager::IsReducedAnimationsEnabled() const {
-  return ::features::IsAccessibilityReducedAnimationsEnabled() && profile_ &&
-         profile_->GetPrefs()->GetBoolean(
-             prefs::kAccessibilityReducedAnimationsEnabled);
+  return profile_ && profile_->GetPrefs()->GetBoolean(
+                         prefs::kAccessibilityReducedAnimationsEnabled);
 }
 
 void AccessibilityManager::EnableAlwaysShowScrollbars(bool enabled) {
@@ -1961,12 +1960,10 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
         prefs->GetBoolean(prefs::kAccessibilityAutoclickEnabled);
     base::UmaHistogramBoolean("Accessibility.CrosAutoclick", autoclick_enabled);
 
-    if (::features::IsAccessibilityReducedAnimationsEnabled()) {
-      bool reduced_animations_enabled =
-          prefs->GetBoolean(prefs::kAccessibilityReducedAnimationsEnabled);
-      base::UmaHistogramBoolean("Accessibility.CrosReducedAnimations",
-                                reduced_animations_enabled);
-    }
+    bool reduced_animations_enabled =
+        prefs->GetBoolean(prefs::kAccessibilityReducedAnimationsEnabled);
+    base::UmaHistogramBoolean("Accessibility.CrosReducedAnimations",
+                              reduced_animations_enabled);
 
     int caret_blink_interval_ms =
         prefs->GetInteger(prefs::kAccessibilityCaretBlinkInterval);

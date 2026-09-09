@@ -206,11 +206,6 @@ AX_BASE_EXPORT bool IsAccessibilityGroupLocationChangeByCommonAncestorEnabled();
 // TODO(accessibility): Should this be moved to ash_features.cc?
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
-// Adds option to limit the movement on the screen.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimations);
-AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();
-
-
 // Allow context checking with the accessibility Dictation
 // feature.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
