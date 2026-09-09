@@ -19,6 +19,8 @@ try_.defaults.set(
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
         "chromium_tests.resultdb_module": 100,
+        "luci.buildbucket.run_in_turboci": 2,
+        "luci.buildbucket.run_in_turboci.grpc_client": 100,
     },
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
