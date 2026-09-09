@@ -269,7 +269,9 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
   TRACE_EVENT0("navigation", "AgentSchedulingGroupHost::RemoveRoute");
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.AgentSchedulingGroupHost.RemoveRoute");
-  CHECK_EQ(state_, LifecycleState::kBound, base::NotFatalUntil::M153);
+  // TODO(crbug.com/558680516): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(state_, LifecycleState::kBound);
   listener_map_.Remove(routing_id);
   process_->RemoveRoute(routing_id);
 }
