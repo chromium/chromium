@@ -273,6 +273,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     protected void showSelectionView(List<BookmarkId> selectedItems, boolean wasSelectionEnabled) {
         super.showSelectionView(selectedItems, wasSelectionEnabled);
 
+        restoreDefaultMenuState();
+
         setSelectionShowEdit(mSelectionShowEdit);
         setSelectionShowOpenInNewTab(mSelectionShowOpenInNewTab);
         setSelectionShowOpenInIncognito(mSelectionShowOpenInIncognito);
@@ -280,5 +282,16 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setSelectionShowCopyLink(mSelectionShowCopyLink);
         setSelectionShowMarkRead(mSelectionShowMarkRead);
         setSelectionShowMarkUnread(mSelectionShowMarkUnread);
+    }
+
+    /**
+     * Restores default selection menu and overflow button enabled states on reentry. This
+     * establishes a clean slate default on entrance to selection mode, ensuring any cached or
+     * transient disabled states (such as those left by a drag-to-deselect race condition) are
+     * cleanly reset.
+     */
+    private void restoreDefaultMenuState() {
+        getMenu().setGroupEnabled(R.id.selection_mode_menu_group, true);
+        ToolbarUtils.setOverFlowMenuEnabled(this, true);
     }
 }
