@@ -16,12 +16,10 @@ import androidx.test.runner.lifecycle.Stage;
 import org.junit.Assert;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.EnumSet;
 
@@ -65,7 +63,7 @@ public class SettingsTestRule<T extends Fragment>
     public ChromeBaseAppCompatActivity launchActivity(Intent startIntent) {
         Context context = ContextUtils.getApplicationContext();
         Class<? extends ChromeBaseAppCompatActivity> targetClass =
-                shouldOpenSettingsInTab(context)
+                SettingsInTab.isEnabled()
                         ? SettingsInTabTestActivity.class
                         : SettingsActivity.class;
         startIntent.setClass(context, targetClass);
@@ -79,21 +77,6 @@ public class SettingsTestRule<T extends Fragment>
                         targetClass, targetStages, () -> context.startActivity(startIntent));
         setActivity(activity);
         return activity;
-    }
-
-    /** Returns true if settings should be opened in a tab instead of an independent activity. */
-    private static boolean shouldOpenSettingsInTab(Context context) {
-        if (!SettingsInTab.isEnabled()) return false;
-
-        // Foldables support settings in a tab so that a tab opened while unfolded continues
-        // to display settings when folded. However, when launching settings while in phone mode
-        // (non-tablet), open them in an activity instead of a tab.
-        if (DeviceInfo.isFoldable()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
