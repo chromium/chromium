@@ -432,6 +432,7 @@ public abstract class ChromeFeatureList {
             "CacheIsMultiInstanceApi31Enabled";
     public static final String CCT_ADAPTIVE_BUTTON = "CCTAdaptiveButton";
     public static final String CCT_ADAPTIVE_BUTTON_TEST_SWITCH = "CCTAdaptiveButtonTestSwitch";
+    public static final String CCT_ALWAYS_OPEN_IN_BROWSER = "CCTAlwaysOpenInBrowser";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
     public static final String CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION =
             "CCTBlockTouchesDuringEnterAnimation";
@@ -1048,6 +1049,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctAdaptiveButton =
             newCachedFlag(
                     CCT_ADAPTIVE_BUTTON, /* defaultValue= */ true, /* defaultValueInTests= */ true);
+    public static final CachedFlag sCctAlwaysOpenInBrowser =
+            newCachedFlag(CCT_ALWAYS_OPEN_IN_BROWSER, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBlockTouchesDuringEnterAnimation =
             newCachedFlag(CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION, true);
@@ -1550,6 +1553,7 @@ public abstract class ChromeFeatureList {
                     sCacheIsGoogleSigned,
                     sCacheIsMultiInstanceApi31Enabled,
                     sCctAdaptiveButton,
+                    sCctAlwaysOpenInBrowser,
                     sCctAutoTranslate,
                     sCctBlockTouchesDuringEnterAnimation,
                     sCctContextualMenuItems,

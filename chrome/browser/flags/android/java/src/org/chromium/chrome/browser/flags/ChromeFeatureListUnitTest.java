@@ -193,4 +193,13 @@ public class ChromeFeatureListUnitTest {
         assertFalse(ChromeFeatureList.sCctTabSwitcherEnabledForChromeExperiment.isEnabled());
         assertTrue(ChromeFeatureList.sCctTabSwitcherEnabledForEmbedderExperiment.isEnabled());
     }
+
+    @Test
+    public void testCctAlwaysOpenInBrowserCachedFlag() {
+        assertEquals(
+                ChromeFeatureList.sCctAlwaysOpenInBrowser,
+                ChromeFeatureList.sAllCachedFlags.get(
+                        ChromeFeatureList.CCT_ALWAYS_OPEN_IN_BROWSER));
+        assertFalse(ChromeFeatureList.sCctAlwaysOpenInBrowser.getDefaultValue());
+    }
 }

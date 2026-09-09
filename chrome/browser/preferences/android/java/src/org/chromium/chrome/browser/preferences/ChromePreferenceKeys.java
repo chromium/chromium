@@ -312,6 +312,9 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX =
             new KeyPrefix("pref_local_custom_tabs_module_dex_last_update_time_*");
 
+    public static final String CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER =
+            "Chrome.CustomTabs.AlwaysOpenInBrowser";
+
     /** Package name of the client app that uses CCT service of the last launched CCT. */
     public static final String CUSTOM_TABS_LAST_CLIENT_PACKAGE =
             "Chrome.CustomTabs.LastClientPackage";
@@ -1234,6 +1237,7 @@ public final class ChromePreferenceKeys {
                 NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH,
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH,
                 NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH,
+                CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER,
                 CUSTOM_TABS_LAST_CLIENT_PACKAGE,
                 CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,
                 CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,

@@ -383,4 +383,15 @@ public class ChromePreferenceKeysTest {
         doTestKeysConformToFormat(
                 Arrays.asList(TestFormatConstantsClass.PREFIX_MISSING_LEVEL.pattern()));
     }
+
+    @Test
+    @SmallTest
+    public void testCustomTabsAlwaysOpenInBrowserKey() {
+        assertTrue(
+                ChromePreferenceKeys.getKeysInUse()
+                        .contains(ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER));
+        assertEquals(
+                "Chrome.CustomTabs.AlwaysOpenInBrowser",
+                ChromePreferenceKeys.CUSTOM_TABS_ALWAYS_OPEN_IN_BROWSER);
+    }
 }

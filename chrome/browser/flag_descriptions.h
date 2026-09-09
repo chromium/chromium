@@ -5932,6 +5932,11 @@ inline constexpr char kCCTAdaptiveButtonTestSwitchDescription[] =
     "to facilitate testing 1) simulate narrow toolbar to hide MTB 2) Always "
     "show static action MTB chip animation";
 
+inline constexpr char kCCTAlwaysOpenInBrowserName[] =
+    "Always Open Custom Tabs in Browser";
+inline constexpr char kCCTAlwaysOpenInBrowserDescription[] =
+    "Enable setting to always open Custom Tabs in the Chrome browser.";
+
 inline constexpr char kCCTContextualMenuItemsName[] =
     "Enable Contextual Menu Items in CCT";
 inline constexpr char kCCTContextualMenuItemsDescription[] =

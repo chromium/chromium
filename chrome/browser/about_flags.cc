@@ -7998,6 +7998,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-always-open-in-browser",
+     flag_descriptions::kCCTAlwaysOpenInBrowserName,
+     flag_descriptions::kCCTAlwaysOpenInBrowserDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTAlwaysOpenInBrowser)},
     {"cct-contextual-menu-items",
      flag_descriptions::kCCTContextualMenuItemsName,
      flag_descriptions::kCCTContextualMenuItemsDescription, kOsAndroid,

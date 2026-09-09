@@ -11467,6 +11467,7 @@ from previous Chrome versions.
   <int value="-1018983714" label="FedCm:enabled"/>
   <int value="-1018713194"
       label="SupervisedUserInterstitialWithoutApprovals:disabled"/>
+  <int value="-1018547313" label="CCTAlwaysOpenInBrowser:enabled"/>
   <int value="-1018454657" label="SharingPeerConnectionReceiver:enabled"/>
   <int value="-1017686690" label="CrosMall:enabled"/>
   <int value="-1017396114" label="FastEnumeratePrinters:enabled"/>
@@ -13475,6 +13476,7 @@ from previous Chrome versions.
   <int value="-396568607" label="KerberosSettingsSection:enabled"/>
   <int value="-396496344" label="ViewsTaskManager:enabled"/>
   <int value="-396443477" label="CrOSDspBasedAecAllowed:disabled"/>
+  <int value="-396288086" label="CCTAlwaysOpenInBrowser:disabled"/>
   <int value="-396046249" label="PhotoPickerVideoSupport:enabled"/>
   <int value="-395864120" label="HubSlideAnimation:disabled"/>
   <int value="-395606844" label="enable-site-settings"/>

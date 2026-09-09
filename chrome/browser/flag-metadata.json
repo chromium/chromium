@@ -1748,6 +1748,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "cct-always-open-in-browser",
+    "owners": [ "eisinger@google.com", "chrome-connective-tissue@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cct-contextual-menu-items",
     "owners": [
       "adelm@google.com",
