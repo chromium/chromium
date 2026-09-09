@@ -143,14 +143,24 @@ bool IsValidActionURIForType(
     return false;
   }
 
+  // Block javascript: schemes unconditionally to prevent XSS in the active tab
+  // context.
+  if (action_url.SchemeIs(url::kJavaScriptScheme)) {
+    return false;
+  }
+
   switch (action_type) {
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return action_url.SchemeIs(url::kTelScheme);
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
       return action_url.SchemeIsHTTPOrHTTPS();
     default:
-      return true;
+      return false;
   }
 }
 }  // namespace

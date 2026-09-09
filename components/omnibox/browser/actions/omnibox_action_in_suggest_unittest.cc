@@ -46,6 +46,8 @@ const char* ToString(ActionType type) {
       return "Reviews";
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return "Aim";
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
+      return "Lens";
     case omnibox::
         SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
       return "TabSwitch";
@@ -305,6 +307,66 @@ TEST_F(OmniboxActionInSuggestTest, ShowAsActionButton) {
         EXPECT_EQ(ActionPresentationMode::CHIP, action->presentation_mode_);
       }
     }
+  }
+}
+
+TEST_F(OmniboxActionInSuggestTest, Create_ValidatesUriSchemes) {
+  // CALL actions require tel: scheme.
+  {
+    TemplateAction action;
+    action.set_action_type(
+        omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL);
+    action.set_action_uri("tel:1234567890");
+    EXPECT_NE(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt));
+
+    action.set_action_uri("https://google.com");
+    EXPECT_EQ(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt));
+
+    action.set_action_uri("javascript:alert(1)");
+    EXPECT_EQ(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt));
+  }
+
+  // Web actions require HTTP or HTTPS scheme.
+  const ActionType web_action_types[] = {
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH,
+  };
+
+  for (auto type : web_action_types) {
+    TemplateAction action;
+    action.set_action_type(type);
+
+    action.set_action_uri("https://www.google.com");
+    EXPECT_NE(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt))
+        << "Failed for type: " << ToString(type);
+
+    action.set_action_uri("http://www.google.com");
+    EXPECT_NE(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt))
+        << "Failed for type: " << ToString(type);
+
+    action.set_action_uri("javascript:alert(1)");
+    EXPECT_EQ(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt))
+        << "Failed for type: " << ToString(type);
+
+    action.set_action_uri("data:text/html,<h1>XSS</h1>");
+    EXPECT_EQ(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt))
+        << "Failed for type: " << ToString(type);
+
+    action.set_action_uri("tel:1234567890");
+    EXPECT_EQ(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt))
+        << "Failed for type: " << ToString(type);
+  }
+
+  // Empty URI is allowed (e.g. for actions with search parameters).
+  {
+    TemplateAction action;
+    action.set_action_type(
+        omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM);
+    action.set_action_uri("");
+    EXPECT_NE(nullptr, OmniboxActionInSuggest::Create(action, std::nullopt));
   }
 }
 

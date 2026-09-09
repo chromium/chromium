@@ -9,7 +9,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -340,6 +342,36 @@ public class OmniboxActionInSuggestUnitTest {
         assertNotNull(url);
         assertEquals(UrlConstants.CHROME_DINO_URL, url);
         verifyNoMoreInteractions(mDelegate);
+    }
+
+    @Test
+    public void executeActionInSuggest_rejectsJavascriptUrlForAim() {
+        var intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("javascript:alert(1)"));
+        buildActionInSuggest(ActionType.CHROME_AIM, intent).execute(mDelegate);
+        verify(mDelegate, never()).loadPageInCurrentTab(any());
+    }
+
+    @Test
+    public void executeActionInSuggest_rejectsJavascriptUrlForReviews() {
+        var intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("javascript:alert(1)"));
+        buildActionInSuggest(ActionType.REVIEWS, intent).execute(mDelegate);
+        verify(mDelegate, never()).loadPageInCurrentTab(any());
+    }
+
+    @Test
+    public void executeActionInSuggest_rejectsJavascriptUrlForTabSwitchFallback() {
+        doReturn(false).when(mDelegate).switchToTab(anyInt(), any());
+        var intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("javascript:alert(1)"));
+        buildActionInSuggest(ActionType.CHROME_TAB_SWITCH, intent).execute(mDelegate);
+        verify(mDelegate, never()).loadPageInCurrentTab(any());
+    }
+
+    @Test
+    public void executeActionInSuggest_rejectsJavascriptUrlForDirectionsFallback() {
+        doReturn(true).when(mDelegate).isIncognito();
+        var intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("javascript:alert(1)"));
+        buildActionInSuggest(ActionType.DIRECTIONS, intent).execute(mDelegate);
+        verify(mDelegate, never()).loadPageInCurrentTab(any());
     }
 
     @Test

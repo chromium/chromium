@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 import android.util.SparseArray;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -113,7 +113,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         switch (actionType) {
             case SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE:
             case SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE:
-                delegate.loadPageInCurrentTab(assumeNonNull(intent.getDataString()));
+                loadPageInCurrentTab(delegate, intent.getDataString());
                 actionStarted = true;
                 break;
 
@@ -137,7 +137,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
             case SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE:
                 if (!delegate.switchToTab(tabId, new GURL(mActionUri))) {
-                    delegate.loadPageInCurrentTab(assumeNonNull(intent.getDataString()));
+                    loadPageInCurrentTab(delegate, intent.getDataString());
                 }
                 actionStarted = true;
                 break;
@@ -159,10 +159,22 @@ public class OmniboxActionInSuggest extends OmniboxAction {
             }
 
             if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE) {
-                delegate.loadPageInCurrentTab(assumeNonNull(intent.getDataString()));
+                loadPageInCurrentTab(delegate, intent.getDataString());
             }
         }
 
         return true;
+    }
+
+    /**
+     * Loads the target URL in the current tab via the delegate if the URL is valid and safe.
+     * Rejects javascript: URLs to prevent cross-site scripting vulnerabilities.
+     */
+    private static void loadPageInCurrentTab(OmniboxActionDelegate delegate, @Nullable String url) {
+        if (url == null) return;
+        var gurl = new GURL(url);
+        if (gurl.isValid() && !UrlConstants.JAVASCRIPT_SCHEME.equalsIgnoreCase(gurl.getScheme())) {
+            delegate.loadPageInCurrentTab(url);
+        }
     }
 }
