@@ -282,7 +282,7 @@ void LogTimeOpenHistogram(const std::string& name, base::TimeTicks start_time) {
 }
 
 bool HasSiteSpecificDecision(const PageInfo::PermissionInfo& permission,
-                             bool is_incognito) {
+                             bool is_off_the_record) {
   auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
       permission.type);
 
@@ -291,16 +291,16 @@ bool HasSiteSpecificDecision(const PageInfo::PermissionInfo& permission,
           ->Get(permission.type)
           ->GetInitialDefaultSetting();
 
-  // Settings that are granted in regular mode get reduced to ASK in incognito
-  // mode. In this case, the site should trigger a permission prompt if/when
-  // appropriate to change the setting, and until then, the capability cannot be
-  // used, so no need to show it in page info.
-  const bool is_incognito_default =
-      is_incognito && permission.setting &&
+  // Settings that are granted in regular mode get reduced to ASK in
+  // off-the-record mode. In this case, the site should trigger a permission
+  // prompt if/when appropriate to change the setting, and until then, the
+  // capability cannot be used, so no need to show it in page info.
+  const bool is_off_the_record_default =
+      is_off_the_record && permission.setting &&
       info->delegate().IsUndecided(*permission.setting) &&
       info->delegate().IsUndecided(factory_default_setting);
 
-  return permission.setting && !is_incognito_default;
+  return permission.setting && !is_off_the_record_default;
 }
 
 bool IsDefaultSameAsFactoryDefault(const PageInfo::PermissionInfo& permission) {
@@ -1466,14 +1466,14 @@ bool PageInfo::ShouldShowPermission(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  const bool is_incognito =
+  const bool is_off_the_record =
       web_contents_->GetBrowserContext()->IsOffTheRecord();
 #if BUILDFLAG(IS_ANDROID)
   // Special geolocation DSE settings apply only on Android, so make sure it
   // gets checked there regardless of default setting on Desktop.
   // DSE settings don't apply to incognito mode.
   if (info.type == permissions::PermissionUtil::GetGeolocationType() &&
-      !is_incognito) {
+      !is_off_the_record) {
     return true;
   }
 #else
@@ -1524,7 +1524,7 @@ bool PageInfo::ShouldShowPermission(
   //   default to a setting that prevents sites from prompting, so users must
   //   resort to making per-site decisions using page info.
 
-  if (HasSiteSpecificDecision(info, is_incognito)) {
+  if (HasSiteSpecificDecision(info, is_off_the_record)) {
     return true;
   }
 
