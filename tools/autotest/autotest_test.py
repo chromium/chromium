@@ -841,6 +841,147 @@ class RunTestTargetsTest(TestCase):
     self.assertNotIn('--fast-local-dev', second_call_args)
     self.assertNotIn('--single-variant', second_call_args)
 
+  def test_single_target_no_summary(self):
+    from utils.command_util import TestSummary
+
+    self.mock_run_with_summary.return_value = (
+      0,
+      TestSummary(passed_tests=['TestA', 'TestB']),
+    )
+
+    with mock.patch('logging.info') as mock_log:
+      exit_code = test_executor.RunTestTargets(
+        out_dir=self.out_dir,
+        targets=['base_unittests'],
+        gtest_filter='Test.*',
+        pref_mapping_filter=None,
+        extra_args=[],
+        dry_run=False,
+        no_try_android_wrappers=False,
+        no_fast_local_dev=False,
+        no_single_variant=False,
+      )
+      self.assertEqual(exit_code, 0)
+      # EXECUTION SUMMARY should NOT be logged for a single target
+      logged_messages = [
+        call.args[0] for call in mock_log.call_args_list if call.args
+      ]
+      self.assertNotIn('EXECUTION SUMMARY', logged_messages)
+
+  def test_single_target_failure_no_summary(self):
+    from utils.command_util import TestSummary
+
+    self.mock_run_with_summary.return_value = (
+      5,
+      TestSummary(failed_tests=[('TestA', 'fail')]),
+    )
+
+    with mock.patch('logging.info') as mock_log:
+      exit_code = test_executor.RunTestTargets(
+        out_dir=self.out_dir,
+        targets=['base_unittests'],
+        gtest_filter='Test.*',
+        pref_mapping_filter=None,
+        extra_args=[],
+        dry_run=False,
+        no_try_android_wrappers=False,
+        no_fast_local_dev=False,
+        no_single_variant=False,
+      )
+      self.assertEqual(exit_code, 5)
+      logged_messages = [
+        call.args[0] for call in mock_log.call_args_list if call.args
+      ]
+      self.assertNotIn('EXECUTION SUMMARY', logged_messages)
+
+  def test_multiple_targets_summary_logged(self):
+    from utils.command_util import TestSummary
+
+    self.mock_run_with_summary.side_effect = [
+      (0, TestSummary(passed_tests=['TestA', 'TestB'])),
+      (0, TestSummary(passed_tests=['TestC'])),
+    ]
+
+    with mock.patch('logging.info') as mock_log:
+      exit_code = test_executor.RunTestTargets(
+        out_dir=self.out_dir,
+        targets=['base_unittests', 'browser_tests'],
+        gtest_filter='Test.*',
+        pref_mapping_filter=None,
+        extra_args=[],
+        dry_run=False,
+        no_try_android_wrappers=False,
+        no_fast_local_dev=False,
+        no_single_variant=False,
+      )
+      self.assertEqual(exit_code, 0)
+      logged_messages = [
+        call.args[0] for call in mock_log.call_args_list if call.args
+      ]
+      self.assertIn('EXECUTION SUMMARY', logged_messages)
+      self.assertIn('Total Tests Passed/Skipped: 3', logged_messages)
+      self.assertIn('Total Tests Failed:         0', logged_messages)
+
+  def test_multiple_targets_failure_summary_logged(self):
+    from utils.command_util import TestSummary
+
+    self.mock_run_with_summary.side_effect = [
+      (2, TestSummary(passed_tests=['TestA'], failed_tests=[('TestB', 'err')])),
+      (0, TestSummary(passed_tests=['TestC'])),
+    ]
+
+    with mock.patch('logging.info') as mock_log:
+      exit_code = test_executor.RunTestTargets(
+        out_dir=self.out_dir,
+        targets=['base_unittests', 'browser_tests'],
+        gtest_filter='Test.*',
+        pref_mapping_filter=None,
+        extra_args=[],
+        dry_run=False,
+        no_try_android_wrappers=False,
+        no_fast_local_dev=False,
+        no_single_variant=False,
+      )
+      self.assertEqual(exit_code, 1)
+      self.assertEqual(self.mock_run_with_summary.call_count, 2)
+      logged_messages = [
+        call.args[0] for call in mock_log.call_args_list if call.args
+      ]
+      self.assertIn('EXECUTION SUMMARY', logged_messages)
+      self.assertIn('Total Tests Passed/Skipped: 2', logged_messages)
+      self.assertIn('Total Tests Failed:         1', logged_messages)
+      self.assertIn('FAILED TESTS:', logged_messages)
+      self.assertIn('  - base_unittests: TestB', logged_messages)
+
+  def test_suite_single_target_summary_logged(self):
+    from utils.command_util import TestSummary
+
+    self.mock_run_with_summary.return_value = (
+      0,
+      TestSummary(passed_tests=['TestA']),
+    )
+
+    with mock.patch('logging.info') as mock_log:
+      exit_code = test_executor.RunTestTargets(
+        out_dir=self.out_dir,
+        targets=['base_unittests'],
+        gtest_filter='Test.*',
+        pref_mapping_filter=None,
+        extra_args=[],
+        dry_run=False,
+        no_try_android_wrappers=False,
+        no_fast_local_dev=False,
+        no_single_variant=False,
+        is_suite=True,
+      )
+      self.assertEqual(exit_code, 0)
+      logged_messages = [
+        call.args[0] for call in mock_log.call_args_list if call.args
+      ]
+      self.assertIn('EXECUTION SUMMARY', logged_messages)
+      self.assertIn('Total Tests Passed/Skipped: 1', logged_messages)
+      self.assertIn('Total Tests Failed:         0', logged_messages)
+
 
 class GetChangedTestFilesTest(TestCase):
   def setUp(self):
@@ -851,6 +992,7 @@ class GetChangedTestFilesTest(TestCase):
     self.addCleanup(mock.patch.stopall)
 
   def test_no_git_ref(self):
+
     def run_command_side_effect(cmd, *args, **kwargs):
       if 'merge-base' in cmd:
         return 'merge_base_commit_hash\n'
@@ -870,6 +1012,7 @@ class GetChangedTestFilesTest(TestCase):
     self.assertEqual(['foo_unittest.cc'], files)
 
   def test_with_git_ref(self):
+
     def run_command_side_effect(cmd, *args, **kwargs):
       if 'merge-base' in cmd:
         self.fail('git merge-base should not be called')
@@ -888,6 +1031,7 @@ class GetChangedTestFilesTest(TestCase):
     self.assertEqual(['foo_unittest.cc'], files)
 
   def test_deleted_file_ignored(self):
+
     def run_command_side_effect(cmd, *args, **kwargs):
       if 'diff' in cmd:
         return 'deleted_unittest.cc\nexisting_unittest.cc\n'

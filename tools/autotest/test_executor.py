@@ -169,7 +169,7 @@ def RunTestTargets(
         f"\n<<< {target_binary} failed with exit code {return_code}\n"
       )
 
-    if not is_suite:
+    if not is_suite and len(targets) <= 1:
       if return_code != 0:
         if gemini:
           _RunGeminiDiagnostic(cmd, summary)
@@ -191,11 +191,11 @@ def RunTestTargets(
       if gemini:
         _RunGeminiDiagnostic(cmd, summary)
 
-  if dry_run or not is_suite:
+  if dry_run or (not is_suite and len(targets) <= 1):
     return 0
 
   logging.info('=' * 40)
-  logging.info('SUITE EXECUTION SUMMARY')
+  logging.info('EXECUTION SUMMARY')
   logging.info('=' * 40)
   logging.info(f'Total Tests Passed/Skipped: {total_passed}')
   logging.info(f'Total Tests Failed:         {total_failed}')
