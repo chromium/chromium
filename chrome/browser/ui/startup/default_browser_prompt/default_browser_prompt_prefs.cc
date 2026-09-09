@@ -31,5 +31,5 @@ void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
   local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
   local_state->SetInteger(
       prefs::kDefaultBrowserDeclinedCount,
-      local_state->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount) + 1);
+      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
 }
