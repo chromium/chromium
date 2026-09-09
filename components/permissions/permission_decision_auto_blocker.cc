@@ -437,17 +437,22 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
                                           settings_map_)
           : -1;
 
-  int ignores_before_block = kDefaultIgnoresBeforeBlock;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           permissions::kPermissionsAndroidClapperLoud) &&
       permission == ContentSettingsType::NOTIFICATIONS &&
       !ignored_prompt_was_quiet) {
-    ignores_before_block = kClapperIgnoresBeforeBlock;
+    int quiet_ignore_count = GetActionCount(
+        url, permission, kPromptIgnoreCountWithQuietUiKey, settings_map_);
+    int current_loud_ignore_count = current_ignore_count - quiet_ignore_count;
+    if (current_loud_ignore_count >= kClapperIgnoresBeforeBlock) {
+      PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
+      return true;
+    }
   }
 #endif
 
-  if (current_ignore_count >= ignores_before_block) {
+  if (current_ignore_count >= kDefaultIgnoresBeforeBlock) {
     PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
     return true;
   }

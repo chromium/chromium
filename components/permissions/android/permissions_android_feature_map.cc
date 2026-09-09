@@ -52,7 +52,7 @@ BASE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the loud version of the Clapper permission prompt.
-BASE_FEATURE(kPermissionsAndroidClapperLoud, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPermissionsAndroidClapperLoud, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Timeout for the Clapper Loud permission prompt.
 const base::FeatureParam<base::TimeDelta> kClapperLoudTimeout{

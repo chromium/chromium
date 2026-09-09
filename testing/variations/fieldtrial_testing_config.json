@@ -15705,22 +15705,6 @@
             ]
         }
     ],
-    "PermissionsAndroidClapperLoud": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PermanentNotificationSubscribeInPageInfo",
-                        "PermissionsAndroidClapperLoud"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionsGestureGatedPrompts": [
         {
             "platforms": [

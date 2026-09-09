@@ -18,6 +18,9 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/permissions_android_feature_map.h"
+#endif
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -849,6 +852,39 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, TestDismissEmbargoUsingQuietUi) {
   EXPECT_EQ(content::PermissionStatusSource::MULTIPLE_DISMISSALS,
             result->source);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Test that Clapper loud ui embargo on Android has an ignore threshold of 2.
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       TestIgnoreEmbargoUsingClapperLoudUi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::kPermissionsAndroidClapperLoud);
+
+  GURL url("https://www.google.com");
+  clock()->SetNow(base::Time::Now());
+
+  // Check the default state.
+  std::optional<content::PermissionResult> result =
+      autoblocker()->GetEmbargoResult(url, ContentSettingsType::NOTIFICATIONS);
+  EXPECT_FALSE(result.has_value());
+
+  // One loud ui ignore is not enough to trigger embargo.
+  EXPECT_FALSE(autoblocker()->RecordIgnoreAndEmbargo(
+      url, ContentSettingsType::NOTIFICATIONS, false));
+  result =
+      autoblocker()->GetEmbargoResult(url, ContentSettingsType::NOTIFICATIONS);
+  EXPECT_FALSE(result.has_value());
+
+  // The second loud ui ignore puts the url under embargo.
+  EXPECT_TRUE(autoblocker()->RecordIgnoreAndEmbargo(
+      url, ContentSettingsType::NOTIFICATIONS, false));
+  result =
+      autoblocker()->GetEmbargoResult(url, ContentSettingsType::NOTIFICATIONS);
+  EXPECT_EQ(PermissionStatus::DENIED, result->status);
+  EXPECT_EQ(content::PermissionStatusSource::MULTIPLE_IGNORES, result->source);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
