@@ -66,6 +66,14 @@ TEST(InstallComponentTest, GetComponentVersion) {
   ASSERT_TRUE(base::CreateDirectory(no_manifest_dir));
   EXPECT_EQ(GetComponentVersion(no_manifest_dir), std::nullopt);
 
+  // Valid version directory with temporary manifest only (e.g. interrupted
+  // installation).
+  base::FilePath temp_manifest_dir = temp_dir.GetPath().AppendASCII("3.0.0.0");
+  ASSERT_TRUE(base::CreateDirectory(temp_manifest_dir));
+  ASSERT_TRUE(base::WriteFile(
+      temp_manifest_dir.AppendASCII("manifest.json.tmp"), "dummy"));
+  EXPECT_EQ(GetComponentVersion(temp_manifest_dir), std::nullopt);
+
   // Invalid version directory name with manifest.json.
   base::FilePath invalid_name_dir =
       temp_dir.GetPath().AppendASCII("not_a_version");
@@ -128,6 +136,7 @@ TEST(InstallComponentTest, DeleteInvalidComponentDirectories) {
   base::FilePath v2 = component_root.AppendASCII("2.0.0.0");
   base::FilePath v3 = component_root.AppendASCII("3.0.0.0");
   base::FilePath v4_corrupted = component_root.AppendASCII("4.0.0.0");
+  base::FilePath v5_interrupted = component_root.AppendASCII("5.0.0.0");
   base::FilePath invalid_dir = component_root.AppendASCII("corrupted_dir");
 
   ASSERT_TRUE(base::CreateDirectory(v1));
@@ -142,23 +151,32 @@ TEST(InstallComponentTest, DeleteInvalidComponentDirectories) {
   ASSERT_TRUE(base::CreateDirectory(v4_corrupted));
   ASSERT_TRUE(base::WriteFile(v4_corrupted.AppendASCII("other.dll"), "dummy"));
 
+  ASSERT_TRUE(base::CreateDirectory(v5_interrupted));
+  ASSERT_TRUE(base::WriteFile(v5_interrupted.AppendASCII("manifest.json.tmp"),
+                              "dummy"));
+  ASSERT_TRUE(
+      base::WriteFile(v5_interrupted.AppendASCII("component.dll"), "dummy"));
+
   ASSERT_TRUE(base::CreateDirectory(invalid_dir));
 
   ASSERT_TRUE(base::PathExists(v1));
   ASSERT_TRUE(base::PathExists(v2));
   ASSERT_TRUE(base::PathExists(v3));
   ASSERT_TRUE(base::PathExists(v4_corrupted));
+  ASSERT_TRUE(base::PathExists(v5_interrupted));
   ASSERT_TRUE(base::PathExists(invalid_dir));
 
   // Keep version 2.0.0.0.
-  // v1 (< 2.0.0.0), v4_corrupted (missing manifest), and invalid_dir should be
-  // deleted. v2 (== 2.0.0.0) and v3 (> 2.0.0.0) should remain.
+  // v1 (< 2.0.0.0), v4_corrupted (missing manifest), v5_interrupted (only
+  // temporary manifest), and invalid_dir should be deleted. v2 (== 2.0.0.0)
+  // and v3 (> 2.0.0.0) should remain.
   DeleteInvalidComponentDirectories(component_root, base::Version("2.0.0.0"));
 
   EXPECT_FALSE(base::PathExists(v1));
   EXPECT_TRUE(base::PathExists(v2));
   EXPECT_TRUE(base::PathExists(v3));
   EXPECT_FALSE(base::PathExists(v4_corrupted));
+  EXPECT_FALSE(base::PathExists(v5_interrupted));
   EXPECT_FALSE(base::PathExists(invalid_dir));
 }
 
@@ -429,6 +447,8 @@ TEST(InstallComponentTest, ArbitrarySourceFilePath) {
   EXPECT_TRUE(base::PathExists(installed_version_dir));
   EXPECT_TRUE(
       base::PathExists(installed_version_dir.AppendASCII("manifest.json")));
+  EXPECT_FALSE(
+      base::PathExists(installed_version_dir.AppendASCII("manifest.json.tmp")));
 }
 
 TEST(InstallComponentTest, UserLevelInstallation) {
@@ -446,6 +466,47 @@ TEST(InstallComponentTest, UserLevelInstallation) {
       temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId).AppendASCII("394");
   EXPECT_TRUE(base::PathExists(target_dir));
   EXPECT_TRUE(base::PathExists(target_dir.AppendASCII("manifest.json")));
+  EXPECT_FALSE(base::PathExists(target_dir.AppendASCII("manifest.json.tmp")));
+}
+
+TEST(InstallComponentTest, IncompletePreviousInstallationOverwritten) {
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  base::FilePath component_root =
+      temp_dir.GetPath().AppendASCII(kTestDeveloperCrxId);
+  ASSERT_TRUE(base::CreateDirectory(component_root));
+
+  // Simulate an incomplete/interrupted installation of version 394 that left
+  // behind manifest.json.tmp and another file, but no manifest.json.
+  base::FilePath v394_incomplete = component_root.AppendASCII("394");
+  ASSERT_TRUE(base::CreateDirectory(v394_incomplete));
+  ASSERT_TRUE(base::WriteFile(v394_incomplete.AppendASCII("manifest.json.tmp"),
+                              "incomplete"));
+  ASSERT_TRUE(
+      base::WriteFile(v394_incomplete.AppendASCII("stale.dll"), "dummy"));
+
+  ASSERT_TRUE(base::PathExists(v394_incomplete));
+  ASSERT_TRUE(
+      base::PathExists(v394_incomplete.AppendASCII("manifest.json.tmp")));
+
+  base::FilePath src_file = GetTestCrxPath();
+  ASSERT_TRUE(base::PathExists(src_file));
+
+  // The incomplete directory should not trigger anti-downgrade and should be
+  // successfully replaced by the fresh installation.
+  EXPECT_EQ(INSTALL_COMPONENT_SUCCESS,
+            InstallComponentForTesting(
+                src_file, installer_state, kTestComponents,
+                crx_file::VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF));
+
+  EXPECT_TRUE(base::PathExists(v394_incomplete));
+  EXPECT_TRUE(base::PathExists(v394_incomplete.AppendASCII("manifest.json")));
+  EXPECT_FALSE(
+      base::PathExists(v394_incomplete.AppendASCII("manifest.json.tmp")));
+  EXPECT_FALSE(base::PathExists(v394_incomplete.AppendASCII("stale.dll")));
 }
 
 }  // namespace installer

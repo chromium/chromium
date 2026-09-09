@@ -39,6 +39,11 @@ namespace installer {
 
 namespace {
 
+constexpr base::FilePath::CharType kManifestFilename[] =
+    FILE_PATH_LITERAL("manifest.json");
+constexpr base::FilePath::CharType kTempManifestFilename[] =
+    FILE_PATH_LITERAL("manifest.json.tmp");
+
 // The SHA256 of the SubjectPublicKeyInfo used to sign the PlatformRuntime
 // component.
 constexpr uint8_t kPlatformRuntimePublicKeySHA256[32] = {
@@ -139,8 +144,7 @@ InstallStatus InstallComponentInternal(
   }
 
   // Read manifest.json to get version and validate name.
-  base::FilePath manifest_path =
-      unpack_dir.Append(FILE_PATH_LITERAL("manifest.json"));
+  base::FilePath manifest_path = unpack_dir.Append(kManifestFilename);
   if (!base::PathExists(manifest_path)) {
     LOG(ERROR) << "manifest.json missing in unpacked component.";
     return installer::INSTALL_COMPONENT_INVALID_INPUT;
@@ -212,9 +216,27 @@ InstallStatus InstallComponentInternal(
                   << target_dir;
   }
 
+  // Rename manifest.json to a temporary name before moving unpack_dir to
+  // target_dir. This ensures that if the installation process terminates
+  // unexpectedly midway through moving or copying files, GetComponentVersion()
+  // will not detect target_dir as a valid installed component.
+  if (!file_conductor.MoveEntry(manifest_path,
+                                unpack_dir.Append(kTempManifestFilename))) {
+    PLOG(ERROR) << "Failed to rename manifest.json to manifest.json.tmp";
+    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+  }
+
   // Atomic move to final versioned destination. Move the whole unpack_dir.
   if (!file_conductor.MoveEntry(unpack_dir, target_dir,
                                 /*lenient_deletion=*/true)) {
+    return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
+  }
+
+  // Restore manifest.json last to mark the component installation as complete.
+  if (!file_conductor.MoveEntry(target_dir.Append(kTempManifestFilename),
+                                target_dir.Append(kManifestFilename))) {
+    PLOG(ERROR) << "Failed to finalize manifest.json in target directory: "
+                << target_dir;
     return installer::INSTALL_COMPONENT_FAILED_INTERNAL;
   }
 
@@ -248,8 +270,7 @@ std::optional<base::Version> GetComponentVersion(
   if (!version.IsValid()) {
     return std::nullopt;
   }
-  if (!base::PathExists(
-          version_dir.Append(FILE_PATH_LITERAL("manifest.json")))) {
+  if (!base::PathExists(version_dir.Append(kManifestFilename))) {
     return std::nullopt;
   }
   return version;
