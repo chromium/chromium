@@ -4743,21 +4743,7 @@ test("unit_tests") {
     "../app/llvm_profile_util.cc",
     "../app/llvm_profile_util.h",
     "../app/llvm_profile_util_unittest.cc",
-    "../browser/about_flags_unittest.cc",
-    "../browser/after_startup_task_utils_unittest.cc",
-    "../browser/browser_about_handler_unittest.cc",
-    "../browser/chained_back_navigation_tracker_unittest.cc",
-    "../browser/chrome_browser_field_trials_unittest.cc",
-    "../browser/chrome_content_browser_client_parts_unittest.cc",
     "../browser/chrome_content_browser_client_unittest.cc",
-    "../browser/command_updater_impl_unittest.cc",
-    "../browser/file_select_helper_unittest.cc",
-    "../browser/font_family_cache_unittest.cc",
-    "../browser/font_pref_change_notifier_unittest.cc",
-    "../browser/logging_chrome_unittest.cc",
-    "../browser/renderer_preferences_util_unittest.cc",
-    "../browser/resources_util_unittest.cc",
-    "../browser/services_unittest.cc",
     "../common/chrome_content_client_unittest.cc",
     "../common/chrome_paths_unittest.cc",
     "../common/crash_keys_unittest.cc",
@@ -4873,6 +4859,7 @@ test("unit_tests") {
     "//chrome/browser:chained_back_navigation_tracker",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:command_updater_impl",
+    "//chrome/browser:core_unit_tests",
     "//chrome/browser:file_select_helper",
     "//chrome/browser:flags",
     "//chrome/browser:font_pref",
@@ -5672,10 +5659,6 @@ test("unit_tests") {
   if (is_win) {
     assert(toolkit_views)
     sources += [
-      "../browser/chrome_browser_main_win_unittest.cc",
-      "../browser/chrome_process_singleton_win_unittest.cc",
-      "../browser/process_singleton_win_unittest.cc",
-      "../browser/shell_integration_win_unittest.cc",
       "../browser/ui/views/frame/windows_caption_button_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../common/chrome_constants_win_unittest.cc",
@@ -5764,11 +5747,6 @@ test("unit_tests") {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
       "../app_shim/app_shim_controller_unittest.mm",
-      "../browser/app_controller_mac_unittest.mm",
-      "../browser/chrome_browser_application_mac_unittest.mm",
-      "../browser/global_keyboard_shortcuts_mac_unittest.mm",
-      "../browser/shell_integration_mac_unittest.mm",
-      "../browser/shutdown_watchdog_mac_unittest.cc",
     ]
 
     data_deps += [ "//chrome:chrome_framework" ]
@@ -6317,10 +6295,6 @@ test("unit_tests") {
     if (!is_mac) {
       data_deps += [ "//chrome:packed_resources" ]
     }
-    if (is_posix) {
-      sources += [ "../browser/process_singleton_posix_unittest.cc" ]
-    }
-
     if (is_linux) {
       sources += [ "../browser/ui/views/eula_dialog_linux_unittest.cc" ]
       deps += [
@@ -6600,7 +6574,6 @@ test("unit_tests") {
 
   if (is_chromeos) {
     sources += [
-      "../browser/shell_integration_chromeos_unittest.cc",
       "../browser/ui/views/mahi/mahi_condensed_menu_view_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
@@ -7042,18 +7015,10 @@ test("unit_tests") {
   }
 
   if (is_linux) {
-    sources += [ "../browser/shell_integration_linux_unittest.cc" ]
-
     deps += [ "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests" ]
 
     if (use_dbus) {
-      sources +=
-          [ "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc" ]
-      deps += [
-        "//chrome/browser/ui/views/eye_dropper:unit_tests",
-        "//components/dbus",
-        "//dbus:test_support",
-      ]
+      deps += [ "//chrome/browser/ui/views/eye_dropper:unit_tests" ]
     }
 
     if (use_ozone) {
