@@ -149,6 +149,8 @@ class BrowserFrameView : public views::FrameView {
   // provides one for the frame. This checks for images for the given active
   // state and also considers theme-related fallbacks (e.g., an inactive image
   // falling back to an active one).
+  //
+  // Returns std::nullopt if profile is in isolated mode.
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const;
 

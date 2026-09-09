@@ -1464,6 +1464,10 @@ bool BrowserView::GetIncognito() const {
   return browser_->GetProfile()->IsIncognitoProfile();
 }
 
+bool BrowserView::GetEnterpriseIsolatedMode() const {
+  return browser_->GetProfile()->IsEnterpriseIsolatedModeProfile();
+}
+
 bool BrowserView::GetGuestSession() const {
   return browser_->GetProfile()->IsGuestSession();
 }
@@ -5279,8 +5283,7 @@ void BrowserView::CreateJumpList() {
 #endif
 
 bool BrowserView::ShouldShowAvatarToolbarIPH() {
-  if (GetGuestSession() || GetIncognito() ||
-      GetProfile()->IsEnterpriseIsolatedModeProfile()) {
+  if (GetGuestSession() || GetIncognito() || GetEnterpriseIsolatedMode()) {
     return false;
   }
   AvatarToolbarButtonInterface* avatar_button =

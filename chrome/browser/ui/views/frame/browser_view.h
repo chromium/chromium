@@ -353,6 +353,10 @@ class BrowserView : public BrowserWindow,
   // incognito.
   bool GetIncognito() const;
 
+  // Returns true if the profile associated with this Browser window is in
+  // enterprise isolated mode.
+  bool GetEnterpriseIsolatedMode() const;
+
   // Returns true if the profile associated with this Browser window is
   // a guest session.
   bool GetGuestSession() const;
