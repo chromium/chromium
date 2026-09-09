@@ -23,9 +23,6 @@ specific_include_rules = {
   ],
 
   # Dependencies on //base:
-  "extended_api\\.cc": [
-    "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
-  ],
   "partition_alloc_perftest\\.cc": [
     "+base/allocator/dispatcher/dispatcher.h",
     "+base/debug/allocation_trace.h",
@@ -48,8 +45,6 @@ specific_include_rules = {
     "+base/types/to_address.h",
   ],
   "raw_ref_unittest\\.cc": [
-    "+base/debug/asan_service.h",
-    "+base/memory/raw_ptr_asan_service.h",
     "+base/test/gtest_util.h",
   ],
 }
