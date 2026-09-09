@@ -6,6 +6,8 @@
 #define CHROME_COMMON_MAC_APP_MODE_COMMON_H_
 
 #include <CoreServices/CoreServices.h>
+
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -257,8 +259,10 @@ struct ChromeConnectionConfig {
   // Generates a path value which encodes the contents of this structure.
   base::FilePath EncodeAsPath() const;
 
-  // Parses a path value into a configuration.
-  static ChromeConnectionConfig DecodeFromPath(const base::FilePath& path);
+  // Parses a path value into a configuration, returning std::nullopt if the
+  // path is invalid or the framework version fails validation.
+  static std::optional<ChromeConnectionConfig> DecodeFromPath(
+      const base::FilePath& path);
 };
 
 }  // namespace app_mode

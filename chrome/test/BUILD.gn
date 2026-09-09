@@ -5747,6 +5747,7 @@ test("unit_tests") {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
       "../app_shim/app_shim_controller_unittest.mm",
+      "../common/mac/app_mode_common_unittest.mm",
     ]
 
     data_deps += [ "//chrome:chrome_framework" ]

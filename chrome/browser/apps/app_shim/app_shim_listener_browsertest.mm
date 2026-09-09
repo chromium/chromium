@@ -351,6 +351,7 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTestSymlink,
   EXPECT_TRUE(base::ReadSymbolicLink(version_path_, &encoded_config));
   auto config =
       app_mode::ChromeConnectionConfig::DecodeFromPath(encoded_config);
-  EXPECT_EQ(version_info::GetVersionNumber(), config.framework_version);
-  EXPECT_TRUE(config.is_mojo_ipcz_enabled);
+  ASSERT_TRUE(config.has_value());
+  EXPECT_EQ(version_info::GetVersionNumber(), config->framework_version);
+  EXPECT_TRUE(config->is_mojo_ipcz_enabled);
 }

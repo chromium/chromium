@@ -30,6 +30,12 @@ struct PathAndStructure {
 std::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
     NSString* bundle_path,
     NSString* version) {
+  base::FilePath version_path = base::apple::NSStringToFilePath(version);
+  if (version_path.empty() || version_path.BaseName() != version_path ||
+      version_path.ReferencesParent() || version_path.value() == ".") {
+    return std::nullopt;
+  }
+
   // NEW STYLE:
   // Chromium.app/Contents/Frameworks/Chromium Framework.framework/
   //   Versions/<version>/Chromium Framework

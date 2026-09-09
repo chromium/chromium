@@ -8,9 +8,10 @@
 // minimal and do as little work as possible (with as much work done on
 // framework side as possible).
 
+#import <Cocoa/Cocoa.h>
 #include <dlfcn.h>
 
-#import <Cocoa/Cocoa.h>
+#include <optional>
 
 #include "base/allocator/early_zone_registration_apple.h"
 #include "base/apple/foundation_util.h"
@@ -116,11 +117,16 @@ int LoadFrameworkAndStart(int argc, char** argv) {
           user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName),
           &encoded_config);
       if (!encoded_config.empty()) {
-        config =
+        std::optional<app_mode::ChromeConnectionConfig> parsed_config =
             app_mode::ChromeConnectionConfig::DecodeFromPath(encoded_config);
-        mojo_ipcz_config = config.is_mojo_ipcz_enabled
-                               ? app_mode::MojoIpczConfig::kEnabled
-                               : app_mode::MojoIpczConfig::kDisabled;
+        if (parsed_config) {
+          config = *parsed_config;
+          mojo_ipcz_config = config.is_mojo_ipcz_enabled
+                                 ? app_mode::MojoIpczConfig::kEnabled
+                                 : app_mode::MojoIpczConfig::kDisabled;
+        } else {
+          NSLog(@"Failed to decode framework version from symlink");
+        }
       }
       // If the version file does exist, it may have been left by a crashed
       // Chrome process. Ensure the process is still running.

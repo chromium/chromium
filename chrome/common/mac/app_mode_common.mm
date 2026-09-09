@@ -6,11 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include <optional>
 #include <type_traits>
 
 #include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/version.h"
 #include "components/version_info/version_info.h"
 
 namespace app_mode {
@@ -86,20 +88,32 @@ base::FilePath ChromeConnectionConfig::EncodeAsPath() const {
 }
 
 // static
-ChromeConnectionConfig ChromeConnectionConfig::DecodeFromPath(
+std::optional<ChromeConnectionConfig> ChromeConnectionConfig::DecodeFromPath(
     const base::FilePath& path) {
-  DCHECK(!path.empty());
+  if (path.empty()) {
+    return std::nullopt;
+  }
   const std::vector<std::string> parts = base::SplitString(
       path.value(), ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  DCHECK(!parts.empty());
+  if (parts.size() != 1 && parts.size() != 2) {
+    return std::nullopt;
+  }
+  if (!base::Version(parts[0]).IsValid()) {
+    return std::nullopt;
+  }
   if (parts.size() == 1) {
     // Assume MojoIpcz is disabled for path values which predate the
     // introduction of the MojoIpcz bit.
-    return {.framework_version = parts[0], .is_mojo_ipcz_enabled = false};
+    return ChromeConnectionConfig{.framework_version = parts[0],
+                                  .is_mojo_ipcz_enabled = false};
   }
 
-  return {.framework_version = parts[0],
-          .is_mojo_ipcz_enabled = parts[1] == "1"};
+  if (parts[1] != "0" && parts[1] != "1") {
+    return std::nullopt;
+  }
+
+  return ChromeConnectionConfig{.framework_version = parts[0],
+                                .is_mojo_ipcz_enabled = parts[1] == "1"};
 }
 
 }  // namespace app_mode
