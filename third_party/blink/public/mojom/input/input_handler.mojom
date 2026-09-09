@@ -520,7 +520,8 @@ interface WidgetInputHandler {
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
   // `target_dom_node_id`, if not a null value, will target the text commit to
-  // the specified node, adjusting and restoring focus if necessary.
+  // the specified node, adjusting and restoring focus if necessary, and
+  // revealing the selection.
   // TODO(crbug.com/535826288): Make `DOMNodeId` optional once the typemap
   // is nullable_is_same_type.
   // Note, the response is specifically for Devtools to learn about completion

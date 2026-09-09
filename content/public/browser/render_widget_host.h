@@ -369,6 +369,8 @@ class CONTENT_EXPORT RenderWidgetHost {
       base::OnceClosure on_complete) = 0;
 
   // Commits composition text. See `SetExternallySourcedComposition`.
+  // Additionally, if `target_dom_node_id` is not a null value, the caret is
+  // kept in view in the element after the commit.
   virtual void CommitExternallySourcedComposition(
       const std::u16string& text,
       const GlobalDOMNodeId& target_dom_node_id,
