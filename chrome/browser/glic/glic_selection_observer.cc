@@ -81,6 +81,8 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/widget/widget.h"
 
@@ -152,15 +154,6 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
   return context;
 }
 
-// Minimum distance in pixels required for a mouse move step to establish or
-// change movement direction.
-constexpr float kMinShakeDistance = 10.0f;
-// Required number of direction changes to trigger region capture.
-constexpr int kRequiredDirectionChanges = 4;
-// Maximum time allowed between direction changes before the shake detector
-// resets.
-constexpr base::TimeDelta kShakeTimeout = base::Milliseconds(1000);
-
 bool IsListenedToInputEvent(blink::WebInputEvent::Type type) {
   switch (type) {
     case blink::WebInputEvent::Type::kMouseDown:
@@ -186,6 +179,114 @@ bool IsListenedToInputEvent(blink::WebInputEvent::Type type) {
 }
 
 }  // namespace
+
+class GlicSelectionObserver::ShakeDetector {
+ public:
+  ShakeDetector(base::RepeatingCallback<bool()> is_enabled_callback,
+                base::RepeatingClosure on_shake_detected)
+      : is_enabled_callback_(std::move(is_enabled_callback)),
+        on_shake_detected_(std::move(on_shake_detected)) {}
+  ~ShakeDetector() = default;
+
+  void OnInputEvent(const blink::WebInputEvent& event) {
+    switch (event.GetType()) {
+      case blink::WebInputEvent::Type::kMouseMove:
+        ProcessMouseMove(static_cast<const blink::WebMouseEvent&>(event));
+        break;
+      case blink::WebInputEvent::Type::kMouseDown:
+      case blink::WebInputEvent::Type::kPointerDown:
+      case blink::WebInputEvent::Type::kGestureTapDown:
+      case blink::WebInputEvent::Type::kTouchStart:
+      case blink::WebInputEvent::Type::kMouseUp:
+      case blink::WebInputEvent::Type::kPointerUp:
+      case blink::WebInputEvent::Type::kPointerCancel:
+      case blink::WebInputEvent::Type::kTouchEnd:
+      case blink::WebInputEvent::Type::kTouchCancel:
+      case blink::WebInputEvent::Type::kGestureTapCancel:
+      case blink::WebInputEvent::Type::kRawKeyDown:
+      case blink::WebInputEvent::Type::kKeyDown:
+      case blink::WebInputEvent::Type::kGestureScrollBegin:
+      case blink::WebInputEvent::Type::kMouseWheel:
+        Reset();
+        break;
+      default:
+        break;
+    }
+  }
+
+ private:
+  // Minimum distance in pixels required for a mouse move step to establish or
+  // change movement direction.
+  static constexpr float kMinShakeDistance = 10.0f;
+  // Required number of direction changes to trigger region capture.
+  static constexpr int kRequiredDirectionChanges = 4;
+  // Maximum time allowed between direction changes before the shake detector
+  // resets.
+  static constexpr base::TimeDelta kShakeTimeout = base::Milliseconds(1000);
+
+  void ProcessMouseMove(const blink::WebMouseEvent& mouse_event) {
+    if (!is_enabled_callback_.Run()) {
+      return;
+    }
+    if (direction_change_count_ > 0 &&
+        (base::TimeTicks::Now() - last_direction_change_time_) >
+            kShakeTimeout) {
+      Reset();
+    }
+
+    gfx::PointF current_pos = mouse_event.PositionInWidget();
+
+    if (!last_shake_point_.has_value()) {
+      last_shake_point_ = current_pos;
+      return;
+    }
+
+    gfx::Vector2dF delta = current_pos - *last_shake_point_;
+    float dist = delta.Length();
+    if (dist < kMinShakeDistance) {
+      return;
+    }
+
+    gfx::Vector2dF current_dir(delta.x() / dist, delta.y() / dist);
+
+    if (!last_shake_dir_.has_value()) {
+      last_shake_dir_ = current_dir;
+      last_shake_point_ = current_pos;
+      last_direction_change_time_ = base::TimeTicks::Now();
+      return;
+    }
+
+    float dot = last_shake_dir_->x() * current_dir.x() +
+                last_shake_dir_->y() * current_dir.y();
+    if (dot < -0.5f) {
+      direction_change_count_++;
+      last_shake_dir_ = current_dir;
+      last_shake_point_ = current_pos;
+      last_direction_change_time_ = base::TimeTicks::Now();
+
+      if (direction_change_count_ >= kRequiredDirectionChanges) {
+        Reset();
+        on_shake_detected_.Run();
+      }
+    } else {
+      last_shake_point_ = current_pos;
+    }
+  }
+
+  void Reset() {
+    last_shake_point_.reset();
+    last_shake_dir_.reset();
+    direction_change_count_ = 0;
+    last_direction_change_time_ = base::TimeTicks();
+  }
+
+  base::RepeatingCallback<bool()> is_enabled_callback_;
+  base::RepeatingClosure on_shake_detected_;
+  std::optional<gfx::PointF> last_shake_point_;
+  std::optional<gfx::Vector2dF> last_shake_dir_;
+  int direction_change_count_ = 0;
+  base::TimeTicks last_direction_change_time_;
+};
 
 class GlicSelectionObserver::WidgetActionDelegate
     : public GlicSelectionWidgetDelegate::ActionDelegate {
@@ -237,6 +338,11 @@ GlicSelectionObserver* GlicSelectionObserver::From(tabs::TabInterface* tab) {
 
 GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      shake_detector_(std::make_unique<ShakeDetector>(
+          base::BindRepeating(&GlicSelectionObserver::IsShakeTriggerEnabled,
+                              base::Unretained(this)),
+          base::BindRepeating(&GlicSelectionObserver::TriggerRegionCapture,
+                              base::Unretained(this)))),
       action_delegate_(std::make_unique<WidgetActionDelegate>(this)) {
   CHECK(web_contents);
   Profile* profile =
@@ -422,19 +528,13 @@ void GlicSelectionObserver::ProcessInputEvent(
     return;
   }
 
-  switch (event->GetType()) {
-    case blink::WebInputEvent::Type::kMouseMove: {
-      const auto& mouse_event =
-          static_cast<const blink::WebMouseEvent&>(*event);
-      ProcessMouseMoveForShake(mouse_event);
-      break;
-    }
+  shake_detector_->OnInputEvent(*event);
 
+  switch (event->GetType()) {
     case blink::WebInputEvent::Type::kMouseDown:
     case blink::WebInputEvent::Type::kPointerDown:
     case blink::WebInputEvent::Type::kGestureTapDown:
     case blink::WebInputEvent::Type::kTouchStart: {
-      ResetShakeDetector();
       bool is_left_click_or_touch = true;
       if (event->GetType() == blink::WebInputEvent::Type::kMouseDown ||
           event->GetType() == blink::WebInputEvent::Type::kPointerDown) {
@@ -474,7 +574,6 @@ void GlicSelectionObserver::ProcessInputEvent(
     case blink::WebInputEvent::Type::kTouchEnd:
     case blink::WebInputEvent::Type::kTouchCancel:
     case blink::WebInputEvent::Type::kGestureTapCancel:
-      ResetShakeDetector();
       // Process the selection received so far. If the final selection IPC is
       // delayed, OnTextSelectionChanged will handle it since `is_selecting_`
       // becomes false.
@@ -489,7 +588,6 @@ void GlicSelectionObserver::ProcessInputEvent(
 
     case blink::WebInputEvent::Type::kRawKeyDown:
     case blink::WebInputEvent::Type::kKeyDown: {
-      ResetShakeDetector();
       if (is_key_selection_) {
         break;
       }
@@ -528,7 +626,6 @@ void GlicSelectionObserver::ProcessInputEvent(
 
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
-      ResetShakeDetector();
       DismissUI(DismissReason::kExternal);
       break;
 
@@ -1355,62 +1452,6 @@ void GlicSelectionObserver::TriggerRegionCapture() {
       glic::mojom::InvocationSource::kCaptureRegionHotkey);
   options.wait_for_panel_open = true;
   glic_keyed_service_->Invoke(std::move(options));
-}
-
-void GlicSelectionObserver::ProcessMouseMoveForShake(
-    const blink::WebMouseEvent& mouse_event) {
-  if (!IsShakeTriggerEnabled()) {
-    return;
-  }
-  if (direction_change_count_ > 0 &&
-      (base::TimeTicks::Now() - last_direction_change_time_) > kShakeTimeout) {
-    ResetShakeDetector();
-  }
-
-  gfx::PointF current_pos = mouse_event.PositionInWidget();
-
-  if (!last_shake_point_.has_value()) {
-    last_shake_point_ = current_pos;
-    return;
-  }
-
-  gfx::Vector2dF delta = current_pos - *last_shake_point_;
-  float dist = delta.Length();
-  if (dist < kMinShakeDistance) {
-    return;
-  }
-
-  gfx::Vector2dF current_dir(delta.x() / dist, delta.y() / dist);
-
-  if (!last_shake_dir_.has_value()) {
-    last_shake_dir_ = current_dir;
-    last_shake_point_ = current_pos;
-    last_direction_change_time_ = base::TimeTicks::Now();
-    return;
-  }
-
-  float dot = last_shake_dir_->x() * current_dir.x() +
-              last_shake_dir_->y() * current_dir.y();
-  if (dot < -0.5f) {
-    direction_change_count_++;
-    last_shake_dir_ = current_dir;
-    last_shake_point_ = current_pos;
-    last_direction_change_time_ = base::TimeTicks::Now();
-
-    if (direction_change_count_ >= kRequiredDirectionChanges) {
-      ResetShakeDetector();
-      TriggerRegionCapture();
-    }
-  } else {
-    last_shake_point_ = current_pos;
-  }
-}
-
-void GlicSelectionObserver::ResetShakeDetector() {
-  last_shake_point_.reset();
-  last_shake_dir_.reset();
-  direction_change_count_ = 0;
-  last_direction_change_time_ = base::TimeTicks();
 }
 
 void GlicSelectionObserver::ResetSelectionState() {

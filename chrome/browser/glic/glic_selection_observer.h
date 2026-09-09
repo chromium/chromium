@@ -30,8 +30,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace content {
 class Page;
@@ -249,13 +247,8 @@ class GlicSelectionObserver
   // True if a dismissal metric has already been recorded for the shown widget.
   bool dismissal_recorded_ = false;
 
-  void ProcessMouseMoveForShake(const blink::WebMouseEvent& mouse_event);
-  void ResetShakeDetector();
-
-  std::optional<gfx::PointF> last_shake_point_;
-  std::optional<gfx::Vector2dF> last_shake_dir_;
-  int direction_change_count_ = 0;
-  base::TimeTicks last_direction_change_time_;
+  class ShakeDetector;
+  std::unique_ptr<ShakeDetector> shake_detector_;
 
   // Private bridge implementation of
   // GlicSelectionWidgetDelegate::ActionDelegate. This is required because
