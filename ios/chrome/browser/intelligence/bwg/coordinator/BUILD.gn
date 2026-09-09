@@ -120,6 +120,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "gemini_container_mediator_unittest.mm",
+    "gemini_entry_flow_coordinator_unittest.mm",
     "gemini_first_run_coordinator_unittest.mm",
     "gemini_first_run_mediator_unittest.mm",
   ]
@@ -148,6 +149,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/bwg/model:config",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/model:test_support",
     "//ios/chrome/browser/intelligence/bwg/ui",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/bwg/utils:test_support",
@@ -167,7 +169,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",

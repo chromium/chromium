@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_entry_flow_coordinator.h"
 
 #import "base/notreached.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
@@ -14,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -62,6 +65,9 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
 
 }  // namespace
 
+@interface GeminiEntryFlowCoordinator () <GeminiServiceObserving>
+@end
+
 @implementation GeminiEntryFlowCoordinator {
   // The sign-in coordinator presented when the user is signed out.
   SigninCoordinator* _signinCoordinator;
@@ -74,16 +80,20 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
   // The account menu coordinator for switching accounts when the current
   // account is ineligible due to Gemini policy restriction.
   AccountMenuCoordinator* _accountMenuCoordinator;
+  // Bridge to observe GeminiService for enterprise policy updates.
+  std::unique_ptr<GeminiServiceObserverBridge> _geminiServiceObserverBridge;
+  // Whether the pending policy check timed out.
+  BOOL _policyCheckTimedOut;
 }
 
 #pragma mark - ChromeCoordinator
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)baseViewController
-                       browser:(Browser*)browser
-                  startupState:(GeminiStartupState*)startupState
-      showSnackbarOnCompletion:(BOOL)showSnackbarOnCompletion
-                    completion:(GeminiEntryFlowCompletion)completion {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                              startupState:(GeminiStartupState*)startupState
+                  showSnackbarOnCompletion:(BOOL)showSnackbarOnCompletion
+                                completion:
+                                    (GeminiEntryFlowCompletion)completion {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _startupState = startupState;
@@ -142,6 +152,7 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
 }
 
 - (void)stop {
+  _geminiServiceObserverBridge.reset();
   [_signinCoordinator stop];
   _signinCoordinator = nil;
   [self stopAccountMenu];
@@ -165,6 +176,22 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
   }
 
   [self finishWithResult:kGeminiEntryFlowResultAccountIneligibleByGemini];
+}
+
+#pragma mark - GeminiServiceObserving
+
+- (void)geminiEligibilityDidChange {
+  _geminiServiceObserverBridge.reset();
+  [self evaluateEligibilityAndRoute];
+}
+
+- (void)policyCheckDidTimeout {
+  if (!_geminiServiceObserverBridge) {
+    return;
+  }
+  _policyCheckTimedOut = YES;
+  _geminiServiceObserverBridge.reset();
+  [self evaluateEligibilityAndRoute];
 }
 
 #pragma mark - Private
@@ -237,9 +264,9 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
 }
 
 // Evaluates profile eligibility and routes to the appropriate outcome.
-// Uses the currently available eligibility data. If the workspace policy
-// check hasn't completed yet, the service returns conservative defaults
-// (personal accounts treated as eligible, managed accounts as ineligible).
+// If the workspace policy check is pending (e.g. during cold start),
+// observes the GeminiService until the check finishes before evaluating
+// eligibility, falling back to conservative defaults if the check times out.
 - (void)evaluateEligibilityAndRoute {
   GeminiService* geminiService =
       GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
@@ -251,6 +278,25 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
 
   // Trigger the workspace policy check if it hasn't started yet.
   geminiService->CheckGeminiEnterpriseEligibilityIfNeeded();
+
+  // If the workspace policy check is still pending, wait for it to complete
+  // before evaluating eligibility. This prevents showing a false ineligibility
+  // snackbar for eligible managed accounts during cold start.
+  if (!_policyCheckTimedOut && geminiService->IsWorkspacePolicyCheckPending()) {
+    if (!_geminiServiceObserverBridge) {
+      _geminiServiceObserverBridge =
+          std::make_unique<GeminiServiceObserverBridge>(self, geminiService);
+      __weak __typeof(self) weakSelf = self;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf policyCheckDidTimeout];
+          }),
+          base::Seconds(3));
+    }
+    return;
+  }
+
+  _geminiServiceObserverBridge.reset();
 
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
