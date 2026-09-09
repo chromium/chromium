@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 
+#include <cmath>
+
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
@@ -338,6 +340,14 @@ void GPUQueue::copyExternalImageToTexture(
   PredefinedColorSpace color_space;
   if (!ValidateAndConvertColorSpace(destination->colorSpace(), color_space,
                                     exception_state)) {
+    return;
+  }
+
+  if (std::isnan(destination->linearHDRHeadroom()) ||
+      destination->linearHDRHeadroom() < 1.0f) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
+        "linearHDRHeadroom must be greater or equal to 1.");
     return;
   }
 

@@ -7,4 +7,5 @@
 dictionary GPUImageCopyTextureTagged : GPUTexelCopyTextureInfo  {
     PredefinedColorSpace colorSpace = "srgb";
     boolean premultipliedAlpha = false;
+    [RuntimeEnabled=WebGPUExternalImageHDRHeadroom] unrestricted float linearHDRHeadroom = 1;
 };

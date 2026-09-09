@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 
+#include <cmath>
+
 #include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -11,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
@@ -539,6 +542,13 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 GPUExternalTexture* GPUDevice::importExternalTexture(
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
+  if (std::isnan(descriptor->linearHDRHeadroom()) ||
+      descriptor->linearHDRHeadroom() < 1.0f) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
+        "linearHDRHeadroom must be greater or equal to 1.");
+    return nullptr;
+  }
   return external_texture_cache_->Import(descriptor, exception_state);
 }
 

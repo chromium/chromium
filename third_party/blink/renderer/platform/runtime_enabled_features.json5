@@ -7038,6 +7038,14 @@
       public: true,
     },
     {
+      // WebGPU external image copy and import HDR headroom parameter for tone
+      // mapping.
+      // https://crbug.com/557320955
+      // https://chromestatus.com/feature/5147993689948160
+      name: "WebGPUExternalImageHDRHeadroom",
+      status: "experimental",
+    },
+    {
       // Enables GPUBuffer::mapSync for WebGPU.
       name: "WebGPUMapSyncOnWorkers",
       status: "experimental",

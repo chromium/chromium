@@ -7,4 +7,5 @@
 dictionary GPUExternalTextureDescriptor : GPUObjectDescriptorBase {
     required (HTMLVideoElement or VideoFrame) source;
     PredefinedColorSpace colorSpace = "srgb";
+    [RuntimeEnabled=WebGPUExternalImageHDRHeadroom] unrestricted float linearHDRHeadroom = 1;
 };
