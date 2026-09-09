@@ -4,21 +4,9 @@
 
 package com.android.webview.chromium;
 
-import android.content.Context;
-import android.webkit.CookieManager;
-import android.webkit.WebIconDatabase;
-import android.webkit.WebViewDatabase;
-
-import androidx.annotation.GuardedBy;
-
-import com.android.webview.chromium.ApiCallLogger.ApiCall;
-import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
-
 import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.DualTraceEvent;
-import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
@@ -39,26 +27,9 @@ import java.util.concurrent.CountDownLatch;
 public class WebViewChromiumAwInit {
     private static final String TAG = "WebViewChromiumAwInit";
 
-    private static final String HTTP_AUTH_DATABASE_FILE = "http_auth.db";
-
-    @GuardedBy("mLazyInitLock")
-    private CookieManagerAdapter mDefaultCookieManager;
-
-    @GuardedBy("mLazyInitLock")
-    private WebIconDatabaseAdapter mWebIconDatabase;
-
-    @GuardedBy("mLazyInitLock")
-    private WebViewDatabaseAdapter mDefaultWebViewDatabase;
-
     private final ProfileStore mProfileStore = new ProfileStore(this);
 
     private final DefaultProfileHolder mDefaultProfileHolder = new DefaultProfileHolder();
-
-    // Guards access to fields that are initialized on first use rather than by startChromium.
-    // This lock is used across WebViewChromium startup classes ie WebViewChromiumAwInit,
-    // SupportLibWebViewChromiumFactory and WebViewChromiumFactoryProvider so as to avoid deadlock.
-    // TODO(crbug.com/397385172): Get rid of this lock.
-    private final Object mLazyInitLock = new Object();
 
     private final WebViewChromiumFactoryProvider mFactory;
 
@@ -109,50 +80,12 @@ public class WebViewChromiumAwInit {
         return mProfileStore;
     }
 
-    public CookieManager getDefaultCookieManager() {
-        synchronized (mLazyInitLock) {
-            if (mDefaultCookieManager == null) {
-                mDefaultCookieManager =
-                        new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
-            }
-            return mDefaultCookieManager;
-        }
-    }
-
-    public WebIconDatabase getWebIconDatabase() {
-        StartupController.getInstance()
-                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_WEB_ICON_DATABASE);
-        ApiCallLogger.recordWebViewApiCall(
-                ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
-                ApiCallUserAction.WEB_ICON_DATABASE_GET_INSTANCE);
-        synchronized (mLazyInitLock) {
-            if (mWebIconDatabase == null) {
-                mWebIconDatabase = new WebIconDatabaseAdapter();
-            }
-            return mWebIconDatabase;
-        }
-    }
-
-    public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
-        StartupController.getInstance()
-                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_DEFAULT_WEBVIEW_DATABASE);
-        synchronized (mLazyInitLock) {
-            if (mDefaultWebViewDatabase == null) {
-                mDefaultWebViewDatabase =
-                        new WebViewDatabaseAdapter(
-                                mFactory,
-                                HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE));
-            }
-            return mDefaultWebViewDatabase;
-        }
-    }
-
     public WebViewChromiumRunQueue getRunQueue() {
         return mFactory.getRunQueue();
     }
 
     public Object getLazyInitLock() {
-        return mLazyInitLock;
+        return mFactory.getLazyInitLock();
     }
 
     public Profile getDefaultProfile(@StartupCallSite int callSite) {

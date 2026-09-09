@@ -57,8 +57,10 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.CompatQuirks;
 import org.chromium.android_webview.DualTraceEvent;
+import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupController;
@@ -149,11 +151,32 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private StartupDelegateImpl mStartupDelegate;
 
-    @GuardedBy("mAwInit.getLazyInitLock()")
+    private static final String HTTP_AUTH_DATABASE_FILE = "http_auth.db";
+
+    // Guards access to fields that are initialized on first use rather than by startChromium.
+    // This lock is used across WebViewChromium startup classes ie WebViewChromiumAwInit,
+    // SupportLibWebViewChromiumFactory and WebViewChromiumFactoryProvider so as to avoid deadlock.
+    // TODO(crbug.com/397385172): Get rid of this lock.
+    private final Object mLazyInitLock = new Object();
+
+    @GuardedBy("mLazyInitLock")
+    private CookieManagerAdapter mDefaultCookieManager;
+
+    @GuardedBy("mLazyInitLock")
+    private WebIconDatabaseAdapter mWebIconDatabase;
+
+    @GuardedBy("mLazyInitLock")
+    private WebViewDatabaseAdapter mDefaultWebViewDatabase;
+
+    @GuardedBy("mLazyInitLock")
     private TracingController mTracingController;
 
     private static final Object sSingletonLock = new Object();
     private static WebViewChromiumFactoryProvider sSingleton;
+
+    public Object getLazyInitLock() {
+        return mLazyInitLock;
+    }
 
     /* package */ WebViewChromiumRunQueue getRunQueue() {
         return StartupController.getInstance().getRunQueue();
@@ -869,7 +892,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public CookieManager getCookieManager() {
-        return mAwInit.getDefaultCookieManager();
+        synchronized (mLazyInitLock) {
+            if (mDefaultCookieManager == null) {
+                mDefaultCookieManager =
+                        new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
+            }
+            return mDefaultCookieManager;
+        }
     }
 
     @Override
@@ -885,7 +914,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public WebIconDatabase getWebIconDatabase() {
-        return mAwInit.getWebIconDatabase();
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_WEB_ICON_DATABASE);
+        ApiCallLogger.recordWebViewApiCall(
+                ApiCallLogger.ApiCall.WEB_ICON_DATABASE_GET_INSTANCE,
+                ApiCallLogger.ApiCallUserAction.WEB_ICON_DATABASE_GET_INSTANCE);
+        synchronized (mLazyInitLock) {
+            if (mWebIconDatabase == null) {
+                mWebIconDatabase = new WebIconDatabaseAdapter();
+            }
+            return mWebIconDatabase;
+        }
     }
 
     @Override
@@ -895,7 +934,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public WebViewDatabase getWebViewDatabase(final Context context) {
-        return mAwInit.getDefaultWebViewDatabase(context);
+        StartupController.getInstance()
+                .triggerAndWaitForChromiumStarted(StartupCallSite.GET_DEFAULT_WEBVIEW_DATABASE);
+        synchronized (mLazyInitLock) {
+            if (mDefaultWebViewDatabase == null) {
+                mDefaultWebViewDatabase =
+                        new WebViewDatabaseAdapter(
+                                this,
+                                HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE));
+            }
+            return mDefaultWebViewDatabase;
+        }
     }
 
     WebViewDelegate getWebViewDelegate() {
@@ -910,12 +959,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     public TracingController getTracingController() {
         StartupController.getInstance()
                 .triggerAndWaitForChromiumStarted(StartupCallSite.GET_TRACING_CONTROLLER);
-        synchronized (mAwInit.getLazyInitLock()) {
+        synchronized (mLazyInitLock) {
             if (mTracingController == null) {
                 mTracingController =
                         new TracingControllerAdapter(
                                 new SharedTracingControllerAdapter(
-                                        mAwInit.getRunQueue(), mAwInit.getAwTracingController()));
+                                        getRunQueue(), AwTracingController.getInstance()));
             }
             return mTracingController;
         }
