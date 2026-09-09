@@ -148,6 +148,9 @@ class StatusIconLinuxDbusTest : public testing::Test {
                   .Run(interface_name, method_name, true);
             });
 
+    EXPECT_CALL(*bus_, GetConnectionName())
+        .WillRepeatedly(testing::Return(":1.100"));
+
     EXPECT_CALL(*bus_proxy_, CallMethodWithErrorResponse(_, _, _))
         .WillRepeatedly(&OnBusProxyCall);
 
@@ -158,15 +161,6 @@ class StatusIconLinuxDbusTest : public testing::Test {
               OnWatcherProxyCall(nullptr, method_call, timeout_ms,
                                  std::move(callback));
             });
-
-    EXPECT_CALL(*bus_, RequestOwnership(_, _, _))
-        .WillRepeatedly([](const std::string& service_name,
-                           dbus::Bus::ServiceOwnershipOptions options,
-                           dbus::Bus::OnOwnershipCallback callback) {
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(std::move(callback), service_name, true));
-        });
   }
 
  protected:
@@ -319,10 +313,8 @@ TEST_F(StatusIconLinuxDbusTest, RegisterStatusNotifierItem) {
   task_environment_.RunUntilIdle();
 
   // The service string passed to RegisterStatusNotifierItem should be
-  // the well-known service name without an object path.
-  EXPECT_THAT(registered_service,
-              testing::StartsWith("org.freedesktop.StatusNotifierItem-"));
-  EXPECT_THAT(registered_service, testing::Not(testing::HasSubstr("/")));
+  // the unique bus connection name.
+  EXPECT_EQ(registered_service, ":1.100");
 }
 
 TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
@@ -337,6 +329,8 @@ TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
   auto exported_menu_object2 = base::MakeRefCounted<dbus::MockExportedObject>(
       bus2.get(), dbus::ObjectPath("/org/chromium/DbusMenu"));
 
+  EXPECT_CALL(*bus2, GetConnectionName())
+      .WillRepeatedly(testing::Return(":1.101"));
   EXPECT_CALL(*bus2, GetDBusTaskRunner())
       .WillRepeatedly(testing::Return(
           base::SingleThreadTaskRunner::GetCurrentDefault().get()));
@@ -366,13 +360,6 @@ TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
           });
   EXPECT_CALL(*bus_proxy2, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(&OnBusProxyCall);
-  EXPECT_CALL(*bus2, RequestOwnership(_, _, _))
-      .WillRepeatedly([](const std::string& service_name,
-                         dbus::Bus::ServiceOwnershipOptions options,
-                         dbus::Bus::OnOwnershipCallback callback) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), service_name, true));
-      });
 
   std::string registered_service1;
   std::string registered_service2;
@@ -417,9 +404,7 @@ TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(registered_service1,
-              testing::StartsWith("org.freedesktop.StatusNotifierItem-"));
-  EXPECT_THAT(registered_service2,
-              testing::StartsWith("org.freedesktop.StatusNotifierItem-"));
+  EXPECT_EQ(registered_service1, ":1.100");
+  EXPECT_EQ(registered_service2, ":1.101");
   EXPECT_NE(registered_service1, registered_service2);
 }

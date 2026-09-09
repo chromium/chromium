@@ -351,15 +351,6 @@ StatusIconLinuxDbus::~StatusIconLinuxDbus() {
       g_shared_bus_in_use = false;
       bus_->UnregisterExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
       bus_->UnregisterExportedObject(dbus::ObjectPath(kPathDbusMenu));
-      if (!service_name_.empty()) {
-        bus_->GetDBusTaskRunner()->PostTask(
-            FROM_HERE, base::BindOnce(
-                           [](scoped_refptr<dbus::Bus> bus,
-                              const std::string& service_name) {
-                             bus->ReleaseOwnership(service_name);
-                           },
-                           bus_, service_name_));
-      }
     } else {
       bus_->GetDBusTaskRunner()->PostTask(
           FROM_HERE,
@@ -415,10 +406,7 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
 
   service_id_ = NextServiceId();
 
-  service_name_ =
-      base::StrCat({"org.freedesktop.StatusNotifierItem-",
-                    base::NumberToString(base::Process::Current().Pid()), "-",
-                    base::NumberToString(service_id_)});
+  service_name_ = bus_->GetConnectionName();
 
   item_ = bus_->GetExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
 
@@ -503,20 +491,6 @@ void StatusIconLinuxDbus::OnInitialized(bool success) {
   watcher_->SetNameOwnerChangedCallback(
       base::BindRepeating(&StatusIconLinuxDbus::OnNameOwnerChangedReceived,
                           weak_factory_.GetWeakPtr()));
-
-  bus_->RequestOwnership(
-      service_name_, dbus::Bus::REQUIRE_PRIMARY,
-      base::BindOnce(&StatusIconLinuxDbus::OnOwnershipAcquired,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void StatusIconLinuxDbus::OnOwnershipAcquired(const std::string& service_name,
-                                              bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!success) {
-    delegate_->OnImplInitializationFailed();
-    return;
-  }
 
   RegisterStatusNotifierItem();
 }

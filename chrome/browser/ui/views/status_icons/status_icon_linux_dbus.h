@@ -71,7 +71,6 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   void OnHostRegisteredResponse(dbus_utils::CallMethodResultSig<"v"> response);
 
   void OnInitialized(bool success);
-  void OnOwnershipAcquired(const std::string& service_name, bool success);
   void RegisterStatusNotifierItem();
 
   // Step 5: register the StatusNotifierItem with the StatusNotifierWatcher.
