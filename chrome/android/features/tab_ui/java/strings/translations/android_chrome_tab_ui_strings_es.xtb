@@ -21,7 +21,7 @@
 <translation id="1499635324672558517">¿Cerrar todas las pestañas de Incógnito?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento inactivo}other{<ph name="TABS_COUNT_MANY" /> elementos inactivos}}</translation>
-<translation id="1568067597247500137">Silenciar sitio web</translation>
+<translation id="1568067597247500137">Silenciar sitio</translation>
 <translation id="1645759014353344461">Se han agrupado <ph name="TABS_COUNT_MANY" /> pestañas</translation>
 <translation id="1657719826150349398">Bajar pestaña</translation>
 <translation id="1670942869417022142">Audio silenciado</translation>
