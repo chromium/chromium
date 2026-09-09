@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/safe_browsing/model/password_protection_java_script_feature.h"
 
+#import <memory>
+#import <vector>
+
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -24,6 +27,7 @@ class MockInputEventObserver : public InputEventObserver {
   virtual ~MockInputEventObserver() = default;
   void OnKeyPressed(std::string text) override {
     on_key_pressed_called_ = true;
+    key_pressed_count_++;
   }
   void OnPaste(std::string text) override {
     on_paste_called_ = true;
@@ -33,6 +37,7 @@ class MockInputEventObserver : public InputEventObserver {
   web::WebState* web_state() const override { return web_state_; }
 
   bool on_key_pressed_called_ = false;
+  int key_pressed_count_ = 0;
   bool on_paste_called_ = false;
   bool on_paste_key_detected_called_ = false;
   std::string pasted_text_;
@@ -130,6 +135,9 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest, KeyDownEventLengthCheck) {
   EXPECT_TRUE(observer_->on_key_pressed_called_);
   observer_->on_key_pressed_called_ = false;
 
+  // Advance time by keydown rate limit.
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+
   // A single supplementary Unicode code point (e.g., U+1F600 Grinning Face
   // emoji). It takes 2 UTF-16 code units (surrogate pair) but is 1 Unicode code
   // point.
@@ -143,6 +151,9 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest, KeyDownEventLengthCheck) {
   feature_->ScriptMessageReceived(&web_state_, message2);
   EXPECT_TRUE(observer_->on_key_pressed_called_);
   observer_->on_key_pressed_called_ = false;
+
+  // Advance time by keydown rate limit.
+  task_environment_.FastForwardBy(base::Milliseconds(25));
 
   // Multiple characters should be dropped.
   base::Value body3(
@@ -252,6 +263,43 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest,
   EXPECT_FALSE(observer_->on_paste_key_detected_called_);
 }
 
+// Tests that key down events are rate limited.
+TEST_F(PasswordProtectionJavaScriptFeatureTest, KeyDownEventRateLimited) {
+  base::Value body1(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "a"));
+  web::ScriptMessage message1(std::make_unique<base::Value>(std::move(body1)),
+                              /*is_user_interacting=*/true,
+                              /*is_main_frame=*/true,
+                              /*request_url=*/std::nullopt, url::Origin());
+
+  // First key down should be allowed.
+  feature_->ScriptMessageReceived(&web_state_, message1);
+  EXPECT_TRUE(observer_->on_key_pressed_called_);
+  observer_->on_key_pressed_called_ = false;
+
+  // Second key down immediately after should be dropped.
+  base::Value body2(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "b"));
+  web::ScriptMessage message2(std::make_unique<base::Value>(std::move(body2)),
+                              /*is_user_interacting=*/true,
+                              /*is_main_frame=*/true,
+                              /*request_url=*/std::nullopt, url::Origin());
+
+  feature_->ScriptMessageReceived(&web_state_, message2);
+  EXPECT_FALSE(observer_->on_key_pressed_called_);
+
+  // Third key down should be allowed after a sufficient amount of time.
+  base::Value body3(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "b"));
+  web::ScriptMessage message3(std::make_unique<base::Value>(std::move(body3)),
+                              /*is_user_interacting=*/true,
+                              /*is_main_frame=*/true,
+                              /*request_url=*/std::nullopt, url::Origin());
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+  feature_->ScriptMessageReceived(&web_state_, message3);
+  EXPECT_TRUE(observer_->on_key_pressed_called_);
+}
+
 // Tests that if the text pasted event arrives after the coalescing window
 // has expired (and UIPasteboard has already been read), the text pasted event
 // is ignored (rate limited).
@@ -305,6 +353,92 @@ TEST_F(PasswordProtectionJavaScriptFeatureTest, PasteKeyDetectedDisabled) {
   // and OnPasteKeyDetected should NOT be called.
   task_environment_.FastForwardBy(base::Milliseconds(200));
   EXPECT_FALSE(observer_->on_paste_key_detected_called_);
+}
+
+// Tests that keydown events across multiple WebStates are rate-limited in
+// aggregate.
+TEST_F(PasswordProtectionJavaScriptFeatureTest,
+       KeyDownAggregateRateLimitedAcrossMultipleWebStates) {
+  constexpr int kNumExtraWebStates = 4;
+  std::vector<std::unique_ptr<web::FakeWebState>> extra_web_states;
+  std::vector<std::unique_ptr<MockInputEventObserver>> extra_observers;
+  std::vector<web::WebState*> all_web_states;
+  std::vector<MockInputEventObserver*> all_observers;
+
+  all_web_states.push_back(&web_state_);
+  all_observers.push_back(observer_.get());
+
+  for (int i = 0; i < kNumExtraWebStates; ++i) {
+    auto ws = std::make_unique<web::FakeWebState>();
+    auto obs = std::make_unique<MockInputEventObserver>(ws.get());
+    feature_->AddObserver(obs.get());
+    all_web_states.push_back(ws.get());
+    all_observers.push_back(obs.get());
+    extra_web_states.push_back(std::move(ws));
+    extra_observers.push_back(std::move(obs));
+  }
+
+  // Send 80 keydown events round-robin across all WebStates.
+  // With 5 WebStates and 10ms between events, each WebState receives an event
+  // every 50ms (>= 25ms per-WebState limit), and 80 events * 10ms = 800ms total
+  // (< 1s aggregate window limit).
+  for (int i = 0; i < 80; ++i) {
+    web::WebState* target_ws = all_web_states[i % all_web_states.size()];
+    base::Value body(
+        base::DictValue().Set("eventType", "KeyDown").Set("text", "a"));
+    web::ScriptMessage message(std::make_unique<base::Value>(std::move(body)),
+                               /*is_user_interacting=*/true,
+                               /*is_main_frame=*/true,
+                               /*request_url=*/std::nullopt, url::Origin());
+    feature_->ScriptMessageReceived(target_ws, message);
+    task_environment_.FastForwardBy(base::Milliseconds(10));
+  }
+
+  int total_key_presses = 0;
+  for (auto* obs : all_observers) {
+    total_key_presses += obs->key_pressed_count_;
+  }
+  EXPECT_EQ(total_key_presses, 80);
+
+  // The 81st event within the same 1-second window should be dropped by the
+  // aggregate rate limit.
+  base::Value body_extra(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "b"));
+  web::ScriptMessage message_extra(
+      std::make_unique<base::Value>(std::move(body_extra)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/std::nullopt, url::Origin());
+  feature_->ScriptMessageReceived(all_web_states[0], message_extra);
+
+  total_key_presses = 0;
+  for (auto* obs : all_observers) {
+    total_key_presses += obs->key_pressed_count_;
+  }
+  EXPECT_EQ(total_key_presses, 80);
+
+  // Fast forward by 1 second so the aggregate rate limit window resets.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // The next keydown should now be allowed.
+  base::Value body_after(
+      base::DictValue().Set("eventType", "KeyDown").Set("text", "c"));
+  web::ScriptMessage message_after(
+      std::make_unique<base::Value>(std::move(body_after)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/std::nullopt, url::Origin());
+  feature_->ScriptMessageReceived(all_web_states[0], message_after);
+
+  total_key_presses = 0;
+  for (auto* obs : all_observers) {
+    total_key_presses += obs->key_pressed_count_;
+  }
+  EXPECT_EQ(total_key_presses, 81);
+
+  for (auto& obs : extra_observers) {
+    feature_->RemoveObserver(obs.get());
+  }
 }
 
 }  // namespace

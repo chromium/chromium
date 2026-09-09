@@ -24,9 +24,38 @@ const char kKeyDownEventType[] = "KeyDown";
 const char kPasteEventType[] = "TextPasted";
 const char kPasteKeyDetectedEventType[] = "PasteKeyDetected";
 
+constexpr base::TimeDelta kKeyDownRateLimit = base::Milliseconds(25);
 constexpr base::TimeDelta kPasteRateLimit = base::Milliseconds(200);
 inline constexpr base::TimeDelta kPasteKeyTimerDuration =
     base::Milliseconds(100);
+
+// Process-wide aggregate budget, counted across all WebStates. Only one
+// WebState receives keyboard or paste input at a time, so normal input
+// does not exceed a single tab's budget (40 keydown/s, 5 paste/s); the caps
+// below provide additional headroom for focus transitions, iPad multi-window
+// environments, and burst typing while bounding aggregate event frequency.
+constexpr base::TimeDelta kAggregateRateLimitInterval = base::Seconds(1);
+constexpr int kMaxKeyDownEventsPerInterval = 80;
+
+// Returns true if an additional event should be dropped because the
+// process-wide budget (`max_events_per_interval` per aggregate interval) is
+// exhausted; otherwise consumes one slot and returns false.
+bool IsAggregateRateLimited(base::TimeTicks now,
+                            base::TimeTicks& interval_start,
+                            int& events_in_interval,
+                            int max_events_per_interval) {
+  if (interval_start.is_null() || now < interval_start ||
+      now - interval_start >= kAggregateRateLimitInterval) {
+    interval_start = now;
+    events_in_interval = 0;
+  }
+  if (events_in_interval >= max_events_per_interval) {
+    return true;
+  }
+  ++events_in_interval;
+  return false;
+}
+
 }  // namespace
 
 PasswordProtectionJavaScriptFeature::PasswordProtectionJavaScriptFeature()
@@ -89,14 +118,17 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
   if (!text || text->empty()) {
     return;
   }
-
   if (*event_type == kKeyDownEventType) {
     // A key event should consist of a single character. A longer string
-    // means the message isn't well-formed, so might be coming from a
-    // compromised WebProcess.
+    // means the message is not well-formed.
     if (base::CountUnicodeCharacters(*text) != 1) {
       return;
     }
+
+    if (IsKeyDownRateLimited(web_state)) {
+      return;
+    }
+
     observer->OnKeyPressed(*text);
   } else if (*event_type == kPasteEventType) {
     auto timer_it = paste_key_timers_.find(web_state);
@@ -131,6 +163,28 @@ bool PasswordProtectionJavaScriptFeature::IsPasteRateLimited(
   }
 
   it->second = now;
+  return false;
+}
+
+bool PasswordProtectionJavaScriptFeature::IsKeyDownRateLimited(
+    web::WebState* web_state) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  auto it = last_keydown_timestamps_.find(web_state);
+  if (it != last_keydown_timestamps_.end()) {
+    const base::TimeDelta elapsed = now - it->second;
+    if (elapsed < kKeyDownRateLimit) {
+      return true;
+    }
+  }
+
+  // Enforce the process-wide aggregate budget across all WebStates.
+  if (IsAggregateRateLimited(now, keydown_interval_start_,
+                             keydown_events_in_interval_,
+                             kMaxKeyDownEventsPerInterval)) {
+    return true;
+  }
+
+  last_keydown_timestamps_[web_state] = now;
   return false;
 }
 
@@ -177,4 +231,9 @@ void PasswordProtectionJavaScriptFeature::RemoveObserver(
   lookup_by_observer_.erase(observer);
   last_paste_timestamps_.erase(web_state);
   paste_key_timers_.erase(web_state);
+  last_keydown_timestamps_.erase(web_state);
+  if (lookup_by_web_state_.empty()) {
+    keydown_interval_start_ = base::TimeTicks();
+    keydown_events_in_interval_ = 0;
+  }
 }
