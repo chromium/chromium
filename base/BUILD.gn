@@ -1191,7 +1191,7 @@ component("base") {
     "//base/allocator/partition_allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/logging:log_severity",
-    "//base/numerics:base_numerics",
+    "//base/numerics",
     "//base/third_party/icu",
     "//build:chromecast_buildflags",
     "//build:robolectric_buildflags",
@@ -2943,7 +2943,7 @@ if (is_linux || is_chromeos) {
     deps = [
       ":compiler_specific",
       "//base/allocator/partition_allocator:raw_ptr",
-      "//base/numerics:base_numerics",
+      "//base/numerics",
       "//base/third_party/symbolize",
     ]
 
