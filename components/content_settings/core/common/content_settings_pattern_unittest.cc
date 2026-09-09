@@ -344,12 +344,19 @@ TEST(ContentSettingsPatternTest, Wildcard) {
                 ContentSettingsPattern::Wildcard()));
 }
 
-TEST(ContentSettingsPatternTest, TrimEndingDotFromHost) {
+TEST(ContentSettingsPatternTest, TrimTrailingDotsFromHost) {
   EXPECT_TRUE(Pattern("www.example.com").IsValid());
   EXPECT_TRUE(
       Pattern("www.example.com").Matches(GURL("http://www.example.com")));
   EXPECT_TRUE(
       Pattern("www.example.com").Matches(GURL("http://www.example.com.")));
+  EXPECT_TRUE(
+      Pattern("www.example.com").Matches(GURL("http://www.example.com..")));
+
+  EXPECT_TRUE(
+      Pattern("https://example.com..").Matches(GURL("https://example.com")));
+  EXPECT_TRUE(
+      Pattern("https://example.com").Matches(GURL("https://example.com..")));
 
   EXPECT_TRUE(Pattern("www.example.com.").IsValid());
   EXPECT_STREQ("www.example.com",
@@ -357,6 +364,9 @@ TEST(ContentSettingsPatternTest, TrimEndingDotFromHost) {
 
   EXPECT_TRUE(Pattern("www.example.com.") == Pattern("www.example.com"));
   EXPECT_TRUE(Pattern("www.example.com.") == Pattern("www.example.com."));
+  EXPECT_TRUE(Pattern("www.example.com..") == Pattern("www.example.com"));
+  EXPECT_TRUE(Pattern("http://www.example.com..") ==
+              Pattern("http://www.example.com"));
 
   EXPECT_TRUE(Pattern(".").IsValid());
   EXPECT_STREQ(".", Pattern(".").ToString().c_str());
@@ -370,8 +380,8 @@ TEST(ContentSettingsPatternTest, TrimEndingDotFromHost) {
   EXPECT_STREQ("a..b", Pattern("a..b.").ToString().c_str());
   EXPECT_TRUE(Pattern("a..b.").Matches(GURL("http://a..b.")));
 
-  EXPECT_FALSE(Pattern("..").IsValid());
-  EXPECT_FALSE(Pattern("a..").IsValid());
+  EXPECT_TRUE(Pattern("..").IsValid());  // Equivalent to Pattern(".").
+  EXPECT_TRUE(Pattern("a..").IsValid());  // Equivalent to Pattern("a").
 }
 
 TEST(ContentSettingsPatternTest, FromString_WithNoWildcards) {
@@ -743,10 +753,6 @@ TEST(ContentSettingsPatternTest, InvalidPatterns) {
   // Invalid file pattern strings.
   EXPECT_FALSE(Pattern("file://").IsValid());
   EXPECT_STREQ("", Pattern("file://").ToString().c_str());
-
-  // Host having multiple ending dots.
-  EXPECT_FALSE(Pattern("www.example.com..").IsValid());
-  EXPECT_STREQ("", Pattern("www.example.com..").ToString().c_str());
 }
 
 TEST(ContentSettingsPatternTest, UnequalOperator) {
