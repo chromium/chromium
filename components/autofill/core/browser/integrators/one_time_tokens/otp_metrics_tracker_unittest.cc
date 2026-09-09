@@ -115,7 +115,7 @@ TEST_F(
 
   auto entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::Autofill_OneTimeTokens::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
   test_ukm_recorder().ExpectEntryMetric(
       entries[0],
@@ -126,6 +126,12 @@ TEST_F(
       entries[0], ukm::builders::Autofill_OneTimeTokens::kTickle_ArrivalName,
       static_cast<int64_t>(
           one_time_tokens::TickleArrival::kAfterFieldDetection));
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -241,7 +247,7 @@ TEST_F(OtpMetricsTrackerTest,
 
   auto entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::Autofill_OneTimeTokens::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
   test_ukm_recorder().ExpectEntryMetric(
       entries[0],
@@ -252,6 +258,12 @@ TEST_F(OtpMetricsTrackerTest,
       entries[0], ukm::builders::Autofill_OneTimeTokens::kTickle_ArrivalName,
       static_cast<int64_t>(
           one_time_tokens::TickleArrival::kBeforeFieldDetection));
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction));
 }
 
 TEST_F(
@@ -357,12 +369,18 @@ TEST_F(OtpMetricsTrackerTest, TickleArrival_AfterFieldDetection) {
 
   auto entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::Autofill_OneTimeTokens::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
   test_ukm_recorder().ExpectEntryMetric(
       entries[0], ukm::builders::Autofill_OneTimeTokens::kTickle_ArrivalName,
       static_cast<int64_t>(
           one_time_tokens::TickleArrival::kAfterFieldDetection));
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest, TickleArrival_BeforeFieldDetection) {
@@ -378,12 +396,18 @@ TEST_F(OtpMetricsTrackerTest, TickleArrival_BeforeFieldDetection) {
 
   auto entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::Autofill_OneTimeTokens::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries.size(), 2u);
   EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
   test_ukm_recorder().ExpectEntryMetric(
       entries[0], ukm::builders::Autofill_OneTimeTokens::kTickle_ArrivalName,
       static_cast<int64_t>(
           one_time_tokens::TickleArrival::kBeforeFieldDetection));
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest, TickleArrival_WithoutFieldDetection) {
@@ -426,11 +450,16 @@ TEST_F(OtpMetricsTrackerTest,
 
   auto entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::Autofill_OneTimeTokens::kEntryName);
-  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries.size(), 2u);
   test_ukm_recorder().ExpectEntryMetric(
       entries[0], ukm::builders::Autofill_OneTimeTokens::kTickle_ArrivalName,
       static_cast<int64_t>(
           one_time_tokens::TickleArrival::kBeforeFieldDetection));
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -494,6 +523,16 @@ TEST_F(OtpMetricsTrackerTest, FormOutcome_TickleBeforeUserInteraction) {
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction, 1);
+
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -513,6 +552,16 @@ TEST_F(OtpMetricsTrackerTest,
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction, 1);
+
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -533,6 +582,16 @@ TEST_F(OtpMetricsTrackerTest,
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction, 1);
+
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -542,6 +601,8 @@ TEST_F(OtpMetricsTrackerTest,
 
   tracker.OnOtpFieldDetected(form->global_id(), {form->field(0)->global_id()},
                              autofill_manager());
+
+  ukm::SourceId expected_source_id = autofill_driver().GetPageUkmSourceId();
 
   // User submitted or navigated away -> frame / BrowserAutofillManager
   // destroyed.
@@ -553,6 +614,16 @@ TEST_F(OtpMetricsTrackerTest,
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction, 1);
+
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[1]->source_id, expected_source_id);
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleAfterUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest, FormOutcome_NoTickleReceived_Timeout) {
@@ -569,6 +640,16 @@ TEST_F(OtpMetricsTrackerTest, FormOutcome_NoTickleReceived_Timeout) {
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kNoTickleReceived, 1);
+
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kNoTickleReceived));
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -586,6 +667,16 @@ TEST_F(OtpMetricsTrackerTest,
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction, 1);
+
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[1]->source_id, autofill_driver().GetPageUkmSourceId());
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction));
 }
 
 TEST_F(OtpMetricsTrackerTest, FormOutcome_FeatureDisabled) {
@@ -604,6 +695,10 @@ TEST_F(OtpMetricsTrackerTest, FormOutcome_FeatureDisabled) {
 
   histogram_tester_.ExpectTotalCount(
       one_time_tokens::kTickleFormOutcomeHistogram, 0);
+  EXPECT_TRUE(
+      test_ukm_recorder()
+          .GetEntriesByName(ukm::builders::Autofill_OneTimeTokens::kEntryName)
+          .empty());
 }
 
 TEST_F(
@@ -633,6 +728,11 @@ TEST_F(
   // Should NOT record a duplicate sample (e.g. kNoTickleReceived).
   histogram_tester_.ExpectTotalCount(
       one_time_tokens::kTickleFormOutcomeHistogram, 1);
+  EXPECT_EQ(
+      test_ukm_recorder()
+          .GetEntriesByName(ukm::builders::Autofill_OneTimeTokens::kEntryName)
+          .size(),
+      2u);
 }
 
 TEST_F(OtpMetricsTrackerTest,
@@ -655,6 +755,14 @@ TEST_F(OtpMetricsTrackerTest,
   histogram_tester_.ExpectUniqueSample(
       one_time_tokens::kTickleFormOutcomeHistogram,
       one_time_tokens::TickleFormOutcome::kNoTickleReceived, 1);
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder().ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_OneTimeTokens::kTickle_FormOutcomeName,
+      static_cast<int64_t>(
+          one_time_tokens::TickleFormOutcome::kNoTickleReceived));
 }
 
 TEST_F(OtpMetricsTrackerTest,

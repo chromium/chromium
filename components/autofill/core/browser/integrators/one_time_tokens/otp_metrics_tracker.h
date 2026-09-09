@@ -86,9 +86,8 @@ class OtpMetricsTracker {
   void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
   void OnTickleTimeout();
   void OnFormOutcomeTimeout();
-  // Records `kTickleFormOutcomeHistogram` and the corresponding sparse
-  // `kPageLanguage...` histogram for the given form outcome.
-  void RecordFormOutcomeMetrics(one_time_tokens::TickleFormOutcome outcome);
+  void RecordFormOutcomeMetrics(
+      one_time_tokens::TickleFormOutcome form_outcome);
 
   // Returns the language of the page associated with the detected OTP form.
   // Queries `autofill_client_` for the latest detected language if available,

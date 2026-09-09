@@ -44,7 +44,7 @@ bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
                             std::string_view latency_histogram_name,
                             one_time_tokens::TickleArrival arrival_type,
                             std::optional<ukm::SourceId> ukm_source_id,
-                            UkmLatencySetter ukm_setter) {
+                            UkmLatencySetter latency_setter) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (previous_event_time.has_value()) {
     base::TimeDelta latency = now - *previous_event_time;
@@ -63,7 +63,7 @@ bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
       if (ukm_source_id.has_value() &&
           *ukm_source_id != ukm::kInvalidSourceId) {
         ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id);
-        (builder.*ukm_setter)(latency.InMilliseconds());
+        (builder.*latency_setter)(latency.InMilliseconds());
         builder.SetTickle_Arrival(static_cast<int64_t>(arrival_type));
         builder.Record(ukm::UkmRecorder::Get());
       }
@@ -218,11 +218,17 @@ void OtpMetricsTracker::OnFormOutcomeTimeout() {
 }
 
 void OtpMetricsTracker::RecordFormOutcomeMetrics(
-    one_time_tokens::TickleFormOutcome outcome) {
+    one_time_tokens::TickleFormOutcome form_outcome) {
   base::UmaHistogramEnumeration(one_time_tokens::kTickleFormOutcomeHistogram,
-                                outcome);
+                                form_outcome);
+  if (ukm_source_id_.has_value() && *ukm_source_id_ != ukm::kInvalidSourceId) {
+    ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id_);
+    builder.SetTickle_FormOutcome(static_cast<int64_t>(form_outcome));
+    builder.Record(ukm::UkmRecorder::Get());
+  }
+
   std::string_view language_histogram;
-  switch (outcome) {
+  switch (form_outcome) {
     case one_time_tokens::TickleFormOutcome::kTickleBeforeUserInteraction:
       language_histogram = kPageLanguageTickleBeforeUserInteractionHistogram;
       break;

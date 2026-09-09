@@ -3505,6 +3505,14 @@ be describing additional metrics about the same event.
       detected and the URL can be reliably established.
     </summary>
   </metric>
+  <metric name="Tickle.FormOutcome" enum="OneTimeTokensTickleFormOutcome">
+    <summary>
+      Records the outcome of an OTP form on a web page relative to push
+      notification (tickle) delivery and user interaction (e.g. tickle arrived
+      before user interaction, after user interaction, or no tickle received
+      within timeout).
+    </summary>
+  </metric>
 </event>
 
 <event name="Autofill.PayLaterTabSelected" singular="true">
