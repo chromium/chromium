@@ -1155,7 +1155,7 @@ public class CustomTabsConnection {
         // Conditions:
         // - There is a valid redirect endpoint.
         // - The URL's origin is first party with respect to the app.
-        Uri redirectEndpoint = intent.getParcelableExtra(REDIRECT_ENDPOINT_KEY);
+        Uri redirectEndpoint = IntentUtils.safeGetParcelableExtra(intent, REDIRECT_ENDPOINT_KEY);
         if (redirectEndpoint == null || !isValid(redirectEndpoint)) return;
 
         Origin origin = Origin.create(url);
@@ -1183,7 +1183,9 @@ public class CustomTabsConnection {
         // Success is already reported per URL, report any failures here.
         if ((status != ParallelRequestStatus.SUCCESS)) {
             reportParallelRequestStatus(
-                    session, status, intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY));
+                    session,
+                    status,
+                    IntentUtils.safeGetParcelableExtra(intent, PARALLEL_REQUEST_URL_KEY));
         }
 
         return status;
@@ -1251,7 +1253,7 @@ public class CustomTabsConnection {
         }
 
         String referrerString = referrer.toString();
-        Uri uri = intent.getParcelableExtra(PARALLEL_REQUEST_URL_KEY);
+        Uri uri = IntentUtils.safeGetParcelableExtra(intent, PARALLEL_REQUEST_URL_KEY);
         if (uri != null) {
             return doParallelResourceRequest(session, uri, referrerString, packageName, policy);
         }
@@ -1310,7 +1312,7 @@ public class CustomTabsConnection {
         }
 
         List<Uri> resourceList = intent.getParcelableArrayListExtra(RESOURCE_PREFETCH_URL_LIST_KEY);
-        Uri referrer = intent.getParcelableExtra(PARALLEL_REQUEST_REFERRER_KEY);
+        Uri referrer = IntentUtils.safeGetParcelableExtra(intent, PARALLEL_REQUEST_REFERRER_KEY);
         int policy =
                 intent.getIntExtra(PARALLEL_REQUEST_REFERRER_POLICY_KEY, ReferrerPolicy.DEFAULT);
 

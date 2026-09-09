@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -159,7 +160,8 @@ public class ExclusiveAccessManager
         if (savedInstanceState == null) {
             return;
         }
-        FullscreenOptions options = savedInstanceState.getParcelable(LATEST_FULLSCREEN_OPTIONS);
+        FullscreenOptions options =
+                IntentUtils.safeGetParcelable(savedInstanceState, LATEST_FULLSCREEN_OPTIONS);
         if (options == null) {
             return;
         }

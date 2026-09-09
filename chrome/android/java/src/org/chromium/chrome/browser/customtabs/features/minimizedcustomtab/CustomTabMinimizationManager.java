@@ -25,6 +25,7 @@ import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.Lifecycle.State;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
@@ -410,7 +411,7 @@ public class CustomTabMinimizationManager
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(TITLE, bundle.getString(TITLE.toString()))
                 .with(URL, bundle.getString(URL.toString()))
-                .with(FAVICON, bundle.getParcelable(FAVICON.toString()))
+                .with(FAVICON, IntentUtils.safeGetParcelable(bundle, FAVICON.toString()))
                 .build();
     }
 

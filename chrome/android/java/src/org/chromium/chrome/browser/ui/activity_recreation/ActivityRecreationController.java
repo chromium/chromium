@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.view.View;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -128,7 +129,7 @@ public class ActivityRecreationController {
         }
 
         ActivityRecreationUiState uiState =
-                savedInstanceState.getParcelable(ACTIVITY_RECREATION_UI_STATE);
+                IntentUtils.safeGetParcelable(savedInstanceState, ACTIVITY_RECREATION_UI_STATE);
         if (uiState == null) {
             return;
         }

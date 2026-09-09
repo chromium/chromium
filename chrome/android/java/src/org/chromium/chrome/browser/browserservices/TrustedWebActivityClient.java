@@ -31,6 +31,7 @@ import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
@@ -236,9 +237,9 @@ public class TrustedWebActivityClient {
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
                         PendingIntent pendingIntent =
                                 commandSuccess
-                                        ? assumeNonNull(commandResult)
-                                                .getParcelable(
-                                                        KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
+                                        ? IntentUtils.safeGetParcelable(
+                                                assumeNonNull(commandResult),
+                                                KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
                                         : null;
                         TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,

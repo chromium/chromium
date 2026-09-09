@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -106,7 +107,8 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         // This Activity has no own UI and uses external pending intent to provide it. Since this
         // Activity requires native initialization it implements AsyncInitializationActivity and
         // thus the pending intent is sent inside triggerLayoutInflation() instead of onCreate().
-        PendingIntent proxiedIntent = getIntent().getParcelableExtra(EXTRA_KEY_PROXIED_INTENT);
+        PendingIntent proxiedIntent =
+                IntentUtils.safeGetParcelableExtra(getIntent(), EXTRA_KEY_PROXIED_INTENT);
         mRequestCode = getIntent().getIntExtra(EXTRA_KEY_REQUEST_CODE, -1);
         mUserActionTrigger = getIntent().getIntExtra(EXTRA_KEY_USER_ACTION_TRIGGER, -1);
 

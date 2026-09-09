@@ -37,6 +37,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -618,7 +619,10 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
     private void setUpClearBrowsingDataFetcher(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mFetcher = assertNonNull(savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER));
+            mFetcher =
+                    assertNonNull(
+                            IntentUtils.safeGetParcelable(
+                                    savedInstanceState, CLEAR_BROWSING_DATA_FETCHER));
             return;
         }
 
