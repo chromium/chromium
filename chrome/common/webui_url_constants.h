@@ -97,13 +97,13 @@ inline constexpr char16_t kChromeUICookieSettingsURL[] =
     u"chrome://settings/cookies";
 inline constexpr char kChromeUICrashesHost[] = "crashes";
 inline constexpr char kChromeUICrashesUrl[] = "chrome://crashes";
+inline constexpr char kChromeUICreditsHost[] = "credits";
+inline constexpr char kChromeUICreditsURL[] = "chrome://credits/";
+inline constexpr char16_t kChromeUICreditsURL16[] = u"chrome://credits/";
 inline constexpr char kChromeUICriticalActionsInternalsHost[] =
     "critical-actions-internals";
 inline constexpr char kChromeUICriticalActionsInternalsURL[] =
     "chrome://critical-actions-internals/";
-inline constexpr char kChromeUICreditsHost[] = "credits";
-inline constexpr char kChromeUICreditsURL[] = "chrome://credits/";
-inline constexpr char16_t kChromeUICreditsURL16[] = u"chrome://credits/";
 inline constexpr char kChromeUICrossDeviceSigninQrBubbleHost[] =
     "cross-device-signin-qr-bubble";
 inline constexpr char kChromeUICrossDeviceSigninQrBubbleURL[] =

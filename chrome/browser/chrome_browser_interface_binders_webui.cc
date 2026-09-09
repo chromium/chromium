@@ -56,6 +56,8 @@
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/critical_actions/critical_actions.mojom.h"
+#include "chrome/browser/ui/webui/critical_actions/critical_actions_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals.mojom.h"
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals_ui.h"
@@ -198,6 +200,9 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       map);
 
 #if !BUILDFLAG(IS_ANDROID)
+  RegisterWebUIControllerInterfaceBinder<
+      critical_actions::mojom::PageHandlerFactory,
+      critical_actions::CriticalActionsUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       omnibox_popup_aim::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
   RegisterWebUIControllerInterfaceBinder<

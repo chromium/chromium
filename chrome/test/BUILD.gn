@@ -5605,6 +5605,7 @@ test("unit_tests") {
       "//chrome/browser/ui/browser_active_state_manager:unit_tests",
       "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/side_panel:test_support",
+      "//chrome/browser/ui/webui/critical_actions:unit_tests",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/ui/window_metadata:unit_tests",
       "//chrome/browser/webapps:desktop",

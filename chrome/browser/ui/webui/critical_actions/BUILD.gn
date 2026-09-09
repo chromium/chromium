@@ -1,0 +1,60 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+static_library("critical_actions") {
+  sources = [
+    "critical_actions_page_handler.cc",
+    "critical_actions_page_handler.h",
+    "critical_actions_ui.cc",
+    "critical_actions_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/critical_actions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/critical_actions:resources",
+    "//components/critical_actions/core/browser",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "critical_actions.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "critical_actions_page_handler_unittest.cc" ]
+  deps = [
+    ":critical_actions",
+    ":mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/critical_actions",
+    "//chrome/test:test_support",
+    "//components/critical_actions/core/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,114 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module critical_actions.mojom;
+
+// Represents a memory row copy of a single record in the CriticalActions
+// database.
+struct CriticalActionItem {
+  // Unique identifier for the critical action record.
+  string critical_action_id;
+
+  // Timestamp of the action as microseconds since Windows epoch.
+  int64 timestamp_raw;
+
+  // Formatted human-readable date and time string.
+  string timestamp_str;
+
+  // Visit ID associated with the action in Chromium history.
+  int64 visit_id;
+
+  // Conversation ID if triggered during an agent/AI conversation.
+  string conversation_id;
+
+  // Actor task ID if triggered by an actor task.
+  string actor_task_id;
+
+  // Numeric enum value representing the ActionType.
+  int32 action_type;
+
+  // Human-readable string representation of the ActionType.
+  string action_type_str;
+
+  // Numeric enum value representing the ActionSource.
+  int32 action_source;
+
+  // Human-readable string representation of the ActionSource.
+  string action_source_str;
+
+  // User-facing label describing the action.
+  string label;
+
+  // Tooltip providing additional details.
+  string tooltip;
+
+  // URL of the page where the action occurred.
+  string url;
+
+  // Additional JSON metadata for the action.
+  string metadata;
+};
+
+// Represents a paginated list of critical actions.
+struct CriticalActionsList {
+  // The list of critical actions for the requested page.
+  array<CriticalActionItem> entries;
+
+  // The total number of critical actions matching the query filter across all
+  // pages.
+  uint32 total_entries;
+
+  // The 0-based page index of the returned entries.
+  uint32 page_index;
+
+  // The number of items per page.
+  uint32 page_size;
+};
+
+// Error types that can occur when querying critical actions.
+enum CriticalActionsError {
+  // The CriticalActionHistory feature is disabled or unavailable.
+  kFeatureDisabled,
+};
+
+// Result of querying critical actions: either a paginated list of items if
+// successful, or an error code if unsuccessful.
+union CriticalActionsQueryResult {
+  // The paginated critical actions query result on success.
+  CriticalActionsList list;
+
+  // The error code on failure.
+  CriticalActionsError error;
+};
+
+// Interface for querying and manipulating Critical Actions from WebUI.
+interface PageHandler {
+  // Returns a paginated slice of critical actions.
+  // |page_index|: 0-based page index.
+  // |page_size|: number of items per page.
+  // |search_query|: optional text filter for ID, URL, metadata, etc.
+  // |action_type_filter|: optional action type filter. If null, returns all
+  // types.
+  GetCriticalActions(uint32 page_index,
+                     uint32 page_size,
+                     string? search_query,
+                     int32? action_type_filter)
+      => (CriticalActionsQueryResult result);
+
+  // Deletes a single critical action entry by ID.
+  // |critical_action_id|: Unique identifier of the critical action to delete.
+  // Returns whether the deletion was successfully dispatched.
+  DeleteCriticalAction(string critical_action_id) => (bool success);
+
+  // Clears all critical action entries from the database.
+  // Returns whether the clear operation was successfully dispatched.
+  ClearAllCriticalActions() => (bool success);
+};
+
+// Factory interface used by the WebUI to bind the PageHandler.
+interface PageHandlerFactory {
+  // Creates a PageHandler instance bound to the provided |receiver|.
+  // |receiver|: The pending receiver to be bound to the browser's PageHandler.
+  CreatePageHandler(pending_receiver<PageHandler> receiver);
+};

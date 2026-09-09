@@ -1306,6 +1306,8 @@ source_set("core") {
       "//chrome/browser/ui/views/tabs/organizer",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webui:chrome_content_browser_client_webui_part",
+      "//chrome/browser/ui/webui/critical_actions",
+      "//chrome/browser/ui/webui/critical_actions:mojo_bindings",
       "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/image",
       "//chrome/browser/ui/webui/indigo_internals",

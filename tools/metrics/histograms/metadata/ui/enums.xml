@@ -809,6 +809,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1591890659" label="chrome://syncfs-internals/"/>
   <int value="-1564946100" label="chrome://tab-strip.top-chrome/"/>
   <int value="-1532727290" label="chrome://whats-new/"/>
+  <int value="-1503118064" label="chrome://critical-actions-internals/"/>
   <int value="-1500737448" label="chrome://manage-mirrorsync/"/>
   <int value="-1493822642" label="chrome://invalidations/"/>
   <int value="-1493762713" label="chrome://settings/cookies/"/>

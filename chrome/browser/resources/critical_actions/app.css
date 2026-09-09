@@ -1,0 +1,306 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  display: block;
+  margin: 24px auto;
+  max-width: 1400px;
+  padding: 0 24px;
+}
+
+.flex-center {
+  align-items: center;
+  display: flex;
+}
+
+header {
+  border-bottom: 2px solid var(--cr-separator-color);
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 500;
+  gap: 10px;
+  margin: 0;
+}
+
+.table-badge {
+  background-color: var(--google-blue-50);
+  border-radius: 4px;
+  color: var(--google-blue-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.warning-banner {
+  background-color: var(--google-yellow-50);
+  border: 1px solid var(--google-yellow-400);
+  border-radius: 8px;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 12px 18px;
+}
+
+.warning-icon {
+  color: var(--google-yellow-900);
+  font-size: 20px;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-title {
+  color: var(--google-yellow-900);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.warning-desc {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.flags-link {
+  align-items: center;
+  background-color: white;
+  border: 1px solid var(--google-yellow-400);
+  border-radius: 6px;
+  color: var(--google-yellow-900);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.flags-link:hover {
+  background-color: var(--google-yellow-100);
+}
+
+.toolbar,
+.table-container,
+.pagination-bar {
+  background: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.toolbar {
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 14px 18px;
+}
+
+.filters-group {
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 400px;
+  min-width: 280px;
+  position: relative;
+}
+
+.search-input,
+select,
+.page-btn {
+  background: white;
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 6px;
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+}
+
+.search-input,
+select {
+  padding: 8px 12px;
+}
+
+.search-input {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.search-input::placeholder {
+  color: var(--cr-secondary-text-color);
+}
+
+select {
+  cursor: pointer;
+}
+
+select option {
+  background-color: white;
+  color: var(--google-grey-900);
+}
+
+.search-input:focus,
+select:focus {
+  border-color: var(--google-blue-600);
+  box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), 0.2);
+  outline: none;
+}
+
+.actions-group {
+  gap: 10px;
+}
+
+.table-container {
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+  width: 100%;
+}
+
+th {
+  background-color: var(--google-grey-100);
+  border-bottom: 1px solid var(--cr-separator-color);
+  color: var(--cr-secondary-text-color);
+  font-weight: 600;
+  padding: 10px 14px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.empty-state {
+  color: var(--cr-secondary-text-color);
+  font-size: 15px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.pagination-bar {
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.pagination-info {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+}
+
+.pagination-controls {
+  gap: 8px;
+}
+
+.page-btn {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  min-width: 36px;
+  padding: 0 10px;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: var(--google-grey-100);
+  border-color: var(--google-grey-400);
+}
+
+.page-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.page-current {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+.danger-btn {
+  --cr-button-text-color: var(--google-red-600);
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  .table-badge {
+    background-color: rgba(var(--google-blue-300-rgb), 0.15);
+    color: var(--google-blue-300);
+  }
+
+  .toolbar,
+  .table-container,
+  .pagination-bar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .search-input,
+  select,
+  .page-btn {
+    background-color: var(--google-grey-900);
+    border-color: var(--google-grey-700);
+    color: var(--google-grey-200);
+  }
+
+  .search-input:focus,
+  select:focus {
+    border-color: var(--google-blue-300);
+    box-shadow: 0 0 0 2px rgba(var(--google-blue-300-rgb), 0.25);
+  }
+
+  select option {
+    background-color: var(--google-grey-900);
+    color: var(--google-grey-200);
+  }
+
+  th {
+    background-color: var(--google-grey-900);
+  }
+
+  .page-btn:hover:not(:disabled) {
+    background-color: var(--google-grey-800);
+    border-color: var(--google-blue-300);
+  }
+
+  .warning-banner {
+    background-color: rgba(var(--google-yellow-300-rgb), 0.12);
+    border-color: rgba(var(--google-yellow-300-rgb), 0.3);
+  }
+
+  .warning-icon,
+  .warning-title {
+    color: var(--google-yellow-300);
+  }
+
+  .flags-link {
+    background-color: var(--google-grey-900);
+    border-color: rgba(var(--google-yellow-300-rgb), 0.4);
+    color: var(--google-yellow-300);
+  }
+
+  .flags-link:hover {
+    background-color: var(--google-grey-800);
+  }
+}

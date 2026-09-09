@@ -1,0 +1,173 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: table-row;
+}
+
+:host(:hover) {
+  background-color: var(--cr-hover-background-color);
+}
+
+td {
+  border-bottom: 1px solid var(--cr-separator-color);
+  color: var(--cr-primary-text-color);
+  font-family: Roboto Mono, monospace, monospace;
+  font-size: 12px;
+  padding: 10px 14px;
+  vertical-align: top;
+}
+
+.uuid-cell,
+.url-cell,
+.metadata-preview {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uuid-cell {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  max-width: 130px;
+}
+
+.url-cell {
+  max-width: 220px;
+}
+
+.url-link,
+.metadata-preview {
+  color: var(--cr-link-color);
+}
+
+.url-link {
+  text-decoration: none;
+}
+
+.url-link:hover,
+.metadata-preview:hover {
+  text-decoration: underline;
+}
+
+.type-pill {
+  border-radius: 12px;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.type-formfill {
+  background-color: var(--google-blue-50);
+  color: var(--google-blue-700);
+}
+
+.type-download {
+  background-color: var(--google-red-100);
+  color: var(--google-red-700);
+}
+
+.type-settingchange {
+  background-color: var(--google-yellow-50);
+  color: var(--google-yellow-900);
+}
+
+.type-credential {
+  background-color: var(--google-green-50);
+  color: var(--google-green-800);
+}
+
+.type-unknown {
+  background-color: var(--google-grey-200);
+  color: var(--google-grey-700);
+}
+
+.metadata-cell {
+  max-width: 260px;
+}
+
+.metadata-preview {
+  cursor: pointer;
+  user-select: none;
+}
+
+.metadata-full {
+  background-color: var(--google-grey-100);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 6px 0 0;
+  max-height: 200px;
+  max-width: 320px;
+  overflow: auto;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.row-delete-btn {
+  background: transparent;
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 4px;
+  color: var(--google-red-600);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 8px;
+}
+
+.row-delete-btn:hover {
+  background-color: var(--google-red-50);
+  border-color: var(--google-red-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  .type-formfill {
+    background-color: var(--google-blue-900);
+    color: var(--google-blue-100);
+  }
+
+  .type-download {
+    background-color: var(--google-red-900);
+    color: var(--google-red-100);
+  }
+
+  .type-settingchange {
+    background-color: var(--google-yellow-900);
+    color: var(--google-yellow-100);
+  }
+
+  .type-credential {
+    background-color: var(--google-green-900);
+    color: var(--google-green-200);
+  }
+
+  .type-unknown {
+    background-color: var(--google-grey-800);
+    color: var(--google-grey-500);
+  }
+
+  .metadata-full {
+    background-color: var(--google-grey-900);
+  }
+
+  .row-delete-btn {
+    border-color: var(--google-grey-700);
+    color: var(--google-red-300);
+  }
+
+  .row-delete-btn:hover {
+    background-color: rgba(var(--google-red-500-rgb), 0.2);
+    border-color: var(--google-red-300);
+  }
+}

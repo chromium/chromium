@@ -470,6 +470,7 @@ group("dev_ui_resources") {
   } else {
     public_deps += [
       "color_pipeline_internals:resources",
+      "critical_actions:resources",
       "indigo_internals:resources",
       "infobar_internals:resources",
       "media_router/internals:resources",
@@ -562,6 +563,7 @@ repack("dev_ui_paks") {
   } else {
     sources += [
       "$root_gen_dir/chrome/color_pipeline_internals_resources.pak",
+      "$root_gen_dir/chrome/critical_actions_resources.pak",
       "$root_gen_dir/chrome/indigo_internals_resources.pak",
       "$root_gen_dir/chrome/infobar_internals_resources.pak",
       "$root_gen_dir/chrome/media_router_internals_resources.pak",
