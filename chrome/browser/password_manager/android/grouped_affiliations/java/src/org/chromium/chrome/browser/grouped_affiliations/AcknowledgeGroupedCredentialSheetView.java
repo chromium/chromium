@@ -23,10 +23,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.text.SpanApplier;
 
 @NullMarked
 class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.ACKNOWLEDGE_GROUPED_CREDENTIAL)
+                    .build();
+
     private static final float URL_IN_TITLE_MAX_LINES = 1.5f;
     private final View mContent;
     private final String mCurrentHostname;
@@ -123,6 +130,11 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {

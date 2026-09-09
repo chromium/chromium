@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.ALL_PASSWORDS,
     UserCriticalFeature.TOUCH_TO_FILL_PASSWORD_GENERATION,
     UserCriticalFeature.TOUCH_TO_FILL_NO_PASSKEYS,
+    UserCriticalFeature.ACKNOWLEDGE_GROUPED_CREDENTIAL,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -41,4 +42,5 @@ public @interface UserCriticalFeature {
     int ALL_PASSWORDS = 3;
     int TOUCH_TO_FILL_PASSWORD_GENERATION = 4;
     int TOUCH_TO_FILL_NO_PASSKEYS = 5;
+    int ACKNOWLEDGE_GROUPED_CREDENTIAL = 6;
 }
