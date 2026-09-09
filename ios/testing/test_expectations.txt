@@ -127,3 +127,15 @@ crbug.com/556842646 [ Simulator ] AutofillAIEGTest/testWalletFailureShowsErrorDi
 
 # Gardening suppression 2026-09-09
 crbug.com/559221484 TabGroupsTestCase/testGroupCreationFromAnotherGroupInSelectionMode [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] LegacySnapshotGeneratorTest/GenerateUIViewSnapshot [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] LegacySnapshotGeneratorTest/GenerateWebViewSnapshotWithNTP [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] LegacySnapshotGeneratorWithOverlaysTest/GenerateUIViewSnapshot [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] LegacySnapshotGeneratorWithOverlaysTest/GenerateUIViewSnapshotWithoutOverlays [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] LegacySnapshotGeneratorWithOverlaysTest/GenerateWebViewSnapshot [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotGeneratorTest/GenerateUIViewSnapshot [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotGeneratorTest/GenerateWebViewSnapshotWithNTP [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotGeneratorWithOverlaysTest/GenerateUIViewSnapshot [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotGeneratorWithOverlaysTest/GenerateUIViewSnapshotWithoutOverlays [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/GenerateSnapshot [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/GenerateSnapshotWithoutOverlaysWithCallback [ Pass Failure ]
+crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/UpdateSnapshotWithCallback [ Pass Failure ]
