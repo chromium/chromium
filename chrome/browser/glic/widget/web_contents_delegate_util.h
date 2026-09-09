@@ -25,7 +25,7 @@ void SetWebContentsDelegate(content::WebContents* web_contents,
   if (!web_contents) {
     return;
   }
-  if (base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+  if (features::IsGlicNoWebviewEnabled()) {
     if (auto* pwc = pwc::PrivilegedWebContents::FromWebContents(web_contents)) {
       if (!expected_delegate || pwc->embedder_delegate() == expected_delegate) {
         pwc->SetEmbedderDelegate(delegate);

@@ -187,7 +187,7 @@ GlicKeyedService::GlicKeyedService(
           enabling_.get(),
           contextual_cueing_service)),
       auth_controller_(
-          base::FeatureList::IsEnabled(features::kGlicNoWebview)
+          features::IsGlicNoWebviewEnabled()
               ? nullptr
               : std::make_unique<AuthController>(profile, identity_manager)),
 

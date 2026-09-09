@@ -43,7 +43,7 @@ enum class GlicWebClientLifecycleEvent {
 class GlicWebClientManager : public content::WebContentsObserver {
  public:
   // Interface to the owner of GlicWebClientManager. Note, the owner will differ
-  // depending on whether `kGlicNoWebview` is enabled.
+  // depending on whether `IsGlicNoWebviewEnabled()` is true.
   class Delegate {
    public:
     virtual ~Delegate() = default;

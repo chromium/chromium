@@ -18,10 +18,10 @@ namespace glic {
 
 // WebUI controller for the Glic overlay surface (`chrome://glic/overlay`).
 //
-// In NoWebview mode (`features::kGlicNoWebview`), Glic loads this lightweight
-// WebUI overlay instead of embedding a webview in `GlicUI`. It is responsible
-// for displaying loading skeletons and local error/offline panels while the
-// guest page (`gemini.google.com/glic`) runs in a separate
+// In NoWebview mode (`features::IsGlicNoWebviewEnabled()`), Glic loads this
+// lightweight WebUI overlay instead of embedding a webview in `GlicUI`. It is
+// responsible for displaying loading skeletons and local error/offline panels
+// while the guest page (`gemini.google.com/glic`) runs in a separate
 // PrivilegedWebContents.
 class GlicOverlayUI : public ui::MojoWebUIController,
                       public mojom::GlicOverlayPageHandlerFactory {

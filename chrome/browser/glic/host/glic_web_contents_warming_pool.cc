@@ -192,7 +192,7 @@ GlicWebContentsWarmingPool::CreateContainer() {
   TRACE_EVENT("glic", "GlicWebContentsWarmingPool::CreateContainer");
   bool initially_hidden =
       base::FeatureList::IsEnabled(features::kGlicContentsInitiallyHidden);
-  if (base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
+  if (features::IsGlicNoWebviewEnabled()) {
     return std::make_unique<GlicNoWebviewContentsManager>(profile_,
                                                           initially_hidden);
   }

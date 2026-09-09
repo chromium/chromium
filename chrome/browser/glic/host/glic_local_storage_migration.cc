@@ -181,7 +181,7 @@ class GlicLocalStorageMigrator {
 }  // namespace
 
 void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview) ||
+  if (!features::IsGlicNoWebviewEnabled() ||
       !GlicEnabling::IsEnabledByGlobalCriteria()) {
     return;
   }

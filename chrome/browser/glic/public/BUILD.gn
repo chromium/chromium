@@ -10,5 +10,6 @@ source_set("features") {
   deps = [
     "//base",
     "//build:android_buildflags",
+    "//chrome/browser/pwc:features",
   ]
 }

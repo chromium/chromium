@@ -806,6 +806,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/pwc:features_shared_cpp_sources",
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//chrome/test/base:chrome_test_scoped_utils",
