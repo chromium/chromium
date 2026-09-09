@@ -145,6 +145,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/search:test_support_ui",
+      "//chrome/browser/ui/window_feature_controller",
       "//chrome/test:test_support",
       "//components/captive_portal/content",
       "//content/test:test_support",

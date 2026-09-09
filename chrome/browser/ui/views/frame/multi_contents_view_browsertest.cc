@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -380,7 +381,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 class MultiContentsViewWebContentsReLayoutBrowserTest
     : public SplitViewBrowserTestMixin<InProcessBrowserTest> {
  protected:
-
   static constexpr char kReLayoutTestURL[] = "/re_layout_test.html";
 
   void SetUpOnMainThread() override {

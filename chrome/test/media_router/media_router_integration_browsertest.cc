@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
@@ -71,8 +72,9 @@ class NoRoutesObserver : public MediaRoutesObserver {
   ~NoRoutesObserver() override = default;
 
   void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override {
-    if (callback_ && routes.empty())
+    if (callback_ && routes.empty()) {
       std::move(callback_).Run();
+    }
   }
 
  private:
@@ -177,8 +179,9 @@ bool MediaRouterIntegrationBrowserTest::ConditionalWait(
     const base::RepeatingCallback<bool(void)>& callback) {
   base::ElapsedTimer timer;
   do {
-    if (callback.Run())
+    if (callback.Run()) {
       return true;
+    }
 
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -198,8 +201,9 @@ void MediaRouterIntegrationBrowserTest::Wait(base::TimeDelta timeout) {
 
 void MediaRouterIntegrationBrowserTest::WaitUntilNoRoutes(
     WebContents* web_contents) {
-  if (!test_provider_->HasRoutes())
+  if (!test_provider_->HasRoutes()) {
     return;
+  }
 
   // TODO(crbug.com/1374499): There can't be a good reason to use the observer
   // API to check for routes asynchronously, which is fragile.  However, some
@@ -332,8 +336,9 @@ void MediaRouterIntegrationBrowserTest::ParseCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   receiver_ = command_line->GetSwitchValueASCII("receiver");
-  if (receiver_.empty())
+  if (receiver_.empty()) {
     receiver_ = "test-sink-1";
+  }
 }
 
 void MediaRouterIntegrationBrowserTest::CheckSessionValidity(

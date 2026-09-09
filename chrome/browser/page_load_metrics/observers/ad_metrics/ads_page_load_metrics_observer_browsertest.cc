@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -2059,7 +2060,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   CloseAllTabs();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled", features.size());
+      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
+      features.size());
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Permissions_PrivacySensitive_UseCounter::kEntryName);
@@ -2955,8 +2957,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 #define MAYBE_AggregateCpuTriggersCpuUpdateOverSubframeNavigate \
   AggregateCpuTriggersCpuUpdateOverSubframeNavigate
 #endif
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_AggregateCpuTriggersCpuUpdateOverSubframeNavigate) {
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverBrowserTest,
+    MAYBE_AggregateCpuTriggersCpuUpdateOverSubframeNavigate) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
 

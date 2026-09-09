@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -50,18 +51,22 @@ BrowserWindow* GetBrowserWindow(int window_id) {
 std::unique_ptr<protocol::Browser::Bounds> GetBrowserWindowBounds(
     ui::BaseWindow* window) {
   std::string window_state = "normal";
-  if (window->IsMinimized())
+  if (window->IsMinimized()) {
     window_state = "minimized";
-  if (window->IsMaximized())
+  }
+  if (window->IsMaximized()) {
     window_state = "maximized";
-  if (window->IsFullscreen())
+  }
+  if (window->IsFullscreen()) {
     window_state = "fullscreen";
+  }
 
   gfx::Rect bounds;
-  if (window->IsMinimized())
+  if (window->IsMinimized()) {
     bounds = window->GetRestoredBounds();
-  else
+  } else {
     bounds = window->GetBounds();
+  }
   return protocol::Browser::Bounds::Create()
       .SetLeft(bounds.x())
       .SetTop(bounds.y())
@@ -77,8 +82,9 @@ BrowserHandler::BrowserHandler(protocol::UberDispatcher* dispatcher,
                                const std::string& target_id)
     : target_id_(target_id) {
   // Dispatcher can be null in tests.
-  if (dispatcher)
+  if (dispatcher) {
     protocol::Browser::Dispatcher::wire(dispatcher, this);
+  }
 }
 
 BrowserHandler::~BrowserHandler() = default;
@@ -89,8 +95,9 @@ Response BrowserHandler::GetWindowForTarget(
     std::unique_ptr<protocol::Browser::Bounds>* out_bounds) {
   auto host =
       content::DevToolsAgentHost::GetForId(target_id.value_or(target_id_));
-  if (!host)
+  if (!host) {
     return Response::ServerError("No target with given id");
+  }
   content::WebContents* web_contents = host->GetWebContents();
   if (!web_contents) {
     return Response::ServerError("No web contents in the target");
@@ -123,8 +130,9 @@ Response BrowserHandler::GetWindowBounds(
     int window_id,
     std::unique_ptr<protocol::Browser::Bounds>* out_bounds) {
   BrowserWindow* window = GetBrowserWindow(window_id);
-  if (!window)
+  if (!window) {
     return Response::ServerError("Browser window not found");
+  }
 
   *out_bounds = GetBrowserWindowBounds(window);
   return Response::Success();
@@ -139,8 +147,9 @@ Response BrowserHandler::SetWindowBounds(
     int window_id,
     std::unique_ptr<protocol::Browser::Bounds> window_bounds) {
   BrowserWindow* window = GetBrowserWindow(window_id);
-  if (!window)
+  if (!window) {
     return Response::ServerError("Browser window not found");
+  }
   gfx::Rect bounds = window->GetBounds();
   const bool set_bounds = window_bounds->HasLeft() || window_bounds->HasTop() ||
                           window_bounds->HasWidth() ||

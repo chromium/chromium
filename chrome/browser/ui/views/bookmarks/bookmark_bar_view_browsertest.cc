@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
@@ -139,7 +140,6 @@ class BookmarkBarNavigationTestBase : public BookmarkBarTestBase,
   content::WebContents* web_contents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
-
 
   std::string GetContent() {
     content::WebContents* web_contents =
