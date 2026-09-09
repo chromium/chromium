@@ -112,6 +112,10 @@ void MediaElementAudioSourceNode::unlock() {
   GetMediaElementAudioSourceHandler().unlock();
 }
 
+void MediaElementAudioSourceNode::OnCurrentSrcChanged(const KURL& current_src) {
+  GetMediaElementAudioSourceHandler().OnCurrentSrcChanged(current_src);
+}
+
 void MediaElementAudioSourceNode::ReportDidCreate() {
   GraphTracer().DidCreateAudioNode(this);
 }

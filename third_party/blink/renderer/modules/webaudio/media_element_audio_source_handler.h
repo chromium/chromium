@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
@@ -21,9 +22,11 @@ namespace blink {
 
 class AudioContext;
 class HTMLMediaElement;
+class KURL;
 class MediaElementAudioSourceOptions;
 
-class MediaElementAudioSourceHandler final : public AudioHandler {
+class MODULES_EXPORT MediaElementAudioSourceHandler final
+    : public AudioHandler {
  public:
   static scoped_refptr<MediaElementAudioSourceHandler> Create(
       AudioNode&,
@@ -45,6 +48,12 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   void SetFormat(uint32_t number_of_channels, float sample_rate);
   void lock() EXCLUSIVE_LOCK_FUNCTION(GetProcessLock());
   void unlock() UNLOCK_FUNCTION(GetProcessLock());
+  void OnCurrentSrcChanged(const KURL& current_src);
+
+  unsigned SourceNumberOfChannelsForTesting();
+  double SourceSampleRateForTesting();
+  bool IsOriginTaintedForTesting();
+  bool WouldTaintOriginForTesting();
 
   // For thread safety analysis only.  Does not actually return mu.
   base::Lock* GetProcessLock() LOCK_RETURNED(process_lock_) { NOTREACHED(); }
@@ -77,10 +86,11 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   CrossThreadWeakPersistent<HTMLMediaElement> media_element_;
   base::Lock process_lock_;
 
-  unsigned source_number_of_channels_ = 0;
-  double source_sample_rate_ = 0;
+  unsigned source_number_of_channels_ GUARDED_BY(process_lock_) = 0;
+  double source_sample_rate_ GUARDED_BY(process_lock_) = 0;
 
-  std::unique_ptr<MediaMultiChannelResampler> multi_channel_resampler_;
+  std::unique_ptr<MediaMultiChannelResampler> multi_channel_resampler_
+      GUARDED_BY(process_lock_);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -88,7 +98,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   // this node outputs silence.  This can happen if the media element source is
   // a cross-origin source which we're not allowed to access due to CORS
   // restrictions.
-  bool is_origin_tainted_ = false;
+  bool is_origin_tainted_ GUARDED_BY(process_lock_) = false;
 };
 
 }  // namespace blink
