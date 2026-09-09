@@ -85,27 +85,30 @@ content::WebContents::CreateParams MakeOverlayCreateParams(
 
 std::u16string GetBootstrapScript() {
   static constexpr char kBootstrapScriptTemplate[] = R"js(
-    (function() {
-      if (window.__glic_bootstrap_timer) {
-        clearTimeout(window.__glic_bootstrap_timer);
-        window.__glic_bootstrap_timer = null;
-      }
-      const source = $1;
-      const ping = () => {
-        try {
-          window.dispatchEvent(new MessageEvent('message', {
-            data: { type: 'glic-bootstrap', glicApiSource: source },
-            origin: 'chrome://glic',
-            source: window
-          }));
-        } catch (e) {
-          console.error('[GlicNoWebview Bootstrap Error]', e);
-        }
-        window.__glic_bootstrap_timer = setTimeout(ping, 50);
-      };
-      ping();
-    })();
-  )js";
+(function() {
+window.__glic_bootstrap_active = true;
+const source = $1;
+const ping = () => {
+  if (!window.__glic_bootstrap_active) return;
+  try {
+    window.dispatchEvent(new MessageEvent('message', {
+      data: { type: 'glic-bootstrap', glicApiSource: source },
+      origin: 'chrome://glic',
+      source: window
+    }));
+  } catch (e) {
+    console.error('[GlicNoWebview Bootstrap Error]', e);
+  }
+  if (!window.__glic_bootstrap_active) return;
+  setTimeout(ping, 50);
+};
+
+document.addEventListener('DOMContentLoaded', ping, { once: true });
+document.addEventListener('readystatechange', ping);
+
+ping();
+})();
+)js";
 
   std::string guest_source = GetGuestAPISource();
   std::string escaped_source = base::GetQuotedJSONString(guest_source);
@@ -583,9 +586,7 @@ void GlicNoWebviewContentsManager::StopGuestBootstrap() {
     return;
   }
   static constexpr char16_t kStopScript[] =
-      u"if (window.__glic_bootstrap_timer) { "
-      u"clearTimeout(window.__glic_bootstrap_timer); "
-      u"window.__glic_bootstrap_timer = null; }";
+      u"window.__glic_bootstrap_active = false;";
   guest_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       kStopScript, base::NullCallback(), ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
