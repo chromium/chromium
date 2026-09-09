@@ -142,6 +142,9 @@ constexpr ImmutableString::ImmutableString(const ImmutableString& other) =
 inline constexpr ImmutableString& ImmutableString::operator=(
     const ImmutableString& other) = default;
 
+static_assert(sizeof(ImmutableString) <= 24,
+              "Keep ImmutableString's stack footprint low.");
+
 }  // namespace base::i18n_internal
 
 #endif  // BASE_I18N_INTERNAL_IMMUTABLE_STRING_H_
