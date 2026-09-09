@@ -23,7 +23,7 @@ owners:
 - file://ash/OWNERS
 schema:
   type: boolean
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:155-
 tags: []
 type: main
