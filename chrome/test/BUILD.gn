@@ -119,6 +119,7 @@ if (is_android) {
   generate_jni("test_support_jni_headers") {
     testonly = true
     sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImpl.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerNativeTestSupport.java",
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
     ]

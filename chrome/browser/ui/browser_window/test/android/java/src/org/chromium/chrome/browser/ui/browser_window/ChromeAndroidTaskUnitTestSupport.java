@@ -547,7 +547,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockParams.getProfile()).thenReturn(profile);
         when(mockParams.getInitialBoundsInDp()).thenReturn(launchBounds);
         when(mockParams.getInitialShowState()).thenReturn(showState);
-        when(mockParams.getWebContents()).thenReturn(null);
+        when(mockParams.takeWebContents()).thenReturn(null);
         mockPopupCreator();
         mockMultiInstanceOrchestrator();
 

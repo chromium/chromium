@@ -52,6 +52,7 @@ final class PendingTaskInfo {
     }
 
     void destroy() {
+        mCreateParams.destroyWebContents();
         if (mTaskCreationCallbackForNative != null) {
             mTaskCreationCallbackForNative.destroy();
         }

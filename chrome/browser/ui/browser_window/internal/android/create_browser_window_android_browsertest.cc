@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/android/jni_android.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +27,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/test/test_support_jni_headers/PopupCreatorImpl_jni.h"
 
 namespace {
 class NavigationStartedObserver : public content::WebContentsObserver {
@@ -318,6 +322,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateBrowserWindow(std::move(create_params), future.GetCallback());
   BrowserWindowInterface* new_browser_window = future.Get();
 
+  EXPECT_EQ(create_params.web_contents, nullptr);
   AssertBrowserWindow(new_browser_window, type, profile,
                       /*expect_fully_initialized=*/true);
 
@@ -348,6 +353,7 @@ IN_PROC_BROWSER_TEST_F(
   CreateBrowserWindow(std::move(create_params), future.GetCallback());
   BrowserWindowInterface* new_browser_window = future.Get();
 
+  EXPECT_EQ(create_params.web_contents, nullptr);
   AssertBrowserWindow(new_browser_window, type, profile,
                       /*expect_fully_initialized=*/true);
 
@@ -357,4 +363,70 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(tab, nullptr);
   EXPECT_EQ(tab->GetContents(), expected_web_contents);
   EXPECT_FALSE(observer.navigation_started());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsync_WithWebContents_UnsupportedWindowType_ReturnsNull) {
+  auto type =
+      BrowserWindowInterface::Type::TYPE_APP;  // not supported on Android
+  Profile* profile = GetProfile();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+
+  BrowserWindowCreateParams create_params(type, *profile, false);
+  create_params.web_contents = std::move(web_contents);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_browser_window = future.Get();
+
+  EXPECT_EQ(new_browser_window, nullptr);
+  EXPECT_EQ(create_params.web_contents, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsync_PopupWithWebContents_CreationFails_DoesNotDoubleFree) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PopupCreatorImpl_setTryStartActivityResultForTesting(env, false);
+
+  auto type = BrowserWindowInterface::Type::TYPE_POPUP;
+  Profile* profile = GetProfile();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+
+  BrowserWindowCreateParams create_params(type, *profile, false);
+  create_params.web_contents = std::move(web_contents);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_browser_window = future.Get();
+
+  EXPECT_EQ(new_browser_window, nullptr);
+  EXPECT_EQ(create_params.web_contents, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowSync_PopupWithWebContents_CreationFails_DoesNotDoubleFree) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PopupCreatorImpl_setTryStartActivityResultForTesting(env, false);
+
+  auto type = BrowserWindowInterface::Type::TYPE_POPUP;
+  Profile* profile = GetProfile();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+
+  BrowserWindowCreateParams create_params(type, *profile, false);
+  create_params.web_contents = std::move(web_contents);
+
+  BrowserWindowInterface* new_browser_window =
+      CreateBrowserWindow(std::move(create_params));
+
+  EXPECT_EQ(new_browser_window, nullptr);
+  EXPECT_EQ(create_params.web_contents, nullptr);
 }

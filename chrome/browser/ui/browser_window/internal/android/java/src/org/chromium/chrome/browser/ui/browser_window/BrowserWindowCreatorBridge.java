@@ -28,6 +28,7 @@ final class BrowserWindowCreatorBridge {
     @VisibleForTesting
     static long createBrowserWindow(AndroidBrowserWindowCreateParams createParams) {
         if (!canCreateBrowserWindow(createParams)) {
+            createParams.destroyWebContents();
             return 0L;
         }
 
@@ -43,6 +44,7 @@ final class BrowserWindowCreatorBridge {
     static void createBrowserWindowAsync(
             AndroidBrowserWindowCreateParams createParams, JniOnceCallback<Long> callback) {
         if (!canCreateBrowserWindow(createParams)) {
+            createParams.destroyWebContents();
             callback.onResult(0L);
             return;
         }

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -136,6 +137,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         // Only the "NORMAL" browser window requires a source Activity. See
         // MultiInstanceOrchestrator for the reason.
         if (createParams.getWindowType() == BrowserWindowType.NORMAL && sourceActivity == null) {
+            createParams.destroyWebContents();
             if (callback != null) {
                 callback.onResult(0L);
             }
@@ -154,6 +156,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 if (callback != null) {
                     callback.onResult(0L);
                 }
+                pendingTask.destroy();
                 return null;
             }
         } else {
@@ -393,12 +396,13 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         ActivityOptions options =
                 getStartActivityOptions(sourceActivity, createParams.getInitialBoundsInDp());
 
-        if (createParams.getWebContents() != null) {
+        WebContents webContents = createParams.takeWebContents();
+        if (webContents != null) {
             return MultiInstanceOrchestratorFactory.getInstance()
                     .createNewWindowFromWebContents(
                             sourceActivity,
                             createParams.getProfile(),
-                            createParams.getWebContents(),
+                            webContents,
                             extrasBundle,
                             options != null ? options.toBundle() : null,
                             NewWindowAppSource.BROWSER_WINDOW_CREATOR);
@@ -431,12 +435,13 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
         ActivityOptions options = getStartActivityOptions(context, bounds);
 
-        if (createParams.getWebContents() != null) {
+        WebContents webContents = createParams.takeWebContents();
+        if (webContents != null) {
             return PopupCreatorFactory.getInstance()
                     .createNewPopupFromWebContents(
                             context,
                             createParams.getProfile(),
-                            createParams.getWebContents(),
+                            webContents,
                             features,
                             extrasBundle,
                             options != null ? options.toBundle() : null);

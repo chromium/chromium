@@ -29,6 +29,15 @@ interface AndroidBrowserWindowCreateParams {
     @WindowShowState.EnumType
     int getInitialShowState();
 
-    /** Returns the WebContents to use for the new window, if any. */
-    @Nullable WebContents getWebContents();
+    /**
+     * Transfers the WebContents to the caller for creating a new window, if any. After this method
+     * returns, the WebContents held by this class will be set to null.
+     */
+    @Nullable WebContents takeWebContents();
+
+    /**
+     * Destroys the WebContents if one is held by this object and has not been transferred via
+     * {@link #takeWebContents}.
+     */
+    void destroyWebContents();
 }

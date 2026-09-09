@@ -21,6 +21,8 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.jni_zero.CalledByNativeForTesting;
+
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -73,6 +75,7 @@ public class PopupCreatorImpl implements PopupCreator {
     private static @Nullable Boolean sMoveTabToNewPopupResultForTesting;
     private static @Nullable Boolean sMoveToNewDocumentPiPWindowResultForTesting;
     private static @Nullable Boolean sSetMovableTaskRequiredForPopupsForTesting;
+    private static @Nullable Boolean sTryStartActivityResultForTesting;
 
     @Override
     public boolean createNewPopup(
@@ -327,6 +330,9 @@ public class PopupCreatorImpl implements PopupCreator {
     @Override
     public boolean tryStartActivity(
             Context context, Intent intent, @Nullable Bundle activityOptions) {
+        if (sTryStartActivityResultForTesting != null) {
+            return sTryStartActivityResultForTesting;
+        }
         try {
             context.startActivity(intent, activityOptions);
         } catch (SecurityException e) {
@@ -476,6 +482,12 @@ public class PopupCreatorImpl implements PopupCreator {
             Boolean setMovableTaskRequiredForPopups) {
         sSetMovableTaskRequiredForPopupsForTesting = setMovableTaskRequiredForPopups;
         ResettersForTesting.register(() -> sSetMovableTaskRequiredForPopupsForTesting = null);
+    }
+
+    @CalledByNativeForTesting
+    public static void setTryStartActivityResultForTesting(boolean result) {
+        sTryStartActivityResultForTesting = result;
+        ResettersForTesting.register(() -> sTryStartActivityResultForTesting = null);
     }
 
     private static Intent createTrustedPopupIntent(

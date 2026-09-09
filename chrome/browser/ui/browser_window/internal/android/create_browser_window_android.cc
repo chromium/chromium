@@ -23,24 +23,20 @@ BrowserWindowInterface* CreateBrowserWindow(
   JNIEnv* env = base::android::AttachCurrentThread();
   const gfx::Rect& bounds = create_params.initial_bounds;
 
-  // This code is still responsible for the WebContents until it receives a
-  // signal that the window creation is possible.
+  // Transfer ownership of WebContents to Java. Java assumes ownership of
+  // WebContents upon receiving it, wrapping it into a detached Tab or
+  // destroying it on window creation failure.
+  content::WebContents* raw_web_contents = create_params.web_contents.release();
+
   base::android::ScopedJavaLocalRef<jobject> j_create_params =
       Java_AndroidBrowserWindowCreateParamsImpl_create(
           env, static_cast<int>(create_params.type),
           create_params.profile->GetJavaObject(), bounds.x(), bounds.y(),
           bounds.right(), bounds.bottom(),
-          static_cast<int>(create_params.initial_show_state),
-          create_params.web_contents.get());
+          static_cast<int>(create_params.initial_show_state), raw_web_contents);
 
   int64_t window_ptr =
       Java_BrowserWindowCreatorBridge_createBrowserWindow(env, j_create_params);
-
-  if (window_ptr != 0) {
-    // Java has created a detached Tab which has assumed ownership of this
-    // WebContents (and is being reparented asynchronously).
-    create_params.web_contents.release();
-  }
 
   return reinterpret_cast<BrowserWindowInterface*>(window_ptr);
 }
@@ -51,29 +47,25 @@ void CreateBrowserWindow(
   JNIEnv* env = base::android::AttachCurrentThread();
   const gfx::Rect& bounds = create_params.initial_bounds;
 
-  // This code is still responsible for the WebContents until it receives a
-  // signal that the window creation is possible.
+  // Transfer ownership of WebContents to Java. Java assumes ownership of
+  // WebContents upon receiving it, wrapping it into a detached Tab or
+  // destroying it on window creation failure.
+  content::WebContents* raw_web_contents = create_params.web_contents.release();
+
   base::android::ScopedJavaLocalRef<jobject> j_create_params =
       Java_AndroidBrowserWindowCreateParamsImpl_create(
           env, static_cast<int>(create_params.type),
           create_params.profile->GetJavaObject(), bounds.x(), bounds.y(),
           bounds.right(), bounds.bottom(),
-          static_cast<int>(create_params.initial_show_state),
-          create_params.web_contents.get());
+          static_cast<int>(create_params.initial_show_state), raw_web_contents);
 
   // The callback will be invoked with the native pointer of the created browser
   // window. The pointer is represented as a int64_t in Java.
   base::OnceCallback<void(int64_t)> jlong_callback = base::BindOnce(
-      [](base::OnceCallback<void(BrowserWindowInterface*)> cb,
-         std::unique_ptr<content::WebContents> web_contents, int64_t ptr) {
-        if (ptr != 0) {
-          // Java has created a detached Tab which has assumed ownership of this
-          // WebContents (and is being reparented asynchronously).
-          web_contents.release();
-        }
+      [](base::OnceCallback<void(BrowserWindowInterface*)> cb, int64_t ptr) {
         std::move(cb).Run(reinterpret_cast<BrowserWindowInterface*>(ptr));
       },
-      std::move(callback), std::move(create_params.web_contents));
+      std::move(callback));
 
   Java_BrowserWindowCreatorBridge_createBrowserWindowAsync(
       env, j_create_params,

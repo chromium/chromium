@@ -108,6 +108,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNull(pendingTask);
         verify(mockCallback).onResult(0L);
+        verify(mockParams).destroyWebContents();
     }
 
     @Test
@@ -182,6 +183,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNull(pendingTask);
         verify(mockCallback).onResult(0L);
+        verify(mockParams).destroyWebContents();
     }
 
     @Test
@@ -201,6 +203,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNull(pendingTask);
         verify(mockCallback).onResult(0L);
+        verify(mockParams).destroyWebContents();
     }
 
     @Test

@@ -24,7 +24,7 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
     private final Profile mProfile;
     private final Rect mInitialBounds;
     private final @WindowShowState.EnumType int mInitialShowState;
-    private final @Nullable WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     /**
      * @param windowType The browser window type.
@@ -67,8 +67,18 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
     }
 
     @Override
-    public @Nullable WebContents getWebContents() {
-        return mWebContents;
+    public @Nullable WebContents takeWebContents() {
+        WebContents webContents = mWebContents;
+        mWebContents = null;
+        return webContents;
+    }
+
+    @Override
+    public void destroyWebContents() {
+        if (mWebContents != null) {
+            mWebContents.destroy();
+            mWebContents = null;
+        }
     }
 
     @CalledByNative
