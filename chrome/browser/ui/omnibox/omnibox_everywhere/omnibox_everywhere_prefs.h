@@ -63,12 +63,12 @@ inline constexpr char kOmniboxEverywhereShowShortcuts[] =
     "omnibox_everywhere.show_shortcuts";
 
 // Boolean preference specifying whether Omnibox Everywhere (Search in Chrome)
-// is enabled (main settings toggle).
+// is enabled (main settings toggle) and status tray icon is shown.
 inline constexpr char kOmniboxEverywhereEnabled[] =
     "omnibox_everywhere.enabled";
 
 // Boolean preference specifying whether Omnibox Everywhere background mode
-// and status tray icon are enabled.
+// is enabled.
 inline constexpr char kOmniboxEverywhereBackgroundMode[] =
     "omnibox_everywhere.background_mode";
 

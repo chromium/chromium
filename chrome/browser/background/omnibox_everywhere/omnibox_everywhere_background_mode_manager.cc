@@ -41,6 +41,11 @@ OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere));
   CHECK(g_browser_process && g_browser_process->local_state());
 
+  enabled_pref_member_.Init(
+      prefs::kOmniboxEverywhereEnabled, g_browser_process->local_state(),
+      base::BindRepeating(
+          &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
+          base::Unretained(this)));
   background_mode_pref_member_.Init(
       prefs::kOmniboxEverywhereBackgroundMode, g_browser_process->local_state(),
       base::BindRepeating(
@@ -86,6 +91,14 @@ void OmniboxEverywhereBackgroundModeManager::ExitBackgroundMode() {
 }
 
 void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
+  if (!enabled_pref_member_.GetValue()) {
+#if BUILDFLAG(IS_WIN)
+    startup_launch_client_.SetLaunchOnStartup(false);
+#endif
+    Reset();
+    return;
+  }
+
   const bool background_mode_enabled = background_mode_pref_member_.GetValue();
 
 #if BUILDFLAG(IS_WIN)
@@ -98,8 +111,7 @@ void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
   startup_launch_client_.SetLaunchOnStartup(should_launch_on_startup);
 #endif
 
-  // Only show the status tray/menu bar icon when we have an active profile.
-  if (!profile_ || !background_mode_enabled) {
+  if (!profile_) {
     Reset();
     return;
   }
@@ -108,21 +120,27 @@ void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
     ShowStatusIcon();
   }
 
-  if (!keep_alive_) {
-    KeepAliveRegistry* const keep_alive_registry =
-        KeepAliveRegistry::GetInstance();
+  if (background_mode_enabled) {
+    if (!keep_alive_) {
+      KeepAliveRegistry* const keep_alive_registry =
+          KeepAliveRegistry::GetInstance();
 
-    if (keep_alive_registry && !keep_alive_registry->IsShuttingDown()) {
-      keep_alive_ = std::make_unique<ScopedKeepAlive>(
-          KeepAliveOrigin::OMNIBOX_EVERYWHERE, KeepAliveRestartOption::ENABLED);
+      if (keep_alive_registry && !keep_alive_registry->IsShuttingDown()) {
+        keep_alive_ = std::make_unique<ScopedKeepAlive>(
+            KeepAliveOrigin::OMNIBOX_EVERYWHERE,
+            KeepAliveRestartOption::ENABLED);
+      }
     }
+    UpdateProfileKeepAlive();
+  } else {
+    profile_keep_alive_.reset();
+    keep_alive_.reset();
   }
-
-  UpdateProfileKeepAlive();
 }
 
 void OmniboxEverywhereBackgroundModeManager::UpdateProfileKeepAlive() {
-  if (background_mode_pref_member_.GetValue() && profile_ &&
+  if (enabled_pref_member_.GetValue() &&
+      background_mode_pref_member_.GetValue() && profile_ &&
       !profile_->IsOffTheRecord()) {
     if (!profile_keep_alive_ || profile_keep_alive_->profile() != profile_) {
       profile_keep_alive_ = ScopedProfileKeepAlive::TryAcquire(

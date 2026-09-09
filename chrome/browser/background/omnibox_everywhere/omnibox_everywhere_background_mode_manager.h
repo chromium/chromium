@@ -63,6 +63,7 @@ class OmniboxEverywhereBackgroundModeManager
 
   void Reset();
 
+  BooleanPrefMember enabled_pref_member_;
   BooleanPrefMember background_mode_pref_member_;
   StringPrefMember hotkey_string_pref_member_;
   raw_ptr<Profile> profile_ = nullptr;
