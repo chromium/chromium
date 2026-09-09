@@ -1625,6 +1625,17 @@ inline constexpr char kComposeboxRichImageSuggestionsName[] =
 inline constexpr char kComposeboxRichImageSuggestionsDescription[] =
     "Enables richer image suggestions in the Composebox for image generation.";
 
+inline constexpr char kComposeboxPersistentAimButtonName[] =
+    "Composebox Persistent AIM Button";
+inline constexpr char kComposeboxPersistentAimButtonDescription[] =
+    "Persists the AIM button in the Composebox.";
+
+inline constexpr char kComposeboxPersistentAimButtonWithXName[] =
+    "Composebox Persistent AIM Button With X";
+inline constexpr char kComposeboxPersistentAimButtonWithXDescription[] =
+    "Shows an X icon on the persistent AIM button. Only effective if "
+    "persistent AIM button is also enabled.";
+
 inline constexpr char kComposeboxSkillsContextualTasksName[] =
     "Composebox/Searchbox Skills (Contextual Tasks)";
 inline constexpr char kComposeboxSkillsContextualTasksDescription[] =
