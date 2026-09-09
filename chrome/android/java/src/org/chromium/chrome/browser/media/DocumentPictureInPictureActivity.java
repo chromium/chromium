@@ -70,6 +70,7 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -875,17 +876,32 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
      * @param parentWebContents The opener's WebContents.
      * @return True if the origins match, or if verification is skipped; false on mismatch.
      */
-    private boolean verifyOpenerOrigin(Intent intent, WebContents parentWebContents) {
+    @VisibleForTesting
+    boolean verifyOpenerOrigin(Intent intent, WebContents parentWebContents) {
         if (mIsFromActivityRecreation) {
             return true; // Already verified on initial startup.
         }
         final String initialOpenerOriginStr = intent.getStringExtra(INITIAL_OPENER_ORIGIN_KEY);
-        if (initialOpenerOriginStr == null) {
-            Log.e(TAG, "No initial opener origin in intent! Finishing.");
+        if (initialOpenerOriginStr == null || initialOpenerOriginStr.isEmpty()) {
+            Log.e(TAG, "Missing or empty initial opener origin, finishing.");
             return false;
         }
-        final GURL currentOpenerUrl = parentWebContents.getLastCommittedUrl();
-        final String currentOpenerOriginStr = Origin.create(currentOpenerUrl).toString();
+        if (parentWebContents == null) {
+            Log.e(TAG, "Parent WebContents is null, finishing.");
+            return false;
+        }
+        final RenderFrameHost openerFrame = parentWebContents.getMainFrame();
+        final Origin currentOpenerOrigin =
+                openerFrame != null
+                        ? openerFrame.getLastCommittedOrigin()
+                        : (parentWebContents.getLastCommittedUrl() != null
+                                ? Origin.create(parentWebContents.getLastCommittedUrl())
+                                : null);
+        if (currentOpenerOrigin == null || currentOpenerOrigin.isOpaque()) {
+            Log.e(TAG, "Current opener origin is missing or opaque, finishing.");
+            return false;
+        }
+        final String currentOpenerOriginStr = currentOpenerOrigin.toString();
         if (!initialOpenerOriginStr.equals(currentOpenerOriginStr)) {
             Log.e(
                     TAG,

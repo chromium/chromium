@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager.AppTask;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.WindowManager;
@@ -43,10 +44,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** Unit tests for {@link DocumentPictureInPictureActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -363,5 +367,110 @@ public class DocumentPictureInPictureActivityUnitTest {
         Assert.assertNotNull(supplier);
         ProfileProvider profileProvider = supplier.get();
         Assert.assertNotNull(profileProvider);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_ValidHttpsOrigin_ReturnsTrue() {
+        GURL url = new GURL("https://example.com/page");
+        Intent intent = new Intent();
+        intent.putExtra(
+                DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY,
+                Origin.create(url).toString());
+        WebContents parentWebContents = mock(WebContents.class);
+        when(parentWebContents.getLastCommittedUrl()).thenReturn(url);
+
+        Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_OpaqueInitialOrigin_ReturnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "null");
+        WebContents parentWebContents = mock(WebContents.class);
+        when(parentWebContents.getLastCommittedUrl()).thenReturn(new GURL("about:blank#fragment"));
+
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_OpaqueCurrentOrigin_ReturnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
+        WebContents parentWebContents = mock(WebContents.class);
+        when(parentWebContents.getLastCommittedUrl()).thenReturn(new GURL("about:blank"));
+
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_OriginMismatch_ReturnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
+        WebContents parentWebContents = mock(WebContents.class);
+        when(parentWebContents.getLastCommittedUrl())
+                .thenReturn(new GURL("https://attacker.com/page"));
+
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_MissingInitialOriginExtra_ReturnsFalse() {
+        Intent intent = new Intent(); // No INITIAL_OPENER_ORIGIN_KEY extra
+        WebContents parentWebContents = mock(WebContents.class);
+        when(parentWebContents.getLastCommittedUrl())
+                .thenReturn(new GURL("https://example.com/page"));
+
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_NullParentWebContents_ReturnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
+
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, null));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_SandboxedOpaqueFrameOrigin_ReturnsFalse() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY, "https://example.com");
+        WebContents parentWebContents = mock(WebContents.class);
+        RenderFrameHost openerFrame = mock(RenderFrameHost.class);
+        when(parentWebContents.getMainFrame()).thenReturn(openerFrame);
+        // Sandboxed frame: URL is https://example.com, but frame origin is opaque
+        when(parentWebContents.getLastCommittedUrl())
+                .thenReturn(new GURL("https://example.com/page"));
+        Origin opaqueOrigin = Origin.create(new GURL("about:blank"));
+        when(openerFrame.getLastCommittedOrigin()).thenReturn(opaqueOrigin);
+
+        Assert.assertFalse(mActivity.verifyOpenerOrigin(intent, parentWebContents));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testVerifyOpenerOrigin_FrameOriginMatchesInitialOrigin_ReturnsTrue() {
+        GURL url = new GURL("https://example.com/page");
+        Intent intent = new Intent();
+        intent.putExtra(
+                DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY,
+                Origin.create(url).toString());
+        WebContents parentWebContents = mock(WebContents.class);
+        RenderFrameHost openerFrame = mock(RenderFrameHost.class);
+        when(parentWebContents.getMainFrame()).thenReturn(openerFrame);
+        when(openerFrame.getLastCommittedOrigin()).thenReturn(Origin.create(url));
+
+        Assert.assertTrue(mActivity.verifyOpenerOrigin(intent, parentWebContents));
     }
 }

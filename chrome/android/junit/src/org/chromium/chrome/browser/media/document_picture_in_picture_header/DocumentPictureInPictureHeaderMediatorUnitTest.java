@@ -133,6 +133,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
     }
 
     private void createMediator(boolean isBackToTabShown, GURL url) {
+        when(mOpenerWebContents.getLastCommittedUrl()).thenReturn(url);
         when(mOpenerWebContents.getVisibleUrl()).thenReturn(url);
         mMediator =
                 new DocumentPictureInPictureHeaderMediator(
@@ -519,6 +520,40 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 CONTENT_URL.getSpec(),
                 mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
+    }
+
+    @Test
+    @SmallTest
+    public void testAboutBlankUrlWithFragmentDoesNotRenderFullSpecOrHeadElide() {
+        GURL url = new GURL("about:blank#////////////////https://victim-bank.com/pay");
+        createMediator(/* isBackToTabShown= */ true, url);
+
+        assertEquals("", mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
+    }
+
+    @Test
+    @SmallTest
+    public void testNonHttpSchemeUsesTailElision() {
+        GURL url = new GURL("chrome://version");
+        createMediator(/* isBackToTabShown= */ true, url);
+
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyUrlReturnsEmptyStringAndTailElides() {
+        createMediator(/* isBackToTabShown= */ true, GURL.emptyGURL());
+
+        assertEquals("", mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
         assertEquals(
                 TextUtils.TruncateAt.END,
                 mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));

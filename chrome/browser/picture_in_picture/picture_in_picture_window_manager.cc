@@ -17,30 +17,24 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/url_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-#include "components/webapps/isolated_web_apps/scheme.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
-// TODO(crbug.com/421608904): include auto_picture_in_picture_tab_helper for
-// Android when supporting document PiP.
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "media/base/media_switches.h"
-#include "net/base/url_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -601,8 +595,6 @@ void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
 // static
 bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
     const GURL& url) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
   // Only allow document PiP to be opened if the URL is of a type that we know
   // how to display in the title bar.  Otherwise, the title bar might be
   // misleading in certain scenarios.  See https://crbug.com/40066780 .
@@ -612,13 +604,15 @@ bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Isolated Web Apps (IWAs) are only supported on desktop platforms.
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return url.SchemeIs(url::kHttpsScheme) || url.SchemeIsFile() ||
-         net::IsLocalhost(url) || url.SchemeIs(content::kChromeUIScheme) ||
-         url.SchemeIs(webapps::kIsolatedAppScheme);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+         net::IsLocalhost(url) || url.SchemeIs(content::kChromeUIScheme);
 }
 
 void PictureInPictureWindowManager::CreateWindowInternal(

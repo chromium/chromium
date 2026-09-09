@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.Log;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -52,7 +52,6 @@ public class DocumentPictureInPictureHeaderMediator
         implements DesktopWindowStateManager.AppHeaderObserver,
                 ThemeColorProvider.ThemeColorObserver,
                 ThemeColorProvider.TintObserver {
-    private static final String TAG = "DocumentPiPHdrMdtr";
     private final PropertyModel mModel;
     private @MonotonicNonNull AppHeaderState mCurrentHeaderState;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
@@ -121,15 +120,17 @@ public class DocumentPictureInPictureHeaderMediator
         onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
 
         updateSecurityIcon();
-        GURL visibleUrl = mOpenerWebContents.getVisibleUrl();
-        mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, getUrlString(visibleUrl));
-        // To prevent spoofing, local URLs are tail-elided (keeping the scheme prefix
-        // visible) and standard web URLs are head-elided, matching desktop elision behavior.
+        GURL openerUrl = mOpenerWebContents.getLastCommittedUrl();
+        mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, getUrlString(openerUrl));
+        // To prevent spoofing, standard HTTP/HTTPS URLs with non-empty hostnames are
+        // head-elided, matching desktop elision behavior. All other schemes (local,
+        // chrome://, etc.) are tail-elided so their scheme prefix remains visible.
+        boolean isHttpOrHttps = openerUrl != null && UrlUtilities.isHttpOrHttps(openerUrl);
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR,
-                isLocalFileOrContentScheme(visibleUrl.getScheme())
-                        ? TextUtils.TruncateAt.END
-                        : TextUtils.TruncateAt.START);
+                (isHttpOrHttps && !openerUrl.getHost().isEmpty())
+                        ? TextUtils.TruncateAt.START
+                        : TextUtils.TruncateAt.END);
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
@@ -283,21 +284,23 @@ public class DocumentPictureInPictureHeaderMediator
                 DocumentPictureInPictureHeaderProperties.NON_DRAGGABLE_AREAS, mNonDraggableAreas);
     }
 
-    private boolean isLocalFileOrContentScheme(@Nullable String scheme) {
-        return UrlConstants.FILE_SCHEME.equals(scheme)
-                || UrlConstants.CONTENT_SCHEME.equals(scheme);
-    }
+    private String getUrlString(@Nullable GURL url) {
+        if (url == null || url.isEmpty() || !url.isValid()) {
+            return "";
+        }
 
-    private String getUrlString(GURL url) {
-        if (url.getScheme().equals(UrlConstants.FILE_SCHEME)) {
+        final String scheme = url.getScheme();
+        if (UrlConstants.FILE_SCHEME.equals(scheme)) {
             // File scheme URLs do not have a host, so we use the path instead.
             return url.getPath();
         }
 
-        if (url.getHost().isEmpty()) {
-            Log.w(TAG, "URL has an empty host, falling back to the full URL spec.");
-            // Fallback to the full URL spec if the host is empty.
+        if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
             return url.getSpec();
+        }
+
+        if (url.getHost().isEmpty()) {
+            return "";
         }
 
         return UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);

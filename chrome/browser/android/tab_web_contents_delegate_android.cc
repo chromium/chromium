@@ -421,6 +421,17 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   // Can't create a new contents for the current tab - invalid case.
   DCHECK_NE(disposition, WindowOpenDisposition::CURRENT_TAB);
 
+  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    const GURL& opener_url = source ? source->GetLastCommittedURL() : GURL();
+    if (!PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+            opener_url)) {
+      if (was_blocked) {
+        *was_blocked = true;
+      }
+      return nullptr;
+    }
+  }
+
   // At this point the |new_contents| is beyond the popup blocker, but we use
   // the same logic for determining if the popup tracker needs to be attached.
   if (source && blocked_content::ConsiderForPopupBlocking(disposition)) {

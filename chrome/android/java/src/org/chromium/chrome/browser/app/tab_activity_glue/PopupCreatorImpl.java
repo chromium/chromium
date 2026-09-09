@@ -52,13 +52,13 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.WindowInsetsUtils;
-import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
@@ -530,16 +530,25 @@ public class PopupCreatorImpl implements PopupCreator {
         // if the opener navigates before the Activity completes its launch.
         WebContents opener = webContents.getDocumentPictureInPictureOpener();
         if (opener != null) {
-            GURL openerUrl = opener.getLastCommittedUrl();
-            Origin openerOrigin = Origin.create(openerUrl != null ? openerUrl : GURL.emptyGURL());
             intent.putExtra(
                     DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY,
-                    openerOrigin.toString());
+                    getOpenerOriginString(opener));
         }
 
         intent.setAction(Intent.ACTION_VIEW);
 
         return intent;
+    }
+
+    private static String getOpenerOriginString(WebContents opener) {
+        RenderFrameHost frame = opener.getMainFrame();
+        Origin origin =
+                frame != null
+                        ? frame.getLastCommittedOrigin()
+                        : (opener.getLastCommittedUrl() != null
+                                ? Origin.create(opener.getLastCommittedUrl())
+                                : null);
+        return (origin != null && !origin.isOpaque()) ? origin.toString() : "";
     }
 
     private static @Nullable Bundle resolveStartActivityOptions(

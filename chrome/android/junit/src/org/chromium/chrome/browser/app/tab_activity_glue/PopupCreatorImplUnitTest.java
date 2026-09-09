@@ -71,11 +71,14 @@ import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** Unit test for {@link PopupCreatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -522,6 +525,103 @@ public class PopupCreatorImplUnitTest {
         PictureInPictureWindowOptions options = new PictureInPictureWindowOptions(optionsBundle);
 
         assertEquals("Cached bounds should be applied", cachedBounds, options.windowBounds);
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_setsInitialOpenerOriginForTupleOrigin() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
+
+        WebContents opener = mock(WebContents.class);
+        RenderFrameHost openerFrame = mock(RenderFrameHost.class);
+        Origin origin = Origin.create(new GURL("https://example.com"));
+        when(mWebContents.getDocumentPictureInPictureOpener()).thenReturn(opener);
+        when(opener.getMainFrame()).thenReturn(openerFrame);
+        when(openerFrame.getLastCommittedOrigin()).thenReturn(origin);
+
+        mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                null, mWebContents, windowOptions);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                origin.toString(),
+                sentIntent.getStringExtra(
+                        DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY));
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_omitsInitialOpenerOriginForOpaqueOrigin() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
+
+        WebContents opener = mock(WebContents.class);
+        RenderFrameHost openerFrame = mock(RenderFrameHost.class);
+        Origin opaqueOrigin = Origin.createOpaqueOrigin();
+        when(mWebContents.getDocumentPictureInPictureOpener()).thenReturn(opener);
+        when(opener.getMainFrame()).thenReturn(openerFrame);
+        when(openerFrame.getLastCommittedOrigin()).thenReturn(opaqueOrigin);
+
+        mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                null, mWebContents, windowOptions);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                "",
+                sentIntent.getStringExtra(
+                        DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY));
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_fallsBackToLastCommittedUrl() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
+
+        WebContents opener = mock(WebContents.class);
+        GURL url = new GURL("https://example.com");
+        when(mWebContents.getDocumentPictureInPictureOpener()).thenReturn(opener);
+        when(opener.getMainFrame()).thenReturn(null);
+        when(opener.getLastCommittedUrl()).thenReturn(url);
+
+        mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                null, mWebContents, windowOptions);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                Origin.create(url).toString(),
+                sentIntent.getStringExtra(
+                        DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY));
+    }
+
+    @Test
+    public void testMoveWebContentsToNewDocPipWindow_nullOpenerUrlDoesNotSetExtra() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        final PictureInPictureWindowOptions windowOptions = new PictureInPictureWindowOptions();
+
+        WebContents opener = mock(WebContents.class);
+        when(mWebContents.getDocumentPictureInPictureOpener()).thenReturn(opener);
+        when(opener.getMainFrame()).thenReturn(null);
+        when(opener.getLastCommittedUrl()).thenReturn(null);
+
+        mPopupCreator.moveWebContentsToNewDocumentPictureInPictureWindow(
+                null, mWebContents, windowOptions);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mContext).startActivity(captor.capture(), any());
+        Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                "",
+                sentIntent.getStringExtra(
+                        DocumentPictureInPictureActivity.INITIAL_OPENER_ORIGIN_KEY));
     }
 
     @Test
