@@ -880,6 +880,9 @@ bool IsGraphiteContextThreadSafe() {
 
 BASE_FEATURE(kWebGPUCompatibilityMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebGLDeleteBuffersInBackground,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebGPUAndroidOpenGLES, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)

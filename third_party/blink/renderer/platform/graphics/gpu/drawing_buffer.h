@@ -156,9 +156,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Issues a glClear() on all framebuffers associated with this DrawingBuffer.
   void ClearFramebuffers(GLbitfield clear_mask);
 
-  // Recreates the back color buffer if it was discarded.
-  void EnsureBackColorBuffer();
-
   // Indicates whether the DrawingBuffer internally allocated a packed
   // depth-stencil renderbuffer in the situation where the end user only asked
   // for a depth buffer. In this case, we need to upgrade clears of the depth
@@ -197,6 +194,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Bind the default framebuffer to |target|. |target| must be
   // GL_FRAMEBUFFER, GL_READ_FRAMEBUFFER, or GL_DRAW_FRAMEBUFFER.
   void Bind(GLenum target);
+  // Restore the default framebuffer binding to |target| in the GL context
+  // without ensuring/reallocating discarded buffers.
+  void RestoreDefaultFramebufferBinding(GLenum target = GL_FRAMEBUFFER);
   gfx::Size Size() const { return size_; }
   GLenum StorageFormat() const;
 
@@ -218,6 +218,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Returns false if the contents had previously been marked as changed and
   // have not yet been resolved.
   bool MarkContentsChanged();
+  // Restore buffers if they have been discarded.
+  void EnsureBuffers();
 
   void SetBufferClearNeeded(bool);
   void RequireExplicitBufferClear();
@@ -350,8 +352,13 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void SetSharedImageInterfaceProviderForSoftwareRenderingTest(
       std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider);
-
   bool HasBackColorBufferForTesting() const { return !!back_color_buffer_; }
+  bool HasMultisampleRenderbufferForTesting() const {
+    return !!multisample_renderbuffer_;
+  }
+  bool HasDepthStencilBufferForTesting() const {
+    return !!depth_stencil_buffer_;
+  }
 
   struct SoftwareResource {
     SoftwareResource(
@@ -472,6 +479,14 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // Clears out newly-allocated framebuffers (really, renderbuffers / textures).
   void ClearNewlyAllocatedFramebuffers(ClearOption clear_option);
+
+  // These two functions are meant to discard buffers when possible upon
+  // entering the background.
+  void DiscardBackBuffer();
+  void DiscardMSAADepthStencilBuffers();
+
+  void EnsureBackColorBuffer();
+  void EnsureMSAADepthStencilBuffers();
 
   // The same as clearFramebuffers(), but leaves GL state dirty.
   void ClearFramebuffersInternal(GLbitfield clear_mask,
@@ -602,6 +617,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Reallocate Multisampled renderbuffer, used by explicit resolve when resize
   // and GPU switch
   bool ReallocateMultisampleRenderbuffer(const gfx::Size&);
+  void ReallocateDepthStencilRenderbuffer(const gfx::Size&);
 
   WebGraphicsSharedImageInterfaceProvider*
   GetSharedImageInterfaceProviderForBitmap();

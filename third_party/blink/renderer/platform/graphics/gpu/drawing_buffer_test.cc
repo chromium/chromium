@@ -43,6 +43,7 @@
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -765,18 +766,21 @@ TEST_F(
   testing::Mock::VerifyAndClearExpectations(gl_);
 }
 
-class DrawingBufferDiscardBackBufferTest : public testing::Test {
+class DrawingBufferDiscardBackBufferTestBase : public testing::Test {
  protected:
-  void SetupDrawingBuffer(bool enable_feature,
-                          DrawingBuffer::PreserveDrawingBuffer preserve_mode) {
-    if (enable_feature) {
-      feature_list_.InitAndEnableFeature(
-          blink::features::kWebGLDiscardBackBuffer);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          blink::features::kWebGLDiscardBackBuffer);
-    }
+  explicit DrawingBufferDiscardBackBufferTestBase(bool enable_feature)
+      : feature_list_(
+            enable_feature
+                ? std::vector<
+                      base::test::FeatureRef>{blink::features::
+                                                  kWebGLDiscardBackBuffer}
+                : std::vector<base::test::FeatureRef>{},
+            enable_feature ? std::vector<base::test::FeatureRef>{}
+                           : std::vector<base::test::FeatureRef>{
+                                 blink::features::kWebGLDiscardBackBuffer}) {}
 
+  void SetupDrawingBuffer(DrawingBuffer::PreserveDrawingBuffer preserve_mode =
+                              DrawingBuffer::kDiscard) {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     InitializeSharedGpuContext(test_context_provider_.get());
 
@@ -811,7 +815,7 @@ class DrawingBufferDiscardBackBufferTest : public testing::Test {
   }
 
   // Before the task environment because it does not support getting destructed
-  // concurrently to baes::Feature accesses.
+  // concurrently to base::Feature accesses.
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -821,8 +825,22 @@ class DrawingBufferDiscardBackBufferTest : public testing::Test {
   viz::ReleaseCallback release_callback_;
 };
 
-TEST_F(DrawingBufferDiscardBackBufferTest, Disabled) {
-  SetupDrawingBuffer(/*enable_feature=*/false, DrawingBuffer::kDiscard);
+class DrawingBufferDiscardBackBufferTest
+    : public DrawingBufferDiscardBackBufferTestBase {
+ public:
+  DrawingBufferDiscardBackBufferTest()
+      : DrawingBufferDiscardBackBufferTestBase(/*enable_feature=*/true) {}
+};
+
+class DrawingBufferDiscardBackBufferDisabledTest
+    : public DrawingBufferDiscardBackBufferTestBase {
+ public:
+  DrawingBufferDiscardBackBufferDisabledTest()
+      : DrawingBufferDiscardBackBufferTestBase(/*enable_feature=*/false) {}
+};
+
+TEST_F(DrawingBufferDiscardBackBufferDisabledTest, Disabled) {
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
   drawing_buffer_->SetIsInHiddenPage(true);
@@ -831,7 +849,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, Disabled) {
 }
 
 TEST_F(DrawingBufferDiscardBackBufferTest, Enabled) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -844,7 +862,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, Enabled) {
 // Back buffer contains unpresented content (contents_changed_ is true).
 TEST_F(DrawingBufferDiscardBackBufferTest,
        FeatureEnabledNoDiscardWithUnpresentedContent) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
   drawing_buffer_->MarkContentsChanged();
@@ -854,7 +872,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest,
 }
 
 TEST_F(DrawingBufferDiscardBackBufferTest, FeatureEnabledPreserveNoDiscard) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kPreserve);
+  SetupDrawingBuffer(DrawingBuffer::kPreserve);
 
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
   drawing_buffer_->SetIsInHiddenPage(true);
@@ -863,7 +881,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, FeatureEnabledPreserveNoDiscard) {
 }
 
 TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundDrawReallocation) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -873,7 +891,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundDrawReallocation) {
 
   // All draw calls are preceded with a buffer clear, which calls
   // EnsureBackColorBuffer(). Simulate the clear call.
-  drawing_buffer_->EnsureBackColorBuffer();
+  drawing_buffer_->EnsureBuffers();
   // Draw calls then call MarkContentsChanged(). Ordering is enforced with a
   // CHECK().
   drawing_buffer_->MarkContentsChanged();
@@ -884,7 +902,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundDrawReallocation) {
 }
 
 TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundBindReallocation) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -901,7 +919,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundBindReallocation) {
 }
 
 TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundResizeReallocation) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -920,7 +938,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundResizeReallocation) {
 }
 
 TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundNoopResizeReallocation) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -939,7 +957,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest, BackgroundNoopResizeReallocation) {
 
 TEST_F(DrawingBufferDiscardBackBufferTest,
        BackgroundSetColorSpaceReallocation) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -959,7 +977,7 @@ TEST_F(DrawingBufferDiscardBackBufferTest,
 
 TEST_F(DrawingBufferDiscardBackBufferTest,
        BackgroundSetHdrMetadataReallocation) {
-  SetupDrawingBuffer(/*enable_feature=*/true, DrawingBuffer::kDiscard);
+  SetupDrawingBuffer(DrawingBuffer::kDiscard);
 
   drawing_buffer_->SetIsInHiddenPage(false);
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
@@ -977,5 +995,168 @@ TEST_F(DrawingBufferDiscardBackBufferTest,
 
   drawing_buffer_->MarkContentsChanged();
   EXPECT_TRUE(drawing_buffer_->HasBackColorBufferForTesting());
+}
+
+class DrawingBufferDeleteBuffersInBackgroundTestBase : public testing::Test {
+ protected:
+  explicit DrawingBufferDeleteBuffersInBackgroundTestBase(bool enable_feature)
+      : feature_list_(
+            enable_feature
+                ? std::vector<
+                      base::test::
+                          FeatureRef>{::features::
+                                          kWebGLDeleteBuffersInBackground}
+                : std::vector<base::test::FeatureRef>{},
+            enable_feature
+                ? std::vector<base::test::FeatureRef>{}
+                : std::vector<base::test::FeatureRef>{
+                      ::features::kWebGLDeleteBuffersInBackground}) {}
+
+  void SetupDrawingBuffer(
+      UseMultisampling use_multisampling,
+      bool want_depth,
+      bool want_stencil,
+      DrawingBuffer::PreserveDrawingBuffer preserve = DrawingBuffer::kDiscard) {
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContext(test_context_provider_.get());
+
+    gfx::Size initial_size(kInitialWidth, kInitialHeight);
+    auto gl = std::make_unique<testing::NiceMock<GLES2InterfaceForTests>>();
+    auto provider =
+        std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
+    GLES2InterfaceForTests* gl_ptr =
+        static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
+    Platform::WebGLContextInfo context_info;
+    context_info.using_gpu_compositing = true;
+    drawing_buffer_ = DrawingBufferForTests::Create(
+        std::move(provider),
+        /*shared_image_interface_provider_for_sw=*/nullptr, context_info,
+        gl_ptr, initial_size, preserve, use_multisampling,
+        /*desynchronized=*/false, want_depth, want_stencil);
+    ASSERT_NE(drawing_buffer_, nullptr);
+
+    // Present once to clear contents_changed_ and perform initial allocation.
+    viz::TransferableResource resource;
+    drawing_buffer_->PrepareTransferableResource(&resource, &release_callback_);
+  }
+
+  void TearDown() override {
+    if (release_callback_) {
+      std::move(release_callback_)
+          .Run(gpu::SyncToken(), false /* lostResource */);
+    }
+    if (drawing_buffer_) {
+      drawing_buffer_->BeginDestruction();
+    }
+    SharedGpuContext::Reset();
+  }
+
+  // Before the task environment because it does not support getting destructed
+  // concurrently to base::Feature accesses.
+  base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
+  scoped_refptr<DrawingBufferForTests> drawing_buffer_;
+  viz::ReleaseCallback release_callback_;
+};
+
+class DrawingBufferDeleteBuffersInBackgroundTest
+    : public DrawingBufferDeleteBuffersInBackgroundTestBase {
+ public:
+  DrawingBufferDeleteBuffersInBackgroundTest()
+      : DrawingBufferDeleteBuffersInBackgroundTestBase(
+            /*enable_feature=*/true) {}
+};
+
+class DrawingBufferDeleteBuffersInBackgroundDisabledTest
+    : public DrawingBufferDeleteBuffersInBackgroundTestBase {
+ public:
+  DrawingBufferDeleteBuffersInBackgroundDisabledTest()
+      : DrawingBufferDeleteBuffersInBackgroundTestBase(
+            /*enable_feature=*/false) {}
+};
+
+TEST_F(DrawingBufferDeleteBuffersInBackgroundDisabledTest, FeatureDisabled) {
+  SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true);
+
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  // Should not delete buffers when feature is disabled.
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+}
+
+TEST_F(DrawingBufferDeleteBuffersInBackgroundTest,
+       FeatureEnabledDeleteAndRestore) {
+  SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true);
+
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  // Should delete buffers in background.
+  EXPECT_FALSE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_FALSE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(false);
+  // Buffers are reallocated.
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+}
+
+TEST_F(DrawingBufferDeleteBuffersInBackgroundTest, BackgroundBindReallocation) {
+  SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true);
+
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  EXPECT_FALSE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_FALSE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  // BInd() leads to buffer reallocation.
+  drawing_buffer_->Bind(GL_FRAMEBUFFER);
+
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+}
+
+TEST_F(DrawingBufferDeleteBuffersInBackgroundTest,
+       FeatureEnabledPreserveNoDiscard) {
+  SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true, DrawingBuffer::kPreserve);
+
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  // Should not delete buffers in background when preserve mode is kPreserve.
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+}
+
+TEST_F(DrawingBufferDeleteBuffersInBackgroundTest,
+       FeatureEnabledNoDiscardWithUnresolvedContent) {
+  SetupDrawingBuffer(kEnableMultisampling, /*want_depth=*/true,
+                     /*want_stencil=*/true);
+
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
+
+  // Mark contents changed (unresolved draw commands)
+  drawing_buffer_->MarkContentsChanged();
+
+  drawing_buffer_->SetIsInHiddenPage(true);
+  // Should not delete buffers in background because there is unresolved
+  // content.
+  EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
+  EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
 }
 }  // namespace blink

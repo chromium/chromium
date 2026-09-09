@@ -5867,8 +5867,23 @@ void WebGL2RenderingContextBase::RemoveBoundBuffer(WebGLBuffer* buffer) {
 }
 
 void WebGL2RenderingContextBase::RestoreCurrentFramebuffer() {
-  bindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer_binding_.Get());
-  bindFramebuffer(GL_READ_FRAMEBUFFER, read_framebuffer_binding_.Get());
+  if (!framebuffer_binding_) {
+    if (GetDrawingBuffer()) {
+      // Not calling bindFrameBuffer() to avoid eager buffer reallocation.
+      GetDrawingBuffer()->RestoreDefaultFramebufferBinding(GL_DRAW_FRAMEBUFFER);
+    }
+  } else {
+    ContextGL()->BindFramebuffer(GL_DRAW_FRAMEBUFFER,
+                                 framebuffer_binding_->Object());
+  }
+  if (!read_framebuffer_binding_) {
+    if (GetDrawingBuffer()) {
+      GetDrawingBuffer()->RestoreDefaultFramebufferBinding(GL_READ_FRAMEBUFFER);
+    }
+  } else {
+    ContextGL()->BindFramebuffer(GL_READ_FRAMEBUFFER,
+                                 read_framebuffer_binding_->Object());
+  }
 }
 
 void WebGL2RenderingContextBase::useProgram(WebGLProgram* program) {

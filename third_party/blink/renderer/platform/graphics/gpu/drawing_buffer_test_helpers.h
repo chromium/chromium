@@ -224,6 +224,8 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   }
 
   void GenTextures(GLsizei n, GLuint* textures) override;
+  void GenRenderbuffers(GLsizei n, GLuint* renderbuffers) override;
+  void GenFramebuffers(GLsizei n, GLuint* framebuffers) override;
 
   // ImplementationBase implementation
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
@@ -421,13 +423,15 @@ class DrawingBufferForTests : public DrawingBuffer {
       const gfx::Size& size,
       PreserveDrawingBuffer preserve,
       UseMultisampling use_multisampling,
-      bool desynchronized = false) {
+      bool desynchronized = false,
+      bool want_depth = false,
+      bool want_stencil = false) {
     std::unique_ptr<Extensions3DUtil> extensions_util =
         Extensions3DUtil::Create(context_provider->ContextGL());
-    scoped_refptr<DrawingBufferForTests> drawing_buffer =
-        base::AdoptRef(new DrawingBufferForTests(
-            std::move(context_provider), context_info,
-            std::move(extensions_util), client, preserve, desynchronized));
+    scoped_refptr<DrawingBufferForTests> drawing_buffer = base::AdoptRef(
+        new DrawingBufferForTests(std::move(context_provider), context_info,
+                                  std::move(extensions_util), client, preserve,
+                                  desynchronized, want_depth, want_stencil));
     if (!drawing_buffer->Initialize(
             size, use_multisampling != kDisableMultisampling)) {
       drawing_buffer->BeginDestruction();
@@ -445,7 +449,9 @@ class DrawingBufferForTests : public DrawingBuffer {
       std::unique_ptr<Extensions3DUtil> extensions_util,
       DrawingBuffer::Client* client,
       PreserveDrawingBuffer preserve,
-      bool desynchronized)
+      bool desynchronized,
+      bool want_depth,
+      bool want_stencil)
       : DrawingBuffer(std::move(context_provider),
                       context_info,
                       desynchronized,
@@ -457,8 +463,8 @@ class DrawingBufferForTests : public DrawingBuffer {
                       true /* premultipliedAlpha */,
                       preserve,
                       Platform::kWebGL1ContextType,
-                      false /* wantDepth */,
-                      false /* wantStencil */,
+                      want_depth,
+                      want_stencil,
                       PredefinedColorSpace::kSRGB,
                       gfx::HDRMetadata(),
                       gl::GpuPreference::kHighPerformance),
@@ -486,6 +492,14 @@ class DrawingBufferForTests : public DrawingBuffer {
 
   bool HasBackColorBufferForTesting() const {
     return DrawingBuffer::HasBackColorBufferForTesting();
+  }
+
+  bool HasMultisampleRenderbufferForTesting() const {
+    return DrawingBuffer::HasMultisampleRenderbufferForTesting();
+  }
+
+  bool HasDepthStencilBufferForTesting() const {
+    return DrawingBuffer::HasDepthStencilBufferForTesting();
   }
 };
 

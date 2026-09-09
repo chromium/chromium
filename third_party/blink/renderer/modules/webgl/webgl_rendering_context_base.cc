@@ -1776,9 +1776,9 @@ WebGLRenderingContextBase::ClearIfComposited(
   if (!framebuffer_binding_ ||
       (caller != kClearCallerDrawOrClear &&
        base::FeatureList::IsEnabled(features::kWebGLDiscardBackBuffer))) {
-    // EnsureBackColorBuffer() must be called before checking
-    // BufferClearNeeded() and returning early below. If the back buffer was
-    // discarded when the page was hidden, it must be recreated even if no
+    // EnsureBuffers() must be called before checking
+    // BufferClearNeeded() and returning early below. If buffers were
+    // discarded when the page was hidden, they must be recreated even if no
     // implicit clear is needed (BufferClearNeeded() is false).
     //
     // If a custom framebuffer is currently bound for a draw/clear operation,
@@ -1787,7 +1787,7 @@ WebGLRenderingContextBase::ClearIfComposited(
     //
     // Note: we don't call MarkContentsChanged(), because it hasn't (there is
     // no new content to present yet).
-    GetDrawingBuffer()->EnsureBackColorBuffer();
+    GetDrawingBuffer()->EnsureBuffers();
   }
 
   if (!GetDrawingBuffer()->BufferClearNeeded() ||
@@ -1799,7 +1799,6 @@ WebGLRenderingContextBase::ClearIfComposited(
     // Unlikely, but context was lost.
     return kSkipped;
   }
-
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
 
   // Determine if it's possible to combine the clear the user asked for and this
@@ -9373,7 +9372,15 @@ void WebGLRenderingContextBase::SetFramebuffer(GLenum target,
 }
 
 void WebGLRenderingContextBase::RestoreCurrentFramebuffer() {
-  bindFramebuffer(GL_FRAMEBUFFER, framebuffer_binding_.Get());
+  if (!framebuffer_binding_) {
+    if (GetDrawingBuffer()) {
+      // Not calling bindFrameBuffer() to avoid eager buffer reallocation.
+      GetDrawingBuffer()->RestoreDefaultFramebufferBinding(GL_FRAMEBUFFER);
+    }
+  } else {
+    ContextGL()->BindFramebuffer(GL_FRAMEBUFFER,
+                                 framebuffer_binding_->Object());
+  }
 }
 
 void WebGLRenderingContextBase::RestoreCurrentTexture2D() {

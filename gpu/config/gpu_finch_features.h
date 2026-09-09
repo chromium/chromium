@@ -264,6 +264,8 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUCompatibilityMode);
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGLDeleteBuffersInBackground);
+
 GPU_CONFIG_EXPORT bool IsGraphiteContextThreadSafe();
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSendGPUChannelEarly);
