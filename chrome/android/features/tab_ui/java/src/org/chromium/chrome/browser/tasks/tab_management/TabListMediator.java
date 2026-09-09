@@ -1714,7 +1714,7 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(
                 TabProperties.TAB_CONTEXT_CLICK_LISTENER,
                 getTabContextClickListener(tabActionState));
-        model.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabListConfig.tabHoverCardListener);
+        model.set(TabProperties.TAB_HOVER_LISTENER, mTabListConfig.tabHoverListener);
 
         if (mTabActionState != TabActionState.SELECTABLE) {
             updateDescriptionString(model);

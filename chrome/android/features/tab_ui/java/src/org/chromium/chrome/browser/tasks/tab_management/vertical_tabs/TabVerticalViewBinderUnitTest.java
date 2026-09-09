@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabA
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -100,7 +100,7 @@ public class TabVerticalViewBinderUnitTest {
     @Mock private TabFaviconFetcher mFaviconFetcher;
     @Mock private TabFaviconFetcher mFaviconFetcher1;
     @Mock private TabFaviconFetcher mFaviconFetcher2;
-    @Mock private TabHoverCardListener mTabHoverCardListener;
+    @Mock private TabHoverListener mTabHoverListener;
 
     private ViewGroup mItemView;
     private TextView mTitleView;
@@ -714,10 +714,10 @@ public class TabVerticalViewBinderUnitTest {
     @SmallTest
     public void testTabHover_SuppressedWhenContextMenuOrScrolling() {
         mModel.set(TabProperties.IS_SELECTED, false);
-        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
 
-        when(mTabHoverCardListener.isContextMenuShowing()).thenReturn(true);
+        when(mTabHoverListener.isContextMenuShowing()).thenReturn(true);
 
         MotionEvent hoverEnterEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
@@ -728,8 +728,8 @@ public class TabVerticalViewBinderUnitTest {
         assertNotNull(bgTint);
         assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
 
-        when(mTabHoverCardListener.isContextMenuShowing()).thenReturn(false);
-        when(mTabHoverCardListener.isScrolling()).thenReturn(true);
+        when(mTabHoverListener.isContextMenuShowing()).thenReturn(false);
+        when(mTabHoverListener.isScrolling()).thenReturn(true);
 
         mItemView.dispatchGenericMotionEvent(hoverEnterEvent);
 
@@ -1521,11 +1521,11 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testBindTabGroupHeader_HoverCardListener() {
+    public void testBindTabGroupHeader_HoverListener() {
         ViewGroup headerView = inflateGroupHeaderView();
         mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
-        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabActionButtonData actionButtonData =
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
@@ -1546,8 +1546,8 @@ public class TabVerticalViewBinderUnitTest {
                         /* metaState= */ 0);
         enterEvent.setSource(InputDevice.SOURCE_MOUSE);
         headerView.dispatchGenericMotionEvent(enterEvent);
-        verify(mTabHoverCardListener)
-                .onTabGroupHoverCardStateChanged(
+        verify(mTabHoverListener)
+                .onTabGroupHoverStateChanged(
                         TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
         assertTrue(
                 userActionTester.getActions().contains("Android.VerticalTabs.GroupHeaderHovered"));
@@ -1564,8 +1564,8 @@ public class TabVerticalViewBinderUnitTest {
                         /* metaState= */ 0);
         exitEvent.setSource(InputDevice.SOURCE_MOUSE);
         headerView.dispatchGenericMotionEvent(exitEvent);
-        verify(mTabHoverCardListener)
-                .onTabGroupHoverCardStateChanged(
+        verify(mTabHoverListener)
+                .onTabGroupHoverStateChanged(
                         TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
         exitEvent.recycle();
     }
@@ -1603,50 +1603,50 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testBindTab_Focus_NotifiesHoverCardListener() {
+    public void testBindTab_Focus_NotifiesHoverListener() {
         mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
-        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
 
         // Focus gain
         mItemView.getOnFocusChangeListener().onFocusChange(mItemView, true);
-        verify(mTabHoverCardListener)
-                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ true);
+        verify(mTabHoverListener)
+                .onTabHoverStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ true);
 
         // Focus loss
         mItemView.getOnFocusChangeListener().onFocusChange(mItemView, false);
-        verify(mTabHoverCardListener)
-                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ false);
+        verify(mTabHoverListener)
+                .onTabHoverStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ false);
     }
 
     @Test
     @SmallTest
-    public void testBindPinnedTab_Focus_NotifiesHoverCardListener() {
+    public void testBindPinnedTab_Focus_NotifiesHoverListener() {
         ViewGroup pinnedView = inflatePinnedTabView();
         mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
-        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
 
         // Focus gain
         pinnedView.getOnFocusChangeListener().onFocusChange(pinnedView, true);
-        verify(mTabHoverCardListener)
-                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, pinnedView, /* isHovered= */ true);
+        verify(mTabHoverListener)
+                .onTabHoverStateChanged(TEST_HEADER_TAB_ID, pinnedView, /* isHovered= */ true);
 
         // Focus loss
         pinnedView.getOnFocusChangeListener().onFocusChange(pinnedView, false);
-        verify(mTabHoverCardListener)
-                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, pinnedView, /* isHovered= */ false);
+        verify(mTabHoverListener)
+                .onTabHoverStateChanged(TEST_HEADER_TAB_ID, pinnedView, /* isHovered= */ false);
     }
 
     @Test
     @SmallTest
-    public void testBindTabGroupHeader_Focus_NotifiesHoverCardListener() {
+    public void testBindTabGroupHeader_Focus_NotifiesHoverListener() {
         ViewGroup headerView = inflateGroupHeaderView();
         mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
-        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.TAB_HOVER_LISTENER, mTabHoverListener);
         TabActionButtonData actionButtonData =
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
@@ -1655,14 +1655,14 @@ public class TabVerticalViewBinderUnitTest {
 
         // Focus gain
         headerView.getOnFocusChangeListener().onFocusChange(headerView, true);
-        verify(mTabHoverCardListener)
-                .onTabGroupHoverCardStateChanged(
+        verify(mTabHoverListener)
+                .onTabGroupHoverStateChanged(
                         TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
 
         // Focus loss
         headerView.getOnFocusChangeListener().onFocusChange(headerView, false);
-        verify(mTabHoverCardListener)
-                .onTabGroupHoverCardStateChanged(
+        verify(mTabHoverListener)
+                .onTabGroupHoverStateChanged(
                         TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
     }
 

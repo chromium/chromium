@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 
 /**
@@ -67,8 +67,8 @@ public class TabListConfig {
     public final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
             railCollapseStateSupplier;
 
-    /** Listener for tab and tab group hover card events, or null if not supported. */
-    public final @Nullable TabHoverCardListener tabHoverCardListener;
+    /** Listener for tab and tab group hover events, or null if not supported. */
+    public final @Nullable TabHoverListener tabHoverListener;
 
     /** Manager for active tab underline indicators (e.g. for Glic), or null if not supported. */
     public final @Nullable TabUnderlineManager tabUnderlineManager;
@@ -84,7 +84,7 @@ public class TabListConfig {
         supportsTabContextClick = builder.mSupportsTabContextClick;
         tabClosingSource = builder.mTabClosingSource;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
-        tabHoverCardListener = builder.mTabHoverCardListener;
+        tabHoverListener = builder.mTabHoverListener;
         tabUnderlineManager = builder.mTabUnderlineManager;
     }
 
@@ -101,7 +101,7 @@ public class TabListConfig {
         private @TabClosingSource int mTabClosingSource;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 mRailCollapseStateSupplier;
-        private @Nullable TabHoverCardListener mTabHoverCardListener;
+        private @Nullable TabHoverListener mTabHoverListener;
         private @Nullable TabUnderlineManager mTabUnderlineManager;
 
         /**
@@ -205,12 +205,11 @@ public class TabListConfig {
         }
 
         /**
-         * @param tabHoverCardListener Listener for tab and tab group hover card events, or null.
+         * @param tabHoverListener Listener for tab and tab group hover events, or null.
          * @return The {@link Builder} instance.
          */
-        public Builder setTabHoverCardListener(
-                @Nullable TabHoverCardListener tabHoverCardListener) {
-            mTabHoverCardListener = tabHoverCardListener;
+        public Builder setTabHoverListener(@Nullable TabHoverListener tabHoverListener) {
+            mTabHoverListener = tabHoverListener;
             return this;
         }
 

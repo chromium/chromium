@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -1205,8 +1205,7 @@ class TabVerticalViewBinder {
 
         Runnable onHoverEnter =
                 () -> {
-                    TabHoverCardListener listener =
-                            model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+                    TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
                     // Blocks new tab hover backgrounds to show when context menu or scroll occurs.
                     if (listener != null
                             && (listener.isContextMenuShowing() || listener.isScrolling())) {
@@ -1244,8 +1243,7 @@ class TabVerticalViewBinder {
 
         Runnable onHoverEnter =
                 () -> {
-                    TabHoverCardListener listener =
-                            model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+                    TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
                     // Blocks new tab hover backgrounds to show when context menu or scroll occurs.
                     if (listener != null
                             && (listener.isContextMenuShowing() || listener.isScrolling())) {
@@ -1284,31 +1282,30 @@ class TabVerticalViewBinder {
     }
 
     /**
-     * Notifies {@link TabHoverCardListener} of hover or keyboard focus state transitions on tab
-     * items.
+     * Notifies {@link TabHoverListener} of hover or keyboard focus state transitions on tab items.
      */
     private static void notifyHoverChange(PropertyModel model, View view, boolean isHovered) {
-        TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+        TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
         if (listener != null) {
             int tabId = model.get(TabProperties.TAB_ID);
-            listener.onTabHoverCardStateChanged(tabId, view, isHovered);
+            listener.onTabHoverStateChanged(tabId, view, isHovered);
         }
     }
 
     /**
-     * Notifies {@link TabHoverCardListener} of hover or keyboard focus state transitions on tab
-     * group headers.
+     * Notifies {@link TabHoverListener} of hover or keyboard focus state transitions on tab group
+     * headers.
      */
     private static void notifyGroupHeaderHoverChange(
             PropertyModel model, View view, boolean isHovered) {
-        TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+        TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
         if (listener != null) {
             int tabId = model.get(TabProperties.TAB_ID);
             Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
             if (tabGroupId == null) {
                 tabGroupId = model.get(TabProperties.TAB_GROUP_ID);
             }
-            listener.onTabGroupHoverCardStateChanged(tabId, tabGroupId, view, isHovered);
+            listener.onTabGroupHoverStateChanged(tabId, tabGroupId, view, isHovered);
         }
     }
 }

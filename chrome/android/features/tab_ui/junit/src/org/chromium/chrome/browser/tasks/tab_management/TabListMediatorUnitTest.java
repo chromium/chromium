@@ -185,7 +185,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -6815,8 +6815,8 @@ public class TabListMediatorUnitTest {
                                 : TabClosingSource.UNKNOWN);
         NonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
                 hasMatchingConfig ? mTabListConfig.railCollapseStateSupplier : null;
-        TabHoverCardListener tabHoverCardListener =
-                hasMatchingConfig ? mTabListConfig.tabHoverCardListener : null;
+        TabHoverListener tabHoverListener =
+                hasMatchingConfig ? mTabListConfig.tabHoverListener : null;
         TabUnderlineManager tabUnderlineManager =
                 hasMatchingConfig
                         ? mTabListConfig.tabUnderlineManager
@@ -6833,7 +6833,7 @@ public class TabListMediatorUnitTest {
                         .setSupportsTabContextClick(supportsTabContextClick)
                         .setTabClosingSource(tabClosingSource)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)
-                        .setTabHoverCardListener(tabHoverCardListener)
+                        .setTabHoverListener(tabHoverListener)
                         .setTabUnderlineManager(tabUnderlineManager)
                         .build();
 

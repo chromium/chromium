@@ -133,7 +133,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -1981,10 +1981,9 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // While context menu is showing, attempting to hover a tab should not show a hover card.
         when(mTabContextMenuCoordinator.isMenuShowing()).thenReturn(true);
-        TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
+        TabHoverListener hoverListener = mCoordinator.getTabHoverListenerForTesting();
         assertNotNull(hoverListener);
-        hoverListener.onTabHoverCardStateChanged(
-                tab.getId(), mMockChildView, /* isHovered= */ true);
+        hoverListener.onTabHoverStateChanged(tab.getId(), mMockChildView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
@@ -4536,9 +4535,9 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_2);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab);
 
-        TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
+        TabHoverListener hoverListener = mCoordinator.getTabHoverListenerForTesting();
         assertNotNull(hoverListener);
-        hoverListener.onTabHoverCardStateChanged(TAB_ID_1, mMockChildView, /* isHovered= */ true);
+        hoverListener.onTabHoverStateChanged(TAB_ID_1, mMockChildView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabHoverCardView).show(anyFloat(), anyFloat());

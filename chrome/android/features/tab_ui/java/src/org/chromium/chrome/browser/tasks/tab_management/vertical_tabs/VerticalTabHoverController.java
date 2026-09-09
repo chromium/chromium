@@ -30,14 +30,16 @@ import org.chromium.chrome.tab_ui.R;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-/** Controller for tab and tab group hover card operations in vertical tabs. */
+/** Controller for tab and tab group hover operations in vertical tabs. */
 @NullMarked
-public class VerticalTabHoverCardController {
+public class VerticalTabHoverController {
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER_MS = 300;
     private static final long INVALID_TIME = -1L;
 
-    /** Interface to receive tab and tab group hover card events. */
-    public interface TabHoverCardListener {
+    // TODO(crbug.com/549878812): Unify hover listeners and detection logic from
+    // TabVerticalViewBinder into this controller.
+    /** Interface to receive tab and tab group hover events. */
+    public interface TabHoverListener {
         /**
          * Called when a tab item view hover or keyboard focus state changes.
          *
@@ -45,7 +47,7 @@ public class VerticalTabHoverCardController {
          * @param view The tab item view being hovered or focused.
          * @param isHovered True if hover or keyboard focus became active, false if both exited.
          */
-        void onTabHoverCardStateChanged(int tabId, View view, boolean isHovered);
+        void onTabHoverStateChanged(int tabId, View view, boolean isHovered);
 
         /**
          * Called when a tab group header view hover or keyboard focus state changes.
@@ -55,7 +57,7 @@ public class VerticalTabHoverCardController {
          * @param view The tab group header view being hovered or focused.
          * @param isHovered True if hover or keyboard focus became active, false if both exited.
          */
-        void onTabGroupHoverCardStateChanged(
+        void onTabGroupHoverStateChanged(
                 int groupHeaderTabId, @Nullable Token tabGroupId, View view, boolean isHovered);
 
         /**
@@ -77,15 +79,15 @@ public class VerticalTabHoverCardController {
     private final TabModelSelector mTabModelSelector;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final TabGroupHoverCardPresenter mTabGroupHoverCardPresenter;
-    private final TabHoverCardListener mTabHoverCardListener =
-            new TabHoverCardListener() {
+    private final TabHoverListener mTabHoverListener =
+            new TabHoverListener() {
                 @Override
-                public void onTabHoverCardStateChanged(int tabId, View view, boolean isHovered) {
+                public void onTabHoverStateChanged(int tabId, View view, boolean isHovered) {
                     showOrHideTabHoverCard(tabId, view, isHovered);
                 }
 
                 @Override
-                public void onTabGroupHoverCardStateChanged(
+                public void onTabGroupHoverStateChanged(
                         int groupHeaderTabId,
                         @Nullable Token tabGroupId,
                         View view,
@@ -95,12 +97,12 @@ public class VerticalTabHoverCardController {
 
                 @Override
                 public boolean isContextMenuShowing() {
-                    return VerticalTabHoverCardController.this.isContextMenuShowing();
+                    return VerticalTabHoverController.this.isContextMenuShowing();
                 }
 
                 @Override
                 public boolean isScrolling() {
-                    return VerticalTabHoverCardController.this.isScrolling();
+                    return VerticalTabHoverController.this.isScrolling();
                 }
             };
     private final @Nullable ViewStub mTabHoverCardViewStub;
@@ -117,7 +119,7 @@ public class VerticalTabHoverCardController {
     private @Nullable Runnable mPendingHoverCardRunnable;
 
     /**
-     * Constructs a {@link VerticalTabHoverCardController}.
+     * Constructs a {@link VerticalTabHoverController}.
      *
      * @param containerView The vertical tab rail container view.
      * @param tabHoverCardViewStub The view stub for inflating the tab hover card.
@@ -126,7 +128,7 @@ public class VerticalTabHoverCardController {
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param isContextMenuShowingSupplier Supplier returning whether any context menu is open.
      */
-    VerticalTabHoverCardController(
+    VerticalTabHoverController(
             VerticalTabRailLayout containerView,
             @Nullable ViewStub tabHoverCardViewStub,
             @Nullable ViewStub tabGroupHoverCardViewStub,
@@ -156,9 +158,9 @@ public class VerticalTabHoverCardController {
         }
     }
 
-    /** Returns the {@link TabHoverCardListener} instance. */
-    TabHoverCardListener getTabHoverCardListener() {
-        return mTabHoverCardListener;
+    /** Returns the {@link TabHoverListener} instance. */
+    TabHoverListener getTabHoverListener() {
+        return mTabHoverListener;
     }
 
     /** Immediately hides any active hover card and cancels any scheduled display. */

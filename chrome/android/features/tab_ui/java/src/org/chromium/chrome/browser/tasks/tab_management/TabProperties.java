@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -252,7 +252,7 @@ public class TabProperties {
             new WritableObjectPropertyKey<>();
 
     /** Listener for hover state changes on tabs and tab group headers. */
-    public static final WritableObjectPropertyKey<TabHoverCardListener> TAB_HOVER_CARD_LISTENER =
+    public static final WritableObjectPropertyKey<TabHoverListener> TAB_HOVER_LISTENER =
             new WritableObjectPropertyKey<>();
 
     private static final PropertyKey[] COMMON_KEYS_TAB_AND_GROUP_GRID =
@@ -308,7 +308,7 @@ public class TabProperties {
                         TAB_GROUP_ID,
                         TAB_GROUP_HEADER_ID,
                         IS_LOADING,
-                        TAB_HOVER_CARD_LISTENER
+                        TAB_HOVER_LISTENER
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);
 
@@ -370,7 +370,7 @@ public class TabProperties {
                 TAB_GROUP_COLOR_VIEW_PROVIDER,
                 TAB_GROUP_HEADER_ID,
                 TAB_GROUP_ID,
-                TAB_HOVER_CARD_LISTENER,
+                TAB_HOVER_LISTENER,
                 TAB_ID,
                 TAB_LONG_CLICK_LISTENER,
                 TITLE
