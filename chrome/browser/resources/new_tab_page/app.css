@@ -37,6 +37,13 @@
   --ntp-scrim-opacity_: 1;
   --threads-rail-width: 76px;
   --threads-rail-focus-outline-color: var(--color-new-tab-page-focus-ring);
+
+<if expr="is_android">
+  /* Use Google Sans Text for the NTP realbox on Android. The @font-face
+   * rules in text_defaults_md.css register the font names, and
+   * AndroidFontLookupImpl downloads them from GMSCore. */
+  font-family: 'Google Sans Text', 'Google Sans', Arial, sans-serif;
+</if>
 }
 
 /**
