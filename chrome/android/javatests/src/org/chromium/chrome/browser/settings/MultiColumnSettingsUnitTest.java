@@ -70,6 +70,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -511,7 +512,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testProcessPendingFragmentIntent_MainSettings_ReturnsNull() {
         Intent intent = new Intent();
@@ -547,7 +548,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testProcessPendingFragmentIntent_SubpageFragment_InstantiatesWithThemedContext() {
         Intent intent = new Intent();
@@ -586,7 +587,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnCreateInitialDetailFragment_SettingsInTab_TwoColumnMode() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -611,7 +612,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnCreateInitialDetailFragment_SettingsInTab_SingleColumnMode() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -636,7 +637,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testUpdateHeaderPaneFocusability() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -679,7 +680,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testEmptyBackStack_InTwoColumnMode_EnsuresInitialDetailFragment() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -715,7 +716,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testEmptyBackStack_InSingleColumnMode_ClosesSlidingPane() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -785,7 +786,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnCreateInitialDetailFragment_withInitialUrl() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -823,7 +824,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_delegatesToSettingsNavigation() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -856,7 +857,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_urlNavDisabled_fallsBackToParent() {
@@ -886,7 +887,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_nullFragment_fallsBackToParent() {
         mBlankUiActivityTestRule.launchActivity(null);
@@ -916,7 +917,7 @@ public class MultiColumnSettingsUnitTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_invalidFragmentClass_fallsBackToParent() {
         mBlankUiActivityTestRule.launchActivity(null);
