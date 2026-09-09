@@ -30,6 +30,13 @@ enum DismissOverlayReason {
   kBackgroundClick = 1,
 };
 
+struct SuggestedAction {
+  // Unique identifier for the action.
+  mojo_base.mojom.UnguessableToken id;
+  // Display title shown on the action chip.
+  string title;
+};
+
 // `chrome-untrusted://glic/selection-overlay/` WebUI calls this interface to
 // setup the mojo channel.
 interface SelectionOverlayPageHandlerFactory {
@@ -63,6 +70,17 @@ interface SelectionOverlayPageHandler {
 
   // Enables/disables the live blurring of the background
   SetLiveBlur(bool enabled);
+
+  // The user submits a prompt (e.g. from the input box). This prompt will be
+  // sent to the Glic side panel to be submitted to gemini.google.com and
+  // processed server-side.
+  SubmitPrompt(string prompt);
+
+  // Requests suggested actions from the browser for the current selection.
+  GetSuggestedActions() => (array<SuggestedAction> actions);
+
+  // The user executes a suggested action by ID.
+  ExecuteSuggestedAction(mojo_base.mojom.UnguessableToken action_id);
 };
 
 // `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives

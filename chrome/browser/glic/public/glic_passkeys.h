@@ -37,6 +37,7 @@ namespace glic {
 
 class GlicExperimentalTriggeringCoordinator;
 class GlicInternalsPageHandler;
+class SelectionOverlayController;
 
 template <mojom::InvocationSource Source>
 class AndroidAutoSubmitPasskeyHelper;
@@ -67,6 +68,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class GlicExperimentalTriggeringCoordinator;
   friend class GlicCueTarget;
   friend class GlicSelectionObserver;
+  friend class SelectionOverlayController;
   friend class ::indigo::IndigoPageActionController;
   friend class ::ttc::AiOverlayTools;
   friend class ::skills::SkillsUiTabController;

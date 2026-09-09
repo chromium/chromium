@@ -9,8 +9,11 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -547,6 +550,60 @@ void SelectionOverlayController::SetLiveBlur(bool enabled) {
   SetLiveBlurImpl(enabled);
 }
 
+void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+    return;
+  }
+  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
+  if (service) {
+    GlicInvokeOptions options(glic::Target(*tab_),
+                              mojom::InvocationSource::kTextSelectionWidget);
+    options.prompts.push_back(prompt);
+    // Once the invoke fires that will close the selection overlay.
+    service->InvokeWithAutoSubmit(
+        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+  }
+}
+
+void SelectionOverlayController::GetSuggestedActions(
+    GetSuggestedActionsCallback callback) {
+  std::vector<selection::SuggestedActionPtr> actions;
+  suggested_actions_.clear();
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+    // TODO(dtapuska): These are placeholders for now.
+    auto explain_id = base::UnguessableToken::Create();
+    suggested_actions_[explain_id] =
+        "Explain the selection in a few sentences.";
+    actions.push_back(selection::SuggestedAction::New(explain_id, "Explain"));
+
+    auto summarize_id = base::UnguessableToken::Create();
+    suggested_actions_[summarize_id] =
+        "Summarize the selection in a few sentences.";
+    actions.push_back(
+        selection::SuggestedAction::New(summarize_id, "Summarize"));
+
+    auto create_image_id = base::UnguessableToken::Create();
+    suggested_actions_[create_image_id] =
+        "Create a cartoon styled image from the selection.";
+    actions.push_back(
+        selection::SuggestedAction::New(create_image_id, "Create Image"));
+  }
+  std::move(callback).Run(std::move(actions));
+}
+
+void SelectionOverlayController::ExecuteSuggestedAction(
+    const base::UnguessableToken& action_id) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+    return;
+  }
+  auto it = suggested_actions_.find(action_id);
+  if (it == suggested_actions_.end()) {
+    receiver_.ReportBadMessage("Unknown suggested action ID.");
+    return;
+  }
+  SubmitPrompt(it->second);
+}
+
 void SelectionOverlayController::Reset() {
   receiver_.reset();
   page_.reset();
@@ -554,6 +611,7 @@ void SelectionOverlayController::Reset() {
   redacted_screenshot_.reset();
   screenshot_available_ = false;
   selected_regions_.clear();
+  suggested_actions_.clear();
   tab_context_.reset();
   capture_region_observer_.reset();
   options_.reset();

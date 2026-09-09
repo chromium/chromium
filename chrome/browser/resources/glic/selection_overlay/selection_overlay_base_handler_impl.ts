@@ -1,6 +1,7 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {SelectedRegion} from '/lens/selection_overlay_base_handler.js';
@@ -8,7 +9,7 @@ import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay
 import {calculateCenterRotatedBox} from '/lens/selection_utils.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {SelectedRegionMojoType} from './selection_overlay.mojom-webui.js';
+import type {SelectedRegionMojoType, SuggestedAction} from './selection_overlay.mojom-webui.js';
 
 function generateRandomHexId(): string {
   return Array
@@ -149,5 +150,26 @@ export class SelectionOverlayBaseHandlerImpl extends
   deleteRegion(id: string, source: RegionSource): void {
     const proxy = BrowserProxyImpl.getInstance();
     proxy.handler.deleteRegion(id, source === RegionSource.KEYBOARD);
+  }
+
+  submitPrompt(prompt: string): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.submitPrompt(prompt);
+  }
+
+  async getSuggestedActions(): Promise<SuggestedAction[]> {
+    const {actions} =
+        await BrowserProxyImpl.getInstance().handler.getSuggestedActions();
+    return actions;
+  }
+
+  executeSuggestedAction(actionId: UnguessableToken): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.executeSuggestedAction(actionId);
+  }
+
+  dismissOverlay(reason: number): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.dismissOverlay(reason);
   }
 }

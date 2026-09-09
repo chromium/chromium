@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
@@ -13,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_untrusted_resources.h"
 #include "chrome/grit/glic_untrusted_resources_map.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
@@ -93,11 +95,16 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
   html_source->AddBoolean("enableMultiRegionSelection", true);
   html_source->AddLocalizedString("close", IDS_CLOSE);
+  html_source->AddLocalizedString("askGemini",
+                                  IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
   html_source->AddResourcePath("glic_region_selection_cursor_icon.svg",
                                IDR_GLIC_REGION_SELECTION_CURSOR_ICON);
   html_source->AddBoolean(
       "lineSelection",
       base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine));
+  html_source->AddBoolean(
+      "enableSelectionOverlayPrompt",
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt));
 
   // TODO(b/489801993): Refactor shared resources into a common directory to
   // avoid manual path concatenation for Lens and the Glic selection overlay.

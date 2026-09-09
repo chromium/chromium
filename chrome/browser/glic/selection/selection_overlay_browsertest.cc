@@ -4,6 +4,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -75,6 +77,60 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
       "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 3);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
+                       SuggestedActionsDisabledByDefault) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+
+  base::test::TestFuture<std::vector<selection::SuggestedActionPtr>> future;
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->GetSuggestedActions(future.GetCallback());
+  auto actions = future.Take();
+  EXPECT_TRUE(actions.empty());
+}
+
+class SelectionOverlayPromptBrowserTest : public GlicBrowserTest {
+ public:
+  SelectionOverlayPromptBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kGlicCaptureRegion,
+         ::features::kGlicSelectionOverlayPrompt},
+        {});
+  }
+  ~SelectionOverlayPromptBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       SuggestedActionsWhenEnabled) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+
+  base::test::TestFuture<std::vector<selection::SuggestedActionPtr>> future;
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->GetSuggestedActions(future.GetCallback());
+  auto actions = future.Take();
+  ASSERT_EQ(actions.size(), 3u);
+  EXPECT_FALSE(actions[0]->id.is_empty());
+  EXPECT_EQ(actions[0]->title, "Explain");
+  EXPECT_FALSE(actions[1]->id.is_empty());
+  EXPECT_EQ(actions[1]->title, "Summarize");
+  EXPECT_FALSE(actions[2]->id.is_empty());
+  EXPECT_EQ(actions[2]->title, "Create Image");
+  EXPECT_NE(actions[0]->id, actions[1]->id);
+  EXPECT_NE(actions[1]->id, actions[2]->id);
 }
 
 }  // namespace glic

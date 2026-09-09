@@ -133,6 +133,9 @@ class SelectionOverlayController
   void ClosePreselectionBubble() override;
   void AddBackgroundBlur() override;
   void SetLiveBlur(bool enabled) override;
+  void SubmitPrompt(const std::string& prompt) override;
+  void GetSuggestedActions(GetSuggestedActionsCallback callback) override;
+  void ExecuteSuggestedAction(const base::UnguessableToken& action_id) override;
 
  private:
   void OnScreenshotTaken(const SkBitmap& bitmap);
@@ -173,6 +176,8 @@ class SelectionOverlayController
   // `initial_screenshot_`.
   base::flat_map<base::UnguessableToken, selection::SelectedRegionPtr>
       selected_regions_;
+  // Maps suggested action IDs to prompt strings.
+  base::flat_map<base::UnguessableToken, std::string> suggested_actions_;
 
   ui::ScopedUnownedUserData<SelectionOverlayController>
       scoped_unowned_user_data_;
