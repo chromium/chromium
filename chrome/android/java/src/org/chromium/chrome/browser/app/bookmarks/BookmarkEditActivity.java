@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -80,7 +81,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
     private @Nullable MenuItem mDeleteButton;
-    private @Nullable MenuItem mCloseButton;
+    private @Nullable View mCloseButton;
     private FrameLayout mFolderPickerRowContainer;
 
     private @Nullable String mInitialTitle;
@@ -140,24 +141,44 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(!isDesktopDialog);
-
-        View shadow = findViewById(R.id.shadow);
-        View scrollView = findViewById(R.id.scroll_view);
-        scrollView
-                .getViewTreeObserver()
-                .addOnScrollChangedListener(
-                        () ->
-                                shadow.setVisibility(
-                                        scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE));
-
         boolean isFolder = item.isFolder();
         TextView folderTitle = findViewById(R.id.folder_title);
         folderTitle.setText(isFolder ? R.string.bookmark_parent_folder : R.string.bookmark_folder);
         mUrlEditText.setVisibility(isFolder ? View.GONE : View.VISIBLE);
-        getSupportActionBar().setTitle(isFolder ? R.string.edit_folder : R.string.edit_bookmark);
+
+        if (isDesktopDialog) {
+            TextView titleView = findViewById(R.id.title);
+            titleView.setText(isFolder ? R.string.edit_folder : R.string.edit_bookmark);
+            mCloseButton = findViewById(R.id.close_button);
+            if (mCloseButton != null) {
+                mCloseButton.setOnClickListener(
+                        (v) -> {
+                            recordOutcome(BookmarkEditOutcome.CLOSED);
+                            finish();
+                        });
+            }
+        } else {
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+            assumeNonNull(getSupportActionBar())
+                    .setTitle(isFolder ? R.string.edit_folder : R.string.edit_bookmark);
+
+            View shadow = findViewById(R.id.shadow);
+            View scrollView = findViewById(R.id.scroll_view);
+            scrollView
+                    .getViewTreeObserver()
+                    .addOnScrollChangedListener(
+                            () ->
+                                    shadow.setVisibility(
+                                            scrollView.getScrollY() > 0
+                                                    ? View.VISIBLE
+                                                    : View.GONE));
+            mEdgeToEdgePadAdjuster =
+                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                            scrollView, getEdgeToEdgeSupplier());
+        }
+
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
@@ -195,10 +216,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
                         finish();
                     });
         }
-
-        mEdgeToEdgePadAdjuster =
-                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                        scrollView, getEdgeToEdgeSupplier());
         updateViewContent(false);
 
         if (isDesktopDialog) {
@@ -206,6 +223,10 @@ public class BookmarkEditActivity extends SnackbarActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
             getWindow().setDimAmount(Color.alpha(scrimColor) / 255.0f);
+            getWindow()
+                    .setLayout(
+                            WindowManager.LayoutParams.WRAP_CONTENT,
+                            WindowManager.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -227,16 +248,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
-            mCloseButton =
-                    menu.add(R.string.close)
-                            .setIcon(
-                                    UiUtils.getTintedDrawable(
-                                            this,
-                                            R.drawable.material_ic_close_24dp,
-                                            R.color.default_icon_color_tint_list))
-                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        } else {
+        if (!BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             mDeleteButton =
                     menu.add(R.string.bookmark_toolbar_delete)
                             .setIcon(
@@ -245,9 +257,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
                                             R.drawable.ic_delete_fill_24dp,
                                             R.color.default_icon_color_tint_list))
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            return super.onCreateOptionsMenu(menu);
         }
-
-        return super.onCreateOptionsMenu(menu);
+        return false;
     }
 
     @Override
@@ -255,10 +267,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (item == mDeleteButton) {
             recordOutcome(BookmarkEditOutcome.DELETED);
             mModel.deleteBookmark(mBookmarkId);
-            finish();
-            return true;
-        } else if (item == mCloseButton) {
-            recordOutcome(BookmarkEditOutcome.CLOSED);
             finish();
             return true;
         } else if (item.getItemId() == android.R.id.home) {
@@ -359,7 +367,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     }
 
     @VisibleForTesting
-    @Nullable MenuItem getCloseButton() {
+    @Nullable View getCloseButton() {
         return mCloseButton;
     }
 
@@ -397,6 +405,15 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            View container = mFolderSelectRow.findViewById(R.id.container);
+            if (container != null
+                    && container.getLayoutParams() instanceof MarginLayoutParams marginParams) {
+                marginParams.setMarginStart(0);
+                marginParams.setMarginEnd(0);
+                container.setLayoutParams(marginParams);
+            }
+        }
         PropertyModelChangeProcessor.create(
                 mFolderSelectRowModel, mFolderSelectRow, ImprovedBookmarkRowViewBinder::bind);
 
@@ -443,5 +460,20 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     PropertyModel getFolderSelectRowPropertyModelForTesting() {
         return mFolderSelectRowModel;
+    }
+
+    @Override
+    protected void applyThemeOverlays() {
+        super.applyThemeOverlays();
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_DialogWhenLarge_ContentWrapping);
+        }
+    }
+
+    @Override
+    protected boolean wrapContentWithEdgeToEdgeLayout() {
+        // Floating modal dialogs should not be wrapped edge-to-edge.
+        return super.wrapContentWithEdgeToEdgeLayout()
+                && !BookmarkUtils.isDesktopBookmarksDialogEnabled();
     }
 }

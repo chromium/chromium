@@ -629,7 +629,6 @@ chrome_java_resources = [
   "java/res/layout/webapk_update_report_abuse_custom_view.xml",
   "java/res/menu/app_specific_history_manager_menu.xml",
   "java/res/menu/bookmark_folder_picker_menu.xml",
-  "java/res/menu/bookmark_folder_picker_menu_desktop.xml",
   "java/res/menu/bookmark_toolbar_menu_improved.xml",
   "java/res/menu/history_manager_menu.xml",
   "java/res/raw/back_gesture_arrow_animation.json",

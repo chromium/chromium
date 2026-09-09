@@ -41,7 +41,8 @@ public class BookmarkViewUtils {
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             return UiUtils.getTintedDrawable(context, R.drawable.ic_reading_list_folder_24dp, tint);
         } else if (bookmarkId.getType() == BookmarkType.NORMAL
-                && Objects.equals(bookmarkId, bookmarkModel.getDesktopFolderId())) {
+                && Objects.equals(bookmarkId, bookmarkModel.getDesktopFolderId())
+                && !BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return UiUtils.getTintedDrawable(context, R.drawable.ic_toolbar_24dp, tint);
         }
 
@@ -147,7 +148,8 @@ public class BookmarkViewUtils {
     /** Return the background color for the given {@link BookmarkType}. */
     public static @ColorInt int getIconBackground(
             Context context, BookmarkModel bookmarkModel, BookmarkItem item) {
-        if (bookmarkModel.isSpecialFolder(item)) {
+        if (bookmarkModel.isSpecialFolder(item)
+                || BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return SemanticColorUtils.getColorPrimaryContainer(context);
         } else {
             return SemanticColorUtils.getColorSurfaceContainerLow(context);
@@ -157,7 +159,8 @@ public class BookmarkViewUtils {
     /** Return the icon tint for the given {@link BookmarkType}. */
     public static ColorStateList getIconTint(
             Context context, BookmarkModel bookmarkModel, BookmarkItem item) {
-        if (bookmarkModel.isSpecialFolder(item)) {
+        if (bookmarkModel.isSpecialFolder(item)
+                || BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
             return ColorStateList.valueOf(
                     SemanticColorUtils.getDefaultIconColorOnAccent1Container(context));
         } else {

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -71,7 +73,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                 ImprovedBookmarkRowViewBinder::bind);
         mAdapter.registerType(
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
-                ImprovedBookmarkRow::buildCompactRow,
+                this::buildCompactRow,
                 ImprovedBookmarkRowViewBinder::bind);
         mAdapter.registerType(
                 ViewType.SECTION_HEADER,
@@ -96,30 +98,38 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                         isFromBookmarkDialog);
 
         if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
-            Toolbar toolbar = mView.findViewById(R.id.toolbar);
-            toolbar.setNavigationOnClickListener(
-                    (v) -> {
-                        if (!mMediator.onBackPressed()) {
-                            if (mContext instanceof Activity activity) {
-                                activity.finish();
-                            } else {
-                                finishRunnable.run();
+            View backButton = mView.findViewById(R.id.back_button);
+            if (backButton != null) {
+                backButton.setOnClickListener(
+                        (v) -> {
+                            if (!mMediator.onBackPressed()) {
+                                if (mContext instanceof Activity activity) {
+                                    activity.finish();
+                                    activity.overridePendingTransition(0, 0);
+                                } else {
+                                    finishRunnable.run();
+                                }
                             }
-                        }
-                    });
+                        });
+            }
+        } else {
+            FadingShadowView shadow = mView.findViewById(R.id.shadow);
+            if (shadow != null) {
+                shadow.init(
+                        mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
+                mRecyclerView.setOnScrollListener(
+                        new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                super.onScrolled(recyclerView, dx, dy);
+                                shadow.setVisibility(
+                                        mRecyclerView.canScrollVertically(-1)
+                                                ? View.VISIBLE
+                                                : View.GONE);
+                            }
+                        });
+            }
         }
-
-        FadingShadowView shadow = mView.findViewById(R.id.shadow);
-        shadow.init(mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
-        mRecyclerView.setOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        shadow.setVisibility(
-                                mRecyclerView.canScrollVertically(-1) ? View.VISIBLE : View.GONE);
-                    }
-                });
     }
 
     /** Destroys the coordinator. */
@@ -133,7 +143,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     }
 
     /** Returns the {@link Toolbar} for the folder picker. */
-    public Toolbar getToolbar() {
+    public @Nullable Toolbar getToolbar() {
         return mView.findViewById(R.id.toolbar);
     }
 
@@ -158,12 +168,34 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     // Building rows for the recycler view.
 
+    View buildCompactRow(ViewGroup parent) {
+        View row = ImprovedBookmarkRow.buildCompactRow(parent);
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            View container = row.findViewById(R.id.container);
+            if (container != null
+                    && container.getLayoutParams() instanceof MarginLayoutParams marginParams) {
+                marginParams.setMarginStart(0);
+                marginParams.setMarginEnd(0);
+                container.setLayoutParams(marginParams);
+            }
+        }
+        return row;
+    }
+
     View buildSectionHeaderView(ViewGroup parent) {
         int layoutId =
                 mBookmarkModel.areAccountBookmarkFoldersActive()
                         ? R.layout.bookmark_section_header_v2
                         : R.layout.bookmark_section_header;
-        return LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+            view.setPaddingRelative(0, view.getPaddingTop(), 0, view.getPaddingBottom());
+            if (view.getLayoutParams() instanceof MarginLayoutParams marginParams) {
+                marginParams.topMargin = 0;
+                view.setLayoutParams(marginParams);
+            }
+        }
+        return view;
     }
 
     // BackPressHandler implementation.

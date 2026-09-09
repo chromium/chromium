@@ -193,6 +193,13 @@ found in the LICENSE file.
         <item name="android:navigationBarDividerColor">@null</item>
         <item name="android:windowLightNavigationBar">false</item>
     </style>
+    <!-- Clears fixed-height constraints so dialog wraps content to spec. -->
+    <style
+        name="ThemeOverlay.Chromium.DialogWhenLarge.ContentWrapping"
+        parent="">
+        <item name="windowFixedHeightMajor">@null</item>
+        <item name="windowFixedHeightMinor">@null</item>
+    </style>
 
     <!-- Theme variation for low-end devices.
 
