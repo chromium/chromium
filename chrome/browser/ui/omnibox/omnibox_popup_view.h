@@ -85,7 +85,7 @@ class OmniboxPopupView {
   virtual void OnTabChanged(content::WebContents* contents) {}
 
   // Called when the omnibox gains focus.
-  virtual void OnFocus(bool query_zps, bool select_all = false) {}
+  virtual void OnFocus(bool query_zps) {}
 
   // Called when the omnibox loses focus.
   virtual void OnBlur() {}

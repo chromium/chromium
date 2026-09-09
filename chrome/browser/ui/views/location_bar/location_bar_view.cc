@@ -1659,19 +1659,17 @@ void LocationBarView::OnVisibleBoundsChanged() {
 }
 
 void LocationBarView::OnFocus() {
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  bool is_user_initiated = true;
+  if (IsFullWebUiOmniboxReady()) {
     // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for
-    // the WebUI omnibox. FocusManager calls `OnFocus()` during tab traversal
-    // and focus restoration. Pass `is_user_initiated = false` to match native
-    // `views::Textfield::OnFocus()` behavior so traversal focuses the omnibox
-    // and selects text without triggering an unexpected Zero-Prefix Suggestion
-    // (ZPS) query.
-    omnibox_view_->SetFocus(/*is_user_initiated=*/false);
-  } else {
-    // This is only called when the user explicitly focuses the location bar.
-    // Renderer-initiated focuses go through the `FocusLocation()` call instead.
-    omnibox_view_->SetFocus(/*is_user_initiated=*/true);
+    // the WebUI omnibox, so `OnFocus()` is called for both user-initiated focus
+    // (e.g. Tab traversal) and focus restoration (e.g. closing a bubble/menu).
+    // If the popup is already open, do not treat focus restoration as a new
+    // user-initiated focus to prevent redundant Zero-Prefix Suggestion (ZPS)
+    // queries or clobbering existing input.
+    is_user_initiated = !GetOmniboxController()->IsPopupOpen();
   }
+  omnibox_view_->SetFocus(is_user_initiated);
 }
 
 void LocationBarView::OnPaintBorder(gfx::Canvas* canvas) {

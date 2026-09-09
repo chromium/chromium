@@ -839,6 +839,7 @@ export class OmniboxPopupSearchboxElement extends
    */
   private onSetInputState_(state: OmniboxInputState) {
     markOnce('OmniboxPopupSearchboxElement::onSetInputState_');
+    const isTabSwitch = this.tabId_ !== state.tabId;
     this.$.input.setInputText(state.text);
     this.userInputInProgress_ = state.userInputInProgress;
     this.hasUserInput_ = state.userInputInProgress && !!state.text.trim();
@@ -854,16 +855,14 @@ export class OmniboxPopupSearchboxElement extends
     // Clear edit history and set baseline text on hard state resets (e.g. tab
     // switch, revert), but preserve active edit history if an IPC arrives
     // while the user is actively typing in the same tab.
-    if (state.isTabSwitch || !state.userInputInProgress) {
+    if (isTabSwitch || !state.userInputInProgress) {
       this.textfieldModel_.setInitialText(state.text, state.selection);
     }
     this.updateEditHistoryState_();
 
-    // Clear stale results on tab switch or when losing focus, so the dropdown
-    // doesn't stay open from a previous tab when switching tabs.
-    if (state.isTabSwitch || !state.isFocused) {
-      this.clearAutocompleteMatches();
-    }
+    // Clear any stale results and close the dropdown on a hard state reset.
+    // Clear results here since focusout event may not fire.
+    this.clearAutocompleteMatches();
 
     this.isLogicallyFocused_ = state.isFocused;
 
@@ -921,28 +920,20 @@ export class OmniboxPopupSearchboxElement extends
   /**
    * Called by C++ via `SetFocus` Mojo IPC when the browser refocuses the
    * Omnibox while the popup is already open (or during tab restoration). If the
-   * document is visible, focuses the input element while preserving the
-   * active selection range. If hidden, defers the focus action until
-   * `visibilitychange`.
+   * document is visible, focuses and selects all input text immediately.
+   * If hidden, defers the action until `visibilitychange`.
    */
-  private onSetFocus_(
-      isFocused: boolean, queryZps: boolean = false,
-      selectAll: boolean = false) {
+  private onSetFocus_(isFocused: boolean, queryZps: boolean = false) {
     this.isLogicallyFocused_ = isFocused;
     if (isFocused) {
       if (document.visibilityState === 'visible') {
         this.deferredFocusAction_ = null;
         this.$.input.focus();
-        if (selectAll) {
-          this.getInputElement().select();
-        }
+        this.getInputElement().select();
       } else {
-        // Defer focusing (and selecting text if selectAll is true) if the
-        // document is currently hidden, as DOM focus calls on hidden documents
-        // may be ignored.
-        this.deferredFocusAction_ = selectAll ?
-            DeferredFocusAction.FOCUS_AND_SELECT :
-            DeferredFocusAction.FOCUS;
+        // Defer focusing and selecting text if the document is currently
+        // hidden, as DOM focus calls on hidden documents may be ignored.
+        this.deferredFocusAction_ = DeferredFocusAction.FOCUS_AND_SELECT;
       }
       if (queryZps && !this.userInputInProgress_ && !this.dropdownIsVisible) {
         this.queryAutocomplete(
