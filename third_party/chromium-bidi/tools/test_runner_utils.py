@@ -116,6 +116,24 @@ def get_node_binary_path(node_py_path: str | None = None) -> str:
     )
 
 
+def get_default_chromedriver_bin() -> str | None:
+    """Returns the default ChromeDriver binary path if available."""
+    if os.environ.get("CHROMEDRIVER_BIN"):
+        return os.environ["CHROMEDRIVER_BIN"]
+    repo_root = get_repo_root()
+    candidate = os.path.abspath(
+        os.path.join(repo_root, "..", "..", "out", "Default", "chromedriver")
+    )
+    if os.path.exists(candidate):
+        return candidate
+    candidate = os.path.abspath(
+        os.path.join(repo_root, "out", "Default", "chromedriver")
+    )
+    if os.path.exists(candidate):
+        return candidate
+    return None
+
+
 def strip_leading_dashes(args: list[str]) -> list[str]:
     """Strips leading '--' from an arguments list."""
     res = list(args)

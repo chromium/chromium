@@ -60,16 +60,13 @@ async def test_session_status(websocket):
 
 
 @pytest.mark.asyncio
+@pytest.mark.xfail(reason="TODO: http://b/343683918")
 async def test_channel_non_empty_static_command(websocket):
     command_id = await send_JSON_command(
         websocket,
         {"method": "session.status", "params": {}, "goog:channel": "SOME_CHANNEL"},
     )
     resp = await read_JSON_message(websocket)
-
-    if "build" in resp["result"]:
-        # Heuristic to detect chromedriver.
-        pytest.xfail(reason="TODO: http://b/343683918")
 
     assert resp == AnyExtending(
         {

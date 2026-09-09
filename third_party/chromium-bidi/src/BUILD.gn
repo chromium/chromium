@@ -220,23 +220,6 @@ ts_library("unit_tests") {
   ]
 }
 
-bidi_foundation_module("bidi_server") {
-  sources = [
-    "bidiServer/BrowserInstance.ts",
-    "bidiServer/MapperCdpConnection.ts",
-    "bidiServer/PipeTransport.ts",
-    "bidiServer/SimpleTransport.ts",
-    "bidiServer/WebSocketServer.ts",
-    "bidiServer/index.ts",
-    "bidiServer/reader.ts",
-  ]
-  deps = [
-    ":cdp",
-    ":protocol",
-    ":utils",
-  ]
-}
-
 bidi_foundation_module("chromium_bidi") {
   sources = [ "index.ts" ]
   deps = [
@@ -253,7 +236,6 @@ bidi_foundation_module("chromium_bidi") {
 group("all") {
   testonly = true
   deps = [
-    ":bidi_server",
     ":chromium_bidi",
     ":mapper_bundle",
     ":unit_tests",

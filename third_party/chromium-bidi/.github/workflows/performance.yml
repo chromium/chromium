@@ -132,15 +132,13 @@ jobs:
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   e2e-perf-metric:
-    name: E2e ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
+    name: E2e ${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest, macos-latest]
         head: [headful, 'new-headless', 'old-headless']
-        # `cd` runs e2e via `chromedriver`. `node` runs tests using `NodeJS` runner.
-        kind: [cd, node]
         exclude:
           - os: ubuntu-latest
             head: headful
@@ -179,21 +177,20 @@ jobs:
         timeout-minutes: 20
         env:
           BROWSER_BIN: ${{ matrix.head == 'old-headless' && steps.browser.outputs.chrome-headless-shell || steps.browser.outputs.chrome }}
-          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           METRICS_JSON_FILE: e2e_perf_metrics.json
           # Reduce runs on macOS to balance execution time and flakiness,
           # while maintaining sufficient signal for performance monitoring.
           ITERATIONS: ${{ matrix.os == 'macos-latest' && 5 || 15 }}
           OS: ${{ matrix.os }}
           HEAD: ${{ matrix.head }}
-          RUNNER: ${{ matrix.kind }}
+          RUNNER: cd
         run: |
           npm run e2e:${{ matrix.head }} -- tests/performance/ -s
           cat e2e_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: e2e-perf-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
+          name: e2e-perf-metrics-${{ matrix.os }}-${{ matrix.head }}
           path: e2e_perf_metrics.json
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1

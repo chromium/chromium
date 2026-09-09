@@ -28,7 +28,7 @@ import sys
 import threading
 from typing import IO
 
-from test_runner_utils import get_node_binary_path, get_repo_root
+from test_runner_utils import get_default_chromedriver_bin, get_repo_root
 
 
 def resolve_binary_path(path: str | None) -> str | None:
@@ -64,7 +64,7 @@ def get_log_file_path(suffix: str) -> str:
 
 
 class BiDiServerProcess:
-    """Manages the lifecycle of a WebDriver BiDi server or ChromeDriver process."""
+    """Manages the lifecycle of a ChromeDriver process."""
 
     def __init__(
         self,
@@ -89,11 +89,7 @@ class BiDiServerProcess:
             browser_bin or os.environ.get("BROWSER_BIN")
         )
         self.chromedriver_bin = resolve_binary_path(
-            chromedriver_bin or os.environ.get("CHROMEDRIVER_BIN")
-        )
-        self.use_chromedriver = (
-            bool(self.chromedriver_bin)
-            or os.environ.get("CHROMEDRIVER", "").lower() == "true"
+            chromedriver_bin or get_default_chromedriver_bin()
         )
         self.verbose = verbose
         self.log_file = log_file
@@ -108,14 +104,6 @@ class BiDiServerProcess:
 
     def start(self) -> BiDiServerProcess:
         env = os.environ.copy()
-        debug = env.get("DEBUG", "bidi:*")
-        env["DEBUG"] = debug
-        env["DEBUG_COLORS"] = env.get("DEBUG_COLORS", "false")
-        env["DEBUG_DEPTH"] = env.get("DEBUG_DEPTH", "10")
-        env["NODE_DEBUG"] = debug
-        env["NODE_OPTIONS"] = env.get(
-            "NODE_OPTIONS", "--unhandled-rejections=strict --trace-uncaught"
-        )
         env["PORT"] = self.port
         if self.browser_bin:
             env["BROWSER_BIN"] = self.browser_bin
@@ -123,51 +111,30 @@ class BiDiServerProcess:
             env["CHROMEDRIVER_BIN"] = self.chromedriver_bin
             env["CHROMEDRIVER"] = "true"
 
-        if self.use_chromedriver:
-            chromedriver_path = self.chromedriver_bin or resolve_binary_path(
-                "chromedriver"
+        chromedriver_path = self.chromedriver_bin or resolve_binary_path("chromedriver")
+        mapper_path = os.path.abspath(
+            os.path.join(
+                self.gen_dir,
+                "third_party",
+                "chromium-bidi",
+                "src",
+                "mapperTab.js",
             )
+        )
+        if not os.path.exists(mapper_path):
             mapper_path = os.path.abspath(
-                os.path.join(
-                    self.gen_dir,
-                    "third_party",
-                    "chromium-bidi",
-                    "src",
-                    "mapperTab.js",
-                )
+                os.path.join(self.gen_dir, "src", "mapperTab.js")
             )
-            if not os.path.exists(mapper_path):
-                mapper_path = os.path.abspath(
-                    os.path.join(self.gen_dir, "src", "mapperTab.js")
-                )
 
-            cmd = [
-                chromedriver_path,
-                f"--port={self.port}",
-                f"--bidi-mapper-path={mapper_path}",
-                "--readable-timestamp",
-            ]
-            if self.verbose:
-                cmd.append("--verbose")
-            cmd.extend(self.extra_args)
-        else:
-            node_bin = get_node_binary_path(self.node_py)
-            bidi_server_js = os.path.abspath(
-                os.path.join(
-                    self.gen_dir,
-                    "third_party",
-                    "chromium-bidi",
-                    "src",
-                    "bidiServer",
-                    "index.js",
-                )
-            )
-            if not os.path.exists(bidi_server_js):
-                bidi_server_js = os.path.abspath(
-                    os.path.join(self.gen_dir, "src", "bidiServer", "index.js")
-                )
-
-            cmd = [node_bin, bidi_server_js] + self.extra_args
+        cmd = [
+            chromedriver_path,
+            f"--port={self.port}",
+            f"--bidi-mapper-path={mapper_path}",
+            "--readable-timestamp",
+        ]
+        if self.verbose:
+            cmd.append("--verbose")
+        cmd.extend(self.extra_args)
 
         if self.log_file:
             self._log_handle = open(self.log_file, "a", encoding="utf-8")
@@ -199,7 +166,7 @@ class BiDiServerProcess:
     def _reader_thread(self, name: str, stream: IO | None):
         if stream is None:
             return
-        pattern = re.compile(r".*(BiDi server|ChromeDriver) was started successfully")
+        pattern = re.compile(r".*ChromeDriver was started successfully")
         try:
             for line in iter(stream.readline, ""):
                 self.server_logs.append(line)
@@ -250,9 +217,7 @@ def main():
     parser.add_argument("--node-py", help="Path to node.py")
     parser.add_argument("--port", default=os.environ.get("PORT", "8080"))
     parser.add_argument("--browser-bin", default=os.environ.get("BROWSER_BIN"))
-    parser.add_argument(
-        "--chromedriver-bin", default=os.environ.get("CHROMEDRIVER_BIN")
-    )
+    parser.add_argument("--chromedriver-bin", default=get_default_chromedriver_bin())
     parser.add_argument("--verbose", action="store_true", default=True)
     parser.add_argument("--log-file", help="Path to server log file")
     args, unknown = parser.parse_known_args()

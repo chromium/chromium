@@ -19,7 +19,6 @@
     "format:keep-sorted": "(git ls-files 2>/dev/null | grep -vE '^(wpt|third_party|playwright|puppeteer|out|node_modules)(/|$)' | xargs -r keep-sorted --mode=fix) || true",
     "format:prettier": "prettier --cache --write .",
     "format:py": "(command -v ruff_chromium >/dev/null && ruff_chromium check --fix . && ruff_chromium format .) || (PATH=\"../../third_party/depot_tools:$PATH\" ruff_chromium check --fix . && PATH=\"../../third_party/depot_tools:$PATH\" ruff_chromium format .)",
-    "prepare": "npm run build",
     "rdb-e2e": "rdb stream -new -realm chromium:public -- npm run e2e",
     "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
     "server": "npm run build && ./tools/run_bidi_server.py",
@@ -53,7 +52,6 @@
     "@types/chai": "5.2.3",
     "@types/node": "20.19.43",
     "@types/sinon": "22.0.0",
-    "@types/websocket": "1.0.10",
     "chai": "6.2.2",
     "devtools-protocol": "0.0.1692173",
     "eslint": "10.9.1",
@@ -70,8 +68,7 @@
     "semver": "7.8.5",
     "sinon": "22.1.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.69.0",
-    "websocket": "1.0.35"
+    "typescript-eslint": "8.69.0"
   },
   "overrides": {
     "eslint-plugin-import": {

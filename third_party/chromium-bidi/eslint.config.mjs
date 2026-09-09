@@ -220,7 +220,7 @@ export default defineConfig([
   {
     name: 'Test deps',
     files: ['**/*.ts'],
-    ignores: ['**/*.test.ts', 'src/bidiServer/**', 'tools/**'],
+    ignores: ['**/*.test.ts', 'tools/**'],
 
     rules: {
       'import/no-extraneous-dependencies': [

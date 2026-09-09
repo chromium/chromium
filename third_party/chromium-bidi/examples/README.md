@@ -17,10 +17,10 @@ python -m pip install --user -r requirements.txt
 
 The examples require WebDriver BiDi server running on the same host on port `8080`.
 
-The server (CDP-BiDi Mapper) can be built and run from `third_party/chromium-bidi`:
+The server (ChromeDriver with CDP-BiDi Mapper) can be built and run from `third_party/chromium-bidi`:
 
 ```sh
-autoninja -C ../../out/Default third_party/chromium-bidi:default
+autoninja -C ../../out/Default third_party/chromium-bidi:default chrome/test/chromedriver:chromedriver_server
 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ```
 

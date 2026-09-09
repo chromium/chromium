@@ -59,7 +59,7 @@ async def test_browsingContext_close_last_command(websocket, context_id):
         assert result["contexts"] == []
     except websockets.exceptions.ConnectionClosedError:
         # Chromedriver closes the connection after the last context (not
-        # counting the mapper tab) is closed. NodeJS runner does not.
+        # counting the mapper tab) is closed.
         pass
 
 

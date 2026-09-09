@@ -30,6 +30,7 @@ from run_bidi_server import (
     resolve_binary_path,
 )
 from test_runner_utils import (
+    get_default_chromedriver_bin,
     get_repo_root,
     setup_runtime_env,
     strip_leading_dashes,
@@ -43,9 +44,7 @@ def main():
     parser.add_argument("--gen-dir", default=None)
     parser.add_argument("--node-py", default=None)
     parser.add_argument("--browser-bin", default=os.environ.get("BROWSER_BIN"))
-    parser.add_argument(
-        "--chromedriver-bin", default=os.environ.get("CHROMEDRIVER_BIN")
-    )
+    parser.add_argument("--chromedriver-bin", default=get_default_chromedriver_bin())
     parser.add_argument(
         "--python-bin",
         default=os.environ.get("TESTING_PYTHON_BIN", "vpython3"),
@@ -94,7 +93,9 @@ def main():
     )
     node_py = os.path.abspath(args.node_py) if args.node_py else None
     browser_bin = resolve_binary_path(args.browser_bin)
-    chromedriver_bin = resolve_binary_path(args.chromedriver_bin)
+    chromedriver_bin = resolve_binary_path(
+        args.chromedriver_bin or get_default_chromedriver_bin()
+    )
 
     # Prepare runtime node_modules and package.json
     setup_runtime_env(gen_dir, src_dir=repo_root)
@@ -180,7 +181,7 @@ def main():
     try:
         if not server.wait_until_ready(timeout=10.0):
             print(
-                f"(run_e2e.py) BiDi server failed to start within timeout. Server log: {log_file}",
+                f"(run_e2e.py) ChromeDriver failed to start within timeout. Server log: {log_file}",
                 file=sys.stderr,
             )
             if server.server_logs:

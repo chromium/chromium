@@ -20,24 +20,6 @@ from permissions import query_permission, set_permission
 
 
 @pytest.mark.asyncio
-async def test_permissions_set_permission(
-    websocket, context_id, url_example, test_chromedriver_mode
-):
-    if test_chromedriver_mode:
-        pytest.xfail(reason="ChromeDriver handles permissions differently")
-
-    origin = get_origin(url_example)
-    await goto_url(websocket, context_id, url_example)
-    assert await query_permission(websocket, context_id, "geolocation") == "prompt"
-    resp = await set_permission(websocket, origin, {"name": "geolocation"}, "granted")
-    assert resp == {}
-    assert await query_permission(websocket, context_id, "geolocation") == "granted"
-    resp = await set_permission(websocket, origin, {"name": "geolocation"}, "prompt")
-    assert resp == {}
-    assert await query_permission(websocket, context_id, "geolocation") == "prompt"
-
-
-@pytest.mark.asyncio
 @pytest.mark.skip(reason="See chromium-bidi/issues#1610")
 async def test_permissions_set_permission_in_user_context(
     websocket, context_id, url_example, create_context

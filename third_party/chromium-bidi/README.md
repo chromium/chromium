@@ -221,10 +221,12 @@ To auto-format and lint files:
 
 ### Starting WebDriver BiDi Server
 
-First, build the target:
+ChromeDriver is used as the WebDriver BiDi server.
+
+First, build the targets:
 
 ```sh
-autoninja -C ../../out/Default third_party/chromium-bidi:default
+autoninja -C ../../out/Default third_party/chromium-bidi:default chrome/test/chromedriver:chromedriver_server
 ```
 
 Run the server:
@@ -238,46 +240,6 @@ By default, the server runs on port `8080`. Use the `PORT=` environment variable
 ```sh
 PORT=8081 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
 ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081
-```
-
-Use the `DEBUG` environment variable to see debug info:
-
-```sh
-DEBUG=* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
-```
-
-Use the `DEBUG_DEPTH` (default: `10`) environment variable to see debug deeply nested objects:
-
-```sh
-DEBUG_DEPTH=100 DEBUG=* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
-```
-
-Use the `CHANNEL=...` environment variable with one of the following values to run
-the specific Chrome channel: `stable`, `beta`, `canary`, `dev`, `local`. Default is
-`local`. The `local` channel means the pinned in `.browser` Chrome version will be
-downloaded if it is not yet in cache. Otherwise, the requested Chrome version should
-be installed.
-
-```sh
-CHANNEL=dev ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi
-```
-
-Use the CLI argument `--verbose` to have CDP events printed to the console. Note: you have to enable debugging output `bidi:mapper:debug:*` as well.
-
-```sh
-DEBUG=bidi:mapper:debug:* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --verbose
-```
-
-or
-
-```sh
-DEBUG=* ./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --verbose
-```
-
-To run the browser in headful mode:
-
-```sh
-./tools/run_bidi_server.py --gen-dir ../../out/Default/gen/third_party/chromium-bidi --port=8081 --headless=false
 ```
 
 ## Running
@@ -409,12 +371,6 @@ Run a specific test using the `-k` filter:
 ../../out/Default/bin/run_webdriver_bidi_e2e_tests -- -k <TestName>
 ```
 
-Use `CHROMEDRIVER` environment variable to run tests in `chromedriver` instead of NodeJS runner:
-
-```shell
-CHROMEDRIVER=true ../../out/Default/bin/run_webdriver_bidi_e2e_tests
-```
-
 Use the `PORT` environment variable to connect to another port:
 
 ```sh
@@ -483,12 +439,10 @@ The architecture is described in the
 [WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY)
 .
 
-There are 2 main modules:
+There are 2 main components:
 
-1. backend WS server in `src`. It runs webSocket server, and for each ws connection
-   runs an instance of browser with BiDi Mapper.
-2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the backend,
-   and map them to CDP commands.
+1. ChromeDriver (C++ server), which hosts the WebDriver BiDi WebSocket and HTTP endpoints and manages browser instances.
+2. Front-end BiDi Mapper in `src/bidiMapper` (bundled into `mapperTab.js`). It runs inside the browser, receives BiDi commands from ChromeDriver, and translates them to CDP commands.
 
 ## Contributing
 

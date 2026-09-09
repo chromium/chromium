@@ -53,7 +53,6 @@ To run a specific E2E test, use the following command:
 To debug a failing E2E test, try running it with different environment variables:
 
 - Set `HEADLESS` to `true`, `false`, or `old`.
-- Set `CHROMEDRIVER` to `true` or `false`.
 
 Each run should be done with `VERBOSE=true`. Inspect the latest log in the `logs`
 directory for errors.
