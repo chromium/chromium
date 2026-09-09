@@ -224,6 +224,21 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+try_.builder(
+    name = "mac-webdriver-bidi-rel",
+    description_html = "Runs webdriver bidi tests exactly like mac-rel",
+    mirrors = [
+        "ci/mac-webdriver-bidi-rel",
+    ],
+    gn_args = "ci/mac-webdriver-bidi-rel",
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-devtools@google.com",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+    main_list_view = "try",
+)
+
 try_.orchestrator_builder(
     name = "mac-gpu-rel",
     branch_selector = branches.selector.MAC_BRANCHES,

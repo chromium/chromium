@@ -1,2 +1,6 @@
 ci/linux-webdriver-bidi-rel
+ci/mac-webdriver-bidi-rel
+ci/win-webdriver-bidi-rel
 try/linux-webdriver-bidi-rel
+try/mac-webdriver-bidi-rel
+try/win-webdriver-bidi-rel

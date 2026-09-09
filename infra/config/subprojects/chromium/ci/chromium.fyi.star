@@ -2868,6 +2868,68 @@ ci.builder(
 )
 
 ci.builder(
+    name = "mac-webdriver-bidi-rel",
+    description_html = "Builder for WebDriver BiDi implementation",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/mac-arm64-rel"),
+    gn_args = "ci/mac-arm64-rel",
+    targets = targets.bundle(
+        targets = [
+            "webdriver_bidi_e2e_tests",
+            "webdriver_bidi_unittests",
+        ],
+        mixins = [
+            "mac_default_arm64",
+        ],
+        per_test_modifications = {
+            "webdriver_bidi_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
+    ),
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "webdriver",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)
+
+ci.builder(
+    name = "win-webdriver-bidi-rel",
+    description_html = "Builder for WebDriver BiDi implementation",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
+    gn_args = "ci/Win x64 Builder",
+    targets = targets.bundle(
+        targets = [
+            "webdriver_bidi_e2e_tests",
+            "webdriver_bidi_unittests",
+        ],
+        mixins = [
+            "win10",
+        ],
+        per_test_modifications = {
+            "webdriver_bidi_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+        },
+    ),
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "webdriver",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)
+
+ci.builder(
     name = "win-separate-renderer-fyi-rel",
     description_html = "Windows Release build and test with enable_separate_renderer_binary=true.",
     schedule = "with 6h interval",

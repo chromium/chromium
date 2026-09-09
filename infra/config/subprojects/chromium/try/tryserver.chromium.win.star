@@ -240,6 +240,20 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "win-webdriver-bidi-rel",
+    description_html = "Runs webdriver bidi tests exactly like win-rel",
+    mirrors = [
+        "ci/win-webdriver-bidi-rel",
+    ],
+    gn_args = "ci/win-webdriver-bidi-rel",
+    contact_team_email = "chrome-devtools@google.com",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "win32-clobber-rel",
     mirrors = [
         "ci/win32-archive-rel",

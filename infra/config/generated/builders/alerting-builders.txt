@@ -692,6 +692,7 @@ try/mac-separate-renderer-rel
 try/mac-swangle-chromium-try-x64
 try/mac-updater-try-builder-dbg
 try/mac-updater-try-builder-rel
+try/mac-webdriver-bidi-rel
 try/mac-x64-compile-dbg
 try/mac13-arm64-rel
 try/mac13-tests
@@ -740,6 +741,7 @@ try/win-swangle-try-x86
 try/win-updater-try-builder-dbg
 try/win-updater-try-builder-rel
 try/win-utr-tester
+try/win-webdriver-bidi-rel
 try/win-x64-libfuzzer-asan-rel-tests
 try/win10-dbg
 try/win11-rel
