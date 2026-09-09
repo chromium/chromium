@@ -31,6 +31,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   content::WebContents* GetWebContentsAt(size_t index) const override;
   std::optional<size_t> GetIndexOfWebContents(
       const content::WebContents* contents) const override;
+  content::WebContents* GetOpenerOfTabAt(size_t index) const override;
   tabs::TabIteratorRange GetTabIterator() const override;
   content::WebContents* GetInspectedWebContents() const override;
   ui::BaseWindow* GetWindow() const override;

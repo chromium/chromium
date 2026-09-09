@@ -26,14 +26,13 @@
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -199,15 +198,15 @@ void TerminalSource::StartDataRequest(
     content::WebContents* contents = wc_getter.Run();
     if (contents) {
       contents_url = contents->GetVisibleURL();
-      TabStripModel* tab_strip;
-      int tab_index;
-      extensions::ExtensionTabUtil::GetTabStripModel(contents, &tab_strip,
-                                                     &tab_index);
-      tabs::TabInterface* opener_tab = tab_strip->GetOpenerOfTabAt(tab_index);
-      if (opener_tab) {
-        CHECK(opener_tab->GetContents());
-        opener_background_color =
-            opener_tab->GetContents()->GetBackgroundColor();
+      ash::BrowserDelegate* browser =
+          ash::BrowserController::GetInstance()->GetBrowserForTab(contents);
+      std::optional<size_t> tab_index =
+          browser ? browser->GetIndexOfWebContents(contents) : std::nullopt;
+      content::WebContents* opener = tab_index.has_value()
+                                         ? browser->GetOpenerOfTabAt(*tab_index)
+                                         : nullptr;
+      if (opener) {
+        opener_background_color = opener->GetBackgroundColor();
       }
     }
     replacements["themeColor"] =

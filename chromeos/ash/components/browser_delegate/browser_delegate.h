@@ -88,6 +88,10 @@ class BrowserDelegate {
   virtual std::optional<size_t> GetIndexOfWebContents(
       const content::WebContents* contents) const = 0;
 
+  // Returns the opener WebContents for the tab at the given index, or nullptr
+  // if there is none.
+  virtual content::WebContents* GetOpenerOfTabAt(size_t index) const = 0;
+
   // Returns a range wrapper to iterate over all tabs in the browser.
   virtual tabs::TabIteratorRange GetTabIterator() const = 0;
 

@@ -44,6 +44,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/base_window.h"
 
 namespace ash {
@@ -112,6 +113,13 @@ std::optional<size_t> BrowserDelegateImpl::GetIndexOfWebContents(
   int index = browser_->tab_strip_model()->GetIndexOfWebContents(contents);
   return index == TabStripModel::kNoTab ? std::nullopt
                                         : std::optional<size_t>(index);
+}
+
+content::WebContents* BrowserDelegateImpl::GetOpenerOfTabAt(
+    size_t index) const {
+  tabs::TabInterface* opener =
+      browser_->tab_strip_model()->GetOpenerOfTabAt(index);
+  return opener ? opener->GetContents() : nullptr;
 }
 
 tabs::TabIteratorRange BrowserDelegateImpl::GetTabIterator() const {
