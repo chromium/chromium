@@ -152,7 +152,7 @@ void StartupLaunchInfoBarManagerImpl::CreateInfoBarForWebContents(
 bool StartupLaunchInfoBarManagerImpl::ShouldTrackBrowser(
     BrowserWindowInterface* browser) {
   return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
-         !browser->GetProfile()->IsIncognitoProfile() &&
+         !browser->GetProfile()->IsPrimaryOTRProfileWithRegularParent() &&
          !browser->GetProfile()->IsGuestSession();
 }
 

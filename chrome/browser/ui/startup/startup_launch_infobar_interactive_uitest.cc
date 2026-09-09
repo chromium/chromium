@@ -6,6 +6,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/startup_launch_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_launch_infobar_manager_impl.h"
@@ -13,6 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -123,4 +125,54 @@ IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest,
             "Startup.Launch.InfoBar.ForegroundOptIn.Interaction",
             StartupLaunchInfoBarInteraction::kDismiss, 1);
       }));
+}
+
+
+IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarInteractiveTest,
+                       InfoBarDoesNotAppearOnIncognitoNewTabs) {
+  base::HistogramTester histogram_tester;
+
+  // Create an Incognito browser before showing the infobar.
+  BrowserWindowInterface* incognito =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  EXPECT_TRUE(incognito->GetProfile()->IsIncognitoProfile());
+
+  RunTestSequence(
+      Do([this]() {
+        manager_->ShowInfoBars(
+            StartupLaunchInfoBarManager::InfoBarType::kForegroundOptIn);
+      }),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      InContext(BrowserElements::From(incognito)->GetContext(),
+                EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId)));
+}
+
+class StartupLaunchInfoBarIsolatedModeInteractiveTest
+    : public StartupLaunchInfoBarInteractiveTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupLaunchInfoBarInteractiveTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StartupLaunchInfoBarIsolatedModeInteractiveTest,
+                       InfoBarDoesNotAppearOnIsolatedModeNewTabs) {
+  base::HistogramTester histogram_tester;
+
+  // Create an Isolated Mode browser (using NewIncognitoWindow essentially)
+  BrowserWindowInterface* isolated =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  EXPECT_TRUE(isolated->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  RunTestSequence(
+      Do([this]() {
+        manager_->ShowInfoBars(
+            StartupLaunchInfoBarManager::InfoBarType::kForegroundOptIn);
+      }),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      InContext(BrowserElements::From(isolated)->GetContext(),
+                EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId)));
 }
