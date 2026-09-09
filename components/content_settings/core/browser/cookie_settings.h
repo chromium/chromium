@@ -70,8 +70,9 @@ class CookieSettings
   // Creates a new CookieSettings instance.
   // The caller is responsible for ensuring that |extension_scheme| is valid for
   // the whole lifetime of this instance.
-  // |is_incognito| indicates whether this is an incognito profile. It is not
-  // true for other types of off-the-record profiles like guest mode.
+  // |is_incognito| indicates whether this is an incognito (or isolated mode)
+  // profile. It is not true for other types of off-the-record profiles like
+  // guest mode.
   CookieSettings(
       HostContentSettingsMap* host_content_settings_map,
       PrefService* prefs,

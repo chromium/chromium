@@ -102,6 +102,7 @@ CookieSettingsFactory::BuildServiceInstanceFor(
           profile, scoped_refptr(host_content_settings_map));
 
   return new content_settings::CookieSettings(
-      host_content_settings_map, prefs, profile->IsIncognitoProfile(),
+      host_content_settings_map, prefs,
+      profile->IsPrimaryOTRProfileWithRegularParent(),
       compute_fedcm_sharing_permissions, extension_scheme);
 }

@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cookies/site_for_cookies.h"
@@ -135,6 +139,27 @@ TEST_F(CookieSettingsFactoryTest, GuestProfile) {
   EXPECT_TRUE(CookieSettingsFactory::GetForProfile(
                   profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true))
                   ->ShouldBlockThirdPartyCookies());
+}
+
+// Tests that cookie blocking is enabled by default for enterprise isolated mode
+// profiles.
+TEST_F(CookieSettingsFactoryTest, IsolatedModeProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  profile_.GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+
+  Profile* isolated_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(isolated_profile);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  scoped_refptr<content_settings::CookieSettings> isolated_settings =
+      CookieSettingsFactory::GetForProfile(isolated_profile);
+  EXPECT_TRUE(isolated_settings->ShouldBlockThirdPartyCookies());
 }
 
 #endif
