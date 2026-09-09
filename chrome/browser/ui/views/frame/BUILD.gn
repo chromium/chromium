@@ -619,6 +619,52 @@ source_set("tab_modal_dialog_host") {
   ]
 }
 
+source_set("tab_modal_dialog_host_impl") {
+  sources = [ "tab_modal_dialog_host.cc" ]
+  public_deps = [
+    ":tab_modal_dialog_host",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":multi_contents_resize_area",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/split_tabs",
+    "//components/web_modal",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("find_bar_owner_views") {
+  public = [ "find_bar_owner_views.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views:find_bar_owner",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("find_bar_owner_views_impl") {
+  sources = [ "find_bar_owner_views.cc" ]
+  public_deps = [
+    ":find_bar_owner_views",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/translate",
+    "//chrome/browser/ui/window_metadata",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
 source_set("contents_border_controller") {
   public = [ "contents_border_controller.h" ]
   public_deps = [ "//base" ]

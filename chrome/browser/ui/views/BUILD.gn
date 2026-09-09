@@ -93,6 +93,33 @@ source_set("bubble_anchor_util_views") {
   ]
 }
 
+source_set("bubble_anchor_util_views_impl") {
+  sources = [ "bubble_anchor_util_views.cc" ]
+  public_deps = [
+    ":bubble_anchor_util_views",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:bubble_anchor_util",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/payments",
+    "//chrome/browser/ui/views/permissions/chip",
+    "//chrome/browser/ui/views/picture_in_picture",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui",
+    "//components/content_settings/core/common:features",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
 source_set("dotted_icon") {
   public = [ "dotted_icon.h" ]
   sources = [ "dotted_icon.cc" ]

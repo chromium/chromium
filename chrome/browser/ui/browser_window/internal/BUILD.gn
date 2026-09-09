@@ -122,6 +122,7 @@ source_set("internal") {
       "//chrome/browser/ui/views/data_sharing",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/frame:contents_border_controller",
+      "//chrome/browser/ui/views/frame:find_bar_owner_views",
       "//chrome/browser/ui/views/fullscreen_control",
       "//chrome/browser/ui/views/interaction:impl",
       "//chrome/browser/ui/views/location_bar:impl",
