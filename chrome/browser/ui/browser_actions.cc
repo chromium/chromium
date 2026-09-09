@@ -1096,36 +1096,40 @@ void BrowserActions::InitializeChromeMenuActions() {
                 IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER))
             .Build());
 
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  auto* controller =
-                      tabs::VerticalTabStripStateController::From(bwi);
-                  bool collapse =
-                      controller->GetCollapseState() ==
-                      tabs::VerticalTabStripCollapseState::kExpanded;
-                  controller->RequestCollapse(collapse);
-                  if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
-                      chrome::ActionInvocationSource::kKeyboardShortcut) {
-                    base::RecordAction(base::UserMetricsAction(
-                        collapse ? "VerticalTabs_TabStrip_"
-                                   "KeyboardShortcutToggleCollapsed"
-                                 : "VerticalTabs_TabStrip_"
-                                   "KeyboardShortcutToggleUncollapsed"));
-                  } else {
-                    base::RecordAction(base::UserMetricsAction(
-                        collapse
-                            ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
-                            : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
-                  }
-                },
-                bwi))
-            .SetActionId(kActionToggleCollapseVertical)
-            .SetAccelerator(ui::Accelerator(
-                ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR))
-            .Build());
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* controller =
+                    tabs::VerticalTabStripStateController::From(bwi);
+                if (!controller) {
+                  // The controller is only instantiated for normal browsers.
+                  return;
+                }
+                bool collapse = controller->GetCollapseState() ==
+                                tabs::VerticalTabStripCollapseState::kExpanded;
+                controller->RequestCollapse(collapse);
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kKeyboardShortcut) {
+                  base::RecordAction(base::UserMetricsAction(
+                      collapse ? "VerticalTabs_TabStrip_"
+                                 "KeyboardShortcutToggleCollapsed"
+                               : "VerticalTabs_TabStrip_"
+                                 "KeyboardShortcutToggleUncollapsed"));
+                } else {
+                  base::RecordAction(base::UserMetricsAction(
+                      collapse
+                          ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
+                          : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
+                }
+              },
+              bwi))
+          .SetActionId(kActionToggleCollapseVertical)
+          .SetAccelerator(ui::Accelerator(
+              ui::VKEY_L, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR))
+          .SetEnabled(false)
+          .Build());
 
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
