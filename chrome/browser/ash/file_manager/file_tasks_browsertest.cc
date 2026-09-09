@@ -692,6 +692,11 @@ const FileSystemURL CreateOfficeFileSourceURL(Profile* profile,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test that the Fallback dialog can be shown when Quick Office is installed.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
+  // TODO(crbug.com/558941696): Fix and re-enable for guest profile.
+  if (profile_type() == TestProfileType::kGuest) {
+    GTEST_SKIP() << "Disabled for guest profile: crbug.com/558941696";
+  }
+
   if (profile_type() == TestProfileType::kIncognito) {
     GTEST_SKIP()
         << "There is no AppServiceProxy for incognito profiles as they are "
@@ -717,6 +722,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
+  // TODO(crbug.com/558941696): Fix and re-enable for guest profile.
+  if (profile_type() == TestProfileType::kGuest) {
+    GTEST_SKIP() << "Disabled for guest profile: crbug.com/558941696";
+  }
+
   if (profile_type() == TestProfileType::kIncognito) {
     GTEST_SKIP()
         << "There is no AppServiceProxy, which is required to check "
