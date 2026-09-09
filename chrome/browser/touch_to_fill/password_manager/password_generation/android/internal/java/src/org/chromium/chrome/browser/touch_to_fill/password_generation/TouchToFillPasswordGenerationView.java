@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProvi
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillUtil;
 import org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.GenerationCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 /**
  * This class is responsible for rendering the password generation bottom sheet. It is a View in
@@ -29,6 +31,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  */
 @NullMarked
 class TouchToFillPasswordGenerationView implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.TOUCH_TO_FILL_PASSWORD_GENERATION)
+                    .build();
+
     private final View mContent;
     private final Context mContext;
     private final TextView mPasswordView;
@@ -122,6 +129,11 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
