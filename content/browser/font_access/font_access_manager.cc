@@ -146,7 +146,14 @@ void FontAccessManager::EnumerateLocalFonts(
         base::ReadOnlySharedMemoryRegion());
     return;
   }
-  if (!rfh->frame_tree_node()->UpdateUserActivationState(
+
+  // Ensure the requesting document is still active and consume transient user
+  // activation to prevent stale/pending-deletion frames from consuming user
+  // gestures from newly committed documents or other frames in the frame tree.
+  if ((!rfh->IsActive() &&
+       base::FeatureList::IsEnabled(
+           blink::features::kFontAccessCheckFrameIsActive)) ||
+      !rfh->frame_tree_node()->UpdateUserActivationState(
           blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
           blink::mojom::UserActivationNotificationType::kNone)) {
     std::move(callback).Run(

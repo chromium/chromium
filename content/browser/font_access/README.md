@@ -17,7 +17,8 @@ It consists of the following parts:
  * `FontAccessManager`: `content::FontAccessManager` implements
    `blink::mojom::FontAccessManager`, providing a way to enumerate local fonts.
    It checks for the requirements to access local fonts such as user permission,
-   page visibility and transient user activation. Once all the requirements are
+   page visibility, transient user activation, and that the requesting frame is
+   active before user activation is consumed. Once all the requirements are
    met, it returns the fonts data from `FontEnumerationCache`. In terms of code
    ownership, there is one `FontAccessManager` per `StoragePartitionImpl`;
    `Frame`s are bound to `FontAccessManager` via a `BindingContext`.
