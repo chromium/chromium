@@ -281,8 +281,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // be allocated in a different way.
   void InvalidateResources();
 
-  // Called when a resource's content has been fully replaced (and is completely
-  // valid). Updates the resource's content ID to its new value.
+  // Called when a resource's content has been replaced. Updates the resource's
+  // content ID to its new value; 0 means the content is incomplete (e.g. it
+  // has checker-image placeholders) and must not be reused for partial raster.
   void OnContentReplaced(const InUsePoolResource& in_use_resource,
                          uint64_t content_id);
   void ReleaseResource(InUsePoolResource resource);

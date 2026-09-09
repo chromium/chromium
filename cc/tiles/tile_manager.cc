@@ -1735,7 +1735,18 @@ void TileManager::OnRasterTaskCompleted(
     return;
   }
 
-  resource_pool_->OnContentReplaced(resource, tile_id);
+  // Only register a content id if this resource holds a complete render. A
+  // raster that skipped checker-imaged images leaves gray placeholders
+  // behind, and a later partial raster on top of it would keep them forever.
+  // See crbug.com/515542787. Passing 0 also clears any content id the
+  // resource carries from a previous raster: pool resources are reused
+  // between tiles, and this tile itself may have rastered cleanly before a
+  // checker-imaged image was added to it. If the tile was destroyed while
+  // the task was still running, we cannot tell whether images were skipped,
+  // so play it safe and clear the content id too.
+  resource_pool_->OnContentReplaced(
+      resource,
+      (tile && !raster_task_was_scheduled_with_checker_images) ? tile_id : 0);
   ++raster_task_completion_stats_.completed_count;
 
   if (!tile) {

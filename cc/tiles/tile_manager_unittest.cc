@@ -2295,6 +2295,45 @@ TEST_F(PartialRasterTileManagerTest, CancelledTasksHaveNoContentId) {
   ClearLayersAndHost();
 }
 
+// If the tile is destroyed while its raster task is still running, the task
+// completes without a tile and we cannot tell whether images were skipped, so
+// the resource must not be registered for reuse. See crbug.com/515542787.
+TEST_F(PartialRasterTileManagerTest,
+       OrphanedRasterCompletionHasNoPartialContentId) {
+  const uint64_t kOrphanTileId = 4242;  // Intentionally absent from tiles_.
+  const gfx::Size kTileSize(128, 128);
+
+  // Seed scheduled_draw_images_[kOrphanTileId] so the CHECK in
+  // OnRasterTaskCompleted passes; UnrefImages is a no-op on the empty vector.
+  host_impl()->tile_manager()->decode_tasks_for_testing(kOrphanTileId);
+
+  // A completed raster resource from the now-destroyed tile.
+  ResourcePool::InUsePoolResource resource =
+      host_impl()->resource_pool()->AcquireResource(
+          kTileSize, viz::SinglePlaneFormat::kBGRA_8888,
+          gfx::ColorSpace::CreateSRGB());
+  auto backing = std::make_unique<ResourcePool::Backing>(
+      resource.size(), resource.format(), resource.color_space());
+  backing->CreateSharedImageForTesting();
+  backing->mailbox_sync_token.Set(gpu::GPU_IO,
+                                  gpu::CommandBufferId::FromUnsafeValue(1), 1);
+  resource.set_backing(std::move(backing));
+
+  // Complete the raster for a tile that no longer exists.
+  host_impl()->tile_manager()->OnRasterTaskCompleted(
+      kOrphanTileId, std::move(resource), /*was_canceled=*/false);
+
+  // The orphaned resource must not be reacquirable as a partial-raster base.
+  gfx::Rect total_invalidated_rect;
+  ResourcePool::InUsePoolResource reused =
+      host_impl()->resource_pool()->TryAcquireResourceForPartialRaster(
+          kOrphanTileId + 1, gfx::Rect(), kOrphanTileId,
+          &total_invalidated_rect, gfx::ColorSpace::CreateSRGB());
+  EXPECT_FALSE(reused);
+
+  ClearLayersAndHost();
+}
+
 // FakeRasterBufferProviderImpl that verifies the resource content ID of raster
 // tasks.
 class VerifyResourceContentIdRasterBufferProvider
@@ -3291,6 +3330,69 @@ TEST_F(CheckerImagingTileManagerTest,
   static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+}
+
+// A raster that skipped checker-imaged images leaves gray placeholders in
+// its resource, so the resource must not be handed out again as a
+// partial-raster base. See crbug.com/515542787.
+TEST_F(CheckerImagingTileManagerTest,
+       CheckerImagedResourceNotReusedForPartialRaster) {
+  const gfx::Size layer_bounds(512, 512);
+
+  FakeRecordingSource recording_source(layer_bounds);
+  recording_source.set_fill_with_nonsolid_color(true);
+
+  auto generator =
+      sk_make_sp<testing::StrictMock<MockImageGenerator>>(gfx::Size(512, 512));
+  PaintImage image = PaintImageBuilder::WithDefault()
+                         .set_id(PaintImage::GetNextId())
+                         .set_paint_image_generator(generator)
+                         .set_decoding_mode(PaintImage::DecodingMode::kAsync)
+                         .TakePaintImage();
+  recording_source.add_draw_image(image, gfx::Point(0, 0));
+
+  recording_source.Rerecord();
+  scoped_refptr<RasterSource> raster_source =
+      recording_source.CreateRasterSource();
+
+  Region invalidation((gfx::Rect(layer_bounds)));
+  SetupPendingTree(raster_source, layer_bounds, invalidation);
+
+  PictureLayerTilingSet* tiling_set =
+      pending_layer()->picture_layer_tiling_set();
+  PictureLayerTiling* tiling = tiling_set->tiling_at(0);
+  tiling->set_resolution(HIGH_RESOLUTION);
+  tiling->CreateAllTilesForTesting(gfx::Rect(layer_bounds));
+  tiling->set_can_require_tiles_for_activation(true);
+
+  // Raster the checker-imaged tile to completion.
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+  static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+
+  // Find the rastered, checker-imaged tile.
+  Tile* checker_tile = nullptr;
+  for (Tile* tile : host_impl()->tile_manager()->AllTilesForTesting()) {
+    if (tile->draw_info().has_resource() &&
+        tile->draw_info().is_checker_imaged()) {
+      checker_tile = tile;
+      break;
+    }
+  }
+  ASSERT_TRUE(checker_tile);
+  const uint64_t checker_tile_id = checker_tile->id();
+
+  // Release the resource back to the pool, as re-tiling would.
+  host_impl()->tile_manager()->ReleaseTileResourcesForTesting(
+      std::vector<Tile*>{checker_tile});
+
+  // The placeholder must not come back as a partial-raster base.
+  gfx::Rect total_invalidated_rect;
+  ResourcePool::InUsePoolResource reused =
+      host_impl()->resource_pool()->TryAcquireResourceForPartialRaster(
+          checker_tile_id + 1, gfx::Rect(), checker_tile_id,
+          &total_invalidated_rect, gfx::ColorSpace::CreateSRGB());
+  EXPECT_FALSE(reused);
 }
 
 class EmptyCacheTileManagerTest : public TileManagerTest {
