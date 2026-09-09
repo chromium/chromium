@@ -627,6 +627,7 @@ source_set("extensions_menu_coordinator") {
     "//ui/views",
   ]
   deps = [
+    ":extensions_container_views",
     ":extensions_menu_delegate_desktop",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views:layout_provider",

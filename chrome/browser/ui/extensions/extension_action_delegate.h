@@ -12,6 +12,10 @@
 
 class ExtensionActionViewModel;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace extensions {
 class ExtensionViewHost;
 }  // namespace extensions
@@ -67,6 +71,10 @@ class ExtensionActionDelegate {
 
   // Closes the extensions menu if it was open.
   virtual void CloseExtensionsMenuIfOpen() = 0;
+
+  // Returns the active WebContents associated with this action, or nullptr if
+  // callers should fall back to the browser's active tab.
+  virtual content::WebContents* GetActiveWebContents() const;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_DELEGATE_H_

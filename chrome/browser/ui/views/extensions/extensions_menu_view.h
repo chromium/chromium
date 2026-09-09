@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -21,6 +22,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace views {
 class Button;
@@ -156,6 +161,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // Runs a set of sanity checks on the appearance of the menu. This is a no-op
   // if DCHECKs are disabled.
   void SanityCheck();
+
+  content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ref<ExtensionsContainer> extensions_container_;

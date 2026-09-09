@@ -616,6 +616,11 @@ void ExtensionActionViewModel::InspectPopup() {
 }
 
 content::WebContents* ExtensionActionViewModel::GetCurrentWebContents() const {
+  if (delegate_) {
+    if (auto* web_contents = delegate_->GetActiveWebContents()) {
+      return web_contents;
+    }
+  }
   tabs::TabInterface* tab = TabListInterface::From(browser_)->GetActiveTab();
   if (!tab) {
     return nullptr;
@@ -624,7 +629,7 @@ content::WebContents* ExtensionActionViewModel::GetCurrentWebContents() const {
 }
 
 void ExtensionActionViewModel::NotifyIconObservers() {
-  if (!TabListInterface::From(browser_)->GetActiveTab()) {
+  if (!GetCurrentWebContents()) {
     return;
   }
   icon_observers_.Notify();

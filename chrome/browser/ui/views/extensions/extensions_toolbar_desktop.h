@@ -204,6 +204,7 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   views::BubbleAnchor GetReferenceButtonForPopup(
       const extensions::ExtensionId& action_id) override;
   views::BubbleAnchor GetExtensionsButtonAnchor() override;
+  views::BubbleBorder::Arrow GetPopupArrow() const override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;

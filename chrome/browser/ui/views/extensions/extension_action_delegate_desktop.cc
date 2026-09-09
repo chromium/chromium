@@ -86,9 +86,9 @@ void ExtensionActionDelegateDesktop::ShowPopup(
   // completed rendering on the screen.
   has_opened_popup_ = true;
 
-  // TOP_RIGHT is correct for both RTL and LTR, because the views platform
-  // performs the flipping in RTL cases.
-  views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
+  views::BubbleBorder::Arrow arrow =
+      extensions_container_views_ ? extensions_container_views_->GetPopupArrow()
+                                  : views::BubbleBorder::TOP_RIGHT;
   ExtensionPopup::ShowPopup(
       browser_, std::move(host),
       extensions_container_views_->GetReferenceButtonForPopup(model_->GetId()),
@@ -198,6 +198,11 @@ void ExtensionActionDelegateDesktop::ShowContextMenuAsFallback() {
 
 void ExtensionActionDelegateDesktop::CloseExtensionsMenuIfOpen() {
   extensions_container_->CloseExtensionsMenuIfOpen();
+}
+
+content::WebContents* ExtensionActionDelegateDesktop::GetActiveWebContents()
+    const {
+  return extensions_container_->GetActiveWebContents();
 }
 
 bool ExtensionActionDelegateDesktop::AcceleratorPressed(

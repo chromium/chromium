@@ -13,3 +13,7 @@ ExtensionsContainer* ExtensionsContainer::From(
     BrowserWindowInterface& browser) {
   return Get(browser.GetUnownedUserDataHost());
 }
+
+content::WebContents* ExtensionsContainer::GetActiveWebContents() const {
+  return nullptr;
+}

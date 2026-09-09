@@ -547,6 +547,11 @@ ExtensionsMenuViewModel::MenuEntryState::operator=(const MenuEntryState&) =
     default;
 ExtensionsMenuViewModel::MenuEntryState::~MenuEntryState() = default;
 
+content::WebContents* ExtensionsMenuViewModel::Delegate::GetActiveWebContents()
+    const {
+  return nullptr;
+}
+
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     BrowserWindowInterface* browser,
     Delegate* delegate)
@@ -585,17 +590,19 @@ void ExtensionsMenuViewModel::UpdateSiteAccess(
     const extensions::ExtensionId& extension_id,
     const url::Origin& target_origin,
     PermissionsManager::UserSiteAccess site_access) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
   LogSiteAccessUpdate(site_access);
 
   Profile* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
-  auto url = GetActiveWebContents()->GetLastCommittedURL();
+  auto url = web_contents->GetLastCommittedURL();
   if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
     return;
   }
 
   SitePermissionsHelper permissions(profile);
-  permissions.UpdateSiteAccess(*extension, GetActiveWebContents(), site_access,
+  permissions.UpdateSiteAccess(*extension, web_contents, site_access,
                                target_origin);
 }
 
@@ -621,9 +628,9 @@ void ExtensionsMenuViewModel::AllowHostAccessRequest(
 
 void ExtensionsMenuViewModel::DismissHostAccessRequest(
     const extensions::ExtensionId& extension_id) {
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* permissions_manager = PermissionsManager::Get(browser_->GetProfile());
   CHECK(permissions_manager);
-  content::WebContents* web_contents = GetActiveWebContents();
   int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
   permissions_manager->UserDismissedHostAccessRequest(web_contents, tab_id,
                                                       extension_id);
@@ -644,9 +651,9 @@ void ExtensionsMenuViewModel::ShowHostAccessRequestsInToolbar(
 void ExtensionsMenuViewModel::GrantSiteAccess(
     const extensions::ExtensionId& extension_id,
     const url::Origin& target_origin) {
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
-  content::WebContents* web_contents = GetActiveWebContents();
 
   // Verify that the origin displayed when the action was initiated matches the
   // current origin of the WebContents.
@@ -707,9 +714,9 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
 void ExtensionsMenuViewModel::RevokeSiteAccess(
     const extensions::ExtensionId& extension_id,
     const url::Origin& target_origin) {
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
-  content::WebContents* web_contents = GetActiveWebContents();
 
   // Verify that the origin displayed when the action was initiated matches the
   // current origin of the WebContents.
@@ -777,7 +784,7 @@ void ExtensionsMenuViewModel::UpdateSiteSetting(
     extensions::PermissionsManager::UserSiteSetting site_setting) {
   content::WebContents* web_contents = GetActiveWebContents();
   const url::Origin& origin =
-      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   if (origin.opaque()) {
     return;
@@ -792,8 +799,8 @@ void ExtensionsMenuViewModel::UpdateSiteSetting(
 }
 
 void ExtensionsMenuViewModel::ReloadWebContents() {
-  GetActiveWebContents()->GetController().Reload(content::ReloadType::NORMAL,
-                                                 false);
+  content::WebContents* web_contents = GetActiveWebContents();
+  web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
 bool ExtensionsMenuViewModel::CanShowSitePermissionsPage(
@@ -1316,6 +1323,10 @@ void ExtensionsMenuViewModel::OnActiveTabChanged(TabListInterface& tab_list,
   if (!tab_list_interface_observation_.IsObserving()) {
     return;
   }
+  if (delegate_ && delegate_->GetActiveWebContents() &&
+      delegate_->GetActiveWebContents() != tab->GetContents()) {
+    return;
+  }
   auto* web_contents = tab->GetContents();
   WebContentsObserver::Observe(web_contents);
 
@@ -1469,6 +1480,12 @@ void ExtensionsMenuViewModel::OnWebContentsChanged(
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {
+  if (delegate_) {
+    if (content::WebContents* web_contents =
+            delegate_->GetActiveWebContents()) {
+      return web_contents;
+    }
+  }
   auto* tab_list = TabListInterface::From(browser_);
   if (!tab_list) {
     return nullptr;

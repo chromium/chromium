@@ -13,6 +13,10 @@
 class BrowserWindowInterface;
 class ToolbarActionViewModel;
 
+namespace content {
+class WebContents;
+}
+
 // An interface for containers in the toolbar that host extensions.
 //
 // This interface provides a minimal set of APIs that allows non-UI code to
@@ -45,6 +49,10 @@ class ExtensionsContainer {
 
   // Whether there are any Extensions registered with the ExtensionsContainer.
   virtual bool HasAnyExtensions() const = 0;
+
+  // Returns the active WebContents associated with this container, or nullptr
+  // if callers should fall back to the browser's active tab.
+  virtual content::WebContents* GetActiveWebContents() const;
 
   // Triggers the manage extensions IPH.
   virtual void ShowManageExtensionsIPH() {}

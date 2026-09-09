@@ -96,6 +96,9 @@ class ExtensionsContainerViews {
   // this extensions container, as a Widget's parent window is set from its
   // anchor at creation time and cannot be changed during re-anchoring.
   virtual views::BubbleAnchor GetExtensionsButtonAnchor() = 0;
+
+  // Returns the arrow to use for popups and menus anchored to this container.
+  virtual views::BubbleBorder::Arrow GetPopupArrow() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_CONTAINER_VIEWS_H_

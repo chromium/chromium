@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -79,9 +80,11 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
     ExtensionsContainerViews* extensions_container_views) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
+  views::BubbleBorder::Arrow arrow =
+      extensions_container_views ? extensions_container_views->GetPopupArrow()
+                                 : views::BubbleBorder::TOP_RIGHT;
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      anchor, views::BubbleBorder::TOP_RIGHT,
-      views::BubbleBorder::DIALOG_SHADOW, /*autosize=*/true);
+      anchor, arrow, views::BubbleBorder::DIALOG_SHADOW, /*autosize=*/true);
   bubble_delegate->SetOwnedByWidget(
       views::WidgetDelegate::OwnedByWidgetPassKey());
   bubble_delegate->set_margins(gfx::Insets(0));

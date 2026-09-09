@@ -74,7 +74,10 @@ ExtensionsMenuView::ExtensionsMenuView(
     BrowserWindowInterface* browser,
     ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views)
-    : BubbleDialogDelegateView(anchor, views::BubbleBorder::Arrow::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor,
+                               extensions_container_views
+                                   ? extensions_container_views->GetPopupArrow()
+                                   : views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
       extensions_container_(CHECK_DEREF(extensions_container)),
       extensions_container_views_(extensions_container_views),
@@ -92,7 +95,9 @@ ExtensionsMenuView::ExtensionsMenuView(
           IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
           extensions::SitePermissionsHelper::SiteInteraction::kGranted} {
   toolbar_model_observation_.Observe(toolbar_model_.get());
-  browser_->GetTabStripModel()->AddObserver(this);
+  if (!extensions_container_->GetActiveWebContents()) {
+    browser_->GetTabStripModel()->AddObserver(this);
+  }
   set_margins(gfx::Insets(0));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -330,8 +335,8 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
 void ExtensionsMenuView::InsertMenuItem(ExtensionMenuItemView* menu_item) {
   DCHECK(!Contains(menu_item))
       << "Trying to insert a menu item that is already added in a section!";
-  auto site_interaction = menu_item->view_model()->GetSiteInteraction(
-      browser_->GetTabStripModel()->GetActiveWebContents());
+  auto site_interaction =
+      menu_item->view_model()->GetSiteInteraction(GetActiveWebContents());
   Section* const section = GetSectionForSiteInteraction(site_interaction);
   // Add the view at the end. Note that this *doesn't* insert the item at the
   // correct spot or ensure the view is visible; it's assumed that any callers
@@ -353,8 +358,7 @@ void ExtensionsMenuView::UpdateSectionVisibility() {
 }
 
 void ExtensionsMenuView::Update() {
-  content::WebContents* const web_contents =
-      browser_->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* const web_contents = GetActiveWebContents();
   auto move_children_between_sections_if_necessary =
       [this, web_contents](Section* section) {
         // Note: Collect the views to move separately, so that we don't change
@@ -388,8 +392,7 @@ void ExtensionsMenuView::Update() {
 
 void ExtensionsMenuView::SanityCheck() {
 #if DCHECK_IS_ON()
-  content::WebContents* web_contents =
-      browser_->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Sanity checks: verify that all extensions are properly sorted and in the
   // correct section.
@@ -520,6 +523,13 @@ views::Widget* ExtensionsMenuView::ShowBubble(
       views::BubbleDialogDelegateView::CreateBubble(g_extensions_dialog);
   widget->Show();
   return widget;
+}
+
+content::WebContents* ExtensionsMenuView::GetActiveWebContents() const {
+  if (auto* web_contents = extensions_container_->GetActiveWebContents()) {
+    return web_contents;
+  }
+  return browser_->GetTabStripModel()->GetActiveWebContents();
 }
 
 // static

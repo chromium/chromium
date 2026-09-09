@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
@@ -48,6 +49,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     // platform dependencies.
     virtual std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
         const extensions::ExtensionId& extension_id) = 0;
+
+    // Returns the active WebContents for the extensions menu, or nullptr if
+    // the caller should fall back to the browser's active tab.
+    virtual content::WebContents* GetActiveWebContents() const;
   };
 
   // Observer used to notify platforms about changes to the model.

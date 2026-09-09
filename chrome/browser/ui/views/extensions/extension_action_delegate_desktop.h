@@ -82,6 +82,7 @@ class ExtensionActionDelegateDesktop
                     ShowPopupCallback callback) override;
   void ShowContextMenuAsFallback() override;
   void CloseExtensionsMenuIfOpen() override;
+  content::WebContents* GetActiveWebContents() const override;
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

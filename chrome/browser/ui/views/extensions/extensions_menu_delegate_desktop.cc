@@ -104,6 +104,11 @@ ExtensionsMenuDelegateDesktop::ExtensionsMenuDelegateDesktop(
 
 ExtensionsMenuDelegateDesktop::~ExtensionsMenuDelegateDesktop() = default;
 
+content::WebContents* ExtensionsMenuDelegateDesktop::GetActiveWebContents()
+    const {
+  return extensions_container_->GetActiveWebContents();
+}
+
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsMenuDelegateDesktop::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {

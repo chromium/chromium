@@ -43,6 +43,7 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   ~ExtensionsMenuDelegateDesktop() override;
 
   // ExtensionsMenuViewModel::Delegate:
+  content::WebContents* GetActiveWebContents() const override;
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
       const extensions::ExtensionId& extension_id) override;
 

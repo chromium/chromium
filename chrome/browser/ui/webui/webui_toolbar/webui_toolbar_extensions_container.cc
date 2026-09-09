@@ -401,6 +401,11 @@ WebUIToolbarExtensionsContainer::GetExtensionsButtonAnchor() {
   return views::BubbleAnchor(GetWidget()->GetRootView());
 }
 
+views::BubbleBorder::Arrow WebUIToolbarExtensionsContainer::GetPopupArrow()
+    const {
+  return views::BubbleBorder::TOP_RIGHT;
+}
+
 void WebUIToolbarExtensionsContainer::CollapseConfirmation() {
   NOTIMPLEMENTED();
 }

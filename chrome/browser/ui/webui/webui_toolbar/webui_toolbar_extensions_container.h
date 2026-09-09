@@ -89,6 +89,7 @@ class WebUIToolbarExtensionsContainer
   views::BubbleAnchor GetReferenceButtonForPopup(
       const extensions::ExtensionId& action_id) override;
   views::BubbleAnchor GetExtensionsButtonAnchor() override;
+  views::BubbleBorder::Arrow GetPopupArrow() const override;
 
   void CollapseConfirmation() override;
 
