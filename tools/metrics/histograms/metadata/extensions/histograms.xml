@@ -1088,7 +1088,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IsLargeRegexRule"
-    enum="RegexRuleStatus" expires_after="2026-09-17">
+    enum="RegexRuleStatus" expires_after="2027-09-17">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1161,7 +1161,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RedundantSetReadyToExecuteApiCalls"
-    enum="BooleanSuccess" expires_after="2026-09-15">
+    enum="BooleanSuccess" expires_after="2027-09-15">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1175,7 +1175,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime.{RegexRulesetSize}"
-    units="microseconds" expires_after="2026-10-04">
+    units="microseconds" expires_after="2027-10-04">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1355,7 +1355,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RulesetReindexSuccessful"
-    enum="BooleanSuccess" expires_after="2026-09-08">
+    enum="BooleanSuccess" expires_after="2027-09-08">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
