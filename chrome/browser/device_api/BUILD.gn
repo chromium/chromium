@@ -87,6 +87,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications:web_applications_unit_tests",
     "//chrome/test:test_support",
+    "//components/enterprise/isolated_mode",
     "//components/permissions:test_support",
     "//components/profile_metrics",
     "//components/sync_preferences:test_support",

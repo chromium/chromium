@@ -24,11 +24,9 @@ ManagedConfigurationServiceImpl* ManagedConfigurationServiceImpl::Create(
     return nullptr;
   }
 
-  // Do not create ManagedConfigurationService for incognito or off-the-record
-  // profiles.
-  if (host->GetBrowserContext()->IsOffTheRecord() ||
-      Profile::FromBrowserContext(host->GetBrowserContext())
-          ->IsIncognitoProfile()) {
+  // Do not create ManagedConfigurationService for off-the-record profiles,
+  // including Incognito and Enterprise Isolated Mode profiles.
+  if (host->GetBrowserContext()->IsOffTheRecord()) {
     return nullptr;
   }
 
