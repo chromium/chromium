@@ -212,7 +212,8 @@ void AudioDecoderWrapper::SetDelegate(Delegate* delegate) {
 
 AudioDecoderWrapper::BufferStatus AudioDecoderWrapper::PushBuffer(
     scoped_refptr<DecoderBufferBase> buffer) {
-  return audio_decoder_->PushBuffer(buffer);
+  pushed_buffer_ = std::move(buffer);
+  return audio_decoder_->PushBuffer(pushed_buffer_);
 }
 
 bool AudioDecoderWrapper::SetConfig(const AudioConfig& config) {

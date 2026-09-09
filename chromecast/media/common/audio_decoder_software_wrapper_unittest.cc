@@ -4,7 +4,12 @@
 
 #include "chromecast/media/common/audio_decoder_software_wrapper.h"
 
+#include <memory>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
+#include "chromecast/media/common/audio_decoder_wrapper.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
@@ -32,6 +37,33 @@ class MockAudioDecoder : public MediaPipelineBackend::AudioDecoder {
   MOCK_METHOD1(GetStatistics, void(Statistics*));
   MOCK_METHOD0(GetAudioTrackTimestamp, AudioTrackTimestamp());
   MOCK_METHOD0(GetStartThresholdInFrames, int());
+};
+
+class TestDecoderBuffer : public DecoderBufferBase {
+ public:
+  explicit TestDecoderBuffer(bool* destroyed_flag)
+      : destroyed_flag_(destroyed_flag) {
+    *destroyed_flag_ = false;
+  }
+
+  StreamId stream_id() const override { return StreamId::kPrimary; }
+  int64_t timestamp() const override { return 0; }
+  void set_timestamp(base::TimeDelta timestamp) override {}
+  const uint8_t* data() const override { return nullptr; }
+  uint8_t* writable_data() const override { return nullptr; }
+  size_t data_size() const override { return 0; }
+  const CastDecryptConfig* decrypt_config() const override { return nullptr; }
+  bool end_of_stream() const override { return false; }
+  bool is_key_frame() const override { return false; }
+
+ private:
+  ~TestDecoderBuffer() override {
+    if (destroyed_flag_) {
+      *destroyed_flag_ = true;
+    }
+  }
+
+  bool* const destroyed_flag_;
 };
 
 }  // namespace
@@ -66,6 +98,35 @@ TEST_F(AudioDecoderSoftwareWrapperTest, IsUsingSoftwareDecoder) {
   audio_config.codec = kCodecOpus;
   EXPECT_TRUE(audio_decoder_software_wrapper_.SetConfig(audio_config));
   EXPECT_TRUE(audio_decoder_software_wrapper_.IsUsingSoftwareDecoder());
+}
+
+TEST(AudioDecoderWrapperTest, BufferRetainedAcrossRevocation) {
+  MockAudioDecoder backend_decoder;
+  EXPECT_CALL(backend_decoder, PushBuffer(_))
+      .WillOnce(Return(MediaPipelineBackend::kBufferPending));
+
+  auto audio_decoder_wrapper = std::make_unique<AudioDecoderWrapper>(
+      &backend_decoder, AudioContentType::kMedia, nullptr);
+
+  bool buffer_destroyed = false;
+  auto buffer = base::MakeRefCounted<TestDecoderBuffer>(&buffer_destroyed);
+
+  EXPECT_EQ(audio_decoder_wrapper->PushBuffer(buffer),
+            MediaPipelineBackend::kBufferPending);
+
+  // Upstream pipeline drops its reference.
+  buffer.reset();
+  EXPECT_FALSE(buffer_destroyed);
+
+  // Revoke the audio decoder wrapper.
+  audio_decoder_wrapper->Revoke();
+
+  // Buffer must still be alive in AudioDecoderWrapper to protect the backend.
+  EXPECT_FALSE(buffer_destroyed);
+
+  // Destroying AudioDecoderWrapper releases the buffer.
+  audio_decoder_wrapper.reset();
+  EXPECT_TRUE(buffer_destroyed);
 }
 
 }  // namespace media

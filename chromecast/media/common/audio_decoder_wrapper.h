@@ -84,7 +84,6 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
   void OnInitialized();
   void Revoke();
 
- private:
   // CmaBackend::AudioDecoder implementation:
   void SetDelegate(Delegate* delegate) override;
   BufferStatus PushBuffer(scoped_refptr<DecoderBufferBase> buffer) override;
@@ -96,6 +95,8 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
   int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
 
+ private:
+  scoped_refptr<DecoderBufferBase> pushed_buffer_;
   bool decoder_revoked_;
 
   std::unique_ptr<DestructableAudioDecoder> audio_decoder_;
