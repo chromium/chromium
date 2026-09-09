@@ -259,87 +259,62 @@ def _CheckBuildFilesForIndirectAshSources(input_api, output_api):
     return results
 
 
-def _GetUpstream(input_api):
-    change = input_api.change
-    upstream = None
-    if hasattr(change, 'UpstreamBranch'):
-        upstream = change.UpstreamBranch()
-    return upstream or 'origin/main'
+# Files that legitimately declare, implement, or construct Browser by
+# including chrome/browser/ui/browser.h. All other files must use
+# BrowserWindowInterface instead.
+_BROWSER_HEADER_ALLOWED_PATHS = (
+    'chrome/browser/ui/browser.h',
+    'chrome/browser/ui/browser.cc',
+    ('chrome/browser/ui/browser_window/internal/'
+     'create_browser_window_non_android.cc'),
+)
+
+# Files that legitimately declare, implement, or construct Browser directly
+# (e.g. forward declarations, factories, or migration fallbacks).
+_BROWSER_USAGE_EXCLUDED_PATHS = (
+    'chrome/browser/ui/browser.h',
+    'chrome/browser/ui/browser.cc',
+    'chrome/browser/ui/browser_window/public/browser_window_interface.h',
+    'chrome/browser/ui/browser_window/public/create_browser_window.h',
+    ('chrome/browser/ui/browser_window/internal/'
+     'create_browser_window_non_android.cc'),
+    'chrome/browser/ui/views/frame/browser_window_factory.cc',
+)
 
 
-def _GetSimpleRenamedFiles(input_api):
-    """Returns a set of new paths for files that were simply renamed (R100)."""
-    change = input_api.change
-    scm = getattr(change, 'scm', '')
-    if scm != 'git':
-        return set()
-
-    upstream = _GetUpstream(input_api)
-    end_commit = getattr(change, '_end_commit', 'HEAD') or 'HEAD'
-
-    try:
-        merge_base = input_api.subprocess.check_output(
-            ['git', 'merge-base', upstream, end_commit],
-            cwd=change.RepositoryRoot()).decode('utf-8').strip()
-
-        cmd = ['git', 'diff', '--name-status', '-M', merge_base]
-        if end_commit and end_commit != 'HEAD':
-            cmd.append(end_commit)
-        cmd.extend(['--', '*test*'])
-
-        output = input_api.subprocess.check_output(
-            cmd, cwd=change.RepositoryRoot()).decode('utf-8')
-    except (input_api.subprocess.CalledProcessError, AttributeError):
-        return set()
-
-    simple_renamed = set()
-    for line in output.splitlines():
-        if line.startswith('R100'):
-            parts = line.split('\t')
-            if len(parts) == 3:
-                new_path = parts[2].replace('\\', '/')
-                simple_renamed.add(new_path)
-    return simple_renamed
-
-
-def _CheckAshSourcesForBadIncludes(input_api, output_api):
-    """Make sure changes to Ash sources don't include c/b/ui/browser.h
-
-    Intentionally not using BanRule as that may report includes as new that were
-    already present.
-    """
+def _CheckSourcesForBadIncludes(input_api, output_api):
+    """Make sure changes don't include chrome/browser/ui/browser.h."""
 
     MSG = (
-        "Please don't add new #include's of chrome/browser/ui/browser.h to "
-        "Ash code. Instead, use the BrowserDelegate/BrowserController "
-        "abstraction in chrome/browser/ash/browser_delegate/ (preferred) or "
-        "chrome/browser/ui/browser_window/public/browser_window_interface.h. "
-        "If in doubt, please contact neis@google.com and hidehiko@google.com.")
+        "Please don't include chrome/browser/ui/browser.h. "
+        "Instead, use "
+        "chrome/browser/ui/browser_window/public/browser_window_interface.h "
+        "(or the BrowserDelegate/BrowserController abstraction in "
+        "chrome/browser/ash/browser_delegate/ for Ash code).")
 
     # If you add other files here, please adapt the message and comment above.
     bad_includes = [
         "chrome/browser/ui/browser.h",
     ]
 
-    renamed_files = None
-
     def should_check_path(affected_path):
         # TODO(crbug.com/447299513): Use pathlib's full_match once we are at
         # Python >= 3.13
-        if not (affected_path.startswith('chrome/browser/') and
-                ('/ash/' in affected_path or '/chromeos/' in affected_path)):
+        if not affected_path.startswith('chrome/browser/'):
             return False
 
-        nonlocal renamed_files
-        if renamed_files is None:
-            renamed_files = _GetSimpleRenamedFiles(input_api)
-
-        if affected_path in renamed_files:
+        if not affected_path.endswith(('.cc', '.h', '.mm')):
             return False
+
+        if affected_path in _BROWSER_HEADER_ALLOWED_PATHS:
+            return False
+
         return True
 
-    bad_includes_re = re.compile('|'.join(
-        re.escape(f'#include "{file}"') for file in bad_includes))
+    bad_includes_re = input_api.re.compile(
+        r'^\s*#include\s*["<](' +
+        '|'.join(input_api.re.escape(file) for file in bad_includes) +
+        r')[">]')
 
     def find_bad_includes(lines):
         return [line for line in lines if bad_includes_re.match(line)]
@@ -350,18 +325,16 @@ def _CheckAshSourcesForBadIncludes(input_api, output_api):
             continue
 
         bad_includes_new = find_bad_includes(f.NewContents())
-        if not bad_includes_new:
-            continue
-
-        bad_includes_old = find_bad_includes(f.OldContents())
-        added_bad_includes = (set(bad_includes_new) - set(bad_includes_old))
-
-        if added_bad_includes:
+        if bad_includes_new:
             results.append(
                 output_api.PresubmitError(
                     "Bad includes detected in the following files.",
                     [f.LocalPath()], f"{MSG}\n"))
     return results
+
+
+# Alias for backward compatibility if called externally.
+_CheckAshSourcesForBadIncludes = _CheckSourcesForBadIncludes
 
 
 ###############################################################################
@@ -616,20 +589,9 @@ _BEDROCK_BANNED_UNIT_TEST_INCLUDES = (
     'chrome/test/base/test_browser_window.h',
 )
 
-# Files that legitimately declare, implement, or construct Browser.
-_BROWSER_USAGE_EXCLUDED_PATHS = (
-    'chrome/browser/ui/browser.h',
-    'chrome/browser/ui/browser.cc',
-    'chrome/browser/ui/browser_window/public/browser_window_interface.h',
-    'chrome/browser/ui/browser_window/public/create_browser_window.h',
-    ('chrome/browser/ui/browser_window/internal/'
-     'create_browser_window_non_android.cc'),
-    'chrome/browser/ui/views/frame/browser_window_factory.cc',
-)
-
 
 def _CheckNoNewBrowserUsage(input_api, output_api):
-    """Warns against direct Browser class usage, browser.h includes, and
+    """Bans direct Browser class usage, browser.h includes, and
     monolithic browser test fixtures/headers in desktop unit tests under
     chrome/browser/ as part of Project Bedrock.
 
@@ -651,10 +613,6 @@ def _CheckNoNewBrowserUsage(input_api, output_api):
     comment_pattern = input_api.re.compile(r'^\s*(//|/\*|\*)')
     string_literal_pattern = input_api.re.compile(r'"(\\.|[^"\\])*"')
 
-    def is_excluded(local_path):
-        unix_path = local_path.replace('\\', '/')
-        return unix_path in _BROWSER_USAGE_EXCLUDED_PATHS
-
     problems = []
     for f in input_api.AffectedFiles(include_deletes=False):
         local_path = f.LocalPath().replace('\\', '/')
@@ -663,9 +621,11 @@ def _CheckNoNewBrowserUsage(input_api, output_api):
         if not local_path.endswith(('.cc', '.h', '.mm')):
             continue
 
-        # Skip files that legitimately declare, implement, or construct
-        # Browser.
-        if is_excluded(local_path):
+        is_browser_header_allowed = local_path in _BROWSER_HEADER_ALLOWED_PATHS
+        is_browser_usage_excluded = local_path in _BROWSER_USAGE_EXCLUDED_PATHS
+
+        # If both header include and class usage are allowed, skip entirely.
+        if is_browser_header_allowed and is_browser_usage_excluded:
             continue
 
         # Determine if the file is a desktop unit test (excluding Ash
@@ -682,14 +642,22 @@ def _CheckNoNewBrowserUsage(input_api, output_api):
             if comment_pattern.match(line):
                 continue
 
+            # Check for direct include of chrome/browser/ui/browser.h.
+            # browser.h includes are prohibited for all client code and
+            # cannot be bypassed with '// nocheck'.
+            if not is_browser_header_allowed and bad_include_pattern.search(
+                    line):
+                problems.append('    %s:%d' % (local_path, line_num))
+                continue
+
+            # Skip files that legitimately declare, implement, or construct
+            # Browser.
+            if is_browser_usage_excluded:
+                continue
+
             # Skip lines explicitly annotated with the '// nocheck'
             # escape hatch.
             if input_api.re.search(r'//\s*nocheck', line):
-                continue
-
-            # Check for direct include of chrome/browser/ui/browser.h.
-            if bad_include_pattern.search(line):
-                problems.append('    %s:%d' % (local_path, line_num))
                 continue
 
             # For desktop unit tests, check for banned monolithic test
@@ -734,8 +702,9 @@ def _CheckNoNewBrowserUsage(input_api, output_api):
             '  - InProcessBrowserTest for integration / browser tests\n'
             '    (in *_browsertest.cc)\n\n'
             'If an exception is required, append "// nocheck" to the line '
-            'or add the\nfile to _BROWSER_USAGE_EXCLUDED_PATHS in '
-            'chrome/browser/PRESUBMIT.py.\n' +
+            '(for Browser\nclass usage or test fixtures only; browser.h '
+            'includes cannot be\nbypassed) or add the file to '
+            '_BROWSER_USAGE_EXCLUDED_PATHS in\nchrome/browser/PRESUBMIT.py.\n' +
             '\n'.join(problems))
     ]
 
@@ -924,7 +893,7 @@ def _CommonChecks(input_api, output_api):
     results.extend(_CheckForUselessExterns(input_api, output_api))
     results.extend(_CheckBuildFilesForIndirectAshSources(
         input_api, output_api))
-    results.extend(_CheckAshSourcesForBadIncludes(input_api, output_api))
+    results.extend(_CheckSourcesForBadIncludes(input_api, output_api))
     results.extend(_CheckNoNewBrowserWindowGetter(input_api, output_api))
     results.extend(_CheckNoNewBrowserWindowMemberCall(input_api, output_api))
     results.extend(_CheckNoNewBrowserUsage(input_api, output_api))

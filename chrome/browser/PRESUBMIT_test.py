@@ -277,11 +277,11 @@ class CheckBuildFilesForIndirectAshSourcesTest(unittest.TestCase):
             ['a/c'])
 
 
-class CheckAshSourcesForBadIncludes(unittest.TestCase):
+class CheckSourcesForBadIncludesTest(unittest.TestCase):
     MESSAGE = "Bad includes detected in the following files."
 
     def testScope(self):
-        """We only complain for changes under certain directories."""
+        """We complain for changes under chrome/browser/."""
 
         new_contents = ['#include "chrome/browser/ui/browser.h"']
 
@@ -305,16 +305,20 @@ class CheckAshSourcesForBadIncludes(unittest.TestCase):
             MockAffectedFile('chrome/foo/ash/foo.cc', new_contents),
         ]
 
-        results = PRESUBMIT._CheckAshSourcesForBadIncludes(
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
             mock_input_api, mock_output_api)
 
         for result in results:
             self.assertEqual(result.message, self.MESSAGE)
+            self.assertEqual(result.type, 'error')
 
         self.assertCountEqual([r.items for r in results],
-                              [["chrome/browser/ash/foo.cc"],
+                              [["chrome/browser/foo.cc"],
+                               ["chrome/browser/ash/foo.cc"],
+                               ["chrome/browser/ashley/foo.cc"],
                                ["chrome/browser/chromeos/a/b/foo.cc"],
                                ["chrome/browser/resources/ash/foo.cc"],
+                               ["chrome/browser/ui/foo.cc"],
                                ["chrome/browser/ui/ash/foo/foo.cc"],
                                ["chrome/browser/ui/chromeos/foo.cc"],
                                ["chrome/browser/ui/webui/ash/foo.cc"]])
@@ -327,16 +331,18 @@ class CheckAshSourcesForBadIncludes(unittest.TestCase):
         mock_output_api = MockOutputApi()
         mock_input_api = MockInputApi()
         mock_input_api.files = [
+            MockAffectedFile('chrome/browser/ui/foo.cc', new_contents),
             MockAffectedFile('chrome/browser/ash/foo.cc', new_contents),
         ]
 
-        results = PRESUBMIT._CheckAshSourcesForBadIncludes(
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
             mock_input_api, mock_output_api)
 
         self.assertEqual(results, [])
 
-    def testModifications(self):
-        """We don't complain about bad includes that were already there."""
+    def testExistingIncludesAreFlagged(self):
+        """We complain about bad includes even if they were already present in
+        old contents."""
 
         old_contents = [
             '#include "chrome/browser/foo/bar.h"',
@@ -345,20 +351,130 @@ class CheckAshSourcesForBadIncludes(unittest.TestCase):
         new_contents = [
             '#include "chrome/browser/foo/bar.h"',
             '#include "chrome/browser/ui/browser.h"',
-            '#include "chrome/browser/ui/browser.h"',
         ]
 
         mock_output_api = MockOutputApi()
         mock_input_api = MockInputApi()
         mock_input_api.files = [
+            MockAffectedFile('chrome/browser/ui/foo.cc', new_contents,
+                             old_contents),
             MockAffectedFile('chrome/browser/ash/foo.cc', new_contents,
                              old_contents),
         ]
 
-        results = PRESUBMIT._CheckAshSourcesForBadIncludes(
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
+            mock_input_api, mock_output_api)
+
+        self.assertEqual(len(results), 2)
+        for result in results:
+            self.assertEqual(result.message, self.MESSAGE)
+            self.assertEqual(result.type, 'error')
+
+    def testDeletedIncludesAreNotFlagged(self):
+        """We don't complain when bad includes are removed."""
+
+        old_contents = [
+            '#include "chrome/browser/ui/browser.h"',
+            '#include "chrome/browser/foo/bar.h"',
+        ]
+        new_contents = [
+            '#include "chrome/browser/foo/bar.h"',
+        ]
+
+        mock_output_api = MockOutputApi()
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/ui/foo.cc', new_contents,
+                             old_contents),
+        ]
+
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
             mock_input_api, mock_output_api)
 
         self.assertEqual(results, [])
+
+    def testExcludedFiles(self):
+        """Only the absolute necessary files that legitimately declare,
+        implement, or construct Browser may include browser.h."""
+        new_contents = ['#include "chrome/browser/ui/browser.h"']
+        mock_output_api = MockOutputApi()
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/ui/browser.h', new_contents),
+            MockAffectedFile('chrome/browser/ui/browser.cc', new_contents),
+            MockAffectedFile(
+                'chrome/browser/ui/browser_window/internal/'
+                'create_browser_window_non_android.cc', new_contents),
+        ]
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(results, [])
+
+    def testClientFilesCannotIncludeBrowserHeader(self):
+        """Client files cannot include browser.h even if they are in
+        _BROWSER_USAGE_EXCLUDED_PATHS."""
+        new_contents = ['#include "chrome/browser/ui/browser.h"']
+        mock_output_api = MockOutputApi()
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'chrome/browser/ui/browser_window/public/'
+                'browser_window_interface.h', new_contents),
+            MockAffectedFile(
+                'chrome/browser/ui/browser_window/public/'
+                'create_browser_window.h', new_contents),
+            MockAffectedFile(
+                'chrome/browser/ui/views/frame/browser_window_factory.cc',
+                new_contents),
+        ]
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(len(results), 3)
+        for result in results:
+            self.assertEqual(result.message, self.MESSAGE)
+            self.assertEqual(result.type, 'error')
+
+    def testFormattingVariants(self):
+        """Angle brackets, extra whitespace, indentation, and nocheck are all
+        caught."""
+        mock_output_api = MockOutputApi()
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/ui/brackets.cc',
+                             ['#include <chrome/browser/ui/browser.h>']),
+            MockAffectedFile('chrome/browser/ui/spaces.cc',
+                             ['#include   "chrome/browser/ui/browser.h"']),
+            MockAffectedFile('chrome/browser/ui/indented.cc',
+                             ['  #include "chrome/browser/ui/browser.h"']),
+            MockAffectedFile(
+                'chrome/browser/ui/nocheck.cc',
+                ['#include "chrome/browser/ui/browser.h"  // nocheck']),
+        ]
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(len(results), 4)
+        for result in results:
+            self.assertEqual(result.message, self.MESSAGE)
+            self.assertEqual(result.type, 'error')
+
+    def testNonCppFilesSkipped(self):
+        """Non-C++ files are not flagged."""
+        mock_output_api = MockOutputApi()
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/BUILD.gn',
+                             ['#include "chrome/browser/ui/browser.h"']),
+            MockAffectedFile('chrome/browser/README.md',
+                             ['#include "chrome/browser/ui/browser.h"']),
+            MockAffectedFile('chrome/browser/PRESUBMIT_test.py',
+                             ['#include "chrome/browser/ui/browser.h"']),
+        ]
+        results = PRESUBMIT._CheckSourcesForBadIncludes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(results, [])
+
+
+CheckAshSourcesForBadIncludes = CheckSourcesForBadIncludesTest
 
 
 class CheckNewDirectoryHasBuildGnTest(unittest.TestCase):
@@ -947,9 +1063,6 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
     def testDoesNotWarnOnNocheck(self):
         input_api = MockInputApi()
         input_api.files = [
-            MockAffectedFile('chrome/browser/ui/nocheck_include.cc', [
-                '#include "chrome/browser/ui/browser.h"  // nocheck',
-            ]),
             MockAffectedFile('chrome/browser/ui/nocheck_class.cc', [
                 'Browser* browser = nullptr;  // nocheck',
             ]),
@@ -963,6 +1076,19 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
         ]
         results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
         self.assertEqual(0, len(results))
+
+    def testErrorsOnBrowserHeaderIncludeEvenWithNocheck(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('chrome/browser/ui/nocheck_include.cc', [
+                '#include "chrome/browser/ui/browser.h"  // nocheck',
+            ]),
+        ]
+        results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertIn('chrome/browser/ui/nocheck_include.cc',
+                      results[0].message)
 
     def testDoesNotWarnOnExcludedFiles(self):
         input_api = MockInputApi()
@@ -989,11 +1115,43 @@ class CheckNoNewBrowserUsageTest(unittest.TestCase):
             ),
             MockAffectedFile(
                 'chrome/browser/ui/views/frame/browser_window_factory.cc',
-                ['#include "chrome/browser/ui/browser.h"']
+                ['Browser* browser = nullptr;']
             ),
         ]
         results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
         self.assertEqual(0, len(results))
+
+    def testErrorsOnBrowserHeaderIncludeInUsageExcludedFiles(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile(
+                'chrome/browser/ui/views/frame/browser_window_factory.cc',
+                ['#include "chrome/browser/ui/browser.h"']
+            ),
+            MockAffectedFile(
+                'chrome/browser/ui/browser_window/public/'
+                'browser_window_interface.h',
+                ['#include "chrome/browser/ui/browser.h"']
+            ),
+            MockAffectedFile(
+                'chrome/browser/ui/browser_window/public/'
+                'create_browser_window.h',
+                ['#include "chrome/browser/ui/browser.h"']
+            ),
+        ]
+        results = PRESUBMIT._CheckNoNewBrowserUsage(input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertIn(
+            'chrome/browser/ui/views/frame/browser_window_factory.cc',
+            results[0].message)
+        self.assertIn(
+            'chrome/browser/ui/browser_window/public/'
+            'browser_window_interface.h',
+            results[0].message)
+        self.assertIn(
+            'chrome/browser/ui/browser_window/public/create_browser_window.h',
+            results[0].message)
 
     def testDoesNotWarnOnNonCppFiles(self):
         input_api = MockInputApi()
