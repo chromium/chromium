@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -184,8 +185,8 @@ class UrlBarProperties {
             RICH_TEXT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
 
     /** Specifies whether the text should be selected when the URL bar is focused. */
-    public static final WritableBooleanPropertyKey SELECT_ALL_ON_FOCUS =
-            new WritableBooleanPropertyKey();
+    public static final ReadableBooleanPropertyKey SELECT_ALL_ON_FOCUS =
+            new ReadableBooleanPropertyKey();
 
     /** Whether the hint text should be shown in the view. */
     public static final WritableBooleanPropertyKey SHOW_HINT_TEXT =
