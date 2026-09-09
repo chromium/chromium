@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -39,8 +40,9 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kFileSystemAccessPersistentPermissions},
         // This class is for RHS indicators.
-        // LHS indicators feature should be disable.
-        {content_settings::features::kLeftHandSideActivityIndicators});
+        // LHS indicators and WebUILocationBar features should be disabled.
+        {content_settings::features::kLeftHandSideActivityIndicators,
+         features::kWebUILocationBar});
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
