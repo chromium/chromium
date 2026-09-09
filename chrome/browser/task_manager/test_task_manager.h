@@ -50,6 +50,7 @@ class TestTaskManager : public TaskManagerInterface {
   const std::u16string& GetTitle(TaskId task_id) const override;
   std::u16string GetProfileName(TaskId task_id) const override;
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
+  bool ShouldThemifyIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
   TaskId GetRootTaskId(TaskId task_id) const override;
@@ -96,6 +97,7 @@ class TestTaskManager : public TaskManagerInterface {
   base::ProcessId pid_;
   std::u16string title_;
   gfx::ImageSkia icon_;
+  bool should_themify_icon_ = false;
   TaskIdList ids_;
 };
 

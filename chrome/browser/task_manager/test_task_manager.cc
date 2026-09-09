@@ -94,6 +94,10 @@ const gfx::ImageSkia& TestTaskManager::GetIcon(TaskId task_id) const {
   return icon_;
 }
 
+bool TestTaskManager::ShouldThemifyIcon(TaskId task_id) const {
+  return should_themify_icon_;
+}
+
 const base::ProcessHandle& TestTaskManager::GetProcessHandle(
     TaskId task_id) const {
   return handle_;

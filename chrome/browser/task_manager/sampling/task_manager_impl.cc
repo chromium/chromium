@@ -256,6 +256,10 @@ const gfx::ImageSkia& TaskManagerImpl::GetIcon(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->icon();
 }
 
+bool TaskManagerImpl::ShouldThemifyIcon(TaskId task_id) const {
+  return GetTaskByTaskId(task_id)->should_themify_icon();
+}
+
 const base::ProcessHandle& TaskManagerImpl::GetProcessHandle(
     TaskId task_id) const {
   return GetTaskGroupByTaskId(task_id)->process_handle();

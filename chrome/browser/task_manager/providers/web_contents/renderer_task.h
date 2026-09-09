@@ -18,6 +18,7 @@
 class ProcessResourceUsage;
 
 namespace content {
+class NavigationEntry;
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
@@ -94,6 +95,10 @@ class RendererTask : public Task,
   static std::u16string GetTitleFromWebContents(
       content::WebContents* web_contents);
 
+  // Returns true if the favicon of |entry| is athemeable favicon, i.e. one the
+  // UI must recolor to keep it visible against the background it's painted on.
+  static bool ShouldThemifyFaviconOfEntry(content::NavigationEntry* entry);
+
   // Prefixes the given renderer |title| with the appropriate string based on
   // whether it's an app, an extension, incognito or a background page or
   // contents.
@@ -102,10 +107,12 @@ class RendererTask : public Task,
                                                   bool is_extension,
                                                   bool is_incognito,
                                                   bool is_background);
+
   // Sets the icon to the current favicon of web_contents() (see
-  // GetFaviconFromWebContents()). Tasks whose icon is the favicon of their
-  // WebContents use this both to initialize the icon in their constructor and
-  // to refresh it from UpdateFavicon().
+  // GetFaviconFromWebContents()), flagged for theming when it is a themeable
+  // favicon (see ShouldThemifyFaviconOfEntry()). Tasks whose icon is the
+  // favicon of their WebContents use this both to initialize the icon in
+  // their constructor and to refresh it from UpdateFavicon().
   void DefaultUpdateFaviconImpl();
 
  private:

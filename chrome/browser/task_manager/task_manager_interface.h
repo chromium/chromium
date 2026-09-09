@@ -137,6 +137,12 @@ class TaskManagerInterface {
   // Returns the favicon of the task with |task_id|.
   virtual const gfx::ImageSkia& GetIcon(TaskId task_id) const = 0;
 
+  // Returns true if the favicon of the task with |task_id| is a themeable
+  // favicon the UI must recolor to keep it visible against the background it's
+  // painted on, e.g. the monochrome favicon of the NTP in dark mode. See
+  // Task::should_themify_icon().
+  virtual bool ShouldThemifyIcon(TaskId task_id) const = 0;
+
   // Returns the ID and handle of the process on which the task with |task_id|
   // is running.
   virtual const base::ProcessHandle& GetProcessHandle(TaskId task_id) const = 0;

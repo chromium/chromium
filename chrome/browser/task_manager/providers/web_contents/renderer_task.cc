@@ -21,6 +21,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -220,7 +223,9 @@ void RendererTask::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
   if (notification_icon_type == NON_TOUCH_LARGEST ||
       notification_icon_type == TOUCH_LARGEST) {
     const gfx::ImageSkia* icon = image.ToImageSkia();
-    set_icon(icon ? *icon : gfx::ImageSkia());
+    set_icon(icon ? *icon : gfx::ImageSkia(),
+             ShouldThemifyFaviconOfEntry(
+                 web_contents()->GetController().GetLastCommittedEntry()));
   }
 #endif
 }
@@ -285,6 +290,13 @@ std::unique_ptr<gfx::ImageSkia> RendererTask::GetFaviconFromWebContents(
 }
 
 // static
+bool RendererTask::ShouldThemifyFaviconOfEntry(
+    content::NavigationEntry* entry) {
+  return entry && (!entry->GetFavicon().valid ||
+                   favicon::ShouldThemifyFaviconForEntry(entry));
+}
+
+// static
 const std::u16string RendererTask::PrefixRendererTitle(
     const std::u16string& title,
     bool is_app,
@@ -315,7 +327,9 @@ const std::u16string RendererTask::PrefixRendererTitle(
 void RendererTask::DefaultUpdateFaviconImpl() {
   std::unique_ptr<gfx::ImageSkia> icon =
       GetFaviconFromWebContents(web_contents());
-  set_icon(icon ? *icon : gfx::ImageSkia());
+  set_icon(icon ? *icon : gfx::ImageSkia(),
+           ShouldThemifyFaviconOfEntry(
+               web_contents()->GetController().GetLastCommittedEntry()));
 }
 
 }  // namespace task_manager

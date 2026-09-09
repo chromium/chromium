@@ -188,6 +188,14 @@ class Task {
   int64_t task_id() const { return task_id_; }
   const std::u16string& title() const { return title_; }
   const gfx::ImageSkia& icon() const { return icon_; }
+  // Returns true if icon() is a themeable favicon: one the UI must recolor to
+  // keep it visible against the background it's painted on. This is the case
+  // for the default favicon, shown while a page has no favicon of its own, and
+  // for the favicons of chrome:// pages such as the NTP. Both are monochrome
+  // and illegible on a dark background as is. These are the same favicons the
+  // tab strip themifies for the tab background (see
+  // TabIcon::UpdateThemedFavicon()).
+  bool should_themify_icon() const { return should_themify_icon_; }
   const base::ProcessHandle& process_handle() const { return process_handle_; }
   const base::ProcessId& process_id() const { return process_id_; }
 
@@ -199,7 +207,13 @@ class Task {
   // Returns |*result_image|.
   static gfx::ImageSkia* FetchIcon(int id, gfx::ImageSkia** result_image);
   void set_title(const std::u16string& new_title) { title_ = new_title; }
-  void set_icon(const gfx::ImageSkia& new_icon) { icon_ = new_icon; }
+  // Sets the favicon, and whether it is a themeable favicon the UI must
+  // recolor (see should_themify_icon()).
+  void set_icon(const gfx::ImageSkia& new_icon,
+                bool should_themify_icon = false) {
+    icon_ = new_icon;
+    should_themify_icon_ = should_themify_icon;
+  }
 
  private:
   // The unique ID of this task.
@@ -236,6 +250,9 @@ class Task {
 
   // The favicon.
   gfx::ImageSkia icon_;
+
+  // Whether |icon_| is a themeable favicon.
+  bool should_themify_icon_ = false;
 
   // The handle of the process on which this task is running.
   base::ProcessHandle process_handle_;
