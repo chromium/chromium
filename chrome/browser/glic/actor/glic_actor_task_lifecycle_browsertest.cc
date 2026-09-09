@@ -247,7 +247,6 @@ class GlicActorTaskLifecycleFunctionalBrowserTest
         "components/test/data");
     GlicActorFunctionalBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
  private:

@@ -182,7 +182,8 @@ class InteractiveGlicTestMixin : public T {
     instance_tracker_.SetProfile(T::GetProfile());
     LOG(INFO) << "InteractiveGlicTest: setting up";
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
-        Test::embedded_test_server(), &Test::embedded_https_test_server()));
+        Test::embedded_test_server(), &Test::embedded_https_test_server(),
+        use_https_for_glic_url_));
 
     LOG(INFO) << "InteractiveGlicTest: done setting up";
 
@@ -934,6 +935,12 @@ class InteractiveGlicTestMixin : public T {
         desc);
   }
 
+  // Configures whether the Glic guest URL should use HTTPS instead of HTTP.
+  // Must be called before `SetUpOnMainThread()`.
+  void SetUseHttpsForGlicUrl(bool use_https = true) {
+    use_https_for_glic_url_ = use_https;
+  }
+
   void SetGlicPagePath(const std::string& glic_page_path) {
     glic_test_environment_.SetGlicPagePath(glic_page_path);
   }
@@ -1025,6 +1032,7 @@ class InteractiveGlicTestMixin : public T {
 
   base::WeakPtr<BrowserWindowInterface> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
+  bool use_https_for_glic_url_ = false;
   // This is the default test file. Tests can override with a different path.
   base::test::ScopedFeatureList features_;
 };

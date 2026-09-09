@@ -111,7 +111,8 @@ class GlicTestEnvironment : public ProfileObserver {
   // This must be called in SetUpOnMainThread().
   [[nodiscard]] bool SetupEmbeddedTestServers(
       net::test_server::EmbeddedTestServer* http_server,
-      net::test_server::EmbeddedTestServer* https_server = nullptr);
+      net::test_server::EmbeddedTestServer* https_server = nullptr,
+      bool use_https_for_glic_url = false);
 
   void SetGlicPagePath(const std::string& path);
   void AddMockGlicQueryParam(const std::string_view& key,
@@ -131,13 +132,15 @@ class GlicTestEnvironment : public ProfileObserver {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
 
   bool StartTestServerIfNeeded(
-      net::test_server::EmbeddedTestServer* http_server);
+      net::test_server::EmbeddedTestServer* server,
+      net::test_server::EmbeddedTestServerHandle& handle);
 
   // URL configuration state.
   std::string glic_page_path_ = "/glic/test_client/index.html";
   std::map<std::string, std::string> mock_glic_query_params_;
   GURL guest_url_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
+  net::test_server::EmbeddedTestServerHandle https_test_server_handle_;
 };
 
 // Note: This constructs the GlicKeyedService, if it's not already created,

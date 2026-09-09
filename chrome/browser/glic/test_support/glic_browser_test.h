@@ -343,7 +343,8 @@ class GlicBrowserTestMixin : public T {
     }
 
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
-        T::embedded_test_server(), &T::embedded_https_test_server()));
+        T::embedded_test_server(), &T::embedded_https_test_server(),
+        use_https_for_glic_url_));
     T::GetTabListInterface()
         ->GetActiveTab()
         ->GetBrowserWindowInterface()
@@ -975,6 +976,12 @@ class GlicBrowserTestMixin : public T {
     return T::embedded_test_server()->GetURL("/test_data/" + file_name);
   }
 
+  // Configures whether the Glic guest URL should use HTTPS instead of HTTP.
+  // Must be called before `SetUpOnMainThread()`.
+  void SetUseHttpsForGlicUrl(bool use_https = true) {
+    use_https_for_glic_url_ = use_https;
+  }
+
   void SetGlicPagePath(const std::string& glic_page_path) {
     glic_test_environment_.SetGlicPagePath(glic_page_path);
   }
@@ -1102,6 +1109,7 @@ class GlicBrowserTestMixin : public T {
   // safe profile access during teardown even if all browser windows were
   // closed.
   base::WeakPtr<Profile> weak_profile_;
+  bool use_https_for_glic_url_ = false;
 };
 
 using GlicBrowserTest = GlicBrowserTestMixin<PlatformBrowserTest>;

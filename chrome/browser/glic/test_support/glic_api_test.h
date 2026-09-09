@@ -199,6 +199,7 @@ class GlicApiBrowserTestMixin : public T {
   explicit GlicApiBrowserTestMixin(GlicTestJsPath js_source_path,
                                    Args&&... args)
       : Base(std::forward<Args>(args)...) {
+    Base::SetUseHttpsForGlicUrl(true);
     Base::AddMockGlicQueryParam(
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
@@ -218,6 +219,18 @@ class GlicApiBrowserTestMixin : public T {
     Base::embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &GlicApiBrowserTestMixin::OnEmbeddedTestServerHttpRequest,
         base::Unretained(this)));
+
+    Base::embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&GlicApiBrowserTestMixin::SorryHtmlRequestHandler,
+                            base::Unretained(this)));
+    Base::embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&GlicApiBrowserTestMixin::FakeRpcRequestHandler,
+                            base::Unretained(this)));
+
+    Base::embedded_https_test_server().RegisterRequestMonitor(
+        base::BindRepeating(
+            &GlicApiBrowserTestMixin::OnEmbeddedTestServerHttpRequest,
+            base::Unretained(this)));
 
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/

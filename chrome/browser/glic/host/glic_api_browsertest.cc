@@ -3385,7 +3385,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
   ASSERT_OK(OpenGlicForActiveTab());
   const GURL cross_origin_rpc_url =
-      embedded_test_server()->GetURL("b.com", "/fake-rpc/cors");
+      embedded_https_test_server().GetURL("b.com", "/fake-rpc/cors");
   base::ListValue rpc_urls;
   rpc_urls.Append("/fake-rpc");
   rpc_urls.Append(cross_origin_rpc_url.spec());
