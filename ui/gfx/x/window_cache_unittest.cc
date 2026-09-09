@@ -9,6 +9,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 
 namespace x11 {
@@ -22,6 +23,14 @@ class WindowCacheTest : public testing::Test {
     cache_.reset();
     cache_ = std::make_unique<WindowCache>(connection_, root_);
     cache_->SyncForTest();
+  }
+
+  std::optional<uint32_t> last_processed_event_for_testing() const {
+    return cache_->last_processed_event_;
+  }
+
+  void set_last_processed_event_for_testing(uint32_t sequence) {
+    cache_->last_processed_event_ = sequence;
   }
 
   Window CreateWindow(Window parent) {
@@ -78,6 +87,22 @@ TEST_F(WindowCacheTest, Basic) {
   EXPECT_EQ(info.height_px, 1024);
   EXPECT_EQ(info.border_width_px, 0);
   EXPECT_TRUE(info.children.empty());
+}
+
+// Regression test for crbug.com/556773229. OnEvent can be invoked with
+// GDK events converted to x11 that do not have a sequence number. Reading the
+// sequence number on these events will CHECK. It was possible to CHECK when
+// last_processed_event_ was set and OnEvent verified the event's sequence
+// against last_processed_event_.
+// This test ensures that OnEvent returns early for fabricated events by
+// verifying last_processed_event_ is not cleared for a fabricated event.
+TEST_F(WindowCacheTest, FabricatedKeyEventIgnored) {
+  constexpr uint32_t kLastProcessedEvent = 1;
+  set_last_processed_event_for_testing(kLastProcessedEvent);
+
+  connection()->DispatchEvent(Event(false, KeyEvent{}));
+
+  EXPECT_EQ(last_processed_event_for_testing(), kLastProcessedEvent);
 }
 
 TEST_F(WindowCacheTest, ConfigureNotify) {

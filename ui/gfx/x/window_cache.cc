@@ -170,6 +170,12 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
 }
 
 void WindowCache::OnEvent(const Event& event) {
+  // GtkEventLoopX11 converts GDK key events to fabricated x11 events. They
+  // are not relevant to the window cache.
+  if (event.is_fabricated()) {
+    return;
+  }
+
   // Ignore events that we've already processed.
   if (last_processed_event_ &&
       CompareSequenceIds(event.sequence(), *last_processed_event_) <= 0) {

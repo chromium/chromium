@@ -81,6 +81,8 @@ class COMPONENT_EXPORT(X11) Event {
 
   bool send_event() const { return send_event_; }
 
+  bool is_fabricated() const { return fabricated_; }
+
   uint32_t sequence() const {
     CHECK(!fabricated_);
     return sequence_;

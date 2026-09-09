@@ -103,6 +103,8 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   }
 
  private:
+  friend class WindowCacheTest;
+
   // This helper reduces boilerplate when adding requests.
   template <typename Future, typename Callback, typename... Args>
   void AddRequest(Future&& future, Callback&& callback, Args&&... args) {
