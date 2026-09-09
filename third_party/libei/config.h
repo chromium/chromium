@@ -24,6 +24,11 @@
 #define log_msg_va ei_util_log_msg_va
 #define strv_from_string ei_strv_from_string
 #define strv_join ei_strv_join
+#define strv_len ei_strv_len
+#define strv_append_take ei_strv_append_take
+#define strv_append_strdup ei_strv_append_strdup
+#define strv_find ei_strv_find
+#define strv_find_substring ei_strv_find_substring
 
 /* Other potential conflicts */
 #define xsnprintf ei_xsnprintf
