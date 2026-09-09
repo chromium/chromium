@@ -43,10 +43,12 @@ BASE_FEATURE(kDispatchPointerEventsOnFrameEvent,
 BASE_FEATURE(kDispatchTouchEventsOnFrameEvent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, touchpad scroll events are delivered in unscaled surface
+// If enabled, touchpad scroll events are delivered in newly scaled surface
 // coordinates rather than being scaled by 10x.
 BASE_FEATURE(kWaylandUnscaledTouchpadScrolling,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<double> kWaylandUnscaledTouchpadScrollingNewFactor{
+    &kWaylandUnscaledTouchpadScrolling, "scroll_scaling_factor", 2.5};
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
@@ -78,6 +80,10 @@ bool IsDispatchTouchEventsOnFrameEventEnabled() {
 
 bool IsWaylandUnscaledTouchpadScrollingEnabled() {
   return base::FeatureList::IsEnabled(kWaylandUnscaledTouchpadScrolling);
+}
+
+double GetWaylandUnscaledTouchpadScrollingNewFactor() {
+  return kWaylandUnscaledTouchpadScrollingNewFactor.Get();
 }
 
 }  // namespace ui

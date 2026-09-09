@@ -20786,7 +20786,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260824",
+                    "name": "Enabled_supposed_goldilocks",
+                    "params": {
+                        "scroll_scaling_factor": "2.5"
+                    },
+                    "enable_features": [
+                        "WaylandUnscaledTouchpadScrolling"
+                    ]
+                },
+                {
+                    "name": "Enabled_slower",
+                    "params": {
+                        "scroll_scaling_factor": "2.0"
+                    },
+                    "enable_features": [
+                        "WaylandUnscaledTouchpadScrolling"
+                    ]
+                },
+                {
+                    "name": "Enabled_aggressive",
+                    "params": {
+                        "scroll_scaling_factor": "3.0"
+                    },
                     "enable_features": [
                         "WaylandUnscaledTouchpadScrolling"
                     ]

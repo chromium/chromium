@@ -16,6 +16,7 @@ BASE_DECLARE_FEATURE(kUseDynamicCursorSize);
 BASE_DECLARE_FEATURE(kDispatchPointerEventsOnFrameEvent);
 BASE_DECLARE_FEATURE(kDispatchTouchEventsOnFrameEvent);
 BASE_DECLARE_FEATURE(kWaylandUnscaledTouchpadScrolling);
+extern const base::FeatureParam<double> kWaylandUnscaledTouchpadScrollingNewFactor;
 
 bool IsWaylandOverlayDelegationEnabled();
 bool IsWaylandFractionalScaleV1Enabled();
@@ -25,6 +26,7 @@ bool IsUseDynamicCursorSizeEnabled();
 bool IsDispatchPointerEventsOnFrameEventEnabled();
 bool IsDispatchTouchEventsOnFrameEventEnabled();
 bool IsWaylandUnscaledTouchpadScrollingEnabled();
+double GetWaylandUnscaledTouchpadScrollingNewFactor();
 
 }  // namespace ui
 

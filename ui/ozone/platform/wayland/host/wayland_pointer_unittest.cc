@@ -6,7 +6,9 @@
 #include <wayland-server.h>
 
 #include <cmath>
+#include <map>
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -370,9 +372,46 @@ TEST_F(WaylandPointerTest, AxisFingerAndContinuous) {
       ASSERT_TRUE(event->IsScrollEvent());
       auto* scroll_event = event->AsScrollEvent();
       EXPECT_EQ(EventType::kScroll, scroll_event->type());
-      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? 0.0f : -10.0f,
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? 0.0f : -25.0f,
                 scroll_event->x_offset());
-      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? -10.0f : 0.0f,
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? -25.0f : 0.0f,
+                scroll_event->y_offset());
+    }
+  }
+}
+
+TEST_F(WaylandPointerTest, AxisFingerCustomFactorParam) {
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters["scroll_scaling_factor"] = "5.0";
+  feature_list.InitAndEnableFeatureWithParameters(
+      ui::kWaylandUnscaledTouchpadScrolling, parameters);
+
+  SendEnter();
+
+  for (uint32_t axis :
+       {WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_HORIZONTAL_SCROLL}) {
+    for (uint32_t source :
+         {WL_POINTER_AXIS_SOURCE_FINGER, WL_POINTER_AXIS_SOURCE_CONTINUOUS}) {
+      std::unique_ptr<Event> event;
+      EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
+
+      PostToServerAndWait([axis, source](wl::TestWaylandServerThread* server) {
+        auto* const pointer = server->seat()->pointer()->resource();
+
+        wl_pointer_send_axis_source(pointer, source);
+        wl_pointer_send_axis(pointer, 1003, axis, wl_fixed_from_int(10));
+        wl_pointer_send_frame(pointer);
+      });
+
+      ASSERT_TRUE(event);
+      ASSERT_TRUE(event->IsScrollEvent());
+      auto* scroll_event = event->AsScrollEvent();
+      EXPECT_EQ(EventType::kScroll, scroll_event->type());
+      // Expect 10.0 * 5.0 = 50.0
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? 0.0f : -50.0f,
+                scroll_event->x_offset());
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? -50.0f : 0.0f,
                 scroll_event->y_offset());
     }
   }

@@ -1238,10 +1238,17 @@ void WaylandEventSource::ProcessPointerScrollData() {
         pointer_frames_.push_back(std::make_unique<FrameData>(
             stop_fling_event, base::NullCallback()));
       }
+      float dx = pointer_scroll_data_->dx;
+      float dy = pointer_scroll_data_->dy;
+      if (IsWaylandUnscaledTouchpadScrollingEnabled()) {
+        float touchpad_scroll_scaling_factor = static_cast<float>(
+            GetWaylandUnscaledTouchpadScrollingNewFactor());
+        dx = dx * touchpad_scroll_scaling_factor;
+        dy = dy * touchpad_scroll_scaling_factor;
+      }
       ScrollEvent event(EventType::kScroll, pointer_location_,
-                        pointer_location_, timestamp, flags,
-                        pointer_scroll_data_->dx, pointer_scroll_data_->dy,
-                        pointer_scroll_data_->dx, pointer_scroll_data_->dy,
+                        pointer_location_, timestamp, flags, dx, dy,
+                        dx, dy,
                         kGestureScrollFingerCount);
       pointer_frames_.push_back(
           std::make_unique<FrameData>(event, base::NullCallback()));
