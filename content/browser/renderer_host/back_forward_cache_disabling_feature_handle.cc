@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/back_forward_cache_disabling_feature_handle.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
@@ -17,7 +19,14 @@ BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
 
 BackForwardCacheDisablingFeatureHandle&
 BackForwardCacheDisablingFeatureHandle::operator=(
-    BackForwardCacheDisablingFeatureHandle&& other) = default;
+    BackForwardCacheDisablingFeatureHandle&& other) {
+  if (this != &other) {
+    Reset();
+    render_frame_host_ = std::move(other.render_frame_host_);
+    feature_ = other.feature_;
+  }
+  return *this;
+}
 
 BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
     RenderFrameHostImpl* render_frame_host,

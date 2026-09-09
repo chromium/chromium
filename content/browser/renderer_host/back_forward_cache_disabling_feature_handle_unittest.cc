@@ -134,38 +134,40 @@ TEST_F(BackForwardCacheDisablingFeatureHandleTest,
       blink::scheduler::WebSchedulerTrackedFeature::kWebHID));
 
   // Move-assign `handle2` into `handle1` while `handle1` already holds an
-  // active handle.
+  // active handle. `handle1` calls `Reset()` first, releasing `kWebBluetooth`,
+  // then takes ownership of `kWebHID`.
   handle1 = std::move(handle2);
   EXPECT_FALSE(handle2.IsValid());
   EXPECT_TRUE(handle1.IsValid());
-
-  // TODO(thestig): Defaulting the move-assignment operator causes a resource
-  // leak if `this` already holds an active handle. Because `= default` does not
-  // call `Reset()`, any previously held feature registration on
-  // `render_frame_host_` is overwritten without calling
-  // `OnBackForwardCacheDisablingFeatureRemoved()`, permanently preventing the
-  // frame from entering BackForwardCache.
-  //
-  // `operator=` should call `Reset()` before taking ownership of `other`'s
-  // members (after checking `this != &other`).
-  //
-  // Currently, `kWebBluetooth` was leaked on `rfh` and remains present even
-  // though `handle1` no longer tracks it. Once fixed, `kWebBluetooth` should no
-  // longer be present here (i.e. EXPECT_FALSE).
-  EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
+  EXPECT_FALSE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebHID));
 
-  // Resetting `handle1` cleans up `kWebHID`, but `kWebBluetooth` remains
-  // leaked.
+  // Resetting `handle1` cleans up `kWebHID`.
   handle1.Reset();
   EXPECT_FALSE(handle1.IsValid());
   EXPECT_FALSE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebHID));
+  EXPECT_FALSE(rfh->GetBackForwardCacheDisablingFeatures().Has(
+      blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
+}
 
-  // TODO(thestig): Once the bug is fixed, `kWebBluetooth` will not be leaked
-  // and this expectation should be EXPECT_FALSE.
+TEST_F(BackForwardCacheDisablingFeatureHandleTest, SelfMoveAssignment) {
+  RenderFrameHostImpl* rfh = main_rfh_impl();
+  BackForwardCacheDisablingFeatureHandle handle =
+      rfh->RegisterBackForwardCacheDisablingNonStickyFeature(
+          blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth);
+  EXPECT_TRUE(handle.IsValid());
+  EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
+      blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-move"
+  handle = std::move(handle);
+#pragma clang diagnostic pop
+
+  EXPECT_TRUE(handle.IsValid());
   EXPECT_TRUE(rfh->GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::kWebBluetooth));
 }
