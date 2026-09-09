@@ -17,11 +17,3 @@ include_rules = [
   "+ui/wm/public",
 ]
 
-
-specific_include_rules = {
-  ".*test.*": [
-    "+chrome/browser/ui/ash/test_util.h",
-    "+chrome/test/base",
-    "+content/public/test",
-  ]
-}

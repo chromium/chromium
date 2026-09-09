@@ -15,7 +15,4 @@ specific_include_rules = {
   ".*test\\.cc|mock.*\\.*": [
     "+testing",
   ],
-  "fake_cros_settings_provider\\.(cc|h)" : [
-    "+components/prefs",
-  ]
 }
