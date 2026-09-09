@@ -89,6 +89,11 @@ void BadgeManager::BindFrameReceiverIfAllowed(
     return;
   }
 
+  // The Badging API is only allowed in first-party contexts.
+  if (frame->GetStorageKey().IsThirdPartyContext()) {
+    return;
+  }
+
   auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
 
   auto* badge_manager =
@@ -115,6 +120,11 @@ void BadgeManager::BindServiceWorkerReceiverIfAllowed(
     return;
   }
 
+  // The Badging API is only allowed in first-party contexts.
+  if (info.storage_key.IsThirdPartyContext()) {
+    return;
+  }
+
   auto* profile = Profile::FromBrowserContext(
       service_worker_process_host->GetBrowserContext());
 
@@ -124,7 +134,8 @@ void BadgeManager::BindServiceWorkerReceiverIfAllowed(
     return;
 
   auto context = std::make_unique<BadgeManager::ServiceWorkerBindingContext>(
-      service_worker_process_host->GetDeprecatedID(), info.scope);
+      service_worker_process_host->GetDeprecatedID(), info.scope,
+      info.storage_key);
 
   badge_manager->receivers_.Add(badge_manager, std::move(receiver),
                                 std::move(context));
@@ -173,6 +184,10 @@ const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
   const base::Clock* previous = clock_;
   clock_ = clock;
   return previous;
+}
+
+void BadgeManager::FlushReceiversForTesting() {
+  receivers_.FlushForTesting();
 }
 
 void BadgeManager::UpdateBadge(const webapps::AppId& app_id,
@@ -257,8 +272,9 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* frame =
       content::RenderFrameHost::FromID(process_id_, frame_id_);
-  if (!frame)
+  if (!frame || frame->GetStorageKey().IsThirdPartyContext()) {
     return std::vector<std::tuple<webapps::AppId, GURL>>{};
+  }
 
   const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
       Profile::FromBrowserContext(frame->GetBrowserContext()));
@@ -279,6 +295,10 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
 std::vector<std::tuple<webapps::AppId, GURL>>
 BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (storage_key_.IsThirdPartyContext()) {
+    return std::vector<std::tuple<webapps::AppId, GURL>>{};
+  }
 
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(process_id_);

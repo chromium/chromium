@@ -9,11 +9,6 @@
   <script type="text/javascript">
     'use strict';
 
-    // Note: The url for the cross site frame is embedded in the query string.
-    const crossFrame = document.getElementById('cross-site');
-    const crossSiteUrl = new URLSearchParams(location.search).get('url');
-    crossFrame.src = crossSiteUrl;
-
     // Copy of //content/test/data/service_worker/create_service_worker.html.
 
     // Simulates navigator.serviceWorker.ready, which can't be used since this

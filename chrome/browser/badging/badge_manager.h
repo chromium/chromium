@@ -17,6 +17,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "url/gurl.h"
@@ -106,6 +107,7 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   void ClearBadgeForTesting(const webapps::AppId& app_id,
                             ukm::UkmRecorder* test_recorder);
   const base::Clock* SetClockForTesting(const base::Clock* clock);
+  void FlushReceiversForTesting();
 
  private:
   // The BindingContext of a mojo request. Allows mojo calls to be tied back
@@ -143,8 +145,10 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   // The BindingContext for ServiceWorkerGlobalScope execution contexts.
   class ServiceWorkerBindingContext final : public BindingContext {
    public:
-    ServiceWorkerBindingContext(int process_id, const GURL& scope)
-        : process_id_(process_id), scope_(scope) {}
+    ServiceWorkerBindingContext(int process_id,
+                                const GURL& scope,
+                                const blink::StorageKey& storage_key)
+        : process_id_(process_id), scope_(scope), storage_key_(storage_key) {}
     ~ServiceWorkerBindingContext() override = default;
 
     // Returns the list of AppIds within the service worker's scope. Returns
@@ -155,6 +159,7 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
    private:
     int process_id_;
     GURL scope_;
+    blink::StorageKey storage_key_;
   };
 
   // Updates the badge for |app_id| to be |value|, if it is not std::nullopt.
