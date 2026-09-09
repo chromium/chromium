@@ -384,9 +384,9 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady) {
   // Simulate DomDistiller finishing distillation with multi-page article.
   dom_distiller::DistilledArticleProto proto;
   dom_distiller::DistilledPageProto* page1 = proto.add_pages();
-  page1->set_html("First page content");
+  page1->set_text_content("First page content");
   dom_distiller::DistilledPageProto* page2 = proto.add_pages();
-  page2->set_html("Second page content");
+  page2->set_text_content("Second page content");
 
   delegate_ptr->OnArticleReady(&proto);
 
@@ -405,7 +405,7 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady) {
   EXPECT_EQ(u"Second page content", segments[1]->text);
 }
 
-TEST_F(ReadAloudServiceTest, DistillPageAndArticleReadyEmptyPageHtml) {
+TEST_F(ReadAloudServiceTest, DistillPageAndArticleReadyWithEmptyPage) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 
   SetFakeController(std::make_unique<FakePlaybackController>());
@@ -432,9 +432,9 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReadyEmptyPageHtml) {
   // Distilled article where second page is empty string.
   dom_distiller::DistilledArticleProto proto;
   dom_distiller::DistilledPageProto* page1 = proto.add_pages();
-  page1->set_html("Page 1 text");
+  page1->set_text_content("Page 1 text");
   dom_distiller::DistilledPageProto* page2 = proto.add_pages();
-  page2->set_html("");
+  page2->set_text_content("");
 
   delegate_ptr->OnArticleReady(&proto);
   base::RunLoop().RunUntilIdle();
