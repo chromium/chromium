@@ -47,6 +47,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -279,8 +280,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
  public:
   PinnedSidePanelInteractiveTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {
-  }
+            {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {}
   ~PinnedSidePanelInteractiveTest() override = default;
 
   void SetUp() override {
@@ -504,6 +504,31 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   BrowserWindowInterface* const incognito = CreateIncognitoBrowser();
   RunTestSequence(
       InContext(BrowserElements::From(incognito)->GetContext(),
+                WaitForShow(kBrowserViewElementId)),
+      InSameContext(ActivateSurface(kBrowserViewElementId),
+                    EnsureNotPresent(kSidePanelElementId),
+                    OpenBookmarksSidePanel(),
+                    EnsureNotPresent(kSidePanelPinButtonElementId)));
+}
+
+class SidePanelEnterpriseIsolatedModeTest
+    : public PinnedSidePanelInteractiveTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PinnedSidePanelInteractiveTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SidePanelEnterpriseIsolatedModeTest,
+                       SidePanelPinButtonsHideInEnterpriseIsolatedMode) {
+  BrowserWindowInterface* const isolated_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  RunTestSequence(
+      InContext(BrowserElements::From(isolated_browser)->GetContext(),
                 WaitForShow(kBrowserViewElementId)),
       InSameContext(ActivateSurface(kBrowserViewElementId),
                     EnsureNotPresent(kSidePanelElementId),
@@ -870,7 +895,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelAnimationPerfUiTest,
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        PinActiveItemHighlightsButton) {
   auto* registry = SidePanelRegistry::From(browser());
-  auto* entry = registry->GetEntryForKey(SidePanelEntry::Key(SidePanelEntryId::kReadingList));
+  auto* entry = registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntryId::kReadingList));
   ASSERT_TRUE(entry);
   entry->set_should_show_ephemerally_in_toolbar(false);
 
