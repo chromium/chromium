@@ -10238,16 +10238,6 @@
     "expiry_milestone": 157
   },
   {
-    "name": "vids-app-existing-consumer-preinstall",
-    "owners": [ "alancutter@chromium.org", "cros-ca-eng@google.com" ],
-    "expiry_milestone": 161
-  },
-  {
-    "name": "vids-app-preinstall",
-    "owners": [ "alancutter@chromium.org", "cros-ca-eng@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "viewport-segments",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 140

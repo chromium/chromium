@@ -4963,15 +4963,6 @@ inline constexpr char kVerifyQWACsDescription[] =
     "Enables verification of qualified certificates for website authentication "
     "as described in ETSI TS 119 411-5 V2.1.1 (2025-02).";
 
-inline constexpr char kVidsAppExistingConsumerPreinstallName[] =
-    "Vids app existing consumer preinstall";
-inline constexpr char kVidsAppExistingConsumerPreinstallDescription[] =
-    "Preinstalls the Vids app on ChromeOS for existing consumer users.";
-
-inline constexpr char kVidsAppPreinstallName[] = "Vids app preinstall";
-inline constexpr char kVidsAppPreinstallDescription[] =
-    "Preinstalls the Vids app on ChromeOS.";
-
 inline constexpr char kV8VmFutureName[] = "Future V8 VM features";
 inline constexpr char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "

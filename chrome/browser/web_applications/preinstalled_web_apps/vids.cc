@@ -12,13 +12,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/liburlpattern/parse.h"
@@ -53,8 +51,7 @@ blink::Manifest::HomeTabParams HomeTabPathnames(
 
 }  // namespace
 
-ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed,
-                                        std::string_view user_type) {
+ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed) {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://docs.google.com/videos/installwebapp?usp=chrome_default"),
@@ -63,15 +60,7 @@ ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed,
                            : mojom::UserDisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
-  options.user_type_allowlist = {"managed"};
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kVidsAppConsumerPreinstall)) {
-    options.user_type_allowlist.push_back("unmanaged");
-  }
-  options.only_for_new_users =
-      !base::FeatureList::IsEnabled(
-          chromeos::features::kVidsAppExistingConsumerPreinstall) &&
-      user_type == "unmanaged";
+  options.user_type_allowlist = {"managed", "unmanaged"};
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     GURL start_url =

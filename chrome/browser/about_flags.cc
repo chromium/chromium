@@ -12530,12 +12530,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(device::kPasskeyUnlockErrorUi)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"vids-app-preinstall", flag_descriptions::kVidsAppPreinstallName,
-     flag_descriptions::kVidsAppPreinstallDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kVidsAppPreinstall)},
-#endif
-
 #if (BUILDFLAG(IS_ANDROID))
     {"android-context-menu-disabled-menu-items",
      flag_descriptions::kAndroidContextMenuDisabledMenuItemsName,
@@ -13678,14 +13672,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInputCursorAnchorInfoMigrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kInputCursorAnchorInfoMigration)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-    {"vids-app-existing-consumer-preinstall",
-     flag_descriptions::kVidsAppExistingConsumerPreinstallName,
-     flag_descriptions::kVidsAppExistingConsumerPreinstallDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kVidsAppExistingConsumerPreinstall)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"long-screenshots-no-memory-check",
