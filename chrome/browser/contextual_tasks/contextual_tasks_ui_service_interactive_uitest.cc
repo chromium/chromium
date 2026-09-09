@@ -9,6 +9,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -19,12 +21,16 @@
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -649,6 +655,123 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
         EXPECT_EQ(task2->GetTaskId(), initial_task_id);
         EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceInteractiveUiTest,
+    StartTaskUiInSidePanel_MultipleContextTabs_SidePanelAttachesToAllContextTabs) {
+  // Disable side panel animations to make test deterministic.
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  // Navigate initial active tab (tab 0) to settings, and add history (tab 1)
+  // and version (tab 2) in the background.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1,
+                   /*foreground=*/false);
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUIVersionURL), -1,
+                   /*foreground=*/false);
+
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  content::WaitForLoadStop(tab_list->GetTab(0)->GetContents());
+  content::WaitForLoadStop(tab_list->GetTab(1)->GetContents());
+  content::WaitForLoadStop(tab_list->GetTab(2)->GetContents());
+  EXPECT_EQ(0, tab_list->GetActiveIndex());
+
+  contextual_tasks::ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(contextual_tasks_service);
+
+  SessionID tab0_id =
+      sessions::SessionTabHelper::IdForTab(tab_list->GetTab(0)->GetContents());
+  SessionID tab1_id =
+      sessions::SessionTabHelper::IdForTab(tab_list->GetTab(1)->GetContents());
+  SessionID tab2_id =
+      sessions::SessionTabHelper::IdForTab(tab_list->GetTab(2)->GetContents());
+  ASSERT_TRUE(tab0_id.is_valid());
+  ASSERT_TRUE(tab1_id.is_valid());
+  ASSERT_TRUE(tab2_id.is_valid());
+
+  // Create a contextual search session handle on tab 0 with tab 0 and tab 1 as
+  // context.
+  auto* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(browser()->GetProfile());
+  auto session_handle = contextual_search_service->CreateSession(
+      std::make_unique<
+          contextual_search::ContextualSearchContextController::ConfigParams>(),
+      contextual_search::ContextualSearchSource::kOmnibox,
+      lens::LensOverlayInvocationSource::kOmnibox);
+  session_handle->CheckSearchContentSharingSettings(
+      browser()->GetProfile()->GetPrefs());
+
+  base::UnguessableToken token0 = session_handle->CreateContextToken();
+  auto data0 = std::make_unique<lens::ContextualInputData>();
+  data0->tab_session_id = tab0_id;
+  data0->page_url = GURL(chrome::kChromeUISettingsURL);
+  session_handle->StartTabContextUploadFlow(token0, std::move(data0),
+                                            std::nullopt);
+
+  base::UnguessableToken token1 = session_handle->CreateContextToken();
+  auto data1 = std::make_unique<lens::ContextualInputData>();
+  data1->tab_session_id = tab1_id;
+  data1->page_url = GURL(chrome::kChromeUIHistoryURL);
+  session_handle->StartTabContextUploadFlow(token1, std::move(data1),
+                                            std::nullopt);
+
+  session_handle->set_submitted_context_tokens({token0, token1});
+  session_handle->set_persisted_tabs({
+      {tab0_id, {token0, lens::LensOverlayRequestId()}},
+      {tab1_id, {token1, lens::LensOverlayRequestId()}},
+  });
+  ASSERT_TRUE(session_handle->IsTabInContext(tab0_id));
+  ASSERT_TRUE(session_handle->IsTabInContext(tab1_id));
+
+  const GURL search_url("https://google.com/search?udm=50&q=test");
+
+  ContextualTasksPanelController* coordinator =
+      ContextualTasksPanelController::From(browser());
+
+  RunTestSequence(
+      Do([&]() {
+        service->StartTaskUiInSidePanel(browser(), tab_list->GetTab(0),
+                                        search_url, std::move(session_handle));
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify side panel opened for tab 0 and task is associated with tab 0.
+        EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
+
+        std::optional<ContextualTask> task =
+            contextual_tasks_service->GetContextualTaskForTab(tab0_id);
+        ASSERT_TRUE(task.has_value());
+        base::Uuid task_id = task->GetTaskId();
+
+        // Verify that tab 1 is also associated with the same task, but tab 2 is
+        // not.
+        std::optional<ContextualTask> task1 =
+            contextual_tasks_service->GetContextualTaskForTab(tab1_id);
+        ASSERT_TRUE(task1.has_value());
+        EXPECT_EQ(task1->GetTaskId(), task_id);
+        EXPECT_FALSE(contextual_tasks_service->GetContextualTaskForTab(tab2_id)
+                         .has_value());
+      }),
+      // Switch to tab 1 (which was in context). Side panel should remain open.
+      SelectTab(kTabStripElementId, 1),
+      Do([&]() { EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask()); }),
+      // Switch to tab 2 (which was not in context). Side panel should close.
+      SelectTab(kTabStripElementId, 2),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      Do([&]() { EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask()); }),
+      // Switch back to tab 1. Side panel should reopen.
+      SelectTab(kTabStripElementId, 1),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      Do([&]() { EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask()); }),
+      // Switch back to tab 0. Side panel should remain open.
+      SelectTab(kTabStripElementId, 0),
+      Do([&]() { EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask()); }));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,

@@ -1717,6 +1717,91 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_AssociatesAllContextTabsWithTask) {
+  ContextualTasksUiService service(
+      profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
+      /*identity_manager=*/nullptr, aim_eligibility_service_.get(),
+      std::make_unique<ContextualTasksEligibilityManager>(
+          profile_->GetPrefs(), /*identity_manager=*/nullptr,
+          aim_eligibility_service_.get()),
+      /*cookie_synchronizer=*/nullptr);
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID source_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents.get());
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::ContextualSearchMetricsRecorder metrics_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ON_CALL(*mock_session, GetMetricsRecorder)
+      .WillByDefault(Return(&metrics_recorder));
+
+  SessionID submitted_tab_id = SessionID::FromSerializedValue(100);
+  SessionID uploaded_tab_id = SessionID::FromSerializedValue(200);
+  SessionID persisted_tab_id = SessionID::FromSerializedValue(300);
+
+  contextual_search::FileInfo submitted_info;
+  submitted_info.tab_session_id = submitted_tab_id;
+
+  contextual_search::FileInfo uploaded_info;
+  uploaded_info.tab_session_id = uploaded_tab_id;
+
+  ON_CALL(*mock_session, GetSubmittedContextFileInfos)
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{submitted_info}));
+  ON_CALL(*mock_session, GetUploadedContextFileInfos)
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{uploaded_info}));
+
+  contextual_search::ContextualSearchSessionHandle::PersistedTabsMap
+      persisted_map;
+  lens::LensOverlayRequestId req_id;
+  persisted_map[persisted_tab_id] =
+      std::make_pair(base::UnguessableToken::Create(), req_id);
+  mock_session->set_persisted_tabs(persisted_map);
+
+  helper->SetTaskSession(std::nullopt, std::move(mock_session),
+                         /*input_state_model=*/nullptr,
+                         /*selected_tab_ids=*/{});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+
+  // Only submitted and persisted tabs should be associated with the task.
+  // Tabs that are only uploaded should not be associated.
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(task.GetTaskId(), submitted_tab_id))
+      .Times(1);
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(task.GetTaskId(), uploaded_tab_id))
+      .Times(0);
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(task.GetTaskId(), persisted_tab_id))
+      .Times(1);
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(task.GetTaskId(), source_tab_id))
+      .Times(testing::AtLeast(1));
+
+  base::WeakPtrFactory weak_factory(&tab);
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
        OnNavigationToAiPageIntercepted_PreservesCsParam) {
   ContextualTasksUiService service(
       profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),

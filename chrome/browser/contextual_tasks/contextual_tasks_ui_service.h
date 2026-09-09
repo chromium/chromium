@@ -616,6 +616,12 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
+  // Associates all submitted and persisted tabs in the session handle with the
+  // given task.
+  void AssociateSessionTabsToTask(
+      const contextual_search::ContextualSearchSessionHandle* session_handle,
+      const base::Uuid& task_id);
+
   // Re-initializes the open side panel with a new zero-state task. This
   // provides a clean start by creating a new task, attaching the entry point,
   // and reloading the parent WebUI.
