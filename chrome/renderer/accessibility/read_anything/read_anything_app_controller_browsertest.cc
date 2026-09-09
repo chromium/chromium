@@ -6636,3 +6636,38 @@ TEST_F(ReadAnythingAppControllerTest, ScreenAIServiceReady_UpdatesModel) {
   controller().ScreenAIServiceReady();
   EXPECT_TRUE(model().is_screen_ai_service_ready());
 }
+
+class ReadAnythingAppControllerDistillerRefactorTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  ReadAnythingAppControllerDistillerRefactorTest() = default;
+  ~ReadAnythingAppControllerDistillerRefactorTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kReadAnythingDistillerRefactor);
+    forced_distillation_method_ =
+        ReadAnythingAppModel::DistillationMethod::kScreen2x;
+    ReadAnythingAppControllerTest::SetUp();
+  }
+
+  void DoInitialDistillation() override {
+    std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
+    test::SetUpdateTreeID(snapshot.get(), tree_id_);
+    AccessibilityEventReceived({*snapshot});
+    controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                         false);
+  }
+};
+
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       Distill_WithRefactorEnabled_Screen2xDistillsSuccessfully) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData node = test::TextNode(/* id= */ 2);
+  update.nodes = {node};
+  AccessibilityEventReceived({std::move(update)});
+
+  // Distillation completed and tree is updated.
+  EXPECT_FALSE(model().screen2x_distiller_running());
+}

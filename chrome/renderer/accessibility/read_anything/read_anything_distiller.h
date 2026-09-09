@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -54,6 +55,10 @@ class ReadAnythingDistiller {
 
   // Returns whether a distillation is currently in progress.
   virtual bool IsInProgress() const = 0;
+
+  // Returns the distillation method handled by this distiller instance.
+  virtual ReadAnythingAppModel::DistillationMethod GetDistillationMethod()
+      const = 0;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_DISTILLER_H_

@@ -66,6 +66,11 @@ bool Screen2xDistiller::IsInProgress() const {
   return false;
 }
 
+ReadAnythingAppModel::DistillationMethod
+Screen2xDistiller::GetDistillationMethod() const {
+  return ReadAnythingAppModel::DistillationMethod::kScreen2x;
+}
+
 void Screen2xDistiller::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {

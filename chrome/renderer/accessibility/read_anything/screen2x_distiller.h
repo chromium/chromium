@@ -38,6 +38,8 @@ class Screen2xDistiller : public ReadAnythingDistiller {
   void Distill(const DistillationRequest& request) override;
   void Reset() override;
   bool IsInProgress() const override;
+  ReadAnythingAppModel::DistillationMethod GetDistillationMethod()
+      const override;
 
  private:
   void OnAXTreeDistilled(const ui::AXTreeID& tree_id,

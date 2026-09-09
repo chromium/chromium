@@ -36,8 +36,8 @@
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_distiller_factory.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
-#include "chrome/renderer/accessibility/read_anything/screen2x_distiller.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -174,12 +174,10 @@ ReadAnythingAppController::ReadAnythingAppController(
                           weak_ptr_factory_.GetWeakPtr()));
   renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
   if (features::IsReadAnythingDistillerRefactorEnabled()) {
-    active_distiller_ = std::make_unique<Screen2xDistiller>(
+    distiller_factory_ = std::make_unique<ReadAnythingDistillerFactory>(
         render_frame,
         base::BindRepeating(&ReadAnythingAppModel::is_screen_ai_service_ready,
-                            base::Unretained(&model_)),
-        base::BindRepeating(&ReadAnythingAppController::OnDistillationComplete,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            base::Unretained(&model_)));
   } else {
     distiller_ = std::make_unique<AXTreeDistiller>(
         render_frame,
@@ -202,6 +200,8 @@ ReadAnythingAppController::~ReadAnythingAppController() {
 }
 
 void ReadAnythingAppController::OnDestruct() {
+  distiller_factory_.reset();
+  active_distiller_.reset();
   self_.Clear();
 }
 
@@ -793,6 +793,31 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   model_.OnAXTreeDestroyed(tree_id);
 }
 
+void ReadAnythingAppController::UpdateActiveDistiller() {
+  CHECK(distiller_factory_);
+  ReadAnythingAppModel::DistillationMethod method =
+      model_.next_distillation_method();
+  if (active_distiller_ &&
+      active_distiller_->GetDistillationMethod() == method) {
+    return;
+  }
+  // Recreating active_distiller_ destructs the previous instance,
+  // canceling its in-flight operations and dropping pending callbacks.
+  active_distiller_ = distiller_factory_->CreateDistiller(
+      method,
+      base::BindRepeating(&ReadAnythingAppController::OnDistillationComplete,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingAppController::ExecuteDistillation(
+    const DistillationRequest& request) {
+  // Ensure the active distiller matches the model's next distillation method
+  // before dispatching the request.
+  UpdateActiveDistiller();
+  CHECK(active_distiller_);
+  active_distiller_->Distill(request);
+}
+
 void ReadAnythingAppController::Distill() {
   if (IsUpdateProcessingPaused()) {
     // When distillation is in progress, the model may have queued up tree
@@ -835,7 +860,7 @@ void ReadAnythingAppController::Distill() {
     DistillationRequest request;
     request.tree = tree;
     request.ukm_source_id = model_.GetUkmSourceId();
-    active_distiller_->Distill(request);
+    ExecuteDistillation(request);
   } else {
     std::unique_ptr<
         ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
