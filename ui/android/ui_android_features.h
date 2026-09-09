@@ -76,7 +76,7 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMaximumWindowForGestureNavDetection);
 // (crbug.com/490206349).
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kPointerLockMouseScaling);
 inline constexpr base::FeatureParam<double> kPointerLockMouseScalingFactor{
-    &kPointerLockMouseScaling, "factor", 1.2};
+    &kPointerLockMouseScaling, "factor", 2.4};
 
 // Whether to enable the refactor of the smallestScreenWidthDp override.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRefactorMinWidthContextOverride);

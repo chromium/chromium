@@ -310,7 +310,7 @@ public final class PointerLockEventHelper {
     // pointer lock is active, Android delivers raw unaccelerated relative coordinates without
     // applying system pointer speed, causing physical mouse movement to feel sluggish compared to
     // unlocked mode.
-    @VisibleForTesting public static final float MOUSE_MOVEMENT_SCALE_FACTOR = 1.2f;
+    @VisibleForTesting public static final float MOUSE_MOVEMENT_SCALE_FACTOR = 2.4f;
 
     private static float getScaleFactor() {
         if (!UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled()) {
