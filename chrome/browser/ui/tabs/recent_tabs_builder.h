@@ -30,7 +30,6 @@ class RecentTabItem {
     kGroup,    // Recently closed tab group
     kSplit,    // Recently closed split view
     kDevice,   // Remote device session
-    kDivider,  // Divider / separator
   };
 
   RecentTabItem(Type type, std::u16string title);

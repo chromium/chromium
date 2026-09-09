@@ -32,7 +32,6 @@ class ActionAppMenuManager {
     kFooter,
     kDivider,
     kSection,
-    kHeader,
     kSearch,
     kCustom,
   };
@@ -53,7 +52,7 @@ class ActionAppMenuManager {
       DisplayType display_type,
       std::optional<ui::ColorId> container_color = std::nullopt);
 
-  static std::unique_ptr<actions::ActionItem> CreateHeaderActionItem(
+  static std::unique_ptr<actions::ActionItem> CreateSectionHeaderActionItem(
       std::u16string text,
       std::optional<ui::ColorId> container_color = std::nullopt);
 

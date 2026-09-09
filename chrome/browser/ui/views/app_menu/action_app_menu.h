@@ -66,13 +66,13 @@ class ActionAppMenu : public views::MenuDelegate {
   views::MenuItemView* AppendMenuItem(actions::BaseAction* base_action_item,
                                       views::MenuItemView* parent_menu_item);
 
-  // Configures the header in a menu to display the correct text. A header is
-  // essentially a non-interactive piece of text within the menu to helps break
-  // up the menu into sections.
-  void ConfigureHeader(views::MenuItemView* header_menu_item);
+  // Configures the section header in a menu to display the correct text. A
+  // section header is essentially a non-interactive piece of text within the
+  // menu to helps break up the menu into sections.
+  void ConfigureSectionHeader(views::MenuItemView* header_menu_item);
 
   // Configures the menu item to populate with the correct icon, text, and
-  // padding. ConfigureMenuItem() differs from ConfigureHeader() in that
+  // padding. ConfigureMenuItem() differs from ConfigureSectionHeader() in that
   // ConfigureMenuItem() should only be used for clickable menu items within the
   // action app menu or have a sub-menu.
   void ConfigureMenuItem(views::MenuItemView* menu_item,
@@ -112,7 +112,7 @@ class ActionAppMenu : public views::MenuDelegate {
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<ActionAppMenuSearchBarView> search_bar_ = nullptr;
 
-  size_t header_count_ = 0;
+  size_t section_header_count_ = 0;
 
   // The action to execute when the menu is closed.
   std::optional<actions::ActionId> action_to_execute_on_close_;

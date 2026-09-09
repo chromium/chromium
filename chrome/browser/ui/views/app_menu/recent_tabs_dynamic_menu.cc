@@ -134,7 +134,6 @@ RecentTabsDynamicMenu::GetInvokeCallback(RecentTabItem recent_item,
 
     case RecentTabItem::Type::kHeader:
     case RecentTabItem::Type::kDevice:
-    case RecentTabItem::Type::kDivider:
       break;
   }
   return base::DoNothing();
@@ -150,15 +149,10 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
   WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   for (const auto& recent_tab : recent_tabs) {
-    if (recent_tab.type() == RecentTabItem::Type::kDivider) {
-      parent_item->AddChild(ActionAppMenuManager::CreateDividerActionItem());
-      continue;
-    }
-
     std::unique_ptr<actions::BaseAction> action_item;
     if (recent_tab.type() == RecentTabItem::Type::kHeader) {
-      action_item =
-          ActionAppMenuManager::CreateHeaderActionItem(recent_tab.title());
+      action_item = ActionAppMenuManager::CreateSectionHeaderActionItem(
+          recent_tab.title());
     } else {
       if (recent_tab.action_id().has_value()) {
         action_item = ActionAppMenuManager::CreateIndirectActionItem(
