@@ -219,12 +219,28 @@ class AwPrefetchManagerNoNetworkServiceDedicatedThreadTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
-       DeduplicationWebViewPrefetchOffTheMainThreadDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebViewPrefetchOffTheMainThread);
+class AwPrefetchManagerDeduplicationTest
+    : public AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  AwPrefetchManagerDeduplicationTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {features::kWebViewPrefetchOffTheMainThread,
+           ::features::kPrefetchOffTheMainThread},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {features::kWebViewPrefetchOffTheMainThread,
+               ::features::kPrefetchOffTheMainThread});
+    }
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(AwPrefetchManagerDeduplicationTest, Deduplication) {
   const std::string prefetch_url = "https://example.com";
   const int ttl_in_sec = 10;
 
@@ -248,50 +264,23 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
   task_environment_.FastForwardBy(base::Seconds(ttl_in_sec + 1));
 
   // 4. Third request for same URL should succeed because prefetch is expired
-  // in `PrefetchService`.
+  // in `PrefetchService` (for OMT disabled) or staleness is tracked via
+  // `AwPrefetchHandleWrapper::IsPrefetchStale()` ->
+  // `CrossThreadPrefetchHandle::IsPrefetchStale()` (for OMT enabled).
   int key3 = prefetch_manager.StartPrefetchRequest(
       env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
       /*callback_executor=*/nullptr);
   EXPECT_NE(key3, NO_PREFETCH_KEY);
 }
 
-TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
-       DeduplicationWebViewPrefetchOffTheMainThreadEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kWebViewPrefetchOffTheMainThread,
-                                 ::features::kPrefetchOffTheMainThread},
-                                {});
-
-  const std::string prefetch_url = "https://example.com";
-  const int ttl_in_sec = 10;
-
-  AwPrefetchManager prefetch_manager(browser_context_.get());
-  prefetch_manager.SetTtlInSec(env_, ttl_in_sec);
-  prefetch_manager.SetMaxPrefetches(env_, /*max_prefetches=*/5);
-
-  // 1. First request should succeed.
-  int key1 = prefetch_manager.StartPrefetchRequest(
-      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
-  EXPECT_NE(key1, NO_PREFETCH_KEY);
-
-  // 2. Second request for same URL should fail due to deduplication in manager.
-  int key2 = prefetch_manager.StartPrefetchRequest(
-      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
-  EXPECT_EQ(key2, NO_PREFETCH_KEY);
-
-  // 3. Forward the time after TTL.
-  task_environment_.FastForwardBy(base::Seconds(ttl_in_sec + 1));
-
-  // 4. Third request for same URL should succeed because staleness is tracked
-  // via `AwPrefetchHandleWrapper::IsPrefetchStale()` ->
-  // `CrossThreadPrefetchHandle::IsPrefetchStale()`.
-  int key3 = prefetch_manager.StartPrefetchRequest(
-      env_, prefetch_url, /*prefetch_params=*/nullptr, /*callback=*/nullptr,
-      /*callback_executor=*/nullptr);
-  EXPECT_NE(key3, NO_PREFETCH_KEY);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AwPrefetchManagerDeduplicationTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<bool>& info) {
+      return info.param ? "WebViewPrefetchOffTheMainThreadEnabled"
+                        : "WebViewPrefetchOffTheMainThreadDisabled";
+    });
 
 // Tests that the latest prefetch origin and JavaScript enabled status are
 // updated on a (pre)prefetch request.
