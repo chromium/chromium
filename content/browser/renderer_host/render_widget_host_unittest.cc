@@ -423,6 +423,8 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   bool handle_wheel_event_called() const { return handle_wheel_event_called_; }
 
   bool unresponsive_timer_fired() const { return unresponsive_timer_fired_; }
+  void reset_unresponsive_timer_fired() { unresponsive_timer_fired_ = false; }
+  int renderer_responsive_count() const { return renderer_responsive_count_; }
 
   MockRenderViewHostDelegateView* mock_delegate_view() {
     return render_view_host_delegate_view_.get();
@@ -504,6 +506,10 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
     unresponsive_timer_fired_ = true;
   }
 
+  void RendererResponsive(RenderWidgetHostImpl* render_widget_host) override {
+    ++renderer_responsive_count_;
+  }
+
   bool ShouldIgnoreInputEvents() override { return ignore_input_events_; }
   bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event) override {
     return ignore_input_events_;
@@ -538,6 +544,7 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   bool handle_wheel_event_called_;
 
   bool unresponsive_timer_fired_;
+  int renderer_responsive_count_ = 0;
 
   bool ignore_input_events_;
 
@@ -1885,6 +1892,53 @@ TEST_F(RenderWidgetHostTest, InputEventAckTimeoutDisabledForInputWhenHidden) {
   host_->WasShown({} /* record_tab_switch_time_request */);
   WaitForHang();
   EXPECT_TRUE(delegate_->unresponsive_timer_fired());
+}
+
+// Hiding a widget whose renderer is unresponsive must not report the renderer
+// as responsive; only an ack for the pending input does that.
+TEST_F(RenderWidgetHostTest, HidingUnresponsiveWidgetDoesNotReportResponsive) {
+  SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
+  WaitForHang();
+  ASSERT_TRUE(delegate_->unresponsive_timer_fired());
+  ASSERT_TRUE(host_->IsCurrentlyUnresponsive());
+
+  host_->WasHidden();
+  EXPECT_EQ(0, delegate_->renderer_responsive_count());
+  EXPECT_TRUE(host_->IsCurrentlyUnresponsive());
+
+  // The ack for the pending event arrives while hidden: that is a real
+  // recovery and is reported.
+  MockWidgetInputHandler::MessageVector dispatched_events =
+      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
+  ASSERT_EQ(1u, dispatched_events.size());
+  ASSERT_TRUE(dispatched_events[0]->ToEvent());
+  dispatched_events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  EXPECT_EQ(1, delegate_->renderer_responsive_count());
+  EXPECT_FALSE(host_->IsCurrentlyUnresponsive());
+}
+
+// An unresponsive widget that is hidden and shown again with input still in
+// flight re-arms the hang monitor and reports unresponsive again, without an
+// intervening responsive notification.
+TEST_F(RenderWidgetHostTest, ShowingUnresponsiveWidgetRestartsAckTimeout) {
+  SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown);
+  WaitForHang();
+  ASSERT_TRUE(delegate_->unresponsive_timer_fired());
+
+  host_->WasHidden();
+  delegate_->reset_unresponsive_timer_fired();
+  WaitForHang();
+  EXPECT_FALSE(delegate_->unresponsive_timer_fired());
+
+  host_->WasShown({} /* record_tab_switch_time_request */);
+  EXPECT_EQ(0, delegate_->renderer_responsive_count());
+  // RenderWidgetHostImpl ignores ack timeouts within the hung renderer delay of
+  // being shown, so it takes two timeout cycles to report again.
+  WaitForHang();
+  WaitForHang();
+  EXPECT_TRUE(delegate_->unresponsive_timer_fired());
+  EXPECT_EQ(0, delegate_->renderer_responsive_count());
 }
 
 // Test that the hang monitor catches two input events but only one ack.

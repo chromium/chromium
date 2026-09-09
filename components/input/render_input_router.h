@@ -217,8 +217,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
 
   void RenderProcessBlockedStateChanged(bool blocked);
 
-  // Stops all existing hang monitor timeouts and assumes the renderer is
-  // responsive.
+  // Stops all existing hang monitor timeouts.
   void StopInputEventAckTimeout();
   void RestartInputEventAckTimeoutIfNecessary();
 
