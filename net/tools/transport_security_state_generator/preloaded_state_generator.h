@@ -28,11 +28,14 @@ class PreloadedStateGenerator {
   ~PreloadedStateGenerator();
 
   // Returns the generated C++ code on success and the empty string on failure.
-  std::string Generate(const std::string& preload_template,
-                       const TransportSecurityStateEntries& entries,
-                       const PinEntries& pin_entries,
-                       const Pinsets& pinsets,
-                       base::Time timestamp);
+  std::string GenerateHsts(const std::string& preload_template,
+                           const TransportSecurityStateEntries& entries);
+
+  // Returns the generated C++ code on success and the empty string on failure.
+  std::string GeneratePkp(const std::string& preload_template,
+                          const PinEntries& pin_entries,
+                          const Pinsets& pinsets,
+                          base::Time timestamp);
 
  private:
   void ProcessSPKIHashes(const Pinsets& pinset, std::string* tpl);

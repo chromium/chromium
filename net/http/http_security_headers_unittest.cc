@@ -13,26 +13,12 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_util.h"
-#include "net/http/transport_security_state.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
-namespace {
-
-namespace test_default {
-#include "net/http/transport_security_state_static_unittest_default.h"
-}
-
-}  // anonymous namespace
-
-class HttpSecurityHeadersTest : public testing::Test {
- public:
-  ~HttpSecurityHeadersTest() override {
-    SetTransportSecurityStateSourceForTesting(nullptr);
-  }
-};
+class HttpSecurityHeadersTest : public testing::Test {};
 
 TEST_F(HttpSecurityHeadersTest, LeadingTrailingSemicolons) {
   base::TimeDelta max_age;

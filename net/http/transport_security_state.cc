@@ -48,6 +48,9 @@ namespace net {
 namespace {
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+// TODO(crbug.com/497882860): Remove pins include from this file.
+#include "net/http/transport_security_state_static_pins.h"  // nogncheck
+// Must be included after the pins:
 #include "net/http/transport_security_state_static.h"  // nogncheck
 // Points to the active transport security state source.
 const TransportSecurityStateSource* const kDefaultHSTSSource = &kHSTSSource;

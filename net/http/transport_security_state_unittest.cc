@@ -65,15 +65,24 @@ namespace net {
 namespace {
 
 namespace test_default {
+// TODO(crbug.com/497882860): Remove pins includes from this file.
+#include "net/http/transport_security_state_static_pins_unittest_default.h"
+// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 namespace test1 {
+#include "net/http/transport_security_state_static_unittest1_pins.h"
+// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest1.h"
 }
 namespace test2 {
+#include "net/http/transport_security_state_static_unittest2_pins.h"
+// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest2.h"
 }
 namespace test3 {
+#include "net/http/transport_security_state_static_unittest3_pins.h"
+// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest3.h"
 }
 

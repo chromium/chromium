@@ -33,9 +33,13 @@ namespace {
 
 // Print the command line help.
 void PrintHelp() {
-  std::cout << "transport_security_state_generator <hsts-json-file>"
-            << " <pins-json-file> <pins-file> <template-file> <output-file>"
+  std::cout << "transport_security_state_generator <mode> <mode-args>"
             << " [--v=1]" << std::endl;
+  std::cout << "  --hsts <hsts-json-file> <template-file> <output-file>"
+            << std::endl;
+  std::cout
+      << "  --pkp <pins-json-file> <pins-file> <template-file> <output-file>"
+      << std::endl;
 }
 
 // Checks if there are pins with the same name or the same hash.
@@ -218,21 +222,8 @@ bool CheckPinHostnames(const PinEntries& entries) {
   return true;
 }
 
-}  // namespace
-
-int main(int argc, char* argv[]) {
-  base::AtExitManager at_exit_manager;
-  base::CommandLine::Init(argc, argv);
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  logging::LoggingSettings settings;
-  settings.logging_dest =
-      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  logging::InitLogging(settings);
-
-  base::CommandLine::StringVector args = command_line.GetArgs();
-  if (args.size() < 5U) {
+int MainHsts(const base::CommandLine::StringVector& args) {
+  if (args.size() < 3U) {
     PrintHelp();
     return 1;
   }
@@ -250,53 +241,20 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  base::FilePath pins_json_filepath = base::FilePath(args[1]);
-  if (!base::PathExists(pins_json_filepath)) {
-    LOG(ERROR) << "Input pins JSON file doesn't exist.";
-    return 1;
-  }
-  pins_json_filepath = base::MakeAbsoluteFilePath(pins_json_filepath);
-
-  std::string pins_json_input;
-  if (!base::ReadFileToString(pins_json_filepath, &pins_json_input)) {
-    LOG(ERROR) << "Could not read input pins JSON file.";
-    return 1;
-  }
-
-  base::FilePath pins_filepath = base::FilePath(args[2]);
-  if (!base::PathExists(pins_filepath)) {
-    LOG(ERROR) << "Input pins file doesn't exist.";
-    return 1;
-  }
-  pins_filepath = base::MakeAbsoluteFilePath(pins_filepath);
-
-  std::string certs_input;
-  if (!base::ReadFileToString(pins_filepath, &certs_input)) {
-    LOG(ERROR) << "Could not read input pins file.";
-    return 1;
-  }
-
   TransportSecurityStateEntries entries;
-  PinEntries pin_entries;
-  Pinsets pinsets;
-  base::Time timestamp;
 
-  if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
-      !ParseHstsJson(hsts_json_input, &entries) ||
-      !ParsePkpJson(pins_json_input, &pin_entries, &pinsets)) {
+  if (!ParseHstsJson(hsts_json_input, &entries)) {
     LOG(ERROR) << "Error while parsing the input files.";
     return 1;
   }
 
   if (!CheckDuplicateEntries(entries) || !CheckNoopEntries(entries) ||
-      !CheckDuplicatePinEntries(pin_entries) ||
-      !CheckForDuplicatePins(pinsets) || !CheckCertificatesInPinsets(pinsets) ||
-      !CheckHostnames(entries) || !CheckPinHostnames(pin_entries)) {
+      !CheckHostnames(entries)) {
     LOG(ERROR) << "Checks failed. Aborting.";
     return 1;
   }
 
-  base::FilePath template_path = base::FilePath(args[3]);
+  base::FilePath template_path = base::FilePath(args[1]);
   if (!base::PathExists(template_path)) {
     LOG(ERROR) << "Template file doesn't exist.";
     return 1;
@@ -311,24 +269,132 @@ int main(int argc, char* argv[]) {
 
   std::string output;
   PreloadedStateGenerator generator;
-  output = generator.Generate(preload_template, entries, pin_entries, pinsets,
-                              timestamp);
+  output = generator.GenerateHsts(preload_template, entries);
   if (output.empty()) {
     LOG(ERROR) << "Trie generation failed.";
     return 1;
   }
 
   base::FilePath output_path;
-  output_path = base::FilePath(args[4]);
+  output_path = base::FilePath(args[2]);
 
   if (!base::WriteFile(output_path, output)) {
     LOG(ERROR) << "Failed to write output.";
     return 1;
   }
 
-  VLOG(1) << "Wrote trie containing " << entries.size()
+  VLOG(1) << "Wrote trie containing " << entries.size() << " entries to "
+          << output_path.AsUTF8Unsafe() << std::endl;
+
+  return 0;
+}
+
+int MainPkp(const base::CommandLine::StringVector& args) {
+  if (args.size() < 4U) {
+    PrintHelp();
+    return 1;
+  }
+
+  base::FilePath pins_json_filepath = base::FilePath(args[0]);
+  if (!base::PathExists(pins_json_filepath)) {
+    LOG(ERROR) << "Input pins JSON file doesn't exist.";
+    return 1;
+  }
+  pins_json_filepath = base::MakeAbsoluteFilePath(pins_json_filepath);
+
+  std::string pins_json_input;
+  if (!base::ReadFileToString(pins_json_filepath, &pins_json_input)) {
+    LOG(ERROR) << "Could not read input pins JSON file.";
+    return 1;
+  }
+
+  base::FilePath pins_filepath = base::FilePath(args[1]);
+  if (!base::PathExists(pins_filepath)) {
+    LOG(ERROR) << "Input pins file doesn't exist.";
+    return 1;
+  }
+  pins_filepath = base::MakeAbsoluteFilePath(pins_filepath);
+
+  std::string certs_input;
+  if (!base::ReadFileToString(pins_filepath, &certs_input)) {
+    LOG(ERROR) << "Could not read input pins file.";
+    return 1;
+  }
+
+  PinEntries pin_entries;
+  Pinsets pinsets;
+  base::Time timestamp;
+
+  if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
+      !ParsePkpJson(pins_json_input, &pin_entries, &pinsets)) {
+    LOG(ERROR) << "Error while parsing the input files.";
+    return 1;
+  }
+
+  if (!CheckDuplicatePinEntries(pin_entries) ||
+      !CheckForDuplicatePins(pinsets) || !CheckCertificatesInPinsets(pinsets) ||
+      !CheckPinHostnames(pin_entries)) {
+    LOG(ERROR) << "Checks failed. Aborting.";
+    return 1;
+  }
+
+  base::FilePath template_path = base::FilePath(args[2]);
+  if (!base::PathExists(template_path)) {
+    LOG(ERROR) << "Template file doesn't exist.";
+    return 1;
+  }
+  template_path = base::MakeAbsoluteFilePath(template_path);
+
+  std::string preload_template;
+  if (!base::ReadFileToString(template_path, &preload_template)) {
+    LOG(ERROR) << "Could not read template file.";
+    return 1;
+  }
+
+  std::string output;
+  PreloadedStateGenerator generator;
+  output =
+      generator.GeneratePkp(preload_template, pin_entries, pinsets, timestamp);
+  if (output.empty()) {
+    LOG(ERROR) << "Pins generation failed.";
+    return 1;
+  }
+
+  base::FilePath output_path;
+  output_path = base::FilePath(args[3]);
+
+  if (!base::WriteFile(output_path, output)) {
+    LOG(ERROR) << "Failed to write output.";
+    return 1;
+  }
+
+  VLOG(1) << "Wrote pins containing " << pin_entries.size()
           << " entries, referencing " << pinsets.size() << " pinsets to "
           << output_path.AsUTF8Unsafe() << std::endl;
 
   return 0;
+}
+
+}  // namespace
+
+int main(int argc, char* argv[]) {
+  base::AtExitManager at_exit_manager;
+  base::CommandLine::Init(argc, argv);
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
+  logging::LoggingSettings settings;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+  logging::InitLogging(settings);
+
+  base::CommandLine::StringVector args = command_line.GetArgs();
+  if (command_line.HasSwitch("hsts")) {
+    return MainHsts(args);
+  } else if (command_line.HasSwitch("pkp")) {
+    return MainPkp(args);
+  }
+
+  PrintHelp();
+  return 1;
 }

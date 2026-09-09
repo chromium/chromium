@@ -44,6 +44,8 @@ struct TransportSecurityStateSource {
   size_t preloaded_bits;
   size_t root_position;
 
+  // TODO(crbug.com/497882860): Remove pinning data from
+  // TransportSecurityStateSource.
   // RAW_PTR_EXCLUSION: find_host_pin always points to static data.
   RAW_PTR_EXCLUSION const HostPin* (*const find_host_pin)(
       std::string_view hostname);

@@ -9,6 +9,9 @@
 namespace net {
 
 namespace test_default {
+// TODO(crbug.com/497882860): Remove pins includes from this file.
+#include "net/http/transport_security_state_static_pins_unittest_default.h"
+// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest_default.h"
 }  // namespace test_default
 

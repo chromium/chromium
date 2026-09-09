@@ -2424,6 +2424,7 @@ static_library("test_support") {
   deps = [
     ":quic_test_flags_utils",
     ":simple_quic_tools",
+    "//net/http:transport_security_state_pins_unittest_data_default",
     "//net/http:transport_security_state_unittest_data_default",
     "//third_party/zlib",
   ]
@@ -3355,6 +3356,8 @@ target(_test_target_type, "net_unittests") {
     "//net/cert:root_store_proto_lite",
     "//net/dns:tests",
     "//net/dns/public:tests",
+    "//net/http:transport_security_state_pins_unittest_data",
+    "//net/http:transport_security_state_pins_unittest_data_default",
     "//net/http:transport_security_state_unittest_data",
     "//net/http:transport_security_state_unittest_data_default",
     "//net/third_party/quiche:quiche_tests",

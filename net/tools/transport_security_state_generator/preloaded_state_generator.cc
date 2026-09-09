@@ -130,22 +130,10 @@ PreloadedStateGenerator::PreloadedStateGenerator() = default;
 
 PreloadedStateGenerator::~PreloadedStateGenerator() = default;
 
-// TODO(crbug.com/497882860): split this into separate functions for HSTS and
-// PKP, and put the PKP data in a separate output file.
-std::string PreloadedStateGenerator::Generate(
+std::string PreloadedStateGenerator::GenerateHsts(
     const std::string& preload_template,
-    const TransportSecurityStateEntries& entries,
-    const PinEntries& pin_entries,
-    const Pinsets& pinsets,
-    base::Time timestamp) {
+    const TransportSecurityStateEntries& entries) {
   std::string output = preload_template;
-
-  ProcessSPKIHashes(pinsets, &output);
-
-  ProcessPinsets(pinsets, &output);
-
-  ProcessPinEntries(pin_entries, &output);
-
   std::vector<std::unique_ptr<TransportSecurityStateTrieEntry>> trie_entries;
   std::vector<huffman_trie::TrieEntry*> raw_trie_entries;
   for (const auto& entry : entries) {
@@ -186,12 +174,28 @@ std::string PreloadedStateGenerator::Generate(
   ReplaceTag("HSTS_TRIE_BITS", base::NumberToString(new_length), &output);
   ReplaceTag("HSTS_TRIE_ROOT", base::NumberToString(root_position), &output);
 
-  ReplaceTag("PINS_LIST_TIMESTAMP", base::NumberToString(timestamp.ToTimeT()),
-             &output);
-
   VLOG(1) << "PreloadedStateGenerator wrote " << huffman_tree.size()
           << " bytes for the huffman table and " << new_writer.bytes().size()
           << " bytes for the trie.";
+
+  return output;
+}
+
+std::string PreloadedStateGenerator::GeneratePkp(
+    const std::string& preload_template,
+    const PinEntries& pin_entries,
+    const Pinsets& pinsets,
+    base::Time timestamp) {
+  std::string output = preload_template;
+
+  ProcessSPKIHashes(pinsets, &output);
+
+  ProcessPinsets(pinsets, &output);
+
+  ProcessPinEntries(pin_entries, &output);
+
+  ReplaceTag("PINS_LIST_TIMESTAMP", base::NumberToString(timestamp.ToTimeT()),
+             &output);
 
   return output;
 }
