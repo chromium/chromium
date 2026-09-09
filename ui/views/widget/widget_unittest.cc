@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -17,7 +18,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -68,6 +71,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
 #include "ui/views/views_features.h"
@@ -3813,6 +3817,164 @@ TEST_F(DesktopWidgetTest, LockPaintAsActiveAndCloseParent) {
 
   // Ensure that child widget has been destroyed.
   ASSERT_TRUE(child && child->IsClosed());
+}
+
+// Regression tests for https://crbug.com/558945747
+class WidgetDestroyedDuringPaintAsActiveChangeTest : public WidgetTest {
+ public:
+  WidgetDestroyedDuringPaintAsActiveChangeTest() = default;
+  ~WidgetDestroyedDuringPaintAsActiveChangeTest() override = default;
+
+  void SetUp() override {
+    WidgetTest::SetUp();
+    ResetCallbackBehavior();
+
+    parent1_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                Widget::InitParams::TYPE_WINDOW);
+    parent1_->MakeCloseSynchronous(base::BindLambdaForTesting(
+        [this](Widget::ClosedReason) { parent1_.reset(); }));
+    parent1_->Show();
+    subscriptions_.emplace_back(parent1_->RegisterPaintAsActiveChangedCallback(
+        parent1_callback_.Get()));
+    parent2_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                Widget::InitParams::TYPE_WINDOW);
+    parent2_->MakeCloseSynchronous(base::BindLambdaForTesting(
+        [this](Widget::ClosedReason) { parent2_.reset(); }));
+    parent2_->ShowInactive();
+    subscriptions_.emplace_back(parent2_->RegisterPaintAsActiveChangedCallback(
+        parent2_callback_.Get()));
+    WaitForWidgetActive(parent1_.get(), true);
+
+    Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_BUBBLE);
+    params.parent = parent1_->GetNativeView();
+    widget_ = CreateTestWidget(std::move(params));
+    widget_->MakeCloseSynchronous(base::BindLambdaForTesting(
+        [this](Widget::ClosedReason) { widget_.reset(); }));
+    widget_->Show();
+    CHECK_EQ(parent1_.get(), widget_->parent());
+    WaitForWidgetActive(widget_.get(), true);
+    subscriptions_.emplace_back(
+        widget_->RegisterPaintAsActiveChangedCallback(widget_callback_.Get()));
+
+    CHECK(widget_->ShouldPaintAsActive());
+    CHECK(parent1_->ShouldPaintAsActive());
+    CHECK(!parent2_->ShouldPaintAsActive());
+  }
+
+  void TearDown() override {
+    subscriptions_.clear();
+    if (widget_) {
+      widget_->Close();
+    }
+    if (parent1_) {
+      parent1_->Close();
+    }
+    if (parent2_) {
+      parent2_->Close();
+    }
+    WidgetTest::TearDown();
+  }
+
+ protected:
+  void ResetCallbackBehavior() {
+    EXPECT_CALL(widget_callback_, Run).Times(testing::AnyNumber());
+    EXPECT_CALL(parent1_callback_, Run).Times(testing::AnyNumber());
+    EXPECT_CALL(parent2_callback_, Run).Times(testing::AnyNumber());
+  }
+
+  base::MockCallback<Widget::PaintAsActiveCallbackList::CallbackType>
+      widget_callback_;
+  base::MockCallback<Widget::PaintAsActiveCallbackList::CallbackType>
+      parent1_callback_;
+  base::MockCallback<Widget::PaintAsActiveCallbackList::CallbackType>
+      parent2_callback_;
+  std::unique_ptr<Widget> widget_;
+  std::unique_ptr<Widget> parent1_;
+  std::unique_ptr<Widget> parent2_;
+
+ private:
+  std::vector<base::CallbackListSubscription> subscriptions_;
+};
+
+TEST_F(WidgetDestroyedDuringPaintAsActiveChangeTest,
+       ChecksOnDestructionDuringPaintAsActiveFalse) {
+  auto lock = widget_->LockPaintAsActive();
+  parent2_->Activate();
+  WaitForWidgetActive(parent2_.get(), true);
+  WaitForWidgetActive(parent1_.get(), false);
+  WaitForWidgetActive(widget_.get(), false);
+  EXPECT_CALL(widget_callback_, Run).WillRepeatedly([this]() {
+    if (widget_ && !widget_->ShouldPaintAsActive()) {
+      EXPECT_CHECK_DEATH_WITH(widget_->Close(), "Check failed: !iterating_.");
+    }
+  });
+  lock.reset();
+}
+
+TEST_F(WidgetDestroyedDuringPaintAsActiveChangeTest,
+       ChecksOnDestructionDuringPaintAsActiveTrue) {
+  parent2_->Activate();
+  WaitForWidgetActive(parent2_.get(), true);
+  WaitForWidgetActive(parent1_.get(), false);
+  WaitForWidgetActive(widget_.get(), false);
+  EXPECT_CALL(widget_callback_, Run).WillRepeatedly([this]() {
+    if (widget_ && widget_->ShouldPaintAsActive()) {
+      EXPECT_CHECK_DEATH_WITH(widget_->Close(), "Check failed: !iterating_.");
+    }
+  });
+  auto lock = widget_->LockPaintAsActive();
+}
+
+TEST_F(WidgetDestroyedDuringPaintAsActiveChangeTest,
+       DestroysOnParentPaintAsActiveFalse) {
+  auto lock = widget_->LockPaintAsActive();
+  parent2_->Activate();
+  WaitForWidgetActive(parent2_.get(), true);
+  WaitForWidgetActive(parent1_.get(), false);
+  WaitForWidgetActive(widget_.get(), false);
+  EXPECT_CALL(parent1_callback_, Run).WillOnce([this]() {
+    if (!parent1_->ShouldPaintAsActive()) {
+      widget_->Close();
+    }
+  });
+  lock.reset();
+}
+
+TEST_F(WidgetDestroyedDuringPaintAsActiveChangeTest,
+       DestroysOnParentPaintAsActiveTrue) {
+  parent2_->Activate();
+  WaitForWidgetActive(parent2_.get(), true);
+  WaitForWidgetActive(parent1_.get(), false);
+  WaitForWidgetActive(widget_.get(), false);
+  EXPECT_CALL(parent1_callback_, Run).WillRepeatedly([this]() {
+    if (widget_ && parent1_->ShouldPaintAsActive()) {
+      widget_->Close();
+    }
+  });
+  auto lock = widget_->LockPaintAsActive();
+}
+
+TEST_F(WidgetDestroyedDuringPaintAsActiveChangeTest,
+       DestroysOnReparentWhenOriginalParentLosesPaintAsActive) {
+  widget_->LockPaintAsActive();
+  EXPECT_CALL(parent1_callback_, Run).WillOnce([this]() {
+    if (!parent1_->ShouldPaintAsActive()) {
+      widget_->Close();
+    }
+  });
+  widget_->Reparent(parent2_.get());
+}
+
+TEST_F(WidgetDestroyedDuringPaintAsActiveChangeTest,
+       DestroysOnReparentWhenNewParentGainsPaintAsActive) {
+  widget_->LockPaintAsActive();
+  EXPECT_CALL(parent2_callback_, Run).WillRepeatedly([this]() {
+    if (widget_ && parent2_->ShouldPaintAsActive()) {
+      widget_->Close();
+    }
+  });
+  widget_->Reparent(parent2_.get());
 }
 
 // Widget used to destroy itself when OnNativeWidgetDestroyed is called.

@@ -1380,6 +1380,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Prevents the widget from being rendered as inactive during the lifetime of
   // the returned lock. Multiple locks can exist with disjoint lifetimes. The
   // returned lock can safely outlive the associated widget.
+  //
+  // IMPORTANT SAFETY NOTE: When the paint-as-active state of a window changes,
+  // callbacks are called. Destroying a widget synchronously in response to it
+  // gaining or losing paint-on-active status will cause a crash, but it is
+  // possible for a callback from an ancestor widget to indirectly delete the
+  // widget. Do not assume that a widget is still valid after adding or removing
+  // a paint-as-active lock.
   std::unique_ptr<PaintAsActiveLock> LockPaintAsActive();
 
   // Undoes LockPaintAsActive(). This should never be called outside of
