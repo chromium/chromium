@@ -187,7 +187,7 @@ PageInfoBubbleView::PageInfoBubbleView(
     PageInfoClosingCallback closing_callback,
     bool allow_extended_site_info,
     ChromePageInfoDelegate::GetBrowserCallback get_browser_callback,
-    bool show_extensions_menu)
+    base::RepeatingClosure open_extensions_menu_callback)
     : PageInfoBubbleViewBase(anchor,
                              anchor_rect,
                              parent_window,
@@ -211,7 +211,7 @@ PageInfoBubbleView::PageInfoBubbleView(
       web_contents(), url);
   view_factory_ = std::make_unique<PageInfoViewFactory>(
       presenter_.get(), ui_delegate_.get(), this, allow_extended_site_info,
-      show_extensions_menu);
+      std::move(open_extensions_menu_callback));
 
   SetShowTitle(false);
   SetShowCloseButton(false);
@@ -256,13 +256,13 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
                                           web_contents, url);
   }
 
-  PageInfoBubbleView* const bubble =
-      new PageInfoBubbleView(anchor, anchor_rect, parent_view, web_contents,
-                             url, specification->initialized_callback(),
-                             specification->page_info_closing_callback(),
-                             specification->show_extended_site_info(),
-                             specification->get_browser_callback(),
-                             specification->show_extensions_menu());
+  PageInfoBubbleView* const bubble = new PageInfoBubbleView(
+      anchor, anchor_rect, parent_view, web_contents, url,
+      specification->initialized_callback(),
+      specification->page_info_closing_callback(),
+      specification->show_extended_site_info(),
+      specification->get_browser_callback(),
+      specification->get_open_extensions_menu_callback());
   if (specification->permission_page_type().has_value()) {
     bubble->OpenPermissionPage(specification->permission_page_type().value());
   }

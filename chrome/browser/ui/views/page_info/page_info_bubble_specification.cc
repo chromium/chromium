@@ -72,9 +72,14 @@ PageInfoBubbleSpecification::Builder::ShowPermissionPage(
 }
 
 PageInfoBubbleSpecification::Builder&
-PageInfoBubbleSpecification::Builder::SetShowExtensionsMenu(
-    bool show_extensions_menu) {
-  page_info_bubble_specification_->SetShowExtensionsMenu(show_extensions_menu);
+PageInfoBubbleSpecification::Builder::SetOnExtensionsClickedCallback(
+    base::RepeatingClosure callback) {
+  // The extensions menu item visibility is tied to this callback. If called,
+  // a valid callback is required so clicking the item executes an action.
+  CHECK(!callback.is_null())
+      << "The extensions menu item must have a callback to call when clicked";
+  page_info_bubble_specification_->SetOnExtensionsClickedCallback(
+      std::move(callback));
   return *this;
 }
 
@@ -128,13 +133,22 @@ void PageInfoBubbleSpecification::ShowPermissionPage(ContentSettingsType type) {
   permission_page_type_ = type;
 }
 
-void PageInfoBubbleSpecification::SetShowExtensionsMenu(
-    bool show_extensions_menu) {
-  show_extensions_menu_ = show_extensions_menu;
+void PageInfoBubbleSpecification::SetOnExtensionsClickedCallback(
+    base::RepeatingClosure callback) {
+  // The extensions menu item visibility is tied to this callback. If called,
+  // a valid callback is required so clicking the item executes an action.
+  CHECK(!callback.is_null())
+      << "The extensions menu item must have a callback to call when clicked";
+  open_extensions_menu_callback_ = std::move(callback);
 }
 
-bool PageInfoBubbleSpecification::show_extensions_menu() const {
-  return show_extensions_menu_;
+bool PageInfoBubbleSpecification::should_show_extensions_menu() const {
+  return !open_extensions_menu_callback_.is_null();
+}
+
+const base::RepeatingClosure&
+PageInfoBubbleSpecification::get_open_extensions_menu_callback() const {
+  return open_extensions_menu_callback_;
 }
 
 views::BubbleAnchor PageInfoBubbleSpecification::anchor() {

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -112,19 +113,23 @@ class PageInfoBubbleViewTestApi {
   PageInfoBubbleViewTestApi& operator=(const PageInfoBubbleViewTestApi&) =
       delete;
 
-  void CreateView(bool show_extensions_menu = false) {
+  void CreateView(base::RepeatingClosure open_extensions_menu_callback =
+                      base::RepeatingClosure()) {
     if (bubble_delegate_) {
       bubble_delegate_->GetWidget()->CloseNow();
     }
 
+    PageInfoBubbleSpecification::Builder builder(views::BubbleAnchor(), parent_,
+                                                 web_contents_, GURL(kUrl));
+    builder.AddPageInfoClosingCallback(
+        base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
+                       base::Unretained(this), run_loop_.QuitClosure()));
+    if (!open_extensions_menu_callback.is_null()) {
+      builder.SetOnExtensionsClickedCallback(
+          std::move(open_extensions_menu_callback));
+    }
     std::unique_ptr<PageInfoBubbleSpecification> specification =
-        PageInfoBubbleSpecification::Builder(views::BubbleAnchor(), parent_,
-                                             web_contents_, GURL(kUrl))
-            .AddPageInfoClosingCallback(base::BindOnce(
-                &PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
-                base::Unretained(this), run_loop_.QuitClosure()))
-            .SetShowExtensionsMenu(show_extensions_menu)
-            .Build();
+        builder.Build();
 
     auto* const bubble = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::CreatePageInfoBubble(std::move(specification)));
@@ -1373,7 +1378,22 @@ TEST_F(PageInfoBubbleViewTest, SeeExtensionsButton) {
   // By default, the button is not present.
   EXPECT_EQ(nullptr, api_->see_extensions_button());
 
-  // When show_extensions_menu is true, the button is present.
-  api_->CreateView(/*show_extensions_menu=*/true);
+  // When a see extensions callback is set, the button is present.
+  api_->CreateView(base::DoNothing());
   EXPECT_NE(nullptr, api_->see_extensions_button());
+}
+
+TEST_F(PageInfoBubbleViewTest, SeeExtensionsButtonClick) {
+  base::MockRepeatingCallback<void()> callback;
+  api_->CreateView(callback.Get());
+  auto* button = static_cast<views::Button*>(api_->see_extensions_button());
+  ASSERT_NE(nullptr, button);
+
+  EXPECT_CALL(callback, Run()).Times(1);
+
+  ui::MouseEvent click_event(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  button->OnMousePressed(click_event);
+  button->OnMouseReleased(click_event);
 }

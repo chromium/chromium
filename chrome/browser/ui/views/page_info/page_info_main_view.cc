@@ -145,10 +145,11 @@ PageInfoMainView::PageInfoMainView(
     PageInfoNavigationHandler* navigation_handler,
     base::OnceClosure initialized_callback,
     bool allow_extended_site_info,
-    bool show_extensions_menu)
+    base::RepeatingClosure open_extensions_menu_callback)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
-      navigation_handler_(navigation_handler) {
+      navigation_handler_(navigation_handler),
+      open_extensions_menu_callback_(std::move(open_extensions_menu_callback)) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // In Harmony, the last view is a HoverButton, which overrides the bottom
@@ -179,7 +180,7 @@ PageInfoMainView::PageInfoMainView(
 
   site_settings_view_ = AddChildView(CreateContainerView());
 
-  if (show_extensions_menu) {
+  if (open_extensions_menu_callback_) {
     see_extensions_button_ =
         site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
             base::BindRepeating(&PageInfoMainView::OnSeeExtensionsClicked,
@@ -281,7 +282,13 @@ void PageInfoMainView::SetCookieInfo(const CookiesInfo& cookie_info) {
 }
 
 void PageInfoMainView::OnSeeExtensionsClicked() {
-  // TODO(crbug.com/533073052): Trigger the extensions control menu.
+  base::RepeatingClosure callback = open_extensions_menu_callback_;
+  if (callback) {
+    callback.Run();
+  }
+  if (navigation_handler_) {
+    navigation_handler_->CloseBubble();
+  }
 }
 
 void PageInfoMainView::SetPermissionInfo(

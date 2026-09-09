@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -1446,8 +1447,9 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
       PageInfoBubbleSpecification::Builder(
           specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
           contents, contents->GetVisibleURL())
-          .SetShowExtensionsMenu(
-              IsContextualTasksSidePanelRearchitectureEnabled())
+          // TODO(crbug.com/533073052): Add functional callback later. Currently
+          // DoNothing() to ensure the menu item renders.
+          .SetOnExtensionsClickedCallback(base::DoNothing())
           .Build();
 
   views::BubbleDialogDelegateView* const bubble =

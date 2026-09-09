@@ -34,7 +34,7 @@ TEST_F(PageInfoBubbleSpecificationTest, DefaultSpec) {
   EXPECT_FALSE(specification->get_browser_callback().is_null());
   EXPECT_TRUE(specification->show_extended_site_info());
   EXPECT_FALSE(specification->permission_page_type().has_value());
-  EXPECT_FALSE(specification->show_extensions_menu());
+  EXPECT_FALSE(specification->should_show_extensions_menu());
   specification.reset();
   anchor_view.reset();
 }
@@ -47,10 +47,24 @@ TEST_F(PageInfoBubbleSpecificationTest, ShowExtensionsMenuSpec) {
       PageInfoBubbleSpecification::Builder(
           views::BubbleAnchor(anchor_view.get()), gfx::NativeWindow(),
           test_web_contents.get(), test_url)
-          .SetShowExtensionsMenu(true)
+          .SetOnExtensionsClickedCallback(base::DoNothing())
           .Build();
 
-  EXPECT_TRUE(specification->show_extensions_menu());
+  EXPECT_TRUE(specification->should_show_extensions_menu());
+  EXPECT_FALSE(specification->get_open_extensions_menu_callback().is_null());
+}
+
+TEST_F(PageInfoBubbleSpecificationTest, ShowExtensionsMenuNullCallback) {
+  auto anchor_view = std::make_unique<views::View>();
+  auto const test_web_contents = CreateTestWebContents();
+  GURL test_url("https://www.example.com");
+
+  EXPECT_DEATH(PageInfoBubbleSpecification::Builder(
+                   views::BubbleAnchor(anchor_view.get()), gfx::NativeWindow(),
+                   test_web_contents.get(), test_url)
+                   .SetOnExtensionsClickedCallback(base::RepeatingClosure())
+                   .Build(),
+               "");
 }
 
 TEST_F(PageInfoBubbleSpecificationTest, InvalidSpec) {

@@ -24,7 +24,9 @@ class PageInfoViewFactory {
                       ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler,
                       bool allow_extended_site_info,
-                      bool show_extensions_menu = false);
+                      base::RepeatingClosure open_extensions_menu_callback =
+                          base::RepeatingClosure());
+  ~PageInfoViewFactory();
 
   // Bubble width constraints.
   static constexpr int kMinBubbleWidth = 320;
@@ -158,7 +160,7 @@ class PageInfoViewFactory {
   raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   raw_ptr<PageInfoNavigationHandler> navigation_handler_;
   const bool allow_extended_site_info_;
-  const bool show_extensions_menu_;
+  base::RepeatingClosure open_extensions_menu_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_

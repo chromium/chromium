@@ -121,12 +121,15 @@ PageInfoViewFactory::PageInfoViewFactory(
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
     bool allow_extended_site_info,
-    bool show_extensions_menu)
+    base::RepeatingClosure open_extensions_menu_callback)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler),
       allow_extended_site_info_(allow_extended_site_info),
-      show_extensions_menu_(show_extensions_menu) {}
+      open_extensions_menu_callback_(std::move(open_extensions_menu_callback)) {
+}
+
+PageInfoViewFactory::~PageInfoViewFactory() = default;
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreatePageView(
     std::u16string title,
@@ -141,7 +144,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
   return std::make_unique<PageInfoMainView>(
       presenter_, ui_delegate_, navigation_handler_,
       std::move(initialized_callback), allow_extended_site_info_,
-      show_extensions_menu_);
+      open_extensions_menu_callback_);
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {

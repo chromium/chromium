@@ -70,7 +70,8 @@ class PageInfoMainView : public views::View,
                    PageInfoNavigationHandler* navigation_handler,
                    base::OnceClosure initialized_callback,
                    bool allow_extended_site_info,
-                   bool show_extensions_menu = false);
+                   base::RepeatingClosure open_extensions_menu_callback =
+                       base::RepeatingClosure());
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
@@ -234,6 +235,8 @@ class PageInfoMainView : public views::View,
 
   raw_ptr<views::LabelButton, AcrossTasksDanglingUntriaged> reset_button_ =
       nullptr;
+
+  base::RepeatingClosure open_extensions_menu_callback_;
 
   base::WeakPtrFactory<PageInfoMainView> weak_factory_{this};
 };
