@@ -21,11 +21,18 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Implements the content for the no passkeys bottom sheet. */
 @NullMarked
 class NoPasskeysBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.TOUCH_TO_FILL_NO_PASSKEYS)
+                    .build();
+
     private final Delegate mDelegate;
     private final Context mContext;
     private final String mOrigin;
@@ -119,6 +126,11 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mDelegate.onDestroy();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
