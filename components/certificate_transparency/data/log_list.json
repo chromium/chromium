@@ -1,6 +1,6 @@
 {
-  "version": "90.8",
-  "log_list_timestamp": "2026-09-08T13:35:36Z",
+  "version": "91.0",
+  "log_list_timestamp": "2026-09-09T13:39:05Z",
   "operators": [
     {
       "name": "Google",
@@ -746,6 +746,125 @@
             "start_inclusive": "2027-07-01T00:00:00Z",
             "end_exclusive": "2028-01-01T00:00:00Z"
           }
+        },
+        {
+          "description": "Geomys Tuscolo2028h1",
+          "log_id": "TefD7+U3ZpoMsB44OPqv3PCMmoBWM55wK1iVm9FxiS4=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEoCrY9Jw/QWI36H+7Y8UlXfNOxk2Atg3H3nXSqLKz52sV4RV9ERRq/IjD4uSP/k5xCT+4nHCjAL8kRjGUeslejw==",
+          "submission_url": "https://tuscolo2028h1.sunlight.geomys.org/",
+          "monitoring_url": "https://tuscolo2028h1.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys Tuscolo2028h2",
+          "log_id": "A18eYQnn44YBqbhkHlfl9aePeIcnUy/PQlPx68mqDzk=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFvXbrz+N3iRcf4pomNlyVokxas/fGQu1DqxIbZ9M34w9W98lDao2v6qV7mRDDDcoh2kSfyAe6GxLuBMrmRPEMg==",
+          "submission_url": "https://tuscolo2028h2.sunlight.geomys.org/",
+          "monitoring_url": "https://tuscolo2028h2.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys Trastevere2026h2",
+          "log_id": "yMaDuhp5vKPNGyZsbZ6MzSf0hFEMerHyV59nUhBYOgM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEzFcfnR+P+xG2TA2LWjhkeMcQMTU62r6koepINb7hwcl/hitPLeUzD3vRDpNyvq+9Vrci1FEmctYDWH+iZ2hww==",
+          "submission_url": "https://trastevere2026h2.sunlight.geomys.org/",
+          "monitoring_url": "https://trastevere2026h2.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys Trastevere2027h1",
+          "log_id": "F23RQr8KrLyBjUUTu9zDCtteWTJiU5KLmtfLdg/247k=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcGYiRUG5f1qpqGWsFjfXZZT5NqkWVUJdtRSsWyhKOXXryyIIlfsUtKhmqJSPJhkxS9U1hgPQZ5dzXDA5x/5pYA==",
+          "submission_url": "https://trastevere2027h1.sunlight.geomys.org/",
+          "monitoring_url": "https://trastevere2027h1.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys Trastevere2027h2",
+          "log_id": "dZIIKK86Y1XymO0JfjR1dfm5hDwR4TkfV0QpnxyujO4=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJPGejk3XdRtqgzqM5SJPvN9Y6CpSincXJAFPzR4+/hP6KuWhmeL1GVCnbYJ2hFS94pE8k7feYNGB6tuYkvXw2Q==",
+          "submission_url": "https://trastevere2027h2.sunlight.geomys.org/",
+          "monitoring_url": "https://trastevere2027h2.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys Trastevere2028h1",
+          "log_id": "j5ct6c9T2eqhZDHY6vWLWGZ8/QysT5c0VLGZaVHvlYc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE05RdO9dxuePFpoo+c/h8Aj9iOsl3dRzRJarigJiLWXEtm9JV9n0rs9M/fDVSSwGEh2p9PUO8RR1+6Bt77v2iLQ==",
+          "submission_url": "https://trastevere2028h1.sunlight.geomys.org/",
+          "monitoring_url": "https://trastevere2028h1.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys Trastevere2028h2",
+          "log_id": "y6VZ4BSDyZ+U7N2er0ezmWM1bZ/1wShe6un50SqgTMc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEB4h5MMLSgZuO0R2uMCvA/5WYIvsiYMcYLviqSqL6RNnpOnXiGlz49iWeo7n0R+v9CUj0Clv2In5EwnHwGK2/Tw==",
+          "submission_url": "https://trastevere2028h2.sunlight.geomys.org/",
+          "monitoring_url": "https://trastevere2028h2.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
         }
       ]
     },
@@ -873,6 +992,74 @@
           "temporal_interval": {
             "start_inclusive": "2027-07-01T00:00:00Z",
             "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "IPng Networks Gouda2028h1",
+          "log_id": "EgXQJVrBiTyuVBBwPE8Sc/yXAOErWEp/gGrcVVWAwLE=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5mgCmJbPo4B+gxJf8U94HykKo0cBsGsqnSu/ycQ61WGS6b/XL2StiN28YF8/8I4GmLQBDUkz1sTOG4syBcKYMw==",
+          "submission_url": "https://gouda2028h1.log.ct.ipng.ch/",
+          "monitoring_url": "https://gouda2028h1.mon.ct.ipng.ch/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "IPng Networks Gouda2028h2",
+          "log_id": "ANXCUqZpzf6O0sgXpi5M/O2SyHSR7pccmv3bUoh4hag=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENtjPyH/uZmZuu4RQSJU0p+unP9ZZKv/Z4MLpQhdbiFGgUBIgBr6urLPCIzSFZuM4HhgnnwiI4aS7Wpi0kMEoNw==",
+          "submission_url": "https://gouda2028h2.log.ct.ipng.ch/",
+          "monitoring_url": "https://gouda2028h2.mon.ct.ipng.ch/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "IPng Networks Halloumi2028h1",
+          "log_id": "6+a9C+qJOkTtPzg+2/4QzZnxhphufXsmsBqEMk57934=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQVDEFJcCWS8jtF8M3uMfghI3wMo6VwH2Cpf/9P1x9/sv7aV8WSnrw7pq0EW1njmLo/6FBoCWHLpqoGKmBZKDVg==",
+          "submission_url": "https://halloumi2028h1.log.ct.ipng.ch/",
+          "monitoring_url": "https://halloumi2028h1.mon.ct.ipng.ch/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "IPng Networks Halloumi2028h2",
+          "log_id": "ALNWz93lJLRlXUxjZTxSUMQ04goEhRA5uv1kzlyFq2s=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEZvv84G/hcMbLeIokkLkT0JPzRkdV5VvAXpWGYJGwwETCO447iGSZScyW0ROuNbvsotXYjs02ADpW+6OTD0hXg==",
+          "submission_url": "https://halloumi2028h2.log.ct.ipng.ch/",
+          "monitoring_url": "https://halloumi2028h2.mon.ct.ipng.ch/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-09T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
           }
         }
       ]
