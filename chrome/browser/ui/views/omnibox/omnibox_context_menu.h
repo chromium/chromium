@@ -88,6 +88,11 @@ class OmniboxContextMenu : public views::MenuDelegate,
   bool was_add_tabs_button_shown_logged_ = false;
   bool was_add_tabs_button_hovered_logged_ = false;
   bool was_add_tabs_flyout_shown_logged_ = false;
+
+  // True while ExecuteCommand is actively running.
+  bool is_executing_command_ = false;
+  // True when the menu is in the process of closing or has closed.
+  bool is_closing_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_

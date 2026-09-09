@@ -63,6 +63,8 @@
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_tracker.h"
 
 namespace {
 
@@ -1863,6 +1865,127 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
     EXPECT_TRUE(controller.IsCommandIdEnabled(33000));
     EXPECT_FALSE(controller.IsCommandIdEnabled(33001));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       ExecuteCommandDoesNotReentrantlyDestroyViews) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* popup_web_contents = GetWebContents();
+
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
+
+  GURL url2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(AddTabAtIndex(2, url2, ui::PAGE_TRANSITION_TYPED));
+
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  auto* web_ui = popup_web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui);
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  ASSERT_TRUE(popup_ui);
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+
+  // Set input state with BROWSER_TAB and DEEP_SEARCH allowed.
+  omnibox::InputState test_state;
+  test_state.allowed_input_types.emplace_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  test_state.allowed_tools.emplace_back(
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler->input_state_model()->set_state_for_testing(test_state);
+
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(popup_web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  OmniboxContextMenu context_menu(
+      views::Widget::GetWidgetForNativeWindow(owning_window),
+      omnibox_popup_file_selector.get(), popup_web_contents);
+
+  views::MenuItemView* child_item = nullptr;
+  for (views::MenuItemView* item :
+       context_menu.menu()->GetSubmenu()->GetMenuItems()) {
+    if (item->GetProperty(views::kElementIdentifierKey) ==
+        OmniboxContextMenuController::kDeepResearchIdForTesting) {
+      child_item = item;
+      break;
+    }
+  }
+  ASSERT_TRUE(child_item);
+  int command_id = child_item->GetCommand();
+
+  views::ViewTracker tracker(child_item);
+  EXPECT_EQ(tracker.view(), child_item);
+
+  // Executing a command that mutates the input state model triggers
+  // OnInputStateChanged -> BuildMenu -> OnMenuStructureChanged.
+  // The execution guard ensures child views are not synchronously wiped
+  // while command execution is active on the stack.
+  context_menu.ExecuteCommand(command_id, 0);
+
+  EXPECT_NE(tracker.view(), nullptr);
+  EXPECT_EQ(tracker.view(), child_item);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       SuppressesMenuRebuildWhenClosing) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* popup_web_contents = GetWebContents();
+
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  auto* web_ui = popup_web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui);
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  ASSERT_TRUE(popup_ui);
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+
+  omnibox::InputState test_state;
+  test_state.allowed_input_types.emplace_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  test_state.allowed_tools.emplace_back(
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  handler->input_state_model()->set_state_for_testing(test_state);
+
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(popup_web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  OmniboxContextMenu context_menu(
+      views::Widget::GetWidgetForNativeWindow(owning_window),
+      omnibox_popup_file_selector.get(), popup_web_contents);
+
+  ASSERT_TRUE(context_menu.menu());
+  views::MenuItemView* child_item = context_menu.menu()->GetMenuItemByID(33000);
+  if (!child_item && context_menu.menu()->HasSubmenu()) {
+    child_item = context_menu.menu()->GetSubmenu()->GetMenuItemAt(0);
+  }
+  ASSERT_TRUE(child_item);
+
+  views::ViewTracker tracker(child_item);
+
+  // Canceling marks the menu as closing.
+  context_menu.Cancel();
+
+  // Subsequent structure change events while closing must be suppressed.
+  context_menu.OnMenuStructureChanged();
+
+  EXPECT_NE(tracker.view(), nullptr);
+  EXPECT_EQ(tracker.view(), child_item);
 }
 
 // Recent tab/Current tab should not show since context management flag is

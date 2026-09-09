@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -135,12 +136,18 @@ void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
 }
 
 OmniboxContextMenu::~OmniboxContextMenu() {
-  if (controller_ && controller_->menu_model()) {
-    controller_->menu_model()->SetMenuModelDelegate(nullptr);
-    if (controller_->shared_tabs_menu_model()) {
+  is_closing_ = true;
+  if (controller_) {
+    if (controller_->menu_model() &&
+        controller_->menu_model()->menu_model_delegate() == this) {
+      controller_->menu_model()->SetMenuModelDelegate(nullptr);
+    }
+    if (controller_->shared_tabs_menu_model() &&
+        controller_->shared_tabs_menu_model()->menu_model_delegate() == this) {
       controller_->shared_tabs_menu_model()->SetMenuModelDelegate(nullptr);
     }
   }
+  view_shadows_.clear();
 }
 
 void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
@@ -196,12 +203,14 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
 }
 
 void OmniboxContextMenu::Cancel() {
+  is_closing_ = true;
   if (menu_runner_) {
     menu_runner_->Cancel();
   }
 }
 
 void OmniboxContextMenu::ExecuteCommand(int command_id, int event_flags) {
+  base::AutoReset<bool> auto_reset(&is_executing_command_, true);
   controller_->ExecuteCommand(command_id, event_flags);
 }
 
@@ -238,6 +247,7 @@ bool OmniboxContextMenu::IsCommandVisible(int command_id) const {
 }
 
 void OmniboxContextMenu::OnMenuClosed(views::MenuItemView* menu) {
+  is_closing_ = true;
   view_shadows_.clear();
   if (on_menu_closed_) {
     on_menu_closed_.Run();
@@ -264,8 +274,9 @@ void OmniboxContextMenu::OnIconChanged(int command_id) {
 }
 
 void OmniboxContextMenu::BuildMenuTree() {
+  view_shadows_.clear();
   if (menu_->HasSubmenu()) {
-    menu_->GetSubmenu()->RemoveAllChildViews();
+    menu_->RemoveAllMenuItems();
   }
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   if (controller_->shared_tabs_menu_model() &&
@@ -295,6 +306,9 @@ void OmniboxContextMenu::BuildMenuTree() {
 }
 
 void OmniboxContextMenu::OnMenuStructureChanged() {
+  if (is_executing_command_ || is_closing_) {
+    return;
+  }
   BuildMenuTree();
 }
 

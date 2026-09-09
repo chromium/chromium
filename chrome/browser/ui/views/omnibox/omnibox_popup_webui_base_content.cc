@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/file_select_helper.h"
@@ -427,7 +428,10 @@ content::WebContents* OmniboxPopupWebUIBaseContent::GetWrappedWebContents() {
 }
 
 void OmniboxPopupWebUIBaseContent::OnMenuClosed() {
-  std::move(context_menu_).reset();
+  if (context_menu_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(context_menu_));
+  }
   OnContextMenuClosed();
   // Synthesize a mouse leave event from the context menu to trigger
   // re-rendering of the web ui pop up state. This is to ensure entrypoint
