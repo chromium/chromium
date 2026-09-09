@@ -105,20 +105,33 @@ void ParseSuggestResults(const base::ListValue& results_list,
     }
     // Verticals that are not handled above stay plain query suggestions.
 
-    omnibox::EntityInfo entity_info;
+    std::optional<omnibox::SuggestTemplateInfo> suggest_template_info;
+    if (suggest_type == omnibox::TYPE_ENTITY) {
+      suggest_template_info.emplace();
+      suggest_template_info->set_style(omnibox::SuggestTemplateInfo::ENRICHED);
+    }
     if (const std::string* name = suggestion_dict.FindString("name")) {
-      entity_info.set_name(*name);
+      if (!suggest_template_info) {
+        suggest_template_info.emplace();
+      }
+      suggest_template_info->mutable_primary_text()->set_text(*name);
     }
     if (const std::string* image_url = suggestion_dict.FindString("img");
         image_url && IsUsableImageUrl(*image_url)) {
-      entity_info.set_image_url(*image_url);
+      if (!suggest_template_info) {
+        suggest_template_info.emplace();
+      }
+      suggest_template_info->mutable_image()->set_url(*image_url);
     }
 
     std::u16string annotation;
     if (const std::string* description = suggestion_dict.FindString("desc");
         description && !description->empty()) {
       annotation = base::UTF8ToUTF16(*description);
-      entity_info.set_annotation(*description);
+      if (!suggest_template_info) {
+        suggest_template_info.emplace();
+      }
+      suggest_template_info->mutable_secondary_text()->set_text(*description);
     }
 
     std::u16string suggestion_text;
@@ -157,10 +170,11 @@ void ParseSuggestResults(const base::ListValue& results_list,
         suggestion_text, match_type, suggest_type,
         /*subtypes=*/std::vector<int>(), match_contents,
         /*match_contents_prefix=*/std::u16string(), annotation,
-        std::move(entity_info), /*deletion_url=*/std::string(),
-        is_keyword_result, omnibox::NAV_INTENT_NONE, default_result_relevance,
+        /*deletion_url=*/std::string(), is_keyword_result,
+        omnibox::NAV_INTENT_NONE, default_result_relevance,
         /*relevance_from_server=*/false, /*should_prefetch=*/false,
-        /*should_prerender=*/false, trimmed_input);
+        /*should_prerender=*/false, trimmed_input,
+        std::move(suggest_template_info));
   }
 }
 

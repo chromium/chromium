@@ -31,7 +31,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
-#include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"

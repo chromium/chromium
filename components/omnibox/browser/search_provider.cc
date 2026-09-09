@@ -1584,7 +1584,10 @@ void SearchProvider::PrefetchImages(SearchSuggestionParser::Results* results) {
        ++i) {
     auto suggestion = results->suggest_results[i];
 
-    GURL entity_image_url = GURL(suggestion.entity_info().image_url());
+    GURL entity_image_url =
+        GURL(suggestion.suggest_template_info()
+                 ? suggestion.suggest_template_info()->image().url()
+                 : "");
     if (entity_image_url.is_valid()) {
       prefetch_image_urls.push_back(std::move(entity_image_url));
     }

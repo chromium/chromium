@@ -68,20 +68,19 @@ TEST(BraveSearchSuggestionParserTest, ParseSuggestResults) {
   EXPECT_EQ(u"helldivers 2", entity.suggestion());
   EXPECT_EQ(u"2024 video game developed by Arrowhead Game Studios",
             entity.annotation());
-  EXPECT_EQ("Helldivers 2", entity.entity_info().name());
+  EXPECT_EQ("Helldivers 2",
+            entity.suggest_template_info()->primary_text().text());
   EXPECT_EQ("https://imgs.search.brave.com/a.png",
-            entity.entity_info().image_url());
+            entity.suggest_template_info()->image().url());
   EXPECT_EQ("2024 video game developed by Arrowhead Game Studios",
-            entity.entity_info().annotation());
+            entity.suggest_template_info()->secondary_text().text());
 
   const auto& query = results.suggest_results[1];
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, query.type());
   EXPECT_EQ(omnibox::TYPE_QUERY, query.suggest_type());
   EXPECT_EQ(u"hello fresh", query.suggestion());
   EXPECT_TRUE(query.annotation().empty());
-  EXPECT_FALSE(query.entity_info().has_name());
-  EXPECT_FALSE(query.entity_info().has_image_url());
-  EXPECT_FALSE(query.entity_info().has_annotation());
+  EXPECT_FALSE(query.suggest_template_info().has_value());
 }
 
 TEST(BraveSearchSuggestionParserTest, RelevanceIsNotFromTheServer) {
@@ -168,10 +167,11 @@ TEST(BraveSearchSuggestionParserTest, ImageUrl) {
     ASSERT_TRUE(ParseSuggestions("hel", suggestions_json, &results));
     ASSERT_EQ(1u, results.suggest_results.size());
 
-    const auto& entity_info = results.suggest_results[0].entity_info();
-    EXPECT_EQ(test_case.expected_usable, entity_info.has_image_url());
+    const auto& suggest_template_info =
+        results.suggest_results[0].suggest_template_info();
+    EXPECT_EQ(test_case.expected_usable, suggest_template_info->has_image());
     if (test_case.expected_usable) {
-      EXPECT_EQ(test_case.image_url, entity_info.image_url());
+      EXPECT_EQ(test_case.image_url, suggest_template_info->image().url());
     }
     // The suggestion itself survives either way.
     EXPECT_EQ(u"helldivers 2", results.suggest_results[0].suggestion());

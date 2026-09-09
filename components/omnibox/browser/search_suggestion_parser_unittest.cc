@@ -229,8 +229,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     ASSERT_EQ(u"christmas", suggestion_result.suggestion());
     ASSERT_EQ(u"", suggestion_result.annotation());
     // This entry has no entity data
-    ASSERT_TRUE(ProtosAreEqual(suggestion_result.entity_info(),
-                               omnibox::EntityInfo::default_instance()));
+    ASSERT_FALSE(suggestion_result.suggest_template_info().has_value());
     ASSERT_EQ(suggestion_result.navigational_intent(),
               omnibox::NAV_INTENT_MEDIUM);
   }
@@ -238,10 +237,13 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     const auto& suggestion_result = results.suggest_results[1];
     ASSERT_EQ(u"christopher doe", suggestion_result.suggestion());
     ASSERT_EQ(u"American author", suggestion_result.annotation());
-    ASSERT_EQ("/m/065xxm", suggestion_result.entity_info().entity_id());
-    ASSERT_EQ("#424242", suggestion_result.entity_info().dominant_color());
+    ASSERT_EQ("/m/065xxm",
+              suggestion_result.suggest_template_info()->entity_id());
+    ASSERT_EQ(
+        "#424242",
+        suggestion_result.suggest_template_info()->image().dominant_color());
     ASSERT_EQ("http://example.com/a.png",
-              suggestion_result.entity_info().image_url());
+              suggestion_result.suggest_template_info()->image().url());
     ASSERT_EQ(suggestion_result.navigational_intent(), omnibox::NAV_INTENT_LOW);
     // Verify the translation layer synthesized suggest_template_info.
     ASSERT_TRUE(suggestion_result.suggest_template_info().has_value());
@@ -750,15 +752,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
     // For each suggestion, verify that the JSON fields were correctly parsed.
     ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
     ASSERT_EQ(u"", results.suggest_results[0].annotation());
-    ASSERT_TRUE(ProtosAreEqual(results.suggest_results[0].entity_info(),
-                               omnibox::EntityInfo::default_instance()));
-    ASSERT_TRUE(results.suggest_results[0].entity_info().image_url().empty());
+    ASSERT_FALSE(
+        results.suggest_results[0].suggest_template_info().has_value());
     // Empty "t" value from server results in suggestion being used instead.
     ASSERT_EQ(u"the menu", results.suggest_results[0].match_contents());
 
     ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
-    ASSERT_TRUE(ProtosAreEqual(results.suggest_results[1].entity_info(),
-                               first_entity_info));
     ASSERT_TRUE(results.suggest_results[1].suggest_template_info().has_value());
     const auto& template_info =
         *results.suggest_results[1].suggest_template_info();
@@ -766,6 +765,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
     ASSERT_EQ(template_info.primary_text().text(), "The Menu");
     ASSERT_EQ(template_info.image().url(),
               "https://encrypted-tbn0.gstatic.com/images?q=the+menu");
+    ASSERT_EQ(template_info.entity_id(), "/g/11qprvnvhw");
     ASSERT_EQ(template_info.action_suggestions_size(), 1);
     ASSERT_EQ(template_info.action_suggestions(0).action_uri(),
               "https://example.com/action");
@@ -773,10 +773,19 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
               omnibox::SuggestTemplateInfo::TemplateAction::CALL);
     ASSERT_EQ(template_info.action_suggestions(0).search_parameters().at("key"),
               "value");
+    ASSERT_EQ(first_entity_info.suggest_search_parameters().substr(7),
+              template_info.default_search_parameters().at("gs_ssp"));
 
     ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
-    ASSERT_TRUE(ProtosAreEqual(results.suggest_results[2].entity_info(),
-                               second_entity_info));
+    ASSERT_TRUE(results.suggest_results[2].suggest_template_info().has_value());
+    ASSERT_EQ(
+        second_entity_info.image_url(),
+        results.suggest_results[2].suggest_template_info()->image().url());
+    ASSERT_EQ(second_entity_info.suggest_search_parameters().substr(7),
+              results.suggest_results[2]
+                  .suggest_template_info()
+                  ->default_search_parameters()
+                  .at("gs_ssp"));
   }
 
   // Parse EntityInfo data from garbled proto field.
@@ -825,19 +834,19 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
 
     // For each suggestion, verify that the JSON fields were correctly parsed.
     ASSERT_EQ(u"the menu", results.suggest_results[0].suggestion());
-    ASSERT_TRUE(ProtosAreEqual(results.suggest_results[0].entity_info(),
-                               omnibox::EntityInfo::default_instance()));
+    ASSERT_FALSE(
+        results.suggest_results[0].suggest_template_info().has_value());
     ASSERT_EQ(u"", results.suggest_results[0].annotation());
     // Empty "t" value from server results in suggestion being used instead.
     ASSERT_EQ(u"the menu", results.suggest_results[0].match_contents());
 
     ASSERT_EQ(u"the menu", results.suggest_results[1].suggestion());
-    ASSERT_TRUE(ProtosAreEqual(results.suggest_results[1].entity_info(),
-                               omnibox::EntityInfo::default_instance()));
+    ASSERT_FALSE(
+        results.suggest_results[1].suggest_template_info().has_value());
 
     ASSERT_EQ(u"the midnight club", results.suggest_results[2].suggestion());
-    ASSERT_TRUE(ProtosAreEqual(results.suggest_results[2].entity_info(),
-                               omnibox::EntityInfo::default_instance()));
+    ASSERT_FALSE(
+        results.suggest_results[2].suggest_template_info().has_value());
   }
 }
 
@@ -1466,8 +1475,7 @@ TEST(SearchSuggestionParserTest, ParseCalculatorSuggestion) {
 
   // Most fields for a verbatim suggestion should be empty.
   ASSERT_EQ(u"1 + 1", results.suggest_results[0].suggestion());
-  ASSERT_TRUE(ProtosAreEqual(results.suggest_results[0].entity_info(),
-                             omnibox::EntityInfo::default_instance()));
+  ASSERT_FALSE(results.suggest_results[0].suggest_template_info().has_value());
   ASSERT_EQ(u"", results.suggest_results[0].annotation());
   ASSERT_EQ(u"1 + 1", results.suggest_results[0].match_contents());
 
@@ -1476,30 +1484,32 @@ TEST(SearchSuggestionParserTest, ParseCalculatorSuggestion) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(u"2", results.suggest_results[1].suggestion());
   ASSERT_EQ(u"", results.suggest_results[1].annotation());
-  ASSERT_TRUE(ProtosAreEqual(results.suggest_results[1].entity_info(),
-                             omnibox::EntityInfo::default_instance()));
+  ASSERT_FALSE(results.suggest_results[1].suggest_template_info().has_value());
   ASSERT_EQ(u"1 + 1 = 2", results.suggest_results[1].match_contents());
 #else
   ASSERT_EQ(u"2", results.suggest_results[1].suggestion());
   ASSERT_EQ(u"", results.suggest_results[1].annotation());
-  ASSERT_TRUE(ProtosAreEqual(results.suggest_results[1].entity_info(),
-                             omnibox::EntityInfo::default_instance()));
+  ASSERT_FALSE(results.suggest_results[1].suggest_template_info().has_value());
   ASSERT_EQ(u"= 2", results.suggest_results[1].match_contents());
 #endif
 
   // Entity data should be correctly sourced as usual.
   ASSERT_EQ(u"1 + 1", results.suggest_results[2].suggestion());
   ASSERT_EQ(u"Song", results.suggest_results[2].annotation());
-  ASSERT_EQ("#424242",
-            results.suggest_results[2].entity_info().dominant_color());
+  ASSERT_EQ("#424242", results.suggest_results[2]
+                           .suggest_template_info()
+                           ->image()
+                           .dominant_color());
   ASSERT_EQ("https://encrypted-tbn0.gstatic.com/images?q=song",
-            results.suggest_results[2].entity_info().image_url());
-  ASSERT_EQ(
-      "gs_ssp=eJzj4tFP1zcsNjAzMykwKDZg9GI1VNBWMAQAOlEEsA",
-      results.suggest_results[2].entity_info().suggest_search_parameters());
+            results.suggest_results[2].suggest_template_info()->image().url());
+  ASSERT_EQ("eJzj4tFP1zcsNjAzMykwKDZg9GI1VNBWMAQAOlEEsA",
+            results.suggest_results[2]
+                .suggest_template_info()
+                ->default_search_parameters()
+                .at("gs_ssp"));
   ASSERT_EQ(u"1+1", results.suggest_results[2].match_contents());
   ASSERT_EQ("/g/1s0664p0s",
-            results.suggest_results[2].entity_info().entity_id());
+            results.suggest_results[2].suggest_template_info()->entity_id());
 }
 
 TEST(SearchSuggestionParserTest, ParseTailSuggestion) {
