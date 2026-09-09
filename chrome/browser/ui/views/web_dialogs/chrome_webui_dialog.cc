@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -21,6 +22,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/webview.h"
@@ -103,6 +105,8 @@ std::unique_ptr<views::Widget> ChromeWebUIDialog::Show(
   // Observe the widget so the delegate can safely clean itself up.
   dialog_ptr->widget_observation_.Observe(widget.get());
 
+  dialog_ptr->UpdateAutoResizeBounds();
+
   if (!spec.wait_for_explicit_show) {
     dialog_ptr->ShowWidget();
   }
@@ -149,8 +153,7 @@ ChromeWebUIDialog::ChromeWebUIDialog(
     initial_size = gfx::Size(1, 1);
   }
   web_view_->SetPreferredSize(initial_size);
-  web_view_->EnableSizingFromWebContents(EffectiveMinSize(spec_),
-                                         EffectiveMaxSize(spec_));
+  UpdateAutoResizeBounds();
 
   view_observation_.Observe(web_view_);
 
@@ -228,8 +231,7 @@ void ChromeWebUIDialog::ResizeDueToAutoResize(content::WebContents* source,
   gfx::Size bounded_size = new_size;
 
   // The `new_size` comes from the renderer, which is instructed to respect
-  // the min/max bounds via `EnableAutoResize()` in the constructor. However,
-  // because the renderer is an untrusted process, the size must be defensively
+  // the min/max bounds by UpdateAutoResizeBounds(). However, the size must be
   // clamped here to guarantee strict adherence to `spec_`.
   bounded_size.SetToMax(EffectiveMinSize(spec_));
   bounded_size.SetToMin(EffectiveMaxSize(spec_));
@@ -242,30 +244,12 @@ void ChromeWebUIDialog::ResizeDueToAutoResize(content::WebContents* source,
     return;
   }
 
-  // Ensure the dialog doesn't exceed the display's work area.
-  // Note: Clamping against the work area occurs *after* applying the spec
-  // bounds in case the spec max_size is larger than the screen.
-  gfx::Rect work_area = GetWidget()->GetWorkAreaBoundsInScreen();
+  // Ensure that the bounds are updated so that they can be used for the page
+  // load.
+  UpdateAutoResizeBounds();
 
-  if (!work_area.IsEmpty()) {
-    // The `bounded_size` represents the web content size, but the widget must
-    // fit within the work area. Calculate the maximum content size by
-    // subtracting the frame's size (borders, shadows) from the work area.
-    gfx::Size frame_size = GetWidget()
-                               ->non_client_view()
-                               ->GetWindowBoundsForClientBounds(gfx::Rect())
-                               .size();
-
-    const int max_content_width =
-        std::max(0, work_area.width() - frame_size.width());
-    const int max_content_height =
-        std::max(0, work_area.height() - frame_size.height());
-    if (bounded_size.height() > max_content_height) {
-      bounded_size.set_height(max_content_height);
-    }
-    if (bounded_size.width() > max_content_width) {
-      bounded_size.set_width(max_content_width);
-    }
+  if (std::optional<gfx::Size> max_content = MaxContentSizeForWorkArea()) {
+    bounded_size.SetToMin(*max_content);
   }
 
   web_view_->SetPreferredSize(bounded_size);
@@ -288,6 +272,52 @@ void ChromeWebUIDialog::ResizeDueToAutoResize(content::WebContents* source,
   // The non-client view includes the window frame, so this ensures the
   // entire dialog is sized correctly.
   GetWidget()->CenterWindow(GetWidget()->non_client_view()->GetPreferredSize());
+}
+
+std::optional<gfx::Size> ChromeWebUIDialog::MaxContentSizeForWorkArea() {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return std::nullopt;
+  }
+
+  const gfx::Rect work_area = widget->GetWorkAreaBoundsInScreen();
+  if (work_area.IsEmpty()) {
+    return std::nullopt;
+  }
+
+  // The work area has to host the whole window, so what is left for the web
+  // contents is the work area less the frame around it.
+  gfx::Size frame_size;
+  if (widget->non_client_view()) {
+    frame_size = widget->non_client_view()
+                     ->GetWindowBoundsForClientBounds(gfx::Rect())
+                     .size();
+  }
+
+  gfx::Size max_content(std::max(0, work_area.width() - frame_size.width()),
+                        std::max(0, work_area.height() - frame_size.height()));
+  // Auto-resize rejects a zero-sized extent and keeps the bounds usable even
+  // for a degenerate work area.
+  max_content.SetToMax(gfx::Size(1, 1));
+  return max_content;
+}
+
+void ChromeWebUIDialog::UpdateAutoResizeBounds() {
+  // OnViewIsDeleting() can clear `web_view_` while the wrapper still holds its
+  // host reference.
+  if (!web_view_) {
+    return;
+  }
+
+  gfx::Size capped_min = EffectiveMinSize(spec_);
+  gfx::Size capped_max = EffectiveMaxSize(spec_);
+
+  if (std::optional<gfx::Size> max_content = MaxContentSizeForWorkArea()) {
+    capped_max.SetToMin(*max_content);
+  }
+
+  capped_min.SetToMin(capped_max);
+  web_view_->EnableSizingFromWebContents(capped_min, capped_max);
 }
 
 bool ChromeWebUIDialog::HandleKeyboardEvent(
@@ -335,12 +365,31 @@ void ChromeWebUIDialog::OnViewAddedToWidget(views::View* observed_view) {
   // natively supports rounded corners.
   web_view_->holder()->SetNativeViewCornerRadii(
       gfx::RoundedCornersF(spec_.corner_radius.value_or(GetCornerRadius())));
+
+  UpdateAutoResizeBounds();
 }
 
 void ChromeWebUIDialog::OnViewIsDeleting(views::View* observed_view) {
   if (observed_view == web_view_) {
     view_observation_.Reset();
     web_view_ = nullptr;
+  }
+}
+
+void ChromeWebUIDialog::OnWidgetBoundsChanged(views::Widget* widget,
+                                              const gfx::Rect& new_bounds) {
+  UpdateAutoResizeBounds();
+}
+
+void ChromeWebUIDialog::OnDisplayMetricsChanged(const display::Display& display,
+                                                uint32_t changed_metrics) {
+  constexpr uint32_t kSizeAffectingMetrics =
+      display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+      display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+      display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
+      display::DisplayObserver::DISPLAY_METRIC_ROTATION;
+  if (changed_metrics & kSizeAffectingMetrics) {
+    UpdateAutoResizeBounds();
   }
 }
 

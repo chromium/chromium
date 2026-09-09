@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_DIALOGS_CHROME_WEBUI_DIALOG_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +15,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view_observer.h"
@@ -119,7 +119,8 @@ struct WebDialogSpec {
 class ChromeWebUIDialog : public views::DialogDelegate,
                           public WebUIContentsWrapper::Host,
                           public views::ViewObserver,
-                          public views::WidgetObserver {
+                          public views::WidgetObserver,
+                          public display::DisplayObserver {
  public:
   ChromeWebUIDialog(std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
                     const WebDialogSpec& spec);
@@ -160,10 +161,24 @@ class ChromeWebUIDialog : public views::DialogDelegate,
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
+  // std::nullopt before there is a widget, or when the platform reports no
+  // work area.
+  std::optional<gfx::Size> MaxContentSizeForWorkArea();
+
+  // Recomputes the auto-resize bounds capped to the current display work area
+  // and updates the WebContents auto-resize parameters if changed.
+  void UpdateAutoResizeBounds();
 
   views::WebView* web_view() { return web_view_; }
 
@@ -181,6 +196,8 @@ class ChromeWebUIDialog : public views::DialogDelegate,
   // Keeps renderer-declined keys to the focus manager so browser accelerators
   // keep working from inside the dialog.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
