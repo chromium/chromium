@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -33,6 +35,12 @@ import org.chromium.ui.base.LocalizationUtils;
  */
 @NullMarked
 class AllPasswordsBottomSheetView implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserInitiated(true)
+                    .setUserCritical(UserCriticalFeature.ALL_PASSWORDS)
+                    .build();
+
     private final BottomSheetController mBottomSheetController;
     private @Nullable Callback<Integer> mDismissHandler;
     private final RecyclerView mSheetItemListView;
@@ -162,6 +170,11 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     @Override
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
