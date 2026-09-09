@@ -30,8 +30,8 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -57,7 +57,7 @@ public class ViewArcAnimatorRenderTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     private static Activity sActivity;
@@ -104,8 +104,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MAX,
                                         COORD_MAX,
                                         COORD_MIN,
@@ -127,8 +126,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MIN,
                                         COORD_MIN,
                                         COORD_MAX,
@@ -150,8 +148,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MAX,
                                         COORD_MIN,
                                         COORD_MIN,
@@ -173,8 +170,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MIN,
                                         COORD_MAX,
                                         COORD_MAX,
@@ -196,8 +192,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MIN,
                                         COORD_MIN,
                                         COORD_MAX,
@@ -215,13 +210,11 @@ public class ViewArcAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/553221391")
     public void testQuadrantIII_Clockwise() throws IOException {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MAX,
                                         COORD_MAX,
                                         COORD_MIN,
@@ -243,8 +236,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MIN,
                                         COORD_MAX,
                                         COORD_MAX,
@@ -266,8 +258,7 @@ public class ViewArcAnimatorRenderTest {
         Animator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                CommonAnimationsFactory.createViewArcAnimation(
-                                        mView,
+                                createViewArcAnimation(
                                         COORD_MAX,
                                         COORD_MIN,
                                         COORD_MIN,
@@ -280,5 +271,18 @@ public class ViewArcAnimatorRenderTest {
                 mRootView,
                 (ValueAnimator) animator,
                 ANIMATION_STEPS);
+    }
+
+    private Animator createViewArcAnimation(
+            float startX,
+            float startY,
+            float endX,
+            float endY,
+            @PathAnimationUtils.ArcDirection int direction) {
+        Animator animator =
+                CommonAnimationsFactory.createViewArcAnimation(
+                        mView, startX, startY, endX, endY, direction);
+        animator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        return animator;
     }
 }
