@@ -3503,15 +3503,26 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
     bool did_update_state) {
   CHECK_EQ(text_input_manager_, text_input_manager);
 
-  if (!GetInputMethod())
+  if (!GetInputMethod()) {
     return;
+  }
 
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostViewBase> weak_updated_view =
+      updated_view ? updated_view->GetWeakPtr() : nullptr;
+
+  auto check_alive = [&]() -> bool {
+    if (!weak_this || !weak_updated_view || !text_input_manager_ ||
+        !text_input_manager_->IsRegistered(updated_view)) {
+      // `this` or `updated_view` may have been deleted inside the IME callout.
+      return false;
+    }
+    return true;
+  };
 
   if (did_update_state) {
     GetInputMethod()->OnTextInputTypeChanged(this);
-    if (!weak_this) {
-      // `this` may have been deleted inside the IME callout.
+    if (!check_alive()) {
       return;
     }
   }
@@ -3528,6 +3539,12 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
                ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
       GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(false);
     }
+    if (!check_alive()) {
+      return;
+    }
+    // The IME callout may have re-entrantly updated or unregistered the
+    // active view's state, freeing the object `state` points to.
+    state = text_input_manager_->GetTextInputState();
   }
 #endif
 
@@ -3538,6 +3555,12 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
     if (state->show_ime_if_needed &&
         GetInputMethod()->GetTextInputClient() == this) {
       GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
+      if (!check_alive()) {
+        return;
+      }
+      // The IME callout may have re-entrantly updated or unregistered the
+      // active view's state, freeing the object `state` points to.
+      state = text_input_manager_->GetTextInputState();
     }
 // TODO(crbug.com/40110609): Remove this once TSF fix for input pane policy
 // is serviced
@@ -3549,6 +3572,12 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
                                                            GetInputMethod());
       }
       virtual_keyboard_controller_win_->UpdateTextInputState(state);
+      if (!check_alive()) {
+        return;
+      }
+      // The IME callout may have re-entrantly updated or unregistered the
+      // active view's state, freeing the object `state` points to.
+      state = text_input_manager_->GetTextInputState();
     }
 #endif
   }
@@ -3556,10 +3585,12 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
   // Ensure that selection bounds changes are sent to the IME.
   if (state && state->type != ui::TEXT_INPUT_TYPE_NONE) {
     text_input_manager->NotifySelectionBoundsChanged(updated_view);
-    if (!weak_this) {
-      // `this` may have been deleted inside the IME callout.
+    if (!check_alive()) {
       return;
     }
+    // The IME callout may have re-entrantly updated or unregistered the
+    // active view's state, freeing the object `state` points to.
+    state = text_input_manager_->GetTextInputState();
   }
 
   if (auto* render_widget_host = updated_view->host()) {
