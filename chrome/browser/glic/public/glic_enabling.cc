@@ -748,10 +748,13 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
     return *g_system_requirement_met_for_testing;
   }
   static const bool supported_system_requirements = [] {
-    if (base::SysInfo::AmountOfTotalPhysicalMemory() <
-        base::MiB(base::saturated_cast<uint64_t>(
-            features::kGlicMinRequiredRamMb.Get()))) {
-      return false;
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestType)) {
+      if (base::SysInfo::AmountOfTotalPhysicalMemory() <
+          base::MiB(base::saturated_cast<uint64_t>(
+              features::kGlicMinRequiredRamMb.Get()))) {
+        return false;
+      }
     }
 
 #if BUILDFLAG(IS_ANDROID)
