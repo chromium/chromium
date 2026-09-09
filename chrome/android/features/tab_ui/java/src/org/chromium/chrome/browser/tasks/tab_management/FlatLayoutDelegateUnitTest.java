@@ -507,6 +507,7 @@ public class FlatLayoutDelegateUnitTest {
         // Execute moving mTab1 out.
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
 
+        verify(mMediator).removeObserversForTab(mTab1);
         assertModelListTabIds(TAB2_ID);
     }
 
@@ -517,6 +518,7 @@ public class FlatLayoutDelegateUnitTest {
         // Execute moving mTab1 (last tab) out.
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
 
+        verify(mMediator).removeObserversForTab(mTab1);
         assertModelListTabIds();
     }
 
@@ -526,6 +528,7 @@ public class FlatLayoutDelegateUnitTest {
 
         mDelegate.didMoveTabOutOfGroup(mTab1, 0);
 
+        verify(mMediator, never()).removeObserversForTab(any());
         // Verify no-op when tab is not in model list.
         assertModelListTabIds(TAB2_ID);
     }

@@ -97,6 +97,7 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
         int curTabListModelIndex = mModelList.indexFromTabId(movedTab.getId());
         if (!mModelList.isValidIndex(curTabListModelIndex)) return;
 
+        mMediator.removeObserversForTab(movedTab);
         mModelList.removeAt(curTabListModelIndex);
     }
 

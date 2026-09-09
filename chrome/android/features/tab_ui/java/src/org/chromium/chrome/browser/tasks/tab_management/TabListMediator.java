@@ -2640,7 +2640,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void removeObserversForTab(Tab tab) {
+    void removeObserversForTab(Tab tab) {
         mObserverManager.removeTabObserver(tab);
 
         ActorUiTabController controller = ActorUiTabController.from(tab);
