@@ -302,8 +302,8 @@ fn parse_array(
         return parse_string(data, size_in_bytes, num_elements);
     }
 
-    // An array body is equivalent to a struct body with `num_elements` copies of
-    // its field.
+    // An array body is equivalent to a struct body with `num_elements` copies
+    // of its field.
     let array_body = crate::pack::pack_array_body(element_type, num_elements);
 
     // We also need to provide dummy field names for debugging purposes.
@@ -454,7 +454,8 @@ fn parse_map(
                     values.len(),
                 ));
             }
-            // Map bodies are 24 bytes, and the key array immediately follows them.
+            // Map bodies are 24 bytes, and the key array immediately follows
+            // them.
             let key_offset = initial_bytes_parsed + 24;
             check_for_duplicate_keys(key_offset, &mut keys)?;
             let map_val = keys.into_iter().zip(values).collect();
@@ -474,7 +475,8 @@ fn parse_string(
     size_in_bytes: usize,
     num_elements: usize,
 ) -> ParsingResult<MojomValue> {
-    // Array header size should be the size of the header (8) + the number of bytes
+    // Array header size should be the size of the header (8) + the number of
+    // bytes
     if size_in_bytes != num_elements + 8 {
         return Err(ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, num_elements + 8));
     }
@@ -552,8 +554,8 @@ where
         None => &mut local_nested_data_list,
     };
 
-    // Pre-allocate space for the parsed values, so we can write directly into them
-    // by index. We have to provide dummy values since rust won't allow
+    // Pre-allocate space for the parsed values, so we can write directly into
+    // them by index. We have to provide dummy values since rust won't allow
     // uninitialized memory.
     let mut ret_names: Vec<String> = vec![String::new(); num_elements_in_value];
     let mut ret_values: Vec<MojomValue> =
@@ -633,16 +635,22 @@ where
                             // to nested_data_list. We need to adjust the appended info so that it's
                             // relative to the enclosing struct, instead of this union.
                             (tag, None) => {
-                                // We just pushed an entry, so we know it exists.
-                                // We know no elements are later than it because unions cannot nest
-                                // directly in other unions, so we'll never recurse more than once.
+                                // We just pushed an entry, so we know it
+                                // exists.
+                                // We know no elements are later than it because
+                                // unions cannot nest
+                                // directly in other unions, so we'll never
+                                // recurse more than once.
                                 let nested_data_info = nested_data_list.last_mut().unwrap();
                                 // This was previously None
                                 nested_data_info.union_discriminant = Some((tag, *is_nullable));
-                                // This was previously the ordinal in the _union_ (i.e. 0)
+                                // This was previously the ordinal in the
+                                // _union_ (i.e. 0)
                                 nested_data_info.ordinal = ordinal;
-                                // This was previously the distance from the start of the _union_
-                                // body. We need it to be the distance from the start of _this_ body
+                                // This was previously the distance from the
+                                // start of the _union_
+                                // body. We need it to be the distance from the
+                                // start of _this_ body
                                 nested_data_info.expected_offset += bytes_parsed_at_union_start;
                             }
                         }
@@ -665,14 +673,15 @@ where
         parse_padding(data, expected_size_in_bytes - bytes_parsed_so_far)?
     }
 
-    // At this point, we'll only parse nested things if we didn't have an eclosing
-    // nested data list; if we did, then the nested things will be at the end of the
-    // enclosing object instead.
+    // At this point, we'll only parse nested things if we didn't have an
+    // eclosing nested data list; if we did, then the nested things will be
+    // at the end of the enclosing object instead.
     for nested_data in local_nested_data_list {
         // All nested data is 8-byte aligned
         skip_to_alignment(data, 8)?;
-        // Nested data is required to appear in the same order as the (packed) fields
-        // of the struct. So the expected offset is only useful for validation.
+        // Nested data is required to appear in the same order as the (packed)
+        // fields of the struct. So the expected offset is only useful
+        // for validation.
         let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
         if nested_data.expected_offset != bytes_parsed_so_far {
             return Err(ParsingError::wrong_pointer(
@@ -704,7 +713,8 @@ where
                 parse_map(data, key_type, value_type)?
             }
         };
-        // If necessary, wrap the parsed value based on the type it was contained in
+        // If necessary, wrap the parsed value based on the type it was
+        // contained in
         if nested_data.was_nullable {
             // The pointer to this data was nullable
             parsed_data = MojomValue::Nullable(Some(Box::new(parsed_data)));
@@ -742,9 +752,10 @@ fn extract_interface_ids(
     data_slice: &[u8],
     interface_ids_offset: u64,
 ) -> ParsingResult<(&[u8], Vec<Option<InterfaceId>>)> {
-    // We will parse the array later by calling `parse_array`; this is the element
-    // type we'll pass to the function. It's logically a constant, but since `Arc`
-    // involves heap allocations we need to use `LazyLock` instead.
+    // We will parse the array later by calling `parse_array`; this is the
+    // element type we'll pass to the function. It's logically a constant,
+    // but since `Arc` involves heap allocations we need to use `LazyLock`
+    // instead.
     static INTERFACE_ARRAY_TY: LazyLock<Arc<MojomWireType>> = LazyLock::new(|| {
         Arc::new(MojomWireType::Leaf { leaf_type: PackedLeafType::UInt32, is_nullable: false })
     });

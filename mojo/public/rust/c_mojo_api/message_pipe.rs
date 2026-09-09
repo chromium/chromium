@@ -97,8 +97,8 @@ pub fn MojoReadMessage(message_pipe: &UntypedHandle) -> MojoResult<MessageHandle
 /// - `FailedPrecondition`: If the other end of the pipe has been closed.
 pub fn MojoWriteMessage(message_pipe: &UntypedHandle, message: MessageHandle) -> MojoResult<()> {
     // SAFETY: the options pointer is allowed to be null;
-    // The `UntypedHandle` and `MessageHandle` types guarantee that their handles
-    // are live.
+    // The `UntypedHandle` and `MessageHandle` types guarantee that their
+    // handles are live.
     let ret = MojoError::result_from_code(unsafe {
         raw_ffi::MojoWriteMessage(
             message_pipe.handle_value.into(),

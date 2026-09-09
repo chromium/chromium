@@ -82,8 +82,9 @@ pub(crate) fn equivalent_value(v1: &MojomValue, v2: &MojomValue) -> bool {
         }
         (MojomValue::Array(vals1), MojomValue::Array(vals2)) => equivalent_values(vals1, vals2),
         (MojomValue::Map(map1), MojomValue::Map(map2)) => {
-            // Note that we use BTreeMaps, which guarantee that both these iterators
-            // are sorted by key. So it's sufficient to compare them independently.
+            // Note that we use BTreeMaps, which guarantee that both these
+            // iterators are sorted by key. So it's sufficient to
+            // compare them independently.
             equivalent_values(map1.keys(), map2.keys())
                 && equivalent_values(map1.values(), map2.values())
         }

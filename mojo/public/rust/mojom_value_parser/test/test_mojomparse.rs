@@ -149,8 +149,8 @@ impl TestType {
         rust_val: T,
         mojom_val: MojomValue,
     ) {
-        // FOR RELEASE: These assertion macros seem to print a massive (and utterly
-        // useless) stack trace. See if we can turn that off.
+        // FOR RELEASE: These assertion macros seem to print a massive (and
+        // utterly useless) stack trace. See if we can turn that off.
         expect_eq!(
             T::mojom_type(),
             self.base_type,

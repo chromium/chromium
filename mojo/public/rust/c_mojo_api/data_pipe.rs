@@ -59,10 +59,10 @@ pub fn MojoWriteData(
     let mut num_elements: u32 = elements.len().try_into().unwrap_or(u32::MAX);
     let options = MojoWriteDataOptions::new(flags.bits());
 
-    // SAFETY: The `UntypedHandle` type guarantees the handle is alive. The pointers
-    // are obtained from references and hence valid. The `num_elements`
-    // pointer stores the number of bytes in `elements`, so we will not read past
-    // the end of `elements`.
+    // SAFETY: The `UntypedHandle` type guarantees the handle is alive. The
+    // pointers are obtained from references and hence valid. The
+    // `num_elements` pointer stores the number of bytes in `elements`, so
+    // we will not read past the end of `elements`.
     let ret = MojoError::result_from_code(unsafe {
         raw_ffi::MojoWriteData(
             data_pipe_producer_handle.handle_value.into(),
@@ -146,10 +146,10 @@ pub fn MojoReadData(
     let mut num_elements: u32 = elements.len().try_into().unwrap_or(u32::MAX);
     let options = MojoReadDataOptions::new(flags.bits());
 
-    // SAFETY: The `UntypedHandle` type guarantees the handle is alive. The pointers
-    // are obtained from references and hence valid. The `num_elements`
-    // pointer stores the number of bytes in `elements`, so we will not write past
-    // the end of `elements`.
+    // SAFETY: The `UntypedHandle` type guarantees the handle is alive. The
+    // pointers are obtained from references and hence valid. The
+    // `num_elements` pointer stores the number of bytes in `elements`, so
+    // we will not write past the end of `elements`.
     let ret = MojoError::result_from_code(unsafe {
         raw_ffi::MojoReadData(
             data_pipe_consumer_handle.handle_value.into(),

@@ -59,14 +59,16 @@ pub trait MojomParse<Context = ()>: Sized + 'static {
         // TypeId to represent them at runtime.
         type WireTypeCache = HashMap<TypeId, &'static MojomWireType>;
 
-        // Sadly, we can't initialize an RwLock static directly because the initializer
-        // wouldn't be a constant expression, so have to wrap it in LazyLock.
+        // Sadly, we can't initialize an RwLock static directly because the
+        // initializer wouldn't be a constant expression, so have to
+        // wrap it in LazyLock.
         static WIRE_TYPE: LazyLock<RwLock<WireTypeCache>> =
             LazyLock::new(|| RwLock::new(WireTypeCache::new()));
 
-        // The read can only fail if a writer panicked at some point; packing never
-        // panics so we know it's safe to unwrap here.
-        // `cloned` transforms Option<&& MojomWireType> -> Option<& MojomWireType>
+        // The read can only fail if a writer panicked at some point; packing
+        // never panics so we know it's safe to unwrap here.
+        // `cloned` transforms Option<&& MojomWireType> -> Option<&
+        // MojomWireType>
         let contents: Option<&'static MojomWireType> =
             WIRE_TYPE.read().unwrap().get(&TypeId::of::<Self>()).cloned();
 

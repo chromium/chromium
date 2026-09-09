@@ -177,10 +177,11 @@ impl Trap {
         let trigger_ptr = raw_event.trigger_context() as *mut Trigger;
 
         {
-            // Safety: The pointer was obtained from `Box::leak` so it's valid and
-            // non-null. Since we're not called concurrently with the same context,
-            // nobody else has access to this pointer. The pointer isn't freed until
-            // we're called with `Cancelled`, and we're guaranteed not to be called
+            // Safety: The pointer was obtained from `Box::leak` so it's valid
+            // and non-null. Since we're not called concurrently
+            // with the same context, nobody else has access to this
+            // pointer. The pointer isn't freed until we're called
+            // with `Cancelled`, and we're guaranteed not to be called
             // again after that point.
             let trigger_ref: &mut Trigger = unsafe { trigger_ptr.as_mut_unchecked() };
 

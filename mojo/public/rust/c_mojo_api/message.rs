@@ -99,10 +99,11 @@ pub fn MojoAppendMessageData(
     let mut buffer_ptr: *mut std::ffi::c_void = std::ptr::null_mut();
     let mut buffer_size: u32 = 0;
 
-    // SAFETY: All pointers are to stack data, except possibly `raw_handles_ptr`.
-    // `slice_as_ptr` guarantees that which is null iff `handles.len()` is 0; which
-    // is permitted by the function. We're passing `handles.len()` as the number
-    // of handles, so we won't read past the end of `handles`.
+    // SAFETY: All pointers are to stack data, except possibly
+    // `raw_handles_ptr`. `slice_as_ptr` guarantees that which is null iff
+    // `handles.len()` is 0; which is permitted by the function. We're
+    // passing `handles.len()` as the number of handles, so we won't read
+    // past the end of `handles`.
     let result = MojoError::result_from_code(unsafe {
         raw_ffi::MojoAppendMessageData(
             message.handle_value.into(),
@@ -118,7 +119,8 @@ pub fn MojoAppendMessageData(
     match result {
         Ok(()) => {
             // If `MojoAppendMessageData` succeeds, ownership of all handles is
-            // transferred to the C object, so prevent Rust from double-free-ing them.
+            // transferred to the C object, so prevent Rust from double-free-ing
+            // them.
             for handle in handles.into_iter() {
                 std::mem::forget(handle);
             }
@@ -128,14 +130,15 @@ pub fn MojoAppendMessageData(
         }
     };
 
-    // `MojoAppendMessageData` copies the handles for us, but returns a pointer to
-    // its buffer that we need to write to ourselves.
+    // `MojoAppendMessageData` copies the handles for us, but returns a pointer
+    // to its buffer that we need to write to ourselves.
     if !bytes.is_empty() {
-        // Will not panic if usize has at least 32 bits, which is true for Chromium
-        // targets
+        // Will not panic if usize has at least 32 bits, which is true for
+        // Chromium targets
         let buffer_size: usize = buffer_size.try_into().unwrap();
-        // This may be unnecessary, but `MojoAppendMessageData` doesn't explicitly
-        // promise that the returned capacity is at most the requested amount.
+        // This may be unnecessary, but `MojoAppendMessageData` doesn't
+        // explicitly promise that the returned capacity is at most the
+        // requested amount.
         let bytes_to_write = std::cmp::min(bytes.len(), buffer_size);
 
         // SAFETY: The API call guarantees that the buffer pointer is valid
@@ -288,8 +291,9 @@ fn MojoGetMessageDataInternal(
     };
 
     // SAFETY: All pointers are either to stack variables, or validly null.
-    // If `num_handles` is nonzero, then it contains the length of `handles_ptr`,
-    // so this function will not write past the end of `handles`.
+    // If `num_handles` is nonzero, then it contains the length of
+    // `handles_ptr`, so this function will not write past the end of
+    // `handles`.
     let result = MojoError::result_from_code(unsafe {
         raw_ffi::MojoGetMessageData(
             message.handle_value.into(),
@@ -304,25 +308,28 @@ fn MojoGetMessageDataInternal(
     match result {
         Ok(()) => {
             debug_assert!(!buffer.is_null());
-            // Will not panic if usize has at least 32 bits, which is true for Chromium
-            // targets
+            // Will not panic if usize has at least 32 bits, which is true for
+            // Chromium targets
             let buffer_size: usize = num_bytes.try_into().unwrap();
-            // SAFETY: We must show that it is valid to call `std::slice::from_raw_parts` on
-            // the `bytes` field of the return value. `buffer` and `buffer_size`
+            // SAFETY: We must show that it is valid to call
+            // `std::slice::from_raw_parts` on the `bytes` field of
+            // the return value. `buffer` and `buffer_size`
             // were obtained by calling `MojoGetMessageData`, so we trust that
             // they are valid, aligned, readable, etc.
-            // The buffer is readable as long as the message is alive, and the type
-            // of this function ensures that the lifetime of the resulting reference
-            // is the same as that of `message`. If `message` is writable, then
-            // the buffer is also writable.
+            // The buffer is readable as long as the message is alive, and the
+            // type of this function ensures that the lifetime of
+            // the resulting reference is the same as that of
+            // `message`. If `message` is writable, then the buffer
+            // is also writable.
             return GetMessageDataStatus::Success {
                 bytes: (buffer.cast(), buffer_size),
                 num_handles_written: num_handles.try_into().unwrap(),
             };
         }
         Err(MojoError::ResourceExhausted) => {
-            // ResourceExhausted indicates that the provided handles buffer wasn't
-            // large enough. In this case, `num_handles` has been filled in.
+            // ResourceExhausted indicates that the provided handles buffer
+            // wasn't large enough. In this case, `num_handles` has
+            // been filled in.
             return GetMessageDataStatus::NotEnoughCapacity { num_handles_attached: num_handles };
         }
         Err(e) => return GetMessageDataStatus::Error(e),
@@ -339,9 +346,9 @@ fn MojoGetMessageDataInternal(
 // I'm not entirely sure if it's safe to call this concurrently from multiple
 // threads, so I'm requiring &mut for safety.
 pub fn MojoNotifyBadMessage(message: &mut MessageHandle, error_msg: &str) {
-    // SAFETY: The option pointer is allowed to be be null. The string parts were
-    // constructed from an &str, and will not be retained by C code after the
-    // function returns.
+    // SAFETY: The option pointer is allowed to be be null. The string parts
+    // were constructed from an &str, and will not be retained by C code
+    // after the function returns.
     let ret = unsafe {
         raw_ffi::MojoNotifyBadMessage(
             message.handle_value.into(),
@@ -350,7 +357,7 @@ pub fn MojoNotifyBadMessage(message: &mut MessageHandle, error_msg: &str) {
             std::ptr::null(), // Options pointer
         )
     };
-    // This should only fail if the message handle is invalid and we guarantee that
-    // it's valid as part of this type.
+    // This should only fail if the message handle is invalid and we guarantee
+    // that it's valid as part of this type.
     debug_assert!(MojoError::result_from_code(ret).is_ok())
 }

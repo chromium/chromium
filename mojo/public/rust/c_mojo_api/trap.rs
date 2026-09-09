@@ -196,7 +196,8 @@ pub use types::*;
 ///   because the process ran out of possible handle values)
 pub fn MojoCreateTrap(handler: EventHandler) -> MojoResult<UntypedHandle> {
     // First we need to transmute the passed-in handler to match the C type.
-    // SAFETY: The EventHandler type is ABI-compatible with MojoTrapEventHandler.
+    // SAFETY: The EventHandler type is ABI-compatible with
+    // MojoTrapEventHandler.
     let handler_ptr = unsafe {
         std::mem::transmute::<extern "C" fn(&TrapEvent), extern "C" fn(*const raw_ffi::MojoTrapEvent)>(
             handler,
@@ -292,8 +293,8 @@ pub fn MojoAddTrigger(
 /// - `InvalidArgument`: if `trap_handle` is not actually a trap handle
 /// - `NotFound`: if the trap has no trigger associated with `context`.
 pub fn MojoRemoveTrigger(trap_handle: &UntypedHandle, context: usize) -> MojoResult<()> {
-    // SAFETY: The `UntypedHandle` type guarantees the handle is valid. The options
-    // pointer is allowed to be null.
+    // SAFETY: The `UntypedHandle` type guarantees the handle is valid. The
+    // options pointer is allowed to be null.
     MojoError::result_from_code(unsafe {
         raw_ffi::MojoRemoveTrigger(
             trap_handle.handle_value.into(),
@@ -344,15 +345,17 @@ pub fn MojoArmTrap<'a>(
 
     let (blocking_events_ptr, num_events_ptr) = match blocking_events {
         Some(ref mut slice) => {
-            // For each blocking event, we must initialize `struct_size`. Otherwise,
-            // `MojoArmTrap` below will complain about receiving an invalid argument.
+            // For each blocking event, we must initialize `struct_size`.
+            // Otherwise, `MojoArmTrap` below will complain about
+            // receiving an invalid argument.
 
             for event in slice.iter_mut() {
                 // A reference to the `struct_size` field of the TrapEvent.
-                // SAFETY: TrapEvent is a #[repr(transparent)] wrapper around `MojoTrapEvent`,
-                // which itself is a #[repr(C)] struct with `struct_size` as the first element.
-                // Therefore, the `struct_size` field begins at the same memory address as the
-                // `TrapEvent` as a whole.
+                // SAFETY: TrapEvent is a #[repr(transparent)] wrapper around
+                // `MojoTrapEvent`, which itself is a #[repr(C)]
+                // struct with `struct_size` as the first element.
+                // Therefore, the `struct_size` field begins at the same memory
+                // address as the `TrapEvent` as a whole.
                 let size_ref = unsafe {
                     std::mem::transmute::<
                         &mut std::mem::MaybeUninit<TrapEvent>,
@@ -388,9 +391,10 @@ pub fn MojoArmTrap<'a>(
             debug_assert!(count > 0);
             debug_assert!(count <= blocking_events.len());
             // SAFETY: Transmuting into &mut [TrapEvent] is safe because:
-            // * it is derived from blocking_events, which is already a valid Rust slice
-            //   managing the lifetime
-            // * MojoArmTrap guarantees it initialized the first `num_events` elements
+            // * it is derived from blocking_events, which is already a valid
+            //   Rust slice managing the lifetime
+            // * MojoArmTrap guarantees it initialized the first `num_events`
+            //   elements
             let initialized_slice = unsafe {
                 std::slice::from_raw_parts_mut(blocking_events.as_mut_ptr().cast(), count)
             };

@@ -89,8 +89,8 @@ impl SharedBuffer {
     /// - `ResourceExhausted`: if the mapping operation itself failed.
     pub fn map(&self, offset: u64, num_bytes: usize) -> MojoResult<MappedBuffer> {
         let ptr = mojo_ffi::buffer::MojoMapBuffer(&self.handle, offset, num_bytes)?;
-        // MappedBuffer takes ownership of this pointer and will unmap it on Drop.
-        // MojoMapBuffer returns a pointer valid for `num_bytes`.
+        // MappedBuffer takes ownership of this pointer and will unmap it on
+        // Drop. MojoMapBuffer returns a pointer valid for `num_bytes`.
         Ok(MappedBuffer { ptr: NonNull::new(ptr).unwrap(), len: num_bytes })
     }
 }
@@ -116,9 +116,9 @@ impl MappedBuffer {
     /// and that no mutable references to this memory exist,
     /// while the slice is alive (including by another process or thread).
     pub unsafe fn as_slice(&self) -> &[u8] {
-        // SAFETY: The memory is valid for `self.len` bytes and we hold a reference to
-        // `self` ensuring it won't be unmapped while the slice is alive. The
-        // caller guarantees no mutable aliasing.
+        // SAFETY: The memory is valid for `self.len` bytes and we hold a
+        // reference to `self` ensuring it won't be unmapped while the
+        // slice is alive. The caller guarantees no mutable aliasing.
         unsafe { slice::from_raw_parts(self.ptr.as_ptr(), self.len) }
     }
 
@@ -133,10 +133,11 @@ impl MappedBuffer {
     /// exist, while the slice is alive (including by another process or
     /// thread).
     pub unsafe fn as_mut_slice(&mut self) -> &mut [u8] {
-        // SAFETY: The memory is valid for `self.len` bytes and we hold a mutable
-        // reference to `self` ensuring exclusive access locally, and that it
-        // won't be unmapped while the slice is alive. The caller guarantees no
-        // aliasing at all from other processes.
+        // SAFETY: The memory is valid for `self.len` bytes and we hold a
+        // mutable reference to `self` ensuring exclusive access
+        // locally, and that it won't be unmapped while the slice is
+        // alive. The caller guarantees no aliasing at all from other
+        // processes.
         unsafe { slice::from_raw_parts_mut(self.ptr.as_ptr(), self.len) }
     }
 }
@@ -145,9 +146,10 @@ impl MappedBuffer {
 /// dropped.
 impl Drop for MappedBuffer {
     fn drop(&mut self) {
-        // SAFETY: The pointer was returned by MojoMapBuffer. Because `MappedBuffer`
-        // owns the pointer and it is only unmapped here in Drop, we know it hasn't
-        // been unmapped before and is valid to unmap.
+        // SAFETY: The pointer was returned by MojoMapBuffer. Because
+        // `MappedBuffer` owns the pointer and it is only unmapped here
+        // in Drop, we know it hasn't been unmapped before and is valid
+        // to unmap.
         let result = unsafe { mojo_ffi::buffer::MojoUnmapBuffer(self.ptr.as_ptr()) };
 
         // The only way this fails is if the pointer is invalid, which means

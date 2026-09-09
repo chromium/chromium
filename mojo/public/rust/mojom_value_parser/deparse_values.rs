@@ -187,7 +187,8 @@ fn deparse_leaf_value(
         }
         (MojomValue::PendingRemote(handle), PackedLeafType::PendingRemote) => {
             deparse_handle(data, handle.into());
-            // Remotes have a version field (4 bytes), which we don't use for now.
+            // Remotes have a version field (4 bytes), which we don't use for
+            // now.
             data.extend(0u32.to_le_bytes());
         }
         (
@@ -201,7 +202,8 @@ fn deparse_leaf_value(
             PackedLeafType::PendingAssociatedRemote,
         ) => {
             deparse_interface_id(data, interface_id);
-            // Remotes have a version field (4 bytes), which we don't use for now.
+            // Remotes have a version field (4 bytes), which we don't use for
+            // now.
             data.extend(0u32.to_le_bytes());
         }
         (value, _) => wrong_type!(leaf_type, value),
@@ -433,8 +435,9 @@ where
                         MojomValue::Nullable(None) => false,
                         MojomValue::Nullable(Some(_)) if *is_tag_bit => true,
                         MojomValue::Nullable(Some(inner_value)) => {
-                            // If deref patterns are ever stabilized, we won't need
-                            // a nested match here.
+                            // If deref patterns are ever stabilized, we won't
+                            // need a nested match
+                            // here.
                             match &**inner_value {
                                 MojomValue::Bool(bit) => *bit,
                                 _ => bail!("Got non-bool value when deparsing a bitfield"),
@@ -454,7 +457,8 @@ where
                     MojomWireType::Leaf { leaf_type, is_nullable } => {
                         let num_bytes = wire_type.size();
                         let leaf_value = take_field_at_ordinal(&mut field_values, ordinal)?;
-                        // Null handles are indicated with all `f`s, everything else is all `0`s.
+                        // Null handles are indicated with all `f`s, everything
+                        // else is all `0`s.
                         let none_indicator_byte = if matches!(
                             leaf_type,
                             PackedLeafType::Handle
@@ -517,7 +521,8 @@ where
                             ),
                         };
                         nested_data_list.push(NestedDataInfo { nested_data, ptr_loc: data.len() });
-                        // Allocate space for the pointer, we'll write to it later.
+                        // Allocate space for the pointer, we'll write to it
+                        // later.
                         pad_to_alignment(data, 8);
                         data.extend([0; 8]);
                     }
@@ -596,7 +601,8 @@ fn append_interface_ids(data: &mut DeparsedData) {
         Arc::new(MojomWireType::Leaf { leaf_type: PackedLeafType::UInt32, is_nullable: false })
     });
 
-    // We should always end messages at an 8-byte alignment...but check just in case
+    // We should always end messages at an 8-byte alignment...but check just in
+    // case
     let mismatch = data.bytes.len() % 8;
     assert!(mismatch == 0);
 

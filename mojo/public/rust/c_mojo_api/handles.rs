@@ -56,7 +56,8 @@ fn is_pseudohandle(raw_value: raw_ffi::MojoHandle) -> bool {
 /// A wrapper for the MojoHandle C type which is guaranteed to be live.
 /// This type can represent any handle except for a message object.
 #[repr(transparent)]
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)] // Do NOT derive Copy or Clone!
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)] // Do NOT derive Copy or
+                                                       // Clone!
 pub struct UntypedHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
     // Private member to force construction using the `wrap_raw_value`

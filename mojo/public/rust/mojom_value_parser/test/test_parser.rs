@@ -46,7 +46,8 @@ fn validate_parsing<T>(value: T, data: &str) -> anyhow::Result<()>
 where
     T: MojomParse<()> + PartialEq + std::fmt::Debug,
 {
-    // We have to compute this eagerly since `value ` will get consumed by the test
+    // We have to compute this eagerly since `value ` will get consumed by the
+    // test
     let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
 
     // Helper function so we can use the question mark operator, but also
@@ -57,8 +58,9 @@ where
             // We currently don't do anything with handles, so only look at the data field
             .data;
 
-        // TODO(crbug.com/456214728):: It would be nice to use the `verify_` macros from
-        // googletest that return a result, if we get access to them.
+        // TODO(crbug.com/456214728):: It would be nice to use the `verify_`
+        // macros from googletest that return a result, if we get access
+        // to them.
         expect_eq!(
             &value,
             &try_from_mojom_value(parse_single_value_for_testing(
@@ -74,8 +76,8 @@ where
         Ok(())
     };
 
-    // We could also use anyhow's Context trait, but that overwrites the old context
-    // since we can't control the printing format gtest uses.
+    // We could also use anyhow's Context trait, but that overwrites the old
+    // context since we can't control the printing format gtest uses.
     validate_parsing_internal().map_err(|err| anyhow::anyhow!("{err}{err_str}"))
 }
 
@@ -87,7 +89,8 @@ fn validate_parsing_with_handles<T>(value: T, data: &str, num_handles: usize) ->
 where
     T: MojomParse<()> + PartialEq + std::fmt::Debug,
 {
-    // We have to compute this eagerly since `value ` will get consumed by the test
+    // We have to compute this eagerly since `value ` will get consumed by the
+    // test
     let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
 
     // Helper function so we can use the question mark operator, but also
@@ -101,8 +104,9 @@ where
         let mojom_value = into_mojom_value(value);
         let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();
 
-        // TODO(crbug.com/456214728): It would be nice to use the `verify_` macros from
-        // googletest that return a result, if we get access to them.
+        // TODO(crbug.com/456214728): It would be nice to use the `verify_`
+        // macros from googletest that return a result, if we get access
+        // to them.
         expect_true!(equivalent_value(
             &mojom_value,
             &parse_single_value_for_testing(wire_data.as_ref(), &mut handles, T::wire_type())?
@@ -116,8 +120,8 @@ where
         Ok(())
     };
 
-    // We could also use anyhow's Context trait, but that overwrites the old context
-    // since we can't control the printing format gtest uses.
+    // We could also use anyhow's Context trait, but that overwrites the old
+    // context since we can't control the printing format gtest uses.
     validate_parsing_internal().map_err(|err| anyhow::anyhow!("{err}{err_str}"))
 }
 
@@ -222,8 +226,8 @@ fn test_primitives() -> anyhow::Result<()> {
     validate_parsing(-123.456f64, "[d]-123.456")?;
 
     // Also make sure we correctly fail to parse things.
-    // Since all bit patterns are valid, the only way for this to happen is if we
-    // don't have enough data.
+    // Since all bit patterns are valid, the only way for this to happen is if
+    // we don't have enough data.
     validate_parsing_failure::<u16>("[u1]8")?;
     validate_parsing_failure::<i64>("[s4]1006")?;
     validate_parsing_failure::<f64>("[s4]1006")?;
@@ -1340,7 +1344,8 @@ fn test_handle_parsing() -> anyhow::Result<()> {
         3,
     )?;
 
-    // Fails because remote needs 8 bytes but we only provide 4 after the receiver
+    // Fails because remote needs 8 bytes but we only provide 4 after the
+    // receiver
     validate_parsing_failure_with_handles::<WithPendingTypes>("[u4]20 [u4]0 [u4]0 [u4]1", 2)?;
 
     Ok(())

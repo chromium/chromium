@@ -45,7 +45,8 @@ fn test_basic_message_write_and_send() {
     // message, returning a new state.
     let (_handles, bytes_only_msg) = hello_msg.read_data().unwrap();
 
-    // Calling read_bytes is independent of read_data and can be done many times.
+    // Calling read_bytes is independent of read_data and can be done many
+    // times.
     let _ = bytes_only_msg.read_bytes().unwrap();
     let _ = bytes_only_msg.read_bytes().unwrap();
 }
@@ -150,11 +151,11 @@ fn test_trap_signal_on_readable() {
 
 #[gtest(RustSystemAPITestSuite, CloseSafeTrapWithActiveTrigger)]
 fn test_close_trap_with_active_trigger() {
-    // Trap must do some lifecycle management/teardown of the pointers it encloses
-    // when it is `drop`'d.
+    // Trap must do some lifecycle management/teardown of the pointers it
+    // encloses when it is `drop`'d.
     //
-    // Additionally we expect remove_trigger to be called on each active trigger,
-    // and the associated callback to return TrapError::Cancelled.
+    // Additionally we expect remove_trigger to be called on each active
+    // trigger, and the associated callback to return TrapError::Cancelled.
     let trap = system::trap::Trap::new().expect("Failed to create trap");
     let (ep_a, _ep_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
@@ -252,12 +253,12 @@ fn test_shared_buffer() {
         mapped_slice[1023] = 43;
     }
 
-    // Duplicate the buffer handle. The shared buffer remains alive as long as at
-    // least one handle to it exists.
+    // Duplicate the buffer handle. The shared buffer remains alive as long as
+    // at least one handle to it exists.
     let duplicate = handle.clone_handle().unwrap();
 
-    // Map the newly duplicated handle and verify the memory contents are exactly
-    // what we wrote using the original handle.
+    // Map the newly duplicated handle and verify the memory contents are
+    // exactly what we wrote using the original handle.
     let mapped_dup = duplicate.map(0, num_bytes as usize).unwrap();
 
     // SAFETY: We mapped it successfully and we are just reading from it.

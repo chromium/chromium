@@ -102,8 +102,8 @@ fn derive_mojomparse_struct(
     // As far as I know, quote can only iterate over vectors of things that can
     // be directly converted to tokens. Notably, this means they have to be
     // single values. So if we want to write something like #name = #val, in a
-    // loop, we first have to combine each pair of names and values into a single
-    // token stream, and then can we iterate over that in the quote.
+    // loop, we first have to combine each pair of names and values into a
+    // single token stream, and then can we iterate over that in the quote.
 
     // The names of the fields in the struct.
     let field_idents: Vec<&syn::Ident> =
@@ -127,12 +127,13 @@ fn derive_mojomparse_struct(
     // The names of the `context` and `value` parameters in the `MojomParse`
     // functions.
     //
-    // If the mojom file has a struct with a field named "context" or "value", those
-    // functions will create local variables named `context` and `value`
-    // respectively. To distinguish that variable from the parameters (and thus
-    // prevent accidental variable shadowing), we give the parameters a
-    // `mixed_site` span and the variables a `call_site` span. This tells the
-    // compiler to treat them as separate values that don't shadow each other.
+    // If the mojom file has a struct with a field named "context" or "value",
+    // those functions will create local variables named `context` and
+    // `value` respectively. To distinguish that variable from the
+    // parameters (and thus prevent accidental variable shadowing), we give
+    // the parameters a `mixed_site` span and the variables a `call_site`
+    // span. This tells the compiler to treat them as separate values that
+    // don't shadow each other.
     let context_ident = syn::Ident::new("context", proc_macro2::Span::mixed_site());
     let value_ident = syn::Ident::new("value", proc_macro2::Span::mixed_site());
 
@@ -398,7 +399,8 @@ pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::Token
             panic!("Mojom enums must not have any variants with fields!")
         }
 
-        // TODO(crbug.com/496945860): See if any variants have a "default" attribute
+        // TODO(crbug.com/496945860): See if any variants have a "default"
+        // attribute
         default_variant = None; // Silence compiler until we do that
 
         let discriminant = compute_next_discriminant(&mut next_discriminant, variant.discriminant);

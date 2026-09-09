@@ -33,8 +33,8 @@ fn test_message_pipe() {
     let message_bytes = message_contents.to_ne_bytes();
 
     // Append our data payload (an 8-byte integer) to the message.
-    // We use COMMIT_SIZE to indicate this is the final write, marking it ready to
-    // be sent.
+    // We use COMMIT_SIZE to indicate this is the final write, marking it ready
+    // to be sent.
     let bytes_written = mojo_ffi::message::MojoAppendMessageData(
         &mut message,
         mojo_ffi::message::AppendMessageDataFlags::COMMIT_SIZE,
@@ -96,18 +96,18 @@ fn test_shared_buffer() {
     }
 
     // Explicitly unmap the mapped memory.
-    // SAFETY: `mapped` is a valid pointer returned by `MojoMapBuffer` just above,
-    // and it has not been unmapped yet.
+    // SAFETY: `mapped` is a valid pointer returned by `MojoMapBuffer` just
+    // above, and it has not been unmapped yet.
     unsafe {
         mojo_ffi::buffer::MojoUnmapBuffer(mapped).unwrap();
     }
 
-    // Duplicate the buffer handle. The shared buffer remains alive as long as at
-    // least one handle to it exists. We set read_only to false.
+    // Duplicate the buffer handle. The shared buffer remains alive as long as
+    // at least one handle to it exists. We set read_only to false.
     let duplicate = mojo_ffi::buffer::MojoDuplicateBufferHandle(&handle, false).unwrap();
 
-    // Map the newly duplicated handle and verify the memory contents are exactly
-    // what we wrote using the original handle.
+    // Map the newly duplicated handle and verify the memory contents are
+    // exactly what we wrote using the original handle.
     let mapped_dup = mojo_ffi::buffer::MojoMapBuffer(&duplicate, 0, num_bytes as usize).unwrap();
     // SAFETY: `mapped_dup` is a valid pointer to memory we just mapped, and we
     // are only creating a temporary read-only slice of the correct size.
@@ -147,8 +147,8 @@ fn test_platform_handle() {
             mojo_ffi::platform::MojoUnwrapPlatformHandle(mojo_handle).unwrap();
         let unwrapped_owned = OwnedFd::from(unwrapped_platform_handle);
 
-        // Verify the unwrapped handle works by creating a File from it and writing to
-        // it.
+        // Verify the unwrapped handle works by creating a File from it and
+        // writing to it.
         let mut unwrapped_file = std::fs::File::from(unwrapped_owned);
         use std::io::Write;
         unwrapped_file.write_all(b"hello").unwrap();

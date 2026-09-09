@@ -189,16 +189,17 @@ impl ReadableWithHandlesMessage {
             }
         };
 
-        // Copy the handles from the message into a vector. This prevents further
-        // reads of the handles.
+        // Copy the handles from the message into a vector. This prevents
+        // further reads of the handles.
         let mut handles: Vec<UntypedHandle> = Vec::with_capacity(num_handles as usize);
 
         match message::MojoGetMessageData(&self.message_handle, Some(handles.spare_capacity_mut()))
         {
             // If the call succeeded, then we successfully read the attached handles!
             message::GetMessageDataStatus::Success { num_handles_written, .. } => {
-                // SAFETY: `MojoGetMessageData` guarantees that the first `num_handles_written`
-                // elements of `handles` are now initialized.
+                // SAFETY: `MojoGetMessageData` guarantees that the first
+                // `num_handles_written` elements of `handles`
+                // are now initialized.
                 unsafe { handles.set_len(num_handles_written) };
                 return Ok((handles, self.into()));
             }

@@ -85,7 +85,8 @@ impl PlatformHandle {
         if raw < 0 {
             Err(MojoError::InvalidArgument)
         } else {
-            // SAFETY: The caller guarantees `raw` is a valid owned file descriptor.
+            // SAFETY: The caller guarantees `raw` is a valid owned file
+            // descriptor.
             Ok(Self { inner: unsafe { OwnedFd::from_raw_fd(raw) } })
         }
         #[cfg(target_family = "windows")]
@@ -179,8 +180,8 @@ pub fn MojoWrapPlatformHandle(platform_handle: PlatformHandle) -> MojoResult<Unt
     );
 
     ret.map(|_| {
-        // Ownership transferred to Mojo, so consume the inner handle to prevent it from
-        // closing.
+        // Ownership transferred to Mojo, so consume the inner handle to prevent
+        // it from closing.
         let _ = platform_handle.into_raw();
 
         // SAFETY: We just got this handle from Mojo.
@@ -198,8 +199,8 @@ pub fn MojoWrapPlatformHandle(platform_handle: PlatformHandle) -> MojoResult<Unt
 pub fn MojoUnwrapPlatformHandle(mojo_handle: UntypedHandle) -> MojoResult<PlatformHandle> {
     let mut raw_platform_handle = new_raw_platform_handle(MOJO_PLATFORM_HANDLE_TYPE_INVALID, 0);
 
-    // Consume ownership of the mojo handle value, as the C function closes it on
-    // both success and failure.
+    // Consume ownership of the mojo handle value, as the C function closes it
+    // on both success and failure.
     let raw_mojo_handle = mojo_handle.into_raw_value();
 
     MojoError::result_from_code(
@@ -218,7 +219,7 @@ pub fn MojoUnwrapPlatformHandle(mojo_handle: UntypedHandle) -> MojoResult<Platfo
         return Err(MojoError::InvalidArgument);
     }
 
-    // SAFETY: MojoUnwrapPlatformHandle just succeeded, so we can transfer ownership
-    // to us.
+    // SAFETY: MojoUnwrapPlatformHandle just succeeded, so we can transfer
+    // ownership to us.
     unsafe { PlatformHandle::from_raw(raw_platform_handle.value as RawPlatformHandle) }
 }
