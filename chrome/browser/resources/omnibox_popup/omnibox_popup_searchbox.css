@@ -212,23 +212,11 @@ cr-searchbox-input::part(icon) {
   -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
 }
 
-:host(:not([use-webkit-search-icons_])) #debugButton {
-  background-image: url(//resources/cr_components/searchbox/icons/dino_cr23_old.svg);
-}
-
 :host([use-webkit-search-icons_]) #voiceSearchButton,
 :host([use-webkit-search-icons_]) #lensSearchButton {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 21px 21px;
-  background-color: var(--color-searchbox-lens-voice-icon-background);
-}
-
-:host([use-webkit-search-icons_]) #debugButton {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/dino_cr23.svg);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: var(--cr-searchbox-icon-size-in-searchbox, 16px) var(--cr-searchbox-icon-size-in-searchbox, 16px);
   background-color: var(--color-searchbox-lens-voice-icon-background);
 }
 
@@ -266,9 +254,15 @@ omnibox-popup-contextual-entrypoint {
 }
 
 #debugButton {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: var(--cr-searchbox-icon-size-in-searchbox, 16px) var(--cr-searchbox-icon-size-in-searchbox, 16px);
+  -webkit-mask-image:
+      url(//resources/cr_components/searchbox/icons/dino_cr23_old.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-searchbox-icon-size-in-searchbox, 16px)
+      var(--cr-searchbox-icon-size-in-searchbox, 16px);
+  background-color: var(
+      --color-searchbox-search-icon-background,
+      var(--color-omnibox-results-icon));
   height: var(--cr-searchbox-icon-size-in-searchbox, 16px);
   width: var(--cr-searchbox-icon-size-in-searchbox, 16px);
 }
@@ -401,4 +395,8 @@ omnibox-popup-contextual-entrypoint {
 
 :host-context([webui-rounded-icons]):host([use-webkit-search-icons_]) #voiceSearchButton {
   -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+}
+
+:host-context([webui-rounded-icons]) #debugButton {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/dino_cr23.svg);
 }
