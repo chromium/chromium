@@ -155,6 +155,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   friend class OpenscreenSessionHostTest;
   FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, ChangeTargetPlayoutDelay);
   FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, UpdateBandwidthEstimate);
+  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest,
+                           RestartRefreshTimerOnInsertVideoFrame);
+  FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest,
+                           PreservesBandwidthWhenNoFramesDropped);
 
   using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;
 
@@ -410,6 +414,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Note that the actual bandwidth will be effectively capped at the sum of the
   // current video and audio bitrates.
   uint32_t usable_bandwidth_ = kDefaultBitrate;
+
+  // Tracks the number of dropped video frames observed at the last bandwidth
+  // update so downward bandwidth estimates during idle/static screen periods
+  // (where no frames are dropped) do not falsely crush the target bitrate.
+  int num_video_frames_dropped_ = 0;
 
   // Indicate whether we're in the middle of switching tab sources.
   bool switching_tab_source_ = false;

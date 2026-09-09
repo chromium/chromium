@@ -412,6 +412,7 @@ void OpenscreenSessionHost::OnNegotiated(
         base::BindRepeating(&OpenscreenSessionHost::GetVideoNetworkBandwidth,
                             base::Unretained(this)));
     video_sender_ = std::move(video_sender);
+    num_video_frames_dropped_ = 0;
     refresh_interval_ = mirror_settings_.refresh_interval();
     expecting_a_refresh_frame_ = false;
     if (refresh_interval_.is_positive()) {
@@ -566,7 +567,7 @@ void OpenscreenSessionHost::InsertVideoFrame(
   expecting_a_refresh_frame_ = false;
   base::TimeTicks reference_time = *video_frame->metadata().reference_time;
   video_sender_->InsertRawVideoFrame(std::move(video_frame), reference_time);
-  if (refresh_timer_.IsRunning()) {
+  if (refresh_interval_.is_positive()) {
     refresh_timer_.Reset();
   }
 }
@@ -1040,8 +1041,22 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate() {
     constexpr double kConservativeIncrease = 1.1;
     usable_bandwidth_ = std::min<uint32_t>(
         usable_bandwidth_ * kConservativeIncrease, usable_bandwidth);
-  } else {
-    usable_bandwidth_ = usable_bandwidth;
+    if (video_sender_) {
+      num_video_frames_dropped_ = video_sender_->GetFramesDropped();
+    }
+  } else if (usable_bandwidth < usable_bandwidth_) {
+    bool should_decrease_bandwidth = true;
+    if (video_sender_) {
+      const int current_frames_dropped = video_sender_->GetFramesDropped();
+      should_decrease_bandwidth =
+          current_frames_dropped > num_video_frames_dropped_;
+      if (should_decrease_bandwidth) {
+        num_video_frames_dropped_ = current_frames_dropped;
+      }
+    }
+    if (should_decrease_bandwidth) {
+      usable_bandwidth_ = usable_bandwidth;
+    }
   }
 
   VLOG(2) << ": updated available bandwidth to " << usable_bandwidth_ << "/"

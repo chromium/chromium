@@ -31,6 +31,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/encoding/encoding_support.h"
 #include "media/cast/sender/audio_sender.h"
+#include "media/cast/sender/video_sender.h"
 #include "media/cast/test/openscreen_test_helpers.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/media_buildflags.h"
@@ -158,6 +159,18 @@ openscreen::cast::SenderStats ConstructDefaultSenderStats() {
       .video_statistics = openscreen::cast::SenderStats::StatisticsList(),
       .video_histograms = openscreen::cast::SenderStats::HistogramsList()};
 }
+
+class FakeVideoSender : public media::cast::VideoSender {
+ public:
+  FakeVideoSender() = default;
+  ~FakeVideoSender() override = default;
+
+  int GetFramesDropped() const override { return frames_dropped_; }
+  void set_frames_dropped(int count) { frames_dropped_ = count; }
+
+ private:
+  int frames_dropped_ = 0;
+};
 
 }  // namespace
 
@@ -964,12 +977,18 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
   CreateSession(SessionType::VIDEO_ONLY);
   StartSession();
 
+  auto fake_video_sender = std::make_unique<FakeVideoSender>();
+  FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
+  session_host().video_sender_ = std::move(fake_video_sender);
+
   constexpr uint32_t kMinVideoBitrate = 393216;
   constexpr uint32_t kMaxVideoBitrate = 1250000;
   // Default bitrate should match kDefaultBitrate (5 Mbps).
   EXPECT_EQ(5000000u, session_host().GetVideoNetworkBandwidth());
 
-  // If the estimate is below the minimum, it should stay at the minimum.
+  // If the estimate is below the minimum and frames were dropped, it should
+  // stay at the minimum.
+  fake_sender_ptr->set_frames_dropped(1);
   session_host().forced_bandwidth_estimate_for_testing_ = 1000;
   session_host().UpdateBandwidthEstimate();
   EXPECT_EQ(kMinVideoBitrate, session_host().GetVideoNetworkBandwidth());
@@ -998,11 +1017,49 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
   StopSession();
 }
 
+TEST_F(OpenscreenSessionHostTest, PreservesBandwidthWhenNoFramesDropped) {
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  EXPECT_EQ(5000000u, session_host().GetVideoNetworkBandwidth());
+
+  // Updating bandwidth estimate with a lower estimate but without frame drops
+  // should not reduce the available video bandwidth.
+  session_host().forced_bandwidth_estimate_for_testing_ = 1000;
+  session_host().UpdateBandwidthEstimate();
+  EXPECT_EQ(5000000u, session_host().GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
 TEST_F(OpenscreenSessionHostTest, CanRequestRefresh) {
   CreateSession(SessionType::VIDEO_ONLY);
 
   // We just want to make sure this doesn't result in an error or crash.
   session_host().RequestRefreshFrame();
+}
+
+TEST_F(OpenscreenSessionHostTest, RestartRefreshTimerOnInsertVideoFrame) {
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+  ASSERT_TRUE(session_host().refresh_timer_.IsRunning());
+
+  // Simulate static screen timeout where two refresh timer intervals fire
+  // without receiving a frame, stopping the timer.
+  session_host().OnRefreshTimerFired();
+  EXPECT_TRUE(session_host().expecting_a_refresh_frame_);
+  session_host().OnRefreshTimerFired();
+  EXPECT_FALSE(session_host().refresh_timer_.IsRunning());
+
+  // When motion resumes and a frame is inserted, the refresh timer must
+  // restart.
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(640, 480));
+  frame->metadata().reference_time = base::TimeTicks::Now();
+  session_host().InsertVideoFrame(std::move(frame));
+  EXPECT_TRUE(session_host().refresh_timer_.IsRunning());
+  EXPECT_FALSE(session_host().expecting_a_refresh_frame_);
+
+  StopSession();
 }
 
 TEST_F(OpenscreenSessionHostTest, Vp9CodecEnabledInOffer) {
