@@ -6,10 +6,12 @@
 
 #import <vector>
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -170,6 +172,7 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
                   deviceName:(NSString*)deviceName
                   formFactor:(syncer::DeviceInfo::FormFactor)formFactor
                       osType:(syncer::DeviceInfo::OsType)osType {
+  CHECK(cacheGUID.length, base::NotFatalUntil::M158);
   if ((self = [super initWithData:data handler:handler])) {
     _activityTitleOverride = activityTitle;
     _cacheGUID = cacheGUID;
@@ -183,11 +186,9 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 #pragma mark - UIActivity Overrides
 
 - (NSString*)activityType {
-  if (_cacheGUID.length > 0) {
-    return [NSString
-        stringWithFormat:@"%@.%@", kSendTabToSelfActivityType, _cacheGUID];
-  }
-  return [super activityType];
+  CHECK(_cacheGUID.length, base::NotFatalUntil::M158);
+  return [NSString
+      stringWithFormat:@"%@.%@", kSendTabToSelfActivityType, _cacheGUID];
 }
 
 - (NSString*)activityTitle {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/send_tab_to_self_activity.h"
 
+#import "base/test/gtest_util.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
@@ -131,36 +132,31 @@ TEST_F(SendTabToSelfActivityTest,
   EXPECT_NSEQ(expected_activity_type, [activity activityType]);
 }
 
-// Tests that a device-specific activity falls back to the generic activity type
-// when the cache GUID is empty or nil.
+// Tests that initializing a device-specific activity with an empty or nil cache
+// GUID triggers a CHECK failure.
 TEST_F(SendTabToSelfActivityTest,
-       DeviceSpecific_ActivityTypeFallsBackWhenGuidIsEmpty) {
+       DeviceSpecific_InitWithEmptyOrNilGuidCrashes) {
   ShareToData* data = CreateData(true);
-  SendTabToSelfShareActivity* activity_empty_guid =
-      [[SendTabToSelfShareActivity alloc]
-           initWithData:data
-                handler:mocked_handler_
-          activityTitle:@"My MacBook Pro"
-              cacheGUID:@""
-             deviceName:@"My MacBook Pro"
-             formFactor:syncer::DeviceInfo::FormFactor::kDesktop
-                 osType:syncer::DeviceInfo::OsType::kMac];
 
-  EXPECT_NSEQ(@"com.google.chrome.sendTabToSelfActivity",
-              [activity_empty_guid activityType]);
+  // Passing an empty string violates the cache GUID non-empty precondition.
+  EXPECT_CHECK_DEATH((void)[[SendTabToSelfShareActivity alloc]
+       initWithData:data
+            handler:mocked_handler_
+      activityTitle:@"My MacBook Pro"
+          cacheGUID:@""
+         deviceName:@"My MacBook Pro"
+         formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+             osType:syncer::DeviceInfo::OsType::kMac]);
 
-  SendTabToSelfShareActivity* activity_nil_guid =
-      [[SendTabToSelfShareActivity alloc]
-           initWithData:data
-                handler:mocked_handler_
-          activityTitle:@"My MacBook Pro"
-              cacheGUID:nil
-             deviceName:@"My MacBook Pro"
-             formFactor:syncer::DeviceInfo::FormFactor::kDesktop
-                 osType:syncer::DeviceInfo::OsType::kMac];
-
-  EXPECT_NSEQ(@"com.google.chrome.sendTabToSelfActivity",
-              [activity_nil_guid activityType]);
+  // Passing nil violates the cache GUID non-empty precondition.
+  EXPECT_CHECK_DEATH((void)[[SendTabToSelfShareActivity alloc]
+       initWithData:data
+            handler:mocked_handler_
+      activityTitle:@"My MacBook Pro"
+          cacheGUID:nil
+         deviceName:@"My MacBook Pro"
+         formFactor:syncer::DeviceInfo::FormFactor::kDesktop
+             osType:syncer::DeviceInfo::OsType::kMac]);
 }
 
 // Tests that device-specific activities return valid images for each form

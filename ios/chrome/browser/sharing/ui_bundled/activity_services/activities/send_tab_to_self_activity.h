@@ -49,6 +49,7 @@ class SendTabToSelfSyncService;
 // Initializes the send tab to self activity in device-specific mode,
 // sending the tab directly to that target device with the given
 // `activityTitle`, `cacheGUID`, `deviceName`, `formFactor`, and `osType`.
+// `cacheGUID` must not be empty.
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<SendTabToSelfCommands>)handler
                activityTitle:(NSString*)activityTitle
