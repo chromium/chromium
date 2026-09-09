@@ -392,21 +392,6 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         }
     }
 
-    static void setBitmapDecoderForTesting(BitmapDecoder decoder) {
-        sBitmapDecoder = decoder;
-        ResettersForTesting.register(() -> sBitmapDecoder = BitmapFactory::decodeByteArray);
-    }
-
-    static void setFileStreamReaderForTesting(FileStreamReader reader) {
-        sFileStreamReader = reader;
-        ResettersForTesting.register(() -> sFileStreamReader = FileUtils::readStream);
-    }
-
-    static void setImageDecoderForTesting(DownscaledImageDecoder decoder) {
-        sImageDecoder = decoder;
-        ResettersForTesting.register(() -> sImageDecoder = ImageDecoder::decodeBitmap);
-    }
-
     @VisibleForTesting
     interface BitmapDecoder {
         @Nullable Bitmap decodeByteArray(
@@ -429,5 +414,20 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
     private static final class ImageDimensions {
         int mWidth;
         int mHeight;
+    }
+
+    static void setBitmapDecoderForTesting(BitmapDecoder decoder) {
+        sBitmapDecoder = decoder;
+        ResettersForTesting.register(() -> sBitmapDecoder = BitmapFactory::decodeByteArray);
+    }
+
+    static void setFileStreamReaderForTesting(FileStreamReader reader) {
+        sFileStreamReader = reader;
+        ResettersForTesting.register(() -> sFileStreamReader = FileUtils::readStream);
+    }
+
+    static void setImageDecoderForTesting(DownscaledImageDecoder decoder) {
+        sImageDecoder = decoder;
+        ResettersForTesting.register(() -> sImageDecoder = ImageDecoder::decodeBitmap);
     }
 }

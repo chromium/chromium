@@ -86,10 +86,6 @@ class UrlBarContextMenuHelper {
         mListMenuHost.dismiss();
     }
 
-    ModelList getModelListForTesting() {
-        return mListItems;
-    }
-
     void setTouchCoordinates(float x, float y) {
         mTouchX = x;
         mTouchY = y;
@@ -182,5 +178,9 @@ class UrlBarContextMenuHelper {
     @VisibleForTesting
     void onMenuItemClicked(int id) {
         mDelegate.onTextContextMenuItem(id);
+    }
+
+    ModelList getModelListForTesting() {
+        return mListItems;
     }
 }

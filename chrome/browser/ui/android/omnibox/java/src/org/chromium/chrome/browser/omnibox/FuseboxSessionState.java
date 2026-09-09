@@ -380,6 +380,15 @@ public class FuseboxSessionState implements UserData {
         return mFuseboxAttachmentModelList;
     }
 
+    private static boolean canStripTrailingSlash(GURL url) {
+        return url.isValid()
+                && !url.getScheme().equals(UrlConstants.FILE_SCHEME)
+                && !url.getScheme().equals(UrlConstants.FILESYSTEM_SCHEME)
+                && url.getQuery().isEmpty()
+                && url.getRef().isEmpty()
+                && url.getPath().equals("/");
+    }
+
     /**
      * Directly specify FuseboxSessionState object to be used to conduct tests.
      *
@@ -393,14 +402,5 @@ public class FuseboxSessionState implements UserData {
     /** Revert all overrides for testing. */
     public static void resetInstanceForTesting() {
         sInstanceForTesting = null;
-    }
-
-    private static boolean canStripTrailingSlash(GURL url) {
-        return url.isValid()
-                && !url.getScheme().equals(UrlConstants.FILE_SCHEME)
-                && !url.getScheme().equals(UrlConstants.FILESYSTEM_SCHEME)
-                && url.getQuery().isEmpty()
-                && url.getRef().isEmpty()
-                && url.getPath().equals("/");
     }
 }

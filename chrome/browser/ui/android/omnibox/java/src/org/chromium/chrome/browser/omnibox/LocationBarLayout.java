@@ -371,18 +371,6 @@ public class LocationBarLayout extends ConstraintLayout {
         mStatusCoordinator.setUnfocusedLocationBarWidth(unfocusedWidth);
     }
 
-    public StatusCoordinator getStatusCoordinatorForTesting() {
-        return mStatusCoordinator;
-    }
-
-    public boolean getLocationBarButtonsVisibilityForTesting() {
-        return mShowUrlButtons;
-    }
-
-    public void setStatusCoordinatorForTesting(StatusCoordinator statusCoordinator) {
-        mStatusCoordinator = statusCoordinator;
-    }
-
     /* package */ void setUrlActionContainerVisibility(boolean shouldShow) {
         mShowUrlButtons = shouldShow;
 
@@ -546,10 +534,6 @@ public class LocationBarLayout extends ConstraintLayout {
         }
     }
 
-    int getUrlActionContainerEndMarginForTesting() {
-        return mUrlActionContainerEndMargin;
-    }
-
     /**
      * This should be called when the state of the fusebox shown in the LocationBar changes; it is
      * assumed to start in the DISABLED state.
@@ -682,5 +666,21 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /* package */ boolean isActivationChipCompact() {
         return mActivationChip.isCompact();
+    }
+
+    public StatusCoordinator getStatusCoordinatorForTesting() {
+        return mStatusCoordinator;
+    }
+
+    public boolean getLocationBarButtonsVisibilityForTesting() {
+        return mShowUrlButtons;
+    }
+
+    public void setStatusCoordinatorForTesting(StatusCoordinator statusCoordinator) {
+        mStatusCoordinator = statusCoordinator;
+    }
+
+    int getUrlActionContainerEndMarginForTesting() {
+        return mUrlActionContainerEndMargin;
     }
 }

@@ -109,10 +109,6 @@ public class SpannableAutocompleteEditTextModel
         return mInputConnection;
     }
 
-    public void setInputConnectionForTesting(AutocompleteInputConnection connection) {
-        mInputConnection = connection;
-    }
-
     private void sendAccessibilityEventForUserTextChange(
             AutocompleteState oldState, AutocompleteState newState) {
         String oldAutocompleteText = oldState.getAutocompleteText();
@@ -594,17 +590,6 @@ public class SpannableAutocompleteEditTextModel
     }
 
     @Override
-    public void updateSelectionForTesting() {
-        int selStart = mDelegate.getSelectionStart();
-        int selEnd = mDelegate.getSelectionEnd();
-        if (selStart == mLastUpdateSelStart && selEnd == mLastUpdateSelEnd) return;
-
-        mLastUpdateSelStart = selStart;
-        mLastUpdateSelEnd = selEnd;
-        mDelegate.onUpdateSelectionForTesting(selStart, selEnd);
-    }
-
-    @Override
     public boolean shouldIgnoreAccessibilityEvent() {
         return mDelegateShouldIgnoreAccessibilityEvents;
     }
@@ -671,5 +656,20 @@ public class SpannableAutocompleteEditTextModel
     @Override
     public void setDeletePostfixOnNextBeginImeCommand(int postfix) {
         mDeletePostfixOnNextBeginImeCommand = postfix;
+    }
+
+    public void setInputConnectionForTesting(AutocompleteInputConnection connection) {
+        mInputConnection = connection;
+    }
+
+    @Override
+    public void updateSelectionForTesting() {
+        int selStart = mDelegate.getSelectionStart();
+        int selEnd = mDelegate.getSelectionEnd();
+        if (selStart == mLastUpdateSelStart && selEnd == mLastUpdateSelEnd) return;
+
+        mLastUpdateSelStart = selStart;
+        mLastUpdateSelEnd = selEnd;
+        mDelegate.onUpdateSelectionForTesting(selStart, selEnd);
     }
 }

@@ -819,29 +819,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                         (Object[]) args);
     }
 
-    public static void disableCachesForTesting() {
-        sStringCache =
-                new SparseArray<>() {
-                    @Override
-                    public @Nullable String get(int key) {
-                        return null;
-                    }
-
-                    @Override
-                    public String get(int key, String valueIfKeyNotFound) {
-                        return valueIfKeyNotFound;
-                    }
-                };
-    }
-
-    public static void reenableCachesForTesting() {
-        sStringCache = new SparseArray<>();
-    }
-
-    public static SparseArray<String> getStringCacheForTesting() {
-        return sStringCache;
-    }
-
     /**
      * Returns a drawable for a given attribute depending on a {@link BrandedColorScheme}.
      *
@@ -905,11 +882,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return color;
     }
 
-    public static void setUrlBarPrimaryTextColorForTesting(@ColorInt int value) {
-        sUrlBarPrimaryTextColorForTesting = value;
-        ResettersForTesting.register(() -> sUrlBarPrimaryTextColorForTesting = null);
-    }
-
     /**
      * Returns the secondary text color for the url bar.
      *
@@ -945,11 +917,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
             return sUrlBarHintTextColorForTesting;
         }
         return getUrlBarSecondaryTextColor(context, brandedColorScheme);
-    }
-
-    public static void setUrlBarHintTextColorForTesting(@ColorInt int value) {
-        sUrlBarHintTextColorForTesting = value;
-        ResettersForTesting.register(() -> sUrlBarHintTextColorForTesting = null);
     }
 
     /**
@@ -1459,6 +1426,39 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
         sTabFaviconFactory = tabFaviconFactory;
+    }
+
+    public static void disableCachesForTesting() {
+        sStringCache =
+                new SparseArray<>() {
+                    @Override
+                    public @Nullable String get(int key) {
+                        return null;
+                    }
+
+                    @Override
+                    public String get(int key, String valueIfKeyNotFound) {
+                        return valueIfKeyNotFound;
+                    }
+                };
+    }
+
+    public static void reenableCachesForTesting() {
+        sStringCache = new SparseArray<>();
+    }
+
+    public static SparseArray<String> getStringCacheForTesting() {
+        return sStringCache;
+    }
+
+    public static void setUrlBarPrimaryTextColorForTesting(@ColorInt int value) {
+        sUrlBarPrimaryTextColorForTesting = value;
+        ResettersForTesting.register(() -> sUrlBarPrimaryTextColorForTesting = null);
+    }
+
+    public static void setUrlBarHintTextColorForTesting(@ColorInt int value) {
+        sUrlBarHintTextColorForTesting = value;
+        ResettersForTesting.register(() -> sUrlBarHintTextColorForTesting = null);
     }
 
     ResourceCache getCacheForTesting() {

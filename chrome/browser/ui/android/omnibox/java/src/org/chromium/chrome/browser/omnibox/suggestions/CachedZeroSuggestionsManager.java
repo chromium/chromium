@@ -86,11 +86,6 @@ public class CachedZeroSuggestionsManager {
 
     private static @Nullable OverridesForTesting sOverridesForTesting;
 
-    public static void setOverridesForTesting(OverridesForTesting value) {
-        sOverridesForTesting = value;
-        ResettersForTesting.register(() -> sOverridesForTesting = null);
-    }
-
     /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
     @SuppressWarnings("ApplySharedPref")
     public static void saveToCache(
@@ -256,5 +251,10 @@ public class CachedZeroSuggestionsManager {
     @VisibleForTesting
     static String getCacheKey(@PageClassification int pageClass) {
         return String.format(Locale.getDefault(), "omnibox:cached_suggestions:%d", pageClass);
+    }
+
+    public static void setOverridesForTesting(OverridesForTesting value) {
+        sOverridesForTesting = value;
+        ResettersForTesting.register(() -> sOverridesForTesting = null);
     }
 }

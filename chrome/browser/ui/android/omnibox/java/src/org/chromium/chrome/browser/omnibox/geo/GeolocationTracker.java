@@ -161,6 +161,26 @@ class GeolocationTracker {
         }
     }
 
+    private static boolean hasPermission(Context context, String permission) {
+        return ApiCompatibilityUtils.checkPermission(
+                        context, permission, Process.myPid(), Process.myUid())
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private static @Nullable Location chooseLocation(
+            @Nullable Location networkLocation, @Nullable Location gpsLocation) {
+        if (gpsLocation == null) {
+            return networkLocation;
+        }
+
+        if (networkLocation == null) {
+            return gpsLocation;
+        }
+
+        // Both are not null, take the younger one.
+        return networkLocation.getTime() > gpsLocation.getTime() ? networkLocation : gpsLocation;
+    }
+
     static void setLocationForTesting(
             Location networkLocationForTesting, Location gpsLocationForTesting) {
         sNetworkLocationForTesting = networkLocationForTesting;
@@ -180,25 +200,5 @@ class GeolocationTracker {
     static void setRefreshLastKnownLocationRunnableForTesting(Runnable runnable) {
         sRefreshLastKnownLocationRunnableForTesting = runnable;
         ResettersForTesting.register(() -> sRefreshLastKnownLocationRunnableForTesting = null);
-    }
-
-    private static boolean hasPermission(Context context, String permission) {
-        return ApiCompatibilityUtils.checkPermission(
-                        context, permission, Process.myPid(), Process.myUid())
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private static @Nullable Location chooseLocation(
-            @Nullable Location networkLocation, @Nullable Location gpsLocation) {
-        if (gpsLocation == null) {
-            return networkLocation;
-        }
-
-        if (networkLocation == null) {
-            return gpsLocation;
-        }
-
-        // Both are not null, take the younger one.
-        return networkLocation.getTime() > gpsLocation.getTime() ? networkLocation : gpsLocation;
     }
 }

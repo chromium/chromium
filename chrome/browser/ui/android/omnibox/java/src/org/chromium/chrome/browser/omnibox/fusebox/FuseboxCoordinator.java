@@ -445,22 +445,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
     }
 
-    public @Nullable PropertyModel getModelForTesting() {
-        return mModel;
-    }
-
-    @Nullable FuseboxViewHolder getViewHolderForTesting() {
-        return mViewHolder;
-    }
-
-    void setMediatorForTesting(FuseboxMediator mediator) {
-        mMediator = mediator;
-    }
-
-    @Nullable FuseboxMediator getMediatorForTesting() {
-        return mMediator;
-    }
-
     @VisibleForTesting
     void onContextPopupDismissed() {
         if (mViewHolder == null || mViewHolder.plusButton == null) return;
@@ -638,5 +622,21 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 mInsetObserver.removeObserver(this);
             }
         }
+    }
+
+    public @Nullable PropertyModel getModelForTesting() {
+        return mModel;
+    }
+
+    @Nullable FuseboxViewHolder getViewHolderForTesting() {
+        return mViewHolder;
+    }
+
+    void setMediatorForTesting(FuseboxMediator mediator) {
+        mMediator = mediator;
+    }
+
+    @Nullable FuseboxMediator getMediatorForTesting() {
+        return mMediator;
     }
 }

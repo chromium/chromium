@@ -103,10 +103,6 @@ public class UnsyncedSuggestionsListAnimation
         return mAnimator;
     }
 
-    static void setAnimationsDisabledForTesting(boolean disabledForTesting) {
-        sAnimationsDisabledForTesting = disabledForTesting;
-    }
-
     @Override
     public void onAnimationUpdate(ValueAnimator valueAnimator) {
         if (getDuration() == 0) return;
@@ -165,5 +161,9 @@ public class UnsyncedSuggestionsListAnimation
                     .getDimensionPixelOffset(
                             R.dimen.omnibox_suggestion_list_animation_added_vertical_offset);
         }
+    }
+
+    static void setAnimationsDisabledForTesting(boolean disabledForTesting) {
+        sAnimationsDisabledForTesting = disabledForTesting;
     }
 }

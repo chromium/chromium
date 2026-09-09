@@ -79,11 +79,6 @@ public class UrlBarData {
         return forUrlAndText(url, displayText, null);
     }
 
-    public static void setShouldShowUrlForTesting(boolean shouldShow) {
-        sShouldShowUrlForTesting = shouldShow;
-        ResettersForTesting.register(() -> sShouldShowUrlForTesting = null);
-    }
-
     /** Returns whether supplied URL should be shown in the Omnibox/Suggestions list. */
     public static boolean shouldShowUrl(GURL gurl, boolean isOffTheRecord) {
         if (sShouldShowUrlForTesting != null) {
@@ -237,5 +232,10 @@ public class UrlBarData {
         this.originStartIndex = originStartIndex;
         this.originEndIndex = originEndIndex;
         this.editingText = editingText;
+    }
+
+    public static void setShouldShowUrlForTesting(boolean shouldShow) {
+        sShouldShowUrlForTesting = shouldShow;
+        ResettersForTesting.register(() -> sShouldShowUrlForTesting = null);
     }
 }

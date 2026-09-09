@@ -245,62 +245,6 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
     }
 
     /**
-     * Returns the last permission type handled by this class. This is primarily used for testing to
-     * verify that the correct permission logic was triggered.
-     */
-    public int getLastPermissionForTest() {
-        return mLastPermission;
-    }
-
-    /**
-     * Sets a callback to be run when the permission icon is shown.
-     *
-     * @param callback The callback to run.
-     */
-    public void setOnIconShownCallbackForTesting(@Nullable Runnable callback) {
-        mOnIconShownCallbackForTesting = callback;
-    }
-
-    /**
-     * Sets a callback to be run when the permission icon is dismissed.
-     *
-     * @param callback The callback to run.
-     */
-    public void setOnIconDismissedCallbackForTesting(@Nullable Runnable callback) {
-        mOnIconDismissedCallbackForTesting = callback;
-    }
-
-    /**
-     * Sets a callback to be run when a tab switch happened.
-     *
-     * @param callback The callback to run.
-     */
-    public void setTabSwitchCallbackForTesting(@Nullable Runnable callback) {
-        mTabSwitchCallbackForTesting = callback;
-    }
-
-    /**
-     * Triggers the permission icon timeout immediately for testing purposes.
-     *
-     * <p>This simulates the timeout expiring and executes the dismissal logic.
-     */
-    public void triggerIconTimeoutForTesting() {
-        if (mFinishIconAnimationRunnable != null) {
-            mHandler.removeCallbacks(mFinishIconAnimationRunnable);
-            mFinishIconAnimationRunnable.run();
-        }
-    }
-
-    /**
-     * Returns whether the permission icon timeout is currently running.
-     *
-     * @return True if the timeout is running, false otherwise.
-     */
-    public boolean isIconTimeoutRunningForTesting() {
-        return mFinishIconAnimationRunnable != null;
-    }
-
-    /**
      * Returns the configuration required to open the PageInfo dialog with the appropriate
      * permission highlighted. This is used when the user clicks on the permission icon in the
      * omnibox, ensuring they are taken directly to the relevant permission setting within PageInfo.
@@ -376,5 +320,61 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
 
     boolean isClapperQuietIconShowing() {
         return mIsQuietClapperUi;
+    }
+
+    /**
+     * Returns the last permission type handled by this class. This is primarily used for testing to
+     * verify that the correct permission logic was triggered.
+     */
+    public int getLastPermissionForTest() {
+        return mLastPermission;
+    }
+
+    /**
+     * Sets a callback to be run when the permission icon is shown.
+     *
+     * @param callback The callback to run.
+     */
+    public void setOnIconShownCallbackForTesting(@Nullable Runnable callback) {
+        mOnIconShownCallbackForTesting = callback;
+    }
+
+    /**
+     * Sets a callback to be run when the permission icon is dismissed.
+     *
+     * @param callback The callback to run.
+     */
+    public void setOnIconDismissedCallbackForTesting(@Nullable Runnable callback) {
+        mOnIconDismissedCallbackForTesting = callback;
+    }
+
+    /**
+     * Sets a callback to be run when a tab switch happened.
+     *
+     * @param callback The callback to run.
+     */
+    public void setTabSwitchCallbackForTesting(@Nullable Runnable callback) {
+        mTabSwitchCallbackForTesting = callback;
+    }
+
+    /**
+     * Triggers the permission icon timeout immediately for testing purposes.
+     *
+     * <p>This simulates the timeout expiring and executes the dismissal logic.
+     */
+    public void triggerIconTimeoutForTesting() {
+        if (mFinishIconAnimationRunnable != null) {
+            mHandler.removeCallbacks(mFinishIconAnimationRunnable);
+            mFinishIconAnimationRunnable.run();
+        }
+    }
+
+    /**
+     * Returns whether the permission icon timeout is currently running.
+     *
+     * @return True if the timeout is running, false otherwise.
+     */
+    public boolean isIconTimeoutRunningForTesting() {
+        return mFinishIconAnimationRunnable != null;
     }
 }

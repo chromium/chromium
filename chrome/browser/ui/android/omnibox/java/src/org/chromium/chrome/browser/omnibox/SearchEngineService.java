@@ -359,12 +359,6 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         return mTemplateUrlService.isDefaultSearchEngineGoogle();
     }
 
-    /** Set the instance for testing. */
-    public static void setInstanceForTesting(SearchEngineService instance) {
-        sInstanceForTesting = instance;
-        ResettersForTesting.register(() -> sInstanceForTesting = null);
-    }
-
     /** Returns the hint text to be used on fakebox/searchbox on the New Tab Page. */
     public String getNtpHintText(Context context) {
         if (TextUtils.isEmpty(mSearchEngineName)) {
@@ -403,5 +397,11 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         }
 
         return R.string.omnibox_empty_hint_with_dse_name;
+    }
+
+    /** Set the instance for testing. */
+    public static void setInstanceForTesting(SearchEngineService instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 }

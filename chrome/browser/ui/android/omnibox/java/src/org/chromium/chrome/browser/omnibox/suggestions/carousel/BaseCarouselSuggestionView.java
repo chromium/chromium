@@ -110,13 +110,6 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         }
     }
 
-    /* package */ void setSelectionControllerForTesting(
-            RecyclerViewSelectionController controller) {
-        removeOnChildAttachStateChangeListener(mSelectionController);
-        mSelectionController = controller;
-        addOnChildAttachStateChangeListener(mSelectionController);
-    }
-
     /* package */ void setItemDecoration(SpacingRecyclerViewItemDecoration decoration) {
         if (mDecoration != null) {
             removeItemDecoration(mDecoration);
@@ -125,5 +118,12 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         if (mDecoration != null) {
             addItemDecoration(mDecoration);
         }
+    }
+
+    /* package */ void setSelectionControllerForTesting(
+            RecyclerViewSelectionController controller) {
+        removeOnChildAttachStateChangeListener(mSelectionController);
+        mSelectionController = controller;
+        addOnChildAttachStateChangeListener(mSelectionController);
     }
 }

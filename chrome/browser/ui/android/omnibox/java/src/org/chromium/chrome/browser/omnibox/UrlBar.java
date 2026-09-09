@@ -1820,14 +1820,6 @@ public class UrlBar extends AutocompleteEditText {
         public static final BoundsEllipsisSpan INSTANCE = new BoundsEllipsisSpan();
     }
 
-    /* package */ boolean hasPendingDisplayTextScrollForTesting() {
-        return mPendingScroll;
-    }
-
-    /* package */ void setVisibleTextPrefixHintForTesting(CharSequence hintForTesting) {
-        mVisibleTextPrefixHint = hintForTesting;
-    }
-
     /* package */ @Nullable Runnable getManageSearchEnginesCallback() {
         return mManageSearchEnginesCallback;
     }
@@ -1846,6 +1838,14 @@ public class UrlBar extends AutocompleteEditText {
             mContextMenuHelper.clearTouchCoordinates();
         }
         return super.showContextMenu();
+    }
+
+    /* package */ boolean hasPendingDisplayTextScrollForTesting() {
+        return mPendingScroll;
+    }
+
+    /* package */ void setVisibleTextPrefixHintForTesting(CharSequence hintForTesting) {
+        mVisibleTextPrefixHint = hintForTesting;
     }
 
     @Nullable UrlBarContextMenuHelper getContextMenuHelperForTesting() {

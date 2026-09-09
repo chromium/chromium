@@ -106,15 +106,15 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         /** Notifies that the autocomplete text state has changed. */
         void notifyAutocompleteTextStateChanged();
 
-        /** Updates the selection, primarily for testing purposes. */
-        void updateSelectionForTesting();
-
         /**
          * Determines if the composition should be finished upon deletion.
          *
          * @return True if the composition should be finished on deletion, false otherwise.
          */
         boolean shouldFinishCompositionOnDeletion();
+
+        /** Updates the selection, primarily for testing purposes. */
+        void updateSelectionForTesting();
     }
 
     /**

@@ -234,16 +234,6 @@ public class ComposeboxQueryControllerBridge {
         return mSuggestedTabsSupplier;
     }
 
-    public static void setInstanceForTesting(@Nullable ComposeboxQueryControllerBridge instance) {
-        sInstanceForTesting = Optional.ofNullable(instance);
-        ResettersForTesting.register(ComposeboxQueryControllerBridge::resetInstanceForTesting);
-    }
-
-    public static void resetInstanceForTesting() {
-        sInstanceForTesting = null;
-    }
-
-
     @CalledByNative
     private void onInputStateChanged(InputState inputState) {
         mInputStateSupplier.set(inputState);
@@ -253,6 +243,15 @@ public class ComposeboxQueryControllerBridge {
     private void onSuggestedTabsUpdated(
             @JniType("std::vector") List<SuggestedTabInfo> suggestedTabs) {
         mSuggestedTabsSupplier.set(suggestedTabs);
+    }
+
+    public static void setInstanceForTesting(@Nullable ComposeboxQueryControllerBridge instance) {
+        sInstanceForTesting = Optional.ofNullable(instance);
+        ResettersForTesting.register(ComposeboxQueryControllerBridge::resetInstanceForTesting);
+    }
+
+    public static void resetInstanceForTesting() {
+        sInstanceForTesting = null;
     }
 
     @NativeMethods

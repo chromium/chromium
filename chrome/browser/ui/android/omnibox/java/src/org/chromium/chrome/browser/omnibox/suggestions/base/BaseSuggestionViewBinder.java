@@ -371,11 +371,11 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         sFocusableDrawableState = null;
     }
 
+    protected abstract void bindContent(
+            PropertyModel model, T contentView, PropertyKey propertyKey);
+
     /** Returns the cached ConstantState for testing. */
     public static @Nullable ConstantState getFocusableDrawableStateForTesting() {
         return sFocusableDrawableState;
     }
-
-    protected abstract void bindContent(
-            PropertyModel model, T contentView, PropertyKey propertyKey);
 }

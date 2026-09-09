@@ -115,11 +115,11 @@ public interface LocationBar {
      */
     default void maybeShowOrClearCursorInLocationBar() {}
 
+    /** Destroys the LocationBar. */
+    void destroy();
+
     /** Returns the optional button view for testing. */
     default @Nullable View getOptionalButtonViewForTesting() {
         return null;
     }
-
-    /** Destroys the LocationBar. */
-    void destroy();
 }

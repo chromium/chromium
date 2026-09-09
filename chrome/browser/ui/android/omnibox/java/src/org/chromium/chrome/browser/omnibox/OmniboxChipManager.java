@@ -243,6 +243,12 @@ public class OmniboxChipManager {
         return mExpandedToolbarWidthConsumer;
     }
 
+    private int getRootVisibility() {
+        if (!isChipPlaced()) return View.GONE;
+
+        return mOmniboxFocused ? View.INVISIBLE : View.VISIBLE;
+    }
+
     @Px
     int getCollapsedWidthForTesting() {
         return mCollapsedWidth;
@@ -251,11 +257,5 @@ public class OmniboxChipManager {
     @Px
     int getMinExpandedWidthForTesting() {
         return mMinExpandedWidth;
-    }
-
-    private int getRootVisibility() {
-        if (!isChipPlaced()) return View.GONE;
-
-        return mOmniboxFocused ? View.INVISIBLE : View.VISIBLE;
     }
 }

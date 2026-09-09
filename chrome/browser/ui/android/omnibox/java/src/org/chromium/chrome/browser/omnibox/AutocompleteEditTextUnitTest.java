@@ -187,12 +187,6 @@ public class AutocompleteEditTextUnitTest {
         }
 
         @Override
-        public void onUpdateSelectionForTesting(int selStart, int selEnd) {
-            mVerifier.onUpdateSelection(selStart, selEnd);
-            mVerifierCallCount.incrementAndGet();
-        }
-
-        @Override
         public void onPopulateAccessibilityEvent(AccessibilityEvent event) {
             super.onPopulateAccessibilityEvent(event);
             mVerifier.onPopulateAccessibilityEvent(
@@ -251,6 +245,12 @@ public class AutocompleteEditTextUnitTest {
                 s = s.substring(JAVASCRIPT_SCHEME.length());
             }
             return s;
+        }
+
+        @Override
+        public void onUpdateSelectionForTesting(int selStart, int selEnd) {
+            mVerifier.onUpdateSelection(selStart, selEnd);
+            mVerifierCallCount.incrementAndGet();
         }
     }
 

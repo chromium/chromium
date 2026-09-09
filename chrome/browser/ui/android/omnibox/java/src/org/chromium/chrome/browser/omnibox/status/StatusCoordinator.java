@@ -272,13 +272,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         return mStatusView.isSearchEngineStatusIconVisible();
     }
 
-    /** Returns the ID of the drawable currently shown in the security icon. */
-    public @DrawableRes int getSecurityIconResourceIdForTesting() {
-        return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
-                ? 0
-                : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes();
-    }
-
     /**
      * Update visibility of the verbose status based on the button type and focus state of the
      * omnibox.
@@ -322,11 +315,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     }
 
     @SuppressWarnings("NullAway")
-    public StatusMediator getMediatorForTesting() {
-        return mMediator;
-    }
-
-    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
         mLocationBarDataProvider.removeObserver(this);
@@ -340,5 +328,17 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
 
     public long getAnimationStartTimeMs() {
         return mStatusView.getAnimationStartTimeMs();
+    }
+
+    /** Returns the ID of the drawable currently shown in the security icon. */
+    public @DrawableRes int getSecurityIconResourceIdForTesting() {
+        return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
+                ? 0
+                : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes();
+    }
+
+    @SuppressWarnings("NullAway")
+    public StatusMediator getMediatorForTesting() {
+        return mMediator;
     }
 }

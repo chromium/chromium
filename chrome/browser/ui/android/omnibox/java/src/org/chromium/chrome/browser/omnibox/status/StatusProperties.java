@@ -109,13 +109,6 @@ public class StatusProperties {
             }
         }
 
-        /**
-         * @return The icon identifier, used for testing.
-         */
-        @Nullable String getIconIdentifierForTesting() {
-            return mIconIdentifier;
-        }
-
         @Override
         public boolean equals(@Nullable Object other) {
             if (!(other instanceof StatusIconResource)) return false;
@@ -144,6 +137,13 @@ public class StatusProperties {
          */
         @Nullable Runnable getAnimationFinishedCallback() {
             return mCallback;
+        }
+
+        /**
+         * @return The icon identifier, used for testing.
+         */
+        @Nullable String getIconIdentifierForTesting() {
+            return mIconIdentifier;
         }
     }
 

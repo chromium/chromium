@@ -418,9 +418,6 @@ public class AutocompleteEditText extends EditTextWithLeading
     }
 
     @Override
-    public void onUpdateSelectionForTesting(int selStart, int selEnd) {}
-
-    @Override
     public String getKeyboardPackageName() {
         String defaultIme =
                 Settings.Secure.getString(
@@ -430,14 +427,6 @@ public class AutocompleteEditText extends EditTextWithLeading
 
     @Override
     public void setInputIsMultilineEligible(boolean isMultilineEligible) {}
-
-    /* package */ void setModelForTesting(AutocompleteEditTextModelBase model) {
-        mModel = model;
-    }
-
-    /* package */ @Nullable AutocompleteEditTextModelBase getModelForTesting() {
-        return mModel;
-    }
 
     @Override
     public void setSiteSearchChip(@Nullable String keyword) {
@@ -458,5 +447,16 @@ public class AutocompleteEditText extends EditTextWithLeading
         setOnKeyListener(null);
         dispatchKeyEventToModel(event);
         setOnKeyListener(onKeyListener);
+    }
+
+    @Override
+    public void onUpdateSelectionForTesting(int selStart, int selEnd) {}
+
+    /* package */ void setModelForTesting(AutocompleteEditTextModelBase model) {
+        mModel = model;
+    }
+
+    /* package */ @Nullable AutocompleteEditTextModelBase getModelForTesting() {
+        return mModel;
     }
 }

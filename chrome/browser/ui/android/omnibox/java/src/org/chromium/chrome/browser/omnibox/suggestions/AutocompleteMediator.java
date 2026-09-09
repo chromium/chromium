@@ -2190,21 +2190,6 @@ class AutocompleteMediator
         }
     }
 
-    /** Returns the current AutocompleteInput instance. */
-    @Nullable AutocompleteInput getAutocompleteInputForTesting() {
-        return mAutocompleteInput;
-    }
-
-    /** Returns whether Omnibox session is active (the user is interacting with the Omnibox). */
-    boolean isOmniboxSessionActiveForTesting() {
-        return isInInputSession();
-    }
-
-    /** Returns the current Animation Driver instance. */
-    SuggestionsListAnimation getAnimationDriverForTesting() {
-        return mAnimationDriver;
-    }
-
     /**
      * @see FuseboxAttachmentChangeListener#onAttachmentListChanged()
      */
@@ -2333,5 +2318,20 @@ class AutocompleteMediator
         if (!isInInputSession()) return false;
         FuseboxAttachmentModelList attachments = mSessionState.getFuseboxAttachmentModelList();
         return attachments != null && !attachments.isEmpty();
+    }
+
+    /** Returns the current AutocompleteInput instance. */
+    @Nullable AutocompleteInput getAutocompleteInputForTesting() {
+        return mAutocompleteInput;
+    }
+
+    /** Returns whether Omnibox session is active (the user is interacting with the Omnibox). */
+    boolean isOmniboxSessionActiveForTesting() {
+        return isInInputSession();
+    }
+
+    /** Returns the current Animation Driver instance. */
+    SuggestionsListAnimation getAnimationDriverForTesting() {
+        return mAnimationDriver;
     }
 }
