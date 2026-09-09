@@ -255,7 +255,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void ActivateAndFocus();
   void OnEphemeralModelPrefChanged();
   void OnMostVisitedPrefChanged();
-  void RecordFreImpression();
+  void MaybeRecordFreImpression();
   static gfx::Rect CalculateWidgetBounds(int height);
 
   // Try and acquire process and profile keep alives. If unsuccessful, releases
@@ -305,6 +305,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_screenshare_disclosure_open_ = false;
   bool is_permission_prompt_open_ = false;
   bool is_dragging_ = false;
+  // Re-entrancy guard to prevent recursive closing or processing deactivation
+  // events while Close() is executing synchronously on the stack.
+  bool is_closing_ = false;
   std::optional<gfx::Size> pending_auto_resize_size_;
   std::optional<SkRegion> draggable_region_;
 

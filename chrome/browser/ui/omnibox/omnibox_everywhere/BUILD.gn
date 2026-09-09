@@ -18,6 +18,7 @@ source_set("prefs") {
     "//components/pref_registry",
     "//components/prefs",
     "//ui/base",
+    "//ui/strings:ui_strings",
   ]
 }
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -525,28 +526,27 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
   CleanUpWidget();
 }
 
-void OmniboxEverywhereUIManager::RecordFreImpression() {
+// TODO(crbug.com/558851707): Move impression recording to the FRE WebUI
+// component lifecycle (e.g. on render/mount) so that impressions are recorded
+// based on true visual visibility and both ephemeral and persistent window
+// models are handled consistently.
+void OmniboxEverywhereUIManager::MaybeRecordFreImpression() {
   if (!profile_ || !profile_->GetPrefs() ||
       !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre)) {
     return;
   }
 
-  PrefService* prefs = profile_->GetPrefs();
-  if (prefs->GetBoolean(omnibox_everywhere::prefs::kFreDismissed)) {
-    return;
-  }
-
-  int impressions =
-      prefs->GetInteger(omnibox_everywhere::prefs::kFreImpressionCount) + 1;
-  prefs->SetInteger(omnibox_everywhere::prefs::kFreImpressionCount,
-                    impressions);
-  if (impressions >= omnibox_everywhere::prefs::kMaxFreImpressions) {
-    prefs->SetBoolean(omnibox_everywhere::prefs::kFreDismissed, true);
-  }
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  omnibox_everywhere::prefs::IncrementFreImpression(profile_, local_state);
 }
 
 void OmniboxEverywhereUIManager::Close() {
-  RecordFreImpression();
+  if (is_closing_) {
+    return;
+  }
+  base::AutoReset<bool> closing_reset(&is_closing_, true);
+  MaybeRecordFreImpression();
   last_shown_time_.reset();
   deactivation_task_.Cancel();
   if (widget_) {
@@ -703,7 +703,8 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
 }
 
 void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
-  if (!widget_ || !widget_->IsVisible() || !prefs::IsEphemeralModelEnabled()) {
+  if (is_closing_ || !widget_ || !widget_->IsVisible() ||
+      !prefs::IsEphemeralModelEnabled()) {
     return;
   }
   if (last_shown_time_.has_value() &&

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_PREFS_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_PREFS_H_
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -19,6 +23,19 @@ class Accelerator;
 
 namespace omnibox_everywhere {
 namespace prefs {
+
+// Stages of the Omnibox Everywhere First Run Experience (FRE).
+enum class FreStage {
+  // FRE is complete or inactive.
+  kNone = 0,
+  // Stage 1: Two-row modal card (Value prop + Where to find).
+  kIntroModal = 1,
+  // Stage 2: One-row chin with shortcut selector dropdown & "Set as shortcut"
+  // CTA.
+  kShortcutSetupChin = 2,
+  // Stage 3: One-row educational chin showing active shortcut reminder.
+  kShortcutReminderChin = 3,
+};
 
 // Returns true if the ephemeral model (close/hide on focus loss) is enabled.
 bool IsEphemeralModelEnabled();
@@ -75,17 +92,37 @@ inline constexpr char kOmniboxEverywhereShowAiMode[] =
 inline constexpr char kLastTargetProfileDir[] =
     "omnibox_everywhere.last_target_profile_dir";
 
-// Boolean preference specifying whether the First Run Experience (FRE)
+// Boolean preference specifying whether the overall First Run Experience (FRE)
 // modal for Omnibox Everywhere has been dismissed or completed.
 inline constexpr char kFreDismissed[] = "omnibox_everywhere.fre_dismissed";
 
-// Integer preference storing the number of times the First Run Experience (FRE)
-// modal has been shown to the user.
+// Integer preference storing the legacy number of times the FRE modal was
+// shown. Retained for compatibility with pre-multi-stage WebUI controllers.
 inline constexpr char kFreImpressionCount[] =
     "omnibox_everywhere.fre_impression_count";
 
-// Maximum number of impressions the FRE modal will be shown before
-// auto-dismissing.
+// Preferences for Stage 1: Intro Modal.
+inline constexpr char kFreIntroDismissed[] =
+    "omnibox_everywhere.fre_intro_dismissed";
+inline constexpr char kFreIntroImpressionCount[] =
+    "omnibox_everywhere.fre_intro_impression_count";
+inline constexpr int kMaxFreIntroImpressions = 2;
+
+// Preferences for Stage 2: Shortcut Setup Chin.
+inline constexpr char kFreShortcutSetupDismissed[] =
+    "omnibox_everywhere.fre_shortcut_setup_dismissed";
+inline constexpr char kFreShortcutSetupImpressionCount[] =
+    "omnibox_everywhere.fre_shortcut_setup_impression_count";
+inline constexpr int kMaxFreShortcutSetupImpressions = 3;
+
+// Preferences for Stage 3: Shortcut Reminder Chin.
+inline constexpr char kFreShortcutReminderDismissed[] =
+    "omnibox_everywhere.fre_shortcut_reminder_dismissed";
+inline constexpr char kFreShortcutReminderImpressionCount[] =
+    "omnibox_everywhere.fre_shortcut_reminder_impression_count";
+inline constexpr int kMaxFreShortcutReminderImpressions = 3;
+
+// Legacy maximum number of impressions.
 inline constexpr int kMaxFreImpressions = 3;
 
 // Registers Local State preferences for Omnibox Everywhere.
@@ -94,12 +131,43 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 // Registers Profile preferences for Omnibox Everywhere.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+// TODO(crbug.com/559175507): Introduce a dedicated onboarding controller to
+// encapsulate FRE state machine transitions and pref observation.
+// Returns the active FRE stage for the profile.
+FreStage GetCurrentFreStage(Profile* profile,
+                            PrefService* local_state = nullptr);
+
+// Increments the impression count for the currently active FRE stage.
+void IncrementFreImpression(Profile* profile,
+                            PrefService* local_state = nullptr);
+
+// Records that the specified FRE stage was dismissed (or marks overall FRE
+// completed).
+void OnFreStageDismissed(Profile* profile,
+                         FreStage stage,
+                         PrefService* local_state = nullptr);
+
 // Returns the default global hotkey accelerator for Omnibox Everywhere.
 ui::Accelerator GetDefaultOmniboxEverywhereHotkey();
 
 // Returns the configured global hotkey accelerator for Omnibox Everywhere from
 // local state, falling back to the default accelerator if unset or invalid.
 ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state);
+
+// Sets the configured global hotkey accelerator in local state.
+void SetOmniboxEverywhereHotkey(PrefService* local_state,
+                                std::string_view hotkey_str);
+
+// Returns true if a global hotkey combination is available for Omnibox
+// Everywhere (either explicitly configured or default fallback) and enabled.
+bool HasOmniboxEverywhereHotkey(PrefService* local_state);
+
+// Returns token strings for the accelerator (e.g. ["Cmd", "Shift", "Space"]).
+std::vector<std::string> GetOmniboxEverywhereHotkeyTokens(
+    const ui::Accelerator& accelerator);
+
+// Returns available shortcut presets for the current platform.
+std::vector<std::string> GetAvailableHotkeyPresets();
 
 // Returns whether any shortcuts (enterprise or personal) are available and
 // enabled for the profile.
