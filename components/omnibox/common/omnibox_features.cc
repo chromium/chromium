@@ -452,16 +452,27 @@ const base::FeatureParam<bool> kComposeboxDriveIdentityFallback{
 BASE_FEATURE(kComposeboxDriveContextMenuOptionDisclaimer, DISABLED);
 
 // For Workspace AIM, the Flow ID is the ConsentKit frontend identifier
-// (e.g. CHOICEFLOW_PCONTEXT_WORKSPACE_AIM) and the Product ID is the
-// Footprints ConsentVariant ID (e.g.
-// CHOICEFLOW_VARIANT_PCONTEXT_WORKSPACE_AIM_DEFAULT)
+// (CHOICEFLOW_PCONTEXT_WORKSPACE_AIM = 76).
 const base::FeatureParam<int> kComposeboxDriveConsentFlowId{
     &kComposeboxDriveContextMenuOptionDisclaimer, "flow_id", 76};
 
+#if BUILDFLAG(IS_IOS)
+// For Chrome on iOS:
+// - Product ID: Chrome iOS (71720513)
+// - Product Surface: SEARCH_AIM (29)
 const base::FeatureParam<int> kComposeboxDriveConsentProductId{
-    &kComposeboxDriveContextMenuOptionDisclaimer, "product_id", 89978449};
+    &kComposeboxDriveContextMenuOptionDisclaimer, "product_id", 71720513};
 const base::FeatureParam<int> kComposeboxDriveConsentProductSurface{
     &kComposeboxDriveContextMenuOptionDisclaimer, "product_surface", 29};
+#else
+// For Chrome on Desktop:
+// - Product ID: Chrome Desktop (67911908)
+// - Product Surface: CHROME_DESKTOP_NEW_TAB_PAGE (76)
+const base::FeatureParam<int> kComposeboxDriveConsentProductId{
+    &kComposeboxDriveContextMenuOptionDisclaimer, "product_id", 67911908};
+const base::FeatureParam<int> kComposeboxDriveConsentProductSurface{
+    &kComposeboxDriveContextMenuOptionDisclaimer, "product_surface", 76};
+#endif
 const base::FeatureParam<std::string> kComposeboxDriveConsentEntrypointId{
     &kComposeboxDriveContextMenuOptionDisclaimer, "entrypoint_id", "aim-drive"};
 

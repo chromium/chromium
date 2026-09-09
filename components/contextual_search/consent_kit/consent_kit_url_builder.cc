@@ -45,6 +45,10 @@ void ConsentKitUrlBuilder::SetProductId(int32_t product_id) {
   product_id_ = product_id;
 }
 
+void ConsentKitUrlBuilder::SetProductSurface(int32_t product_surface) {
+  product_surface_ = product_surface;
+}
+
 void ConsentKitUrlBuilder::SetEntrypointId(const std::string& entrypoint_id) {
   entrypoint_id_ = entrypoint_id;
 }
@@ -73,11 +77,10 @@ GURL ConsentKitUrlBuilder::Build() {
 
   base::ListValue flow_params = base::ListValue().Append(flow_id_);
 
-  base::ListValue product_entry_point =
-      base::ListValue::with_capacity(3)
-          .Append(product_id_)
-          .Append(76)  // CHROME_DESKTOP_NEW_TAB_PAGE
-          .Append(entrypoint_id_);
+  base::ListValue product_entry_point = base::ListValue::with_capacity(3)
+                                            .Append(product_id_)
+                                            .Append(product_surface_)
+                                            .Append(entrypoint_id_);
 
   base::ListValue shared_consent_session_id =
       base::ListValue::with_capacity(3)

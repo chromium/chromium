@@ -30,6 +30,7 @@ class ConsentKitUrlBuilder {
 
   void SetFlowId(int32_t flow_id);
   void SetProductId(int32_t product_id);
+  void SetProductSurface(int32_t product_surface);
   void SetEntrypointId(const std::string& entrypoint_id);
   // Sets the allowed host origins for the handshake.
   void SetHostOrigins(std::vector<std::string> host_origins);
@@ -45,6 +46,7 @@ class ConsentKitUrlBuilder {
   std::string locale_ = "en-US";
   int32_t flow_id_ = 0;
   int32_t product_id_ = 0;
+  int32_t product_surface_ = 0;
   std::string entrypoint_id_;
   bool is_dark_mode_ = false;
   std::vector<std::string> host_origins_ = {

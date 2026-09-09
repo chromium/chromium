@@ -69,8 +69,7 @@ TEST(ConsentKitUrlBuilderTest, BuildMinimalUrl) {
   const base::ListValue& product_entry_point = ppc_list[1].GetList();
   ASSERT_EQ(product_entry_point.size(), 3u);
   EXPECT_EQ(product_entry_point[0].GetInt(), 0);  // default product_id
-  EXPECT_EQ(product_entry_point[1].GetInt(),
-            76);  // product_surface (CHROME_DESKTOP_NEW_TAB_PAGE)
+  EXPECT_EQ(product_entry_point[1].GetInt(), 0);  // default product_surface
   EXPECT_EQ(product_entry_point[2].GetString(), "");  // default entrypoint_id
 
   // Field 2: SessionInfo [[null, null, uuid_string]]
@@ -110,6 +109,7 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
   builder.SetLocale("ja");
   builder.SetFlowId(987);
   builder.SetProductId(654);
+  builder.SetProductSurface(123);
   builder.SetEntrypointId("picker_entrypoint");
   builder.SetHostOrigins(
       {"chrome-untrusted://another-host", "chrome://yet-another-host"});
@@ -163,7 +163,7 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
   const base::ListValue& product_entry_point = ppc_list[1].GetList();
   ASSERT_EQ(product_entry_point.size(), 3u);
   EXPECT_EQ(product_entry_point[0].GetInt(), 654);
-  EXPECT_EQ(product_entry_point[1].GetInt(), 76);
+  EXPECT_EQ(product_entry_point[1].GetInt(), 123);
   EXPECT_EQ(product_entry_point[2].GetString(), "picker_entrypoint");
 
   // Field 2: SessionInfo [[null, null, uuid_string]]
