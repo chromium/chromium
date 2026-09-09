@@ -1677,7 +1677,6 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   cookies_info.controls_state = cookie_controls_state_;
   cookies_info.enforcement = cookie_enforcement_;
   cookies_info.expiration = cookie_exception_expiration_;
-  cookies_info.is_incognito = delegate_->IsIncognitoProfile();
   ui_->SetCookieInfo(cookies_info);
 
   std::move(done).Run();

@@ -59,7 +59,6 @@ PageInfoCookiesContentView::CookiesInfo DefaultCookieInfoForTests(
                          : base::Time();
   cookie_info.controls_state = CookieControlsState::kBlocked3pc;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
-  cookie_info.is_incognito = false;
   return cookie_info;
 }
 
