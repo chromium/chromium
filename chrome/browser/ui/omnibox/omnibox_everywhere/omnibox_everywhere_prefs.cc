@@ -82,8 +82,6 @@ ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state) {
   return GetDefaultOmniboxEverywhereHotkey();
 }
 
-namespace {
-
 bool AreShortcutsAvailableForProfile(Profile* profile) {
   if (!profile || !profile->GetPrefs()) {
     return true;
@@ -91,15 +89,15 @@ bool AreShortcutsAvailableForProfile(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   const bool has_enterprise_shortcuts =
       !prefs->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList).empty();
+  if (!has_enterprise_shortcuts) {
+    return true;
+  }
   const bool enterprise_visible =
-      has_enterprise_shortcuts &&
       prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible);
   const bool personal_visible =
       prefs->GetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible);
   return enterprise_visible || personal_visible;
 }
-
-}  // namespace
 
 bool IsOmniboxEverywhereShortcutsVisible(Profile* profile,
                                          PrefService* local_state) {

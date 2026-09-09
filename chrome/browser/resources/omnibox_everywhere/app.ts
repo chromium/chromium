@@ -146,7 +146,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.showFreModal_ = show;
     });
 
-    if (this.mostVisitedEnabled_ && this.showShortcuts_) {
+    if (this.mostVisitedEnabled_) {
       this.mostVisitedListenerId_ =
           browserProxyFactory.getInstance()
               .callbackRouter.setMostVisitedInfo.addListener(

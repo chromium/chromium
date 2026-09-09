@@ -155,20 +155,21 @@ TEST_F(OmniboxEverywherePrefsTest,
 }
 
 TEST_F(OmniboxEverywherePrefsTest,
-       ShortcutsVisible_PersonalDisabledWithoutEnterprisePolicy) {
-  // Top toggle is ON, no enterprise policy list, but personal shortcuts are
-  // OFF.
+       ShortcutsVisible_WithoutEnterprisePolicyShortcutsAlwaysAvailable) {
+  // Top toggle is ON, no enterprise policy list.
+  // Checkboxes do not appear in Customize Chrome without enterprise policy,
+  // so shortcuts remain available even if individual checkbox prefs are false.
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
                                   false);
 
   local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
                           std::to_underlying(ShowShortcutsPrefValue::kUnset));
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
 
   local_state_.SetInteger(kOmniboxEverywhereShowShortcuts,
                           std::to_underlying(ShowShortcutsPrefValue::kEnabled));
-  EXPECT_FALSE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
+  EXPECT_TRUE(IsOmniboxEverywhereShortcutsVisible(&profile_, &local_state_));
 }
 
 }  // namespace

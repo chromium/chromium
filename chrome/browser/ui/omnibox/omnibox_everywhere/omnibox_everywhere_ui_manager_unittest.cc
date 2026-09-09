@@ -1411,6 +1411,65 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuShowShortcutsToggle) {
   }
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ContextMenuShowShortcutsHiddenWhenNoShortcutsAvailable) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_editable = false;
+
+  // By default, personal shortcuts are enabled, so the option should be
+  // present.
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(
+      model
+          ->GetIndexOfCommandId(
+              omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts)
+          .has_value());
+
+  // Without enterprise policy shortcuts, the option is always present.
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  false);
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  model = ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(
+      model
+          ->GetIndexOfCommandId(
+              omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts)
+          .has_value());
+
+  // Add enterprise shortcuts policy so both checkboxes exist.
+  {
+    ScopedListPrefUpdate update(
+        profile_.GetPrefs(), ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
+    update->Append("https://corp.example.com");
+  }
+
+  // When both checkboxes are unchecked, no shortcuts can be shown at all.
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                  false);
+  profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
+                                  false);
+
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  model = ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(
+      model
+          ->GetIndexOfCommandId(
+              omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts)
+          .has_value());
+}
+
 // TODO(crbug.com/546710681): Re-enable test on linux
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ResizeDueToAutoResizeUpdatesWidgetBounds \
