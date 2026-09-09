@@ -11,15 +11,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/no_destructor.h"
@@ -149,6 +152,10 @@ void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
           << install_dir.value();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    return;
+  }
   if (!features::IsWasmTtsEngineAutoInstallDisabled()) {
     // Instead of installing the component extension as soon as it is ready,
     // store the install directory, so that the install can be triggered
@@ -272,6 +279,13 @@ const std::string WasmTtsEngineComponentInstallerPolicy::GetExtensionId() {
 }
 
 void WasmTtsEngineComponentInstallerPolicy::UpdateWasmComponentOnDemand() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kTestType) ||
+      command_line->HasSwitch(switches::kDisableComponentUpdate) ||
+      !g_browser_process || !g_browser_process->component_updater()) {
+    return;
+  }
   const std::string crx_id = component_updater::
       WasmTtsEngineComponentInstallerPolicy::GetExtensionId();
   g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(

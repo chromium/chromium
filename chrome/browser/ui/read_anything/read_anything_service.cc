@@ -19,8 +19,11 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
+#include "base/command_line.h"
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/common/chrome_switches.h"
+#include "content/public/common/content_switches.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -80,6 +83,13 @@ void ReadAnythingService::OnReadAnythingShown() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingService::SetupDesktopEngine() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kTestType) ||
+      command_line->HasSwitch(switches::kDisableComponentUpdate)) {
+    return;
+  }
+
   // If the extension was previously installed but now the Read Aloud flag
   // is disabled, or if the component updater flag is enabled, we should
   // uninstall the component extension.

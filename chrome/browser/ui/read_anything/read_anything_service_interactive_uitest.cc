@@ -13,6 +13,11 @@
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
+#include "chrome/common/extensions/extension_constants.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -33,6 +38,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingServiceGuestTest,
   ReadAnythingService* original_service =
       ReadAnythingService::Get(original_profile);
   EXPECT_EQ(nullptr, original_service);
+}
+
+using ReadAnythingServiceTest = InProcessBrowserTest;
+IN_PROC_BROWSER_TEST_F(ReadAnythingServiceTest,
+                       DoesNotInstallExtensionInTests) {
+  ReadAnythingService* service =
+      ReadAnythingService::Get(browser()->GetProfile());
+  ASSERT_NE(nullptr, service);
+  service->OnReadAnythingShown();
+  EXPECT_FALSE(EmbeddedA11yExtensionLoader::GetInstance()->IsExtensionInstalled(
+      extension_misc::kComponentUpdaterTTSEngineExtensionId));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
