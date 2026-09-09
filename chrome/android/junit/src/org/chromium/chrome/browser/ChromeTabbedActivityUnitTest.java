@@ -22,11 +22,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
+import android.view.Window;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -347,5 +349,13 @@ public class ChromeTabbedActivityUnitTest {
 
         assertTrue(activity.wasTerminateIncognitoSessionCalled());
         assertFalse(activity.wasFinishCalled());
+    }
+
+    @Test
+    public void testOnPreCreate_requestsFeatureActionModeOverlay() {
+        ChromeTabbedActivity activity =
+                spy(Robolectric.buildActivity(ChromeTabbedActivity.class).get());
+        activity.onPreCreate();
+        verify(activity).supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
     }
 }

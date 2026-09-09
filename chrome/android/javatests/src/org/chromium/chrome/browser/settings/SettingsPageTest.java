@@ -685,6 +685,40 @@ public class SettingsPageTest {
                 "Window should be laid out in the target orientation.");
     }
 
+    /** Regression test for https://crbug.com/558516224. */
+    @Test
+    @MediumTest
+    public void testThemeSwitchWithSelectLanguageFragment() {
+        // Open Settings and wait for it to finish loading.
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Navigate to Language settings in the header pane.
+        var headerRecyclerViewMatcher =
+                allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header)));
+        onViewWaiting(headerRecyclerViewMatcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.language_settings))));
+
+        // Click on Language settings.
+        var languageSettingMatcher =
+                allOf(
+                        isDescendantOfA(withId(R.id.preferences_header)),
+                        withText(R.string.language_settings));
+        onViewWaiting(languageSettingMatcher).perform(click());
+
+        // Open SelectLanguageFragment ("Add language") and ensure the language list is displayed.
+        onViewWaiting(withId(org.chromium.chrome.browser.language.R.id.add_language))
+                .perform(click());
+        onViewWaiting(withId(org.chromium.chrome.browser.language.R.id.language_list))
+                .check(matches(isDisplayed()));
+
+        // Simulate theme switch / activity recreation.
+        mActivityTestRule.recreateActivity();
+
+        // Verify Toolbar/Action Bar is restored and displayed without crashing.
+        onViewWaiting(withId(R.id.action_bar)).check(matches(isDisplayed()));
+    }
+
     private void ensureTwoColumnMode() {
         CriteriaHelper.pollUiThread(
                 () -> {

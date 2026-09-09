@@ -779,6 +779,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     protected void onPreCreate() {
+        // Window features must be requested before adding content. super.onCreate() may restore
+        // fragments that install the window decor (e.g. via setHasOptionsMenu()), so request the
+        // feature early here.
+        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         super.onPreCreate();
         mMultiInstanceManager =
                 MultiInstanceManagerFactory.create(
@@ -3348,7 +3352,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             StartupPaintPreviewHelper.enableShowOnRestore();
         }
 
-        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
         StartupPaintPreviewHelperSupplier.attach(
                 getWindowAndroid().getUnownedUserDataHost(), mStartupPaintPreviewHelperSupplier);
