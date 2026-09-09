@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -130,6 +131,8 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // construction and before any deferred tasks can run that might need it.
   void SetPrefService(PrefService* pref_service) override;
 
+  void SetMigratedPaths(base::span<const std::string> migrated_paths) override;
+
  private:
   // Friend fixtures for unit testing.
   FRIEND_TEST_ALL_PREFIXES(PrefHashFilterTest,
@@ -219,6 +222,9 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // The set of all paths whose value has changed since the last call to
   // FilterSerializeData.
   ChangedPathsMap changed_paths_;
+
+  // The set of paths migrated during FilterOnLoad (e.g. initial preferences).
+  std::vector<std::string> migrated_paths_;
 
   // The total number of reporting IDs.
   const size_t reporting_ids_count_;

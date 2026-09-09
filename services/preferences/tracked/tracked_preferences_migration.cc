@@ -6,9 +6,11 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
 #include "base/values.h"
@@ -83,6 +85,13 @@ class TrackedPreferencesMigrator
   std::unique_ptr<PrefHashStore> unprotected_pref_hash_store_;
   std::unique_ptr<PrefHashStore> protected_pref_hash_store_;
 
+  // Non-owning pointer to the filter owned by the protected JsonPrefStore.
+  // The filter is guaranteed to outlive this TrackedPreferencesMigrator, which
+  // is only kept alive by the load interception callbacks during startup.
+  // Used to pass migrated preference paths so their encrypted hashes can be
+  // initialized during deferred revalidation when the encryptor arrives.
+  raw_ptr<InterceptablePrefFilter> protected_pref_filter_;
+
   std::unique_ptr<base::DictValue> unprotected_prefs_;
   std::unique_ptr<base::DictValue> protected_prefs_;
 };
@@ -134,13 +143,15 @@ void CleanupMigratedAuthenticators(const PrefNameSet& migrated_pref_names,
 // Copies the value of each pref in |pref_names| which is set in |old_store|,
 // but not in |new_store| into |new_store|. Sets |old_store_needs_cleanup| to
 // true if any old duplicates remain in |old_store| and sets |new_store_altered|
-// to true if any value was copied to |new_store|.
+// to true if any value was copied to |new_store|. Appends the names of all
+// preferences successfully copied to |new_store| to |migrated_paths|.
 void MigratePrefsFromOldToNewStore(const PrefNameSet& pref_names,
                                    base::DictValue& old_store,
                                    base::DictValue& new_store,
                                    PrefHashStore* new_hash_store,
                                    bool* old_store_needs_cleanup,
-                                   bool* new_store_altered) {
+                                   bool* new_store_altered,
+                                   std::vector<std::string>& migrated_paths) {
   const base::DictValue* old_hash_store_contents =
       DictionaryHashStoreContents(old_store).GetContents();
   DictionaryHashStoreContents dictionary_contents(new_store);
@@ -190,7 +201,12 @@ void MigratePrefsFromOldToNewStore(const PrefNameSet& pref_names,
         // value for |pref_name| in |new_store|.
         new_store.RemoveByDottedPath(pref_name);
         *new_store_altered = true;
+        migrated_value = false;
       }
+    }
+
+    if (migrated_value) {
+      migrated_paths.push_back(pref_name);
     }
   }
 }
@@ -219,7 +235,8 @@ TrackedPreferencesMigrator::TrackedPreferencesMigrator(
       register_on_successful_protected_store_write_callback_(
           register_on_successful_protected_store_write_callback),
       unprotected_pref_hash_store_(std::move(unprotected_pref_hash_store)),
-      protected_pref_hash_store_(std::move(protected_pref_hash_store)) {}
+      protected_pref_hash_store_(std::move(protected_pref_hash_store)),
+      protected_pref_filter_(protected_pref_filter) {}
 
 TrackedPreferencesMigrator::~TrackedPreferencesMigrator() {}
 
@@ -250,16 +267,22 @@ void TrackedPreferencesMigrator::MigrateIfReady() {
 
   bool protected_prefs_need_cleanup = false;
   bool unprotected_prefs_altered = false;
+  std::vector<std::string> migrated_unprotected_paths;
   MigratePrefsFromOldToNewStore(
       unprotected_pref_names_, *protected_prefs_, *unprotected_prefs_,
       unprotected_pref_hash_store_.get(), &protected_prefs_need_cleanup,
-      &unprotected_prefs_altered);
+      &unprotected_prefs_altered, migrated_unprotected_paths);
   bool unprotected_prefs_need_cleanup = false;
   bool protected_prefs_altered = false;
+  std::vector<std::string> migrated_protected_paths;
   MigratePrefsFromOldToNewStore(
       protected_pref_names_, *unprotected_prefs_, *protected_prefs_,
       protected_pref_hash_store_.get(), &unprotected_prefs_need_cleanup,
-      &protected_prefs_altered);
+      &protected_prefs_altered, migrated_protected_paths);
+
+  if (protected_pref_filter_ && !migrated_protected_paths.empty()) {
+    protected_pref_filter_->SetMigratedPaths(migrated_protected_paths);
+  }
 
   if (!unprotected_prefs_altered && !protected_prefs_altered) {
     // Clean up any authenticators that might have been previously migrated from

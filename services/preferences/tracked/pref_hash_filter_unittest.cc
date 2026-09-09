@@ -2526,6 +2526,53 @@ TEST_P(PrefHashFilterEncryptedTest, DetectsAndLogsMismatch_AllPrefs) {
     pref_store_contents_.clear();
   }
 }
+
+TEST_P(PrefHashFilterEncryptedTest,
+       MigratedPathsInitializedDuringDeferredRevalidation) {
+  InitializeAsyncOSCrypt();
+  ResetImpl(true /* enable_encrypted_hashing_feature */,
+            test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  const std::string migrated[] = {kAtomicPref};
+  pref_hash_filter_->SetMigratedPaths(migrated);
+
+  base::Value atomic_val("migrated_value");
+  pref_store_contents_.Set(kAtomicPref, atomic_val.Clone());
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::UNCHANGED_ENCRYPTED);
+
+  base::RunLoop revalidation_run_loop;
+  bool callback_ran = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &callback_ran,
+      revalidation_run_loop.QuitClosure()));
+
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false),
+      pref_store_contents_.Clone());
+
+  revalidation_run_loop.Run();
+  ASSERT_TRUE(callback_ran);
+
+  // Verifies that OnNewValue was called for the migrated preference, storing
+  // its encrypted hash.
+  EXPECT_TRUE(mock_pref_hash_store_->StoreEncryptedHashCalled());
+  pref_hash_filter_->SetPrefService(nullptr);
+  pref_store_contents_.clear();
+}
+
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
                          PrefHashFilterEncryptedTest,
                          testing::Values(EnforcementLevel::NO_ENFORCEMENT,

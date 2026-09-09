@@ -190,6 +190,12 @@ void PrefHashFilter::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
 }
 
+void PrefHashFilter::SetMigratedPaths(
+    base::span<const std::string> migrated_paths) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  migrated_paths_.assign(migrated_paths.begin(), migrated_paths.end());
+}
+
 // static
 void PrefHashFilter::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -463,6 +469,15 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
       continue;
     }
 
+    // Preferences migrated on first run (from initial preferences) were
+    // seeded before the encryptor was available and therefore lack encrypted
+    // hashes. Initialize their encrypted hashes directly so that they are
+    // properly anchored in os_crypt without relying on legacy HMAC fallback.
+    if (std::ranges::contains(migrated_paths_, path)) {
+      preference->OnNewValue(value_at_load, transaction.get(),
+                             encryptor_.get());
+    }
+
     if (preference->EnforceAndReport(
             pref_store_contents_at_load, transaction.get(),
             nullptr /* external_tx */, encryptor_.get())) {
@@ -494,6 +509,7 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
 
   pref_service_->SetString(
       pref_to_write, base::NumberToString(base::Time::Now().ToInternalValue()));
+  migrated_paths_.clear();
   if (on_deferred_revalidation_complete_for_testing_) {
     std::move(on_deferred_revalidation_complete_for_testing_).Run();
   }
