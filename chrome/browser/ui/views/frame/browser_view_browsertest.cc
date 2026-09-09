@@ -703,6 +703,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
 
 // Browser widget must be visible for ui::ElementIdentifiers to resolve.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Not applicable when WebUILocationBar is enabled.";
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   browser_view->GetWidget()->Activate();
   // Native NSWindow widget activation events are not reliably dispatched on
@@ -717,10 +720,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
                           .SetIsAlertDialog()
                           .AddOkButton(base::DoNothing())
                           .Build();
-  views::View* anchor =
-      browser_view->GetLocationBarView()
-          ? static_cast<views::View*>(browser_view->GetLocationBarView())
-          : browser_view->top_container();
+  views::View* anchor = browser_view->GetLocationBarView();
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);

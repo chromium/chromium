@@ -96,6 +96,9 @@ class BrowserViewTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenClearsFocus) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Not applicable when WebUILocationBar is enabled.";
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   LocationBar* location_bar = browser_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
@@ -478,16 +481,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserViewTest,
                        MAYBE_FocusInactivePopupForAccessibility) {
+  if (features::IsWebUILocationBarEnabled()) {
+    GTEST_SKIP() << "Not applicable when WebUILocationBar is enabled.";
+  }
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder()
           .SetTitle(u"test")
           .SetIsAlertDialog()
           .AddOkButton(base::DoNothing())
           .Build();
-  views::View* anchor =
-      browser_view()->GetLocationBarView()
-          ? static_cast<views::View*>(browser_view()->GetLocationBarView())
-          : browser_view()->top_container();
+  views::View* anchor = browser_view()->GetLocationBarView();
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);
