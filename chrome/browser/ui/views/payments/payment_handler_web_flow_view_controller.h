@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "components/payments/content/payment_request_display_manager.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -34,6 +35,7 @@
 
 class LocationBarModel;
 class PermissionDashboardView;
+class PermissionPromptChipModel;
 class Profile;
 
 namespace blink {
@@ -64,6 +66,7 @@ class PaymentHandlerWebFlowViewController
       public LocationIconView::Delegate,
       public MediaStreamCaptureIndicator::Observer,
       public PermissionChipInterface::Observer,
+      public permissions::PermissionRequestManager::Observer,
       public views::ViewObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAppIconElementId);
@@ -170,10 +173,18 @@ class PaymentHandlerWebFlowViewController
   // PermissionChipInterface::Observer:
   void OnExpandAnimationEnded() override;
 
+  // permissions::PermissionRequestManager::Observer:
+  void OnPromptAdded() override;
+  void OnPromptRemoved() override;
+  void OnRequestsFinalized() override;
+  void OnPermissionRequestManagerDestructed() override;
+
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
 
   void CollapseIndicatorChip();
+  void ResetRequestChip();
+  void OnRequestChipPressed();
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
   void AbortPayment();
@@ -194,7 +205,11 @@ class PaymentHandlerWebFlowViewController
   base::ScopedObservation<PermissionChipInterface,
                           PermissionChipInterface::Observer>
       chip_observation_{this};
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      permission_request_manager_observation_{this};
   base::OneShotTimer indicator_chip_collapse_timer_;
+  std::unique_ptr<PermissionPromptChipModel> chip_model_;
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;
   base::WeakPtr<PaymentHandlerOriginLabel> origin_label_;
   base::WeakPtr<PaymentHandlerCloseButton> close_button_;

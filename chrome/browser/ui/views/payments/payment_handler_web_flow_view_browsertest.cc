@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -36,6 +37,7 @@
 #include "components/payments/core/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -190,16 +192,20 @@ class PermissionPromptWaiter
     observation_.Observe(manager);
   }
 
-  void OnPromptAdded() override { run_loop_.Quit(); }
+  void OnPromptAdded() override { prompt_added_run_loop_.Quit(); }
 
-  void OnRequestsFinalized() override { finalize_run_loop_.Quit(); }
+  void OnPromptRemoved() override { prompt_removed_run_loop_.Quit(); }
 
-  void WaitUntilPromptAdded() { run_loop_.Run(); }
-  void WaitUntilRequestsFinalized() { finalize_run_loop_.Run(); }
+  void OnRequestsFinalized() override { requests_finalized_run_loop_.Quit(); }
+
+  void WaitUntilPromptAdded() { prompt_added_run_loop_.Run(); }
+  void WaitUntilPromptRemoved() { prompt_removed_run_loop_.Run(); }
+  void WaitUntilRequestsFinalized() { requests_finalized_run_loop_.Run(); }
 
  private:
-  base::RunLoop run_loop_;
-  base::RunLoop finalize_run_loop_;
+  base::RunLoop prompt_added_run_loop_;
+  base::RunLoop prompt_removed_run_loop_;
+  base::RunLoop requests_finalized_run_loop_;
   base::ScopedObservation<permissions::PermissionRequestManager,
                           permissions::PermissionRequestManager::Observer>
       observation_{this};
@@ -1553,6 +1559,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
   // Verify collapse timer is running while expanded, then fire it.
   EXPECT_TRUE(
       test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
+
   test_api(web_flow_controller).fire_indicator_chip_collapse_timer();
   EXPECT_FALSE(
       test_api(web_flow_controller).is_indicator_chip_collapse_timer_running());
@@ -1639,6 +1646,80 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
               'stopped';
             )"));
   parent_waiter.WaitForCaptureState(false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    PermissionPrompt_ShowsAnimatedRequestChipAndAnchorsBubble) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  // Initial state: not capturing, no prompt.
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  PermissionPromptWaiter prompt_waiter(manager);
+
+  // Add camera permission request.
+  manager->AddRequest(payment_handler_contents->GetPrimaryMainFrame(),
+                      std::make_unique<permissions::MockPermissionRequest>(
+                          permissions::RequestType::kCameraStream));
+  prompt_waiter.WaitUntilPromptAdded();
+
+  // Verify prompt chip is displayed.
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  EXPECT_TRUE(dashboard->GetVisible());
+  EXPECT_TRUE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Verify bubble anchors to request_chip via GetPageInfoIconView().
+  EXPECT_EQ(dashboard->GetRequestChip(),
+            web_flow_controller->GetPageInfoIconView());
+
+  // Test toggling: clicking the chip when prompt is active dismisses the
+  // prompt and restores location_icon_view.
+  views::test::ButtonTestApi(dashboard->GetRequestChip())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks::Now(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+
+  prompt_waiter.WaitUntilPromptRemoved();
+
+  // Verify prompt removed and request_chip hidden.
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(
