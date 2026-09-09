@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
@@ -695,13 +694,10 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
         metadata->item_id.value_or("").starts_with("local-")) {
       LOG(ERROR) << "Local item id, the file hasn't been uploaded";
       open_result = OfficeDriveOpenErrors::kWaitingForUpload;
-      if (const auto* account_id =
-              ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())) {
-        GetUserFallbackChoice(
-            *account_id, task_, file_urls_,
-            ash::office_fallback::FallbackReason::kWaitingForUpload,
-            base::DoNothing());
-      }
+      GetUserFallbackChoice(
+          profile_, task_, file_urls_,
+          ash::office_fallback::FallbackReason::kWaitingForUpload,
+          base::DoNothing());
     } else if (hosted_url.is_empty()) {
       LOG(ERROR) << "Empty URL";
       open_result = OfficeDriveOpenErrors::kEmptyAlternateUrl;
@@ -916,22 +912,12 @@ void CloudOpenTask::OpenAndroidOneDriveUrl(
         office_fallback::FallbackReason::kAndroidOneDriveUnsupportedLocation;
     // `cloud_open_metrics_` can be safely moved since CloudUploadTask is
     // expected to be destructed straight after.
-    const auto* account_id =
-        ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile());
-    if (!account_id) {
-      // TODO(crbug.com/477191550): audit `profile_`'s characteristic,
-      // specifically whether this is always a user-representative-profile.
-      OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived(
-          profile_, file_urls_, fallback_reason, std::move(cloud_open_metrics_),
-          std::nullopt);
-      return;
-    }
-
     GetUserFallbackChoice(
-        *account_id, task_, file_urls_, fallback_reason,
+        profile_, task_, file_urls_, fallback_reason,
         base::BindOnce(
             &OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived, profile_,
             file_urls_, fallback_reason, std::move(cloud_open_metrics_)));
+
     return;
   }
   // Append relative path from Android OneDrive Url.

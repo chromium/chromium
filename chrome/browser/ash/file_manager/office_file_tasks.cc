@@ -14,6 +14,8 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -25,13 +27,9 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_service.h"
-#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/common/constants.h"
@@ -168,20 +166,11 @@ bool ExecuteWebDriveOfficeTask(
       drive::util::CheckDriveEnabledAndDriveAvailabilityForProfile(profile);
   std::optional<ash::office_fallback::FallbackReason> fallback_reason_opt =
       DriveAvailabilityToFallbackReason(drive_availability);
-  // TODO(crbug.com/477191550): Consider to pull this up more to callers with
-  // making sure this always run on a User-Session context.
-  const AccountId* account_id =
-      ash::AnnotatedAccountId::Get(profile->GetOriginalProfile());
   if (fallback_reason_opt) {
     ash::office_fallback::FallbackReason fallback_reason =
         fallback_reason_opt.value();
-    if (!account_id) {
-      OnDialogChoiceReceived(profile, task, file_urls, fallback_reason,
-                             std::move(cloud_open_metrics), std::nullopt);
-      return false;
-    }
     return GetUserFallbackChoice(
-        *account_id, task, file_urls, fallback_reason,
+        profile, task, file_urls, fallback_reason,
         base::BindOnce(&OnDialogChoiceReceived, profile, task, file_urls,
                        fallback_reason, std::move(cloud_open_metrics)));
   }
@@ -196,13 +185,8 @@ bool ExecuteWebDriveOfficeTask(
        AnyFileNeedsUploadToDrive(profile, file_urls))) {
     ash::office_fallback::FallbackReason fallback_reason =
         fallback_reason_opt.value();
-    if (!account_id) {
-      OnDialogChoiceReceived(profile, task, file_urls, fallback_reason,
-                             std::move(cloud_open_metrics), std::nullopt);
-      return false;
-    }
     return GetUserFallbackChoice(
-        *account_id, task, file_urls, fallback_reason,
+        profile, task, file_urls, fallback_reason,
         base::BindOnce(&OnDialogChoiceReceived, profile, task, file_urls,
                        fallback_reason, std::move(cloud_open_metrics)));
   }
@@ -213,13 +197,8 @@ bool ExecuteWebDriveOfficeTask(
       !integration_service->GetDriveFsInterface()) {
     ash::office_fallback::FallbackReason fallback_reason =
         ash::office_fallback::FallbackReason::kDriveFsInterfaceError;
-    if (!account_id) {
-      OnDialogChoiceReceived(profile, task, file_urls, fallback_reason,
-                             std::move(cloud_open_metrics), std::nullopt);
-      return false;
-    }
     return GetUserFallbackChoice(
-        *account_id, task, file_urls, fallback_reason,
+        profile, task, file_urls, fallback_reason,
         base::BindOnce(&OnDialogChoiceReceived, profile, task, file_urls,
                        fallback_reason, std::move(cloud_open_metrics)));
   }
@@ -237,17 +216,8 @@ bool ExecuteOpenInOfficeTask(
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
     ash::office_fallback::FallbackReason fallback_reason =
         ash::office_fallback::FallbackReason::kOffline;
-    // TODO(crbug.com/477191550): Consider to pull this up more to callers with
-    // making sure this always run on a User-Session context.
-    const AccountId* account_id =
-        ash::AnnotatedAccountId::Get(profile->GetOriginalProfile());
-    if (!account_id) {
-      OnDialogChoiceReceived(profile, task, file_urls, fallback_reason,
-                             std::move(cloud_open_metrics), std::nullopt);
-      return false;
-    }
     return GetUserFallbackChoice(
-        *account_id, task, file_urls, fallback_reason,
+        profile, task, file_urls, fallback_reason,
         base::BindOnce(&OnDialogChoiceReceived, profile, task, file_urls,
                        fallback_reason, std::move(cloud_open_metrics)));
   }
@@ -446,7 +416,7 @@ void OnDialogChoiceReceived(
 }
 
 bool GetUserFallbackChoice(
-    const AccountId& account_id,
+    Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
     ash::office_fallback::FallbackReason fallback_reason,
@@ -456,7 +426,8 @@ bool GetUserFallbackChoice(
   // `OnDialogChoiceReceived()` can open multiple files.
   std::vector<storage::FileSystemURL> first_url{file_urls.front()};
 
-  if (!IsQuickOfficeInstalled(account_id)) {
+  // If QuickOffice is not installed, don't launch dialog.
+  if (!IsQuickOfficeInstalled(profile)) {
     LOG(ERROR) << "Cannot fallback to QuickOffice when it is not installed";
     std::move(callback).Run(std::nullopt);
     return false;
@@ -486,15 +457,15 @@ bool IsOpenInOfficeTask(const TaskDescriptor& task) {
   return IsVirtualTask(task) && action_id == kActionIdOpenInOffice;
 }
 
-bool IsQuickOfficeInstalled(const AccountId& account_id) {
-  apps::AppService* app_service =
-      apps::AppServiceRegistry::Get()->Find(account_id);
-  if (!app_service) {
+bool IsQuickOfficeInstalled(Profile* profile) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (!proxy) {
     return false;
   }
   // The AppRegistryCache will contain the QuickOffice extension on Ash.
   bool installed = false;
-  app_service->AppRegistryCache().ForOneApp(
+  proxy->AppRegistryCache().ForOneApp(
       extension_misc::kQuickOfficeComponentExtensionId,
       [&installed](const apps::AppUpdate& update) {
         installed = apps_util::IsInstalled(update.Readiness());
