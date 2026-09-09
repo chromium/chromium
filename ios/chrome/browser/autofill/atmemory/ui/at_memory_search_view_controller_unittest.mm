@@ -28,6 +28,10 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using autofill::MemoryDataType;
+using autofill::Suggestion;
+using autofill::SuggestionType;
+
 namespace {
 
 // Constants for mock search items.
@@ -38,6 +42,17 @@ NSString* const kExpirationValue = @"2030-01-01";
 
 // Search query used for testing view controller search states.
 NSString* const kSearchQuery = @"test search query";
+
+// Creates a mock passport search result Suggestion for testing.
+Suggestion CreatePassportSuggestion() {
+  Suggestion suggestion(base::SysNSStringToUTF16(kPassportValue),
+                        SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(base::SysNSStringToUTF16(kPassportValue),
+                                      MemoryDataType::kPassportNumber);
+  payload.type_name = base::SysNSStringToUTF16(kPassportTypeName);
+  suggestion.payload = std::move(payload);
+  return suggestion;
+}
 
 }  // namespace
 
@@ -76,17 +91,9 @@ TEST_F(AtMemorySearchViewControllerTest, TestZeroState) {
 
 // Tests that setting search results populates the table view.
 TEST_F(AtMemorySearchViewControllerTest, TestSetSearchResults) {
-  autofill::Suggestion suggestion(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::SuggestionType::kAtMemorySearchResult);
-  autofill::Suggestion::AtMemoryPayload payload(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::MemoryDataType::kPassportNumber);
-  payload.type_name = base::SysNSStringToUTF16(kPassportTypeName);
-  suggestion.payload = std::move(payload);
-
   AtMemorySearchItem* item =
-      [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:0];
+      [[AtMemorySearchItem alloc] initWithSuggestion:CreatePassportSuggestion()
+                                               index:0];
   [view_controller_ setSearchResults:@[ item ]];
 
   EXPECT_EQ(view_controller_.tableView.numberOfSections, 1);
@@ -109,17 +116,9 @@ TEST_F(AtMemorySearchViewControllerTest, TestSelectSearchResultItem) {
   id mutator = OCMProtocolMock(@protocol(AtMemorySearchMutator));
   view_controller_.mutator = mutator;
 
-  autofill::Suggestion suggestion(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::SuggestionType::kAtMemorySearchResult);
-  autofill::Suggestion::AtMemoryPayload payload(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::MemoryDataType::kPassportNumber);
-  payload.type_name = base::SysNSStringToUTF16(kPassportTypeName);
-  suggestion.payload = std::move(payload);
-
   AtMemorySearchItem* item =
-      [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:0];
+      [[AtMemorySearchItem alloc] initWithSuggestion:CreatePassportSuggestion()
+                                               index:0];
   [view_controller_ setSearchResults:@[ item ]];
 
   OCMExpect([mutator didSelectSearchResultItem:item]);
@@ -352,17 +351,9 @@ TEST_F(AtMemorySearchViewControllerTest,
       view_controller_.navigationItem.searchController;
   search_controller.searchBar.text = kSearchQuery;
 
-  autofill::Suggestion suggestion(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::SuggestionType::kAtMemorySearchResult);
-  autofill::Suggestion::AtMemoryPayload payload(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::MemoryDataType::kPassportNumber);
-  payload.type_name = base::SysNSStringToUTF16(kPassportTypeName);
-  suggestion.payload = std::move(payload);
-
   AtMemorySearchItem* item =
-      [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:0];
+      [[AtMemorySearchItem alloc] initWithSuggestion:CreatePassportSuggestion()
+                                               index:0];
   [view_controller_ setSearchResults:@[ item ]];
   [view_controller_ setNoticeVisible:YES];
 
@@ -396,17 +387,9 @@ TEST_F(AtMemorySearchViewControllerTest,
       view_controller_.navigationItem.searchController;
   search_controller.searchBar.text = kSearchQuery;
 
-  autofill::Suggestion suggestion(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::SuggestionType::kAtMemorySearchResult);
-  autofill::Suggestion::AtMemoryPayload payload(
-      base::SysNSStringToUTF16(kPassportValue),
-      autofill::MemoryDataType::kPassportNumber);
-  payload.type_name = base::SysNSStringToUTF16(kPassportTypeName);
-  suggestion.payload = std::move(payload);
-
   AtMemorySearchItem* item =
-      [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:0];
+      [[AtMemorySearchItem alloc] initWithSuggestion:CreatePassportSuggestion()
+                                               index:0];
   [view_controller_ setSearchResults:@[ item ]];
 
   ASSERT_EQ(view_controller_.tableView.numberOfSections, 1);
