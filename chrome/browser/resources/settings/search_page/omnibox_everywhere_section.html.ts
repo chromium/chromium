@@ -44,6 +44,7 @@ export function getHtml(this: SettingsOmniboxEverywhereSectionElement) {
     </div>
 
     <settings-toggle-button id="showShortcutsToggle"
+        .pref="${this.syntheticShowShortcutsPref_}"
         no-set-pref
         .checked="${this.isShortcutsShowing_}"
         @change="${this.onShowShortcutsToggleChange_}"
