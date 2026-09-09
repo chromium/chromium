@@ -298,6 +298,10 @@ void ContextualTasksPageHandler::GetThreadUrl(GetThreadUrlCallback callback) {
   // Re-sync active tab auto-suggestion down to the WebUI for the fresh thread.
   web_ui_controller_->SyncAutoSuggestedTabContext();
 
+  if (web_ui_controller_ && web_ui_controller_->GetPageRemote()) {
+    web_ui_controller_->GetPageRemote()->RestoreInput();
+  }
+
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
   if (task_id.has_value()) {
     std::move(callback).Run(
@@ -410,6 +414,10 @@ void ContextualTasksPageHandler::ShowThreadHistory() {
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view()->mutable_payload();
   PostAimMessage(message);
+
+  if (web_ui_controller_ && web_ui_controller_->GetPageRemote()) {
+    web_ui_controller_->GetPageRemote()->HideInput();
+  }
 }
 
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
@@ -532,6 +540,7 @@ void ContextualTasksPageHandler::OnWebviewMessage(
         std::move(mojo_position));
   } else if (aim_to_client_message.has_exit_basic_mode()) {
     web_ui_controller_->GetPageRemote()->ExitBasicMode();
+    web_ui_controller_->GetPageRemote()->RestoreInput();
   } else if (aim_to_client_message.has_update_thread_context_library()) {
     OnReceivedUpdatedThreadContextLibrary(
         aim_to_client_message.update_thread_context_library());
@@ -1063,6 +1072,10 @@ void ContextualTasksPageHandler::OnLogoPointerDown() {
 }
 
 void ContextualTasksPageHandler::CreateNewThread() {
+  if (web_ui_controller_ && web_ui_controller_->GetPageRemote()) {
+    web_ui_controller_->GetPageRemote()->RestoreInput();
+  }
+
   if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     if (!panel_controller_) {
       return;

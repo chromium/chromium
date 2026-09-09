@@ -324,6 +324,7 @@ TEST_F(ContextualTasksPageHandlerTest, GetThreadUrl) {
   GURL expected_url(kAiPageUrl);
   EXPECT_CALL(*mock_contextual_tasks_ui_service_, GetDefaultAiPageUrl())
       .WillOnce(Return(expected_url));
+  EXPECT_CALL(page_, RestoreInput()).Times(1);
 
   base::RunLoop run_loop;
   page_handler_->GetThreadUrl(base::BindLambdaForTesting([&](const GURL& url) {
@@ -343,6 +344,7 @@ TEST_F(ContextualTasksPageHandlerTest, CreateNewThread_LegacyArchitecture) {
   GURL expected_url(kAiPageUrl);
   EXPECT_CALL(*mock_contextual_tasks_ui_service_, GetDefaultAiPageUrl())
       .WillOnce(Return(expected_url));
+  EXPECT_CALL(page_, RestoreInput()).Times(1);
 
   page_handler_->CreateNewThread();
 
@@ -371,6 +373,7 @@ TEST_F(ContextualTasksPageHandlerTest,
   EXPECT_CALL(*mock_contextual_tasks_ui_service_,
               GetDefaultAiPageUrlForTask(task_id))
       .WillOnce(Return(raw_url));
+  EXPECT_CALL(page_, RestoreInput()).Times(1);
 
   page_handler_->CreateNewThread();
 
@@ -617,6 +620,20 @@ TEST_F(ContextualTasksPageHandlerTest,
   page_handler_->OnWebviewMessage(serialized);
 }
 
+TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_ExitBasicMode) {
+  lens::AimToClientMessage message;
+  message.mutable_exit_basic_mode();
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  message.SerializeToArray(serialized.data(), size);
+
+  EXPECT_CALL(page_, ExitBasicMode()).Times(1);
+  EXPECT_CALL(page_, RestoreInput()).Times(1);
+
+  page_handler_->OnWebviewMessage(serialized);
+}
+
 TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_IgnoreMalformedData) {
   std::vector<uint8_t> garbage_data = {0xDE, 0xAD, 0xBE, 0xEF};
 
@@ -689,6 +706,7 @@ TEST_F(ContextualTasksPageHandlerTest, ShowThreadHistory) {
             client_message.ParseFromArray(message.data(), message.size()));
         EXPECT_TRUE(client_message.has_open_threads_view());
       });
+  EXPECT_CALL(page_, HideInput()).Times(1);
 
   page_handler_->ShowThreadHistory();
 }
