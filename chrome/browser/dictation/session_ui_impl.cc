@@ -215,6 +215,7 @@ void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
              base::WeakPtr<tabs::TabInterface> tab_weak) {
             if (self && tab_weak && !tab_weak->IsActivated()) {
               tab_weak->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
+              self->overlay_view_.reset();
               self->controller_->FinalizeAndShutdown();
               BrowserWindowInterface* const window =
                   tab_weak->GetBrowserWindowInterface();
