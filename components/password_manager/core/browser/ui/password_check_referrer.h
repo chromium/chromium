@@ -25,7 +25,8 @@ enum class PasswordCheckReferrer {
   kMaxValue = kSafetyCheckNotification,
 };
 // LINT.ThenChange(
-//     //chrome/browser/resources/settings/autofill_page/password_manager_proxy.ts:PasswordCheckReferrer,
+//     //chrome/browser/resources/password_manager/side_bar.ts:PasswordCheckReferrer,
+//     //chrome/browser/resources/settings/autofill_page/passwords/password_manager_proxy.ts:PasswordCheckReferrer,
 //     //tools/metrics/histograms/metadata/password/enums.xml:PasswordCheckReferrer
 // )
 

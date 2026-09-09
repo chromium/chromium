@@ -950,7 +950,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Safety Check Notification"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/password_manager_proxy.ts:PasswordCheckReferrer, //components/password_manager/core/browser/ui/password_check_referrer.h:PasswordCheckReferrer) -->
+<!-- LINT.ThenChange(
+  //chrome/browser/resources/password_manager/side_bar.ts:PasswordCheckReferrer,
+  //chrome/browser/resources/settings/autofill_page/passwords/password_manager_proxy.ts:PasswordCheckReferrer,
+  //components/password_manager/core/browser/ui/password_check_referrer.h:PasswordCheckReferrer
+) -->
 
 <enum name="PasswordCheckResolutionAction">
   <int value="0" label="Opened a site to change password manually"/>

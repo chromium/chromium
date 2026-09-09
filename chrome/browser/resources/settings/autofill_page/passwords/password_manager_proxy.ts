@@ -47,8 +47,9 @@ export enum PasswordCheckReferrer {
   COUNT = 8,
 }
 // LINT.ThenChange(
-// //components/password_manager/core/browser/ui/password_check_referrer.h:PasswordCheckReferrer,
-// //tools/metrics/histograms/metadata/password/enums.xml:PasswordCheckReferrer
+//   //chrome/browser/resources/password_manager/side_bar.ts:PasswordCheckReferrer,
+//   //components/password_manager/core/browser/ui/password_check_referrer.h:PasswordCheckReferrer,
+//   //tools/metrics/histograms/metadata/password/enums.xml:PasswordCheckReferrer
 // )
 
 // WARNING: Keep synced with
