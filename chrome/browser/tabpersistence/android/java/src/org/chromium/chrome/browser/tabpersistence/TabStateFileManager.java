@@ -41,7 +41,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
@@ -602,11 +604,18 @@ public class TabStateFileManager {
                     return null;
                 }
                 int size = dataInputStream.readInt();
+                if (size <= 0) {
+                    Log.e(TAG, "Corrupted FlatBuffer payload size: " + size);
+                    return null;
+                }
                 byte[] res = new byte[size];
                 dataInputStream.readFully(res);
                 return serializer.deserialize(ByteBuffer.wrap(res));
             } else {
                 FileChannel channel = fileInputStream.getChannel();
+                if (channel.size() == 0) {
+                    return null;
+                }
                 ByteBuffer res = channel.map(MapMode.READ_ONLY, channel.position(), channel.size());
                 return serializer.deserialize(res);
             }
@@ -717,6 +726,11 @@ public class TabStateFileManager {
         if (state == null || state.contentsState == null) return;
         long startTime = SystemClock.elapsedRealtime();
 
+        if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
+            saveStateFlatBuffer(file, state, encrypted, cipherFactory, startTime);
+            return;
+        }
+
         // Create the byte array from contentsState before opening the FileOutputStream, in case
         // contentsState.buffer is an instance of MappedByteBuffer that is mapped to
         // the tab state file.
@@ -728,11 +742,6 @@ public class TabStateFileManager {
         FileOutputStream fileOutputStream = null;
         try {
             maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
-            if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
-                saveStateFlatBuffer(
-                        file, state, encrypted, cipherFactory, contentsStateBytes, startTime);
-                return;
-            }
             fileOutputStream = new FileOutputStream(file);
 
             if (encrypted) {
@@ -797,34 +806,42 @@ public class TabStateFileManager {
             TabState state,
             boolean encrypted,
             @Nullable CipherFactory cipherFactory,
-            byte[] contentsStateBytes,
             long startTime) {
-        FileOutputStream fileOutputStream = null;
-        CipherOutputStream cipherOutputStream = null;
-        DataOutputStream dataOutputStream = null;
-        boolean success = false;
+        maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
+        Cipher cipher = null;
+        if (encrypted) {
+            cipher = assumeNonNull(cipherFactory).getCipher(Cipher.ENCRYPT_MODE);
+            if (cipher == null) {
+                Log.e(TAG, "Cannot save TabState FlatBuffer file because cipher is null");
+                return;
+            }
+        }
+
         AtomicFile atomicFile = new AtomicFile(file);
+        FileOutputStream fileOutputStream = null;
+        boolean success = false;
         try {
-            maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
-            fileOutputStream = atomicFile.startWrite();
             FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
-            ByteBuffer data = serializer.serialize(state, contentsStateBytes);
+            ByteBuffer data = serializer.serialize(state);
+
+            fileOutputStream = atomicFile.startWrite();
             if (encrypted) {
-                Cipher cipher = assumeNonNull(cipherFactory).getCipher(Cipher.ENCRYPT_MODE);
-                if (cipher == null) {
-                    Log.e(TAG, "Cannot save TabState FlatBuffer file because cipher is null");
-                    return;
-                }
-                cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
-                dataOutputStream = new DataOutputStream(cipherOutputStream);
+                CipherOutputStream cipherOutputStream =
+                        new CipherOutputStream(
+                                new NonClosingOutputStream(fileOutputStream),
+                                assumeNonNull(cipher));
+                DataOutputStream dataOutputStream = new DataOutputStream(cipherOutputStream);
                 dataOutputStream.writeLong(KEY_CHECKER);
                 int size = data.remaining();
                 dataOutputStream.writeInt(size);
                 WritableByteChannel channel = Channels.newChannel(dataOutputStream);
                 channel.write(data);
+                dataOutputStream.close();
             } else {
                 FileChannel channel = fileOutputStream.getChannel();
-                channel.write(data);
+                while (data.hasRemaining()) {
+                    channel.write(data);
+                }
             }
             success = true;
             RecordHistogram.recordTimesHistogram(
@@ -834,10 +851,16 @@ public class TabStateFileManager {
             // the app and simply log what went wrong.
             Log.e(TAG, "Exception writing " + file.getName(), e);
         } finally {
-            assert fileOutputStream != null;
-            StreamUtil.closeQuietly(dataOutputStream);
-            StreamUtil.closeQuietly(cipherOutputStream);
-            StreamUtil.closeQuietly(fileOutputStream);
+            // Note: fileOutputStream must NOT be closed before
+            // atomicFile.finishWrite(fileOutputStream) because finishWrite() internally calls
+            // FileUtils.sync(fileOutputStream) (fsync) and then closes the stream itself. If
+            // fileOutputStream was already closed, fsync fails on a bad file descriptor.
+            // For the encrypted branch, fileOutputStream is wrapped in NonClosingOutputStream
+            // so that dataOutputStream / cipherOutputStream can be closed (invoking
+            // cipher.doFinal() to write out final PKCS padding) without closing the underlying
+            // fileOutputStream. If startWrite() threw an exception and fileOutputStream is null,
+            // safelyFinishOrFailWrite and safelyFailWrite handle the null safely without
+            // NullPointerException or assertion failure.
             if (success) {
                 safelyFinishOrFailWrite(atomicFile, fileOutputStream);
             } else {
@@ -847,7 +870,8 @@ public class TabStateFileManager {
     }
 
     private static void safelyFinishOrFailWrite(
-            AtomicFile atomicFile, FileOutputStream fileOutputStream) {
+            AtomicFile atomicFile, @Nullable FileOutputStream fileOutputStream) {
+        if (fileOutputStream == null) return;
         try {
             atomicFile.finishWrite(fileOutputStream);
         } catch (Throwable e) {
@@ -856,11 +880,54 @@ public class TabStateFileManager {
         }
     }
 
-    private static void safelyFailWrite(AtomicFile atomicFile, FileOutputStream fileOutputStream) {
+    private static void safelyFailWrite(
+            AtomicFile atomicFile, @Nullable FileOutputStream fileOutputStream) {
+        if (fileOutputStream == null) return;
         try {
             atomicFile.failWrite(fileOutputStream);
         } catch (Throwable e) {
             Log.e(TAG, "Error failing atomic write of " + atomicFile, e);
+        }
+    }
+
+    /**
+     * An {@link OutputStream} wrapper that delegates all write and flush operations to the
+     * underlying stream, but ignores {@link #close()}. This allows wrapping streams like {@link
+     * CipherOutputStream} to be closed (which is necessary for {@link Cipher#doFinal()} and writing
+     * final padding) without closing the underlying {@link FileOutputStream} before {@link
+     * AtomicFile#finishWrite(FileOutputStream)}.
+     */
+    private static class NonClosingOutputStream extends FilterOutputStream {
+        private final OutputStream mOut;
+
+        NonClosingOutputStream(OutputStream out) {
+            super(out);
+            mOut = out;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            mOut.write(b);
+        }
+
+        @Override
+        public void write(byte[] b) throws IOException {
+            mOut.write(b);
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            mOut.write(b, off, len);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            mOut.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            flush();
         }
     }
 

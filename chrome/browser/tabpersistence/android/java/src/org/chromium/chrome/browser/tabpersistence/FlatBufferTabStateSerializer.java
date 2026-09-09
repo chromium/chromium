@@ -66,11 +66,15 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
     }
 
     @Override
-    public ByteBuffer serialize(TabState state, byte[] contentsStateBytes) {
+    public ByteBuffer serialize(TabState state) {
         FlatBufferBuilder fbb = new FlatBufferBuilder();
+        ByteBuffer contentsStateBuffer =
+                state.contentsState == null
+                        ? ByteBuffer.allocate(0).asReadOnlyBuffer()
+                        : state.contentsState.buffer().asReadOnlyBuffer();
+        contentsStateBuffer.rewind();
         int webContentsState =
-                TabStateFlatBufferV1.createWebContentsStateBytesVector(
-                        fbb, ByteBuffer.wrap(contentsStateBytes));
+                TabStateFlatBufferV1.createWebContentsStateBytesVector(fbb, contentsStateBuffer);
         int openerAppId =
                 fbb.createString(state.openerAppId == null ? NULL_STR : state.openerAppId);
         int url = fbb.createString(state.url == null ? NULL_STR : state.url.getSpec());
@@ -141,18 +145,16 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                     tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
                             ? ByteBuffer.allocateDirect(0)
                             : tabStateFlatBuffer.webContentsStateBytesAsByteBuffer().slice();
-            if (mIsEncrypted) {
+            if (mIsEncrypted || !webContentsStateBuffer.isDirect()) {
                 ByteBuffer buffer = ByteBuffer.allocateDirect(webContentsStateBuffer.remaining());
                 buffer.put(webContentsStateBuffer);
-                state.contentsState =
-                        new WebContentsState(
-                                buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-            } else {
-                state.contentsState =
-                        new WebContentsState(
-                                webContentsStateBuffer,
-                                WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+                buffer.rewind();
+                webContentsStateBuffer = buffer;
             }
+            state.contentsState =
+                    new WebContentsState(
+                            webContentsStateBuffer,
+                            WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             return state;
         } catch (IndexOutOfBoundsException e) {
             RecordHistogram.recordEnumeratedHistogram(

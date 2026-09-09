@@ -579,6 +579,65 @@ public class TabStateFileManagerUnitTest {
     }
 
     @Test
+    public void testFlatBufferTabStateSerializer_RoundTripDirectByteBuffer() {
+        ByteBuffer directBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        directBuffer.put(CONTENTS_STATE_BYTES);
+        directBuffer.rewind();
+        WebContentsState contentsState =
+                new WebContentsState(directBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        TabState state = createTabState(contentsState, TAB_GROUP_ID);
+
+        FlatBufferTabStateSerializer serializer =
+                new FlatBufferTabStateSerializer(/* isEncrypted= */ false);
+        ByteBuffer serialized = serializer.serialize(state);
+        Assert.assertNotNull(serialized);
+
+        TabState deserialized = serializer.deserialize(serialized);
+        Assert.assertNotNull(deserialized);
+        validateTestTabState(deserialized, TAB_GROUP_ID, contentsState);
+    }
+
+    @Test
+    public void testSaveAndRestoreFlatBufferTabState() throws IOException {
+        Token tabGroupId = new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
+        File file = temporaryFolder.newFile(TabStateFileManager.FLATBUFFER_PREFIX + "tab_1");
+        ByteBuffer directBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        directBuffer.put(CONTENTS_STATE_BYTES);
+        directBuffer.rewind();
+        WebContentsState contentsState =
+                new WebContentsState(directBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        TabState state = createTabState(contentsState, tabGroupId);
+
+        TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ false, mCipherFactory);
+
+        TabState restoredState =
+                TabStateFileManager.restoreTabStateInternal(
+                        file, /* isEncrypted= */ false, mCipherFactory);
+        Assert.assertNotNull(restoredState);
+        validateTestTabState(restoredState, tabGroupId, contentsState);
+    }
+
+    @Test
+    public void testSaveAndRestoreFlatBufferTabState_Encrypted() throws IOException {
+        Token tabGroupId = new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
+        File file = temporaryFolder.newFile(TabStateFileManager.FLATBUFFER_PREFIX + "tab_2");
+        ByteBuffer directBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        directBuffer.put(CONTENTS_STATE_BYTES);
+        directBuffer.rewind();
+        WebContentsState contentsState =
+                new WebContentsState(directBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        TabState state = createTabState(contentsState, tabGroupId);
+
+        TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ true, mCipherFactory);
+
+        TabState restoredState =
+                TabStateFileManager.restoreTabStateInternal(
+                        file, /* isEncrypted= */ true, mCipherFactory);
+        Assert.assertNotNull(restoredState);
+        validateTestTabState(restoredState, tabGroupId, contentsState);
+    }
+
+    @Test
     public void testNullStateDirectoryDeleteFlatBuffer() {
         try {
             TabStateFileManager.deleteFlatBufferFiles(null);
@@ -690,5 +749,31 @@ public class TabStateFileManagerUnitTest {
             StreamUtil.closeQuietly(dataOutputStream);
         }
         return file;
+    }
+
+    @Test
+    public void testFlatBufferFormatIncognito_RestoreTabState() {
+        Token tabGroupId = new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
+        ByteBuffer directBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        directBuffer.put(CONTENTS_STATE_BYTES);
+        directBuffer.rewind();
+        WebContentsState contentsState =
+                new WebContentsState(directBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        TabState state = createTabState(contentsState, tabGroupId);
+        state.isIncognito = true;
+
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        temporaryFolder.getRoot(),
+                        /* tabId= */ 4,
+                        /* encrypted= */ true,
+                        /* isFlatbuffer= */ true),
+                state,
+                /* encrypted= */ true,
+                mCipherFactory);
+        TabState restored =
+                TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 4, mCipherFactory);
+        Assert.assertNotNull("restored TabState should not be null", restored);
+        Assert.assertTrue(restored.isIncognito);
     }
 }
