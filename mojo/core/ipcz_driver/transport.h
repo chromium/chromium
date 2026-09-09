@@ -99,6 +99,12 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   void set_is_trusted_by_peer(bool trusted) { is_trusted_by_peer_ = trusted; }
   bool is_trusted_by_peer() const { return is_trusted_by_peer_; }
 
+  void set_is_peer_elevated(bool elevated) { is_peer_elevated_ = elevated; }
+  bool is_peer_elevated() const { return is_peer_elevated_; }
+
+  void set_is_elevated(bool elevated) { is_elevated_ = elevated; }
+  bool is_elevated() const { return is_elevated_; }
+
   // Indicates whether the remote peer on this transport is trusted as a source
   // of privileged objects (e.g. HandleOwner::kRecipient handles or
   // broker-destined transports). A non-broker implicitly trusts its broker;
@@ -233,6 +239,16 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // broker, since brokers are implicitly trusted; and it's currently
   // meaningless on platforms other than Windows.
   bool is_trusted_by_peer_ = false;
+
+  // Indicates whether the remote transport endpoint is running in an elevated
+  // process relative to this endpoint. On Windows, handles cannot be
+  // pre-duplicated into an elevated process by a less-privileged process.
+  bool is_peer_elevated_ = false;
+
+  // Indicates whether this endpoint is running in an elevated process relative
+  // to the remote endpoint. On Windows, an elevated process does not accept
+  // recipient-owned handles from a less-privileged broker.
+  bool is_elevated_ = false;
 
   // Indicates whether the remote process is "untrusted" in Mojo parlance,
   // meaning this Transport restricts what kinds of objects can be transferred
