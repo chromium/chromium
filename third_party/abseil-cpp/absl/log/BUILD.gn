@@ -330,6 +330,7 @@ absl_test("log_format_test") {
     ":check",
     ":log",
     ":log_entry",
+    ":log_sink",
     ":scoped_mock_log",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",

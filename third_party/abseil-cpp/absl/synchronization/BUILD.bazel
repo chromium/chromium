@@ -248,6 +248,7 @@ cc_library(
     ],
     deps = [
         ":synchronization",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/functional:any_invocable",
     ],

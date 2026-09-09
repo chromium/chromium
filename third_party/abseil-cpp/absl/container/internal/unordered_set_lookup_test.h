@@ -20,6 +20,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/config.h"
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/hash_policy_testing.h"
 

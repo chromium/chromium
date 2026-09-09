@@ -448,6 +448,7 @@ cc_test(
     tags = ["notsan"],
     deps = [
         ":stack_consumption",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/log",
         "@googletest//:gtest",

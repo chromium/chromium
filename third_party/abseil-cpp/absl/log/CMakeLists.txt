@@ -1008,6 +1008,7 @@ absl_cc_test(
     absl::config
     absl::log
     absl::log_internal_test_matchers
+    absl::log_sink
     absl::scoped_mock_log
     absl::source_location
     absl::str_format

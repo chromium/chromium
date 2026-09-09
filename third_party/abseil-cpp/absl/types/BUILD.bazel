@@ -242,6 +242,7 @@ cc_test(
     deps = [
         ":compare",
         "//absl/base",
+        "//absl/base:config",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

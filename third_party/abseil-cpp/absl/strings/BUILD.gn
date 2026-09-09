@@ -167,6 +167,7 @@ absl_test("escaping_test") {
     ":str_format",
     ":string_view",
     ":strings",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/container:fixed_array",
     "//third_party/abseil-cpp/absl/log:check",
@@ -209,6 +210,7 @@ absl_test("memutil_test") {
   ]
   deps = [
     ":strings",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]
 }
@@ -923,6 +925,7 @@ absl_test("str_format_bind_test") {
   deps = [
     ":str_format_internal",
     ":string_view",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/types:span",
   ]
 }
@@ -932,6 +935,7 @@ absl_test("str_format_checker_test") {
   deps = [
     ":str_format",
     ":string_view",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 
@@ -961,6 +965,7 @@ absl_test("str_format_output_test") {
   deps = [
     ":cord",
     ":str_format_internal",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 
@@ -987,6 +992,7 @@ absl_test("pow10_helper_test") {
   deps = [
     ":pow10_helper",
     ":str_format",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 

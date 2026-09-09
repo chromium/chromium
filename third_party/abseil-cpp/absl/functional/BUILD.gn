@@ -59,6 +59,7 @@ absl_source_set("bind_front") {
   sources = [ "internal/front_binder.h" ]
   public = [ "bind_front.h" ]
   deps = [
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/container:compressed_tuple",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/utility",

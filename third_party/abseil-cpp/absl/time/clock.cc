@@ -22,6 +22,7 @@
 #include <limits>
 
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/spinlock.h"
 #include "absl/base/internal/unscaledcycleclock.h"
 #include "absl/base/internal/unscaledcycleclock_config.h"

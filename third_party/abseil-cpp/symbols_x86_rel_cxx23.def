@@ -73,7 +73,13 @@ EXPORTS
     ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AAEXV?$basic_string_view@_WU?$char_traits@_W@__Cr@std@@@__Cr@std@@@Z
     ??$CopyToEncodedBufferWithStructuredProtoField@$00@LogMessage@log_internal@absl@@AAEXUStructuredProtoField@12@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??$CopyToEncodedBufferWithStructuredProtoField@$0A@@LogMessage@log_internal@absl@@AAEXUStructuredProtoField@12@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
-    ??$DeallocateBackingArray@$03V?$allocator@D@__Cr@std@@@container_internal@absl@@YAXPAXIPAW4ctrl_t@01@II_NI@Z
+    ??$DeallocateBackingArray@$03V?$allocator@D@__Cr@std@@@container_internal@absl@@YAXPAX0I@Z
+    ??$Destruct@$00@container_internal@absl@@YAXAAVCommonFields@01@ABUDtorPolicy@01@@Z
+    ??$Destruct@$00@container_internal@absl@@YAXAAVCommonFields@01@ABUDtorPolicy@01@P6AXPAX2I@Z2@Z
+    ??$Destruct@$00@container_internal@absl@@YAXAAVCommonFields@01@ABUDtorPolicy@01@P6AXPAX2I@Z@Z
+    ??$Destruct@$0A@@container_internal@absl@@YAXAAVCommonFields@01@ABUDtorPolicy@01@@Z
+    ??$Destruct@$0A@@container_internal@absl@@YAXAAVCommonFields@01@ABUDtorPolicy@01@P6AXPAX2I@Z2@Z
+    ??$Destruct@$0A@@container_internal@absl@@YAXAAVCommonFields@01@ABUDtorPolicy@01@P6AXPAX2I@Z@Z
     ??$Dispatch@C@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
     ??$Dispatch@D@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
     ??$Dispatch@E@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
@@ -575,7 +581,6 @@ EXPORTS
     ?CurrentThreadIdentityIfPresent@base_internal@absl@@YAPAUThreadIdentity@12@XZ
     ?CurrentValue@FlagImpl@flags_internal@absl@@EBE?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?DataGuard@FlagImpl@flags_internal@absl@@ABEAAVMutex@3@XZ
-    ?DeallocBackingArray@container_internal@absl@@YAXAAVCommonFields@12@IIP6AXPAXIPAW4ctrl_t@12@II_NI@Z1@Z
     ?DecodeFrom@ProtoField@log_internal@absl@@QAE_NPAV?$Span@$$CBD@3@@Z
     ?DecodeRustPunycode@debugging_internal@absl@@YAPADUDecodeRustPunycodeOptions@12@@Z
     ?DecodeWaitCycles@SpinLock@base_internal@absl@@KA_JI@Z
@@ -599,8 +604,6 @@ EXPORTS
     ?DestroyContents@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@AAEXXZ
     ?DestroyCordSlow@Cord@absl@@AAEXXZ
     ?DestroySlots@container_internal@absl@@YAXAAVCommonFields@12@IP6AXPAX1@Z@Z
-    ?DestructNonSoo@container_internal@absl@@YAXAAVCommonFields@12@IIP6AXPAX1@ZP6AX1IPAW4ctrl_t@12@II_NI@Z1@Z
-    ?DestructSoo@container_internal@absl@@YAXAAVCommonFields@12@IIP6AXPAX1@ZP6AX1IPAW4ctrl_t@12@II_NI@Z1@Z
     ?DiagnosticsGetDeleteQueue@CordzHandle@cord_internal@absl@@SA?AV?$vector@PBVCordzHandle@cord_internal@absl@@V?$allocator@PBVCordzHandle@cord_internal@absl@@@__Cr@std@@@__Cr@std@@XZ
     ?DiagnosticsGetSafeToInspectDeletedHandles@CordzHandle@cord_internal@absl@@QAE?AV?$vector@PBVCordzHandle@cord_internal@absl@@V?$allocator@PBVCordzHandle@cord_internal@absl@@@__Cr@std@@@__Cr@std@@XZ
     ?DiagnosticsHandleIsSafeToInspect@CordzHandle@cord_internal@absl@@QBE_NPBV123@@Z
@@ -1334,6 +1337,7 @@ EXPORTS
     ?UnparseFlag@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@VDuration@1@@Z
     ?Unref@StatusRep@status_internal@absl@@QBEXXZ
     ?UnrefTree@InlineRep@Cord@absl@@AAEXXZ
+    ?UnregisterAndDeallocBackingArray@container_internal@absl@@YAXAAVCommonFields@12@ABUDtorPolicy@12@P6AXPAX2I@Z2@Z
     ?UnsampleSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@@Z
     ?Unscramble@CRC32@crc_internal@absl@@UBEXPAI@Z
     ?Untrack@CordzInfo@cord_internal@absl@@QAEXXZ

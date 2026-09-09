@@ -36,6 +36,7 @@ absl_source_set("hash_testing") {
   public = [ "hash_testing.h" ]
   deps = [
     ":spy_hash_state",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:variant",
@@ -89,6 +90,7 @@ absl_source_set("spy_hash_state") {
   deps = [
     ":hash",
     ":weakly_mixed_integer",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",
   ]
@@ -108,7 +110,10 @@ absl_source_set("city") {
 
 absl_test("city_test") {
   sources = [ "internal/city_test.cc" ]
-  deps = [ ":city" ]
+  deps = [
+    ":city",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
 }
 
 absl_source_set("weakly_mixed_integer") {

@@ -48,6 +48,7 @@
 
 #include "absl/algorithm/algorithm.h"
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/hardening.h"
 #include "absl/base/internal/iterator_traits.h"
 #include "absl/base/macros.h"

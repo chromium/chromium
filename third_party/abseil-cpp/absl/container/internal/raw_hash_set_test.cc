@@ -1022,7 +1022,7 @@ struct ValuePolicy {
         std::forward<F>(f), std::forward<Args>(args)...);
   }
 
-  template <class Hash, bool kIsDefault, size_t kSeedShift>
+  template <class Hash, bool kIsAbsl, size_t kSeedShift>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -1176,7 +1176,7 @@ class StringPolicy {
                       PairArgs(std::forward<Args>(args)...));
   }
 
-  template <class Hash, bool kIsDefault, size_t kSeedShift>
+  template <class Hash, bool kIsAbsl, size_t kSeedShift>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -2808,6 +2808,11 @@ struct DecomposeType {
     return *this;
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, const DecomposeType& d) {
+    return H::combine(std::move(h), d.i);
+  }
+
   int i;
 };
 
@@ -2850,7 +2855,7 @@ struct DecomposePolicy {
     return std::forward<F>(f)(x, x);
   }
 
-  template <class Hash, bool kIsDefault, size_t kSeedShift>
+  template <class Hash, bool kIsAbsl, size_t kSeedShift>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -3000,6 +3005,8 @@ TEST(Table, Decompose) {
   TestDecompose<TransparentHashIntOverload, DecomposeEq>(true);
   TestDecompose<TransparentHashIntOverload, TransparentEqIntOverload>(true);
   TestDecompose<DecomposeHash, TransparentEqIntOverload>(true);
+  TestDecompose<absl::TransparentHash<DecomposeType, int>,
+                TransparentEqIntOverload>(true);
 }
 
 struct Modulo1000Hash {

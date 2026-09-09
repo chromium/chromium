@@ -29,6 +29,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
@@ -72,6 +73,38 @@ struct IntPolicy {
 
   template <class F>
   static auto apply(F&& f, int64_t x) -> decltype(std::forward<F>(f)(x, x)) {
+    return std::forward<F>(f)(x, x);
+  }
+
+  template <class Hash, bool kIsAbsl, size_t kSeedShift>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return nullptr;
+  }
+};
+
+struct IntArrayPolicy {
+  using slot_type = std::array<int64_t, 3>;
+  using key_type = std::array<int64_t, 3>;
+  using init_type = std::array<int64_t, 3>;
+
+  using DefaultHash = void;
+  using DefaultEq = void;
+  using DefaultAlloc = void;
+
+  static void construct(void*, slot_type* slot, const init_type& v) {
+    *slot = v;
+  }
+  static std::true_type destroy(void*, slot_type*) { return std::true_type{}; }
+  static std::true_type transfer(void*, slot_type* new_slot,
+                                 slot_type* old_slot) {
+    *new_slot = *old_slot;
+    return std::true_type{};
+  }
+
+  static slot_type& element(slot_type* slot) { return *slot; }
+
+  template <class F>
+  static auto apply(F&& f, slot_type x) -> decltype(std::forward<F>(f)(x, x)) {
     return std::forward<F>(f)(x, x);
   }
 
@@ -142,7 +175,7 @@ class StringPolicy {
                       PairArgs(std::forward<Args>(args)...));
   }
 
-  template <class Hash, bool kIsDefault, size_t kSeedShift>
+  template <class Hash, bool kIsAbsl, size_t kSeedShift>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -158,7 +191,18 @@ struct StringEq : std::equal_to<absl::string_view> {
 struct StringTable
     : raw_hash_set<StringPolicy, StringHash, StringEq, std::allocator<int>> {
   using Base = typename StringTable::raw_hash_set;
-  StringTable() {}
+  StringTable() = default;
+  using Base::Base;
+};
+
+struct IntArrayTable
+    : raw_hash_set<
+          IntArrayPolicy,
+          container_internal::hash_default_hash<std::array<int64_t, 3>>,
+          std::equal_to<std::array<int64_t, 3>>,
+          std::allocator<std::array<int64_t, 3>>> {
+  using Base = typename IntArrayTable::raw_hash_set;
+  IntArrayTable() = default;
   using Base::Base;
 };
 
@@ -166,19 +210,20 @@ struct IntTable
     : raw_hash_set<IntPolicy, container_internal::hash_default_hash<int64_t>,
                    std::equal_to<int64_t>, std::allocator<int64_t>> {
   using Base = typename IntTable::raw_hash_set;
-  IntTable() {}
+  IntTable() = default;
   using Base::Base;
 };
 
 struct MyInt {
   int64_t value;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const MyInt& x) {
+    return H::combine(std::move(h), x.value);
+  }
 };
 
-struct TransparentIntHash {
-  using is_transparent = void;
-  size_t operator()(int64_t x) const { return absl::Hash<int64_t>{}(x); }
-  size_t operator()(MyInt x) const { return absl::Hash<int64_t>{}(x.value); }
-};
+using TransparentIntHash = absl::TransparentHash<int64_t, MyInt>;
 
 struct TransparentIntEq {
   using is_transparent = void;
@@ -486,6 +531,27 @@ BENCHMARK(BM_ReserveIntTable)
     ->Arg(128)
     ->Arg(256)
     ->Arg(512);
+
+// value_type is trivially destructible, so the benchmark isn't measuring
+// ~value_type() time.
+void BM_DestructNonSooTableOneElement(benchmark::State& state) {
+  constexpr size_t kBatchSize = 1024;
+  constexpr size_t kReserveSize = 1;
+
+  std::vector<IntArrayTable> tables;
+  while (state.KeepRunningBatch(kBatchSize)) {
+    benchmark::DoNotOptimize(tables);
+    state.PauseTiming();
+    tables.resize(kBatchSize);
+    for (auto& t : tables) {
+      t.reserve(kReserveSize);
+    }
+    state.ResumeTiming();
+    benchmark::DoNotOptimize(tables);
+    tables.clear();
+  }
+}
+BENCHMARK(BM_DestructNonSooTableOneElement);
 
 void BM_ReserveStringTable(benchmark::State& state) {
   constexpr size_t kBatchSize = 1024;

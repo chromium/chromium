@@ -72,6 +72,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":spy_hash_state",
+        "//absl/base:config",
         "//absl/meta:type_traits",
         "//absl/strings",
         "//absl/types:variant",
@@ -158,6 +159,7 @@ cc_library(
     deps = [
         ":hash",
         ":weakly_mixed_integer",
+        "//absl/base:config",
         "//absl/strings",
         "//absl/strings:str_format",
     ],
@@ -189,6 +191,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":city",
+        "//absl/base:config",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

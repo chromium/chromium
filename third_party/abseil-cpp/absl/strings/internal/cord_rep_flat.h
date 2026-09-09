@@ -22,9 +22,11 @@
 #include <cstring>
 #include <memory>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/strings/internal/cord_internal.h"
+#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

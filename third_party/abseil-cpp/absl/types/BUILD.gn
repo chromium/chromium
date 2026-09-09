@@ -119,6 +119,7 @@ absl_test("compare_test") {
   deps = [
     ":compare",
     "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 

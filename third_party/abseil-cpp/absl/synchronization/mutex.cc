@@ -2788,7 +2788,9 @@ void ReleasableMutexLock::Release() {
 }
 
 #ifdef ABSL_HAVE_THREAD_SANITIZER
+#pragma GCC visibility push(default)
 extern "C" void __tsan_read1(void* addr);
+#pragma GCC visibility pop
 #else
 #define __tsan_read1(addr)  // do nothing if TSan not enabled
 #endif

@@ -38,6 +38,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/utility/utility.h"
 
 #if defined(_MSC_VER) && !defined(__NVCC__)

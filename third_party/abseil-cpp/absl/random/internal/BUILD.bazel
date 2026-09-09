@@ -238,6 +238,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":seed_material",
+        "//absl/base:config",
         "//absl/container:inlined_vector",
         "//absl/meta:type_traits",
         "//absl/types:optional",
@@ -267,6 +268,7 @@ cc_library(
     deps = [
         ":fastmath",
         ":traits",
+        "//absl/base:config",
         "//absl/meta:type_traits",
         "//absl/numeric:bits",
     ],
@@ -279,7 +281,10 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = ["//absl/numeric:bits"],
+    deps = [
+        "//absl/base:config",
+        "//absl/numeric:bits",
+    ],
 )
 
 cc_library(
@@ -335,6 +340,7 @@ cc_library(
     deps = [
         ":iostream_state_saver",
         ":randen",
+        "//absl/base:config",
         "//absl/base:endian",
         "//absl/meta:type_traits",
     ],

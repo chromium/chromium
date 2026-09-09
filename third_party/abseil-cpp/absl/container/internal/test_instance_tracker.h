@@ -19,6 +19,7 @@
 #include <ostream>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/types/compare.h"
 
 namespace absl {

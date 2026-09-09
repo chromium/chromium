@@ -40,6 +40,7 @@
 #include <limits>
 
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/time/civil_time.h"
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
 #include "absl/time/internal/cctz/include/cctz/time_zone.h"

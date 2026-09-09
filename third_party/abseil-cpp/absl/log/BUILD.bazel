@@ -514,6 +514,7 @@ cc_test(
         ":check",
         ":log",
         ":log_entry",
+        ":log_sink",
         ":scoped_mock_log",
         "//absl/base:config",
         "//absl/base:core_headers",

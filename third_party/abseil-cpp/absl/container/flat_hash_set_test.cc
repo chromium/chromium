@@ -389,14 +389,14 @@ TEST(FlatHashSet, MoveOnlyKey) {
 TEST(FlatHashSet, IsDefaultHash) {
   using absl::container_internal::hashtable_debug_internal::
       HashtableDebugAccess;
-  EXPECT_EQ(HashtableDebugAccess<flat_hash_set<int>>::kIsDefaultHash, true);
-  EXPECT_EQ(HashtableDebugAccess<flat_hash_set<std::string>>::kIsDefaultHash,
+  EXPECT_EQ(HashtableDebugAccess<flat_hash_set<int>>::kIsAbslHash, true);
+  EXPECT_EQ(HashtableDebugAccess<flat_hash_set<std::string>>::kIsAbslHash,
             true);
 
   struct Hash {
     size_t operator()(size_t i) const { return i; }
   };
-  EXPECT_EQ((HashtableDebugAccess<flat_hash_set<size_t, Hash>>::kIsDefaultHash),
+  EXPECT_EQ((HashtableDebugAccess<flat_hash_set<size_t, Hash>>::kIsAbslHash),
             false);
 }
 

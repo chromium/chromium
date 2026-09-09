@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "gtest/gtest.h"
+#include "absl/base/config.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/unordered_map_constructor_test.h"
 #include "absl/container/internal/unordered_map_lookup_test.h"

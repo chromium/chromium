@@ -122,6 +122,7 @@ absl_source_set("thread_pool") {
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
   deps = [
     ":synchronization",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/functional:any_invocable",
   ]

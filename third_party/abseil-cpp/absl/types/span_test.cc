@@ -14,7 +14,9 @@
 
 #include "absl/types/span.h"
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <initializer_list>
 #include <numeric>
 #include <stdexcept>

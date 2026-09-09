@@ -190,10 +190,12 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Cord {
 
   // Creates a Cord from an existing Cord. Cord is copyable and efficiently
   // movable. The moved-from state is valid but unspecified.
-  Cord(const Cord& src);
-  Cord(Cord&& src) noexcept;
-  Cord& operator=(const Cord& x);
-  Cord& operator=(Cord&& x) noexcept;
+  // Moves need to be declared since they are otherwise inhibited via the
+  // declaration of the destructor.
+  Cord(const Cord&) = default;
+  Cord(Cord&&) = default;
+  Cord& operator=(const Cord&) = default;
+  Cord& operator=(Cord&&) = default;
 
   // Creates a Cord from a `src` string. This constructor is marked explicit to
   // prevent implicit Cord constructions from arguments convertible to an
@@ -1376,11 +1378,6 @@ constexpr Cord::Cord(strings_internal::StringConstant<T>)
                     : &cord_internal::ConstInitExternalStorage<
                           strings_internal::StringConstant<T>>::value) {}
 
-inline Cord& Cord::operator=(const Cord& x) {
-  contents_ = x.contents_;
-  return *this;
-}
-
 template <typename T, Cord::EnableIfString<T>>
 Cord& Cord::operator=(T&& src) {
   if (src.size() <= cord_internal::kMaxBytesToCopy) {
@@ -1390,17 +1387,8 @@ Cord& Cord::operator=(T&& src) {
   }
 }
 
-inline Cord::Cord(const Cord& src) : contents_(src.contents_) {}
-
-inline Cord::Cord(Cord&& src) noexcept : contents_(std::move(src.contents_)) {}
-
 inline void Cord::swap(Cord& other) noexcept {
   contents_.Swap(&other.contents_);
-}
-
-inline Cord& Cord::operator=(Cord&& x) noexcept {
-  contents_ = std::move(x.contents_);
-  return *this;
 }
 
 extern template Cord::Cord(std::string&& src);
