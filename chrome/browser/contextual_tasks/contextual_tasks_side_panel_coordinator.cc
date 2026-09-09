@@ -710,8 +710,10 @@ void ContextualTasksSidePanelCoordinator::OnTabAdded(TabListInterface& tab_list,
   content::WebContents* content = tab->GetContents();
 
   // Background tabs opened via hotkey commands (e.g. Ctrl+Click, middle-click)
-  // or context menus should not inherit task association from the opener.
-  if (tab_list.GetActiveTab() != tab) {
+  // or context menus should not inherit task association from the opener,
+  // unless clobbering is enabled.
+  if (!contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
+      tab_list.GetActiveTab() != tab) {
     return;
   }
 
