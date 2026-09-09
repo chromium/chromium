@@ -546,6 +546,13 @@ void LocalFrameMojoHandler::SendInterventionReport(
   }
 }
 
+void LocalFrameMojoHandler::UpdateChildFrameToVideoAd(
+    const FrameToken& child_frame_token) {
+  if (auto* child_frame = Frame::ResolveFrame(child_frame_token)) {
+    To<HTMLFrameOwnerElement>(child_frame->Owner())->UpdateToVideoAd();
+  }
+}
+
 void LocalFrameMojoHandler::SetFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr properties) {
   GetDocument()->WillChangeFrameOwnerProperties(

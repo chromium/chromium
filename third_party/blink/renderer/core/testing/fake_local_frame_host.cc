@@ -160,6 +160,8 @@ void FakeLocalFrameHost::DownloadURL(
 
 void FakeLocalFrameHost::ShowCaptionSettings() {}
 
+void FakeLocalFrameHost::UpdateToVideoAdFrame() {}
+
 void FakeLocalFrameHost::FocusedElementChanged(
     bool is_editable_element,
     bool is_richly_editable_element,

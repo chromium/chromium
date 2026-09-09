@@ -46,16 +46,23 @@ class CORE_EXPORT DisplayAdElementMonitor final
 
   bool ShouldHighlight() const { return should_highlight_; }
 
+  bool IsVideoAd() const { return is_video_ad_; }
+  void UpdateToVideoAd();
+
   const AdProvenance& GetAdProvenance() const { return ad_provenance_; }
 
   void Trace(Visitor*) const override;
 
  private:
+  void MaybeRecordVideoAdUseCounter();
+
   Member<Element> element_;
 
   AdProvenance ad_provenance_;
 
   bool started_ = false;
+  bool is_video_ad_ = false;
+  bool did_record_video_ad_use_counter_ = false;
 
   // Caches the last known value of the DevTools "Highlight ads" setting. This
   // value remains `false` if the element is not eligible for monitoring (e.g.,

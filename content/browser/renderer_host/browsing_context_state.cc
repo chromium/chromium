@@ -361,9 +361,10 @@ void BrowsingContextState::SetAdFrameStatus(
     blink::mojom::FrameAdStatus ad_frame_status) {
   // A frame's ad status can only be upgraded monotonically. Ignore redundant
   // updates and reject attempted downgrades. This fails safe in production
-  // and DCHECKs in debug builds.
+  // and CHECKs with NOT_FATAL_UNTIL to gather crash reports.
   if (ad_frame_status <= replication_state_->ad_frame_status) {
-    DCHECK_EQ(ad_frame_status, replication_state_->ad_frame_status)
+    CHECK_EQ(ad_frame_status, replication_state_->ad_frame_status,
+             base::NotFatalUntil::M160)
         << "A frame's ad status must not be downgraded.";
     return;
   }

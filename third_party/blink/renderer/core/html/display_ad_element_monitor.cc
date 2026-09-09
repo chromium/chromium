@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -57,6 +59,22 @@ DisplayAdElementMonitor::DisplayAdElementMonitor(Element* element,
   probe::UpdateAdRelatedState(*element, ad_provenance_);
 
   EnsureStarted();
+}
+
+void DisplayAdElementMonitor::UpdateToVideoAd() {
+  if (!is_video_ad_) {
+    is_video_ad_ = true;
+  }
+  MaybeRecordVideoAdUseCounter();
+}
+
+void DisplayAdElementMonitor::MaybeRecordVideoAdUseCounter() {
+  if (!did_record_video_ad_use_counter_ && is_video_ad_ &&
+      overlay_visibility_ == OverlayVisibility::kVisible &&
+      !last_reported_rect_.IsEmpty()) {
+    did_record_video_ad_use_counter_ = true;
+    UseCounter::Count(element_->GetDocument(), WebFeature::kVideoAdDetected);
+  }
 }
 
 void DisplayAdElementMonitor::EnsureStarted() {
@@ -157,6 +175,8 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
         element_->GetDomNodeId(), rect_to_report);
     last_reported_rect_ = rect_to_report;
   }
+
+  MaybeRecordVideoAdUseCounter();
 }
 
 DisplayAdElementMonitor::OverlayVisibility

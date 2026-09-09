@@ -19277,6 +19277,43 @@ void RenderFrameHostImpl::UpdateToAdFrame() {
   UpdateAdFrameStatus(blink::mojom::FrameAdStatus::kAd);
 }
 
+void RenderFrameHostImpl::UpdateToVideoAdFrame() {
+  if (browsing_context_state_->ad_frame_status() ==
+      blink::mojom::FrameAdStatus::kNotAd) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "Renderer sent UpdateToVideoAdFrame but it is not an ad frame.");
+    return;
+  }
+
+  // Walk up the frame tree to find the root ad frame.
+  RenderFrameHostImpl* current = this;
+  RenderFrameHostImpl* ad_root = this;
+
+  while (current && current->browsing_context_state_->ad_frame_status() !=
+                        blink::mojom::FrameAdStatus::kNotAd) {
+    ad_root = current;
+    current = current->GetParent();
+  }
+
+  // Notify the ad root's parent frame that the root ad frame has transitioned
+  // to a video ad. This allows the DisplayAdElementMonitor attached to the
+  // root ad iframe element to start tracking it for video-related behaviors.
+  if (RenderFrameHostImpl* ad_root_parent = ad_root->GetParent()) {
+    // The ad root frame might be cross-process from its parent. If so, the
+    // parent frame references it via a RemoteFrame, and we need to use the
+    // proxy's token to identify the child frame to the parent.
+    blink::FrameToken ad_root_token;
+    if (RenderFrameProxyHost* ad_root_proxy_host =
+            ad_root->GetProxyToParent()) {
+      ad_root_token = ad_root_proxy_host->GetFrameToken();
+    } else {
+      ad_root_token = ad_root->GetFrameToken();
+    }
+    ad_root_parent->GetAssociatedLocalFrame()->UpdateChildFrameToVideoAd(
+        ad_root_token);
+  }
+}
+
 void RenderFrameHostImpl::UpdateAdFrameStatus(
     blink::mojom::FrameAdStatus ad_frame_status) {
   if (!CanApplyFrameReplicationUpdate(

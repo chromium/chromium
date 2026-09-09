@@ -590,7 +590,6 @@ class CORE_EXPORT HTMLMediaElement
   // state is updated. This is typically handled during `UpdatePlayState`.
   virtual void UpdateVideoVisibilityTracker() {}
 
-
   void SetShowPosterFlag(bool value);
 
   void SetReadyState(ReadyState);
@@ -598,7 +597,7 @@ class CORE_EXPORT HTMLMediaElement
 
   // WebMediaPlayerClient implementation.
   void NetworkStateChanged() final;
-  void ReadyStateChanged() final;
+  void ReadyStateChanged() override;
   void TimeChanged() final;
   void Repaint() final;
   void DurationChanged() final;

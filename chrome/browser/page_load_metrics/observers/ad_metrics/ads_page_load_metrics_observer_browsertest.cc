@@ -3695,3 +3695,270 @@ IN_PROC_BROWSER_TEST_F(DevToolsAdsTest, GetAdMetrics_AdFrames) {
 
   EXPECT_TRUE(removed);
 }
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       VideoAdCreatedByAdScript_AppendedThenLoaded) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  waiter->AddWebFeatureExpectation(blink::mojom::WebFeature::kVideoAdDetected);
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      content::JsReplace("appendThenLoadVideoAd($1);", video_url.spec())));
+
+  waiter->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       VideoAdCreatedByAdScript_LoadedThenAppended) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  waiter->AddWebFeatureExpectation(blink::mojom::WebFeature::kVideoAdDetected);
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      content::JsReplace("loadThenAppendVideoAd($1);", video_url.spec())));
+
+  waiter->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       VideoAdInSameOriginIframe) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  GURL iframe_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/frame_factory.html");
+  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
+          new Promise(resolve => {
+            createAdFrame($1, 'ad_frame', undefined, resolve, resolve);
+          })
+        )",
+                                                      iframe_url.spec())));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+
+  waiter->AddWebFeatureExpectation(blink::mojom::WebFeature::kVideoAdDetected);
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(child_rfh, content::JsReplace("appendThenLoadVideoAd($1);",
+                                                   video_url.spec())));
+
+  waiter->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       VideoAdInCrossOriginIframe) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  GURL iframe_url = embedded_test_server()->GetURL(
+      "bar.com", "/ad_tagging/frame_factory.html");
+  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
+          new Promise(resolve => {
+            createAdFrame($1, 'ad_frame', undefined, resolve, resolve);
+          })
+        )",
+                                                      iframe_url.spec())));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+
+  waiter->AddWebFeatureExpectation(blink::mojom::WebFeature::kVideoAdDetected);
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "bar.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(child_rfh, content::JsReplace("appendThenLoadVideoAd($1);",
+                                                   video_url.spec())));
+
+  waiter->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       VideoAdInNestedAdFrame) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  GURL iframe_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/frame_factory.html");
+  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
+          new Promise(resolve => {
+            createAdFrame($1, 'ad_frame', undefined, resolve, resolve);
+          })
+        )",
+                                                      iframe_url.spec())));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+
+  GURL nested_iframe_url = embedded_test_server()->GetURL(
+      "bar.com", "/ad_tagging/frame_factory.html");
+  EXPECT_TRUE(ExecJs(child_rfh, content::JsReplace(R"(
+          new Promise(resolve => {
+            createAdFrame($1, 'nested_ad_frame', undefined, resolve, resolve);
+          })
+        )",
+                                                   nested_iframe_url.spec())));
+
+  content::RenderFrameHost* grandchild_rfh =
+      content::ChildFrameAt(child_rfh, 0);
+
+  waiter->AddWebFeatureExpectation(blink::mojom::WebFeature::kVideoAdDetected);
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "bar.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(
+      grandchild_rfh,
+      content::JsReplace("appendThenLoadVideoAd($1);", video_url.spec())));
+
+  waiter->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       NonAdVideo_NoVideoAdUseCounter) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
+          const video = document.createElement('video');
+          video.src = $1;
+          video.autoplay = true;
+          video.style.width = '100px';
+          video.style.height = '100px';
+          document.body.appendChild(video);
+          new Promise(resolve => {
+            const checkReady = () => {
+              if (video.readyState >= 1) {
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => resolve(true)));
+              } else {
+                setTimeout(checkReady, 50);
+              }
+            };
+            checkReady();
+          });
+        )",
+                                                      video_url.spec())));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::FetchHistogramsFromChildProcesses();
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      static_cast<int>(blink::mojom::WebFeature::kVideoAdDetected), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       AudioAdCreatedByAdScript_NoVideoAdUseCounter) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  GURL audio_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      content::JsReplace("appendThenLoadAudioAd($1);", audio_url.spec())));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::FetchHistogramsFromChildProcesses();
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      static_cast<int>(blink::mojom::WebFeature::kVideoAdDetected), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       InvisibleVideoAd_NoVideoAdUseCounter) {
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  GURL url = embedded_test_server()->GetURL("foo.com",
+                                            "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
+  GURL video_url = embedded_test_server()->GetURL(
+      "foo.com", "/ad_tagging/bear-320x240-video-only.webm");
+  EXPECT_TRUE(ExecJs(web_contents,
+                     content::JsReplace("appendThenLoadInvisibleVideoAd($1);",
+                                        video_url.spec())));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::FetchHistogramsFromChildProcesses();
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      static_cast<int>(blink::mojom::WebFeature::kVideoAdDetected), 0);
+}

@@ -1908,8 +1908,14 @@ class CORE_EXPORT Element : public ContainerNode {
   // `ad_provenance` is not overwritten).
   void SetIsAdRelated(AdProvenance ad_provenance);
 
+  // Marks this element as an ad-related video stream.
+  void UpdateToVideoAd();
+
   // Returns true if the element is considered ad-related.
   bool IsAdRelated() const;
+
+  // Returns true if the element is an ad-related video stream.
+  bool IsVideoAd() const;
 
   // Returns the `AdProvenance` if the element is ad-related, or `std::nullopt`
   // otherwise.

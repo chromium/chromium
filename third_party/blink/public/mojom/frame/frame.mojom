@@ -534,6 +534,23 @@ interface LocalFrameHost {
   // settings.
   ShowCaptionSettings();
 
+  // Notifies the browser that a video ad was detected within this frame.
+  // The browser then locates the root ad frame (the top-most ancestor that
+  // is still an ad frame) and notifies the root ad frame's parent document
+  // so that the root ad frame's owner element (<iframe>) can be tagged.
+  //
+  // Prerequisite: The frame must already be an ad frame (enforced at the mojom
+  // boundary).
+  //
+  // Note: Renderer-to-browser communication for typical ad-tagging is routed
+  // via subresource_filter.mojom.SubresourceFilterHost. This stems from a
+  // historical strict layering constraint to keep ad-related logic out of
+  // //content. As this constraint has relaxed over time, routing the video
+  // tagging via mojom::LocalFrameHost is now acceptable and cleaner. We may
+  // eventually consolidate the renderer-to-browser ad-tagging communication
+  // into a single channel.
+  UpdateToVideoAdFrame();
+
   // Sent to the browser when focus changes inside the frame.
   // - is_editable_element: Whether the newly focused element needs
   //   keyboard input (true for textfields, text areas and content
@@ -876,6 +893,10 @@ interface LocalFrame {
   //         the child frame's owner element.
   SendInterventionReport(
       string id, string message, blink.mojom.FrameToken? child_frame_token);
+
+  // Notifies this frame that a child frame (identified by `child_frame_token`)
+  // has been updated to be a video ad.
+  UpdateChildFrameToVideoAd(blink.mojom.FrameToken child_frame_token);
 
   // Updates this frame's FrameOwner properties, such as scrolling, margin,
   // or allowfullscreen.  This is used when this frame's parent is in

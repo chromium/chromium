@@ -9261,9 +9261,42 @@ void Element::SetIsAdRelated(AdProvenance ad_provenance) {
       .RefreshNodeAndUnwrap(*this);
 }
 
+void Element::UpdateToVideoAd() {
+  auto& monitor = EnsureRareData()
+                      .EnsureDisplayAdElementMonitor(
+                          this, GetAdProvenance().value_or(NoProvenance{}))
+                      .RefreshNodeAndUnwrap(*this);
+  if (!monitor.IsVideoAd()) {
+    // For display ad tracking, we only need to tag the root ad element rather
+    // than every ancestor in the renderer. However, we tag this monitor here
+    // regardless to prevent redundant IPCs from the same frame.
+    monitor.UpdateToVideoAd();
+
+    if (LocalFrame* frame = GetDocument().GetFrame()) {
+      if (frame->IsAdFrame()) {
+        // Notify the browser process of a video within an ad frame so it can
+        // tag the root ad frame. This assumes the iframe lineage up to the
+        // root exists primarily to host the video. While we could optimize by
+        // walking the local frame tree first (e.g., if we never encounter an
+        // OOPIF), we skip this for simplicity.
+        frame->GetLocalFrameHostRemote().UpdateToVideoAdFrame();
+      }
+    }
+  }
+}
+
 bool Element::IsAdRelated() const {
   if (const NodeRareData* data = RareData()) {
     return data->GetDisplayAdElementMonitor();
+  }
+  return false;
+}
+
+bool Element::IsVideoAd() const {
+  if (const NodeRareData* data = RareData()) {
+    if (auto* monitor = data->GetDisplayAdElementMonitor()) {
+      return monitor->IsVideoAd();
+    }
   }
   return false;
 }

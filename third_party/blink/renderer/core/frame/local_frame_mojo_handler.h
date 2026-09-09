@@ -102,6 +102,7 @@ class LocalFrameMojoHandler
       const String& id,
       const String& message,
       const std::optional<FrameToken>& child_frame_token) final;
+  void UpdateChildFrameToVideoAd(const FrameToken& child_frame_token) final;
   void SetFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties) final;
   void NotifyUserActivation(

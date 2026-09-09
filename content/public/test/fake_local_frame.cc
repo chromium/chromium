@@ -43,6 +43,9 @@ void FakeLocalFrame::SendInterventionReport(
     const std::string& message,
     const std::optional<blink::FrameToken>& child_frame_token) {}
 
+void FakeLocalFrame::UpdateChildFrameToVideoAd(
+    const blink::FrameToken& child_frame_token) {}
+
 void FakeLocalFrame::SetFrameOwnerProperties(
     blink::mojom::FrameOwnerPropertiesPtr properties) {}
 

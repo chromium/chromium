@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -199,6 +200,8 @@ Node::InsertionNotificationRequest HTMLVideoElement::InsertedInto(
   auto insertion_notification_request =
       HTMLMediaElement::InsertedInto(insertion_point);
 
+  UpdateVideoAdTaggingIfNeeded();
+
   UpdateVideoVisibilityTracker();
 
   // For poster-only videos with loading=lazy that were created before being
@@ -212,6 +215,25 @@ Node::InsertionNotificationRequest HTMLVideoElement::InsertedInto(
   }
 
   return insertion_notification_request;
+}
+
+void HTMLVideoElement::ReadyStateChanged() {
+  HTMLMediaElement::ReadyStateChanged();
+  UpdateVideoAdTaggingIfNeeded();
+}
+
+void HTMLVideoElement::UpdateVideoAdTaggingIfNeeded() {
+  if (!HasVideo() || !isConnected()) {
+    return;
+  }
+  if (getReadyState() >= kHaveMetadata) {
+    if (LocalFrame* frame = GetDocument().GetFrame()) {
+      bool is_ad = IsAdRelated() || frame->IsAdFrame();
+      if (is_ad && !IsVideoAd()) {
+        UpdateToVideoAd();
+      }
+    }
+  }
 }
 
 void HTMLVideoElement::RemovedFrom(ContainerNode& insertion_point) {

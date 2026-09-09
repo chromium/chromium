@@ -150,3 +150,84 @@ function createCSSBackgroundImageFromAdScript(url) {
   div.style.backgroundImage = 'url("' + url + '")';
   document.body.appendChild(div);
 }
+
+function appendThenLoadVideoAd(url) {
+  const video = document.createElement('video');
+  video.src = url;
+  video.autoplay = true;
+  video.style.width = '100px';
+  video.style.height = '100px';
+  video.style.position = 'fixed';
+  video.style.top = '0';
+  video.style.left = '0';
+  document.body.appendChild(video);
+  return new Promise(resolve => {
+    const checkReady = () => {
+      if (video.readyState >= 1) {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve(true)));
+      } else {
+        setTimeout(checkReady, 50);
+      }
+    };
+    checkReady();
+  });
+}
+
+function loadThenAppendVideoAd(url) {
+  const video = document.createElement('video');
+  video.src = url;
+  video.autoplay = true;
+  video.style.width = '100px';
+  video.style.height = '100px';
+  video.style.position = 'fixed';
+  video.style.top = '0';
+  video.style.left = '0';
+  return new Promise(resolve => {
+    const checkReady = () => {
+      if (video.readyState >= 1) {
+        document.body.appendChild(video);
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve(true)));
+      } else {
+        setTimeout(checkReady, 50);
+      }
+    };
+    checkReady();
+  });
+}
+
+function appendThenLoadAudioAd(url) {
+  const audio = document.createElement('audio');
+  audio.src = url;
+  audio.autoplay = true;
+  document.body.appendChild(audio);
+  return new Promise(resolve => {
+    const checkReady = () => {
+      if (audio.readyState >= 1) {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve(true)));
+      } else {
+        setTimeout(checkReady, 50);
+      }
+    };
+    checkReady();
+  });
+}
+
+function appendThenLoadInvisibleVideoAd(url) {
+  const video = document.createElement('video');
+  video.src = url;
+  video.autoplay = true;
+  video.style.width = '0px';
+  video.style.height = '0px';
+  video.style.display = 'none';
+  document.body.appendChild(video);
+  return new Promise(resolve => {
+    const checkReady = () => {
+      if (video.readyState >= 1) {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve(true)));
+      } else {
+        setTimeout(checkReady, 50);
+      }
+    };
+    checkReady();
+  });
+}

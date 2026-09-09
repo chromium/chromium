@@ -75,6 +75,14 @@ class CORE_EXPORT HTMLVideoElement final
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
+  // MediaPlayerClient override.
+  void ReadyStateChanged() override;
+
+  // Marks the detected ad media element as a "video ad" if it is connected to
+  // the DOM and has reached the `kHaveMetadata` state. This offers better
+  // precision than simply relying on the presence of a <video> tag.
+  void UpdateVideoAdTaggingIfNeeded();
+
   unsigned videoWidth() const;
   unsigned videoHeight() const;
 

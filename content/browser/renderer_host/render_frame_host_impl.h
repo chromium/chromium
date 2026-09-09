@@ -2420,6 +2420,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                         blink::mojom::FaviconUpdateReason reason) override;
   void DownloadURL(blink::mojom::DownloadURLParamsPtr params) override;
   void ShowCaptionSettings() override;
+  void UpdateToVideoAdFrame() override;
   void FocusedElementChanged(
       bool is_editable_element,
       bool is_richly_editable_element,

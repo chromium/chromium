@@ -5329,6 +5329,7 @@ enum WebFeature {
   kInteractionContentfulPaintEntryEmitted = 6012,
   kInteractionContentfulPaintExplicitlyRequested = 6013,
   kInteractionContentfulPaintObserved = 6014,
+  kVideoAdDetected = 6015,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
