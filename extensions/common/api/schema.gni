@@ -78,7 +78,7 @@ if (enable_extensions) {
     "cec_private.webidl",
     "clipboard.webidl",
     "feedback_private.webidl",
-    "file_system.idl",
+    "file_system.webidl",
     "hid.webidl",
     "mime_handler.webidl",
     "networking_private.webidl",

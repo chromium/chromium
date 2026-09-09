@@ -104,6 +104,7 @@ _CONVERTED_SCHEMAS = [
   ('icon_variants.idl', 'icon_variants.webidl'),
   ('mime_handler_private.idl', 'mime_handler_private.webidl'),
   ('hid.idl', 'hid.webidl'),
+  ('file_system.idl', 'file_system.webidl'),
 ]
 
 
