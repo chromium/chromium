@@ -375,6 +375,10 @@ void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   InitToolbarUIService(*dependency_provider);
 
   omnibox_controller_ = dependency_provider->GetOmniboxController();
+  if (delayed_searchbox_receiver_.is_valid()) {
+    CreatePageHandler(std::move(delayed_searchbox_page_),
+                      std::move(delayed_searchbox_receiver_));
+  }
 }
 
 void WebUIToolbarUI::DependenciesDestroying() {
@@ -508,9 +512,12 @@ void WebUIToolbarUI::FinishCreateHelpBubbleHandler(
 void WebUIToolbarUI::CreatePageHandler(
     mojo::PendingRemote<searchbox::mojom::Page> page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  // If this failed in a MochaJS test, it probably forgot to set a test
-  // BrowserProxy for SearchboxHandler.
-  CHECK(omnibox_controller_);
+  if (!omnibox_controller_) {
+    // Init() hasn't been called yet, save the params so it can call us again.
+    delayed_searchbox_page_ = std::move(page);
+    delayed_searchbox_receiver_ = std::move(receiver);
+    return;
+  }
 
   MetricsReporterService* metrics_reporter_service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());

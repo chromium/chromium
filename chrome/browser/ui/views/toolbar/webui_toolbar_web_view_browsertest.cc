@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
@@ -2213,6 +2214,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedDeferredBrowserTest,
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
       &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
+  auto* webview_ptr = toolbar_view.get();
 
   // Add it to a widget. This should trigger the deferred navigation.
   auto widget = std::make_unique<views::Widget>();
@@ -2224,9 +2226,24 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedDeferredBrowserTest,
   widget->Init(std::move(widget_params));
   widget->GetContentsView()->AddChildView(std::move(toolbar_view));
 
+  auto* web_ui = webview_ptr->GetWebUIToolbarUIForTesting();
+  ASSERT_TRUE(web_ui);
+  EXPECT_FALSE(web_ui->has_been_initialized_for_testing());
+
+  // Test for searchbox CreatePageHandler request happening before this
+  // navigation completes --- see crbug.com/559041124
+  MockSearchboxPage mock_page;
+  mojo::Receiver<searchbox::mojom::Page> page(&mock_page);
+  mojo::Remote<searchbox::mojom::PageHandler> page_handler;
+  web_ui->CreatePageHandler(page.BindNewPipeAndPassRemote(),
+                            page_handler.BindNewPipeAndPassReceiver());
+
   // Wait for the deferred navigation to complete.
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
+
+  EXPECT_TRUE(page.is_bound());
+  EXPECT_TRUE(page_handler.is_bound());
 
   widget->CloseNow();
 }

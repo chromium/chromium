@@ -384,6 +384,10 @@ class WebUIToolbarWebView
   // enabled.
   int GetLocationBarWidthForTesting() const;
 
+  WebUIToolbarUI* GetWebUIToolbarUIForTesting() const {
+    return GetWebUIToolbarUI();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckReloadButtonColor);

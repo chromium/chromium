@@ -166,6 +166,10 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // UIs.
   static const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers();
 
+  bool has_been_initialized_for_testing() const {
+    return toolbar_ui_service_ != nullptr;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
                            BindInterfaceBrowserControlsService);
@@ -229,6 +233,11 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
+
+  // These two are used if searchbox CreatePageHandler is called before Init();
+  mojo::PendingRemote<searchbox::mojom::Page> delayed_searchbox_page_;
+  mojo::PendingReceiver<searchbox::mojom::PageHandler>
+      delayed_searchbox_receiver_;
 
   base::WeakPtrFactory<WebUIToolbarUI> weak_ptr_factory_{this};
 
