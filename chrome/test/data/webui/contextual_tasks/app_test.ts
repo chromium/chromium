@@ -1421,6 +1421,22 @@ suite('ContextualTasksAppTest', function() {
       }
     });
 
+    test('AskG shows when eligible for omnibox popup button', async () => {
+      appElement.entryPoint_ = 'omnibox_popup_button';
+      appElement.isShownInTab_ = false;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      assertTrue(appElement.askGTooltipTarget_ !== null);
+
+      const onboardingTooltip =
+          appElement.shadowRoot.querySelector('#onboardingTooltip');
+      if (onboardingTooltip) {
+        assertFalse(onboardingTooltip.shouldShow);
+      }
+    });
+
     test('AskG shows when eligible in tab mode', async () => {
       appElement.entryPoint_ = 'omnibox_tab_search';
       appElement.isShownInTab_ = true;
