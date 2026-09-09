@@ -39,6 +39,9 @@ const char kImageActionButtonTapped[] = "MobileGeminiImageActionButtonTapped";
 const char kInputPlateAttachmentOptionTapped[] =
     "MobileGeminiInputPlateAttachmentOptionTapped";
 const char kEntryPointAvailable[] = "MobileGeminiEntryPointAvailable";
+const char kEntryPointDisabledByQuota[] =
+    "MobileGeminiEntryPointDisabledByQuota";
+const char kQuotaReached[] = "MobileGeminiQuotaReached";
 }  // namespace
 
 class GeminiMetricsTest : public PlatformTest {
@@ -409,6 +412,21 @@ TEST_F(GeminiMetricsTest, RecordGeminiEntryPointAvailable) {
   histogram_tester_.ExpectBucketCount(kEntryPointAvailableHistogram,
                                       gemini::EntryPoint::EditMenu, 1);
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kEntryPointAvailable));
+}
+
+// Tests that the Gemini entry point disabled by quota metric is recorded
+// correctly.
+TEST_F(GeminiMetricsTest, TestRecordGeminiEntryPointDisabledByQuota) {
+  RecordGeminiEntryPointDisabledByQuota(gemini::EntryPoint::ImageContextMenu);
+  histogram_tester_.ExpectUniqueSample(kEntryPointDisabledByQuotaHistogram,
+                                       gemini::EntryPoint::ImageContextMenu, 1);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kEntryPointDisabledByQuota));
+}
+
+// Tests that the Gemini quota reached metric is recorded correctly.
+TEST_F(GeminiMetricsTest, TestRecordGeminiQuotaReached) {
+  RecordGeminiQuotaReached();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kQuotaReached));
 }
 
 TEST_F(GeminiMetricsTest, RecordGeminiPageAvailability) {

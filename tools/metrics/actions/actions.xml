@@ -20074,6 +20074,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiEntryPointDisabledByQuota" not_user_triggered="true">
+  <owner>hamzamoh@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the Gemini entry point is disabled because quota was reached.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointImpression">
   <owner>kanouche@google.com</owner>
   <description>
@@ -20386,6 +20395,15 @@ should be able to be added at any place in this file.
   <description>
     Reported when the user sends a prompt in a Gemini session. This includes
     both the first prompt and subsequent prompts in a conversation. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiQuotaReached" not_user_triggered="true">
+  <owner>hamzamoh@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported once per session when Gemini quota is reached upon receiving a
+    response, if quota is not refilled. iOS only.
   </description>
 </action>
 

@@ -2822,6 +2822,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.EntryPoint.DisabledByQuota"
+    enum="IOSGeminiEntryPoint" expires_after="2027-03-01">
+  <owner>hamzamoh@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the entry point source when Gemini quota is reached and the entry
+    point is disabled due to quota exhaustion. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.EntryPointImpression" enum="IOSGeminiEntryPoint"
     expires_after="2027-03-05">
   <owner>yasamans@google.com</owner>

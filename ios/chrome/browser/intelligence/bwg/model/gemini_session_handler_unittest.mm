@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -29,6 +30,11 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+namespace ios::provider {
+void SetMockFeatureModeDisabledByQuota(bool disabled);
+void SetMockRefillDateForFeatureMode(NSDate* date);
+}  // namespace ios::provider
 
 namespace {
 const base::TimeDelta kTestSessionDuration = base::Seconds(5);
@@ -82,6 +88,8 @@ class GeminiSessionHandlerTest : public PlatformTest {
   void TearDown() override {
     [mock_gemini_handler_ stopMocking];
     [mock_settings_handler_ stopMocking];
+    ios::provider::SetMockFeatureModeDisabledByQuota(false);
+    ios::provider::SetMockRefillDateForFeatureMode(nil);
     PlatformTest::TearDown();
   }
 
@@ -582,4 +590,30 @@ TEST_F(GeminiSessionHandlerTest,
   EXPECT_EQ(ios::provider::GetCurrentMode(),
             ios::provider::GeminiViewMode::kFloaty);
   [mock_gemini_handler_ verify];
+}
+
+// Tests that receiving a response logs the quota reached metric when quota is
+// exhausted, and deduplicates subsequent responses for the same refill date.
+TEST_F(GeminiSessionHandlerTest, TestQuotaReachedMetricRecordedOnResponse) {
+  base::UserActionTester user_action_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kPageActionMenu, kGeminiAureus}, {});
+
+  ios::provider::SetMockFeatureModeDisabledByQuota(true);
+  NSDate* refill_date = [NSDate dateWithTimeIntervalSinceNow:3600];
+  ios::provider::SetMockRefillDateForFeatureMode(refill_date);
+
+  // First response logs the metric.
+  [session_handler_ responseReceivedWithClientID:GetClientID()
+                                        serverID:kTestServerID
+                        isNanoBananaToolSelected:NO
+                                isImageGenerated:NO];
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiQuotaReached"));
+
+  // Subsequent response for the same refill date is deduplicated.
+  [session_handler_ responseReceivedWithClientID:GetClientID()
+                                        serverID:kTestServerID
+                        isNanoBananaToolSelected:NO
+                                isImageGenerated:NO];
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiQuotaReached"));
 }

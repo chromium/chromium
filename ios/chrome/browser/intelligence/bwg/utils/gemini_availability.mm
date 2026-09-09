@@ -262,6 +262,12 @@ GeminiAvailabilityResult IsGeminiAvailable(EntryPoint entry_point,
     }
   }
 
+  // Record when a Gemini entry point is disabled because quota was reached.
+  if (result.disabled_reason ==
+      gemini::EntryPointDisabledReason::kQuotaExhausted) {
+    RecordGeminiEntryPointDisabledByQuota(entry_point);
+  }
+
   return result;
 }
 

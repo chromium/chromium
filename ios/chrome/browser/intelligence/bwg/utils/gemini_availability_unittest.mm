@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
@@ -138,6 +141,7 @@ TEST_F(GeminiAvailabilityTest, PageActionMenuIneligibleProfile) {
 }
 
 TEST_F(GeminiAvailabilityTest, ContextualEntryPointAllowed) {
+  base::HistogramTester histogram_tester;
   fake_gemini_service_->SetIsEligible(true);
   gemini::test::SetUpEligibleAccount(profile_);
 
@@ -146,9 +150,12 @@ TEST_F(GeminiAvailabilityTest, ContextualEntryPointAllowed) {
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
   EXPECT_FALSE(result.disabled_reason.has_value());
+  histogram_tester.ExpectTotalCount(kEntryPointDisabledByQuotaHistogram, 0);
 }
 
 TEST_F(GeminiAvailabilityTest, ImageContextMenuQuotaReached) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kPageActionMenu, kGeminiAureus}, {});
   fake_gemini_service_->SetIsEligible(true);
@@ -167,9 +174,15 @@ TEST_F(GeminiAvailabilityTest, ImageContextMenuQuotaReached) {
   EXPECT_NE(result.disabled_reason_subtitle, nil);
   EXPECT_TRUE([result.disabled_reason_subtitle
       containsString:@"Images will be available again when your limit resets"]);
+  histogram_tester.ExpectUniqueSample(kEntryPointDisabledByQuotaHistogram,
+                                      EntryPoint::ImageContextMenu, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiEntryPointDisabledByQuota"));
 }
 
 TEST_F(GeminiAvailabilityTest, ImageRemixIPHQuotaReached) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kPageActionMenu, kGeminiAureus}, {});
   fake_gemini_service_->SetIsEligible(true);
@@ -188,6 +201,10 @@ TEST_F(GeminiAvailabilityTest, ImageRemixIPHQuotaReached) {
   EXPECT_NE(result.disabled_reason_subtitle, nil);
   EXPECT_TRUE([result.disabled_reason_subtitle
       containsString:@"Images will be available again when your limit resets"]);
+  histogram_tester.ExpectUniqueSample(kEntryPointDisabledByQuotaHistogram,
+                                      EntryPoint::ImageRemixIPH, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiEntryPointDisabledByQuota"));
 }
 
 TEST_F(GeminiAvailabilityTest, HighLevelFlagDisabled) {

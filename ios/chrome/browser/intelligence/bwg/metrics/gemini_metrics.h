@@ -65,6 +65,9 @@ extern const char kSignInRequiredSnackbarShownHistogram[];
 // UMA histogram key for IOS.Gemini.EntryPoint.Available.
 extern const char kEntryPointAvailableHistogram[];
 
+// UMA histogram key for IOS.Gemini.EntryPoint.DisabledByQuota.
+extern const char kEntryPointDisabledByQuotaHistogram[];
+
 // UMA histogram key for IOS.Gemini.FRE.EntryPoint.
 extern const char kFirstRunEntryPointHistogram[];
 
@@ -538,6 +541,12 @@ void RecordSignInRequiredSnackbarShown(gemini::EntryPoint entry_point);
 // For example the edit menu entry point is only available once the user has
 // selected some text, and is eligible to use the feature.
 void RecordGeminiEntryPointAvailable(gemini::EntryPoint entry_point);
+
+// Records when the Gemini entry point is disabled because quota was reached.
+void RecordGeminiEntryPointDisabledByQuota(gemini::EntryPoint entry_point);
+
+// Records when Gemini quota has been reached.
+void RecordGeminiQuotaReached();
 
 // Records that the Gemini FRE was shown.
 void RecordFirstRunShown();
