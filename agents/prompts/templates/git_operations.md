@@ -8,8 +8,13 @@ Chromium uses traditional git, but our workflow has certain constraints:
     diff.ignoreSubmodules=all commit -a`.
   * **git cl:** Chromium has additional code review related tools in `git cl`,
     which do things like uploading code reviews. You can run `git cl help` to
-    see what options it has. When uploading, you must use `git cl upload
-    --title={CL Title}`. You cannot fail to add the `--title` argument.
+    see what options it has.
+    * **Creating a new CL:** Do **not** use `--title`. The CL title is taken
+      directly from the commit message. Using `--title` on initial upload
+      results in the CL description having the title duplicated.
+    * **Updating an existing CL:** You **must** use `--title={Patchset Title}`
+      (or `-t`) to specify the patchset description and avoid blocking on an
+      interactive prompt.
   * **Rebase:** To rebase onto the latest code, you should pull on the main
     branch, then rebase onto it, then once those are finished you **MUST** run
     `gclient sync`.
