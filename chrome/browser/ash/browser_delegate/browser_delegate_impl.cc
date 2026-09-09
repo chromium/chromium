@@ -248,6 +248,10 @@ void BrowserDelegateImpl::CloseWebContentsAt(size_t index,
                  : TabCloseTypes::CLOSE_NONE);
 }
 
+void BrowserDelegateImpl::ForceCloseWebContentsAt(size_t index) {
+  browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(index);
+}
+
 content::WebContents* BrowserDelegateImpl::NavigateWebApp(
     const GURL& url,
     TabPinning pin_tab,

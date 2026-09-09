@@ -189,10 +189,20 @@ class BrowserDelegate {
                       TabDisposition disposition) = 0;
 
   // Closes the contents at the given index, triggering its destruction.
+  // Runs any beforeunload/unload handlers, which may prompt the user and can
+  // cancel or delay the close. Does not create a tab restore record (the tab
+  // cannot be reopened with "Reopen closed tab" / Ctrl+Shift+T).
   // If UserGesture::kYes is given, the contents will first be marked as closed
   // by user gesture.
   enum class UserGesture { kYes, kNo };
   virtual void CloseWebContentsAt(size_t index, UserGesture user_gesture) = 0;
+
+  // Immediately detaches the contents at the given index and deletes it
+  // synchronously. Unlike CloseWebContentsAt(), this bypasses
+  // beforeunload/unload handlers, ignores closability checks, and cannot be
+  // cancelled or delayed. Like CloseWebContentsAt(), this does not create a
+  // tab restore record.
+  virtual void ForceCloseWebContentsAt(size_t index) = 0;
 
   // Navigates the browser to the given URL, and enqueues the launch params
   // passed as an input if they are available once the navigation commits

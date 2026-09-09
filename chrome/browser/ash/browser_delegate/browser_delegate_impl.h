@@ -58,6 +58,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
               std::optional<size_t> index,
               TabDisposition disposition) override;
   void CloseWebContentsAt(size_t index, UserGesture user_gesture) override;
+  void ForceCloseWebContentsAt(size_t index) override;
   content::WebContents* NavigateWebApp(
       const GURL& url,
       TabPinning pin_tab,

@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -354,8 +353,7 @@ void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
     content::WebContents* const tab = browser->GetWebContentsAt(idx);
     const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     if (tab_ids_to_remove.contains(tab_id)) {
-      browser->GetBrowser().GetTabStripModel()->DetachAndDeleteWebContentsAt(
-          idx);
+      browser->ForceCloseWebContentsAt(idx);
     }
   }
   window_tracker->set_can_start_navigation_throttle(true);
