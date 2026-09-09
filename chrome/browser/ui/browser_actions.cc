@@ -365,15 +365,10 @@ void BrowserActions::InitializeBrowserActions() {
       actions::ActionItem::Builder().CopyAddressTo(&root_action_item_).Build());
 
   InitializeSidePanelActions();
-
   InitializePageActionIconActions();
-
   InitializeChromeMenuActions();
-
   InitializeToolbarAndMiscActions();
-
   InitializeNavigationActions();
-
   InitializeSubmenuActions();
 
   AddListeners();
@@ -1269,6 +1264,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                                             : kTrashCanRefreshOldIcon)
           .SetEnabled(is_incognito ||
                       (!is_guest_session && !profile->IsSystemProfile()))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_CLEAR_BROWSING_DATA))
           .Build());
 
   if (chrome::CanOpenTaskManager()) {
@@ -1833,6 +1829,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           features::IsRoundedIconsEnabled()
               ? kDownloadIcon
               : kDownloadToolbarButtonChromeRefreshOldIcon)
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_SHOW_DOWNLOADS))
           .Build());
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
