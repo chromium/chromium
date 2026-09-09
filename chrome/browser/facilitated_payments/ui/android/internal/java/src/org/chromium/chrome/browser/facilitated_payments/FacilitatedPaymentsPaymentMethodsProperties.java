@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -18,6 +20,9 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties defined here reflect the visible state of the facilitated payments bottom sheet
@@ -39,6 +44,16 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     };
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.
+    @IntDef({
+        ItemType.HEADER,
+        ItemType.BANK_ACCOUNT,
+        ItemType.ADDITIONAL_INFO,
+        ItemType.CONTINUE_BUTTON,
+        ItemType.FOOTER,
+        ItemType.EWALLET,
+        ItemType.PAYMENT_APP
+    })
+    @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         // The header at the top of the FacilitatedPayments bottom sheet.
         int HEADER = 0;

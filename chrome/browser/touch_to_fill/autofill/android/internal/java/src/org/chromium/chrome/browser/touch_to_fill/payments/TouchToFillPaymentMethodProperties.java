@@ -78,6 +78,16 @@ final class TouchToFillPaymentMethodProperties {
 
     // Identifies different screens that can be dynamically displayed by the payments TTF bottom
     // sheet.
+    @IntDef({
+        ScreenId.HOME_SCREEN,
+        ScreenId.ALL_LOYALTY_CARDS_SCREEN,
+        ScreenId.PROGRESS_SCREEN,
+        ScreenId.BNPL_ISSUER_SELECTION_SCREEN,
+        ScreenId.ERROR_SCREEN,
+        ScreenId.BNPL_ISSUER_TOS_SCREEN,
+        ScreenId.TABBED_HOME_SCREEN
+    })
+    @Retention(RetentionPolicy.SOURCE)
     @interface ScreenId {
         // The initial bottom sheet screen which offers the user to fill data into the form.
         int HOME_SCREEN = 0;
@@ -108,6 +118,28 @@ final class TouchToFillPaymentMethodProperties {
         int PAY_LATER = 1;
     }
 
+    @IntDef({
+        ItemType.HEADER,
+        ItemType.CREDIT_CARD,
+        ItemType.IBAN,
+        ItemType.LOYALTY_CARD,
+        ItemType.ALL_LOYALTY_CARDS,
+        ItemType.FILL_BUTTON,
+        ItemType.WALLET_SETTINGS_BUTTON,
+        ItemType.FOOTER,
+        ItemType.TERMS_LABEL,
+        ItemType.BNPL,
+        ItemType.PROGRESS_ICON,
+        ItemType.BNPL_SELECTION_PROGRESS_HEADER,
+        ItemType.BNPL_ISSUER,
+        ItemType.ERROR_DESCRIPTION,
+        ItemType.BNPL_TOS_TEXT,
+        ItemType.BNPL_SELECTION_PROGRESS_TERMS,
+        ItemType.TOS_FOOTER,
+        ItemType.TEXT_BUTTON,
+        ItemType.TOS_HEADER,
+    })
+    @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         // The header at the top of the touch to fill sheet.
         int HEADER = 0;
