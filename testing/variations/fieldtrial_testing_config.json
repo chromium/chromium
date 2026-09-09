@@ -5784,7 +5784,7 @@
             ]
         }
     ],
-    "ContextualTasks_EphemeralPinning_Desktop": [
+    "ContextualTasks_PermanentPinning_Desktop": [
         {
             "platforms": [
                 "chromeos",
@@ -5794,7 +5794,7 @@
             ],
             "experiments": [
                 {
-                    "name": "PermanentPinButtonHeader",
+                    "name": "PinningAndEphemeral_20260901",
                     "params": {
                         "ContextualTasksEntryPoint": "toolbar-ephemeral-branded",
                         "overflow-items": "all-without-new-thread"
@@ -5802,7 +5802,8 @@
                     "enable_features": [
                         "ContextualTasksEnableSpatialModelToolbarLayout",
                         "ContextualTasksEphemeralBrandedEntryPoint",
-                        "EnableContextualTasksPinButtonInToolbar"
+                        "EnableContextualTasksPinButtonInToolbar",
+                        "EphemeralPinningVisibleWhenPermanentlyPinned"
                     ],
                     "disable_features": [
                         "ContextualTasksHideMenuOnAiPage"
