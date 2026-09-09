@@ -490,6 +490,7 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mTabGroupColorViewContainer).removeAllViews();
         verify(mTabGroupColorViewContainer).setVisibility(View.GONE);
+        verify(mViewGroup).setThumbnailSpinnerVisibility(eq(false));
         verify(mViewGroup).updateActionButtonBackground(eq(false), eq(false));
     }
 

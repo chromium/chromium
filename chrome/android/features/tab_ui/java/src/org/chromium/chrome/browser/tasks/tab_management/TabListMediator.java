@@ -1850,6 +1850,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.IS_GLIC_ACTIVE, false)
                         .with(TabProperties.IS_PINNED, tab.getIsPinned())
                         .with(TabProperties.ALERT_STATE, TabAlert.NONE)
+                        .with(TabProperties.SHOW_THUMBNAIL_SPINNER, false)
                         .build();
 
         ActorUiTabController controller = ActorUiTabController.from(tab);

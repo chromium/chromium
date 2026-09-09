@@ -115,6 +115,7 @@ public class TabGridViewBinder {
             TabCardViewBinderUtils.detachTabGroupColorView(container);
 
             tabGridView.clearHighlight();
+            tabGridView.setThumbnailSpinnerVisibility(false);
             tabGridView.updateActionButtonBackground(
                     /* isSelected= */ false, /* isIncognito= */ false);
         }

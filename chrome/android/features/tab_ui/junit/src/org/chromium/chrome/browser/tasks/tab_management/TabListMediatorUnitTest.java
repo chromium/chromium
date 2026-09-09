@@ -6420,6 +6420,10 @@ public class TabListMediatorUnitTest {
         assertNotNull(mModelList.get(1).model.get(TabProperties.FAVICON_FETCHER));
         assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertThat(mModelList.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(
+                mModelList.get(0).model.get(TabProperties.SHOW_THUMBNAIL_SPINNER), equalTo(false));
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.SHOW_THUMBNAIL_SPINNER), equalTo(false));
 
         // Only tab surfaces configured with a ThumbnailProvider (e.g. Grid) bind
         // THUMBNAIL_FETCHER.
