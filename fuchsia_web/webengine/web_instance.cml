@@ -65,6 +65,7 @@
         "fuchsia.media.Audio",
         "fuchsia.media.AudioDeviceEnumerator",
         "fuchsia.media.SessionAudioConsumerFactory",
+        "fuchsia.settings.Input",
 
         // Required by `ContextFeatureFlags.VULKAN`.
         // These are the protocols not already required that

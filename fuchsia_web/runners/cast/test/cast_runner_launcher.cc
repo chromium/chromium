@@ -32,6 +32,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/run_loop.h"
 #include "fuchsia_web/common/test/fake_feedback_service.h"
+#include "fuchsia_web/common/test/fake_settings_service.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 
@@ -106,6 +107,10 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   // protocols to cast_runner.
   FakeFeedbackService::RouteToChild(realm_builder, kCastRunnerComponentName);
 
+  // Register the fake fuchsia.settings service component; plumbing its
+  // protocols to cast_runner.
+  FakeSettingsService::RouteToChild(realm_builder, kCastRunnerComponentName);
+
   // Run an isolated font service and route it to cast_runner.
   AddFontService(realm_builder, kCastRunnerComponentName);
 
@@ -172,12 +177,6 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
                 },
             .source = ChildRef{kFakeCastAgentName},
             .targets = {ChildRef{kCastRunnerComponentName}}});
-
-  if (!(runner_features & kCastRunnerFeaturesHeadless)) {
-    // CastRunner sets ThemeType::DEFAULT when not headless.
-    AddRouteFromParent(realm_builder, kCastRunnerComponentName,
-                       fuchsia::settings::Display::Name_);
-  }
 
   if (runner_features & kCastRunnerFeaturesVulkan) {
     AddVulkanRoutesFromParent(realm_builder, kCastRunnerComponentName);

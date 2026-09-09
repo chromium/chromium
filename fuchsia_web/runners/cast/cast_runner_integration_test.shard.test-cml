@@ -37,9 +37,6 @@
         "fuchsia.net.name.Lookup",
         "fuchsia.posix.socket.Provider",
 
-        // CastRunner sets ThemeType::DEFAULT when not headless.
-        "fuchsia.settings.Display",
-
         // Used by the test UI stack and VulkanCastRunnerIntegrationTest.
         "fuchsia.tracing.provider.Registry",
         "fuchsia.vulkan.loader.Loader",
