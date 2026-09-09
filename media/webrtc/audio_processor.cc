@@ -272,7 +272,8 @@ AudioProcessor::AudioProcessor(
     webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
     bool needs_playout_reference,
     base::TimeDelta added_aec_delay)
-    : residual_echo_estimation_model_(
+    : id_(base::UnguessableToken::Create()),
+      residual_echo_estimation_model_(
           std::move(neural_residual_echo_estimator_model)),
       webrtc_audio_processing_(webrtc_audio_processing),
       needs_playout_reference_(needs_playout_reference),
@@ -589,9 +590,8 @@ std::optional<double> AudioProcessor::ProcessData(
 
 // Called on the owning sequence.
 void AudioProcessor::SendLogMessage(const std::string& message) {
-  log_callback_.Run(base::StringPrintf("MSAP::%s [this=0x%" PRIXPTR "]",
-                                       message.c_str(),
-                                       reinterpret_cast<uintptr_t>(this)));
+  log_callback_.Run(base::StringPrintf("MSAP::%s [id=%s]", message.c_str(),
+                                       id_.ToString().c_str()));
 }
 
 std::optional<AudioParameters> AudioProcessor::ComputeInputFormat(

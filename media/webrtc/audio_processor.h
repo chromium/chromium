@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
 #include "media/base/audio_push_fifo.h"
@@ -208,6 +209,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       VALID_CONTEXT_REQUIRED(owning_sequence_);
 
   SEQUENCE_CHECKER(owning_sequence_);
+
+  const base::UnguessableToken id_;
 
   // ML model used for echo estimation.
   // If not null, must outlive |webrtc_audio_processing_|.
