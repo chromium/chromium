@@ -200,8 +200,8 @@ TEST_F(OtpManagerImplTest, FieldDetectionToTickleLatency_OtpFormLogsMetric) {
       sub_manager;
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
-  autofill_client().set_otp_metrics_tracker(
-      std::make_unique<OtpMetricsTracker>(&mock_ott_service));
+  autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
+      &mock_ott_service, autofill_client()));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   AddFormWithOtpField();
@@ -224,8 +224,8 @@ TEST_F(OtpManagerImplTest,
       sub_manager;
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
-  autofill_client().set_otp_metrics_tracker(
-      std::make_unique<OtpMetricsTracker>(&mock_ott_service));
+  autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
+      &mock_ott_service, autofill_client()));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   AddFormWithFirstNameField();
@@ -248,8 +248,8 @@ TEST_F(OtpManagerImplTest,
       sub_manager;
   SetUpTickleSubscription(mock_ott_service, sub_manager);
 
-  autofill_client().set_otp_metrics_tracker(
-      std::make_unique<OtpMetricsTracker>(&mock_ott_service));
+  autofill_client().set_otp_metrics_tracker(std::make_unique<OtpMetricsTracker>(
+      &mock_ott_service, autofill_client()));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
 

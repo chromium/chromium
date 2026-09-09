@@ -1323,7 +1323,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
 
 #if !BUILDFLAG(IS_ANDROID)
   otp_metrics_tracker_ =
-      std::make_unique<OtpMetricsTracker>(GetOneTimeTokenService());
+      std::make_unique<OtpMetricsTracker>(GetOneTimeTokenService(), *this);
 #endif
 
   // Notify the EntityDataManager about the availability of device re-auth.

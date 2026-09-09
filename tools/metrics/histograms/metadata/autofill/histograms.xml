@@ -6579,6 +6579,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.PageLanguage.{Outcome}"
+    enum="LocaleCodeBCP47" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Captures the page language distribution across different OTP outcomes and
+    arrival sequences to identify locales with high win rates or missing backend
+    push support. Recorded for {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="NoFieldDetected"
+        summary="tickles where no OTP field was detected within 3 minutes of
+                 arrival. The language is logged speculatively from the page
+                 open when the tickle was received."/>
+    <variant name="NoTickleReceived"
+        summary="OTP forms where no tickle was received within 3 minutes of
+                 field detection."/>
+    <variant name="TickleAfterUserInteraction"
+        summary="OTP forms where a tickle arrived after user interaction."/>
+    <variant name="TickleBeforeUserInteraction"
+        summary="OTP forms where a tickle arrived before user interaction."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.PhishGuard.CheckPerformed"
     enum="Boolean" expires_after="2026-10-31">
   <owner>luchenpeng@google.com</owner>
