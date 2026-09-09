@@ -21,6 +21,7 @@ import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 import {getCss} from './memory_banks.css.js';
 import {getHtml} from './memory_banks.html.js';
 import type {EntryAnnotationsUpdatedDetail} from './memory_banks_edit_dialog.js';
+import {matchesMemoryBankEntry, parseSearchQuery} from './memory_banks_search.js';
 
 function downloadFile(filename: string, content: string) {
   if (!content) {
@@ -122,19 +123,11 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected getFilteredEntries_(): MemoryBankEntry[] {
-    if (this.searchQuery) {
-      const query = this.searchQuery.toLowerCase();
-      return this.entries.filter(entry => {
-        return entry.tabTitle.toLowerCase().includes(query) ||
-            entry.url.toLowerCase().includes(query) ||
-            (entry.selectedText &&
-             entry.selectedText.toLowerCase().includes(query)) ||
-            (entry.note && entry.note.toLowerCase().includes(query)) ||
-            (entry.collection &&
-             entry.collection.toLowerCase().includes(query)) ||
-            (entry.tags &&
-             entry.tags.some(tag => tag.toLowerCase().includes(query)));
-      });
+    const query = this.searchQuery.trim();
+    if (query) {
+      const parsed = parseSearchQuery(query);
+      return this.entries.filter(
+          entry => matchesMemoryBankEntry(entry, parsed));
     }
 
     if (this.selectedCollection) {

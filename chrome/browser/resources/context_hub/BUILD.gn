@@ -23,6 +23,7 @@ build_webui("build") {
     "memory_banks/memory_banks_edit_dialog.html.ts",
     "memory_banks/memory_banks_edit_dialog.ts",
     "memory_banks/memory_banks_entry.html.ts",
+    "memory_banks/memory_banks_search.ts",
     "save_to_memory_bank/save_to_memory_bank.html.ts",
     "save_to_memory_bank/save_to_memory_bank.ts",
     "tab_groups/tab_groups.html.ts",

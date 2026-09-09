@@ -16,7 +16,7 @@ export function getHtml(this: MemoryBanksElement) {
               ${this.entries.length > 0 ? html`
                 <cr-search-field
                     id="search-field"
-                    label="Search memory"
+                    label="Search memory (e.g. tag:recipes, collection:Work)"
                     @search-changed="${this.onSearchChanged_}">
                 </cr-search-field>
               ` : ''}
