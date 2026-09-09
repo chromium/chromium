@@ -194,27 +194,26 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 };
 
 const BasicShape* CreateBasicShape(
-    BasicShape::ShapeType type,
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue& untyped_non_interpolable_value,
     const StyleResolverState& state) {
-  if (type == BasicShape::kStylePathType) {
+  if (PathInterpolationFunctions::IsPathNonInterpolableValue(
+          untyped_non_interpolable_value)) {
     return PathInterpolationFunctions::AppliedValue(
                interpolable_value, untyped_non_interpolable_value)
         .shape;
-  }
-
-  if (type == BasicShape::kStyleShapeType) {
+  } else if (CSSShapeInterpolationType::IsShapeNonInterpolableValue(
+                 &untyped_non_interpolable_value)) {
     return CSSShapeInterpolationType::CreateShape(
                interpolable_value, untyped_non_interpolable_value,
                state.CssToLengthConversionData())
         .shape;
+  } else {
+    return basic_shape_interpolation_functions::CreateBasicShape(
+               interpolable_value, untyped_non_interpolable_value,
+               state.CssToLengthConversionData())
+        .shape;
   }
-
-  return basic_shape_interpolation_functions::CreateBasicShape(
-             interpolable_value, untyped_non_interpolable_value,
-             state.CssToLengthConversionData())
-      .shape;
 }
 
 bool CanExtractShapeOrPath(const CSSValue* computed_value) {
@@ -279,19 +278,8 @@ const BasicShape* GetAnimatedShapeFromKeyframe(
               ->CssValue(),
           state);
     } else {
-      BasicShape::ShapeType type =
-          PathInterpolationFunctions::IsPathNonInterpolableValue(
-              *non_interpolable_value)
-              ? BasicShape::kStylePathType
-          : CSSShapeInterpolationType::IsShapeNonInterpolableValue(
-                non_interpolable_value)
-              ? BasicShape::kStyleShapeType
-              // This can be any shape but kStylePathType. This is needed to
-              // distinguish between Path shape and other shapes in
-              // CreateBasicShape function.
-              : BasicShape::kBasicShapeCircleType;
       return CreateBasicShape(
-          type, *keyframe->GetValue()->Value().interpolable_value.Get(),
+          *keyframe->GetValue()->Value().interpolable_value.Get(),
           *non_interpolable_value, state);
     }
   }
