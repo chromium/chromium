@@ -1049,6 +1049,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for the 'Do Not Track' preference. Please leave the 'Do Not Track' part in English according to the glossary.">
         Send a “Do Not Track” request
       </message>
+      <message name="IDS_DO_NOT_TRACK_SUMMARY_DISCLAIMER" desc="Summary for the 'Do Not Track' preference. Explains that sites may not respond to 'Do Not Track' requests even when this toggle is on. Please leave the 'Do Not Track' part in English according to the glossary.">
+        Sites, including Google, use their discretion when responding to this request.
+      </message>
       <message name="IDS_DO_NOT_TRACK_DESCRIPTION" desc="Description for 'Do Not Track' preference">
         Enabling “Do Not Track” means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted.
 

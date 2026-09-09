@@ -12,6 +12,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -35,8 +36,13 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.do_not_track_preferences);
         mPageTitle.set(getString(R.string.do_not_track_title));
 
-        ChromeSwitchPreference doNotTrackSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_DO_NOT_TRACK_SWITCH);
+        ChromeSwitchPreference doNotTrackSwitch = findPreference(PREF_DO_NOT_TRACK_SWITCH);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+            doNotTrackSwitch.setTitle(R.string.do_not_track_title);
+            doNotTrackSwitch.setSummary(R.string.do_not_track_summary_disclaimer);
+            doNotTrackSwitch.setSummaryOn(null);
+            doNotTrackSwitch.setSummaryOff(null);
+        }
 
         PrefService prefService = UserPrefs.get(getProfile());
         boolean isDoNotTrackEnabled = prefService.getBoolean(Pref.ENABLE_DO_NOT_TRACK);
