@@ -2513,6 +2513,7 @@ suite('ComposeboxMixinTest', () => {
         const tabFile = ComposeboxFile.createFromTab(
             dummyToken, 10, 'Restored Tab', 'about:blank?10');
 
+        element.contextManagementInComposeboxEnabled = false;
         element.smartTabSharingVisible = true;
         element.smartTabSharingActive = true;
         element.files = new Map([[dummyToken, tabFile]]);
@@ -2626,6 +2627,37 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(1, element.addedTabsIds.size);
         assertTrue(element.addedTabsIds.has(10));
         assertEquals(dummyToken, element.addedTabsIds.get(10));
+      });
+
+  test(
+      'observeSmartTabSharingActive preserves restored tabs when' +
+          ' contextManagementInComposeboxEnabled is true and composeboxSource' +
+          ' is not Omnibox',
+      async () => {
+        const dummyToken: UnguessableToken = 'dummy-token';
+        const tab = {
+          tabId: 10,
+          title: 'Restored Tab',
+          url: 'about:blank?10',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+
+        element.contextManagementInComposeboxEnabled = true;
+        element.composeboxSource = 'ContextualTasks';
+        element.smartTabSharingVisible = true;
+        element.smartTabSharingActive = true;
+        element.addedTabsIds = new Map([[10, dummyToken]]);
+        element.aimThreadRestoredTabs = [tab];
+
+        searchboxCallbackRouterRemote.updateSmartTabSharingActive(false);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(element.smartTabSharingActive);
+        assertEquals(0, element.addedTabsIds.size);
+        assertEquals(1, element.aimThreadRestoredTabs.length);
       });
 
   test(

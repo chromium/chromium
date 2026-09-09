@@ -4115,3 +4115,119 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(custom_handler->IsSmartTabSharingActive());
 }
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerSmartTabSharingTest,
+    InitializeInputStateModelPreservesSmartTabSharingWhenPreviousTurnSubmitted) {
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_tasks::ThreadTurn turn;
+  turn.query = "sample query";
+  mock_session->AddThreadTurn(turn);
+  mock_ui_->SetSessionHandle(mock_session.get());
+
+  auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
+      *mock_session, omnibox::SearchboxConfig(), GURL(), false, false, false);
+  input_state_model->SetSmartTabSharingActive(true);
+
+  searchbox_page_receiver_.reset();
+  auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
+      mock_ui_.get(), profile(), web_contents(),
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      searchbox_page_receiver_.BindNewPipeAndPassRemote(),
+      base::BindRepeating(
+          &ContextualTasksUI::GetOrCreateContextualSessionHandle,
+          base::Unretained(mock_ui_.get())),
+      base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
+                          base::Unretained(mock_ui_.get())),
+      base::BindRepeating(
+          [](std::unique_ptr<contextual_search::InputStateModel>* model) {
+            return std::move(*model);
+          },
+          base::Unretained(&input_state_model)));
+
+  EXPECT_TRUE(custom_handler->IsSmartTabSharingActive());
+  EXPECT_TRUE(mock_session->smart_tab_sharing_active().value_or(false));
+
+  mock_ui_->SetSessionHandle(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerSmartTabSharingTest,
+    SubmitQueryPreservesSmartTabSharingWhenToggleOffAfterSubmitDisabled) {
+  handler_->SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler_->IsSmartTabSharingActive());
+
+  handler_->SubmitQuery("test query", 0, false, false, false, false,
+                        /*is_voice_search=*/false);
+  EXPECT_TRUE(handler_->IsSmartTabSharingActive());
+  EXPECT_TRUE(session_handle_->smart_tab_sharing_active().value_or(false));
+}
+
+class ContextualTasksComposeboxHandlerSmartTabSharingToggleOffAfterSubmitTest
+    : public ContextualTasksComposeboxHandlerTest {
+ public:
+  ContextualTasksComposeboxHandlerSmartTabSharingToggleOffAfterSubmitTest() {
+    feature_list_sts_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasksContext,
+          {{"ContextualTasksContextSmartTabSharing", "true"},
+           {"ContextualTasksContextToggleOffAfterSubmit", "true"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        {});
+  }
+  ~ContextualTasksComposeboxHandlerSmartTabSharingToggleOffAfterSubmitTest()
+      override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_sts_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerSmartTabSharingToggleOffAfterSubmitTest,
+    InitializeInputStateModelDeactivatesSmartTabSharingWhenPreviousTurnSubmitted) {
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_tasks::ThreadTurn turn;
+  turn.query = "sample query";
+  mock_session->AddThreadTurn(turn);
+  mock_ui_->SetSessionHandle(mock_session.get());
+
+  auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
+      *mock_session, omnibox::SearchboxConfig(), GURL(), false, false, false);
+  input_state_model->SetSmartTabSharingActive(true);
+
+  searchbox_page_receiver_.reset();
+  auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
+      mock_ui_.get(), profile(), web_contents(),
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      searchbox_page_receiver_.BindNewPipeAndPassRemote(),
+      base::BindRepeating(
+          &ContextualTasksUI::GetOrCreateContextualSessionHandle,
+          base::Unretained(mock_ui_.get())),
+      base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
+                          base::Unretained(mock_ui_.get())),
+      base::BindRepeating(
+          [](std::unique_ptr<contextual_search::InputStateModel>* model) {
+            return std::move(*model);
+          },
+          base::Unretained(&input_state_model)));
+
+  EXPECT_FALSE(custom_handler->IsSmartTabSharingActive());
+  EXPECT_FALSE(mock_session->smart_tab_sharing_active().value_or(true));
+
+  mock_ui_->SetSessionHandle(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerSmartTabSharingToggleOffAfterSubmitTest,
+    SubmitQueryDeactivatesSmartTabSharingAfterFirstTurn) {
+  handler_->SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler_->IsSmartTabSharingActive());
+
+  handler_->SubmitQuery("test query", 0, false, false, false, false,
+                        /*is_voice_search=*/false);
+  EXPECT_FALSE(handler_->IsSmartTabSharingActive());
+  EXPECT_FALSE(session_handle_->smart_tab_sharing_active().value_or(true));
+}

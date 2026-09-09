@@ -588,6 +588,11 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
     ContextualSearchboxHandler::InitializeInputStateModel();
   }
 
+  if (contextual_tasks::ShouldToggleOffAfterSubmit() &&
+      HasSubmittedContextOrTurns()) {
+    DeactivateSmartTabSharing();
+  }
+
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     std::vector<int32_t> restored_tab_ids =
         web_ui_interface_->GetRestoredTabIds();
@@ -753,6 +758,10 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     // If there is an auto-added tab, the user sending the query means the
     // system should upload it.
     UploadSnapshotTabContextIfPresent();
+
+    if (contextual_tasks::ShouldToggleOffAfterSubmit()) {
+      DeactivateSmartTabSharing();
+    }
 
     // Create a client to aim message and send it to the page.
     auto create_client_to_aim_request_info =
@@ -1389,4 +1398,27 @@ void ContextualTasksComposeboxHandler::MaybeSendPendingQuery() {
     }
     pending_query_request_info_.reset();
   }
+}
+
+bool ContextualTasksComposeboxHandler::HasSubmittedContextOrTurns() {
+  auto* session_handle = GetContextualSessionHandle();
+  return session_handle &&
+         (session_handle->has_submitted_context() ||
+          !session_handle->GetSubmittedContextFileInfos().empty() ||
+          !session_handle->previous_turns().empty());
+}
+
+void ContextualTasksComposeboxHandler::DeactivateSmartTabSharing() {
+  smart_tab_sharing_active_for_thread_ = false;
+  if (auto* session_handle = GetContextualSessionHandle()) {
+    session_handle->set_smart_tab_sharing_active(false);
+  }
+  if (input_state_model_) {
+    input_state_model_->SetSmartTabSharingActive(false);
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (SearchboxHandler::page_) {
+    SearchboxHandler::page_->UpdateSmartTabSharingActive(false);
+  }
+#endif
 }

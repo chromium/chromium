@@ -213,6 +213,14 @@ class ContextualTasksComposeboxHandler
   // Helper to send the pending query if all uploads are complete.
   void MaybeSendPendingQuery();
 
+  // Returns true if the current contextual session handle has previous turns
+  // or submitted context.
+  bool HasSubmittedContextOrTurns();
+
+  // Deactivates Smart Tab Sharing across thread state, session handle,
+  // input state model, and the WebUI page.
+  void DeactivateSmartTabSharing();
+
   TakeInputStateModelCallback take_input_model_callback_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_interface_;
 

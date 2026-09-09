@@ -434,7 +434,9 @@ export const ComposeboxEmbedderMixin =
                             this.automaticActiveTab.uuid,
                           ]]) :
                           new Map();
-                      this.resetRestoredTabs();
+                      if (this.shouldResetRestoredTabs()) {
+                        this.resetRestoredTabs();
+                      }
                     }
                   });
           this.searchboxListenerIds.push(listenerId);
@@ -1304,7 +1306,9 @@ export const ComposeboxEmbedderMixin =
           ComposeboxProxyImpl.getInstance().setSmartTabSharingActive(active);
           if (!active) {
             this.addedTabsIds = new Map();
-            this.resetRestoredTabs();
+            if (this.shouldResetRestoredTabs()) {
+              this.resetRestoredTabs();
+            }
           }
           this.clearContextForSmartTabSharingActive();
           // </if>
@@ -1904,11 +1908,7 @@ export const ComposeboxEmbedderMixin =
           // clearing, clear input here.
           if (!querySubmitted || this.clearAllInputsWhenSubmittingQuery) {
             this.resetModes();
-            // If context management flag is on, do not delete persisted
-            // (restored) tabs unless the source is Omnibox.
-            if (this.composeboxSource === 'Omnibox' ||
-                this.clearAllInputsWhenSubmittingQuery ||
-                !this.contextManagementInComposeboxEnabled) {
+            if (this.shouldResetRestoredTabs()) {
               this.resetRestoredTabs();
             }
           }
@@ -2055,6 +2055,15 @@ export const ComposeboxEmbedderMixin =
                 this.contextMenuDescriptionEnabled;
             this.handleToolModeUpdate(ToolMode.kUnspecified);
           }
+        }
+
+        // If context management flag is on, do not delete persisted
+        // (restored) tabs unless the source is Omnibox or
+        // clearAllInputsWhenSubmittingQuery is set.
+        shouldResetRestoredTabs(): boolean {
+          return this.composeboxSource === 'Omnibox' ||
+              this.clearAllInputsWhenSubmittingQuery ||
+              !this.contextManagementInComposeboxEnabled;
         }
 
         resetRestoredTabs() {
@@ -3188,6 +3197,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
   getInputType(type: string): InputType;
   resetModes(): void;
+  shouldResetRestoredTabs(): boolean;
   resetRestoredTabs(): void;
   setDefaultModel(): void;
   resetToolsAndModels(): void;

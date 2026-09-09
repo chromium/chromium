@@ -227,6 +227,10 @@ extern const base::FeatureParam<base::TimeDelta> kPreviousTabRecencyThreshold;
 // Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
 extern const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing;
 
+// Whether Smart Tab Sharing should toggle off after query submission.
+extern const base::FeatureParam<bool>
+    kContextualTasksContextToggleOffAfterSubmit;
+
 // Option for smart tab sharing IPH first time prompt.
 enum class SmartTabSharingIphFirstTimePromptOption {
   kIphFirstTimePromptV1,
@@ -405,6 +409,8 @@ extern bool GetIsContextualTasksSuggestionsEnabled();
 // Returns the timeout for smart tab sharing tab selection.
 extern base::TimeDelta GetSmartTabSharingTabSelectionTimeout();
 
+// Returns whether Smart Tab Sharing should toggle off after query submission.
+extern bool ShouldToggleOffAfterSubmit();
 
 // Enables tab auto-chip for contextual tasks. When disabled, no suggested
 // chips will be shown in the composebox automatically.

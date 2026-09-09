@@ -4545,9 +4545,14 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
 
 const FeatureEntry::FeatureParam kSmartTabSharingEnabled[] = {
     {"ContextualTasksContextSmartTabSharing", "true"}};
+const FeatureEntry::FeatureParam kSmartTabSharingToggleOffAfterSubmit[] = {
+    {"ContextualTasksContextSmartTabSharing", "true"},
+    {"ContextualTasksContextToggleOffAfterSubmit", "true"}};
 
 const FeatureEntry::FeatureVariation kContextualTaskContextVariations[] = {
-    {" - With Smart Tab Sharing", kSmartTabSharingEnabled, nullptr}};
+    {" - With Smart Tab Sharing", kSmartTabSharingEnabled, nullptr},
+    {" - Smart Tab Sharing: Toggle Off After Submit",
+     kSmartTabSharingToggleOffAfterSubmit, nullptr}};
 
 const FeatureEntry::FeatureParam kEphemeralBrandedEntryPointEnabled[] = {
     {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}};
