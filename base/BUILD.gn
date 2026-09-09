@@ -3671,9 +3671,10 @@ if (is_fuchsia) {
       ":base",
       "//base/test:test_support",
       "//testing/gtest",
+      "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     ]
     public_deps = [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_cpp",
     ]
   }
 }
