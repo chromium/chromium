@@ -314,7 +314,7 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
           ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
           : nullptr,
       HostContentSettingsMapFactory::GetForProfile(profile),
-      profile->IsIncognitoProfile());
+      profile->IsPrimaryOTRProfileWithRegularParent());
 }
 
 bool ChromePageInfoDelegate::IsIsolatedWebApp() {
@@ -638,7 +638,7 @@ bool ChromePageInfoDelegate::IsHttpsFirstModeEnabledForUrl(const GURL& url) {
 }
 
 bool ChromePageInfoDelegate::IsIncognitoProfile() {
-  return GetProfile()->IsIncognitoProfile();
+  return GetProfile()->IsPrimaryOTRProfileWithRegularParent();
 }
 
 void ChromePageInfoDelegate::SetSecurityStateForTests(
