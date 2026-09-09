@@ -71,6 +71,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "action_customization_model_unittest.mm",
+    "destination_customization_model_unittest.mm",
     "overflow_menu_hosting_controller_unittest.mm",
     "overflow_menu_metrics_unittest.mm",
   ]
