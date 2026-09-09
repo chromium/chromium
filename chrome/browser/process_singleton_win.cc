@@ -381,7 +381,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
   }
 
   // Get a handle to the process that created the window.
-  base::Process process = base::Process::Open(process_id);
+  base::Process process = base::Process::OpenWithAccess(
+      process_id, PROCESS_TERMINATE | SYNCHRONIZE);
 
   // Scan for every window to find a visible one.
   bool visible_window = false;
