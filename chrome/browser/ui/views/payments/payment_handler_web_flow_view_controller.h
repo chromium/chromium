@@ -177,6 +177,7 @@ class PaymentHandlerWebFlowViewController
   void OnPromptAdded() override;
   void OnPromptRemoved() override;
   void OnRequestsFinalized() override;
+  void OnRequestDecided(permissions::PermissionAction action) override;
   void OnPermissionRequestManagerDestructed() override;
 
   // views::ViewObserver:

@@ -1708,16 +1708,118 @@ IN_PROC_BROWSER_TEST_F(
             web_flow_controller->GetPageInfoIconView());
 
   // Test toggling: clicking the chip when prompt is active dismisses the
-  // prompt and restores location_icon_view.
+  // prompt.
   views::test::ButtonTestApi(dashboard->GetRequestChip())
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), base::TimeTicks::Now(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0));
 
   prompt_waiter.WaitUntilPromptRemoved();
-
-  // Verify prompt removed and request_chip hidden.
   EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    PermissionPrompt_AllowCameraHidesPromptImmediatelyAndTransitionsToInUseIndicator) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  // Initial state: not capturing, no prompt.
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  PermissionPromptWaiter prompt_waiter(manager);
+
+  // Add camera permission request.
+  manager->AddRequest(payment_handler_contents->GetPrimaryMainFrame(),
+                      std::make_unique<permissions::MockPermissionRequest>(
+                          permissions::RequestType::kCameraStream));
+  prompt_waiter.WaitUntilPromptAdded();
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  EXPECT_TRUE(dashboard->GetVisible());
+  EXPECT_TRUE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_CHIP),
+      dashboard->GetRequestChip()->GetText());
+
+  // Allow the request.
+  manager->Accept(std::monostate());
+
+  // In 1:1 parity with Omnibox, camera permission skips the confirmation chip
+  // because the LHS activity indicator takes over upon capture. The prompt chip
+  // is reset immediately, restoring location_icon_view until stream starts.
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_FALSE(dashboard->GetIndicatorChip()->GetVisible());
+  EXPECT_FALSE(dashboard->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Video capture starts.
+  GURL app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(app_url, app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  VideoCaptureWaiter waiter(payment_handler_contents);
+  ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
+                         navigator.mediaDevices.getUserMedia({video: true})
+                           .then(stream => {
+                             window.activeStream = stream;
+                             return 'success';
+                           })
+                           .catch(err => err.name);
+                       )"));
+  waiter.WaitForCaptureState(true);
+
+  // Indicator chip expands with "Camera in use".
+  EXPECT_TRUE(dashboard->GetVisible());
+  EXPECT_TRUE(dashboard->GetIndicatorChip()->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE),
+            dashboard->GetIndicatorChip()->GetText());
+  EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Stop video stream and verify it restores location_icon_view.
+  ASSERT_EQ("stopped", content::EvalJs(payment_handler_contents, R"(
+              window.activeStream.getVideoTracks().forEach(t => t.stop());
+              'stopped';
+            )"));
+  waiter.WaitForCaptureState(false);
+
   EXPECT_FALSE(dashboard->GetVisible());
   EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
 }

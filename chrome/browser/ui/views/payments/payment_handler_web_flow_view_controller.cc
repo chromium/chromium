@@ -787,6 +787,18 @@ void PaymentHandlerWebFlowViewController::OnRequestsFinalized() {
   ResetRequestChip();
 }
 
+void PaymentHandlerWebFlowViewController::OnRequestDecided(
+    permissions::PermissionAction action) {
+  if (!chip_model_ || !permission_dashboard_view()) {
+    return;
+  }
+
+  // In parity with the Omnibox, camera permission skips confirmation chips
+  // so the activity indicator can take over on capture (or the LocationIconView
+  // is restored on non-grant).
+  ResetRequestChip();
+}
+
 void PaymentHandlerWebFlowViewController::
     OnPermissionRequestManagerDestructed() {
   permission_request_manager_observation_.Reset();
@@ -837,6 +849,7 @@ void PaymentHandlerWebFlowViewController::OnRequestChipPressed() {
     }
   }
 }
+
 bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
   content::WebContents* contents = GetWebContents();
   if (!contents) {
