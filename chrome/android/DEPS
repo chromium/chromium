@@ -42,6 +42,7 @@ include_rules = [
   "+components/externalauth/android",
   "+components/favicon/android",
   "+components/favicon_base",
+  "+components/fcm/android",
   "+components/find_in_page/android",
   "+components/infobars/android",
   "+components/installedapp/android",

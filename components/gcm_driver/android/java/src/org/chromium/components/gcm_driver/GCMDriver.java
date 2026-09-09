@@ -4,12 +4,15 @@
 
 package org.chromium.components.gcm_driver;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
@@ -36,16 +39,22 @@ public class GCMDriver {
     private long mNativeGCMDriverAndroid;
     private GoogleCloudMessagingSubscriber mSubscriber;
 
-    private GCMDriver(long nativeGCMDriverAndroid) {
+    protected GCMDriver(long nativeGCMDriverAndroid) {
         mNativeGCMDriverAndroid = nativeGCMDriverAndroid;
         mSubscriber = new GoogleCloudMessagingV2();
     }
 
+    /** Sets a test instance. */
+    public static void setInstanceForTesting(@Nullable GCMDriver testInstance) {
+        var previous = sInstance;
+        sInstance = testInstance;
+        ResettersForTesting.register(() -> sInstance = previous);
+    }
+
     /**
-     * Create a GCMDriver object, which is owned by GCMDriverAndroid
-     * on the C++ side.
-     *  @param nativeGCMDriverAndroid The C++ object that owns us.
+     * Create a GCMDriver object, which is owned by GCMDriverAndroid on the C++ side.
      *
+     * @param nativeGCMDriverAndroid The C++ object that owns us.
      */
     @CalledByNative
     private static GCMDriver create(long nativeGCMDriverAndroid) {
@@ -167,7 +176,8 @@ public class GCMDriver {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void onRegisterFinished(
                 long nativeGCMDriverAndroid,
                 @JniType("std::string") String appId,

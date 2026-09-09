@@ -4,6 +4,7 @@
 
 #include "components/fcm/fcm_driver_android.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -71,8 +72,8 @@ TEST_F(FcmDriverAndroidTest, DispatchMessageReceived) {
 
   driver.AddAppHandler("test_app", &handler_);
 
-  std::vector<std::string> keys_and_values = {"subtype", "test_app", "key1",
-                                              "val1",    "key2",     "val2"};
+  std::map<std::string, std::string> data = {
+      {"subtype", "test_app"}, {"key1", "val1"}, {"key2", "val2"}};
   std::vector<uint8_t> raw_data = {1, 2, 3, 4};
 
   EXPECT_CALL(
@@ -86,7 +87,7 @@ TEST_F(FcmDriverAndroidTest, DispatchMessageReceived) {
           Field(&FcmMessage::raw_data, std::string("\x01\x02\x03\x04", 4)))));
 
   driver.OnMessageReceived(base::android::AttachCurrentThread(), "msg_id_1",
-                           keys_and_values, raw_data);
+                           data, raw_data);
 }
 
 TEST_F(FcmDriverAndroidTest, DispatchMessagesDeleted) {

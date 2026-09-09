@@ -694,6 +694,7 @@ if (_is_default_toolchain) {
       "//components/externalauth/android:java",
       "//components/facilitated_payments/android/java",
       "//components/favicon/android:java",
+      "//components/fcm/android:fcm_java",
       "//components/feature_engagement:feature_engagement_java",
       "//components/feed/core/proto:proto_java_v2",
       "//components/feed/core/v2:feedv2_common_core_java",

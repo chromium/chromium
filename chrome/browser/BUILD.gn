@@ -2127,6 +2127,7 @@ source_set("browser") {
     "//chrome/browser/enterprise:impl",
     "//chrome/browser/external_protocol:impl",
     "//chrome/browser/favicon:impl",
+    "//chrome/browser/fcm",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/feature_engagement:impl",
     "//chrome/browser/feedback:feedback_impl",

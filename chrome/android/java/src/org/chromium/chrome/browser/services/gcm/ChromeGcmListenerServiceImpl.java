@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.collection.ArrayMap;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -25,11 +27,15 @@ import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.components.fcm.FcmBridge;
+import org.chromium.components.fcm.FcmManager;
 import org.chromium.components.gcm_driver.GCMDriver;
 import org.chromium.components.gcm_driver.GCMMessage;
 import org.chromium.components.gcm_driver.InstanceIDFlags;
 import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
+
+import java.util.Map;
 
 /** Receives Downstream messages and status of upstream messages from GCM. */
 @NullMarked
@@ -78,6 +84,10 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
                 TAG,
                 "Push messages were deleted, but we can't tell the Service Worker as we don't"
                         + "know what subtype (app ID) it occurred for.");
+        FcmBridge fcmBridge = FcmBridge.getInstance();
+        if (fcmBridge != null) {
+            fcmBridge.onMessagesDeleted();
+        }
     }
 
     @Override
@@ -237,7 +247,34 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
         Log.d(TAG, "dispatchMessageToDriver: Native Library Init begin");
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
         Log.d(TAG, "dispatchMessageToDriver: Native Library Init complete");
-        GCMDriver.dispatchMessage(message);
+        FcmBridge fcmBridge = FcmBridge.getInstance();
+        // TODO(b/545119100): Resolve sender ID routing vs app ID (subtype) routing for push
+        // messages.
+        if (fcmBridge != null && FcmManager.isFcmSenderId(message.getSenderId())) {
+            String messageId = message.getMessageId() != null ? message.getMessageId() : "";
+            byte[] rawData = message.getRawData() != null ? message.getRawData() : new byte[0];
+            fcmBridge.onMessageReceived(messageId, createDataMapWithSubtype(message), rawData);
+        } else {
+            GCMDriver.dispatchMessage(message);
+        }
+    }
+
+    private static Map<String, String> createDataMapWithSubtype(GCMMessage message) {
+        Map<String, String> data = new ArrayMap<>();
+        if (message.getAppId() != null) {
+            data.put("subtype", message.getAppId());
+        }
+        if (message.getDataKeysAndValuesArray() != null) {
+            String[] keysAndValues = message.getDataKeysAndValuesArray();
+            for (int i = 0; i < keysAndValues.length; i += 2) {
+                if (i + 1 < keysAndValues.length) {
+                    assert !"subtype".equals(keysAndValues[i])
+                            : "GCMMessage data should not contain subtype key";
+                    data.put(keysAndValues[i], keysAndValues[i + 1]);
+                }
+            }
+        }
+        return data;
     }
 
     private static boolean isFullBrowserLoaded() {

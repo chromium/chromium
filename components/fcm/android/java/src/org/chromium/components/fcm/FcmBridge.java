@@ -11,14 +11,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,27 +32,41 @@ public class FcmBridge {
 
     private long mNativeFcmDriverAndroid;
 
-    @CalledByNative
-    static FcmBridge create(long nativeFcmDriverAndroid) {
-        assert sInstance == null : "FcmBridge is already created";
-        FcmBridge bridge = new FcmBridge(nativeFcmDriverAndroid);
-        sInstance = bridge;
-        return bridge;
-    }
-
     private FcmBridge(long nativeFcmDriverAndroid) {
         mNativeFcmDriverAndroid = nativeFcmDriverAndroid;
     }
 
+    /**
+     * Create a FcmBridge object, which is owned by FcmDriverAndroid on the C++ side.
+     *
+     * @param nativeFcmDriverAndroid The C++ object that owns us.
+     */
     @CalledByNative
-    void destroy() {
-        mNativeFcmDriverAndroid = 0;
-        if (sInstance == this) {
-            sInstance = null;
-        }
+    static FcmBridge create(long nativeFcmDriverAndroid) {
+        assert sInstance == null : "Already instantiated";
+        sInstance = new FcmBridge(nativeFcmDriverAndroid);
+        return sInstance;
     }
 
-    /** Returns the active FcmBridge singleton instance if created by native. */
+    /** Sets a test instance. */
+    public static void setInstanceForTesting(@Nullable FcmBridge testInstance) {
+        var previous = sInstance;
+        sInstance = testInstance;
+        ResettersForTesting.register(() -> sInstance = previous);
+    }
+
+    /**
+     * Called when our C++ counterpart is deleted. Clear the handle to our native C++ object,
+     * ensuring it's never called.
+     */
+    @CalledByNative
+    void destroy() {
+        assert sInstance == this;
+        sInstance = null;
+        mNativeFcmDriverAndroid = 0;
+    }
+
+    /** Returns the global FcmBridge instance if instantiated, or null otherwise. */
     public static @Nullable FcmBridge getInstance() {
         return sInstance;
     }
@@ -82,34 +95,18 @@ public class FcmBridge {
     }
 
     /**
-     * Called when an FCM message is received.
+     * Called when an FCM message is received with a map of key-value data.
      *
      * @param messageId Unique message ID from FCM.
      * @param data Key-value data map.
-     * @param rawData Optional raw binary payload.
+     * @param rawData Raw binary payload.
      */
-    public void onMessageReceived(
-            @Nullable String messageId,
-            @Nullable Map<String, String> data,
-            byte @Nullable [] rawData) {
+    public void onMessageReceived(String messageId, Map<String, String> data, byte[] rawData) {
         // TODO(b/546476623): When Android is not in foreground mode, native library may not be
         // loaded or accessible. Handle background message dispatching or native initialization.
         if (mNativeFcmDriverAndroid == 0) return;
 
-        List<String> keysAndValues = new ArrayList<>();
-        if (data != null) {
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                keysAndValues.add(entry.getKey());
-                keysAndValues.add(entry.getValue());
-            }
-        }
-
-        FcmBridgeJni.get()
-                .onMessageReceived(
-                        mNativeFcmDriverAndroid,
-                        messageId != null ? messageId : "",
-                        keysAndValues.toArray(new String[0]),
-                        rawData != null ? rawData : new byte[0]);
+        FcmBridgeJni.get().onMessageReceived(mNativeFcmDriverAndroid, messageId, data, rawData);
     }
 
     /** Called when messages are deleted on the server. */
@@ -126,7 +123,7 @@ public class FcmBridge {
         void onMessageReceived(
                 long nativeFcmDriverAndroid,
                 @JniType("std::string") String messageId,
-                @JniType("std::vector<std::string>") String[] dataKeysAndValues,
+                @JniType("std::map<std::string, std::string>") Map<String, String> data,
                 @JniType("std::vector<uint8_t>") byte[] rawData);
 
         void onMessagesDeleted(long nativeFcmDriverAndroid);

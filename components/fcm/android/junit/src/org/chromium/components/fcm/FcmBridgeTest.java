@@ -63,12 +63,7 @@ public class FcmBridgeTest {
 
         mBridge.onMessageReceived(TEST_MESSAGE_ID, data, rawData);
 
-        verify(mMockNative)
-                .onMessageReceived(
-                        NATIVE_DRIVER_PTR,
-                        TEST_MESSAGE_ID,
-                        new String[] {"subtype", "test_app", "key1", "value1"},
-                        rawData);
+        verify(mMockNative).onMessageReceived(NATIVE_DRIVER_PTR, TEST_MESSAGE_ID, data, rawData);
     }
 
     @Test

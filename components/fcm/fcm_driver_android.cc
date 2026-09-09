@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/fcm/fcm_message.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/fcm/android/jni_headers/FcmBridge_jni.h"
@@ -41,15 +42,12 @@ void FcmDriverAndroid::OnInstallationIdRefreshed(
 void FcmDriverAndroid::OnMessageReceived(
     JNIEnv* env,
     const std::string& message_id,
-    const std::vector<std::string>& data_keys_and_values,
+    const std::map<std::string, std::string>& data,
     const std::vector<uint8_t>& raw_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FcmMessage message;
   message.message_id = message_id;
-
-  for (size_t i = 0; i + 1 < data_keys_and_values.size(); i += 2) {
-    message.data[data_keys_and_values[i]] = data_keys_and_values[i + 1];
-  }
+  message.data = data;
 
   if (!raw_data.empty()) {
     message.raw_data.assign(raw_data.begin(), raw_data.end());

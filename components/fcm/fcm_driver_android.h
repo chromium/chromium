@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@ class FcmDriverAndroid : public FcmDriver {
                                  const std::string& installation_id);
   void OnMessageReceived(JNIEnv* env,
                          const std::string& message_id,
-                         const std::vector<std::string>& data_keys_and_values,
+                         const std::map<std::string, std::string>& data,
                          const std::vector<uint8_t>& raw_data);
   void OnMessagesDeleted(JNIEnv* env);
 

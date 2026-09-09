@@ -7,6 +7,7 @@ package org.chromium.components.fcm;
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import com.google.firebase.FirebaseApp;
@@ -34,7 +35,7 @@ public class FcmManager {
     private static final String APP_NAME = "ChromeFcmApp";
 
     // TODO(crbug.com/556011365): move the following constants to C++ code and provide real values.
-    private static final String DEFAULT_PROJECT_ID = "unused-project-id";
+    @VisibleForTesting public static final String DEFAULT_PROJECT_ID = "unused-project-id";
     private static final String DEFAULT_APP_ID = "1:123456789012:android:0123456789abcdef012345";
 
     // Synchronizes lazy initialization of sInstance across worker threads.
@@ -67,6 +68,11 @@ public class FcmManager {
         synchronized (sLock) {
             return sInstance != null;
         }
+    }
+
+    /** Checks whether the given sender ID belongs to FCM. */
+    public static boolean isFcmSenderId(@Nullable String senderId) {
+        return DEFAULT_PROJECT_ID.equals(senderId);
     }
 
     /** Sets a test instance. */
