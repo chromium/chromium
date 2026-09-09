@@ -17,6 +17,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 /**
  * This class is responsible for rendering the Mandatory Reauth opt-in prompt in a bottomsheet. It
@@ -25,6 +27,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  */
 @NullMarked
 class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.MANDATORY_REAUTH_OPT_IN)
+                    .build();
+
     private final View mView;
 
     MandatoryReauthOptInBottomSheet(Context context, Callback<Integer> interactionHandler) {
@@ -58,6 +65,11 @@ class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {
