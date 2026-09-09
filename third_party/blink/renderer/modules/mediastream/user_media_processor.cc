@@ -950,13 +950,13 @@ UserMediaProcessor::DetermineExistingAudioSessionId(
     }
   }
 
-  // Return the session ID associated to the source that has the same settings
-  // that have been previously selected, if one exists.
+  // Return the session ID associated to the source that has the same session
+  // identity properties, if one exists.
   if (!matching_sources.empty()) {
     for (auto& matching_source : matching_sources) {
       auto* audio_source = static_cast<MediaStreamAudioSource*>(
           matching_source->GetPlatformSource());
-      if (audio_source->HasSameReconfigurableSettings(
+      if (audio_source->HasSameSessionIdentityProperties(
               settings.audio_processing_properties())) {
         return audio_source->device().session_id();
       }
@@ -1833,8 +1833,12 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
       auto* processed_new_source =
           ProcessedLocalAudioSource::From(audio_source.get());
       if (processed_new_source && processed_existing_source) {
-        DCHECK(audio_source->HasSameNonReconfigurableSettings(
-            audio_platform_source));
+        // When different AEC modes require separate processed sources on the
+        // same device, verify that AGC and NS remain interlocked across them.
+        // TODO(crbug.com/558631113): Remove this restriction and DCHECK once
+        // interlocked properties are scoped per session rather than per device.
+        DCHECK(
+            audio_source->HasSameInterlockingProperties(audio_platform_source));
       }
     }
   }

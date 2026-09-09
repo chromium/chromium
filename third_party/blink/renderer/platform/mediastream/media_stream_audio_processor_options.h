@@ -50,10 +50,15 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   // Disables properties that are enabled by default.
   static const AudioProcessingProperties& Disabled();
 
-  bool HasSameReconfigurableSettings(
+  // Returns true if the session identity properties match.
+  bool HasSameSessionIdentityProperties(
       const AudioProcessingProperties& other) const;
 
-  bool HasSameNonReconfigurableSettings(
+  // Returns true if properties that are interlocked across processed sources on
+  // the same capture device match.
+  // TODO(crbug.com/558631113): Update this once interlocked properties are
+  // scoped per session rather than per device.
+  bool HasSameInterlockingProperties(
       const AudioProcessingProperties& other) const;
 
   std::string ToString() const;

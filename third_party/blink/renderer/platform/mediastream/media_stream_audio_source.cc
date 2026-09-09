@@ -129,18 +129,18 @@ void* MediaStreamAudioSource::GetClassIdentifier() const {
   return nullptr;
 }
 
-bool MediaStreamAudioSource::HasSameReconfigurableSettings(
+bool MediaStreamAudioSource::HasSameSessionIdentityProperties(
     const blink::AudioProcessingProperties& selected_properties) const {
   std::optional<blink::AudioProcessingProperties> configured_properties =
       GetAudioProcessingProperties();
   if (!configured_properties)
     return false;
 
-  return selected_properties.HasSameReconfigurableSettings(
+  return selected_properties.HasSameSessionIdentityProperties(
       *configured_properties);
 }
 
-bool MediaStreamAudioSource::HasSameNonReconfigurableSettings(
+bool MediaStreamAudioSource::HasSameInterlockingProperties(
     MediaStreamAudioSource* other_source) const {
   if (!other_source)
     return false;
@@ -153,7 +153,7 @@ bool MediaStreamAudioSource::HasSameNonReconfigurableSettings(
   if (!others_properties || !this_properties)
     return false;
 
-  return this_properties->HasSameNonReconfigurableSettings(*others_properties);
+  return this_properties->HasSameInterlockingProperties(*others_properties);
 }
 
 std::optional<media::AudioCapturerSource::ErrorCode>

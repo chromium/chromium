@@ -108,16 +108,19 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // method to provide safe down-casting to their type.
   virtual void* GetClassIdentifier() const;
 
-  // Returns true if the source has audio processing properties and the
-  // reconfigurable settings associated to audio processing match
-  // |selected_properties|; false otherwise.
-  bool HasSameReconfigurableSettings(
+  // Returns true if the source has audio processing properties and its
+  // session identity properties match `selected_properties`, allowing the
+  // existing capture session and source to be reused; false otherwise.
+  bool HasSameSessionIdentityProperties(
       const blink::AudioProcessingProperties& selected_properties) const;
 
-  // Returns true if |this| and |other_source| have audio processing properties
-  // and the set of settings that cannot be reconfigured associated to these
-  // audio sources match; false otherwise.
-  bool HasSameNonReconfigurableSettings(
+  // Returns true if `this` and `other_source` have audio processing properties
+  // and properties that are interlocked across processed sources on the same
+  // capture device match (auto gain control, noise suppression); false
+  // otherwise.
+  // TODO(crbug.com/558631113): Update this once interlocked properties are
+  // scoped per session rather than per device.
+  bool HasSameInterlockingProperties(
       MediaStreamAudioSource* other_source) const;
 
   // Returns the audio processing properties associated to this source if any,

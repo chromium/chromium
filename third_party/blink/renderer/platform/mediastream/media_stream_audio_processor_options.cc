@@ -38,12 +38,12 @@ const AudioProcessingProperties& AudioProcessingProperties::Disabled() {
   return kDisabledProperties;
 }
 
-bool AudioProcessingProperties::HasSameReconfigurableSettings(
+bool AudioProcessingProperties::HasSameSessionIdentityProperties(
     const AudioProcessingProperties& other) const {
   return echo_cancellation_mode == other.echo_cancellation_mode;
 }
 
-bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
+bool AudioProcessingProperties::HasSameInterlockingProperties(
     const AudioProcessingProperties& other) const {
   return auto_gain_control == other.auto_gain_control &&
          noise_suppression == other.noise_suppression &&
