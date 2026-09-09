@@ -45,7 +45,6 @@ external/wpt/css/css-color/system-color-hightlights-vs-getSelection-002.html
 external/wpt/css/css-color/system-color-support.html
 external/wpt/css/css-contain/content-visibility/content-visibility-vs-scrollIntoView-001.html
 external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html
-external/wpt/css/css-content/quotes-022.html
 external/wpt/css/css-fonts/fallback-url-to-local.html
 external/wpt/css/css-fonts/font-display/font-display-change.html
 external/wpt/css/css-fonts/font-display/font-display-preload.html
