@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
@@ -233,26 +234,6 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
     return create_phone_number(new_phone_number);
   }
 
-  // TODO(crbug.com/550246835): Modify ::autofill::i18n::PhoneNumbersMatch to
-  // support SHORT_NSN_MATCH and just call that instead of accessing the
-  // underlying utility library directly?
-
-  // Parse and compare the phone numbers.
-  // The phone number util library needs the numbers in utf8.
-  PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
-  switch (phone_util->IsNumberMatchWithTwoStrings(
-      base::UTF16ToUTF8(new_phone_number),
-      base::UTF16ToUTF8(old_phone_number))) {
-    case PhoneNumberUtil::INVALID_NUMBER:
-    case PhoneNumberUtil::NO_MATCH:
-      return std::nullopt;
-    case PhoneNumberUtil::SHORT_NSN_MATCH:
-    case PhoneNumberUtil::NSN_MATCH:
-    case PhoneNumberUtil::EXACT_MATCH:
-      // A merge is possible.
-      break;
-  }
-
   // Figure out a country code hint.
   // TODO(crbug.com/40221178) `GetNonEmptyOf()` prefers `new_profile` in case
   // both are non empty.
@@ -266,6 +247,7 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   }
 
   // Parse the phone numbers.
+  PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
   ::i18n::phonenumbers::PhoneNumber n1;
   if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(new_phone_number),
                                        region, &n1) !=
@@ -277,6 +259,10 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(old_phone_number),
                                        region, &n2) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
+    return std::nullopt;
+  }
+
+  if (!i18n::PhoneNumbersMatch(n1, n2, /*support_short_nsn_match=*/true)) {
     return std::nullopt;
   }
 

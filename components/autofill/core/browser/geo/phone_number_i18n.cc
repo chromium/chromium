@@ -263,10 +263,28 @@ bool ConstructPhoneNumber(std::u16string_view input_whole_number,
   return true;
 }
 
+bool PhoneNumbersMatch(const ::i18n::phonenumbers::PhoneNumber& number_a,
+                       const ::i18n::phonenumbers::PhoneNumber& number_b,
+                       bool support_short_nsn_match) {
+  switch (PhoneNumberUtil::GetInstance()->IsNumberMatch(number_a, number_b)) {
+    case PhoneNumberUtil::INVALID_NUMBER:
+    case PhoneNumberUtil::NO_MATCH:
+      return false;
+    case PhoneNumberUtil::SHORT_NSN_MATCH:
+      return support_short_nsn_match;
+    case PhoneNumberUtil::NSN_MATCH:
+    case PhoneNumberUtil::EXACT_MATCH:
+      return true;
+  }
+
+  NOTREACHED();
+}
+
 bool PhoneNumbersMatch(std::u16string_view number_a,
                        std::u16string_view number_b,
                        std::string_view raw_region,
-                       std::string_view app_locale) {
+                       std::string_view app_locale,
+                       bool support_short_nsn_match) {
   if (number_a.empty() && number_b.empty()) {
     return true;
   }
@@ -293,18 +311,7 @@ bool PhoneNumbersMatch(std::u16string_view number_a,
     return false;
   }
 
-  switch (phone_util->IsNumberMatch(i18n_number1, i18n_number2)) {
-    case PhoneNumberUtil::INVALID_NUMBER:
-    case PhoneNumberUtil::NO_MATCH:
-      return false;
-    case PhoneNumberUtil::SHORT_NSN_MATCH:
-      return false;
-    case PhoneNumberUtil::NSN_MATCH:
-    case PhoneNumberUtil::EXACT_MATCH:
-      return true;
-  }
-
-  NOTREACHED();
+  return PhoneNumbersMatch(i18n_number1, i18n_number2, support_short_nsn_match);
 }
 
 std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,

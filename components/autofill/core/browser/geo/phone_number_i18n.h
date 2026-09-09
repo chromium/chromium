@@ -76,12 +76,21 @@ std::u16string NormalizePhoneNumber(std::u16string_view value,
                                         const std::string& region,
                                         std::u16string* output_whole_number);
 
+// Returns true if `number_a` and `number_b` match. If `support_short_nsn_match`
+// is true, short national significant number matches are also considered a
+// match.
+bool PhoneNumbersMatch(const ::i18n::phonenumbers::PhoneNumber& number_a,
+                       const ::i18n::phonenumbers::PhoneNumber& number_b,
+                       bool support_short_nsn_match = false);
+
 // Returns true if `number_a` and `number_b` parse to the same phone number in
-// the given `region`.
+// the given `region`. If `support_short_nsn_match` is true, short national
+// significant number matches are also considered a match.
 bool PhoneNumbersMatch(std::u16string_view number_a,
                        std::u16string_view number_b,
                        std::string_view region,
-                       std::string_view app_locale);
+                       std::string_view app_locale,
+                       bool support_short_nsn_match = false);
 
 // Returns the phone number from the given `profile` formatted for display.
 // If it's a valid number for the profile's country or for the `locale` given

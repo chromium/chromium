@@ -223,8 +223,10 @@ TEST(PhoneNumberI18NTest, PhoneNumbersMatch) {
   EXPECT_TRUE(
       PhoneNumbersMatch(u"1(415)888-99-99", u"+14158889999", "US", "en-US"));
 
-  // Partial matches don't count.
+  // Partial matches don't count by default.
   EXPECT_FALSE(PhoneNumbersMatch(u"14158889999", u"8889999", "US", "en-US"));
+  EXPECT_TRUE(PhoneNumbersMatch(u"14158889999", u"8889999", "US", "en-US",
+                                /*support_short_nsn_match=*/true));
 
   // Different numbers don't match.
   EXPECT_FALSE(PhoneNumbersMatch(u"14158889999", u"1415888", "US", "en-US"));
@@ -236,6 +238,29 @@ TEST(PhoneNumberI18NTest, PhoneNumbersMatch) {
   // An empty and a non-empty number do not match.
   EXPECT_FALSE(
       PhoneNumbersMatch(std::u16string(), u"5088585123", "US", "en-US"));
+}
+
+// Tests that PhoneNumbersMatch correctly matches PhoneNumber protos including
+// short NSN matches when support_short_nsn_match is enabled.
+TEST(PhoneNumberI18NTest, PhoneNumbersMatchProto) {
+  ::i18n::phonenumbers::PhoneNumberUtil* phone_util =
+      ::i18n::phonenumbers::PhoneNumberUtil::GetInstance();
+  ::i18n::phonenumbers::PhoneNumber number1;
+  ASSERT_EQ(phone_util->Parse("14158889999", "US", &number1),
+            ::i18n::phonenumbers::PhoneNumberUtil::NO_PARSING_ERROR);
+  ::i18n::phonenumbers::PhoneNumber number2;
+  ASSERT_EQ(phone_util->Parse("8889999", "US", &number2),
+            ::i18n::phonenumbers::PhoneNumberUtil::NO_PARSING_ERROR);
+  ::i18n::phonenumbers::PhoneNumber number3;
+  ASSERT_EQ(phone_util->Parse("14151112222", "US", &number3),
+            ::i18n::phonenumbers::PhoneNumberUtil::NO_PARSING_ERROR);
+
+  EXPECT_FALSE(PhoneNumbersMatch(number1, number2));
+  EXPECT_TRUE(
+      PhoneNumbersMatch(number1, number2, /*support_short_nsn_match=*/true));
+  EXPECT_FALSE(PhoneNumbersMatch(number1, number3));
+  EXPECT_FALSE(
+      PhoneNumbersMatch(number1, number3, /*support_short_nsn_match=*/true));
 }
 
 // Tests that the phone numbers are correctly formatted for the Payment
