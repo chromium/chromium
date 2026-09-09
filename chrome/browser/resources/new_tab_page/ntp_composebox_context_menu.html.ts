@@ -37,6 +37,8 @@ export function getHtml(this: NtpComposeboxElement) {
       .recentTabId="${this.recentTabId}"
       .smartTabSharingActive="${this.smartTabSharingActive}"
       .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
+      .composeboxContextMenuTooltipsEnabled="${
+          this.composeboxContextMenuTooltipsEnabled}"
       .smartTabSharingVisible="${this.smartTabSharingVisible}"
       .searchboxLayoutMode="${this.searchboxLayoutMode}"
       .tabSuggestions="${this.tabSuggestions}"

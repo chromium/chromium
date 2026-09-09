@@ -110,6 +110,8 @@ export class TestComposeboxMixinElement extends TestElementBase {
           <cr-composebox-contextual-entrypoint-and-menu
               id="contextEntrypoint"
               .inputState="${this.inputState}"
+              .composeboxContextMenuTooltipsEnabled="${
+                  this.composeboxContextMenuTooltipsEnabled}"
               @tool-click="${this.onToolClick}">
           </cr-composebox-contextual-entrypoint-and-menu>
           <cr-composebox-submit

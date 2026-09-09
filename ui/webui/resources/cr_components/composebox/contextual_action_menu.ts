@@ -144,6 +144,7 @@ export class ContextualActionMenuElement extends
         attribute: 'unbounded-menu-enabled',
       },
       isOpen_: {type: Boolean},
+      contextMenuTooltipsEnabled: {type: Boolean},
     };
   }
 
@@ -157,6 +158,8 @@ export class ContextualActionMenuElement extends
   accessor smartTabSharingActive: boolean = false;
   accessor smartTabSharingVisible: boolean = false;
   accessor contextManagementInComposeboxEnabled: boolean = false;
+  accessor contextMenuTooltipsEnabled: boolean =
+      getLoadTimeBoolean('composeboxContextMenuTooltipsEnabled', false);
   accessor disableAutoReposition: boolean = false;
   accessor uploadButtonDisabled: boolean = false;
   accessor isSidePanel: boolean = false;
@@ -691,6 +694,41 @@ export class ContextualActionMenuElement extends
       default:
         return '';
     }
+  }
+
+  protected getToolTooltip_(tool: ToolMode): string {
+    if (!this.contextMenuTooltipsEnabled) {
+      return '';
+    }
+    if (this.inputState) {
+      const config = this.inputState.toolConfigs.find(c => c.tool === tool);
+      if (config && config.menuTooltip) {
+        return config.menuTooltip;
+      }
+    }
+    return '';
+  }
+
+  protected getModelTooltip_(model: ModelMode): string {
+    if (!this.contextMenuTooltipsEnabled) {
+      return '';
+    }
+    if (this.inputState) {
+      const config = this.inputState.modelConfigs.find(c => c.model === model);
+      if (config && config.menuTooltip) {
+        return config.menuTooltip;
+      }
+    }
+    return '';
+  }
+
+  protected getShareTabsTooltip_(): string {
+    if (!this.contextMenuTooltipsEnabled) {
+      return '';
+    }
+    return this.getSelectedTabs_().length > 0 ?
+        this.i18n('sharingTabsWithGoogle') :
+        this.i18n('addOpenTabsToAskAnything');
   }
 
   protected getToolHeader_(): string {

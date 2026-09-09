@@ -218,6 +218,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       hasUserInput_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       contextManagementInComposeboxEnabled: {type: Boolean},
+      composeboxContextMenuTooltipsEnabled: {type: Boolean},
       keepMenuOpenOnTabSelectForRealbox: {type: Boolean},
       smartTabSharingVisible: {type: Boolean},
       smartTabSharingActive: {type: Boolean},
@@ -255,6 +256,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   // adding as a backup for tests.
   accessor contextManagementInComposeboxEnabled: boolean =
       getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
+  accessor composeboxContextMenuTooltipsEnabled: boolean =
+      getLoadTimeBoolean('composeboxContextMenuTooltipsEnabled', false);
   accessor keepMenuOpenOnTabSelectForRealbox: boolean =
       getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
   accessor placeholderText: string = '';

@@ -390,5 +390,16 @@ suite('ContextualEntrypointAndMenu', () => {
           assertFalse(entrypointAndMenu.hasAttribute('unbounded-menu-enabled'));
           assertFalse(entrypointAndMenu.$.menu.unboundedMenuEnabled);
         });
+
+    test(
+        'composeboxContextMenuTooltipsEnabled propagates to menu', async () => {
+          entrypointAndMenu.composeboxContextMenuTooltipsEnabled = true;
+          await microtasksFinished();
+          assertTrue(entrypointAndMenu.$.menu.contextMenuTooltipsEnabled);
+
+          entrypointAndMenu.composeboxContextMenuTooltipsEnabled = false;
+          await microtasksFinished();
+          assertFalse(entrypointAndMenu.$.menu.contextMenuTooltipsEnabled);
+        });
   });
 });

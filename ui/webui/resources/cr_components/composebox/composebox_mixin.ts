@@ -102,6 +102,7 @@ export const ComposeboxEmbedderMixin =
             smartTabSharingActive: {type: Boolean},
             smartTabSharingVisible: {type: Boolean},
             contextManagementInComposeboxEnabled: {type: Boolean},
+            composeboxContextMenuTooltipsEnabled: {type: Boolean},
             shouldShowGhostFiles: {type: Boolean},
             showMenuOnClick: {type: Boolean},
             submitButtonIconType: {type: String},
@@ -229,6 +230,8 @@ export const ComposeboxEmbedderMixin =
             getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
         accessor contextManagementInComposeboxEnabled: boolean =
             getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
+        accessor composeboxContextMenuTooltipsEnabled: boolean =
+            getLoadTimeBoolean('composeboxContextMenuTooltipsEnabled', false);
         accessor tabDeselectionEnabled: boolean = getLoadTimeBoolean(
             'composeboxContextMenuEnableTabDeselection', false);
         contextMenuDescriptionEnabled: boolean =
@@ -2999,6 +3002,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   smartTabSharingActive: boolean;
   smartTabSharingVisible: boolean;
   contextManagementInComposeboxEnabled: boolean;
+  composeboxContextMenuTooltipsEnabled: boolean;
   composeboxSkillsEnabled: boolean;
   contextMenuDescriptionEnabled: boolean;
   showContextMenuDescription: boolean;

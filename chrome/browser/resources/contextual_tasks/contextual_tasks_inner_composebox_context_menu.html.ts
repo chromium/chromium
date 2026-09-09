@@ -42,6 +42,8 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
       .smartTabSharingVisible="${this.smartTabSharingVisible}"
       .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
       .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
+      .composeboxContextMenuTooltipsEnabled="${
+          this.composeboxContextMenuTooltipsEnabled}"
       .searchboxLayoutMode="${this.searchboxLayoutMode}"
       .tabSuggestions="${this.tabSuggestions}"
       .tabSuggestionsState="${this.tabSuggestionsState}"

@@ -1321,6 +1321,177 @@ suite('ContextualActionMenu', () => {
     assertTrue(imageUpload!.textContent.includes(imageUploadLabel));
   });
 
+  test(
+      'Shows tool and model tooltips when config provides them and ' +
+          'feature is enabled',
+      async () => {
+        const deepSearchTooltip = 'Deep search tooltip content';
+        const regularModelTooltip = 'Gemini Regular tooltip content';
+
+        actionMenu.contextMenuTooltipsEnabled = true;
+        actionMenu.inputState = new MockInputState({
+          allowedTools: [ToolMode.kDeepSearch, ToolMode.kImageGen],
+          toolConfigs: [
+            {
+              tool: ToolMode.kDeepSearch,
+              menuLabel: 'Deep Search',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: deepSearchTooltip,
+              icon: 0,
+            },
+            {
+              tool: ToolMode.kImageGen,
+              menuLabel: 'Generate Image',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+              icon: 0,
+            },
+          ],
+          toolsSectionConfig: {header: ''},
+          allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+          modelConfigs: [
+            {
+              model: ModelMode.kGeminiRegular,
+              menuLabel: 'Gemini Regular',
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: regularModelTooltip,
+              icon: 0,
+            },
+            {
+              model: ModelMode.kGeminiPro,
+              menuLabel: 'Gemini Pro',
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+              icon: 0,
+            },
+          ],
+          modelSectionConfig: {header: ''},
+        });
+
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const deepSearchEl =
+            $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`);
+        assertTrue(!!deepSearchEl);
+        assertEquals(deepSearchTooltip, deepSearchEl.getAttribute('title'));
+
+        const imageGenEl =
+            $$(actionMenu, `[data-mode="${ToolMode.kImageGen}"]`);
+        assertTrue(!!imageGenEl);
+        assertEquals('', imageGenEl.getAttribute('title') || '');
+
+        const regularModelEl =
+            $$(actionMenu, `[data-model="${ModelMode.kGeminiRegular}"]`);
+        assertTrue(!!regularModelEl);
+        assertEquals(regularModelTooltip, regularModelEl.getAttribute('title'));
+
+        const proModelEl =
+            $$(actionMenu, `[data-model="${ModelMode.kGeminiPro}"]`);
+        assertTrue(!!proModelEl);
+        assertEquals('', proModelEl.getAttribute('title') || '');
+      });
+
+  test('Hides tool and model tooltips when feature is disabled', async () => {
+    actionMenu.contextMenuTooltipsEnabled = false;
+    actionMenu.inputState = new MockInputState({
+      allowedTools: [ToolMode.kDeepSearch],
+      toolConfigs: [
+        {
+          tool: ToolMode.kDeepSearch,
+          menuLabel: 'Deep Search',
+          disableActiveModelSelection: false,
+          chipLabel: '',
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: 'Deep search tooltip content',
+          icon: 0,
+        },
+      ],
+      allowedModels: [ModelMode.kGeminiRegular],
+      modelConfigs: [
+        {
+          model: ModelMode.kGeminiRegular,
+          menuLabel: 'Gemini Regular',
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: 'Gemini Regular tooltip content',
+          icon: 0,
+        },
+      ],
+    });
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const deepSearchEl =
+        $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`);
+    assertTrue(!!deepSearchEl);
+    assertEquals('', deepSearchEl.getAttribute('title') || '');
+
+    const regularModelEl =
+        $$(actionMenu, `[data-model="${ModelMode.kGeminiRegular}"]`);
+    assertTrue(!!regularModelEl);
+    assertEquals('', regularModelEl.getAttribute('title') || '');
+  });
+
+  test(
+      'Shows add tabs tooltip based on selected tabs when tooltips enabled',
+      async () => {
+        actionMenu.contextManagementInComposeboxEnabled = true;
+        actionMenu.contextMenuTooltipsEnabled = true;
+        const tabInfo = createTabSuggestion({tabId: 101, title: 'Tab 1'});
+        actionMenu.tabSuggestions = [tabInfo];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+        });
+
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const shareTabsTrigger =
+            actionMenu.$.menu.querySelector<HTMLButtonElement>(
+                '#shareTabsTrigger')!;
+        assertTrue(!!shareTabsTrigger);
+        assertEquals(
+            actionMenu.i18n('addOpenTabsToAskAnything'),
+            shareTabsTrigger.getAttribute('title'));
+
+        // Select a tab.
+        actionMenu.selectedTabIds = new Map([[101, 'uuid-101']]);
+        await microtasksFinished();
+
+        assertEquals(
+            actionMenu.i18n('sharingTabsWithGoogle'),
+            shareTabsTrigger.getAttribute('title'));
+      });
+
+  test('Hides add tabs tooltip when tooltips disabled', async () => {
+    actionMenu.contextManagementInComposeboxEnabled = true;
+    actionMenu.contextMenuTooltipsEnabled = false;
+    const tabInfo = createTabSuggestion({tabId: 101, title: 'Tab 1'});
+    actionMenu.tabSuggestions = [tabInfo];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    });
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const shareTabsTrigger = actionMenu.$.menu.querySelector<HTMLButtonElement>(
+        '#shareTabsTrigger')!;
+    assertTrue(!!shareTabsTrigger);
+    assertEquals('', shareTabsTrigger.getAttribute('title') || '');
+  });
+
   test('Toggling smart tab sharing fires event', async () => {
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');

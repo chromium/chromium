@@ -746,6 +746,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
           base::FeatureList::IsEnabled(omnibox::kTabFaviconChipsToCoins));
   source->AddBoolean("searchboxShowComposebox",
                      ntp_composebox::IsNtpComposeboxEnabled(profile));
+  source->AddBoolean("composeboxContextMenuTooltipsEnabled",
+                     omnibox::IsContextMenuTooltipsInComposeboxEnabled());
   source->AddBoolean("composeboxShowZps", true);
   source->AddBoolean("composeboxShowTypedSuggest",
                      ntp_composebox::kShowComposeboxTypedSuggest.Get());

@@ -38,6 +38,8 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .smartTabSharingVisible="${this.smartTabSharingVisible}"
         .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
+        .contextMenuTooltipsEnabled="${
+            this.composeboxContextMenuTooltipsEnabled}"
         .disableAutoReposition="${this.disableAutoReposition}"
         .uploadButtonDisabled="${this.uploadButtonDisabled}"
         .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"

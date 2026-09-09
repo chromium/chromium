@@ -38,6 +38,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                     aria-haspopup="menu"
                     aria-expanded="${this.shareTabsFlyoutOpen}"
                     ?disabled="${this.isShareTabsTriggerDisabled_()}"
+                    title="${this.getShareTabsTooltip_()}"
                     @pointerenter="${this.onShareTabsRowPointerenter_}"
                     @pointerleave="${this.onShareTabsRowPointerleave_}"
                     @keydown="${this.onShareTabsRowKeydown_}">
@@ -142,6 +143,7 @@ export function getHtml(this: ContextualActionMenuElement) {
             aria-label="${this.showContextMenuHeaders_ &&
                 this.getToolHeader_() ?
                 `${this.getToolHeader_()}: ` : ''}${this.getToolLabel_(mode)}"
+            title="${this.getToolTooltip_(mode)}"
             @click="${this.onToolClick_}"
             ?disabled="${this.isToolDisabled_(mode)}">
           ${this.getIconForToolMode_(mode) ? html`
@@ -176,6 +178,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                 this.getModelHeader_() ?
                 `${this.getModelHeader_()}: ` : ''}${this.getModelLabel_(mode)}"
             data-model="${mode}"
+            title="${this.getModelTooltip_(mode)}"
             @click="${this.onModelClick_}"
             ?disabled="${this.isModelDisabled_(mode)}">
           ${this.getIconForModelMode_(mode) ? html`

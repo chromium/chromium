@@ -17,9 +17,6 @@ namespace omnibox {
 // instead of in the co-browse tool bar and RHS dropdown.
 BASE_DECLARE_FEATURE(kContextManagementInComposebox);
 
-// If enabled, this feature will show tooltips in the composebox context menu.
-BASE_DECLARE_FEATURE(kContextMenuToolTips);
-
 // If enabled, this feature will gate the functionality of removing the existing
 // tab chips from the composebox and instead add favicon coins next to the "+"
 // button.
@@ -72,6 +69,9 @@ bool IsTabDeselectionInComposeboxEnabled();
 
 // If enabled, tooltips will be shown in the composebox context menu.
 extern const base::FeatureParam<bool> kContextManagementInComposeboxTooltips;
+
+// Helper to check if context menu tooltips are enabled in the composebox.
+bool IsContextMenuTooltipsInComposeboxEnabled();
 
 }  // namespace omnibox
 
