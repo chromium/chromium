@@ -3497,6 +3497,14 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="Tickle.Arrival" enum="OneTimeTokensTickleArrival">
+    <summary>
+      Records the arrival order and timing of push notifications (tickles)
+      relative to OTP form detection on a web page. Only recorded for
+      kAfterFieldDetection and kBeforeFieldDetection, where an OTP form was
+      detected and the URL can be reliably established.
+    </summary>
+  </metric>
 </event>
 
 <event name="Autofill.PayLaterTabSelected" singular="true">

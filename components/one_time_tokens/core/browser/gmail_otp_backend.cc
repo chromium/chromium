@@ -134,6 +134,9 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
     if (base::FeatureList::IsEnabled(features::kGmailOtpRetrievalService)) {
       base::UmaHistogramEnumeration(kTickleArrivalHistogram,
                                     TickleArrival::kExpiredOnArrival);
+      // UKM metric cannot be recorded for `kExpiredOnArrival` because the push
+      // message was delivered outside the context of a page, so we cannot
+      // reliably establish the URL.
     }
     return;
   }

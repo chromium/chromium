@@ -63,8 +63,9 @@ bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
       if (ukm_source_id.has_value() &&
           *ukm_source_id != ukm::kInvalidSourceId) {
         ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id);
-        (builder.*ukm_setter)(latency.InMilliseconds())
-            .Record(ukm::UkmRecorder::Get());
+        (builder.*ukm_setter)(latency.InMilliseconds());
+        builder.SetTickle_Arrival(static_cast<int64_t>(arrival_type));
+        builder.Record(ukm::UkmRecorder::Get());
       }
       return true;
     }
@@ -204,6 +205,8 @@ void OtpMetricsTracker::OnTickleTimeout() {
   base::UmaHistogramSparse(
       kPageLanguageNoFieldDetectedHistogram,
       base::HashMetricName(speculative_page_language_.value_or("")));
+  // UKM metric cannot be recorded for `kWithoutFieldDetection` because no OTP
+  // field was detected, so we cannot reliably establish the page URL.
   tickle_time_.reset();
   speculative_page_language_.reset();
 }
