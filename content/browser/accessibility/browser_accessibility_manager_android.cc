@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
@@ -1219,6 +1220,8 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     at_end_of_anchor = true;
   }
   CHECK(target_node);
+  // TODO(crbug.com/550089859): Remove when crash keys are not needed.
+  ui::AXNode* initial_target_node = target_node;
 
   // If `target_node` is not in the Android accessibility tree (ignored or
   // uninteresting), move it up to the lowest platform ancestor.
@@ -1237,17 +1240,43 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
       static_cast<BrowserAccessibilityAndroid*>(
           GetFromAXNode(target_node->GetUnignoredParent()));
 
+  // TODO(crbug.com/550089859): Update the comment below, when a contradicting
+  // example is found.
   // `parent_node` cannot be null because tree positions only occur on anchors
   // with children, resolving `target_node` to a child, and
   // `GetUnignoredParent()` walks up to the nearest unignored ancestor (up to
   // RootWebArea). Childless root nodes are treated as leaves by
   // `AXNodePosition` and handled earlier in the text position branch.
   if (!parent_node) {
-    SCOPED_CRASH_KEY_STRING1024(
-        "ax", "tree", ax_tree() ? ax_tree()->ToString(/*verbose=*/false) : "");
-    SCOPED_CRASH_KEY_STRING256("ax", "position", original_position->ToString());
-    SCOPED_CRASH_KEY_STRING256("ax", "target_node",
+    SCOPED_CRASH_KEY_STRING256("ax", "original_pos",
+                               original_position->ToString());
+    SCOPED_CRASH_KEY_STRING256("ax", "adjusted_pos", position->ToString());
+    SCOPED_CRASH_KEY_STRING256(
+        "ax", "initial_target_node",
+        initial_target_node->data().ToString(/*verbose=*/false));
+    SCOPED_CRASH_KEY_STRING256("ax", "final_target_node",
                                target_node->data().ToString(/*verbose=*/false));
+
+    // Since the entire accessibility tree can be large, collect the path of
+    // nodes from the initial target node to the root, and all children of the
+    // initial target node.
+    std::string ancestry;
+    ancestry.reserve(1024);
+    for (ui::AXNode* ancestor = initial_target_node; ancestor;
+         ancestor = ancestor->GetParent()) {
+      base::StrAppend(&ancestry,
+                      {ancestor->data().ToString(/*verbose=*/false), "\n"});
+    }
+    SCOPED_CRASH_KEY_STRING1024("ax", "ancestry", ancestry);
+
+    std::string children;
+    children.reserve(1024);
+    for (const auto& child : initial_target_node->children()) {
+      base::StrAppend(&children,
+                      {child->data().ToString(/*verbose=*/false), "\n"});
+    }
+    SCOPED_CRASH_KEY_STRING1024("ax", "children", children);
+
     DUMP_WILL_BE_NOTREACHED();
     return std::nullopt;
   }
