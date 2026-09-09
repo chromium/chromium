@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/log_console_message.h"
@@ -52,11 +53,10 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
   auto& queue = client_map_[key];
 
   const size_t max_elements = GetMaxElementsPerPageForSource(source);
-  if (queue.size() < max_elements ||
-      base::FeatureList::IsEnabled(
-          blink::features::kBypassPepcSecurityForTesting)) {
-    client->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
-  }
+  const bool should_allow = queue.size() < max_elements ||
+                            base::FeatureList::IsEnabled(
+                                blink::features::kBypassPepcSecurityForTesting);
+
   queue.push_back(std::move(client));
   if (queue.size() == max_elements) {
     page().GetMainDocument().AddMessageToConsole(
@@ -64,6 +64,10 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
         "Maximum limit of " + base::NumberToString(max_elements) +
             " permission elements has been reached. More permission"
             " elements can be added but they will not be clickable");
+  }
+
+  if (should_allow) {
+    queue.back()->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
   }
 }
 
@@ -87,7 +91,7 @@ PAGE_USER_DATA_KEY_IMPL(EmbeddedPermissionControlChecker);
 void EmbeddedPermissionControlChecker::OnClientDisconnect(
     Client* disconnected_client) {
   // Store the max elements for the source type before erasing the client.
-  const int max_elements =
+  const size_t max_elements =
       GetMaxElementsPerPageForSource(disconnected_client->source());
 
   ClientKey key(disconnected_client->source(),
@@ -95,22 +99,27 @@ void EmbeddedPermissionControlChecker::OnClientDisconnect(
   auto client_map_it = client_map_.find(key);
   CHECK(client_map_it != client_map_.end() && !client_map_it->second.empty());
   auto& queue = client_map_it->second;
-  for (auto& client : queue) {
-    if (client.get() == disconnected_client) {
-      base::Erase(queue, client);
-      break;
-    }
-  }
+  base::EraseIf(queue, [disconnected_client](const auto& client) {
+    return client.get() == disconnected_client;
+  });
 
   if (queue.empty()) {
     client_map_.erase(client_map_it);
     return;
   }
 
-  for (auto it = queue.begin();
-       it != queue.end() && std::distance(queue.begin(), it) < max_elements;
-       ++it) {
-    (*it)->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
+  // Gather weak pointers to the clients to notify before invoking callbacks,
+  // ensuring iterator and callback safety if the queue is modified reentrantly.
+  std::vector<base::WeakPtr<Client>> clients_to_notify;
+  clients_to_notify.reserve(max_elements);
+  for (size_t i = 0; i < queue.size() && i < max_elements; ++i) {
+    clients_to_notify.push_back(queue[i]->AsWeakPtr());
+  }
+
+  for (auto& weak_client : clients_to_notify) {
+    if (weak_client) {
+      weak_client->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
+    }
   }
 }
 

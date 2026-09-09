@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -312,6 +313,198 @@ TEST_F(EmbeddedPermissionControlCheckerTest, HasPageEmbeddedPermission) {
   EXPECT_FALSE(checker->HasPageEmbeddedPermission(
       EmbeddedPermissionControlChecker::Source::kUserMediaElement,
       {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE}));
+}
+
+TEST_F(EmbeddedPermissionControlCheckerTest,
+       ReentrantRegistrationOnClientDisconnect) {
+  auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+
+  std::vector<mojo::PendingReceiver<EmbeddedPermissionControlClient>> receivers(
+      kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    checker->CheckPageEmbeddedPermission(
+        EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+        {PermissionName::AUDIO_CAPTURE},
+        receivers[i].InitWithNewPipeAndPassRemote(),
+        base::BindOnce(
+            [](bool allow,
+               const mojo::Remote<EmbeddedPermissionControlClient>&) {
+              EXPECT_TRUE(allow);
+            }));
+  }
+
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> pending_receiver;
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> reentrant_receiver;
+  bool pending_callback_called = false;
+  bool reentrant_callback_called = false;
+
+  checker->CheckPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE},
+      pending_receiver.InitWithNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](EmbeddedPermissionControlChecker* checker,
+             mojo::PendingReceiver<EmbeddedPermissionControlClient>*
+                 reentrant_rec,
+             bool* pending_called, bool* reentrant_called, bool allow,
+             const mojo::Remote<EmbeddedPermissionControlClient>&) {
+            *pending_called = true;
+            EXPECT_TRUE(allow);
+            checker->CheckPageEmbeddedPermission(
+                EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+                {PermissionName::AUDIO_CAPTURE},
+                reentrant_rec->InitWithNewPipeAndPassRemote(),
+                base::BindOnce(
+                    [](bool* called, bool allow,
+                       const mojo::Remote<EmbeddedPermissionControlClient>&) {
+                      *called = true;
+                      EXPECT_TRUE(allow);
+                    },
+                    reentrant_called));
+          },
+          checker, &reentrant_receiver, &pending_callback_called,
+          &reentrant_callback_called));
+
+  EXPECT_FALSE(pending_callback_called);
+  EXPECT_FALSE(reentrant_callback_called);
+
+  // Disconnect the first client.
+  receivers[0].reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return pending_callback_called; }));
+  EXPECT_FALSE(reentrant_callback_called);
+
+  // Disconnect the second client to allow the reentrantly registered client.
+  receivers[1].reset();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return reentrant_callback_called; }));
+}
+
+TEST_F(EmbeddedPermissionControlCheckerTest,
+       ReentrantDisconnectOnClientDisconnect) {
+  auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+
+  std::vector<mojo::PendingReceiver<EmbeddedPermissionControlClient>> receivers(
+      kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    checker->CheckPageEmbeddedPermission(
+        EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+        {PermissionName::AUDIO_CAPTURE},
+        receivers[i].InitWithNewPipeAndPassRemote(), base::DoNothing());
+  }
+
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> pending_receiver_1;
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> pending_receiver_2;
+  bool pending_1_called = false;
+  bool pending_2_called = false;
+
+  // When pending_receiver_1's callback runs, it disconnects pending_receiver_2.
+  checker->CheckPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE},
+      pending_receiver_1.InitWithNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](mojo::PendingReceiver<EmbeddedPermissionControlClient>*
+                 receiver_to_disconnect,
+             bool* called, bool allow,
+             const mojo::Remote<EmbeddedPermissionControlClient>&) {
+            *called = true;
+            EXPECT_TRUE(allow);
+            receiver_to_disconnect->reset();
+          },
+          &pending_receiver_2, &pending_1_called));
+
+  checker->CheckPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE},
+      pending_receiver_2.InitWithNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](bool* called, bool allow,
+             const mojo::Remote<EmbeddedPermissionControlClient>&) {
+            *called = true;
+          },
+          &pending_2_called));
+
+  receivers[0].reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return pending_1_called; }));
+  EXPECT_FALSE(pending_2_called);
+}
+
+TEST_F(EmbeddedPermissionControlCheckerTest,
+       ReentrantRegistrationOnInitialCheck) {
+  auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> receiver_1;
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> receiver_2;
+  bool client_1_called = false;
+  bool client_2_called = false;
+
+  checker->CheckPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE},
+      receiver_1.InitWithNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](EmbeddedPermissionControlChecker* checker,
+             mojo::PendingReceiver<EmbeddedPermissionControlClient>*
+                 receiver_2_ptr,
+             bool* c1_called, bool* c2_called, bool allow,
+             const mojo::Remote<EmbeddedPermissionControlClient>&) {
+            *c1_called = true;
+            EXPECT_TRUE(allow);
+            checker->CheckPageEmbeddedPermission(
+                EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+                {PermissionName::AUDIO_CAPTURE},
+                receiver_2_ptr->InitWithNewPipeAndPassRemote(),
+                base::BindOnce(
+                    [](bool* called, bool allow,
+                       const mojo::Remote<EmbeddedPermissionControlClient>&) {
+                      *called = true;
+                      EXPECT_TRUE(allow);
+                    },
+                    c2_called));
+          },
+          checker, &receiver_2, &client_1_called, &client_2_called));
+
+  EXPECT_TRUE(client_1_called);
+  EXPECT_TRUE(client_2_called);
+}
+
+TEST_F(EmbeddedPermissionControlCheckerTest,
+       ReentrantSelfDisconnectOnClientDisconnect) {
+  auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+
+  std::vector<mojo::PendingReceiver<EmbeddedPermissionControlClient>> receivers(
+      kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    checker->CheckPageEmbeddedPermission(
+        EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+        {PermissionName::AUDIO_CAPTURE},
+        receivers[i].InitWithNewPipeAndPassRemote(), base::DoNothing());
+  }
+
+  mojo::PendingReceiver<EmbeddedPermissionControlClient> pending_receiver;
+  bool pending_called = false;
+
+  checker->CheckPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE},
+      pending_receiver.InitWithNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](mojo::PendingReceiver<EmbeddedPermissionControlClient>*
+                 self_receiver,
+             bool* called, bool allow,
+             const mojo::Remote<EmbeddedPermissionControlClient>&) {
+            *called = true;
+            EXPECT_TRUE(allow);
+            self_receiver->reset();
+          },
+          &pending_receiver, &pending_called));
+
+  receivers[0].reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return pending_called; }));
 }
 
 class GeolocationEmbeddedPermissionControlCheckerTest
