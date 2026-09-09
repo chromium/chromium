@@ -624,16 +624,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 
 // Memory Saver Dialog bubble's cancel button's state should be preserved
 // for that tab even when navigating to another tab.
-// TODO(crbug.com/556250703): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CancelButtonStatePreservedWhenSwitchingTabs \
-  DISABLED_CancelButtonStatePreservedWhenSwitchingTabs
-#else
-#define MAYBE_CancelButtonStatePreservedWhenSwitchingTabs \
-  CancelButtonStatePreservedWhenSwitchingTabs
-#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       MAYBE_CancelButtonStatePreservedWhenSwitchingTabs) {
+                       CancelButtonStatePreservedWhenSwitchingTabs) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),
@@ -656,7 +648,9 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Second tab's cancel button should allow users to exclude the site
       // since this tab's site wasn't excluded yet
-      SelectTab(kTabStripElementId, 1), PressPageActionButton(),
+      SelectTab(kTabStripElementId, 1), WaitForShow(kSecondTabContents),
+      Do([=, this]() { content::WaitForLoadStop(GetWebContentsAt(1)); }),
+      WaitForPageActionChipVisible(), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
