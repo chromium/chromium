@@ -465,29 +465,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   TRACE_EVENT1("media", "OpenH264::EncodeFrame", "timestamp",
                frame->timestamp());
-  const bool supported_format = frame->format() == PIXEL_FORMAT_NV12 ||
-                                frame->format() == PIXEL_FORMAT_NV12A ||
-                                frame->format() == PIXEL_FORMAT_I420 ||
-                                frame->format() == PIXEL_FORMAT_I420A ||
-                                frame->format() == PIXEL_FORMAT_I422 ||
-                                frame->format() == PIXEL_FORMAT_I422A ||
-                                frame->format() == PIXEL_FORMAT_I444 ||
-                                frame->format() == PIXEL_FORMAT_I444A ||
-                                frame->format() == PIXEL_FORMAT_YUV420P10 ||
-                                frame->format() == PIXEL_FORMAT_YUV422P10 ||
-                                frame->format() == PIXEL_FORMAT_YUV444P10 ||
-                                frame->format() == PIXEL_FORMAT_YUV420P12 ||
-                                frame->format() == PIXEL_FORMAT_YUV422P12 ||
-                                frame->format() == PIXEL_FORMAT_YUV444P12 ||
-                                frame->format() == PIXEL_FORMAT_YUV420AP10 ||
-                                frame->format() == PIXEL_FORMAT_YUV422AP10 ||
-                                frame->format() == PIXEL_FORMAT_YUV444AP10 ||
-                                frame->format() == PIXEL_FORMAT_XBGR ||
-                                frame->format() == PIXEL_FORMAT_XRGB ||
-                                frame->format() == PIXEL_FORMAT_ABGR ||
-                                frame->format() == PIXEL_FORMAT_ARGB;
-  if ((!frame->HasDirectCpuAccess() && !frame->HasMappableSharedImage()) ||
-      !supported_format) {
+  if (!frame->HasDirectCpuAccess() && !frame->HasMappableSharedImage()) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
                       "Unexpected frame format.")
@@ -497,7 +475,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableSharedImage()) {
+  if (frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(EncoderStatus(
@@ -529,9 +507,10 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                         "Can't allocate an I420 frame."));
       return;
     }
+    // If `frame->format()` is unsupported ConvertAndScale() will fail.
     auto status = frame_converter_.ConvertAndScale(*frame, *i420_frame);
     if (!status.is_ok()) {
-      std::move(done_cb).Run(status);
+      std::move(done_cb).Run(std::move(status));
       return;
     }
     frame = std::move(i420_frame);
