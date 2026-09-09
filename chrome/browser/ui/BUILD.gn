@@ -2515,15 +2515,8 @@ static_library("ui") {
 
   if (toolkit_views) {
     sources += [
-      "views/autofill/at_memory_promo_bubble_view.cc",
-      "views/autofill/at_memory_promo_bubble_view.h",
       "views/autofill/autofill_bubble_handler_impl.cc",
       "views/autofill/autofill_bubble_handler_impl.h",
-      "views/autofill/popup/popup_base_view.cc",
-      "views/autofill/popup/popup_row_view.cc",
-      "views/autofill/popup/popup_view_utils.cc",
-      "views/autofill/popup/popup_view_views.cc",
-      "views/autofill/popup/popup_view_views.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
@@ -2676,9 +2669,15 @@ static_library("ui") {
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
       "//chrome/browser/ui/views/autofill:address_editor_view",
+      "//chrome/browser/ui/views/autofill:at_memory_promo_bubble_view",
+
+      # at_memory_promo_bubble_view_impl includes browser_view.h.
+      "//chrome/browser/ui/views/autofill:at_memory_promo_bubble_view_impl",
       "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
       "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl",
       "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl_impl",
+
+      # popup_impl and popup_view_views_impl include browser_view.h.
       "//chrome/browser/ui/views/autofill:delete_address_profile_dialog_view",
       "//chrome/browser/ui/views/autofill:edit_address_profile_view",
       "//chrome/browser/ui/views/autofill:save_address_profile_view",
@@ -2716,6 +2715,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
       "//chrome/browser/ui/views/autofill/popup:popup_cell_utils",
       "//chrome/browser/ui/views/autofill/popup:popup_centered_text_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_impl",
       "//chrome/browser/ui/views/autofill/popup:popup_loading_view",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/autofill/popup:popup_row_factory_utils",
@@ -2723,6 +2723,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
       "//chrome/browser/ui/views/autofill/popup:popup_separator_view",
       "//chrome/browser/ui/views/autofill/popup:popup_title_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views_impl",
       "//chrome/browser/ui/views/autofill/popup:popup_warning_view",
       "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/views/bookmarks:impl",
@@ -2970,6 +2972,13 @@ static_library("ui") {
       # c/b/ui/browser.h
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl_impl",
+
+      # popup_impl and popup_view_views_impl include browser_view.h.
+      "//chrome/browser/ui/views/autofill/popup:popup_impl",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views_impl",
+
+      # at_memory_promo_bubble_view_impl includes browser_view.h.
+      "//chrome/browser/ui/views/autofill:at_memory_promo_bubble_view_impl",
       "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_controller_impl",
       "//chrome/browser/ui/views/frame:contents_capture_border_view_impl",
       "//chrome/browser/ui/views/frame:multi_contents_background_view_impl",
@@ -3301,8 +3310,6 @@ static_library("ui") {
       # following headers get componentized:
       # c/b/ui/browser.h, browser_commands.h, browser_tabstrip.h,
       # singleton_tabs.h
-      # c/b/ui/views/autofill/at_memory_promo_bubble_view.h
-      # c/b/ui/views/autofill/popup/popup_view_views.h
       # c/b/ui/views/frame/browser_view.h (also needed directly by
       #   custom_webui_help_bubble.h's CreateForController<T> template,
       #   which is why that header lives in :impl rather than the

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -41,6 +42,155 @@ source_set("popup_row_content_view") {
     ":popup",
     "//chrome/browser/ui/views:layout_provider",
     "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("popup_impl") {
+  sources = [
+    "popup_base_view.cc",
+    "popup_row_view.cc",
+    "popup_view_utils.cc",
+  ]
+  public_deps = [
+    ":popup",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":custom_cursor_suppressor",
+    ":lazy_loading_image_view",
+    ":password_favicon_loader",
+    ":popup_at_memory_ai_disclosure_view",
+    ":popup_bnpl_footnote_view",
+    ":popup_cell_utils",
+    ":popup_centered_text_view",
+    ":popup_interactive_row_view",
+    ":popup_loading_view",
+    ":popup_notice_view",
+    ":popup_row_content_view",
+    ":popup_row_factory_utils",
+    ":popup_row_with_button_view",
+    ":popup_search_bar_view",
+    ":popup_separator_view",
+    ":popup_title_view",
+    ":popup_view_views",
+    ":popup_warning_view",
+    "//base",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/extensions:extension_popup",
+    "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/permissions",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/feature_engagement/public",
+    "//components/input",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//skia",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}
+
+source_set("popup_view_views") {
+  public = [ "popup_view_views.h" ]
+  public_deps = [
+    ":password_favicon_loader",
+    ":popup",
+    ":popup_interactive_row_view",
+    ":popup_search_bar_view",
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/input",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/events",
+    "//ui/views",
+  ]
+}
+
+source_set("popup_view_views_impl") {
+  sources = [ "popup_view_views.cc" ]
+  public_deps = [
+    ":popup_view_views",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":lazy_loading_image_view",
+    ":password_favicon_loader",
+    ":popup",
+    ":popup_at_memory_ai_disclosure_view",
+    ":popup_bnpl_footnote_view",
+    ":popup_cell_utils",
+    ":popup_centered_text_view",
+    ":popup_interactive_row_view",
+    ":popup_loading_view",
+    ":popup_notice_view",
+    ":popup_row_content_view",
+    ":popup_row_factory_utils",
+    ":popup_search_bar_view",
+    ":popup_separator_view",
+    ":popup_title_view",
+    ":popup_warning_view",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/favicon",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/passwords",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/common:constants",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/favicon/core",
+    "//components/image_fetcher/core",
+    "//components/input",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:model_execution",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/sync/service",
+    "//components/user_education/common",
+    "//content/public/browser",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/display",
+    "//ui/events",
+    "//ui/events/blink",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
     "//ui/views",
   ]
 }

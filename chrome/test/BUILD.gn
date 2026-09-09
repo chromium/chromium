@@ -664,6 +664,7 @@ static_library("test_support") {
       "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
     ]
     deps += [
       "//chrome/browser/ui/color:mixers",
@@ -2074,6 +2075,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/autofill/popup:browser_tests",
       "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/data_sharing",
@@ -3098,6 +3100,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
     ]
 
     if (enable_on_device_translation) {
@@ -6332,6 +6335,7 @@ test("unit_tests") {
 
     public_deps += [
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
     ]
@@ -6584,6 +6588,7 @@ test("unit_tests") {
       "//chrome/browser/ui/contextual_search:unit_tests",
       "//chrome/browser/ui/passwords/settings:unit_tests",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webui/context_hub:unit_tests",
       "//chrome/browser/ui/webui/settings:unit_tests",
@@ -7371,6 +7376,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/views/bookmarks:unit_tests",
       "//chrome/browser/ui/views/commerce:unit_tests",
@@ -7747,6 +7753,7 @@ if (!is_android) {
       "//chrome/browser/ui/views:intent_picker_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:offer_notification_bubble_views",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/location_bar:test_support",
@@ -8328,6 +8335,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
       "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/contextual_tasks:interactive_ui_tests",
       "//chrome/browser/ui/views/download",
@@ -8733,6 +8741,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
         "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
         "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
+        "//chrome/browser/ui/views/autofill/popup:popup_view_views",
         "//chrome/browser/ui/views/bookmarks",
         "//chrome/browser/ui/views/bookmarks:interactive_ui_tests",
         "//chrome/browser/ui/views/bookmarks/saved_tab_groups:interactive_ui_tests",
