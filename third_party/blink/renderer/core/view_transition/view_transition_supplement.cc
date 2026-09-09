@@ -140,11 +140,11 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
       << "SkipTransition() should finish previously active view transition";
 
   // We need to be connected to a view to have a transition.
-  if (!document.View()) {
+  if (!element.isConnected() || !document.View()) {
     return ViewTransition::CreateSkipped(
                &element, callback,
-               ViewTransition::PromiseResponse::kRejectAbort,
-               ViewTransitionSkipReason::kNoView, types)
+               ViewTransition::PromiseResponse::kRejectInvalidState,
+               ViewTransitionSkipReason::kUnsupportedCapture, types)
         ->GetScriptDelegate();
   }
 

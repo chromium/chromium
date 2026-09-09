@@ -1499,8 +1499,11 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
           ? (layout_object && layout_object->ShouldApplyLayoutContainment())
           : IsA<LayoutBox>(layout_object);
   if (!has_valid_layout) {
+    if (is_element_scoped) {
+      return false;
+    }
     // If we have any view transition elements, while not having a valid layout
-    // for the scoped element, we should abort. Target elements are only set
+    // for the document element, we should abort. Target elements are only set
     // on the current phase of the animation, so it means that the scope's
     // layout object changed in this phase.
     for (auto& entry : element_data_map_) {
