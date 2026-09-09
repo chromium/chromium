@@ -378,7 +378,6 @@ group("fuzzers") {
     deps += [
       "//chrome/browser/ash/policy/fuzzer:policy_fuzzer",
       "//chrome/browser/ash/policy/remote_commands:policy_remote_commands_fuzzer",
-      "//chrome/browser/ash/policy/reporting:policy_single_install_event_log_fuzzer",
     ]
   }
 }

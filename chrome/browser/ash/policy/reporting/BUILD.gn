@@ -14,8 +14,6 @@ static_library("reporting") {
     "app_install_event_log_manager_wrapper.h",
     "arc_app_install_encrypted_event_reporter.cc",
     "arc_app_install_encrypted_event_reporter.h",
-    "arc_app_install_event_log.cc",
-    "arc_app_install_event_log.h",
     "arc_app_install_event_log_collector.cc",
     "arc_app_install_event_log_collector.h",
     "arc_app_install_event_logger.cc",
@@ -24,7 +22,6 @@ static_library("reporting") {
     "arc_app_install_policy_data.h",
     "arc_app_install_policy_data_helper.cc",
     "arc_app_install_policy_data_helper.h",
-    "install_event_log.h",
     "install_event_log_collector_base.cc",
     "install_event_log_collector_base.h",
     "install_event_log_util.cc",
@@ -32,9 +29,6 @@ static_library("reporting") {
     "install_event_logger_base.h",
     "remoting_host_event_reporter_delegate_impl.cc",
     "remoting_host_event_reporter_delegate_impl.h",
-    "single_arc_app_install_event_log.cc",
-    "single_arc_app_install_event_log.h",
-    "single_install_event_log.h",
     "user_event_reporter_helper.cc",
     "user_event_reporter_helper.h",
   ]
@@ -116,12 +110,10 @@ source_set("unit_tests") {
     "app_install_event_log_manager_wrapper_unittest.cc",
     "arc_app_install_encrypted_event_reporter_unittest.cc",
     "arc_app_install_event_log_collector_unittest.cc",
-    "arc_app_install_event_log_unittest.cc",
     "arc_app_install_event_logger_unittest.cc",
     "arc_app_install_policy_data_helper_unittest.cc",
     "arc_app_install_policy_data_unittest.cc",
     "remoting_host_event_reporter_delegate_impl_unittest.cc",
-    "single_arc_app_install_event_log_unittest.cc",
     "user_event_reporter_helper_unittest.cc",
   ]
 
@@ -167,21 +159,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-}
-
-if (use_fuzzing_engine_with_lpm) {
-  fuzzer_test("policy_single_install_event_log_fuzzer") {
-    sources = [ "single_install_event_log_fuzzer.cc" ]
-
-    deps = [
-      ":reporting",
-      "//base",
-      "//testing/libfuzzer:libfuzzer_base_wrappers",
-
-      # TODO(crbug.com/335294371): Remove dependency on //chrome/browser to
-      # implement the proper fix.
-      "//chrome/browser",
-      "//components/exo/wayland:ui_controls_protocol_stub",
-    ]
-  }
 }
