@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
@@ -17,14 +16,14 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -38,6 +37,8 @@ ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
   const int between_spacing = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING);
+  const int corner_radius = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS);
 
   // Arrange the button's icon, label, and optional submenu arrow in a row
   auto layout = std::make_unique<views::BoxLayout>(
@@ -51,6 +52,16 @@ ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  auto* const ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop->SetLayerRegion(views::LayerRegion::kAbove);
+  ink_drop->SetBaseColor(kColorAppMenuFooterButtonBackgroundHovered);
+  ink_drop->SetVisibleOpacity(1.0f);
+  ink_drop->SetHighlightOpacity(1.0f);
+  SetShowInkDropWhenHotTracked(true);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                corner_radius);
 
   // Icon: hidden by default until populated with an ImageModel.
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
@@ -77,37 +88,6 @@ ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
 }
 
 ActionAppMenuFooterButton::~ActionAppMenuFooterButton() = default;
-
-void ActionAppMenuFooterButton::OnPaintBackground(gfx::Canvas* canvas) {
-  // Paint a rounded background highlight when hovered, pressed, or
-  // keyboard-focused.
-  if (GetState() == ButtonState::STATE_HOVERED ||
-      GetState() == ButtonState::STATE_PRESSED || HasFocus()) {
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-    flags.setColor(GetColorProvider()->GetColor(
-        kColorAppMenuFooterButtonBackgroundHovered));
-    const float corner_radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS);
-    canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()), corner_radius, flags);
-  }
-}
-
-void ActionAppMenuFooterButton::StateChanged(ButtonState old_state) {
-  views::Button::StateChanged(old_state);
-  SchedulePaint();
-}
-
-void ActionAppMenuFooterButton::OnFocus() {
-  views::Button::OnFocus();
-  SchedulePaint();
-}
-
-void ActionAppMenuFooterButton::OnBlur() {
-  views::Button::OnBlur();
-  SchedulePaint();
-}
 
 void ActionAppMenuFooterButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));

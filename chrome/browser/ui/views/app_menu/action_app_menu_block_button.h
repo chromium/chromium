@@ -36,10 +36,6 @@ class ActionAppMenuBlockButton : public views::Button {
   void SetImageModel(const ui::ImageModel& image_model);
 
   // views::Button:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-  void StateChanged(ButtonState old_state) override;
-  void OnFocus() override;
-  void OnBlur() override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
  private:

@@ -38,10 +38,6 @@ class ActionAppMenuFooterButton : public views::Button {
   void SetHasSubmenu(bool has_submenu);
 
   // views::Button:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-  void StateChanged(ButtonState old_state) override;
-  void OnFocus() override;
-  void OnBlur() override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
  private:

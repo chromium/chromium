@@ -332,7 +332,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysNeutralContainer};
   mixer[kColorAppMenuBlockButtonBackground] = {ui::kColorSysSurface};
   mixer[kColorAppMenuBlockButtonBackgroundHovered] = {
-      ui::kColorSysTonalContainer};
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorAppMenuBlockButtonBorder] = {ui::kColorSysInversePrimary};
   mixer[kColorAppMenuBlockButtonForeground] = {ui::kColorSysPrimary};
   mixer[kColorAppMenuFooterButtonForeground] = {ui::kColorSysPrimary};
