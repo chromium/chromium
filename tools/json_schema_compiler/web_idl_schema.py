@@ -683,6 +683,15 @@ class DictionaryMember(TypedProperty):
 
     AddCommonExtendedAttributeProperties(self.node, self.properties)
 
+    if HasExtendedAttribute(self.node, 'serializableFunction'):
+      if self.properties.get('type') != 'function':
+        raise SchemaCompilerError(
+          'The [serializableFunction] extended attribute is only supported on'
+          ' function types.',
+          self.node,
+        )
+      self.properties['serializableFunction'] = True
+
     description = ProcessNodeDescription(self.node).description
     if description:
       self.properties['description'] = description

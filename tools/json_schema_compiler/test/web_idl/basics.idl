@@ -164,6 +164,7 @@ callback CallbackWithReturn = boolean();
 dictionary DictionaryWithCallbackMembers {
   required CallbackWithArgument argumentCallback;
   required CallbackWithReturn returnCallback;
+  [serializableFunction] CallbackWithArgument serializableCallback;
 };
 
 [ignoreAdditionalProperties]

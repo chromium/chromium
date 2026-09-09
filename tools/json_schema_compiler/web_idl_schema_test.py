@@ -579,6 +579,20 @@ class WebIdlSchemaTest(unittest.TestCase):
       ],
     )
 
+    expected_serializable_callback_type_member = {
+      'name': 'serializableCallback',
+      'type': 'function',
+      'parameters': [{'name': 'stringArgument', 'type': 'string'}],
+      'serializableFunction': True,
+      'optional': True,
+    }
+    self.assertEqual(
+      expected_serializable_callback_type_member,
+      getType(schema, 'DictionaryWithCallbackMembers')['properties'][
+        'serializableCallback'
+      ],
+    )
+
   def testIgnoresAdditionalPropertiesOnType(self):
     self.assertTrue(
       getType(self.idl_basics, 'IgnoreAdditionalPropertiesType')[
@@ -863,6 +877,21 @@ class WebIdlSchemaTest(unittest.TestCase):
       expected_error_regex,
       web_idl_schema.Load,
       'test/web_idl/void_unsupported.idl',
+    )
+
+  # Tests that using the [serializableFunction] extended attribute on a
+  # dictionary member that is not a function type causes a schema compiler
+  # error to be thrown.
+  def testInvalidSerializableFunctionTypeError(self):
+    expected_error_regex = (
+      r'.* Key\(invalidMember\): The \[serializableFunction\] extended'
+      r' attribute is only supported on function types\.'
+    )
+    self.assertRaisesRegex(
+      SchemaCompilerError,
+      expected_error_regex,
+      web_idl_schema.Load,
+      'test/web_idl/serializable_function_non_function.idl',
     )
 
   # Tests that the nodoc extended attribute used in various places gets the
