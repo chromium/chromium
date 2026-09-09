@@ -4767,8 +4767,10 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   }
 
   const bool should_offer_submenu =
-      base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) &&
+      (base::FeatureList::IsEnabled(
+           send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) ||
+       base::FeatureList::IsEnabled(
+           send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) &&
       (*display_reason ==
        send_tab_to_self::EntryPointDisplayReason::kOfferFeature);
 

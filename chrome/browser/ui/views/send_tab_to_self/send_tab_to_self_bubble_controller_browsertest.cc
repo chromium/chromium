@@ -705,14 +705,23 @@ class SendTabToSelfContextMenuParamsTest
           std::tuple<bool, EntryPointDisplayReason>> {
  public:
   SendTabToSelfContextMenuParamsTest() {
-    feature_list_.InitWithFeatureState(kSendTabToSelfEnhancedDesktopUI,
-                                       std::get<0>(GetParam()));
+    const bool enhanced_ui_enabled = std::get<0>(GetParam());
+    if (enhanced_ui_enabled) {
+      feature_list_.InitWithFeatures(
+          {kSendTabToSelfEnhancedDesktopUI, kSendTabToSelfEnhancedDesktopUIv2},
+          {});
+    } else {
+      feature_list_.InitWithFeatures({}, {kSendTabToSelfEnhancedDesktopUI,
+                                          kSendTabToSelfEnhancedDesktopUIv2});
+    }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Verifies that the context menu offers a submenu or command item according to
+// the enhanced UI feature state and device availability display reason.
 IN_PROC_BROWSER_TEST_P(SendTabToSelfContextMenuParamsTest, VerifyMenuType) {
   const bool enhanced_ui_enabled = std::get<0>(GetParam());
   const EntryPointDisplayReason display_reason = std::get<1>(GetParam());
