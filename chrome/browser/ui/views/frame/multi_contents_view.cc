@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
@@ -271,13 +272,11 @@ void MultiContentsView::SetWebContentsAtIndex(
     UpdateContentsBorderAndOverlay();
   }
 
-  if (web_contents) {
-    tabs::TabInterface* tab =
-        tabs::TabInterface::MaybeGetFromContents(web_contents);
-    if (auto* sad_tab_helper = tab ? SadTabHelper::From(tab) : nullptr) {
-      sad_tab_helper->ReinstallInWebView();
-    }
-  }
+  SafeInvoke(web_contents)
+      .Then(Overload<content::WebContents*>(
+          &tabs::TabInterface::MaybeGetFromContents))
+      .Then(&SadTabHelper::From)
+      .Then(&SadTabHelper::ReinstallInWebView);
 }
 
 void MultiContentsView::ShowSplitView(
@@ -309,13 +308,11 @@ void MultiContentsView::CloseSplitView() {
   resize_area_->SetVisible(false);
   UpdateContentsBorderAndOverlay();
 
-  if (auto* active_contents = GetActiveContentsView()->web_contents()) {
-    tabs::TabInterface* tab =
-        tabs::TabInterface::MaybeGetFromContents(active_contents);
-    if (auto* sad_tab_helper = tab ? SadTabHelper::From(tab) : nullptr) {
-      sad_tab_helper->ReinstallInWebView();
-    }
-  }
+  SafeInvoke(GetActiveContentsView()->web_contents())
+      .Then(Overload<content::WebContents*>(
+          &tabs::TabInterface::MaybeGetFromContents))
+      .Then(&SadTabHelper::From)
+      .Then(&SadTabHelper::ReinstallInWebView);
 }
 
 void MultiContentsView::SwapContentsInSplitView() {

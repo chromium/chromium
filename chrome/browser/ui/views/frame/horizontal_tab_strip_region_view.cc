@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
@@ -119,13 +120,14 @@ END_METADATA
 bool ShouldShowNewTabButton(BrowserWindowInterface* browser) {
   // `browser` can be null in tests and `app_controller` will be null if
   // the browser is not for an app.
-  if (browser) {
-    auto* const controller = web_app::AppBrowserController::From(browser);
-    if (controller && controller->ShouldHideNewTabButton()) {
-      return false;
-    }
-  }
-  return true;
+  bool hide_new_tab_button =
+      SafeInvoke(browser)
+          .Then(Overload<BrowserWindowInterface*>(
+              &web_app::AppBrowserController::From))
+          .Then(&web_app::AppBrowserController::ShouldHideNewTabButton)
+          .value_or(false);
+
+  return !hide_new_tab_button;
 }
 
 // Updates the border of `view` if the insets need to be updated.
@@ -710,12 +712,12 @@ void HorizontalTabStripRegionViewOld::UpdateTabStripMargin() {
 
   bool subtract_radius = current_leading_width > 0;
 #if BUILDFLAG(IS_MAC)
-  const ImmersiveModeController* const immersive_mode_controller =
-      browser_view_->browser()
-          ? ImmersiveModeController::From(browser_view_->browser())
-          : nullptr;
   const bool is_immersive_mode_enabled =
-      immersive_mode_controller && immersive_mode_controller->IsEnabled();
+      SafeInvoke(browser_view_->browser())
+          .Then(
+              Overload<BrowserWindowInterface*>(&ImmersiveModeController::From))
+          .Then(&ImmersiveModeController::IsEnabled)
+          .value_or(false);
   if (is_immersive_mode_enabled) {
     subtract_radius = false;
   }

@@ -121,6 +121,7 @@ source_set("glass_frame_service") {
   public = [ "glass_frame_service.h" ]
   sources = [ "glass_frame_service.cc" ]
   deps = [
+    ":safe_invoke",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
@@ -363,6 +364,7 @@ source_set("custom_corners_background_impl") {
   deps = [
     ":custom_corners",
     ":custom_floating_corner",
+    ":safe_invoke",
     "//base",
     "//base:i18n",
     "//build:buildflag_header_h",

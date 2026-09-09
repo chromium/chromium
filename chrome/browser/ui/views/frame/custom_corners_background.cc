@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/custom_corners.h"
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -131,13 +132,15 @@ void CustomCornersBackground::SetOutline(const Outline& outline) {
 CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
     bool upper) const {
   Corner corner;
-  if (auto* const widget = browser_view().browser_widget()) {
-    if (auto* const frame = widget->GetFrameView()) {
-      const auto corners = frame->GetWindowRoundedCorners();
-      corner.radius = upper ? corners.upper_left() : corners.lower_left();
-      corner.type =
-          corner.radius > 0 ? CornerType::kRounded : CornerType::kSquare;
-    }
+  const std::optional<gfx::RoundedCornersF> corners =
+      SafeInvoke(browser_view().browser_widget())
+          .Then(&BrowserWidget::GetFrameView)
+          .Then(&BrowserFrameView::GetWindowRoundedCorners);
+
+  if (corners) {
+    corner.radius = upper ? corners->upper_left() : corners->lower_left();
+    corner.type =
+        corner.radius > 0 ? CornerType::kRounded : CornerType::kSquare;
   }
   return corner;
 }

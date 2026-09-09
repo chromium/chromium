@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -134,20 +135,18 @@ GlassFrameService::ActivationOrderedEligibleBrowsers() {
           return true;
         }
         // Skip windows currently in fullscreen mode.
-        auto* const exclusive_access_manager =
-            ExclusiveAccessManager::From(browser);
-        if (exclusive_access_manager &&
-            exclusive_access_manager->fullscreen_controller() &&
-            exclusive_access_manager->fullscreen_controller()
-                ->IsFullscreenForBrowser()) {
+        if (SafeInvoke(ExclusiveAccessManager::From(browser))
+                .Then(&ExclusiveAccessManager::fullscreen_controller)
+                .Then(&FullscreenController::IsFullscreenForBrowser)
+                .value_or(false)) {
           return true;
         }
         // Skip windows using an extension theme, which disables glass.
-        if (auto* const theme_service =
-                ThemeServiceFactory::GetForProfile(browser->GetProfile())) {
-          if (theme_service->UsingExtensionTheme()) {
-            return true;
-          }
+        if (SafeInvoke(
+                ThemeServiceFactory::GetForProfile(browser->GetProfile()))
+                .Then(&ThemeService::UsingExtensionTheme)
+                .value_or(false)) {
+          return true;
         }
         activation_ordered_eligible_browsers.insert(browser);
         return activation_ordered_eligible_browsers.size() < kMaxGlassWindows;

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
@@ -808,10 +809,10 @@ bool VerticalTabStripRegionView::IsFrameActive() const {
 }
 
 bool VerticalTabStripRegionView::IsCollapseButtonHovered() const {
-  if (top_button_container_ && top_button_container_->GetCollapseButton()) {
-    return top_button_container_->GetCollapseButton()->IsMouseHovered();
-  }
-  return false;
+  return SafeInvoke(top_button_container_.get())
+      .Then(&VerticalTabStripTopContainer::GetCollapseButton)
+      .Then(&views::View::IsMouseHovered)
+      .value_or(false);
 }
 
 gfx::Rect VerticalTabStripRegionView::GetTabStripDraggableBounds() const {
