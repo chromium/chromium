@@ -1908,26 +1908,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(IsDragSessionActive(tab_strip));
 }
 
-// Flaky. https://crbug.com/343188577
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_StartDragWhileEndingPreviousDragDoesNothingTest \
-  DISABLED_StartDragWhileEndingPreviousDragDoesNothingTest
-#else
-#define MAYBE_StartDragWhileEndingPreviousDragDoesNothingTest \
-  StartDragWhileEndingPreviousDragDoesNothingTest
-#endif
-
 // Can't start another drag session while the previous one is still ending.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_StartDragWhileEndingPreviousDragDoesNothingTest) {
+                       StartDragWhileEndingPreviousDragDoesNothingTest) {
   AddTabsAndResetBrowser(browser(), 2);
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-
-  const gfx::Point tab_0_center_screen =
-      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
-  const gfx::Point tab_2_center_screen =
-      GetCenterInScreenCoordinates(tab_strip->tab_at(2));
 
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
@@ -1949,15 +1935,30 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_EQ("1 0 2", IDString(browser()->GetTabStripModel()));
 
   // Attempt to start *another* drag session while the animation is still going.
-  ASSERT_TRUE(PressInput(tab_2_center_screen, GetWindowHint(tab_strip)));
-  ASSERT_TRUE(DragInputTo(tab_0_center_screen, GetWindowHint(tab_strip)));
+  // We do not use interactive OS input (e.g. PressInput) here because it
+  // dispatches events asynchronously and pumps the message loop. On heavily
+  // loaded test bots, the end-drag animation (~200ms) could complete before
+  // the OS event is received, causing the drag to succeed and flaking the test.
+  // Directly invoking OnMousePressed synchronously guarantees the event is
+  // processed while the animation is still active.
+  ASSERT_TRUE(tab_strip->IsAnimatingInTabStrip());
+  ASSERT_TRUE(tab_strip->tab_at(0)->dragging());
+  ASSERT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
 
-  // This should not actually start.
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip->tab_at(2)->OnMousePressed(press_event);
+
+  // This should not actually start. The previous animation should also still
+  // be in progress.
   EXPECT_FALSE(TabDragController::IsActive());
   EXPECT_FALSE(IsDragSessionActive(tab_strip));
+  EXPECT_TRUE(tab_strip->IsAnimatingInTabStrip());
+  EXPECT_TRUE(tab_strip->tab_at(0)->dragging());
+  EXPECT_EQ(tab_strip->tab_at(0)->parent(), tab_strip->GetDragContext());
   EXPECT_EQ("1 0 2", IDString(browser()->GetTabStripModel()));
-
-  ASSERT_TRUE(ReleaseInput());
 }
 
 #if defined(USE_AURA)
