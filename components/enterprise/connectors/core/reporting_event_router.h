@@ -75,20 +75,23 @@ class ReportingEventRouter : public KeyedService {
       const GURL& url,
       const std::string& threat_type,
       const safe_browsing::RTLookupResponse& response,
-      const ReferrerChain& referrer_chain);
+      const ReferrerChain& referrer_chain,
+      const std::string& tab_title);
 
   // Notifies listeners that the user clicked-through a security interstitial.
   void OnSecurityInterstitialProceeded(const GURL& url,
                                        const std::string& reason,
                                        int net_error_code,
-                                       const ReferrerChain& referrer_chain);
+                                       const ReferrerChain& referrer_chain,
+                                       const std::string& tab_title);
 
   // Notifies listeners that the user saw a security interstitial.
   void OnSecurityInterstitialShown(const GURL& url,
                                    const std::string& reason,
                                    int net_error_code,
                                    bool proceed_anyway_disabled,
-                                   const ReferrerChain& referrer_chain);
+                                   const ReferrerChain& referrer_chain,
+                                   const std::string& tab_title);
 
   void SendEventOnGotHash(const std::string& name,
                           ReportingSettings reporting_settings,

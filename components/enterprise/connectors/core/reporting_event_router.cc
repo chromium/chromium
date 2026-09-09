@@ -232,7 +232,8 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
     const GURL& url,
     const std::string& threat_type,
     const safe_browsing::RTLookupResponse& response,
-    const ReferrerChain& referrer_chain) {
+    const ReferrerChain& referrer_chain,
+    const std::string& tab_title) {
   if (!IsEventEnabled(kKeyUrlFilteringInterstitialEvent)) {
     return;
   }
@@ -241,41 +242,39 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
       reporting_client_->GetReportingSettings();
   std::string active_user = reporting_client_->GetContentAreaAccountEmail(url);
 
-    chrome::cros::reporting::proto::Event event;
-    *event.mutable_url_filtering_interstitial_event() =
-        GetUrlFilteringInterstitialEvent(
-            url, threat_type, response,
-            reporting_client_->GetProfileIdentifier(),
-            reporting_client_->GetProfileUserName(), active_user,
-            referrer_chain,
-            /*tab_title=*/"");  // TODO(b/552985411): Plumb the actual title
-                                // down from the observer in a follow-up CL.
+  chrome::cros::reporting::proto::Event event;
+  *event.mutable_url_filtering_interstitial_event() =
+      GetUrlFilteringInterstitialEvent(
+          url, threat_type, response, reporting_client_->GetProfileIdentifier(),
+          reporting_client_->GetProfileUserName(), active_user, referrer_chain,
+          tab_title);
 
-    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+  *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    reporting_client_->ReportEvent(std::move(event), settings.value());
+  reporting_client_->ReportEvent(std::move(event), settings.value());
 }
 
 void ReportingEventRouter::OnSecurityInterstitialProceeded(
     const GURL& url,
     const std::string& reason,
     int net_error_code,
-    const ReferrerChain& referrer_chain) {
+    const ReferrerChain& referrer_chain,
+    const std::string& tab_title) {
   if (!IsEventEnabled(kKeyInterstitialEvent)) {
     return;
   }
 
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-    chrome::cros::reporting::proto::Event event;
-    *event.mutable_interstitial_event() = GetInterstitialEvent(
-        url, reason, net_error_code,
-        /*clicked_through=*/true, EventResult::BYPASSED,
-        reporting_client_->GetProfileIdentifier(),
-        reporting_client_->GetProfileUserName(), referrer_chain);
-    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+  chrome::cros::reporting::proto::Event event;
+  *event.mutable_interstitial_event() = GetInterstitialEvent(
+      url, reason, net_error_code,
+      /*clicked_through=*/true, EventResult::BYPASSED,
+      reporting_client_->GetProfileIdentifier(),
+      reporting_client_->GetProfileUserName(), referrer_chain, tab_title);
+  *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    reporting_client_->ReportEvent(std::move(event), settings.value());
+  reporting_client_->ReportEvent(std::move(event), settings.value());
 }
 
 void ReportingEventRouter::OnSecurityInterstitialShown(
@@ -283,7 +282,8 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
     const std::string& reason,
     int net_error_code,
     bool proceed_anyway_disabled,
-    const ReferrerChain& referrer_chain) {
+    const ReferrerChain& referrer_chain,
+    const std::string& tab_title) {
   if (!IsEventEnabled(kKeyInterstitialEvent)) {
     return;
   }
@@ -293,15 +293,15 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
   EventResult event_result =
       proceed_anyway_disabled ? EventResult::BLOCKED : EventResult::WARNED;
 
-    chrome::cros::reporting::proto::Event event;
-    *event.mutable_interstitial_event() = GetInterstitialEvent(
-        url, reason, net_error_code,
-        /*clicked_through=*/false, event_result,
-        reporting_client_->GetProfileIdentifier(),
-        reporting_client_->GetProfileUserName(), referrer_chain);
-    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
+  chrome::cros::reporting::proto::Event event;
+  *event.mutable_interstitial_event() = GetInterstitialEvent(
+      url, reason, net_error_code,
+      /*clicked_through=*/false, event_result,
+      reporting_client_->GetProfileIdentifier(),
+      reporting_client_->GetProfileUserName(), referrer_chain, tab_title);
+  *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    reporting_client_->ReportEvent(std::move(event), settings.value());
+  reporting_client_->ReportEvent(std::move(event), settings.value());
 }
 
 void ReportingEventRouter::SendEventOnGotHash(

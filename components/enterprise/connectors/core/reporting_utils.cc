@@ -538,8 +538,12 @@ proto::SafeBrowsingInterstitialEvent GetInterstitialEvent(
     EventResult event_result,
     const std::string& profile_identifier,
     const std::string& profile_username,
-    const ReferrerChain& referrer_chain) {
+    const ReferrerChain& referrer_chain,
+    const std::string& tab_title) {
   proto::SafeBrowsingInterstitialEvent event;
+  if (!tab_title.empty()) {
+    event.set_tab_title(tab_title);
+  }
   event.set_url(url.spec());
   event.set_reason(GetInterstitialReason(reason));
   event.set_net_error_code(net_error_code);
@@ -866,6 +870,9 @@ void MaybeTruncateLongUrls(proto::Event& event_variant) {
     }
     case proto::Event::kInterstitialEvent: {
       auto* event = event_variant.mutable_interstitial_event();
+      if (!event->tab_title().empty()) {
+        TRUNCATE_STRING_URL(event, tab_title);
+      }
       TRUNCATE_STRING_URL(event, url);
       TRUNCATE_REPEATED_STRING_URL(event, referral_urls);
       TRUNCATE_URL_INFO(event, url_info);

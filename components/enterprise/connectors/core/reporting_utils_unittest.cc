@@ -161,8 +161,10 @@ TEST(ReportingUtilsTest, GetInterstitialEvent) {
                                     /*event_result=*/EventResult::WARNED,
                                     /*profile_identifier=*/"identifier",
                                     /*profile_username=*/"profile_username",
-                                    /*referrer_chain*/ referrer_chain);
+                                    /*referrer_chain=*/referrer_chain,
+                                    /*tab_title=*/"My Test Tab Title");
 
+  ASSERT_EQ(event.tab_title(), "My Test Tab Title");
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_EQ(
       event.reason(),
@@ -548,6 +550,20 @@ TEST(ReportingUtilsTest, TestUrlMatchingForOptInEventReturnsFalse) {
   auto url_matcher = CreateURLMatcherForOptInEvent(std::move(settings),
                                                    kKeyPasswordBreachEvent);
   EXPECT_FALSE(IsUrlMatched(url_matcher.get(), GURL("gmail.com")));
+}
+
+TEST(ReportingUtilsTest, MaybeTruncateLongUrls_InterstitialEvent) {
+  std::string long_title(3000, 'a');
+  chrome::cros::reporting::proto::Event event;
+  auto* interstitial_event = event.mutable_interstitial_event();
+  interstitial_event->set_tab_title(long_title);
+  interstitial_event->set_url("https://example.com");
+
+  MaybeTruncateLongUrls(event);
+
+  EXPECT_EQ(interstitial_event->tab_title().length(), 2048u);
+  EXPECT_EQ(interstitial_event->tab_title(), std::string(2048, 'a'));
+  EXPECT_EQ(interstitial_event->url(), "https://example.com");
 }
 
 }  // namespace enterprise_connectors

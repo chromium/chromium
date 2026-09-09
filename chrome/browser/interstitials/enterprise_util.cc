@@ -137,7 +137,7 @@ void MaybeTriggerSecurityInterstitialShownEvent(
   reporting_event_router->OnSecurityInterstitialShown(
       page_url, reason, net_error_code,
       prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
-      referrer_chain);
+      referrer_chain, tab_title);
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 }
@@ -172,7 +172,7 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
   }
 
   reporting_event_router->OnSecurityInterstitialProceeded(
-      page_url, reason, net_error_code, referrer_chain);
+      page_url, reason, net_error_code, referrer_chain, tab_title);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 }
 
@@ -194,7 +194,7 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
   }
 
   router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response,
-                                     referrer_chain);
+                                     referrer_chain, tab_title);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -208,7 +208,7 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
   }
 
   router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response,
-                                     referrer_chain);
+                                     referrer_chain, tab_title);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)

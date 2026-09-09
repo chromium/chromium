@@ -40,7 +40,8 @@ class MockReportingEventRouter
               (const GURL& url,
                const std::string& threat_type,
                const safe_browsing::RTLookupResponse& response,
-               const ReferrerChain& referrer_chain),
+               const ReferrerChain& referrer_chain,
+               const std::string& tab_title),
               (override));
   MOCK_METHOD(void,
               ReportPaste,

@@ -68,9 +68,10 @@ void ReportEnterpriseUrlFilteringEvent(
   CHECK(event_router);
 
   // ReferrerChain is not supported on ios for now.
+  // TODO(crbug.com/558721044): Plumb tab title on iOS.
   event_router->OnUrlFilteringInterstitial(
       page_url, GetEventTypeString(event_type), rt_lookup_response,
-      /*referrer_chain=*/{});
+      /*referrer_chain=*/{}, /*tab_title=*/"");
 }
 
 void MaybeReportDangerousDownloadEvent(

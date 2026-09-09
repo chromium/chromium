@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/memory/weak_ptr.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/prefs/pref_service.h"
@@ -122,7 +123,8 @@ void SafeBrowsingClientImpl::OnSecurityInterstitialShown(
         safe_browsing::GetThreatTypeStringForInterstitial(resource.threat_type),
         /*net_error_code=*/0,
         pref_service_->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
-        referrer_chain);
+        referrer_chain,
+        /*tab_title=*/base::UTF16ToUTF8(web_state->GetTitle()));
   }
 }
 

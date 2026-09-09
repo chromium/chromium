@@ -101,7 +101,8 @@ GetInterstitialEvent(const GURL& url,
                      EventResult event_result,
                      const std::string& profile_identifier,
                      const std::string& profile_username,
-                     const ReferrerChain& referrer_chain);
+                     const ReferrerChain& referrer_chain,
+                     const std::string& tab_title);
 
 chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
 GetUrlFilteringInterstitialEvent(

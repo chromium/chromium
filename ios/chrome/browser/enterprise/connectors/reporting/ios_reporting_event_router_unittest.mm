@@ -42,6 +42,7 @@ using UrlInfo = ::chrome::cros::reporting::proto::UrlInfo;
 
 inline constexpr char kTestDmToken[] = "dm_token";
 inline constexpr char kTestClientId[] = "client_id";
+inline constexpr char kTabTitle[] = "tab_title";
 
 TriggeredRuleInfo MakeTriggeredRuleInfo(TriggeredRuleInfo::Action action,
                                         bool has_watermark) {
@@ -351,6 +352,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::BLOCK, /*has_watermark=*/false);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_tab_title(kTabTitle);
 
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
@@ -372,7 +374,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
-      referrer_chain);
+      referrer_chain, /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
@@ -396,6 +398,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/false);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_tab_title(kTabTitle);
 
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
@@ -417,7 +420,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
-      referrer_chain);
+      referrer_chain, /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
@@ -442,6 +445,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/false);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_tab_title(kTabTitle);
 
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
@@ -463,7 +467,7 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
-      referrer_chain);
+      referrer_chain, /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
@@ -486,6 +490,7 @@ TEST_F(IOSReportingEventRouterTest,
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::ACTION_UNKNOWN, /*has_watermark=*/false);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
+  expected_event.set_tab_title(kTabTitle);
 
   test::EventReportValidatorBase validator(client_.get());
   base::RunLoop run_loop;
@@ -504,7 +509,8 @@ TEST_F(IOSReportingEventRouterTest,
   referrer_chain.Add(test::MakeReferrerChainEntry());
 
   reporting_event_router_->OnUrlFilteringInterstitial(
-      GURL("https://filteredurl.com"), "", response, referrer_chain);
+      GURL("https://filteredurl.com"), "", response, referrer_chain,
+      /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
@@ -531,13 +537,15 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
     expected_event.set_clicked_through(false);
     expected_event.set_net_error_code(0);
     expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
+    expected_event.set_tab_title(kTabTitle);
 
     validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
-      GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain);
+      GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain,
+      /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
@@ -564,13 +572,15 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
     expected_event.set_clicked_through(false);
     expected_event.set_net_error_code(0);
     expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
+    expected_event.set_tab_title(kTabTitle);
 
     validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
-      GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain);
+      GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain,
+      /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
@@ -597,13 +607,15 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
     expected_event.set_clicked_through(true);
     expected_event.set_net_error_code(0);
     expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
+    expected_event.set_tab_title(kTabTitle);
 
     validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
 
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
-      GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain);
+      GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain,
+      /*tab_title=*/kTabTitle);
   run_loop.Run();
 }
 
