@@ -72,6 +72,7 @@
 #include "crypto/sha2.h"
 #include "net/base/mime_util.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
@@ -168,9 +169,16 @@ void ContentAnalysisDelegate::Data::AddClipboardData(
   if (!clipboard_paste_data.rtf.empty()) {
     text.push_back(clipboard_paste_data.rtf);
   }
+  // `png` (populated on paste) and `bitmap` (populated on copy) are mutually
+  // exclusive and do not coexist in `clipboard_paste_data`.
   if (!clipboard_paste_data.png.empty()) {
-    image = std::string(clipboard_paste_data.png.begin(),
-                        clipboard_paste_data.png.end());
+    image.assign(clipboard_paste_data.png.begin(),
+                 clipboard_paste_data.png.end());
+  } else if (!clipboard_paste_data.bitmap.empty()) {
+    std::vector<uint8_t> png_bytes =
+        ui::clipboard_util::EncodeBitmapToPngAcceptJank(
+            clipboard_paste_data.bitmap);
+    image.assign(png_bytes.begin(), png_bytes.end());
   }
   if (!clipboard_paste_data.custom_data.empty()) {
     for (const auto& entry : clipboard_paste_data.custom_data) {

@@ -178,8 +178,9 @@ void HandleStringData(
             if (data.settings.cloud_or_local_settings.is_local_analysis() ||
                 base::FeatureList::IsEnabled(
                     enterprise_connectors::kDlpScanPastedImages)) {
-              image_blocked =
-                  !clipboard_paste_data.png.empty() && !result.image_result;
+              image_blocked = (!clipboard_paste_data.png.empty() ||
+                               !clipboard_paste_data.bitmap.empty()) &&
+                              !result.image_result;
             }
 
             if (text_blocked || image_blocked) {
@@ -296,8 +297,9 @@ void OnCopyDeepScanComplete(
     const enterprise_connectors::ContentAnalysisDelegate::Data& delegate_data,
     enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   bool text_blocked = !result.text_results.empty() && !result.text_results[0];
-  bool image_blocked =
-      !clipboard_paste_data.png.empty() && !result.image_result;
+  bool image_blocked = (!clipboard_paste_data.png.empty() ||
+                        !clipboard_paste_data.bitmap.empty()) &&
+                       !result.image_result;
 
   if (text_blocked || image_blocked) {
     // In copy case, this could be a KeptInManagedChrome result, so we need to

@@ -61,6 +61,7 @@
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -2766,6 +2767,173 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   };
   content::ClipboardPasteData data;
   data.text = std::u16string(100, 'a');
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+
+  data_controls::GetLastReplacedClipboardData() = {};
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kOngoingScan);
+
+  EXPECT_EQ(future.Get<0>().GetName(), metadata.format_type.GetName());
+
+  EXPECT_TRUE(future.Get<1>().empty());
+
+  auto replacement = future.Get<2>();
+  EXPECT_TRUE(replacement.has_value());
+
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(replacement.value_or(u""));
+  }
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kBlocked);
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Copy_ContentAnalysisBlocked_Bitmap) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  SetupDMToken();
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::BLOCK);
+          }),
+          "dm_token"));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
+        return contents()->GetBrowserContext();
+      }),
+      *contents()->GetPrimaryMainFrame());
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorRED);
+
+  ui::ClipboardMetadata metadata = {
+      .size = bitmap.computeByteSize(),
+      .format_type = ui::ClipboardFormatType::BitmapType(),
+  };
+  content::ClipboardPasteData data;
+  data.bitmap = bitmap;
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+
+  data_controls::GetLastReplacedClipboardData() = {};
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kOngoingScan);
+
+  EXPECT_EQ(future.Get<0>().GetName(), metadata.format_type.GetName());
+
+  EXPECT_TRUE(future.Get<1>().empty());
+
+  auto replacement = future.Get<2>();
+  EXPECT_TRUE(replacement.has_value());
+
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(replacement.value_or(u""));
+  }
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kBlocked);
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Copy_ContentAnalysisBlocked_Png) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  SetupDMToken();
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::BLOCK);
+          }),
+          "dm_token"));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  auto source = content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
+        return contents()->GetBrowserContext();
+      }),
+      *contents()->GetPrimaryMainFrame());
+
+  std::vector<uint8_t> png = {1, 2, 3, 4};
+  ui::ClipboardMetadata metadata = {
+      .size = png.size(),
+      .format_type = ui::ClipboardFormatType::PngType(),
+  };
+  content::ClipboardPasteData data;
+  data.png = png;
 
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
