@@ -688,6 +688,10 @@ are declared in tools/grit/grit_args.gni.
           Incognito
         </message>
 
+        <message name="IDS_ISOLATED" desc="The text label for the Isolated button in the block header section of the App Menu">
+          Isolated
+        </message>
+
         <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="The text label of a menu item that notifies the user that sync is on.">
           &amp;Sync is on
         </message>

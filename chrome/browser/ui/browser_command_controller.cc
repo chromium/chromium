@@ -2116,6 +2116,11 @@ void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
     incognito_action->SetEnabled(
         IncognitoModePrefs::IsIncognitoAllowed(profile()));
   }
+  if (auto* const isolated_action =
+          FindAction(kActionNewIsolatedWindow, browser_)) {
+    isolated_action->SetEnabled(
+        enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile()));
+  }
 
   if (!IsShowingMainUI()) {
     command_updater_->UpdateCommandEnabled(IDC_IMPORT_SETTINGS, false);

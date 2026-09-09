@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 
+#include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,6 +127,43 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
   EXPECT_EQ(manage_google_account->GetActionItem()->GetProperty(
                 ActionAppMenuManager::kDisplayTypeKey),
             ActionAppMenuManager::DisplayType::kRow);
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       BlockActionsEnterpriseIsolatedModeReplacesIncognito) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      enterprise_isolated_mode::switches::
+          kForceEnterpriseIsolatedModeReplacesIncognito);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* block_section =
+      root->GetChildren().children()[0]->GetActionItem();
+  ASSERT_NE(block_section, nullptr);
+
+  // When isolated mode replaces incognito, it should replace the New Incognito
+  // Window action rather than adding a fourth item.
+  ASSERT_EQ(block_section->GetChildren().children().size(), 3u);
+  EXPECT_EQ(block_section->GetChildren()
+                .children()[0]
+                ->GetActionItem()
+                ->GetActionId(),
+            kActionNewTab);
+  EXPECT_EQ(block_section->GetChildren()
+                .children()[1]
+                ->GetActionItem()
+                ->GetActionId(),
+            kActionNewWindow);
+  EXPECT_EQ(block_section->GetChildren()
+                .children()[2]
+                ->GetActionItem()
+                ->GetActionId(),
+            kActionNewIsolatedWindow);
 }
 
 }  // namespace

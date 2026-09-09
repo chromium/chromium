@@ -232,6 +232,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kActionCopyUrl, "PinnedCopyLinkButton"},
            {kActionDevTools, "PinnedDeveloperToolsButton"},
            {kActionNewIncognitoWindow, "PinnedNewIncognitoWindowButton"},
+           {kActionNewIsolatedWindow, "PinnedNewIsolatedWindowButton"},
            {kActionPrint, "PinnedPrintButton"},
            {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
            {kActionRouteMedia, "PinnedCastButton"},

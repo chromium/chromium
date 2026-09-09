@@ -28,6 +28,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -1030,6 +1031,25 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetProperty(actions::kShortTitleTextKey,
                        new std::u16string(
                            l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO)))
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Profile* profile, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                CHECK(enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+                    profile));
+                chrome::NewIncognitoWindow(profile);
+              },
+              profile),
+          kActionNewIsolatedWindow, IDS_NEW_ISOLATED_WINDOW,
+          IDS_NEW_ISOLATED_WINDOW,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kDomainIcon
+              : vector_icons::kBusinessChromeRefreshOldIcon)
+          .SetEnabled(
+              enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile))
           .Build());
 
   root_action_item_->AddChild(

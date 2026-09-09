@@ -41,6 +41,8 @@ should be able to be added at any place in this file.
   <variant name=".kActionDevTools" summary="Developer tools action"/>
   <variant name=".kActionNewIncognitoWindow"
       summary="New incognito window action"/>
+  <variant name=".kActionNewIsolatedWindow"
+      summary="New isolated window action"/>
   <variant name=".kActionPrint" summary="Print action"/>
   <variant name=".kActionQrCodeGenerator" summary="QR code generator action"/>
   <variant name=".kActionRouteMedia" summary="Media router action"/>
@@ -30450,6 +30452,8 @@ should be able to be added at any place in this file.
     <variant name=".PinnedGlicButton" summary="Pinned glic button"/>
     <variant name=".PinnedNewIncognitoWindowButton"
         summary="Pinned new incognito window button"/>
+    <variant name=".PinnedNewIsolatedWindowButton"
+        summary="Pinned new isolated window button"/>
     <variant name=".PinnedPrintButton" summary="Pinned print button"/>
     <variant name=".PinnedQrCodeGeneratorButton"
         summary="Pinned QR code generator button"/>

@@ -20,6 +20,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -424,9 +425,16 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
             .AddAction(kActionNewWindow, DisplayType::kBlock);
 
         if (!profile->IsGuestSession()) {
-          section.AddAction(
-              kActionNewIncognitoWindow, DisplayType::kBlock,
-              /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO));
+          if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+                  profile)) {
+            section.AddAction(
+                kActionNewIsolatedWindow, DisplayType::kBlock,
+                /*text_override=*/l10n_util::GetStringUTF16(IDS_ISOLATED));
+          } else {
+            section.AddAction(
+                kActionNewIncognitoWindow, DisplayType::kBlock,
+                /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO));
+          }
         }
       });
 }

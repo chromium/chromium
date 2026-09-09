@@ -65,6 +65,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionNewTab, u"New Tab");
   add_action(kActionNewWindow, u"New Window");
   add_action(kActionNewIncognitoWindow, u"New Incognito Window");
+  add_action(kActionNewIsolatedWindow, u"New Isolated Window");
   add_action(kActionProfileSubmenu, u"Profile");
   add_action(kActionManageGoogleAccount, u"Manage your Google Account");
   add_action(kActionPasswordsAndAutofillSubmenu, u"Passwords and autofill");
