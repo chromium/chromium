@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Manages tab detachment and transitions from physical activities to offscreen background
@@ -303,11 +304,46 @@ public class ActorTabStateHelper {
      */
     public static void listenAndSelectTabOnAdded(
             @Nullable TabModelSelector selector, @Nullable LayoutManager layoutManager, int tabId) {
-        if (selector == null) return;
-        if (selector.getTabById(tabId) != null) {
-            selectTabAndShow(selector, layoutManager, tabId);
+        listenAndSelectTabOnAdded(selector, layoutManager, tabId, null);
+    }
+
+    /**
+     * Listens for the tab with the specified ID to be added to the {@link TabModelSelector}, and
+     * selects it once added. Automatically cleans up the observer when the tab is added or when tab
+     * state initialization completes.
+     *
+     * @param selector The {@link TabModelSelector} to act on.
+     * @param layoutManager The {@link LayoutManager} for switching layouts.
+     * @param tabId The ID of the tab to select when added.
+     * @param onTabSelected Optional callback invoked with the selected tab once added and shown, or
+     *     with null if initialization completes and the tab was not found.
+     */
+    public static void listenAndSelectTabOnAdded(
+            @Nullable TabModelSelector selector,
+            @Nullable LayoutManager layoutManager,
+            int tabId,
+            @Nullable Callback<@Nullable Tab> onTabSelected) {
+        if (selector == null || tabId == Tab.INVALID_TAB_ID) {
+            if (onTabSelected != null) {
+                onTabSelected.onResult(null);
+            }
             return;
         }
+        if (selector.getTabById(tabId) != null) {
+            Tab target = selectTabAndShow(selector, layoutManager, tabId);
+            if (onTabSelected != null) {
+                onTabSelected.onResult(target);
+            }
+            return;
+        }
+        AtomicBoolean isCompleted = new AtomicBoolean(false);
+        Callback<@Nullable Tab> completeOnce =
+                (selected) -> {
+                    if (isCompleted.getAndSet(true)) return;
+                    if (onTabSelected != null) {
+                        onTabSelected.onResult(selected);
+                    }
+                };
         TabModelSelectorTabModelObserver observer =
                 new TabModelSelectorTabModelObserver(selector) {
                     @Override
@@ -316,18 +352,22 @@ public class ActorTabStateHelper {
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
+                        if (isCompleted.get()) return;
                         if (tab.getId() == tabId) {
-                            selectTabAndShow(selector, layoutManager, tabId);
+                            Tab selected = selectTabAndShow(selector, layoutManager, tabId);
                             destroy();
+                            completeOnce.onResult(selected);
                         }
                     }
                 };
         TabModelUtils.runOnTabStateInitialized(
                 selector,
                 (unused) -> {
+                    if (isCompleted.get()) return;
                     if (selector.getTabById(tabId) != null) {
-                        selectTabAndShow(selector, layoutManager, tabId);
+                        Tab selected = selectTabAndShow(selector, layoutManager, tabId);
                         observer.destroy();
+                        completeOnce.onResult(selected);
                         return;
                     }
                     // Background tab restoration runs on tab state initialized as well. Post a task
@@ -336,10 +376,13 @@ public class ActorTabStateHelper {
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
+                                if (isCompleted.get()) return;
+                                Tab selected = null;
                                 if (selector.getTabById(tabId) != null) {
-                                    selectTabAndShow(selector, layoutManager, tabId);
+                                    selected = selectTabAndShow(selector, layoutManager, tabId);
                                 }
                                 observer.destroy();
+                                completeOnce.onResult(selected);
                             });
                 });
     }

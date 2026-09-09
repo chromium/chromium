@@ -209,6 +209,7 @@ if (is_android) {
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicUiHelper.java",
     ]
     deps = [
+      "//base:callback_java",
       "//base:log_java",
       "//base:resetters_java",
       "//base:supplier_java",
@@ -217,6 +218,7 @@ if (is_android) {
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//components/cached_flags:java",
       "//third_party/android_deps:com_airbnb_android_lottie_java",

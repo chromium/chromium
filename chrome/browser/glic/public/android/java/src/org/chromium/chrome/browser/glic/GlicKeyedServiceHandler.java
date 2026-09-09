@@ -116,4 +116,27 @@ public final class GlicKeyedServiceHandler {
         service.invoke(tab, invocationSource);
         return true;
     }
+
+    /**
+     * Invokes the GLIC service with a specific conversation ID.
+     *
+     * @param profile The current profile.
+     * @param tab The {@link Tab} to target, or null.
+     * @param glicConversationId The conversation ID to reconnect to.
+     * @param invocationSource How the UI was triggered.
+     * @return true if the service was successfully invoked.
+     */
+    public static boolean invokeWithConversation(
+            Profile profile,
+            @Nullable Tab tab,
+            String glicConversationId,
+            @GlicInvocationSource int invocationSource) {
+        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+        if (service == null) {
+            return false;
+        }
+
+        service.invokeWithConversation(tab, glicConversationId, invocationSource);
+        return true;
+    }
 }

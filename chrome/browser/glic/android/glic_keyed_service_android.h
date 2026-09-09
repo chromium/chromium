@@ -54,6 +54,11 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   void Invoke(JNIEnv* env, TabAndroid* tab, int32_t source);
 
+  void InvokeWithConversation(JNIEnv* env,
+                              TabAndroid* tab,
+                              std::string glic_conversation_id,
+                              int32_t source);
+
   bool IsPanelShowingForBrowser(JNIEnv* env, int64_t browser_window_ptr);
 
   bool GetUserEnabledActuationOnWeb(JNIEnv* env);

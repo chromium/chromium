@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.glic;
 
+import android.app.Activity;
+import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -87,6 +94,69 @@ public interface GlicKeyedService {
      * @param invocationSource How the UI was triggered.
      */
     void invoke(Tab tab, @GlicInvocationSource int invocationSource);
+
+    /**
+     * Invokes the Glic service with a specific conversation ID.
+     *
+     * @param tab The {@link Tab} to target, or null if no specific tab.
+     * @param glicConversationId The conversation ID to reconnect to.
+     * @param invocationSource How the UI was triggered.
+     */
+    void invokeWithConversation(
+            @Nullable Tab tab,
+            String glicConversationId,
+            @GlicInvocationSource int invocationSource);
+
+    /**
+     * Invokes Glic with the given conversation ID if present, switching away from incognito model
+     * if needed, and guarding against activity and tab destruction during asynchronous profile
+     * resolution.
+     *
+     * @param activity The host {@link Activity}.
+     * @param selector The {@link TabModelSelector} to act on.
+     * @param profileProviderSupplier Supplier for {@link ProfileProvider}.
+     * @param tab The target {@link Tab}, or null to target the active tab.
+     * @param glicConversationId The conversation ID to route to Glic.
+     */
+    static void maybeInvokeGlic(
+            @Nullable Activity activity,
+            @Nullable TabModelSelector selector,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @Nullable Tab tab,
+            @Nullable String glicConversationId) {
+        if (TextUtils.isEmpty(glicConversationId)) {
+            return;
+        }
+        Tab targetTab = tab != null ? tab : (selector != null ? selector.getCurrentTab() : null);
+        if (targetTab != null && targetTab.isIncognito() && selector != null) {
+            selector.selectModel(/* incognito= */ false);
+            targetTab = selector.getCurrentTab();
+        }
+        if (targetTab == null || targetTab.isIncognito()) {
+            return;
+        }
+        // TODO(b/546096305): Add and use an InvocationSource for Notifications before launch to
+        // ensure accurate metrics.
+        final Tab finalTargetTab = targetTab;
+        profileProviderSupplier.runSyncOrOnAvailable(
+                profileProvider -> {
+                    if (activity == null
+                            || activity.isFinishing()
+                            || activity.isDestroyed()
+                            || finalTargetTab.isDestroyed()) {
+                        return;
+                    }
+                    GlicKeyedService service =
+                            GlicKeyedServiceFactory.getForProfile(
+                                    profileProvider.getOriginalProfile());
+                    if (service != null) {
+                        service.invokeWithConversation(
+                                finalTargetTab,
+                                glicConversationId,
+                                GlicInvocationSource.TOOLBAR_BUTTON);
+                    }
+                });
+    }
 
     /** Observer for global show/hide events. */
     interface GlobalShowHideObserver {

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/android/jni_string.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -40,10 +41,18 @@ ActorTaskAndroid* ActorTaskAndroid::GetForTask(ActorTask* task) {
 
 ActorTaskAndroid::ActorTaskAndroid(ActorTask* task) : task_(task) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(env, Java_ActorTask_Constructor(
-                           env, reinterpret_cast<int64_t>(this),
-                           task_->id().GetUnsafeValue(), task_->title(),
-                           task_->GetProfile()->GetJavaObject()));
+  std::optional<std::string> glic_conversation_id;
+  if (task_->source_info().type == actor::TaskSourceInfo::Client::kGlic &&
+      task_->source_info().id.has_value() &&
+      !task_->source_info().id->empty() &&
+      base::IsStringUTF8(*task_->source_info().id)) {
+    glic_conversation_id = task_->source_info().id;
+  }
+  java_obj_.Reset(
+      env, Java_ActorTask_Constructor(
+               env, reinterpret_cast<int64_t>(this),
+               task_->id().GetUnsafeValue(), task_->title(),
+               task_->GetProfile()->GetJavaObject(), glic_conversation_id));
 }
 
 ActorTaskAndroid::~ActorTaskAndroid() {

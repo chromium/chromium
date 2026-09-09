@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.text.TextUtils;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -24,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -185,6 +187,11 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
                 IntentHandler.createTrustedBringTabToFrontIntent(
                         tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        if (ChromeFeatureList.sActorNotificationIntentRouting.isEnabled()
+                && !TextUtils.isEmpty(task.getGlicConversationId())) {
+            intent.putExtra(
+                    NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, task.getGlicConversationId());
+        }
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, task.getId());
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, task.getState());
         return intent;
