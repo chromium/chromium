@@ -60,6 +60,8 @@ component("cpp") {
   sources = [
     "avail_language_header_parser.cc",
     "avail_language_header_parser.h",
+    "basic_data_buffer_factory.cc",
+    "basic_data_buffer_factory.h",
     "connection_allowlist_metrics.h",
     "connection_allowlist_parser.cc",
     "connection_allowlist_parser.h",
@@ -83,6 +85,8 @@ component("cpp") {
     "cross_origin_resource_policy.h",
     "cross_thread_pending_shared_url_loader_factory.cc",
     "cross_thread_pending_shared_url_loader_factory.h",
+    "data_buffer_factory.cc",
+    "data_buffer_factory.h",
     "data_pipe_to_source_stream.cc",
     "data_pipe_to_source_stream.h",
     "declarative_performance_observer_parser.cc",
@@ -754,7 +758,10 @@ mojom("test_interfaces") {
 source_set("test_support") {
   testonly = true
 
-  sources = [ "is_potentially_trustworthy_unittest.h" ]
+  sources = [
+    "data_buffer_factory_test_util.h",
+    "is_potentially_trustworthy_unittest.h",
+  ]
 
   public_deps = [
     ":cpp",
@@ -775,6 +782,7 @@ source_set("tests") {
 
   sources = [
     "avail_language_header_parser_unittest.cc",
+    "basic_data_buffer_factory_unittest.cc",
     "client_hints_unittest.cc",
     "connection_allowlist_unittest.cc",
     "content_decoding_interceptor_unittest.cc",

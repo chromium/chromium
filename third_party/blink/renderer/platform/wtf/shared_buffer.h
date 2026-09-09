@@ -140,6 +140,15 @@ class WTF_EXPORT SegmentedBuffer {
 
   Vector<Vector<char>> TakeData() &&;
 
+  // Returns the number of segments in the buffer.
+  wtf_size_t GetSegmentCount() const { return segments_.size(); }
+
+  // Returns the data of the segment at the given index.
+  base::span<const char> GetSegment(wtf_size_t index) const {
+    CHECK_LT(index, segments_.size());
+    return segments_[index].data();
+  }
+
   // Returns an iterator for the given position of bytes. Returns |cend()| if
   // |position| is greater than or equal to |size()|.
   Iterator GetIteratorAt(base::StrictNumeric<size_t> position) const {

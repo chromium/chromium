@@ -38,6 +38,7 @@
 #include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -62,6 +63,37 @@ TEST(SegmentedBufferTest, TakeData) {
   EXPECT_EQ(base::span(data[0]), span0);
   EXPECT_EQ(base::span(data[1]), span1);
   EXPECT_EQ(base::span(data[2]), span2);
+}
+
+TEST(SegmentedBufferTest, GetSegmentCountAndGetSegment) {
+  SegmentedBuffer buffer;
+  EXPECT_EQ(0u, buffer.GetSegmentCount());
+  EXPECT_CHECK_DEATH(buffer.GetSegment(0));
+
+  static constexpr char kTestData0[] = "Hello";
+  static constexpr char kTestData1[] = "World";
+  static constexpr char kTestData2[] = "Goodbye";
+
+  const auto span0 = base::span_from_cstring(kTestData0);
+  const auto span1 = base::span_from_cstring(kTestData1);
+  const auto span2 = base::span_from_cstring(kTestData2);
+
+  buffer.Append(span0);
+  EXPECT_EQ(1u, buffer.GetSegmentCount());
+  EXPECT_EQ(buffer.GetSegment(0), span0);
+
+  buffer.Append(span1);
+  EXPECT_EQ(2u, buffer.GetSegmentCount());
+  EXPECT_EQ(buffer.GetSegment(0), span0);
+  EXPECT_EQ(buffer.GetSegment(1), span1);
+
+  buffer.Append(span2);
+  EXPECT_EQ(3u, buffer.GetSegmentCount());
+  EXPECT_EQ(buffer.GetSegment(0), span0);
+  EXPECT_EQ(buffer.GetSegment(1), span1);
+  EXPECT_EQ(buffer.GetSegment(2), span2);
+
+  EXPECT_CHECK_DEATH(buffer.GetSegment(3));
 }
 
 TEST(SharedBufferTest, getAsBytes) {
