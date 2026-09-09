@@ -23,9 +23,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/gurl.h"
@@ -188,6 +190,15 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
     }
   }
 
+  bool CanDragEnter(content::WebContents* source,
+                    const content::DropData& data,
+                    blink::DragOperationsMask operations_allowed) override {
+    last_drag_source_ = source;
+    last_drag_operations_allowed_ = operations_allowed;
+    drag_enter_count_++;
+    return can_drag_enter_return_value_;
+  }
+
   raw_ptr<content::WebContents> last_keyboard_source_ = nullptr;
   std::optional<blink::WebInputEvent::Type> last_event_type_;
   int keyboard_event_count_ = 0;
@@ -213,6 +224,12 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
   int file_chooser_count_ = 0;
   bool should_drop_file_chooser_listener_ = false;
   bool should_select_file_ = false;
+
+  raw_ptr<content::WebContents, DisableDanglingPtrDetection> last_drag_source_ =
+      nullptr;
+  std::optional<blink::DragOperationsMask> last_drag_operations_allowed_;
+  int drag_enter_count_ = 0;
+  bool can_drag_enter_return_value_ = true;
 };
 
 content::MediaResponseCallback BindResultToFuture(
@@ -700,6 +717,66 @@ TEST_F(PrivilegedWebContentsTest, DefaultEmbedderDelegateMethods) {
     EXPECT_TRUE(listener->canceled());
     EXPECT_FALSE(listener->file_selected());
   }
+
+  // Default CanDragEnter returns false.
+  content::DropData drop_data;
+  EXPECT_FALSE(default_delegate.CanDragEnter(web_contents(), drop_data,
+                                             blink::kDragOperationCopy));
+}
+
+TEST_F(PrivilegedWebContentsTest, ForwardsCanDragEnterToEmbedderDelegate) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+  content::WebContents* pwc_contents = pwc->web_contents();
+  content::DropData drop_data;
+  blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+  // 1. When no embedder delegate is set, returns false.
+  EXPECT_FALSE(
+      pwc_contents->GetDelegate()->CanDragEnter(pwc_contents, drop_data, ops));
+
+  pwc->SetEmbedderDelegate(&delegate);
+
+  // 2. Embedder delegate handles and returns true.
+  delegate.can_drag_enter_return_value_ = true;
+  EXPECT_TRUE(
+      pwc_contents->GetDelegate()->CanDragEnter(pwc_contents, drop_data, ops));
+  EXPECT_EQ(delegate.drag_enter_count_, 1);
+  EXPECT_EQ(delegate.last_drag_source_, pwc_contents);
+  EXPECT_EQ(delegate.last_drag_operations_allowed_, ops);
+
+  // 3. Embedder delegate handles and returns false.
+  delegate.can_drag_enter_return_value_ = false;
+  EXPECT_FALSE(
+      pwc_contents->GetDelegate()->CanDragEnter(pwc_contents, drop_data, ops));
+  EXPECT_EQ(delegate.drag_enter_count_, 2);
+
+  // 4. Clearing the delegate stops forwarding and returns false.
+  pwc->SetEmbedderDelegate(nullptr);
+  EXPECT_FALSE(
+      pwc_contents->GetDelegate()->CanDragEnter(pwc_contents, drop_data, ops));
+  EXPECT_EQ(delegate.drag_enter_count_, 2);
+}
+
+TEST_F(PrivilegedWebContentsTest, CanDragEnter_RejectsNonMatchingWebContents) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+  pwc->SetEmbedderDelegate(&delegate);
+  content::DropData drop_data;
+  blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+  // 1. Unrelated WebContents is rejected.
+  content::WebContents* unrelated_contents = web_contents();
+  EXPECT_FALSE(pwc->web_contents()->GetDelegate()->CanDragEnter(
+      unrelated_contents, drop_data, ops));
+  EXPECT_EQ(delegate.drag_enter_count_, 0);
+
+  // 2. Null WebContents is rejected.
+  EXPECT_FALSE(pwc->web_contents()->GetDelegate()->CanDragEnter(
+      nullptr, drop_data, ops));
+  EXPECT_EQ(delegate.drag_enter_count_, 0);
 }
 
 }  // namespace

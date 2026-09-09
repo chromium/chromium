@@ -19,6 +19,7 @@
 
 namespace content {
 class BrowserContext;
+struct DropData;
 class FileSelectListener;
 class NavigationHandle;
 class RenderFrameHost;
@@ -117,6 +118,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
         content::RenderFrameHost* render_frame_host,
         scoped_refptr<content::FileSelectListener> listener,
         const blink::mojom::FileChooserParams& params);
+    virtual bool CanDragEnter(content::WebContents* source,
+                              const content::DropData& data,
+                              blink::DragOperationsMask operations_allowed);
   };
 
   void SetEmbedderDelegate(EmbedderDelegate* delegate) {
@@ -157,6 +161,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  bool CanDragEnter(content::WebContents* source,
+                    const content::DropData& data,
+                    blink::DragOperationsMask operations_allowed) override;
 
   // content::WebContentsObserver:
   // Disables the back-forward cache for every committed document, so a

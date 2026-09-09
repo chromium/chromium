@@ -167,68 +167,77 @@ class TestEmbedderDelegate
   ~TestEmbedderDelegate() override = default;
 };
 
-TEST_F(GlicViewTest, SetWebContents_NoWebview_ClearsOldDelegate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
-      {});
+class GlicViewNoWebviewTest : public ChromeViewsTestBase {
+ public:
+  GlicViewNoWebviewTest() {
+    feature_list_.InitWithFeatures(
+        {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents,
+         features::kGlicDragAndDropFileUpload},
+        {});
+  }
+  ~GlicViewNoWebviewTest() override = default;
 
-  content::RenderViewHostTestEnabler rvh_test_enabler;
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    glic_view_ =
+        std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+    pwc_ = CreatePwc();
+    glic_view_->SetWebContents(pwc_->web_contents());
+  }
 
-  auto glic_view =
+  void TearDown() override {
+    glic_view_.reset();
+    pwc_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+  std::unique_ptr<pwc::PrivilegedWebContents> CreatePwc() {
+    auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
+        std::vector<url::Origin>{test_origin()},
+        std::vector<url::Origin>{test_origin()});
+    return pwc::PrivilegedWebContents::Create(
+        pwc::PrivilegedComponent::kGlic, profile(), std::move(policy_delegate));
+  }
+
+  TestingProfile* profile() { return &profile_; }
+  url::Origin test_origin() const {
+    return url::Origin::Create(GURL("https://pwc-test.example.com"));
+  }
+  GlicView* glic_view() { return glic_view_.get(); }
+  pwc::PrivilegedWebContents* pwc() { return pwc_.get(); }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfile profile_;
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc_;
+  std::unique_ptr<GlicView> glic_view_;
+};
+
+TEST_F(GlicViewNoWebviewTest, SetWebContents_ClearsOldDelegate) {
+  auto fresh_pwc = CreatePwc();
+  EXPECT_EQ(fresh_pwc->embedder_delegate(), nullptr);
+
+  auto view =
       std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+  view->SetWebContents(fresh_pwc->web_contents());
+  EXPECT_EQ(fresh_pwc->embedder_delegate(), view.get());
 
-  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))},
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))});
-  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
-      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
-                                         profile(), std::move(policy_delegate));
-  ASSERT_TRUE(pwc);
-
-  EXPECT_EQ(pwc->embedder_delegate(), nullptr);
-
-  glic_view->SetWebContents(pwc->web_contents());
-  EXPECT_EQ(pwc->embedder_delegate(), glic_view.get());
-
-  glic_view->SetWebContents(nullptr);
-  EXPECT_EQ(pwc->embedder_delegate(), nullptr);
+  view->SetWebContents(nullptr);
+  EXPECT_EQ(fresh_pwc->embedder_delegate(), nullptr);
 }
 
-TEST_F(GlicViewTest, SetWebContents_NoWebview_DoesNotClearIfOverwritten) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
-      {});
-
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-
+TEST_F(GlicViewNoWebviewTest, SetWebContents_DoesNotClearIfOverwritten) {
   TestEmbedderDelegate other_delegate;
-  auto glic_view =
-      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+  EXPECT_EQ(pwc()->embedder_delegate(), glic_view());
 
-  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))},
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))});
-  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
-      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
-                                         profile(), std::move(policy_delegate));
-  ASSERT_TRUE(pwc);
+  pwc()->SetEmbedderDelegate(&other_delegate);
+  EXPECT_EQ(pwc()->embedder_delegate(), &other_delegate);
 
-  glic_view->SetWebContents(pwc->web_contents());
-  EXPECT_EQ(pwc->embedder_delegate(), glic_view.get());
+  glic_view()->SetWebContents(nullptr);
+  EXPECT_EQ(pwc()->embedder_delegate(), &other_delegate);
 
-  pwc->SetEmbedderDelegate(&other_delegate);
-  EXPECT_EQ(pwc->embedder_delegate(), &other_delegate);
-
-  glic_view->SetWebContents(nullptr);
-  EXPECT_EQ(pwc->embedder_delegate(), &other_delegate);
-
-  pwc->SetEmbedderDelegate(nullptr);
+  pwc()->SetEmbedderDelegate(nullptr);
 }
 
 TEST_F(GlicViewTest, CheckMediaAccessPermission_RoutesToDispatcher) {
@@ -246,32 +255,9 @@ TEST_F(GlicViewTest, CheckMediaAccessPermission_RoutesToDispatcher) {
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
 }
 
-TEST_F(GlicViewTest, CheckMediaAccessPermission_NoWebview_ForwardsFromPwc) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
-      {});
-
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-  auto glic_view =
-      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
-
-  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))},
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))});
-  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
-      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
-                                         profile(), std::move(policy_delegate));
-  ASSERT_TRUE(pwc);
-
-  glic_view->SetWebContents(pwc->web_contents());
-  ASSERT_EQ(pwc->embedder_delegate(), glic_view.get());
-
-  EXPECT_FALSE(pwc->web_contents()->GetDelegate()->CheckMediaAccessPermission(
-      pwc->web_contents()->GetPrimaryMainFrame(),
-      url::Origin::Create(GURL("https://pwc-test.example.com")),
+TEST_F(GlicViewNoWebviewTest, CheckMediaAccessPermission_ForwardsFromPwc) {
+  EXPECT_FALSE(pwc()->web_contents()->GetDelegate()->CheckMediaAccessPermission(
+      pwc()->web_contents()->GetPrimaryMainFrame(), test_origin(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
 }
 
@@ -320,39 +306,17 @@ TEST_F(GlicViewTest, RequestMediaAccessPermission_RoutesToDispatcher) {
             blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN);
 }
 
-TEST_F(GlicViewTest, RequestMediaAccessPermission_NoWebview_ForwardsFromPwc) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
-      {});
-
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-  auto glic_view =
-      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
-
-  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))},
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))});
-  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
-      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
-                                         profile(), std::move(policy_delegate));
-  ASSERT_TRUE(pwc);
-
-  glic_view->SetWebContents(pwc->web_contents());
-  ASSERT_EQ(pwc->embedder_delegate(), glic_view.get());
-
+TEST_F(GlicViewNoWebviewTest, RequestMediaAccessPermission_ForwardsFromPwc) {
   content::MediaStreamRequest request(
-      /*render_process_id=*/pwc->web_contents()
+      /*render_process_id=*/pwc()
+          ->web_contents()
           ->GetPrimaryMainFrame()
           ->GetProcess()
           ->GetDeprecatedID(),
       /*render_frame_id=*/
-      pwc->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      pwc()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       /*page_request_id=*/0,
-      /*security_origin=*/
-      url::Origin::Create(GURL("https://pwc-test.example.com")),
+      /*security_origin=*/test_origin(),
       /*user_gesture=*/false,
       /*request_type=*/blink::MEDIA_DEVICE_ACCESS,
       /*requested_audio_device_ids=*/{},
@@ -364,8 +328,8 @@ TEST_F(GlicViewTest, RequestMediaAccessPermission_NoWebview_ForwardsFromPwc) {
       /*captured_surface_control_active=*/false);
 
   base::test::TestFuture<blink::mojom::MediaStreamRequestResult> future;
-  pwc->web_contents()->GetDelegate()->RequestMediaAccessPermission(
-      pwc->web_contents(), request, BindResultToFuture(future));
+  pwc()->web_contents()->GetDelegate()->RequestMediaAccessPermission(
+      pwc()->web_contents(), request, BindResultToFuture(future));
   EXPECT_EQ(future.Get(),
             blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN);
 }
@@ -411,39 +375,39 @@ class TestGlicViewForFileChooser : public GlicView {
   bool file_chooser_called_ = false;
 };
 
-TEST_F(GlicViewTest, RunFileChooser_NoWebview_ForwardsFromPwc) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
-      {});
-
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-
-  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))},
-      std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))});
-  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
-      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
-                                         profile(), std::move(policy_delegate));
-  ASSERT_TRUE(pwc);
-
+TEST_F(GlicViewNoWebviewTest, RunFileChooser_ForwardsFromPwc) {
   auto test_view = std::make_unique<TestGlicViewForFileChooser>(
       profile(), gfx::Size(800, 600), nullptr);
 
-  test_view->SetWebContents(pwc->web_contents());
-  ASSERT_EQ(pwc->embedder_delegate(), test_view.get());
+  test_view->SetWebContents(pwc()->web_contents());
+  ASSERT_EQ(pwc()->embedder_delegate(), test_view.get());
 
-  content::RenderFrameHost* rfh = pwc->web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* rfh = pwc()->web_contents()->GetPrimaryMainFrame();
   auto listener = base::MakeRefCounted<TestFileSelectListener>();
   blink::mojom::FileChooserParams params;
   params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
 
-  pwc->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
+  pwc()->web_contents()->GetDelegate()->RunFileChooser(rfh, listener, params);
   EXPECT_TRUE(test_view->file_chooser_called_);
   EXPECT_EQ(test_view->last_rfh_, rfh);
   EXPECT_TRUE(listener->canceled());
+}
+
+TEST_F(GlicViewNoWebviewTest, CanDragEnter_ForwardsFromPwc) {
+  content::DropData drop_data;
+  drop_data.filenames.emplace_back(
+      base::FilePath(FILE_PATH_LITERAL("test.txt")),
+      base::FilePath(FILE_PATH_LITERAL("test.txt")));
+  blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+  // Forwards through PWC delegate to GlicView::CanDragEnter.
+  EXPECT_TRUE(pwc()->web_contents()->GetDelegate()->CanDragEnter(
+      pwc()->web_contents(), drop_data, ops));
+
+  // Empty drop data returns false from GlicView::CanDragEnter.
+  content::DropData empty_drop_data;
+  EXPECT_FALSE(pwc()->web_contents()->GetDelegate()->CanDragEnter(
+      pwc()->web_contents(), empty_drop_data, ops));
 }
 
 }  // namespace glic

@@ -24,6 +24,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -194,6 +195,13 @@ void PrivilegedWebContents::EmbedderDelegate::RunFileChooser(
   }
 }
 
+bool PrivilegedWebContents::EmbedderDelegate::CanDragEnter(
+    content::WebContents* source,
+    const content::DropData& data,
+    blink::DragOperationsMask operations_allowed) {
+  return false;
+}
+
 content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
@@ -294,6 +302,21 @@ void PrivilegedWebContents::RunFileChooser(
       base::MakeRefCounted<ScopedFileSelectListener>(std::move(listener));
   embedder_delegate_->RunFileChooser(render_frame_host,
                                      std::move(scoped_listener), params);
+}
+
+bool PrivilegedWebContents::CanDragEnter(
+    content::WebContents* source,
+    const content::DropData& data,
+    blink::DragOperationsMask operations_allowed) {
+  if (source != web_contents_.get()) {
+    return false;
+  }
+
+  if (embedder_delegate_) {
+    return embedder_delegate_->CanDragEnter(source, data, operations_allowed);
+  }
+
+  return false;
 }
 
 bool PrivilegedWebContents::IsPrimaryMainFrame(
