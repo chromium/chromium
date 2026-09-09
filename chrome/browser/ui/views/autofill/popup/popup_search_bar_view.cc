@@ -24,7 +24,6 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/flex_layout.h"
@@ -122,7 +121,6 @@ END_METADATA
 PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
                                        const std::u16string& initial_value,
                                        Delegate& delegate,
-                                       bool show_indicator,
                                        bool show_search_icon_sparkle,
                                        base::TimeDelta debounce_delay)
     : delegate_(delegate), debounce_delay_(debounce_delay) {
@@ -169,15 +167,6 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
                           base::Unretained(this)),
       this,
       /*visible=*/!initial_value.empty()));
-
-  if (show_indicator) {
-    indicator_ = AddChildView(views::Builder<views::Label>()
-                                  .SetText(u"@@")
-                                  .SetAutoColorReadabilityEnabled(false)
-                                  .Build());
-    indicator_->SetEnabledColor(ui::kColorTextfieldForegroundPlaceholder);
-    indicator_->SetVisible(initial_value.empty());
-  }
 }
 
 void PopupSearchBarView::AddedToWidget() {
@@ -264,10 +253,6 @@ bool PopupSearchBarView::IsClearButtonVisibleForTesting() const {
   return clear_->GetVisible();
 }
 
-bool PopupSearchBarView::IsIndicatorVisibleForTesting() const {
-  return indicator_ ? indicator_->GetVisible() : false;
-}
-
 PopupSearchBarView::~PopupSearchBarView() = default;
 
 void PopupSearchBarView::OnInputChanged() {
@@ -275,9 +260,6 @@ void PopupSearchBarView::OnInputChanged() {
   clear_->SetVisible(!empty);
   if (empty && clear_->HasFocus()) {
     input_->RequestFocus();
-  }
-  if (indicator_) {
-    indicator_->SetVisible(empty);
   }
   input_change_notification_timer_.Start(
       FROM_HERE, debounce_delay_,

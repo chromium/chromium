@@ -118,7 +118,6 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledImmediatelyWithZeroDelay) {
   auto view = std::make_unique<PopupSearchBarView>(
       u"placeholder", /*initial_value=*/u"", delegate(),
-      /*show_indicator=*/false,
       /*show_search_icon_sparkle=*/false, /*debounce_delay=*/base::TimeDelta());
 
   EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text")));
@@ -216,43 +215,10 @@ TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
   EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
 }
 
-TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Enabled) {
-  PopupSearchBarView* view =
-      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate(),
-          /*show_indicator=*/true));
-  widget().Show();
-
-  EXPECT_TRUE(view->IsIndicatorVisibleForTesting());
-
-  view->SetInputTextForTesting(u"a");
-  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
-
-  view->SetInputTextForTesting(u"");
-  EXPECT_TRUE(view->IsIndicatorVisibleForTesting());
-}
-
-TEST_F(PopupSearchBarViewTest, IndicatorVisibility_Disabled) {
-  PopupSearchBarView* view =
-      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate(),
-          /*show_indicator=*/false));
-  widget().Show();
-
-  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
-
-  view->SetInputTextForTesting(u"a");
-  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
-
-  view->SetInputTextForTesting(u"");
-  EXPECT_FALSE(view->IsIndicatorVisibleForTesting());
-}
-
 TEST_F(PopupSearchBarViewTest, InitialText) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
           u"placeholder", u"initial query", delegate(),
-          /*show_indicator=*/false,
           /*show_search_icon_sparkle=*/false,
           /*debounce_delay=*/PopupSearchBarView::kInputChangeCallbackDelay));
   widget().Show();

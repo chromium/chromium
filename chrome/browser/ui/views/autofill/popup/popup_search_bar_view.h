@@ -20,7 +20,6 @@
 
 namespace views {
 class Button;
-class Label;
 class Textfield;
 class Throbber;
 class ImageView;
@@ -68,14 +67,12 @@ class PopupSearchBarView : public views::View,
   static constexpr base::TimeDelta kInputChangeCallbackDelay =
       base::Milliseconds(250);
 
-  // TODO(crbug.com/504977286) Rename show_indicator when launched.
   // Calls to `Delegate::SearchBarOnInputChanged()` are throttled by
   // `debounce_delay`.
   PopupSearchBarView(
       const std::u16string& placeholder,
       const std::u16string& initial_value,
       Delegate& delegate,
-      bool show_indicator = false,
       bool show_search_icon_sparkle = false,
       base::TimeDelta debounce_delay = kInputChangeCallbackDelay);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
@@ -108,7 +105,6 @@ class PopupSearchBarView : public views::View,
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
   bool IsClearButtonVisibleForTesting() const;
-  bool IsIndicatorVisibleForTesting() const;
   views::ImageView* GetSearchIconForTesting() const { return search_icon_; }
   views::Throbber* GetThrobberForTesting() const { return throbber_; }
 
@@ -123,7 +119,6 @@ class PopupSearchBarView : public views::View,
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
-  raw_ptr<views::Label> indicator_ = nullptr;
   raw_ptr<views::ImageView> search_icon_ = nullptr;
   raw_ptr<views::Throbber> throbber_ = nullptr;
 
