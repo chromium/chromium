@@ -46,6 +46,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -521,6 +522,51 @@ public class ChromeActivityUnitTest {
 
         // Verify that the standard settings activity was launched.
         verify(mSettingsNavigation).startSettings(chromeActivity);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testPreferencesMenuItem_SettingsInTabFoldable_PhoneMode() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        doReturn(false).when(chromeActivity).isTablet();
+
+        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+
+        assertTrue(
+                chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
+
+        // Verify that the standard settings activity was launched.
+        verify(mSettingsNavigation).startSettings(chromeActivity);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testPreferencesMenuItem_SettingsInTabFoldable_TabletMode() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        doReturn(true).when(chromeActivity).isTablet();
+
+        doReturn(mActivityTab).when(chromeActivity).getActivityTab();
+        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
+        doReturn(mTabCreator).when(chromeActivity).getTabCreator(eq(false));
+
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+
+        assertTrue(
+                chromeActivity.onMenuOrKeyboardAction(R.id.preferences_id, /* fromMenu= */ true));
+
+        // Verify that createNewTab was called with the settings URL.
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(
+                        paramsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mActivityTab));
+        assertEquals(UrlConstants.SETTINGS_URL, paramsCaptor.getValue().getUrl());
     }
 
     @Test
