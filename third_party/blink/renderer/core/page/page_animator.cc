@@ -137,11 +137,14 @@ void PageAnimator::ServiceScriptedAnimations(
       continue;
     }
 
-    controller->SetCurrentFrameTimeMs(
-        window->document()->Timeline().CurrentTimeMilliseconds().value());
+    base::TimeDelta document_timeline_time =
+        window->document()->Timeline().CurrentTimeDelta().value();
+    controller->SetCurrentFrameTimeMs(document_timeline_time.InMillisecondsF());
     controller->SetCurrentFrameLegacyTimeMs(
         loader->GetTiming()
-            .MonotonicTimeToPseudoWallTime(monotonic_time_now)
+            .MonotonicTimeToPseudoWallTime(
+                window->document()->Timeline().CalculateZeroTime() +
+                document_timeline_time)
             .InMillisecondsF());
     if (can_throttle) {
       continue;

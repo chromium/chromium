@@ -34,7 +34,12 @@
           assert_greater_than_equal(legacyFirstTimestamp, firstTimestamp);
           assert_greater_than_equal(legacySecondTimestamp, secondTimestamp);
           deltaError = Math.abs((legacySecondTimestamp - legacyFirstTimestamp) - (secondTimestamp - firstTimestamp));
-          assert_less_than(deltaError, 0.3);
+          assert_less_than(deltaError, 0.001);
+          var legacyDelta = legacySecondTimestamp - legacyFirstTimestamp;
+          // Matches TimeClamper::kCoarseResolutionMicroseconds (100us):
+          const kCoarseResolutionMicroseconds = 100;
+          var residue = Math.round(legacyDelta * 1000) % kCoarseResolutionMicroseconds;
+          assert_equals(residue, 0);
         });
         t.done();
       });

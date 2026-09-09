@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 
+#include <cmath>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -15,8 +18,11 @@
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -28,6 +34,7 @@ class ScriptedAnimationControllerTest : public testing::Test {
  protected:
   void SetUp() override;
 
+  Page& GetPage() const { return dummy_page_holder_->GetPage(); }
   Document& GetDocument() const { return dummy_page_holder_->GetDocument(); }
   ScriptedAnimationController& Controller() { return *controller_; }
 
@@ -62,6 +69,16 @@ class TaskOrderObserver {
  private:
   void RunTask(int id) { order_.push_back(id); }
   Vector<int> order_;
+};
+
+class RecordTimestampCallback final : public FrameCallback {
+ public:
+  explicit RecordTimestampCallback(double* recorded_time)
+      : recorded_time_(recorded_time) {}
+  void Invoke(double timestamp) override { *recorded_time_ = timestamp; }
+
+ private:
+  raw_ptr<double> recorded_time_;
 };
 
 }  // anonymous namespace
@@ -293,6 +310,76 @@ TEST_F(ScriptedAnimationControllerTest,
                                           {{Controller(), false}});
   EXPECT_EQ(1u, observer.Order().size());
   EXPECT_EQ(2, observer.Order()[0]);
+}
+
+TEST_F(ScriptedAnimationControllerTest, CoarsenedFrameTimestamps) {
+  ScriptedAnimationController& document_controller =
+      GetDocument().GetScriptedAnimationController();
+
+  base::TimeTicks zero_time = GetDocument().Timeline().CalculateZeroTime();
+  double reference_wall_time_ms = GetDocument()
+                                      .Loader()
+                                      ->GetTiming()
+                                      .MonotonicTimeToPseudoWallTime(zero_time)
+                                      .InMillisecondsF();
+
+  double previous_standard_time = -1.0;
+  double previous_legacy_time = -1.0;
+
+  for (int frame = 0; frame < 5; ++frame) {
+    double standard_time = -1.0;
+    double legacy_time = -1.0;
+
+    auto* standard_cb =
+        MakeGarbageCollected<RecordTimestampCallback>(&standard_time);
+    standard_cb->SetUseLegacyTimeBase(false);
+    document_controller.RegisterFrameCallback(standard_cb,
+                                              FrameCallbackType::kWebExposed);
+
+    auto* legacy_cb =
+        MakeGarbageCollected<RecordTimestampCallback>(&legacy_time);
+    legacy_cb->SetUseLegacyTimeBase(true);
+    document_controller.RegisterFrameCallback(legacy_cb,
+                                              FrameCallbackType::kWebExposed);
+
+    // Frame 0 tests zero time (document_timeline_time_ms == 0). Subsequent
+    // frames provide non-aligned microsecond intervals: 16ms simulates a ~60Hz
+    // frame interval, while (13 * frame + 7) microseconds adds prime-stepping
+    // sub-100us jitter (7us, 20us, 33us, 46us, 59us) that is never a multiple
+    // of kCoarseResolutionMicroseconds (100us), ensuring TimeClamper actively
+    // coarsens every frame timestamp.
+    base::TimeTicks frame_time = frame == 0
+                                     ? zero_time
+                                     : zero_time + base::Seconds(1) +
+                                           base::Milliseconds(16 * frame) +
+                                           base::Microseconds(13 * frame + 7);
+    GetPage().Animator().ServiceScriptedAnimations(frame_time);
+
+    EXPECT_GE(standard_time, 0.0);
+    EXPECT_GE(legacy_time, reference_wall_time_ms);
+    EXPECT_NEAR(legacy_time, reference_wall_time_ms + standard_time, 0.001);
+
+    if (frame > 0) {
+      double standard_delta = standard_time - previous_standard_time;
+      double legacy_delta = legacy_time - previous_legacy_time;
+
+      EXPECT_NEAR(legacy_delta, standard_delta, 0.001);
+
+      int64_t standard_delta_us =
+          static_cast<int64_t>(std::round(standard_delta * 1000.0));
+      int64_t legacy_delta_us =
+          static_cast<int64_t>(std::round(legacy_delta * 1000.0));
+
+      EXPECT_EQ(legacy_delta_us, standard_delta_us);
+      EXPECT_EQ(standard_delta_us % TimeClamper::kCoarseResolutionMicroseconds,
+                0);
+      EXPECT_EQ(legacy_delta_us % TimeClamper::kCoarseResolutionMicroseconds,
+                0);
+    }
+
+    previous_standard_time = standard_time;
+    previous_legacy_time = legacy_time;
+  }
 }
 
 }  // namespace blink

@@ -44,6 +44,9 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   }
 
   std::optional<AnimationTimeDelta> CurrentTime();
+  std::optional<base::TimeDelta> CurrentTimeDelta() {
+    return CurrentTimeInternal();
+  }
   std::optional<double> CurrentTimeMilliseconds();
   std::optional<double> CurrentTimeSeconds();
 
