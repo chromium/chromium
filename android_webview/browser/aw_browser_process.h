@@ -108,7 +108,6 @@ class AwBrowserProcess : public WebViewAppStateObserver {
 
   static void TriggerMinidumpUploading();
   static ApkType GetApkType();
-  static bool IsAppVisibleToUser();
 
   EnterpriseAuthenticationAppLinkManager*
   GetEnterpriseAuthenticationAppLinkManager();

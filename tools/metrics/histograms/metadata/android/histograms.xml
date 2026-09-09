@@ -8628,8 +8628,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.OnRenderProcessGoneResult2"
-    enum="AndroidWebViewRenderProcessGoneResult" expires_after="2027-06-21">
+<histogram name="Android.WebView.OnRenderProcessGoneResult3"
+    enum="AndroidWebViewRenderProcessGoneResult3" expires_after="2027-06-21">
   <owner>ntfschr@chromium.org</owner>
   <owner>ziadyoussef@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8639,6 +8639,11 @@ chromium-metrics-reviews@google.com.
     this and was the app in foreground or background? This is recorded once each
     time the renderer process dies unexpectedly, and is logged after we have
     notified the app via the onRenderProcessGone() callback.
+
+    Compared to Android.WebView.OnRenderProcessGoneResult2, version 3 checks
+    base::android::IsProcessInBackground() to determine whether the app is in
+    the background (cached/expendable) or foreground (not expendable), rather
+    than checking if the app is visible to the user.
 
     Note that the foreground/background state tracked here is different from the
     foreground/background state of WebView that we typically track. Those track
