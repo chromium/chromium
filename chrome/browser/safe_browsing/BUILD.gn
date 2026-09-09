@@ -1322,3 +1322,54 @@ source_set("browser_tests") {
     ]
   }
 }
+
+if (safe_browsing_mode != 0 && is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "safe_browsing_blocking_page_android_test.cc" ]
+    deps = [
+      ":blocking_page_platform_test_support",
+      ":safe_browsing",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/android/hats",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/hats",
+      "//chrome/test/base:android_browser_test",
+      "//chrome/test/base:chrome_test_utils",
+      "//components/prefs",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (safe_browsing_mode == 1) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "safe_browsing_navigation_observer_interactive_test.cc" ]
+    deps = [
+      ":safe_browsing",
+      ":test_support",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/sessions",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//ui/base/clipboard",
+    ]
+  }
+}

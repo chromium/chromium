@@ -1138,7 +1138,6 @@ if (is_android) {
     sources = [
       "../browser/android/persisted_tab_data/persisted_tab_data_android_browsertest.cc",
       "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
-      "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
@@ -1227,6 +1226,7 @@ if (is_android) {
       "//chrome/browser/privacy_sandbox:browser_tests",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:android_browsertests",
+      "//chrome/browser/renderer_host:android_browsertests",
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/safe_browsing/android:android_browsertests",
       "//chrome/browser/safe_browsing/android:test_support_java",
@@ -1502,12 +1502,12 @@ if (is_android) {
 
     if (safe_browsing_mode != 0) {
       sources += [
-        "../browser/safe_browsing/safe_browsing_blocking_page_android_test.cc",
         "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
         "../renderer/safe_browsing/phishing_dom_utils_browsertest.cc",
       ]
 
       deps += [
+        "//chrome/browser/safe_browsing:android_browsertests",
         "//chrome/browser/safe_browsing:blocking_page_platform_test_support",
         "//chrome/browser/ui/android/hats",
         "//chrome/browser/ui/hats",
@@ -2756,7 +2756,6 @@ if (!is_android) {
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
-      "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
       "../browser/ui/views/autofill/payments/offer_notification_icon_view_browsertest.cc",
       "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",
@@ -5768,7 +5767,6 @@ test("unit_tests") {
       "../browser/app_controller_mac_unittest.mm",
       "../browser/chrome_browser_application_mac_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
-      "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unittest.mm",
       "../browser/shell_integration_mac_unittest.mm",
       "../browser/shutdown_watchdog_mac_unittest.cc",
     ]
@@ -5780,8 +5778,7 @@ test("unit_tests") {
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/apps/app_shim:unit_tests",
       "//chrome/browser/mac:unit_tests",
-      "//chrome/browser/renderer_host:history_swiper",
-      "//chrome/browser/renderer_host:history_swiping_control",
+      "//chrome/browser/renderer_host:unit_tests",
       "//chrome/browser/ui/cocoa:unit_tests",
       "//chrome/browser/ui/cocoa/test:unit_tests",
       "//chrome/common/notifications",
@@ -9144,7 +9141,7 @@ if (!is_android && !is_chromeos_device) {
     ]
 
     if (safe_browsing_mode == 1) {
-      sources += [ "../browser/safe_browsing/safe_browsing_navigation_observer_interactive_test.cc" ]
+      deps += [ "//chrome/browser/safe_browsing:interactive_ui_tests" ]
     }
 
     if (enterprise_data_controls) {

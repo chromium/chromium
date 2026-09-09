@@ -69,6 +69,22 @@ if (is_mac) {
     public_deps = [ "//content/public/browser" ]
   }
 
+  source_set("unit_tests") {
+    testonly = true
+    sources =
+        [ "chrome_render_widget_host_view_mac_history_swiper_unittest.mm" ]
+    deps = [
+      ":history_swiper",
+      ":history_swiping_control",
+      "//base",
+      "//chrome/test:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+      "//third_party/ocmock",
+      "//ui/events/blink",
+    ]
+  }
+
   # TODO(crbug.com/479890756): Merge :delegate and :delegate_impl targets when
   # c/b/ui/views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm
   # gets componentized.
@@ -92,18 +108,52 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "render_process_host_chrome_browsertest.cc" ]
+    sources = [
+      "javascript_optimizer_feature_browsertest.cc",
+      "render_process_host_chrome_browsertest.cc",
+    ]
     deps = [
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser/content_settings",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/history",
       "//chrome/browser/preloading:test_support",
+      "//chrome/browser/safe_browsing",
       "//chrome/browser/search",
+      "//chrome/browser/site_protection",
+      "//chrome/browser/site_protection:utils",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/page_action",
+      "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/js_optimization",
+      "//chrome/browser/ui/views/page_action:page_action_test_support",
+      "//chrome/common:chrome_features",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//chrome/test/interaction",
+      "//components/content_settings/core/browser",
+      "//components/history/core/browser",
       "//components/performance_manager",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/browser",
+      "//components/policy/core/common:test_support",
+      "//components/prefs",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+      "//components/safe_browsing/core/common:features",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//content/test:test_support",
+      "//net:test_support",
+      "//ui/actions",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base/interaction:test_support",
+      "//ui/views",
+      "//ui/views/interaction:test_support",
     ]
 
     if (is_mac) {
@@ -116,5 +166,34 @@ if (!is_android) {
         "//third_party/ocmock",
       ]
     }
+  }
+} else {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "javascript_optimizer_feature_browsertest.cc" ]
+    deps = [
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/history",
+      "//chrome/browser/safe_browsing",
+      "//chrome/browser/site_protection",
+      "//chrome/browser/site_protection:utils",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/content_settings/core/browser",
+      "//components/history/core/browser",
+      "//components/policy/core/browser",
+      "//components/policy/core/common:test_support",
+      "//components/prefs",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+      "//components/safe_browsing/core/common:features",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//ui/base",
+    ]
   }
 }
