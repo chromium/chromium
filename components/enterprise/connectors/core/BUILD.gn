@@ -59,6 +59,7 @@ source_set("core") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:blink_buildflags",
     "//components/enterprise",
     "//components/enterprise/buildflags",
@@ -86,6 +87,13 @@ source_set("core") {
     "//ui/base/clipboard:clipboard_types",
     "//ui/gfx/range",
   ]
+
+  if (!is_android) {
+    deps += [
+      "//components/enterprise/device_trust/core",
+      "//components/enterprise/device_trust/core:device_trust_connector_service",
+    ]
+  }
 
   if (use_blink) {
     deps += [ "//components/download/public/common:public" ]
@@ -278,6 +286,7 @@ source_set("unit_tests") {
 
   sources = [
     "analysis_service_settings_base_unittest.cc",
+    "connectors_internals_utils_unittest.cc",
     "connectors_manager_base_unittest.cc",
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
@@ -292,7 +301,9 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/enterprise",
     "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/connectors:mojom",
     "//components/enterprise/connectors/core:test_support",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/policy/core/browser",
@@ -305,6 +316,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [ "//components/enterprise/device_trust/core" ]
+  }
 }
 
 if (enterprise_cloud_content_analysis || is_android) {
