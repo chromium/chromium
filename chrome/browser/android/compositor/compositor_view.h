@@ -116,6 +116,8 @@ class CompositorView : public content::CompositorClient,
   ~CompositorView() override;
 
   // content::BrowserChildProcessObserver implementation:
+  void BrowserChildProcessLaunchedAndConnected(
+      const content::ChildProcessData& data) override;
   void BrowserChildProcessKilled(
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override;
