@@ -8773,7 +8773,7 @@ const CSSValue* ScrollMarkerGroup::CSSValueFromComputedStyleInternal(
   }
   auto* position = MakeGarbageCollected<CSSIdentifierValue>(
       style.GetScrollMarkerGroup()->Position());
-  if (!RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
+  if (!RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
     return position;
   }
   auto* mode = MakeGarbageCollected<CSSIdentifierValue>(
@@ -8795,8 +8795,8 @@ const CSSValue* ScrollMarkerGroup::ParseSingleValue(
   if (position->GetValueID() == CSSValueID::kNone || stream.AtEnd()) {
     return position;
   }
-  if (!RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
-    return position;
+  if (!RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+    return nullptr;
   }
   const CSSIdentifierValue* mode =
       css_parsing_utils::ConsumeIdent<CSSValueID::kTabs, CSSValueID::kLinks>(
