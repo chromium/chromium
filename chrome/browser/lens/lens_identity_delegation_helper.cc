@@ -132,13 +132,22 @@ void FetchIdentityDelegationHeaders(
     const std::string& origin,
     std::optional<size_t> authuser_index,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
-  if (!profile || !identity_manager) {
-    std::move(callback).Run({});
-    return;
-  }
-
   std::string canonical_origin =
       origin.empty() ? "" : url::Origin::Create(GURL(origin)).Serialize();
+
+  auto return_signed_out_headers = [&canonical_origin, &callback]() {
+    std::vector<std::string> headers;
+    if (!canonical_origin.empty()) {
+      headers.push_back("Origin");
+      headers.push_back(canonical_origin);
+    }
+    std::move(callback).Run(std::move(headers));
+  };
+
+  if (!profile || !identity_manager) {
+    return_signed_out_headers();
+    return;
+  }
 
   signin::AccountsInCookieJarInfo cookie_jar_info =
       identity_manager->GetAccountsInCookieJar();
@@ -148,13 +157,7 @@ void FetchIdentityDelegationHeaders(
       cookie_jar_info.GetValidSignedInAccounts();
 
   if (accounts.empty()) {
-    // Signed-out case: return only Origin if present.
-    std::vector<std::string> headers;
-    if (!canonical_origin.empty()) {
-      headers.push_back("Origin");
-      headers.push_back(canonical_origin);
-    }
-    std::move(callback).Run(headers);
+    return_signed_out_headers();
     return;
   }
 
@@ -163,33 +166,38 @@ void FetchIdentityDelegationHeaders(
 
   size_t true_authuser_index = 0;
   bool found_account = false;
-  if (authuser_index.has_value() &&
-      authuser_index.value() < all_accounts.size()) {
-    true_authuser_index = authuser_index.value();
-    found_account = true;
+  if (authuser_index.has_value()) {
+    if (authuser_index.value() < all_accounts.size()) {
+      const gaia::ListedAccount& candidate =
+          all_accounts[authuser_index.value()];
+      if (candidate.valid && !candidate.signed_out &&
+          !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+              candidate.id)) {
+        true_authuser_index = authuser_index.value();
+        found_account = true;
+      }
+    }
   } else {
     CoreAccountInfo primary_account =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
-    if (primary_account.IsEmpty() ||
-        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+    if (!primary_account.IsEmpty() &&
+        !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             primary_account.account_id)) {
-      std::move(callback).Run({});
-      return;
-    }
-
-    for (size_t i = 0; i < all_accounts.size(); ++i) {
-      if (all_accounts[i].id == primary_account.account_id) {
-        true_authuser_index = i;
-        found_account = true;
-        break;
+      for (size_t i = 0; i < all_accounts.size(); ++i) {
+        if (all_accounts[i].id == primary_account.account_id &&
+            all_accounts[i].valid && !all_accounts[i].signed_out) {
+          true_authuser_index = i;
+          found_account = true;
+          break;
+        }
       }
     }
+  }
 
-    if (!found_account) {
-      std::move(callback).Run({});
-      return;
-    }
+  if (!found_account) {
+    return_signed_out_headers();
+    return;
   }
 
   const gaia::ListedAccount& selected_account =
@@ -200,12 +208,7 @@ void FetchIdentityDelegationHeaders(
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   if (!cookie_manager) {
-    std::vector<std::string> headers;
-    if (!canonical_origin.empty()) {
-      headers.push_back("Origin");
-      headers.push_back(canonical_origin);
-    }
-    std::move(callback).Run(headers);
+    return_signed_out_headers();
     return;
   }
 

@@ -13,6 +13,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_options.h"
@@ -193,8 +194,71 @@ TEST_F(LensIdentityDelegationHelperTest,
       profile_.get(), identity_test_env_.identity_manager(),
       "https://www.google.com", std::nullopt, future.GetCallback());
 
-  std::vector<std::string> headers = future.Get();
-  EXPECT_TRUE(headers.empty());
+  // Should fall back to signed-out behavior (Origin header only).
+  EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
+}
+
+TEST_F(LensIdentityDelegationHelperTest,
+       FetchIdentityDelegationHeaders_PrimaryAccount_PersistentError) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  SetSapisidCookie("sapisid_value");
+
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  FetchIdentityDelegationHeaders(
+      profile_.get(), identity_test_env_.identity_manager(),
+      "https://www.google.com", std::nullopt, future.GetCallback());
+
+  // Persistent error on primary account: should fall back to signed-out
+  // behavior.
+  EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
+}
+
+TEST_F(LensIdentityDelegationHelperTest,
+       FetchIdentityDelegationHeaders_SpecificIndex_PersistentError) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  SetSapisidCookie("sapisid_value");
+
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  FetchIdentityDelegationHeaders(
+      profile_.get(), identity_test_env_.identity_manager(),
+      "https://www.google.com", /*authuser_index=*/0, future.GetCallback());
+
+  // Persistent error on candidate account: should fall back to signed-out
+  // behavior.
+  EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
+}
+
+TEST_F(LensIdentityDelegationHelperTest,
+       FetchIdentityDelegationHeaders_SpecificIndex_SignedOutCookieAccount) {
+  identity_test_env_.SetCookieAccounts(
+      {{"user1@gmail.com", GaiaId("gaia_id_1"), /*signed_out=*/true}});
+  SetSapisidCookie("sapisid_value");
+
+  base::test::TestFuture<std::vector<std::string>> future;
+  FetchIdentityDelegationHeaders(
+      profile_.get(), identity_test_env_.identity_manager(),
+      "https://www.google.com", /*authuser_index=*/0, future.GetCallback());
+
+  // Signed out account in cookie jar: should fall back to signed-out behavior.
+  EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
