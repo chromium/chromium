@@ -291,28 +291,25 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
                                                kDefaultSkipInBackground) ||
       is_browser_app_likely_in_foreground) {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-    std::move(reset_prewarmer).Cancel();
-    // TODO(crbug.com/544602735): Implement the DeviceBoundSessionPrewarmer as a
-    // KeyedService.
-    if (base::FeatureList::IsEnabled(
-            features::kDeviceBoundSessionsDsePrewarmer) &&
-        !device_bound_session_prewarmer_) {
-      device_bound_session_prewarmer_ =
-          std::make_unique<DeviceBoundSessionPrewarmer>(base::BindRepeating(
-              [](content::BrowserContext* browser_context) {
-                return browser_context->GetDefaultStoragePartition()
-                    ->GetDeviceBoundSessionManager();
-              },
-              browser_context_));
-      device_bound_session_prewarmer_->Start(
-          base::BindRepeating(
-              [](base::WeakPtr<SearchEnginePreconnector> preconnector) {
-                return preconnector
-                           ? preconnector->GetDefaultSearchEngineOriginURL()
-                           : GURL();
-              },
-              GetWeakPtr()),
-          is_startup);
+    if (preconnect_url.SchemeIs(url::kHttpsScheme) &&
+        base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionsDsePrewarmer)) {
+      std::move(reset_prewarmer).Cancel();
+      // TODO(crbug.com/544602735): Implement the
+      // DeviceBoundSessionPrewarmer as a KeyedService.
+      if (!device_bound_session_prewarmer_ ||
+          device_bound_session_prewarmer_->prewarm_url() != preconnect_url) {
+        device_bound_session_prewarmer_ =
+            std::make_unique<DeviceBoundSessionPrewarmer>(
+                preconnect_url,
+                base::BindRepeating(
+                    [](content::BrowserContext* browser_context) {
+                      return browser_context->GetDefaultStoragePartition()
+                          ->GetDeviceBoundSessionManager();
+                    },
+                    browser_context_));
+        device_bound_session_prewarmer_->Start(is_startup);
+      }
     }
 #endif
 
