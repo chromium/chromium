@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListL
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -259,6 +260,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param tabContentManager For management of thumbnails.
      * @param browserControlsStateProvider For determining thumbnail size.
      * @param scrimManager The scrim component to use for the tab grid dialog.
+     * @param snackbarManager The activity-level {@link SnackbarManager}.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
@@ -290,6 +292,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
+            SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
@@ -581,7 +584,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             activity,
                             mModalDialogManager,
                             coordinatorView,
-                            /* rootView= */ parentView,
+                            snackbarManager,
                             browserControlsStateProvider,
                             tabModelSupplier,
                             tabContentManager,

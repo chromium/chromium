@@ -199,6 +199,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mTabContentManager,
                 mBrowserControlsStateProvider,
                 mScrimManager,
+                mSnackbarManager,
                 mModalDialogManager,
                 mBottomSheetController,
                 mDataSharingTabManager,

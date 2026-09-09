@@ -43,7 +43,7 @@ public class TabListEditorManager {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private final ViewGroup mCoordinatorView;
-    private final @Nullable SnackbarManager mSnackbarManager;
+    private final SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
@@ -62,7 +62,7 @@ public class TabListEditorManager {
      * @param activity The current activity.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param coordinatorView The overlay view to attach the editor to.
-     * @param rootView The root view to attach the snackbar to.
+     * @param snackbarManager The activity-level {@link SnackbarManager}.
      * @param browserControlsStateProvider The browser controls state provider.
      * @param currentTabModelSupplier The supplier of the current {@link TabModel}.
      * @param tabContentManager The {@link TabContentManager} for thumbnails.
@@ -74,18 +74,19 @@ public class TabListEditorManager {
             Activity activity,
             ModalDialogManager modalDialogManager,
             ViewGroup coordinatorView,
-            ViewGroup rootView,
+            SnackbarManager snackbarManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             MonotonicObservableSupplier<TabModel> currentTabModelSupplier,
             TabContentManager tabContentManager,
             TabListCoordinator tabListCoordinator,
-            BottomSheetController bottomSheetController,
+            @Nullable BottomSheetController bottomSheetController,
             @Nullable Runnable onTabGroupCreation,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
+        mSnackbarManager = snackbarManager;
         mCurrentTabModelSupplier = currentTabModelSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -94,16 +95,6 @@ public class TabListEditorManager {
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(activity, modalDialogManager, onTabGroupCreation);
         mDesktopWindowStateManager = desktopWindowStateManager;
-
-        // The snackbarManager used by mTabListEditorCoordinator. The rootView is the default
-        // default parent view of the snackbar. When shown this will be re-parented inside the
-        // TabListCoordinator's SelectableListLayout.
-        if (!activity.isDestroyed() && !activity.isFinishing()) {
-            mSnackbarManager =
-                    new SnackbarManager(activity, rootView, null, null, modalDialogManager);
-        } else {
-            mSnackbarManager = null;
-        }
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
@@ -112,9 +103,6 @@ public class TabListEditorManager {
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
         }
-        if (mSnackbarManager != null) {
-            mSnackbarManager.destroy();
-        }
     }
 
     /** Initializes the tab list editor. */
@@ -122,9 +110,6 @@ public class TabListEditorManager {
         // TODO(crbug.com/40945154): Permit a method of switching between selectable and closable
         // modes (or create separate instances).
         if (mTabListEditorCoordinator == null) {
-            assert mSnackbarManager != null
-                    : "SnackbarManager should have been created or the activity was already"
-                            + " finishing.";
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
