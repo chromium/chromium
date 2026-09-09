@@ -30,18 +30,16 @@ if (target_os == "android") {
 
 if (target_os == "ios") {
   import("//build/config/ios/ios_sdk.gni")
-  import("//build/config/mac/mac_sdk.gni")
   build_gn_logs += [ "### ios_sdk.gni ###" ] + ios_sdk_logs
   build_gn_logs += [ "" ]
-  build_gn_logs += [ "### mac_sdk.gni ###" ] + mac_sdk_logs
-  build_gn_logs += [ "" ]
-} else if (target_os == "mac" || host_os == "mac") {
+}
+if (target_os == "mac" || host_os == "mac") {
   import("//build/config/mac/mac_sdk.gni")
   build_gn_logs += [ "### mac_sdk.gni ###" ] + mac_sdk_logs
   build_gn_logs += [ "" ]
 }
 
-if (target_os == "win") {
+if (target_os == "win" || host_os == "win") {
   import("//build/config/win/visual_studio_version.gni")
   build_gn_logs +=
       [ "### visual_studio_version.gni ###" ] + visual_studio_version_logs
