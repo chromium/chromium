@@ -1687,32 +1687,6 @@
       },
     },
 
-    'gpu_skia_renderer_vulkan_passthrough_telemetry_tests': {
-      'vulkan_pixel_skia_gold_test': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-            'has_native_resultdb_integration',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'pixel',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough',
-        ],
-        'android_args': [
-          '--extra-browser-args=--force-online-connection-state-for-indicator',
-        ],
-        'ci_only': True,
-      },
-    },
-
     'gpu_webcodecs_metal_passthrough_graphite_telemetry_test': {
       'webcodecs_metal_passthrough_graphite_tests': {
         'test_common': {
@@ -2060,6 +2034,23 @@
           ],
           'module_scheme': 'flat',
         },
+      },
+    },
+
+    'legacy_vulkan_pixel_skia_gold_test': {
+      'vulkan_pixel_skia_gold_test': {
+        'test_common': {
+          'mixins': [
+            'ci_only',
+            'gpu_integration_test_common_args',
+            'gpu_integration_test_pixel_args',
+            'has_native_resultdb_integration',
+            'legacy_gpu_vulkan_pixel_skia_gold_test_args',
+            'skia_gold_test',
+          ],
+          'module_scheme': 'flat',
+        },
+        'telemetry_test_name': 'pixel',
       },
     },
 
@@ -2722,9 +2713,9 @@
 
     'legacy_gpu_all_linux_release_telemetry_tests': [
       'gpu_passthrough_telemetry_tests',
-      'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
       'legacy_info_collection_tests',
       'legacy_trace_test',
+      'legacy_vulkan_pixel_skia_gold_test',
       'legacy_webcodecs_tests',
       'legacy_webgl2_conformance_gl_passthrough_tests',
       'legacy_webgl_conformance_tests',

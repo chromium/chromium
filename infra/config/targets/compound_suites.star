@@ -52,13 +52,13 @@ targets.legacy_compound_suite(
     name = "legacy_gpu_all_linux_release_telemetry_tests",
     basic_suites = [
         "gpu_passthrough_telemetry_tests",
-        "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
         "legacy_info_collection_tests",
         "legacy_trace_test",
+        "legacy_vulkan_pixel_skia_gold_test",
         "legacy_webcodecs_tests",
         "legacy_webgl_conformance_tests",
         "legacy_webgl2_conformance_gl_passthrough_tests",

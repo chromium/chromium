@@ -990,6 +990,15 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
     # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_vulkan_pixel_skia_gold_test",
+    tests = {
+        "vulkan_pixel_skia_gold_test": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
     name = "legacy_webcodecs_tests",
     tests = {
         "webcodecs_tests": targets.legacy_test_config(),
@@ -1054,28 +1063,6 @@ targets.legacy_basic_suite(
         "hardware_accelerated_feature_tests": targets.legacy_test_config(),
         "pixel_skia_gold_passthrough_test": targets.legacy_test_config(),
         "screenshot_sync_passthrough_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
-    tests = {
-        "vulkan_pixel_skia_gold_test": targets.legacy_test_config(
-            ci_only = True,
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                "--dont-restore-color-profile-after-test",
-                "--test-machine-name",
-                "${buildername}",
-                "--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough",
-            ],
-            android_args = [
-                # TODO(crbug.com/40134877): Remove this once we fix the tests.
-                "--extra-browser-args=--force-online-connection-state-for-indicator",
-            ],
-        ),
     },
 )
 

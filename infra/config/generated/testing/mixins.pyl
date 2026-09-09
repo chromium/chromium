@@ -161,6 +161,9 @@
       },
     },
   },
+  'ci_only': {
+    'ci_only': True,
+  },
   'crosier-no-arc': {
     'args': [
       '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter',
@@ -457,6 +460,11 @@
         },
       ],
     },
+  },
+  'legacy_gpu_vulkan_pixel_skia_gold_test_args': {
+    'args': [
+      '--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough',
+    ],
   },
   'legacy_gpu_webgl2_conformance_shards': {
     'swarming': {

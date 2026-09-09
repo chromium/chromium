@@ -4433,11 +4433,7 @@ targets.bundle(
     targets = [
         # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
         # paths are merged.
-        "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
+        "vulkan_pixel_skia_gold_test",
         "webcodecs_tests",
         "webgl2_conformance_gl_passthrough_tests",
         "webrtc_tests",
