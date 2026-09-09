@@ -284,6 +284,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       GetLensSearchController().should_route_to_contextual_tasks());
   html_source->AddBoolean("isSidePanelOpen",
                           controller.IsResultsSidePanelShowingOrWillOpen());
+  html_source->AddBoolean("isCoBrowsePanelWithLensOverlayEnabled",
+                          controller.CoBrowsePanelWithLensOverlayEnabled());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =
