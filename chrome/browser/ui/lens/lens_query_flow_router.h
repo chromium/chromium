@@ -28,6 +28,11 @@ using SearchUrlType =
 bool IsOmniboxInvocationSource(
     std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
+// Returns true if the active tab should be forced to contextualize for the
+// given invocation source when no overlay token is present.
+bool ShouldFetchActiveTabForInvocationSource(
+    std::optional<lens::LensOverlayInvocationSource> invocation_source);
+
 // A router for queries that Lens should perform.
 class LensQueryFlowRouter
     : public contextual_search::ContextualSearchContextController::
