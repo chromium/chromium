@@ -160,6 +160,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -801,6 +802,25 @@ public class WebContentsAccessibilityTest {
                         endOffsetType));
         mNodeInfo = createAccessibilityNodeInfo(rootVvid);
 
+        assertExtendedSelection(
+                rootVvid,
+                expectedStartNodeId,
+                expectedStartOffset,
+                expectedStartOffsetType,
+                expectedEndNodeId,
+                expectedEndOffset,
+                expectedEndOffsetType);
+    }
+
+    private void assertExtendedSelection(
+            int rootVvid,
+            int expectedStartNodeId,
+            int expectedStartOffset,
+            int expectedStartOffsetType,
+            int expectedEndNodeId,
+            int expectedEndOffset,
+            int expectedEndOffsetType)
+            throws ExecutionException {
         Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
         Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
 
@@ -4514,6 +4534,57 @@ public class WebContentsAccessibilityTest {
 
         setAndAssertExtendedSelection(
                 rootVvid, paragraphVvid, 4, OFFSET_TYPE_TEXT, paragraphVvid, 14, OFFSET_TYPE_TEXT);
+    }
+
+    /** Test selection on a multiline content editable imitating Ctrl+A. */
+    @Test
+    @SmallTest
+    public void testPerformAction_selectAll_multilineContentEditable() throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="contenteditable" contenteditable>
+                  <div>test</div>
+                  <div><br></div>
+                  <div>tester</div>
+                  <div>testing</div>
+                </div>
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int contenteditableVvid =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "contenteditable");
+
+        // Focus the content editable node.
+        focusNodeAndWaitForSelection(contenteditableVvid);
+
+        // Select all using WebContents.selectAll() to imitate Ctrl+A.
+        mTestData.setReceivedSelectionEvent(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ((WebContentsImpl) mActivityTestRule.getWebContents()).selectAll());
+        CriteriaHelper.pollUiThread(
+                () -> mTestData.hasReceivedSelectionEvent(), TEXT_SELECTION_ERROR);
+
+        assertExtendedSelection(
+                rootVvid,
+                contenteditableVvid,
+                0,
+                OFFSET_TYPE_TEXT,
+                contenteditableVvid,
+                18,
+                OFFSET_TYPE_TEXT);
+
+        // Verify that the editable node itself reports the full selection.
+        AccessibilityNodeInfoCompat contentEditableNode =
+                createAccessibilityNodeInfo(contenteditableVvid);
+        Assert.assertEquals(
+                "The editable node must report the full text selection start.",
+                0,
+                contentEditableNode.getTextSelectionStart());
+        Assert.assertEquals(
+                "The editable node must report the full text selection end.",
+                18,
+                contentEditableNode.getTextSelectionEnd());
     }
 
     /** Test extended selection at the beginning and end of an anchor (e.g. image). */
