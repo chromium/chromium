@@ -51,11 +51,18 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator,
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Batch upload promos in the profile menu identity header are only shown
+  // if the user opened the menu via the avatar promo pill. Outside of pill
+  // expansions, batch upload promos are suppressed so they don't overshadow
+  // other promos (such as History Sync), while still fetching local data count
+  // to show the batch upload row item in the menu.
+  const bool allow_batch_upload_promos = from_avatar_promo;
   signin::ComputeProfileMenuAvatarButtonPromoInfo(
       *GetProfile(),
       base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
                      weak_pointer_factory_.GetWeakPtr(), is_source_accelerator,
-                     from_avatar_promo));
+                     from_avatar_promo),
+      allow_batch_upload_promos);
 #else
   ShowWithPromoResults(is_source_accelerator, from_avatar_promo);
 #endif

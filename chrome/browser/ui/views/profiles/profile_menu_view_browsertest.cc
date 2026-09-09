@@ -279,9 +279,21 @@ class ProfileMenuViewTestBase {
                     base::Unretained(this)))),
         override_testing_factories_(override_testing_factories) {}
 
-  void OpenProfileMenu(BrowserWindowInterface* target_browser = nullptr) {
+  void OpenProfileMenu(BrowserWindowInterface* target_browser = nullptr,
+                       bool from_avatar_promo = false) {
     if (target_browser == nullptr) {
       target_browser = target_browser_;
+    }
+    if (from_avatar_promo) {
+      auto* coordinator = ProfileMenuCoordinator::From(target_browser);
+      ASSERT_TRUE(coordinator);
+      coordinator->Show(/*is_source_accelerator=*/false,
+                        /*from_avatar_promo=*/true);
+      ASSERT_TRUE(base::test::RunUntil(
+          [coordinator]() { return coordinator->IsShowing(); }));
+      ASSERT_NO_FATAL_FAILURE(WaitForMenuToBeActive(profile_menu_view()));
+      profile_menu_view()->GetFocusManager()->ClearFocus();
+      return;
     }
     // Click the avatar button to open the menu.
     AvatarToolbarButtonTestAccessor avatar_accessor(target_browser);
@@ -1349,8 +1361,9 @@ class ProfileMenuClickTest : public InProcessBrowserTest,
   }
 
   // This should be called in the test body.
-  void RunTest() {
-    ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+  void RunTest(bool from_avatar_promo = false) {
+    ASSERT_NO_FATAL_FAILURE(
+        OpenProfileMenu(/*target_browser=*/nullptr, from_avatar_promo));
 
     // These tests don't care about performing the actual menu actions, only
     // about the histogram recorded.
@@ -2276,7 +2289,41 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
                                                    /*item_count=*/5);
 
-  RunTest();
+  RunTest(/*from_avatar_promo=*/true);
+}
+
+// List of actionable items in the correct order as they appear in the menu when
+// batch upload is eligible, but the menu is opened normally (outside pill
+// expansion). Only the row button to upload data is shown, not the primary
+// promo button.
+constexpr std::array kActionableItems_WithBatchUploadOnlyRowButton = {
+    ProfileMenuViewBase::ActionableItem::kBatchUploadButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kSignoutButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kBatchUploadButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_WithBatchUploadOnlyRowButton,
+    ProfileMenuClickTest_WithBatchUploadOnlyRowButton,
+    /*enabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {syncer::kReplaceSyncPromosWithSignInPromos,
+         switches::kSigninWindows10DepreciationStateBypassForTesting}),
+    /*disabled_features=*/{}) {
+  Signin();
+  signin_util::EnableHistorySync(sync_service());
+  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
+                                                   /*item_count=*/5);
+
+  RunTest(/*from_avatar_promo=*/false);
 }
 
 // List of actionable items in the correct order as they appear in the menu. If
@@ -2312,7 +2359,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
                                                    /*item_count=*/5);
 
-  RunTest();
+  RunTest(/*from_avatar_promo=*/true);
 }
 
 // List of actionable items in the correct order as they appear in the menu. If
@@ -2353,7 +2400,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
                                                    /*item_count=*/5);
 
-  RunTest();
+  RunTest(/*from_avatar_promo=*/true);
 }
 
 // List of actionable items in the correct order as they appear in the menu in

@@ -129,9 +129,13 @@ inline constexpr signin_metrics::AccessPoint
 // Based on the `profile` current state, compute the data to be shown for the
 // promos, if any, based on the promo priority and the profile state. The promo
 // between the ProfileMenu and the AvatarButton should always be aligned.
+// If `allow_batch_upload_promos` is false, batch upload promos will not be
+// considered for `ProfileMenuAvatarButtonPromoInfo::type` (though
+// `local_data_count` is still computed).
 void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
-    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback);
+    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback,
+    bool allow_batch_upload_promos);
 
 // This class manages the Signin State and Used/Shown count for the AvatarButton
 // promos based on the `ProfileMenuAvatarButtonPromoInfo::Type` that is

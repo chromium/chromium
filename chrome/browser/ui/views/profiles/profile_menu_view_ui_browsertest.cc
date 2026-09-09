@@ -101,6 +101,7 @@ struct ProfileMenuViewPixelTestParam {
   bool with_cross_device_signin_promo = false;
   bool with_cross_device_signin_new_badge = false;
   bool with_account_preview_preference = false;
+  bool from_avatar_promo = false;
 
   // Features and parameters that are enabled in addition to the features
   // enabled by default.
@@ -309,6 +310,7 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .pixel_test_param = {.test_suffix = "BatchUploadPrimaryPromo"},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
         .with_local_data = WithLocalData::kMultipleLocalData,
+        .from_avatar_promo = true,
         .extra_features_and_params =
             {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
     },
@@ -316,6 +318,7 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .pixel_test_param = {.test_suffix = "BatchUploadBookmarksPrimaryPromo"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kWithBookmarksLocalData,
+        .from_avatar_promo = true,
         .extra_features_and_params =
             {{switches::kSigninWindows10DepreciationStateBypassForTesting, {}}},
     },
@@ -324,6 +327,7 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
             {.test_suffix = "BatchUploadWindows10DepreciationPrimaryPromo"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_local_data = WithLocalData::kMultipleLocalData,
+        .from_avatar_promo = true,
         .extra_features_and_params =
             {{switches::kSigninWindows10DepreciationStateForTesting, {}}},
     },
@@ -840,10 +844,17 @@ class ProfileMenuViewPixelTest
 
  private:
   void OpenProfileMenu() {
-    // Click the avatar button to open the menu.
-    AvatarToolbarButtonTestAccessor avatar_accessor(browser());
-    ASSERT_TRUE(avatar_accessor.GetEnabled());
-    avatar_accessor.Click();
+    if (GetParam().from_avatar_promo) {
+      auto* coordinator = ProfileMenuCoordinator::From(browser());
+      ASSERT_TRUE(coordinator);
+      coordinator->Show(/*is_source_accelerator=*/false,
+                        /*from_avatar_promo=*/true);
+    } else {
+      // Click the avatar button to open the menu.
+      AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+      ASSERT_TRUE(avatar_accessor.GetEnabled());
+      avatar_accessor.Click();
+    }
 
     ASSERT_TRUE(profile_menu_view());
     profile_menu_view()->set_close_on_deactivate(false);

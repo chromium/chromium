@@ -1946,7 +1946,8 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
   }
 
   EXPECT_CALL(result_callback, Run(expected_info));
-  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/true);
 }
 
 TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
@@ -1959,7 +1960,72 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
               Run(ProfileMenuAvatarButtonPromoInfo{
                   .type = GetParam(),
                   .local_data_count = GetLocalDataCount(GetParam())}));
-  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/true);
+}
+
+TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
+       DisallowBatchUploadPromos) {
+  ASSERT_NO_FATAL_FAILURE(SetRequirementsForInputPromo(GetParam()));
+
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
+      result_callback;
+
+  ProfileMenuAvatarButtonPromoInfo expected_info;
+  switch (GetParam()) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      // In SetRequirementsForInputPromo, history sync was not turned off (or
+      // was explicitly enabled), so when batch upload promos are disallowed, no
+      // promo type is returned.
+      expected_info = {.type = std::nullopt,
+                       .local_data_count = GetLocalDataCount(GetParam())};
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // Non-batch upload promos are unaffected by allow_batch_upload_promos.
+      expected_info = {.type = GetParam(),
+                       .local_data_count = GetLocalDataCount(GetParam())};
+      break;
+  }
+
+  EXPECT_CALL(result_callback, Run(expected_info));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/false);
+}
+
+TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
+       BatchUploadPromoDisallowedFallsThroughToHistorySync) {
+  switch (GetParam()) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      GTEST_SKIP() << "Not a batch upload promo type.";
+  }
+
+  ASSERT_NO_FATAL_FAILURE(SetRequirementsForInputPromo(GetParam()));
+  // Explicitly ensure history sync is off so history sync promo is eligible.
+  SetHistorySyncPreferenceState(/*is_type_on=*/false);
+
+  // When allow_batch_upload_promos is false, any batch upload promo falls
+  // through to history sync!
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
+      result_callback;
+  EXPECT_CALL(
+      result_callback,
+      Run(ProfileMenuAvatarButtonPromoInfo{
+          .type = ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+          .local_data_count = GetLocalDataCount(GetParam())}));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/false);
 }
 
 TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
@@ -1970,7 +2036,8 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
   base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
   EXPECT_CALL(result_callback, Run(ProfileMenuAvatarButtonPromoInfo()));
-  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/true);
 }
 
 TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
@@ -1984,7 +2051,8 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
   base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
   EXPECT_CALL(result_callback, Run(ProfileMenuAvatarButtonPromoInfo()));
-  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get());
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1998,7 +2066,6 @@ INSTANTIATE_TEST_SUITE_P(
              kBatchUploadWindows10DepreciationPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo}));
-
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

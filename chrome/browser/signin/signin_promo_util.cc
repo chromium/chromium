@@ -342,6 +342,7 @@ bool WasPreviouslySyncingWithPrimaryAccount(Profile* profile) {
 ProfileMenuAvatarButtonPromoInfo
 ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
     Profile* profile,
+    bool allow_batch_upload_promos,
     std::map<syncer::DataType, syncer::LocalDataDescription> local_map_result) {
   CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 
@@ -360,23 +361,28 @@ ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
         return current_count + local_data.second.local_data_models.size();
       });
 
-  // Batch Upload promo: Windows 10 depreciation promo.
-  if (local_data_count > 0 && switches::IsSigninWindows10DepreciationState()) {
-    return {.type = ProfileMenuAvatarButtonPromoInfo::Type::
-                kBatchUploadWindows10DepreciationPromo,
-            .local_data_count = local_data_count};
-  }
-
-  // Batch Upload Bookmarks promo: for users that have local bookmarks and were
-  // previously syncing with the current primary account.
-  if (WasPreviouslySyncingWithPrimaryAccount(profile)) {
-    if (auto it = local_map_result.find(syncer::BOOKMARKS);
-        it != local_map_result.end() && !it->second.local_data_models.empty()) {
+  if (allow_batch_upload_promos) {
+    // Batch Upload promo: Windows 10 depreciation promo.
+    if (local_data_count > 0 &&
+        switches::IsSigninWindows10DepreciationState()) {
       return {.type = ProfileMenuAvatarButtonPromoInfo::Type::
-                  kBatchUploadBookmarksPromo,
+                  kBatchUploadWindows10DepreciationPromo,
               .local_data_count = local_data_count};
     }
+
+    // Batch Upload Bookmarks promo: for users that have local bookmarks and
+    // were previously syncing with the current primary account.
+    if (WasPreviouslySyncingWithPrimaryAccount(profile)) {
+      if (auto it = local_map_result.find(syncer::BOOKMARKS);
+          it != local_map_result.end() &&
+          !it->second.local_data_models.empty()) {
+        return {.type = ProfileMenuAvatarButtonPromoInfo::Type::
+                    kBatchUploadBookmarksPromo,
+                .local_data_count = local_data_count};
+      }
+    }
   }
+
   // History sync promo.
   if (signin_util::ShouldShowHistorySyncOptinScreen(*profile) ==
           signin_util::ShouldShowHistorySyncOptinResult::kShow &&
@@ -386,10 +392,12 @@ ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
             .local_data_count = local_data_count};
   }
 
-  // Regular Batch Upload promo: for users that have any local data type.
-  if (local_data_count > 0) {
-    return {.type = ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
-            .local_data_count = local_data_count};
+  if (allow_batch_upload_promos) {
+    // Regular Batch Upload promo: for users that have any local data type.
+    if (local_data_count > 0) {
+      return {.type = ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
+              .local_data_count = local_data_count};
+    }
   }
 
   // No promo.
@@ -1019,8 +1027,8 @@ void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
 
 void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
-    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>
-        result_callback) {
+    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback,
+    bool allow_batch_upload_promos) {
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     BatchUploadService* batch_upload =
         BatchUploadServiceFactory::GetForProfile(&profile);
@@ -1034,7 +1042,7 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
     batch_upload->GetLocalDataDescriptionsForAvailableTypes(
         base::BindOnce(
             &ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult,
-            &profile)
+            &profile, allow_batch_upload_promos)
             .Then(std::move(result_callback)));
     return;
   }

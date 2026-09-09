@@ -1212,7 +1212,8 @@ class PromoStateProviderCoordinator
         base::BindOnce(&PromoStateProviderCoordinator::OnPromoTypeResult,
                        base::Unretained(this)));
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
-        profile_.get(), promo_request_cancelable_callback_.callback());
+        profile_.get(), promo_request_cancelable_callback_.callback(),
+        /*allow_batch_upload_promos=*/true);
   }
 
   void OnPromoTypeResult(signin::ProfileMenuAvatarButtonPromoInfo promo_info) {
@@ -1282,7 +1283,8 @@ class PromoStateProviderCoordinator
         &PromoStateProviderCoordinator::MaybeCollapsePromoAfterValidation,
         base::Unretained(this)));
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
-        profile_.get(), promo_validation_cancelable_callback_.callback());
+        profile_.get(), promo_validation_cancelable_callback_.callback(),
+        /*allow_batch_upload_promos=*/true);
   }
 
   // Callback to the validation promo calculation.
