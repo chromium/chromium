@@ -36,6 +36,9 @@ class DataSaverWebAPIsBrowserTest : public InProcessBrowserTest {
                          BrowserWindowInterface* browser = nullptr) {
     if (!browser)
       browser = InProcessBrowserTest::browser();
+    browser->GetTabStripModel()
+        ->GetActiveWebContents()
+        ->NotifyPreferencesChanged();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser, test_server_.GetURL("/net_info.html")));
     EXPECT_EQ(expected_header_set,
@@ -58,9 +61,7 @@ class DataSaverWebAPIsBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer test_server_;
 };
 
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest,
-                       DISABLED_DataSaverEnabledJS) {
+IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest, DataSaverEnabledJS) {
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
   VerifySaveDataAPI(true);
 }
@@ -70,9 +71,7 @@ IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest, DataSaverDisabledJS) {
   VerifySaveDataAPI(false);
 }
 
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest,
-                       DISABLED_DataSaverToggleJS) {
+IN_PROC_BROWSER_TEST_F(DataSaverWebAPIsBrowserTest, DataSaverToggleJS) {
   data_saver::OverrideIsDataSaverEnabledForTesting(false);
   VerifySaveDataAPI(false);
 

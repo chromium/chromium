@@ -273,6 +273,16 @@ class DataSaverWithServerBrowserTest : public InProcessBrowserTest {
     test_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
+  void SetDataSaverEnabledForTesting(bool enabled) {
+    data_saver::OverrideIsDataSaverEnabledForTesting(enabled);
+    if (browser() && browser()->tab_strip_model()->GetActiveWebContents()) {
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->NotifyPreferencesChanged();
+    }
+  }
+
   void TearDown() override {
     data_saver::ResetIsDataSaverEnabledForTesting();
     InProcessBrowserTest::TearDown();
@@ -303,11 +313,10 @@ class DataSaverWithServerBrowserTest : public InProcessBrowserTest {
   std::string expected_save_data_header_;
 };
 
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, DISABLED_ReloadPage) {
+IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, ReloadPage) {
   Init();
   ASSERT_TRUE(test_server_->Start());
-  data_saver::OverrideIsDataSaverEnabledForTesting(true);
+  SetDataSaverEnabledForTesting(true);
 
   expected_save_data_header_ = "on";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -322,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, DISABLED_ReloadPage) {
 
   // Reload the webpage with data saver disabled, and expect all the resources
   // will get no save-data header.
-  data_saver::OverrideIsDataSaverEnabledForTesting(false);
+  SetDataSaverEnabledForTesting(false);
   expected_save_data_header_ = "";
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -353,6 +362,13 @@ class DataSaverForWorkerBrowserTest : public InProcessBrowserTest,
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  void SetDataSaverEnabledForTesting(bool enabled) {
+    data_saver::OverrideIsDataSaverEnabledForTesting(enabled);
+    if (GetActiveWebContents()) {
+      GetActiveWebContents()->NotifyPreferencesChanged();
+    }
+  }
+
   static bool IsEnabledDataSaver() { return GetParam(); }
 
   void TearDown() override {
@@ -367,10 +383,8 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Checks that the Save-Data header is sent in a request for dedicated worker
 // script when the data saver is enabled.
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
-                       DISABLED_DedicatedWorker) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, DedicatedWorker) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
 
   const std::string kWorkerScript = R"(postMessage('DONE');)";
   net::test_server::HttpRequest::HeaderMap header_map;
@@ -401,7 +415,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 #define MAYBE_SharedWorker SharedWorker
 #endif
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, MAYBE_SharedWorker) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
 
   const std::string kWorkerScript =
       R"(self.onconnect = e => { e.ports[0].postMessage('DONE'); };)";
@@ -426,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, MAYBE_SharedWorker) {
 // Checks that the Save-Data header is not sent in a request for a service
 // worker script when it's disabled.
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Register) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   net::test_server::HttpRequest::HeaderMap header_map;
   base::RunLoop loop;
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
@@ -456,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Register) {
 // Checks that the Save-Data header is not sent in a request for a service
 // worker script when it's disabled.
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Update) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   net::test_server::HttpRequest::HeaderMap header_map;
   base::RunLoop loop;
   // Wait for two requests to capture the request header for updating.
@@ -488,10 +502,8 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Update) {
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a dedicated worker.
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
-                       DISABLED_FetchFromWorker) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, FetchFromWorker) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -504,10 +516,8 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a shared worker.
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
-                       DISABLED_FetchFromSharedWorker) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, FetchFromSharedWorker) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -521,10 +531,8 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a service worker.
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
-                       DISABLED_FetchFromServiceWorker) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, FetchFromServiceWorker) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -540,11 +548,9 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a page controlled by a service worker without fetch handler.
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(
-    DataSaverForWorkerBrowserTest,
-    DISABLED_FetchFromServiceWorkerControlledPage_NoFetchHandler) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
+                       FetchFromServiceWorkerControlledPage_NoFetchHandler) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -564,11 +570,9 @@ IN_PROC_BROWSER_TEST_P(
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a page controlled by a service worker with fetch handler but no respondWith.
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(
-    DataSaverForWorkerBrowserTest,
-    DISABLED_FetchFromServiceWorkerControlledPage_PassThrough) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
+                       FetchFromServiceWorkerControlledPage_PassThrough) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -590,11 +594,9 @@ IN_PROC_BROWSER_TEST_P(
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a page controlled by a service worker with fetch handler and responds with
 // fetch().
-// TODO(crbug.com/40250644): Fix and enable test.
-IN_PROC_BROWSER_TEST_P(
-    DataSaverForWorkerBrowserTest,
-    DISABLED_FetchFromServiceWorkerControlledPage_RespondWithFetch) {
-  data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
+IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
+                       FetchFromServiceWorkerControlledPage_RespondWithFetch) {
+  SetDataSaverEnabledForTesting(IsEnabledDataSaver());
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
