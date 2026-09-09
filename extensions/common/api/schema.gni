@@ -84,7 +84,7 @@ if (enable_extensions) {
     "networking_private.webidl",
     "printer_provider_internal.webidl",
     "printer_provider.webidl",
-    "socket.idl",
+    "socket.webidl",
     "sockets_tcp_server.webidl",
     "sockets_tcp.webidl",
     "sockets_udp.webidl",

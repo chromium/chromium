@@ -1,0 +1,379 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum SocketType {
+  "tcp",
+  "udp"
+};
+
+// The socket options.
+dictionary CreateOptions {
+};
+
+dictionary CreateInfo {
+  // The id of the newly created socket.
+  required long socketId;
+};
+
+dictionary AcceptInfo {
+  required long resultCode;
+
+  // The id of the accepted socket.
+  long socketId;
+};
+
+dictionary ReadInfo {
+  // The resultCode returned from the underlying read() call.
+  required long resultCode;
+
+  required ArrayBuffer data;
+};
+
+dictionary WriteInfo {
+  // The number of bytes sent, or a negative error code.
+  required long bytesWritten;
+};
+
+dictionary RecvFromInfo {
+  // The resultCode returned from the underlying recvfrom() call.
+  required long resultCode;
+
+  required ArrayBuffer data;
+
+  // The address of the remote machine.
+  required DOMString address;
+
+  required long port;
+};
+
+dictionary SocketInfo {
+  // The type of the passed socket. This will be <code>tcp</code> or
+  // <code>udp</code>.
+  required SocketType socketType;
+
+  // Whether or not the underlying socket is connected.
+  //
+  // For <code>tcp</code> sockets, this will remain true even if the remote
+  // peer has disconnected. Reading or writing to the socket may then result
+  // in an error, hinting that this socket should be disconnected via
+  // <code>disconnect()</code>.
+  //
+  // For <code>udp</code> sockets, this just represents whether a default
+  // remote address has been specified for reading and writing packets.
+  required boolean connected;
+
+  // If the underlying socket is connected, contains the IPv4/6 address of
+  // the peer.
+  DOMString peerAddress;
+
+  // If the underlying socket is connected, contains the port of the
+  // connected peer.
+  long peerPort;
+
+  // If the underlying socket is bound or connected, contains its local
+  // IPv4/6 address.
+  DOMString localAddress;
+
+  // If the underlying socket is bound or connected, contains its local port.
+  long localPort;
+};
+
+dictionary NetworkInterface {
+  // The underlying name of the adapter. On *nix, this will typically be
+  // "eth0", "lo", etc.
+  required DOMString name;
+
+  // The available IPv4/6 address.
+  required DOMString address;
+
+  // The prefix length
+  required long prefixLength;
+};
+
+dictionary TLSVersionConstraints {
+  // The minimum and maximum acceptable versions of TLS. Supported values are
+  // <code>tls1.2</code> or <code>tls1.3</code>.
+  //
+  // The values <code>tls1</code> and <code>tls1.1</code> are no longer
+  // supported. If |min| is set to one of these values, it will be silently
+  // clamped to <code>tls1.2</code>. If |max| is set to one of those values,
+  // or any other unrecognized value, it will be silently ignored.
+  DOMString min;
+  DOMString max;
+};
+
+dictionary SecureOptions {
+  TLSVersionConstraints tlsVersion;
+};
+
+callback ConnectCallback = undefined (long result);
+
+callback BindCallback = undefined (long result);
+
+callback ReadCallback = undefined (ReadInfo readInfo);
+
+callback WriteCallback = undefined (WriteInfo writeInfo);
+
+callback RecvFromCallback = undefined (RecvFromInfo recvFromInfo);
+
+callback SendToCallback = undefined (WriteInfo writeInfo);
+
+callback ListenCallback = undefined (long result);
+
+callback AcceptCallback = undefined (AcceptInfo acceptInfo);
+
+callback SetKeepAliveCallback = undefined (boolean result);
+
+callback SetNoDelayCallback = undefined (boolean result);
+
+callback JoinGroupCallback = undefined (long result);
+
+callback LeaveGroupCallback = undefined (long result);
+
+callback SetMulticastTimeToLiveCallback = undefined (long result);
+
+callback SetMulticastLoopbackModeCallback = undefined (long result);
+
+callback GetJoinedGroupsCallback = undefined (sequence<DOMString> groups);
+
+callback SecureCallback = undefined (long result);
+
+// Use the <code>chrome.socket</code> API to send and receive data over the
+// network using TCP and UDP connections. <b>Note:</b> Starting with Chrome 33,
+// this API is deprecated in favor of the $(ref:sockets.udp), $(ref:sockets.tcp) and
+// $(ref:sockets.tcpServer) APIs.
+interface Socket {
+  // Creates a socket of the specified type that will connect to the specified
+  // remote machine.
+  // |type|: The type of socket to create. Must be <code>tcp</code> or
+  // <code>udp</code>.
+  // |options|: The socket options.
+  // |Returns|: Called when the socket has been created.
+  // |PromiseValue|: createInfo
+  static Promise<CreateInfo> create(
+      SocketType type,
+      optional CreateOptions options);
+
+  // Destroys the socket. Each socket created should be destroyed after use.
+  // |socketId|: The socketId.
+  static undefined destroy(long socketId);
+
+  // Connects the socket to the remote machine (for a <code>tcp</code>
+  // socket). For a <code>udp</code> socket, this sets the default address
+  // which packets are sent to and read from for <code>read()</code>
+  // and <code>write()</code> calls.
+  // |socketId|: The socketId.
+  // |hostname|: The hostname or IP address of the remote machine.
+  // |port|: The port of the remote machine.
+  // |callback|: Called when the connection attempt is complete.
+  static undefined connect(
+      long socketId,
+      DOMString hostname,
+      long port,
+      ConnectCallback callback);
+
+  // Binds the local address for socket. Currently, it does not support
+  // TCP socket.
+  // |socketId|: The socketId.
+  // |address|: The address of the local machine.
+  // |port|: The port of the local machine.
+  // |callback|: Called when the bind attempt is complete.
+  static undefined bind(
+      long socketId,
+      DOMString address,
+      long port,
+      BindCallback callback);
+
+  // Disconnects the socket. For UDP sockets, <code>disconnect</code> is a
+  // non-operation but is safe to call.
+  // |socketId|: The socketId.
+  static undefined disconnect(long socketId);
+
+  // Reads data from the given connected socket.
+  // |socketId|: The socketId.
+  // |bufferSize|: The read buffer size.
+  // |callback|: Delivers data that was available to be read without
+  // blocking.
+  static undefined read(
+      long socketId,
+      optional long bufferSize,
+      ReadCallback callback);
+
+  // Writes data on the given connected socket.
+  // |socketId|: The socketId.
+  // |data|: The data to write.
+  // |callback|: Called when the write operation completes without blocking
+  // or an error occurs.
+  static undefined write(
+      long socketId,
+      ArrayBuffer data,
+      WriteCallback callback);
+
+  // Receives data from the given UDP socket.
+  // |socketId|: The socketId.
+  // |bufferSize|: The receive buffer size.
+  // |callback|: Returns result of the recvFrom operation.
+  static undefined recvFrom(
+      long socketId,
+      optional long bufferSize,
+      RecvFromCallback callback);
+
+  // Sends data on the given UDP socket to the given address and port.
+  // |socketId|: The socketId.
+  // |data|: The data to write.
+  // |address|: The address of the remote machine.
+  // |port|: The port of the remote machine.
+  // |callback|: Called when the send operation completes without blocking
+  // or an error occurs.
+  static undefined sendTo(
+      long socketId,
+      ArrayBuffer data,
+      DOMString address,
+      long port,
+      SendToCallback callback);
+
+  // This method applies to TCP sockets only.
+  // Listens for connections on the specified port and address. This
+  // effectively makes this a server socket, and client socket
+  // functions (connect, read, write) can no longer be used on this socket.
+  // |socketId|: The socketId.
+  // |address|: The address of the local machine.
+  // |port|: The port of the local machine.
+  // |backlog|: Length of the socket's listen queue.
+  // |callback|: Called when listen operation completes.
+  static undefined listen(
+      long socketId,
+      DOMString address,
+      long port,
+      optional long backlog,
+      ListenCallback callback);
+
+  // This method applies to TCP sockets only.
+  // Registers a callback function to be called when a connection is
+  // accepted on this listening server socket. Listen must be called first.
+  // If there is already an active accept callback, this callback will be
+  // invoked immediately with an error as the resultCode.
+  // |socketId|: The socketId.
+  // |callback|: The callback is invoked when a new socket is accepted.
+  static undefined accept(
+      long socketId,
+      AcceptCallback callback);
+
+  // Enables or disables the keep-alive functionality for a TCP connection.
+  // |socketId|: The socketId.
+  // |enable|: If true, enable keep-alive functionality.
+  // |delay|: Set the delay seconds between the last data packet received
+  // and the first keepalive probe. Default is 0.
+  // |callback|: Called when the setKeepAlive attempt is complete.
+  static undefined setKeepAlive(
+      long socketId,
+      boolean enable,
+      optional long delay,
+      SetKeepAliveCallback callback);
+
+  // Sets or clears <code>TCP_NODELAY</code> for a TCP connection. Nagle's
+  // algorithm will be disabled when <code>TCP_NODELAY</code> is set.
+  // |socketId|: The socketId.
+  // |noDelay|: If true, disables Nagle's algorithm.
+  // |callback|: Called when the setNoDelay attempt is complete.
+  static undefined setNoDelay(
+      long socketId,
+      boolean noDelay,
+      SetNoDelayCallback callback);
+
+  // Retrieves the state of the given socket.
+  // |socketId|: The socketId.
+  // |Returns|: Called when the state is available.
+  // |PromiseValue|: result
+  static Promise<SocketInfo> getInfo(long socketId);
+
+  // Retrieves information about local adapters on this system.
+  // |Returns|: Called when local adapter information is available.
+  // |PromiseValue|: result
+  static Promise<sequence<NetworkInterface>> getNetworkList();
+
+  // Join the multicast group and start to receive packets from that group.
+  // The socket must be of UDP type and must be bound to a local port
+  // before calling this method.
+  // |socketId|: The socketId.
+  // |address|: The group address to join. Domain names are not supported.
+  // |callback|: Called when the join group operation is done with an
+  // integer parameter indicating the platform-independent error code.
+  static undefined joinGroup(
+      long socketId,
+      DOMString address,
+      JoinGroupCallback callback);
+
+  // Leave the multicast group previously joined using <code>joinGroup</code>.
+  // It's not necessary to leave the multicast group before destroying the
+  // socket or exiting. This is automatically called by the OS.
+  //
+  // Leaving the group will prevent the router from sending multicast
+  // datagrams to the local host, presuming no other process on the host is
+  // still joined to the group.
+  //
+  // |socketId|: The socketId.
+  // |address|: The group address to leave. Domain names are not supported.
+  // |callback|: Called when the leave group operation is done with an
+  // integer parameter indicating the platform-independent error code.
+  static undefined leaveGroup(
+      long socketId,
+      DOMString address,
+      LeaveGroupCallback callback);
+
+  // Set the time-to-live of multicast packets sent to the multicast group.
+  //
+  // Calling this method does not require multicast permissions.
+  //
+  // |socketId|: The socketId.
+  // |ttl|: The time-to-live value.
+  // |callback|: Called when the configuration operation is done.
+  static undefined setMulticastTimeToLive(
+      long socketId,
+      long ttl,
+      SetMulticastTimeToLiveCallback callback);
+
+  // Set whether multicast packets sent from the host to the multicast
+  // group will be looped back to the host.
+  //
+  // Note: the behavior of <code>setMulticastLoopbackMode</code> is slightly
+  // different between Windows and Unix-like systems. The inconsistency
+  // happens only when there is more than one application on the same host
+  // joined to the same multicast group while having different settings on
+  // multicast loopback mode. On Windows, the applications with loopback off
+  // will not RECEIVE the loopback packets; while on Unix-like systems, the
+  // applications with loopback off will not SEND the loopback packets to
+  // other applications on the same host. See MSDN:
+  // https://learn.microsoft.com/en-us/windows/win32/winsock/ip-multicast-2
+  //
+  // Calling this method does not require multicast permissions.
+  //
+  // |socketId|: The socketId.
+  // |enabled|: Indicate whether to enable loopback mode.
+  // |callback|: Called when the configuration operation is done.
+  static undefined setMulticastLoopbackMode(
+      long socketId,
+      boolean enabled,
+      SetMulticastLoopbackModeCallback callback);
+
+  // Get the multicast group addresses the socket is currently joined to.
+  // |socketId|: The socketId.
+  // |callback|: Called with an array of strings of the result.
+  static undefined getJoinedGroups(
+      long socketId,
+      GetJoinedGroupsCallback callback);
+
+  // Start a TLS client connection over a connected TCP client socket.
+  // |socketId|: The connected socket to use.
+  // |options|: Constraints and parameters for the TLS connection.
+  // |callback|: Called when the TLS connection attempt is complete.
+  static undefined secure(
+      long socketId,
+      optional SecureOptions options,
+      SecureCallback callback);
+};
+
+partial interface Browser {
+  static attribute Socket socket;
+};
