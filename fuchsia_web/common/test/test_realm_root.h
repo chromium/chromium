@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_WEB_COMMON_TEST_TEST_REALM_ROOT_H_
 #define FUCHSIA_WEB_COMMON_TEST_TEST_REALM_ROOT_H_
 
+#include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <fuchsia/component/cpp/fidl.h>
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 
@@ -14,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/fuchsia/test_log_listener_safe.h"
 
 namespace test {
 
@@ -62,10 +64,14 @@ class TestRealmRoot {
   // Returns the realm prefix (e.g. "realm_builder:auto-<id>/").
   const std::string& realm_prefix() const { return realm_prefix_; }
 
+  // Provides access to the isolated archivist's `fuchsia.logger.Log` client.
+  fidl::Client<fuchsia_logger::Log>& log() { return log_client_; }
+
  private:
   void Connect();
   void ListenNext();
   void OnEvents(std::vector<fuchsia::component::Event> events);
+  void PrintLogMessage(const fuchsia_logger::LogMessage& message);
 
   std::optional<::component_testing::RealmRoot> realm_root_;
   std::string realm_prefix_;
@@ -73,6 +79,11 @@ class TestRealmRoot {
   fuchsia::component::EventStreamPtr event_stream_;
   base::flat_set<std::string> running_components_;
   base::flat_set<std::string> expected_abnormal_terminations_;
+
+  fidl::Client<fuchsia_logger::Log> log_client_;
+  base::TestLogListenerSafe log_listener_;
+  std::optional<fidl::ServerBinding<fuchsia_logger::LogListenerSafe>>
+      log_listener_binding_;
 };
 
 }  // namespace test

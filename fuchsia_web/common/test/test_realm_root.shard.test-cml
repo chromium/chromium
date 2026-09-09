@@ -11,4 +11,9 @@
       from: "parent",
     },
   ],
+  facets: {
+    "fuchsia.test": {
+      "deprecated-allowed-packages": [ "archivist-for-embedding" ],
+    },
+  },
 }
