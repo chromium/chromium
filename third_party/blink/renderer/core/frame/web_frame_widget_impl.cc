@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/ime/stylus_writing_gesture.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/editing/reveal_selection_scope.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/clipboard_event.h"
@@ -4404,6 +4405,14 @@ void WebFrameWidgetImpl::CommitText(
     int relative_cursor_pos,
     DOMNodeIdType target_dom_node_id) {
   TargetImeNodeFocusChangeScope focus_scope(target_dom_node_id);
+
+  std::optional<RevealSelectionScope> reveal_selection_scope;
+  if (LocalFrame* target_frame = !target_dom_node_id.is_null()
+                                     ? FocusedLocalFrameInWidget()
+                                     : nullptr) {
+    // If given a target node, keep the selection in view.
+    reveal_selection_scope.emplace(*target_frame);
+  }
 
   WebInputMethodController* controller = GetActiveWebInputMethodController();
   if (!controller) {

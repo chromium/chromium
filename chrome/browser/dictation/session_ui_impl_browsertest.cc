@@ -723,6 +723,35 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+                       OverlayButtonStaysWithinTargetInputField) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textinput.html");
+  gfx::Rect target_bounds;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    ObserveSessionStateChanges(),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id", target_bounds),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal,
+        "This string is longer than the size of the input element."),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
+    WaitForSessionState(SessionState::kInactive),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
                        OverlayPositionUpdatedOnFullscreen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
