@@ -494,6 +494,17 @@ source_set("ui_impl") {
   if (enable_extensions_core) {
     deps +=
         [ "//chrome/browser/resources/contextual_tasks/extension:resources" ]
+    if (!is_android) {
+      sources += [
+        "contextual_tasks_extensions_container.cc",
+        "contextual_tasks_extensions_container.h",
+      ]
+      deps += [
+        "//chrome/browser/ui/views/extensions:extensions_container_views",
+        "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
+        "//chrome/browser/ui/views/extensions:extensions_menu_view",
+      ]
+    }
   }
 
   if (enable_guest_view && !enable_extensions_core) {
@@ -663,6 +674,9 @@ source_set("unit_tests") {
 
   if (enable_extensions_core) {
     sources += [ "contextual_tasks_url_loader_throttle_unittest.cc" ]
+    if (!is_android) {
+      sources += [ "contextual_tasks_extensions_container_unittest.cc" ]
+    }
   }
 
   deps = [
