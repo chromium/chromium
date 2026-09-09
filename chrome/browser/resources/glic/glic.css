@@ -313,16 +313,16 @@ cr-progress {
 }
 
 .placeholder {
-  background-color: var(--cr-fallback-color-surface1);
-  animation: 1s infinite ease-in-out opacity-fade;
+  background-color: var(--cr-fallback-color-surface3);
+  animation: 1.5s infinite ease-in-out opacity-fade;
 }
 
 @keyframes opacity-fade {
   0% {
     opacity: 100%;
   }
-  33% {
-    opacity: 50%;
+  66% {
+    opacity: 60%;
   }
   100% {
     opacity: 100%;
@@ -334,23 +334,11 @@ cr-progress {
 }
 
 .p3 {
-  animation-delay: 0.2s;
-}
-
-.p4 {
   animation-delay: 0.3s;
 }
 
-.p5 {
-  animation-delay: 0.4s;
-}
-
-.p6 {
+.p4 {
   animation-delay: 0.5s;
-}
-
-.p7 {
-  animation-delay: 0.6s;
 }
 
 .overlay {
