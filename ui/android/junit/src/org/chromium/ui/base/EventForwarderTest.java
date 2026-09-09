@@ -50,6 +50,7 @@ import java.io.IOException;
 
 /** Tests logic in the {@link EventForwarder} class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(UiAndroidFeatures.HAS_CONTENT_URI)
 public class EventForwarderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -702,7 +703,7 @@ public class EventForwarderTest {
                         eq(14.0f), // screenX
                         eq(21.0f), // screenY
                         eq(mimeTypes),
-                        eq(""), // content
+                        anyBoolean(), // hasFiles
                         argThat(
                                 (String[][] filenames) -> {
                                     if (filenames.length != expectedFilenames.length) {

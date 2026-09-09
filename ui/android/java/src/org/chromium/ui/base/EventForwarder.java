@@ -25,6 +25,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -697,11 +698,18 @@ public class EventForwarder {
             mimeTypes[i] = clipDescription.getMimeType(i);
         }
 
+        boolean hasFiles = false;
+        if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.HAS_CONTENT_URI)) {
+            AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate != null && clipDescription != null) {
+                hasFiles = delegate.hasContentUri(clipDescription);
+            }
+        }
+
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
             return mIsDragDropEnabled;
         }
 
-        String content = "";
         List<String[]> filenames = new ArrayList<String[]>();
         String text = null;
         String html = null;
@@ -748,14 +756,12 @@ public class EventForwarder {
                         html = temp.toString();
                     }
                 }
-                content = "";
             } catch (UndeclaredThrowableException e) {
                 // When dropped item is not successful for whatever reason, catch before we crash.
                 // While ClipData.Item does capture most common failures, there could be exceptions
                 // that's wrapped by Chrome classes (e.g. ServiceTracingProxyProvider) which changed
                 // the exception signiture. See crbug.com/1406777.
                 Log.e(TAG, "Parsing clip data content failed.", e);
-                content = "";
             }
             RecordHistogram.recordCount100Histogram(
                     "Android.DragDrop.Files.Count", filenames.size());
@@ -779,7 +785,7 @@ public class EventForwarder {
                         screenX,
                         screenY,
                         mimeTypes,
-                        content,
+                        hasFiles,
                         filenames.toArray(new String[][] {}),
                         text,
                         html,
@@ -1055,7 +1061,7 @@ public class EventForwarder {
                 float screenX,
                 float screenY,
                 String[] mimeTypes,
-                String content,
+                boolean hasFiles,
                 String[][] filenames,
                 @Nullable String text,
                 @Nullable String html,

@@ -41,6 +41,7 @@
 #include "content/public/common/drop_data.h"
 #include "net/base/mime_util.h"
 #include "ui/android/overscroll_refresh_handler.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
@@ -552,10 +553,19 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
     case DragEventJni::ACTION_DRAG_ENTERED: {
       drag_metadata_.clear();
       for (const std::u16string& mime_type : event.mime_types()) {
-        if (mime_type == ui::kMimeTypePlainText16 ||
-            mime_type == ui::kMimeTypeHtml16 ||
-            mime_type == ui::kMimeTypeMozillaUrl16 ||
-            mime_type == kMimeTypeIntent || mime_type == kMimeTypeChromeLink) {
+        // The old Android ClipData API does not let you detect whether URIs
+        // (files) are included in drag-start event, only in drop event.  We
+        // guess that text, html, and some other types are not files.  New API
+        // ClipDescription.hasContentUri() provides this information.
+        bool should_guess = true;
+        if (base::FeatureList::IsEnabled(ui::kHasContentUri)) {
+          should_guess = !event.has_files();
+        }
+        if (should_guess && (mime_type == ui::kMimeTypePlainText16 ||
+                             mime_type == ui::kMimeTypeHtml16 ||
+                             mime_type == ui::kMimeTypeMozillaUrl16 ||
+                             mime_type == kMimeTypeIntent ||
+                             mime_type == kMimeTypeChromeLink)) {
           drag_metadata_.push_back(DropData::Metadata::CreateForMimeType(
               DropData::Kind::STRING, mime_type));
         } else if (mime_type == ui::kMimeTypeDataTransferCustomData16) {

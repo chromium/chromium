@@ -215,7 +215,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
                                  float screen_x,
                                  float screen_y,
                                  const JavaRef<jobjectArray>& j_mimeTypes,
-                                 const JavaRef<jstring>& j_content,
+                                 bool has_files,
                                  const JavaRef<jobjectArray>& j_filenames,
                                  const JavaRef<jstring>& j_text,
                                  const JavaRef<jstring>& j_html,
@@ -229,7 +229,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
   AppendJavaStringArrayToStringVector(env, j_mimeTypes, &mime_types);
 
   DragEventAndroid event(env, action, location, root_location, mime_types,
-                         j_content, j_filenames, j_text, j_html, j_url,
+                         has_files, j_filenames, j_text, j_html, j_url,
                          j_customData, j_effectAllowed);
   view_->OnDragEvent(event);
 }

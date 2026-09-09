@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Context.BindServiceFlags;
 import android.content.ServiceConnection;
@@ -524,6 +525,15 @@ public interface AconfigFlaggedApiDelegate {
 
     /** Returns whether the new strict occlusion API is available. */
     default boolean isStrictOcclusionAvailable() {
+        return false;
+    }
+
+    /**
+     * Returns whether the ClipDescription has a content-URI.
+     *
+     * @param clipDescription ClipDescription.
+     */
+    default boolean hasContentUri(ClipDescription clipDescription) {
         return false;
     }
 }

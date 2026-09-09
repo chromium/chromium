@@ -22,6 +22,8 @@ namespace ui {
 
 // Event class used to carry the info from Java DragEvent through native.
 // All coordinates are in DIPs.
+// Android only includes `filenames` in the drop event, so `has_files` is used
+// to indicate when the drag is for files.
 class EVENTS_EXPORT DragEventAndroid {
  public:
   DragEventAndroid(JNIEnv* env,
@@ -29,7 +31,7 @@ class EVENTS_EXPORT DragEventAndroid {
                    const gfx::PointF& location,
                    const gfx::PointF& screen_location,
                    const std::vector<std::u16string>& mime_types,
-                   const base::android::JavaRef<jstring>& content,
+                   bool has_files,
                    const base::android::JavaRef<jobjectArray>& filenames,
                    const base::android::JavaRef<jstring>& text,
                    const base::android::JavaRef<jstring>& html,
@@ -46,11 +48,11 @@ class EVENTS_EXPORT DragEventAndroid {
   const gfx::PointF& location() const { return location_; }
   const gfx::PointF& screen_location() const { return screen_location_; }
   const std::vector<std::u16string>& mime_types() const { return *mime_types_; }
+  bool has_files() const { return has_files_; }
 
   base::android::ScopedJavaLocalRef<jstring> GetJavaCustomData() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaEffectAllowed() const;
 
-  base::android::ScopedJavaLocalRef<jstring> GetJavaContent() const;
   base::android::ScopedJavaLocalRef<jobjectArray> GetJavaFilenames() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaText() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaHtml() const;
@@ -69,7 +71,7 @@ class EVENTS_EXPORT DragEventAndroid {
   gfx::PointF screen_location_;
   const raw_ref<const std::vector<std::u16string>> mime_types_;
   // The Java reference to the drop items to avoid unnecessary copying.
-  base::android::ScopedJavaGlobalRef<jstring> content_;
+  bool has_files_;
   base::android::ScopedJavaGlobalRef<jobjectArray> filenames_;
   base::android::ScopedJavaGlobalRef<jstring> text_;
   base::android::ScopedJavaGlobalRef<jstring> html_;

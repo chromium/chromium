@@ -134,10 +134,10 @@ TEST_F(WebContentsViewAndroidTest, DropDataRestoredFromJava) {
 
   // Action 3 is ACTION_DROP.
   ui::DragEventAndroid drop_event(
-      env, 3, gfx::PointF(), gfx::PointF(), mime_types,
-      base::android::JavaRef<jstring>(), base::android::JavaRef<jobjectArray>(),
+      env, 3, gfx::PointF(), gfx::PointF(), mime_types, false,
+      base::android::JavaRef<jobjectArray>(), base::android::JavaRef<jstring>(),
       base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
-      base::android::JavaRef<jstring>(), j_custom_data, j_effect_allowed);
+      j_custom_data, j_effect_allowed);
 
   view()->OnDragEvent(drop_event);
 

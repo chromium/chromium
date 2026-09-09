@@ -32,6 +32,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kClipboardOversizedPayloadProvider,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
+    &ui::kHasContentUri,
     &ui::kMaximumWindowForGestureNavDetection,
     &ui::kPointerLockMouseScaling,
     &ui::kRefactorMinWidthContextOverride,
