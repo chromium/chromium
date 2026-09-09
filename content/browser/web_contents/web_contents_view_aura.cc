@@ -824,6 +824,12 @@ void WebContentsViewAura::PrepareDropData(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+void WebContentsViewAura::ClearDragStateOnStartFailure(
+    RenderWidgetHostImpl* source_rwh) {
+  drag_security_info_.OnDragEnded();
+  web_contents_->SystemDragEnded(source_rwh);
+}
+
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
@@ -1228,7 +1234,7 @@ void WebContentsViewAura::StartDragging(
     return;
   }
   if (!aura::client::GetDragDropClient(root_window)) {
-    web_contents_->SystemDragEnded(source_rwh);
+    ClearDragStateOnStartFailure(source_rwh);
     return;
   }
 
@@ -1246,7 +1252,7 @@ void WebContentsViewAura::StartDragging(
   // Synchronous policy check.
   // If drag is not allowed, it means the policy blocked the action.
   if (!IsDragAllowedByDataControlPolicy(source_endpoint, drop_data)) {
-    web_contents_->SystemDragEnded(source_rwh);
+    ClearDragStateOnStartFailure(source_rwh);
     return;
   }
 
@@ -1294,7 +1300,7 @@ void WebContentsViewAura::StartDragging(
          !env->is_touch_down()) ||
         (event_info.source == ui::mojom::DragEventSource::kMouse &&
          !env->IsMouseButtonDown())) {
-      web_contents_->SystemDragEnded(source_rwh);
+      ClearDragStateOnStartFailure(source_rwh);
       return;
     }
     if (event_info.source == ui::mojom::DragEventSource::kTouch) {
@@ -1308,7 +1314,7 @@ void WebContentsViewAura::StartDragging(
     // visible.
     if (!content_native_view->GetBoundsInScreen().Contains(trusted_location) ||
         !content_native_view->IsVisible()) {
-      web_contents_->SystemDragEnded(source_rwh);
+      ClearDragStateOnStartFailure(source_rwh);
       return;
     }
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
