@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -22,9 +23,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_types.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/sync_sessions/synced_session.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -54,40 +57,25 @@ OpenTabsUIDelegate* GetOpenTabsUIDelegate(Profile* profile) {
   return service->GetOpenTabsUIDelegate();
 }
 
-bool ShouldSkipTab(const sessions::SessionTab& session_tab) {
-  if (session_tab.navigations.empty()) {
-    return true;
+const sessions::SessionTab* GetForeignSessionTab(OpenTabsUIDelegate* open_tabs,
+                                                 const std::string& session_tag,
+                                                 int session_tab_id) {
+  if (!open_tabs) {
+    return nullptr;
   }
 
-  int selected_index = session_tab.normalized_navigation_index();
-  const sessions::SerializedNavigationEntry& current_navigation =
-      session_tab.navigations.at(selected_index);
-
-  if (current_navigation.virtual_url().is_empty()) {
-    return true;
+  const sessions::SessionTab* session_tab = nullptr;
+  if (!open_tabs->GetForeignTab(session_tag,
+                                SessionID::FromSerializedValue(session_tab_id),
+                                &session_tab)) {
+    return nullptr;
   }
 
-  return false;
-}
-
-bool ShouldSkipWindow(const sessions::SessionWindow& window) {
-  for (const auto& tab_ptr : window.tabs) {
-    const sessions::SessionTab& session_tab = *(tab_ptr.get());
-    if (!ShouldSkipTab(session_tab)) {
-      return false;
-    }
+  if (ForeignSessionHelper::ShouldSkipTab(*session_tab)) {
+    return nullptr;
   }
-  return true;
-}
 
-bool ShouldSkipSession(const SyncedSession& session) {
-  for (const auto& window_pair : session.windows) {
-    const sessions::SessionWindow& window = window_pair.second->wrapped_window;
-    if (!ShouldSkipWindow(window)) {
-      return false;
-    }
-  }
-  return true;
+  return session_tab;
 }
 
 static void JNI_ForeignSessionHelper_CopyTabToJava(
@@ -114,8 +102,8 @@ static void JNI_ForeignSessionHelper_CopyWindowToJava(
   for (const auto& tab_ptr : window.tabs) {
     const sessions::SessionTab& session_tab = *(tab_ptr.get());
 
-    if (ShouldSkipTab(session_tab)) {
-      return;
+    if (ForeignSessionHelper::ShouldSkipTab(session_tab)) {
+      continue;
     }
 
     JNI_ForeignSessionHelper_CopyTabToJava(env, session_tab, j_window);
@@ -129,7 +117,7 @@ static void JNI_ForeignSessionHelper_CopySessionToJava(
   for (const auto& window_pair : session.windows) {
     const sessions::SessionWindow& window = window_pair.second->wrapped_window;
 
-    if (ShouldSkipWindow(window)) {
+    if (ForeignSessionHelper::ShouldSkipWindow(window)) {
       continue;
     }
 
@@ -143,6 +131,53 @@ static void JNI_ForeignSessionHelper_CopySessionToJava(
 }
 
 }  // namespace
+
+// static
+bool ForeignSessionHelper::ShouldSkipTab(
+    const sessions::SessionTab& session_tab) {
+  if (session_tab.navigations.empty()) {
+    return true;
+  }
+
+  int selected_index = session_tab.normalized_navigation_index();
+  const sessions::SerializedNavigationEntry& current_navigation =
+      session_tab.navigations.at(selected_index);
+
+  if (current_navigation.virtual_url().is_empty()) {
+    return true;
+  }
+
+  if (!SessionSyncServiceFactory::ShouldSyncURL(
+          current_navigation.virtual_url())) {
+    return true;
+  }
+
+  return false;
+}
+
+// static
+bool ForeignSessionHelper::ShouldSkipWindow(
+    const sessions::SessionWindow& window) {
+  for (const auto& tab_ptr : window.tabs) {
+    const sessions::SessionTab& session_tab = *(tab_ptr.get());
+    if (!ShouldSkipTab(session_tab)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// static
+bool ForeignSessionHelper::ShouldSkipSession(
+    const sync_sessions::SyncedSession& session) {
+  for (const auto& window_pair : session.windows) {
+    const sessions::SessionWindow& window = window_pair.second->wrapped_window;
+    if (!ShouldSkipWindow(window)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 static int64_t JNI_ForeignSessionHelper_Init(Profile* profile) {
   ForeignSessionHelper* foreign_session_helper =
@@ -272,6 +307,10 @@ bool ForeignSessionHelper::GetMobileAndTabletForeignSessions(
 
   // Note: we don't own the SyncedSessions themselves.
   for (const SyncedSession* session : sessions) {
+    if (ShouldSkipSession(*session)) {
+      continue;
+    }
+
     if (session->GetDeviceFormFactor() ==
             syncer::DeviceInfo::FormFactor::kPhone ||
         session->GetDeviceFormFactor() ==
@@ -301,17 +340,10 @@ bool ForeignSessionHelper::OpenForeignSessionTab(TabAndroid* tab_android,
     return false;
   }
 
-  const sessions::SessionTab* session_tab;
-
-  if (!open_tabs->GetForeignTab(session_tag,
-                                SessionID::FromSerializedValue(session_tab_id),
-                                &session_tab)) {
+  const sessions::SessionTab* session_tab =
+      GetForeignSessionTab(open_tabs, session_tag, session_tab_id);
+  if (!session_tab) {
     LOG(ERROR) << "Failed to load foreign tab.";
-    return false;
-  }
-
-  if (session_tab->navigations.empty()) {
-    LOG(ERROR) << "Foreign tab no longer has valid navigations.";
     return false;
   }
 
@@ -360,9 +392,21 @@ int32_t ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
     return 0;
   }
 
-  // Open the first tab in the list with a renderer and web contents.
-  content::WebContents* web_contents =
-      RestoreTabWithRenderer(session_tag, tab_android, session_tab_ids[0]);
+  OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
+  if (!open_tabs) {
+    return 0;
+  }
+
+  // Open the first valid tab in the list with a renderer and web contents.
+  content::WebContents* web_contents = nullptr;
+  size_t first_tab_index = 0;
+  for (; first_tab_index < session_tab_ids.size(); ++first_tab_index) {
+    web_contents = RestoreTabWithRenderer(open_tabs, session_tag, tab_android,
+                                          session_tab_ids[first_tab_index]);
+    if (web_contents) {
+      break;
+    }
+  }
   if (!web_contents) {
     return 0;
   }
@@ -370,8 +414,14 @@ int32_t ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
 
   // Using the web contents of the first tab, load the rest of the tabs
   // as background tabs without a renderer.
-  for (size_t i = 1; i < session_tab_ids.size(); ++i) {
-    if (RestoreTabNoRenderer(session_tag, session_tab_ids[i], web_contents)) {
+  base::WeakPtr<content::WebContents> weak_web_contents =
+      web_contents->GetWeakPtr();
+  for (size_t i = first_tab_index + 1; i < session_tab_ids.size(); ++i) {
+    if (!weak_web_contents) {
+      break;
+    }
+    if (RestoreTabNoRenderer(open_tabs, session_tag, session_tab_ids[i],
+                             weak_web_contents.get())) {
       num_tabs_restored++;
     }
   }
@@ -379,23 +429,13 @@ int32_t ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
 }
 
 content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
+    sync_sessions::OpenTabsUIDelegate* open_tabs,
     const std::string& session_tag,
     TabAndroid* tab_android,
     int session_tab_id) {
-  OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
-  if (!open_tabs) {
-    return nullptr;
-  }
-
-  const sessions::SessionTab* foreground_session_tab;
-
-  if (!open_tabs->GetForeignTab(session_tag,
-                                SessionID::FromSerializedValue(session_tab_id),
-                                &foreground_session_tab)) {
-    return nullptr;
-  }
-
-  if (foreground_session_tab->navigations.empty()) {
+  const sessions::SessionTab* foreground_session_tab =
+      GetForeignSessionTab(open_tabs, session_tag, session_tab_id);
+  if (!foreground_session_tab) {
     return nullptr;
   }
 
@@ -413,23 +453,13 @@ content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
 }
 
 bool ForeignSessionHelper::RestoreTabNoRenderer(
+    sync_sessions::OpenTabsUIDelegate* open_tabs,
     const std::string& session_tag,
     int session_tab_id,
     content::WebContents* web_contents) {
-  OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
-  if (!open_tabs) {
-    return false;
-  }
-
-  const sessions::SessionTab* background_session_tab;
-
-  if (!open_tabs->GetForeignTab(session_tag,
-                                SessionID::FromSerializedValue(session_tab_id),
-                                &background_session_tab)) {
-    return false;
-  }
-
-  if (background_session_tab->navigations.empty()) {
+  const sessions::SessionTab* background_session_tab =
+      GetForeignSessionTab(open_tabs, session_tag, session_tab_id);
+  if (!background_session_tab) {
     return false;
   }
 

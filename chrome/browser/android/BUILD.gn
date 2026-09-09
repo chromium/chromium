@@ -982,6 +982,7 @@ source_set("unit_tests") {
   sources = [
     "customtabs/detached_resource_request_unittest.cc",
     "customtabs/tab_interaction_recorder_android_unittest.cc",
+    "foreign_session_helper_unittest.cc",
     "metrics/android_atoms_logger_unittest.cc",
     "metrics/android_session_durations_service_unittest.cc",
     "omnibox/autocomplete_controller_android_unittest.cc",
@@ -1030,6 +1031,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/sessions",
     "//components/sessions:session_id",
+    "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
     "//components/tabs:test_support",

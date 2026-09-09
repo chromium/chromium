@@ -28,7 +28,7 @@ class SessionSyncServiceFactory : public ProfileKeyedServiceFactory {
   SessionSyncServiceFactory& operator=(const SessionSyncServiceFactory&) =
       delete;
 
-  static bool ShouldSyncURLForTestingAndMetrics(const GURL& url);
+  static bool ShouldSyncURL(const GURL& url);
 
  private:
   friend base::NoDestructor<SessionSyncServiceFactory>;

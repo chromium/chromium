@@ -22,10 +22,24 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace sessions {
+struct SessionTab;
+struct SessionWindow;
+}  // namespace sessions
+
+namespace sync_sessions {
+class OpenTabsUIDelegate;
+struct SyncedSession;
+}  // namespace sync_sessions
+
 // TODO(crbug.com/40261558): Move this class to chrome/browser/recent_tabs
 // module once dependency issues have been resolved.
 class ForeignSessionHelper {
  public:
+  static bool ShouldSkipTab(const sessions::SessionTab& session_tab);
+  static bool ShouldSkipWindow(const sessions::SessionWindow& window);
+  static bool ShouldSkipSession(const sync_sessions::SyncedSession& session);
+
   explicit ForeignSessionHelper(Profile* profile);
 
   ForeignSessionHelper(const ForeignSessionHelper&) = delete;
@@ -60,11 +74,14 @@ class ForeignSessionHelper {
   void FireForeignSessionCallback();
   // Returns the WebContents of the new foreground tab or nullptr if the
   // operation failed.
-  content::WebContents* RestoreTabWithRenderer(const std::string& session_tag,
-                                               TabAndroid* tab_android,
-                                               int session_tab_id);
+  content::WebContents* RestoreTabWithRenderer(
+      sync_sessions::OpenTabsUIDelegate* open_tabs,
+      const std::string& session_tag,
+      TabAndroid* tab_android,
+      int session_tab_id);
   // Returns whether a background tab with no renderer was restored.
-  bool RestoreTabNoRenderer(const std::string& session_tag,
+  bool RestoreTabNoRenderer(sync_sessions::OpenTabsUIDelegate* open_tabs,
+                            const std::string& session_tag,
                             int session_tab_id,
                             content::WebContents* web_contents);
 

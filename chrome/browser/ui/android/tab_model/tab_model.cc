@@ -127,8 +127,7 @@ void TabModel::RecordActualSyncedTabsHistogram() {
 
   int eligible_tabs_count = 0;
   for (int i = 0; i < GetTabCount(); i++) {
-    if (SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
-            GetTabAt(i)->GetURL())) {
+    if (SessionSyncServiceFactory::ShouldSyncURL(GetTabAt(i)->GetURL())) {
       eligible_tabs_count++;
     }
   }
