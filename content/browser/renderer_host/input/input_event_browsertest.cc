@@ -88,6 +88,10 @@ class InputEventBrowserTest : public ContentBrowserTest {
     const GURL data_url("data:text/html," + page_data);
     EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
+    // It has been observed on Mac that input dispatch can occur before
+    // InputRouter activation.
+    ReadyForInputObserver(shell()->web_contents()).Wait();
+
     RenderWidgetHostImpl* host = GetWidgetHost();
     frame_observer_ = std::make_unique<RenderFrameSubmissionObserver>(
         host->render_frame_metadata_provider());
