@@ -1383,6 +1383,9 @@ crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic
 crbug.com/326681249 external/wpt/html/semantics/interestfor/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
 crbug.com/546131804 external/wpt/html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html [ Failure ]
 crbug.com/546131804 virtual/area-display-inline/external/wpt/html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html [ Pass ]
+# To be fixed:
+crbug.com/453705247 external/wpt/html/semantics/interestfor/interestfor-pseudo-element-contents-appearance.tentative.html [ Failure ]
+crbug.com/453705247 external/wpt/html/semantics/interestfor/interestfor-pseudo-element-counter-appearance.tentative.html [ Failure ]
 
 crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
 

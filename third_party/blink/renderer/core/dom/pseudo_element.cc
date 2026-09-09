@@ -400,7 +400,12 @@ const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
 bool PseudoElement::IsLayoutSiblingOfOriginatingElement(
     const Element& originating_element,
     PseudoId pseudo_id) {
-  if (originating_element.IsDocumentElement()) {
+  const Element* element = &originating_element;
+  if (const auto* pseudo = DynamicTo<PseudoElement>(element)) {
+    element = pseudo->parentElement();
+  }
+  CHECK(element);
+  if (element->IsDocumentElement()) {
     return pseudo_id == kPseudoIdSkeleton;
   }
   return pseudo_id == kPseudoIdScrollButtonBlockStart ||
@@ -410,7 +415,8 @@ bool PseudoElement::IsLayoutSiblingOfOriginatingElement(
          pseudo_id == kPseudoIdScrollButton ||
          pseudo_id == kPseudoIdScrollMarkerGroup ||
          pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
-         pseudo_id == kPseudoIdScrollMarkerGroupBefore;
+         pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
+         pseudo_id == kPseudoIdInterestButton;
 }
 
 bool PseudoElement::IsLayoutSiblingOfOriginatingElement() const {

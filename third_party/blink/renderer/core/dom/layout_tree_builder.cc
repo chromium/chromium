@@ -87,11 +87,12 @@ LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
     return node_->GetDocument().GetLayoutView();
   }
 #if DCHECK_IS_ON()
-  // Box of ::scroll-marker-group and ::scroll-button is previous/next
-  // sibling of its originating element, so the parent should be originating
-  // element's parent. But not in case of <html> element.
+  // Box of ::scroll-marker-group, ::scroll-button, and ::interest-button is
+  // previous/next sibling of its originating element, so the parent should be
+  // originating element's parent. But not in case of <html> element.
   if ((node_->IsScrollMarkerGroupPseudoElement() ||
-       node_->IsScrollButtonPseudoElement()) &&
+       node_->IsScrollButtonPseudoElement() ||
+       node_->IsInterestButtonPseudoElement()) &&
       !node_->parentElement()->IsDocumentElement()) {
     ContainerNode* parent_element =
         LayoutTreeBuilderTraversal::LayoutParent(*node_->parentElement());

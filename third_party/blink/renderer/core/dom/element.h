@@ -1614,6 +1614,8 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns true if this element contains any ::scroll-button or
   // ::scroll-marker-group pseudos.
   bool HasScrollButtonOrMarkerGroupPseudos() const;
+  // Returns true if this element contains an ::interest-button pseudo.
+  bool HasInterestButtonPseudo() const;
 
   bool PseudoElementStylesAffectCounters() const;
 
@@ -2519,6 +2521,7 @@ class CORE_EXPORT Element : public ContainerNode {
     if (IsDocumentElement()) {
       return;
     }
+    AttachPseudoElement(kPseudoIdInterestButton, context);
     AttachSucceedingScrollControlsPseudoElements(context);
   }
 
@@ -2526,7 +2529,6 @@ class CORE_EXPORT Element : public ContainerNode {
     AttachPseudoElement(kPseudoIdAfter, context);
     AttachPseudoElement(kPseudoIdExpandIcon, context);
     AttachPseudoElement(kPseudoIdPickerIcon, context);
-    AttachPseudoElement(kPseudoIdInterestButton, context);
     AttachDocumentElementSucceedingPseudoElements(context);
     AttachPseudoElement(kPseudoIdBackdrop, context);
     UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);

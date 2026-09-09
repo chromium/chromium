@@ -5204,7 +5204,8 @@ const ComputedStyle* Element::ParentComputedStyle() const {
   Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this);
   auto is_rendered_as_sibling = [this] {
     return IsBackdropPseudoElement() || IsScrollButtonPseudoElement() ||
-           IsScrollMarkerGroupPseudoElement();
+           IsScrollMarkerGroupPseudoElement() ||
+           IsInterestButtonPseudoElement();
   };
   if (parent && (parent->ChildrenCanHaveStyle() || is_rendered_as_sibling())) {
     const ComputedStyle* parent_style = parent->GetComputedStyle();
@@ -6114,6 +6115,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
                                        local_attacher);
         RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockStart,
                                        local_attacher);
+        RebuildPseudoElementLayoutTree(kPseudoIdInterestButton, local_attacher);
       }
       LayoutObject* layout_object = GetLayoutObject();
       if (layout_object || !HasDisplayContentsStyle()) {
@@ -6130,8 +6132,6 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
       RebuildPseudoElementLayoutTree(kPseudoIdSkeleton, *child_attacher);
       RebuildOverscrollAreaLayoutTree(*child_attacher);
       if (has_pseudo_elements) {
-        RebuildPseudoElementLayoutTree(kPseudoIdInterestButton,
-                                       *child_attacher);
         RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
         RebuildPseudoElementLayoutTree(kPseudoIdExpandIcon, *child_attacher);
         RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
@@ -11407,7 +11407,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
   const bool is_before_or_after_like =
       pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
       pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdExpandIcon ||
-      pseudo_id == kPseudoIdPickerIcon || pseudo_id == kPseudoIdInterestButton;
+      pseudo_id == kPseudoIdPickerIcon;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -11574,15 +11574,20 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   return false;
 }
 
+bool Element::HasInterestButtonPseudo() const {
+  return GetPseudoElement(kPseudoIdInterestButton) != nullptr;
+}
+
 bool Element::HasSiblingBoxPseudoElements() const {
   const NodeRareData* rare_data = RareData();
   if (!rare_data) {
     return false;
   }
   for (PseudoId pseudo_id :
-       {kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
-        kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd,
-        kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarkerGroupBefore}) {
+       {kPseudoIdInterestButton, kPseudoIdScrollButtonBlockStart,
+        kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
+        kPseudoIdScrollButtonBlockEnd, kPseudoIdScrollMarkerGroupAfter,
+        kPseudoIdScrollMarkerGroupBefore}) {
     if (rare_data->GetPseudoElement(pseudo_id)) {
       return true;
     }

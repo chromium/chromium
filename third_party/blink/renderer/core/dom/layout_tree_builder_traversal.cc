@@ -95,10 +95,11 @@ LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
     return scope->GetLayoutObject();
   }
   const Node* search_start_node = &node;
-  // Parent of ::scroll-marker-group and ::scroll-button() should be layout
-  // parent of its originating element.
+  // Parent of ::scroll-marker-group, ::scroll-button(), and ::interest-button
+  // should be layout parent of its originating element.
   if (node.IsScrollMarkerGroupPseudoElement() ||
-      node.IsScrollButtonPseudoElement()) {
+      node.IsScrollButtonPseudoElement() ||
+      node.IsInterestButtonPseudoElement()) {
     search_start_node = node.parentNode();
   }
   ContainerNode* parent =
@@ -430,11 +431,22 @@ Node* LayoutTreeBuilderTraversal::Next(const Node& node,
   return NextSkippingChildren(node, stay_within);
 }
 
-// Checks if current or (next/prev) sibling is either ::scroll-marker-group
-// or element with scroll-marker-group property set,
-// or ::scroll-button(), or element with scroll-button.
-static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
-  if (current.IsScrollMarkerGroupPseudoElement()) {
+// Fast path for NextLayoutSiblingInBoxTreeOrder: checks if `sibling` (which is
+// `LayoutTreeBuilderTraversal::NextSibling(current)`) can be directly used as
+// the next layout sibling in box-tree order.
+//
+// If `current` is a sibling-box pseudo-element, or if `current` generates any
+// trailing sibling-box pseudo-elements (like ::interest-button,
+// ::scroll-button, or ::scroll-marker-group), the next box in box-tree order is
+// determined by those pseudo-elements rather than the DOM next sibling. In that
+// case, we can return false early without inspecting `sibling`.
+//
+// Similarly, if `sibling` is or generates any sibling-box pseudo-elements,
+// it cannot simply be used directly as the next layout sibling.
+static inline bool CanUseDomNextSiblingInBoxTreeOrder(const Node& current,
+                                                      Node* sibling) {
+  if (current.IsScrollMarkerGroupPseudoElement() ||
+      current.IsInterestButtonPseudoElement()) {
     return false;
   }
   if (const auto* element = DynamicTo<Element>(current)) {
@@ -445,13 +457,20 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
     if (element->HasScrollButtonOrMarkerGroupPseudos()) {
       return false;
     }
+    if (element->HasInterestButtonPseudo()) {
+      return false;
+    }
   }
   if (Element* sibling_element = DynamicTo<Element>(sibling)) {
-    if (sibling_element->IsScrollMarkerGroupPseudoElement()) {
+    if (sibling_element->IsScrollMarkerGroupPseudoElement() ||
+        sibling_element->IsInterestButtonPseudoElement()) {
       return false;
     }
     const ComputedStyle* sibling_style = sibling_element->GetComputedStyle();
     if (sibling_style && !sibling_style->ScrollMarkerGroupNone()) {
+      return false;
+    }
+    if (sibling_element->HasInterestButtonPseudo()) {
       return false;
     }
   }
@@ -499,7 +518,7 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
 // Node tree is input (`node`), return output based on layout tree.
 static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   Node* next = LayoutTreeBuilderTraversal::NextSibling(node);
-  if (AreBoxTreeOrderSiblings(node, next)) {
+  if (CanUseDomNextSiblingInBoxTreeOrder(node, next)) {
     return next;
   }
   // From PS to OE with SMGB, return SMGB.
@@ -511,9 +530,14 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
       return pseudo;
     }
   }
-  // From some pseudo to any SMG, just skip SMG.
-  if (next_element && next_element->IsScrollMarkerGroupPseudoElement()) {
-    return LayoutTreeBuilderTraversal::NextSibling(*next_element);
+  // From some pseudo to any pseudo that is a layout sibling outside, just skip
+  // it.
+  while (auto* next_pseudo = DynamicTo<PseudoElement>(next_element)) {
+    if (!next_pseudo->IsLayoutSiblingOfOriginatingElement()) {
+      break;
+    }
+    next = LayoutTreeBuilderTraversal::NextSibling(*next_pseudo);
+    next_element = DynamicTo<Element>(next);
   }
   // Unified traversal logic using sibling sequence order:
   const Element* element = DynamicTo<Element>(&node);
@@ -529,9 +553,9 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
 
   static constexpr std::array kBoxTreeOrder{
       kPseudoIdScrollMarkerGroupBefore, kPseudoIdNone,
-      kPseudoIdScrollButtonBlockStart,  kPseudoIdScrollButtonInlineStart,
-      kPseudoIdScrollButtonInlineEnd,   kPseudoIdScrollButtonBlockEnd,
-      kPseudoIdScrollMarkerGroupAfter,
+      kPseudoIdInterestButton,          kPseudoIdScrollButtonBlockStart,
+      kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
+      kPseudoIdScrollButtonBlockEnd,    kPseudoIdScrollMarkerGroupAfter,
   };
 
   PseudoId current_id =
@@ -543,9 +567,10 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   }
 
   // If we matched kPseudoIdNone, ensure we are actually the originating element
-  // (meaning we have scroll-buttons or scroll-marker-groups generated).
+  // (meaning we have scroll-buttons, scroll-marker-groups, or interest-button).
   if (current_id == kPseudoIdNone &&
-      !originating->HasScrollButtonOrMarkerGroupPseudos()) {
+      !originating->HasScrollButtonOrMarkerGroupPseudos() &&
+      !originating->HasInterestButtonPseudo()) {
     return next;
   }
 
