@@ -1746,7 +1746,7 @@ void Canvas2DRecorderContext::fillRect(double x,
   }
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  AdjustRectForCanvas(x, y, width, height);
+  CanvasRenderingContext::AdjustRectForCanvas(x, y, width, height);
   gfx::RectF rect(ClampTo<float>(x), ClampTo<float>(y), ClampTo<float>(width),
                   ClampTo<float>(height));
   Draw<OverdrawOp::kNone>(
@@ -1791,7 +1791,7 @@ void Canvas2DRecorderContext::strokeRect(double x,
   }
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  AdjustRectForCanvas(x, y, width, height);
+  CanvasRenderingContext::AdjustRectForCanvas(x, y, width, height);
   float fx = ClampTo<float>(x);
   float fy = ClampTo<float>(y);
   float fwidth = ClampTo<float>(width);
@@ -1960,7 +1960,7 @@ void Canvas2DRecorderContext::clearRect(double x,
   cc::PaintFlags clear_flags = GetClearFlags();
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  AdjustRectForCanvas(x, y, width, height);
+  CanvasRenderingContext::AdjustRectForCanvas(x, y, width, height);
   float fx = ClampTo<float>(x);
   float fy = ClampTo<float>(y);
   float fwidth = ClampTo<float>(width);
@@ -2241,8 +2241,8 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
   }
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  AdjustRectForCanvas(sx, sy, sw, sh);
-  AdjustRectForCanvas(dx, dy, dw, dh);
+  CanvasRenderingContext::AdjustRectForCanvas(sx, sy, sw, sh);
+  CanvasRenderingContext::AdjustRectForCanvas(dx, dy, dw, dh);
   float fsx = ClampTo<float>(sx);
   float fsy = ClampTo<float>(sy);
   float fsw = ClampTo<float>(sw);

@@ -235,6 +235,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
   gfx::RectF src_rect(child_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
     float dpr = child_paint_record->paint_state.effective_zoom;
+    AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
 

@@ -1474,7 +1474,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::DrawElementInternal(
   float dpr = child_paint_record->paint_state.effective_zoom;
   gfx::RectF src_rect(child_paint_record->paint_state.box_size);
   if (sx && sy && swidth && sheight) {
-    Canvas2DRecorderContext::AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
+    AdjustRectForCanvas(*sx, *sy, *swidth, *sheight);
     src_rect = gfx::RectF(*sx * dpr, *sy * dpr, *swidth * dpr, *sheight * dpr);
   }
 
@@ -1500,7 +1500,7 @@ V8UnionDOMMatrixOrUndefined::Ret BaseRenderingContext2D::DrawElementInternal(
   if (dwidth && dheight) {
     dw = *dwidth;
     dh = *dheight;
-    Canvas2DRecorderContext::AdjustRectForCanvas(x, y, dw, dh);
+    AdjustRectForCanvas(x, y, dw, dh);
   }
   gfx::RectF dst_rect(x, y, dw, dh);
 

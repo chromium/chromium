@@ -507,10 +507,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   // such as tainting from a filter applied to the canvas.
   void SetOriginTaintedByContent();
 
-  // Adjusts a rect for negative width or height to give the bounding rect.
-  template <typename T>
-  static void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
-
  private:
   void FillImpl(SkPathFillType winding_rule);
   void FillPathImpl(Path2D* dom_path, SkPathFillType winding_rule);
@@ -957,22 +953,6 @@ bool Canvas2DRecorderContext::ValidateRectForCanvas(T x,
                                                     T height) {
   return (std::isfinite(x) && std::isfinite(y) && std::isfinite(width) &&
           std::isfinite(height) && (width || height));
-}
-
-template <typename T>
-void Canvas2DRecorderContext::AdjustRectForCanvas(T& x,
-                                                  T& y,
-                                                  T& width,
-                                                  T& height) {
-  if (width < 0) {
-    width = -width;
-    x -= width;
-  }
-
-  if (height < 0) {
-    height = -height;
-    y -= height;
-  }
 }
 
 ALWAYS_INLINE void Canvas2DRecorderContext::SetTransform(
