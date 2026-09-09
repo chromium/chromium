@@ -737,12 +737,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     Canvas2DResourceProvider* shared_image_provider,
     Canvas2DBitmapProvider* bitmap_provider,
     FlushReason reason) {
-  MemoryManagedPaintRecorder* recorder = nullptr;
-  if (shared_image_provider) {
-    recorder = &shared_image_provider->Recorder();
-  } else if (bitmap_provider) {
-    recorder = &bitmap_provider->Recorder();
-  }
+  MemoryManagedPaintRecorder* recorder = Recorder();
   if (!recorder || !recorder->HasReleasableDrawOps()) {
     return std::nullopt;
   }
