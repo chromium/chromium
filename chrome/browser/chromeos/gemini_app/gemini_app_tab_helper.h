@@ -33,9 +33,8 @@ class GeminiAppTabHelper
   GeminiAppTabHelper& operator=(const GeminiAppTabHelper&) = delete;
   ~GeminiAppTabHelper() override;
 
-  // Attaches a new instance to `web_contents` if and only if:
-  // (a) the Gemini app preinstallation feature is enabled, and
-  // (b) the specified `web_contents` is not off the record.
+  // Attaches a new instance to `web_contents` if and only if the specified
+  // `web_contents` is not off the record.
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   // Temporarily replaces the URLs of pages for which visits should be recorded

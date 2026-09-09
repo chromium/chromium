@@ -112,9 +112,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
-    app_ids->push_back(ash::kGeminiAppId);
-  }
+  app_ids->push_back(ash::kGeminiAppId);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   app_ids->insert(app_ids->end(), {
