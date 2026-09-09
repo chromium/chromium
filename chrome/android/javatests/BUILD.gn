@@ -613,6 +613,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/ui/android/autofill/internal:java",
     "//chrome/browser/ui/android/autofill/internal:javatests",
     "//components/autofill/core/browser/data_model/payments:mojo_bindings_java",
@@ -672,7 +673,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.browsing_data") {
     "src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragmentTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/settings:settings_in_tab_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {

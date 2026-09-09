@@ -55,6 +55,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -95,6 +96,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -109,7 +111,6 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -2273,8 +2274,10 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE) // Tablets and desktops don't have a help button or menu.
     public void testHelpCenterArticle() {
+        // Settings in a tab doesn't have a help button or menu.
+        Assume.assumeTrue(!SettingsInTab.isEnabled());
+
         mSafetyHubFragmentTestRule.startSettingsActivity();
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
