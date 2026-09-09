@@ -2499,8 +2499,6 @@ class WebUIToolbarWebViewBrowserTest : public WebUIToolbarWebViewTestBase {
           .ExtractBool();
     });
   }
-
-
 };
 
 class WebUIAppMenuBrowserTest : public WebUIToolbarWebViewBrowserTest {
@@ -4022,7 +4020,16 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
       committed_url.query().find("q=hello%20world") != std::string::npos);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
+// On ChromeOS, drag origin provenance cannot be distinguished between OS-local
+// and renderer sources (b/256022714), so all drags are conservatively treated
+// as renderer-originated and local file navigation via drag is blocked.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DropFileOnToolbar DISABLED_DropFileOnToolbar
+#else
+#define MAYBE_DropFileOnToolbar DropFileOnToolbar
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       MAYBE_DropFileOnToolbar) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -4070,6 +4077,109 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
                           ->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       DropFileOnToolbar_BlockedRendererOriginated) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("secret.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>secret</body></html>"));
+
+  gfx::Point click_point(10, 10);
+
+  content::DropData drop_data;
+  drop_data.did_originate_from_renderer = true;
+  drop_data.filenames.emplace_back(file_path, base::FilePath());
+
+  web_view->GetWebContents()->GetDelegate()->PreHandleDragUpdate(
+      drop_data, gfx::PointF(click_point));
+
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  GURL initial_url = active_contents->GetLastCommittedURL();
+  NavigationCounter counter(active_contents);
+
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      base::StringPrintf(R"(
+    const toolbarApp = document.querySelector('toolbar-app');
+    const dataTransfer = new DataTransfer();
+    Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
+    const dropEvent = new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: dataTransfer,
+      clientX: %d,
+      clientY: %d
+    });
+    toolbarApp.dispatchEvent(dropEvent);
+  )",
+                                         click_point.x(), click_point.y())));
+
+  counter.WaitForNoNavigations();
+  EXPECT_EQ(initial_url, active_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       DropFileOnToolbar_BlockedAfterDragExit) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+
+  gfx::Point click_point(10, 10);
+
+  content::DropData drop_data;
+  drop_data.did_originate_from_renderer = false;
+  drop_data.filenames.emplace_back(file_path, base::FilePath());
+
+  auto* delegate = web_view->GetWebContents()->GetDelegate();
+  delegate->PreHandleDragUpdate(drop_data, gfx::PointF(click_point));
+
+  // Drag exits the toolbar area before dropping.
+  delegate->PreHandleDragExit();
+
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  GURL initial_url = active_contents->GetLastCommittedURL();
+  NavigationCounter counter(active_contents);
+
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      base::StringPrintf(R"(
+    const toolbarApp = document.querySelector('toolbar-app');
+    const dataTransfer = new DataTransfer();
+    Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
+    const dropEvent = new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: dataTransfer,
+      clientX: %d,
+      clientY: %d
+    });
+    toolbarApp.dispatchEvent(dropEvent);
+  )",
+                                         click_point.x(), click_point.y())));
+
+  counter.WaitForNoNavigations();
+  EXPECT_EQ(initial_url, active_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
@@ -4667,7 +4777,16 @@ IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropUrl) {
             GetOmniboxTextEventually(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropFilePath) {
+// On ChromeOS, drag origin provenance cannot be distinguished between OS-local
+// and renderer sources (b/256022714), so all drags are conservatively treated
+// as renderer-originated and local file drops on Omnibox are blocked.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DropFilePath DISABLED_DropFilePath
+#else
+#define MAYBE_DropFilePath DropFilePath
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest,
+                       MAYBE_DropFilePath) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -4998,10 +5117,16 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
 }
 
-// Verify that dropping a file on the home button sets it as the home page,
-// and the action can be undone.
+// On ChromeOS, drag origin provenance cannot be distinguished between OS-local
+// and renderer sources (b/256022714), so all drags are conservatively treated
+// as renderer-originated and home button file drop is blocked.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DropFileOnHomeButtonAndUndo DISABLED_DropFileOnHomeButtonAndUndo
+#else
+#define MAYBE_DropFileOnHomeButtonAndUndo DropFileOnHomeButtonAndUndo
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
-                       DropFileOnHomeButtonAndUndo) {
+                       MAYBE_DropFileOnHomeButtonAndUndo) {
   WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   content::WebContents* web_contents =
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
