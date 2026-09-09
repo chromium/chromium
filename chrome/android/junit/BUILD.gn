@@ -437,6 +437,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ChromeTabbedActivityUnitTest.java",
       "src/org/chromium/chrome/browser/ConfirmQuitHelperUnitTest.java",
       "src/org/chromium/chrome/browser/DeferredStartupHandlerTest.java",
+      "src/org/chromium/chrome/browser/DevToolsServerTest.java",
       "src/org/chromium/chrome/browser/ExampleRobolectricTest.java",
       "src/org/chromium/chrome/browser/ExternalIntentUrlCheckerTest.java",
       "src/org/chromium/chrome/browser/GracefulShutdownServiceImplTest.java",

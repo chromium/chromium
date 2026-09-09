@@ -24,8 +24,6 @@ class DevToolsServer {
   // Closes debugging socket, stops debugging.
   void Stop();
 
-  bool IsStarted() const;
-
  private:
   std::string socket_name_;
   bool is_started_;

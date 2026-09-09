@@ -3,9 +3,9 @@ default: true
 desc: |-
   Controls whether users may use remote debugging.
 
-        If this policy is set to Enabled or not set, users may use remote debugging by specifying --remote-debugging-port and --remote-debugging-pipe command line switches.
+  If this policy is set to Enabled or not set, users may use remote debugging by specifying --remote-debugging-port and --remote-debugging-pipe command line switches on desktop platforms, or by enabling the USB debugging system setting on <ph name="ANDROID_NAME">Android</ph>.
 
-        If this policy is set to Disabled, users are not allowed to use remote debugging.
+  If this policy is set to Disabled, users are not allowed to use remote debugging.
 example_value: true
 features:
   dynamic_refresh: true
@@ -24,5 +24,6 @@ schema:
 supported_on:
 - chrome.*:93-
 - chrome_os:93-
+- android:155-
 tags: []
 type: main
