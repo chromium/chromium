@@ -1060,8 +1060,6 @@ component("platform") {
     "graphics/gpu/webgpu_mailbox_buffer.h",
     "graphics/gpu/webgpu_mailbox_texture.cc",
     "graphics/gpu/webgpu_mailbox_texture.h",
-    "graphics/gpu/webgpu_shared_image_wrapper.cc",
-    "graphics/gpu/webgpu_shared_image_wrapper.h",
     "graphics/gpu/webgpu_shared_image_wrapper_cache.cc",
     "graphics/gpu/webgpu_shared_image_wrapper_cache.h",
     "graphics/gpu/webgpu_swap_buffer_provider.cc",
@@ -3044,10 +3042,12 @@ blink_fuzzer_test("blink_storage_key_fuzzer") {
 # Fuzzer template for blink::TextCodec.
 template("blink_text_codec_fuzzer") {
   forward_variables_from(invoker, "*")
+
   config(target_name + "_config") {
     defines = [ "$target_name" ]
   }
   name = target_name
+
   blink_fuzzer_test("blink_text_codec_" + name + "_fuzzer") {
     sources = [ "text_codec_fuzzer.cc" ]
     deps = [ ":platform" ]

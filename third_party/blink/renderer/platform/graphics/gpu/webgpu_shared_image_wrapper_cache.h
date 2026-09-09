@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_CACHE_H_
 
+#include <optional>
+
 #include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,7 +37,6 @@ class RasterInterface;
 namespace blink {
 
 class MemoryManagedPaintRecorder;
-class WebGpuSharedImageWrapper;
 class WebGpuSharedImageWrapperCache;
 class WebGraphicsContext3DProviderWrapper;
 
@@ -43,7 +44,11 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
     : public CanvasMemoryDumpClient {
  public:
   WebGpuSharedImageWrapperLease(
-      std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token,
+      bool is_cleared,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
       base::WeakPtr<WebGpuSharedImageWrapperCache> cache);
 
   ~WebGpuSharedImageWrapperLease();
@@ -84,7 +89,11 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
  private:
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
-  std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  gpu::SyncToken sync_token_;
+  bool is_cleared_ = false;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGpuSharedImageWrapperCache> cache_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 };
@@ -107,10 +116,14 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
       const gfx::ColorSpace& color_space,
       SkAlphaType alpha_type);
 
-  // When the lease is destroyed, move the shared image wrapper to
+  // When the lease is destroyed, move the shared image to
   // |unused_wrappers_| if the cache is not full.
   void ReturnWebGpuSharedImageWrapper(
-      std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper);
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token,
+      bool is_cleared,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper);
 
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
 
@@ -140,13 +153,21 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
       kCleanUpDelayInSeconds / kTimerDurationInSeconds;
 
   struct PLATFORM_EXPORT Resource {
-    Resource(std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
+    Resource(scoped_refptr<gpu::ClientSharedImage> shared_image,
+             const gpu::SyncToken& sync_token,
+             bool is_cleared,
+             base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                 context_provider_wrapper,
              unsigned int timer_id,
              size_t resource_size);
     Resource(Resource&& that) noexcept;
     ~Resource();
 
-    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
+    gpu::SyncToken sync_token_;
+    bool is_cleared_ = false;
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper_;
     unsigned int timer_id_;
     size_t resource_size_;
   };
@@ -155,7 +176,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
 
   // Search |unused_wrappers_| and acquire the WebGPU shared image wrapper
   // with the same cache key for reuse.
-  std::unique_ptr<WebGpuSharedImageWrapper> AcquireCachedWrapper(
+  std::optional<Resource> AcquireCachedWrapper(
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
