@@ -17,8 +17,12 @@
   --cr-searchbox-width: var(--cr-searchbox-min-width);
   --cr-searchbox-border-radius: 16px;
   --cr-searchbox-icon-size-in-searchbox: 18px;
+  --cr-searchbox-icon-container-size: 32px;
+  --cr-searchbox-icon-left-position: 16px;
+  --cr-searchbox-icon-right-position: 0px;
   --cr-searchbox-icon-width: 26px;
-  --cr-searchbox-inner-icon-margin: 8px;
+  --cr-searchbox-match-padding-inline-start: 16px;
+  --cr-searchbox-match-text-padding-inline-start: 8px;
   --cr-searchbox-voice-icon-offset: 16px;
   --cr-searchbox-voice-search-button-width: 0px;
   --cr-compose-button-width: 104px;
@@ -129,6 +133,7 @@
 
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
+  padding-inline-start: 7px;
   padding-top: 2px;
 }
 
@@ -137,7 +142,6 @@ cr-searchbox-input::part(searchbox-input) {
 }
 
 :host([is-fusebox-enabled]) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-start: 12px;
   padding-inline-end: 64px;
 }
 
@@ -273,8 +277,9 @@ cr-composebox-contextual-entrypoint-and-menu {
 }
 
 :host([is-fusebox-enabled]) cr-searchbox-input {
-  --cr-searchbox-icon-container-size: 36px;
+  --cr-searchbox-icon-container-size: 32px;
   --cr-searchbox-icon-left-position: 16px;
+  --cr-searchbox-icon-right-position: 0px;
 }
 
 :host([is-fusebox-enabled]) cr-searchbox-input::part(icon) {

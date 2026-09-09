@@ -27,7 +27,8 @@
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
   --text-input-inline-start-spacing: 16px;
-  --cr-searchbox-match-padding-inline-start: 16px;
+  --cr-composebox-match-icon-container-padding-inline-start: 16px;
+  --cr-searchbox-match-text-padding-inline-start: 8px;
   --text-input-max-height: 190px;
   --color-composebox-type-ahead: var(
       --color-searchbox-placeholder,
@@ -187,4 +188,20 @@ cr-composebox-tool-chip,
 cr-composebox-input::part(icon-container) {
   -webkit-app-region: drag;
   -webkit-user-drag: none;
+  width: var(--cr-searchbox-icon-container-size, 32px);
+}
+
+cr-composebox-input::part(input),
+cr-composebox-input::part(mirror),
+cr-composebox-input::part(smart-compose) {
+  padding-inline-start: 10.5px;
+}
+
+cr-composebox-dropdown::part(match-icon-container) {
+  padding-inline-start: 16px;
+  width: 32px;
+}
+
+cr-composebox-dropdown::part(match-text-container) {
+  padding-inline-start: 8px;
 }

@@ -16,7 +16,11 @@
 omnibox-everywhere-omnibox,
 omnibox-everywhere-composebox {
   --cr-searchbox-height: 48px;
+  --cr-searchbox-icon-container-size: 32px;
   --cr-searchbox-icon-left-position: 16px;
+  --cr-searchbox-icon-right-position: 0px;
+  --cr-searchbox-match-padding-inline-start: 16px;
+  --cr-searchbox-match-text-padding-inline-start: 8px;
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-min-width: 100%;
 

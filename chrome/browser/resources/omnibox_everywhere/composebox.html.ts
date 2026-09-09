@@ -72,7 +72,9 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
             <cr-composebox-dropdown
                 id="matches"
                 part="dropdown"
-                exportparts="match-text-container"
+                exportparts="match-text-container, match-container,
+                             match-icon-container, match-focus-indicator,
+                             match-icon, match-remove-button"
                 role="listbox"
                 .result="${this.result}"
                 .selectedMatchIndex="${this.selectedMatchIndex}"
