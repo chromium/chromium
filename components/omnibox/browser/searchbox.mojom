@@ -634,6 +634,9 @@ interface Page {
   // Called to set searchbox input.
   SetInputText(string input);
 
+  // Sets whether keyword space triggering is enabled.
+  SetKeywordSpaceTriggeringEnabled(bool enabled);
+
   // Sets searchbox thumbnail.
   SetThumbnail(string thumbnail_url, bool is_deletable);
 

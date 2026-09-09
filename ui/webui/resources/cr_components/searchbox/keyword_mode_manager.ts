@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {KeywordType, SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, InputKeywordModel, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -41,6 +42,11 @@ export interface KeywordModeManagerDelegate {
  * the WebUI searchbox.
  */
 export class KeywordModeManager {
+  keywordSpaceTriggeringEnabled: boolean = loadTimeData.isInitialized() &&
+          loadTimeData.valueExists('keywordSpaceTriggeringEnabled') ?
+      loadTimeData.getBoolean('keywordSpaceTriggeringEnabled') :
+      true;
+
   private inputKeywordModel_: InputKeywordModel|null = null;
   private entryMethod_: KeywordModeEntryMethod = KeywordModeEntryMethod.NONE;
   private delegate_: KeywordModeManagerDelegate;
@@ -201,8 +207,9 @@ export class KeywordModeManager {
     // TODO(b/504669216): webUI doesn't track paste state yet.
 
     // Space triggering must be enabled.
-    // TODO(b/504669216): webUI isn't aware of
-    //   `kKeywordSpaceTriggeringEnabled` pref.
+    if (!this.keywordSpaceTriggeringEnabled) {
+      return false;
+    }
 
     this.enter(
         keyword, this.inputKeywordModel_.displayText,

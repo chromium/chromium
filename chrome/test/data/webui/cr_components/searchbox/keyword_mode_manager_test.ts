@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://new-tab-page/strings.m.js';
+
 import {KeywordModeEntryMethod, KeywordModeManager} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import type {KeywordClearedEvent} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createMatchKeywordModelForTesting, createSearchMatchForTesting} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {KeywordType, SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -29,6 +32,12 @@ suite('KeywordModeManagerTest', () => {
         keywordEnteredCount++;
       },
     });
+  });
+
+  teardown(() => {
+    if (loadTimeData.isInitialized()) {
+      loadTimeData.overrideValues({keywordSpaceTriggeringEnabled: true});
+    }
   });
 
   test('initial state', () => {
@@ -103,6 +112,30 @@ suite('KeywordModeManagerTest', () => {
     };
     assertTrue(manager.acceptInputTrigger('google.com　', 11));
     assertTrue(manager.isInKeywordMode);
+
+    // When keywordSpaceTriggeringEnabled is false -> false.
+    manager.exit();
+    manager.keywordSpaceTriggeringEnabled = false;
+    manager.inputKeywordModel = {
+      type: KeywordType.kChip,
+      keyword: 'google.com',
+      displayText: 'Search Google',
+    };
+    assertFalse(manager.acceptInputTrigger('google.com ', 11));
+    assertFalse(manager.isInKeywordMode);
+
+    // Reset keywordSpaceTriggeringEnabled.
+    manager.keywordSpaceTriggeringEnabled = true;
+
+    // Check constructor initialization from loadTimeData.
+    loadTimeData.overrideValues({keywordSpaceTriggeringEnabled: false});
+    const disabledManager = new KeywordModeManager({
+      onKeywordModelChanged: () => {},
+      onKeywordCleared: () => {},
+      onKeywordEntered: () => {},
+    });
+    assertFalse(disabledManager.keywordSpaceTriggeringEnabled);
+    loadTimeData.overrideValues({keywordSpaceTriggeringEnabled: true});
   });
 
   test('acceptInputTrigger for question mark', () => {
