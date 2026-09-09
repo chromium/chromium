@@ -192,7 +192,6 @@ void FamilyLiveTest::SigninToBrowserFor(BrowserUser& browser_user) {
     syncer::SyncServiceImpl* service =
         SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
             &browser_user.profile());
-    service->SetInvalidationsForSessionsEnabled(true);
     bool is_supervised_user = (&browser_user == child_.get());
 
     CHECK(SyncSetupChecker(service, is_supervised_user).Wait())

@@ -459,7 +459,9 @@ SyncService::DataTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
   return DataTypeDownloadStatus::kUpToDate;
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void TestSyncService::SendExplicitPassphraseToPlatformClient() {
   if (send_passphrase_to_platform_client_cb_) {

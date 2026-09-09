@@ -750,6 +750,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
       }
     }
 
+#if BUILDFLAG(IS_ANDROID)
     if (TestUsesSelfNotifications()) {
       // On Android, invalidations for Session data type are disabled by
       // default. This may result in test flakiness when using when using
@@ -761,6 +762,7 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
       CHECK(GetSyncService(client_index)->IsEngineInitialized());
       GetSyncService(client_index)->SetInvalidationsForSessionsEnabled(true);
     }
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // It's important to wait for each client before setting up the next one,
     // otherwise multi-client tests get flaky. This may happen in some tests

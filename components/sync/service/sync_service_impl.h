@@ -144,7 +144,9 @@ class SyncServiceImpl : public SyncService,
   void TriggerRefresh(TriggerRefreshSource source,
                       const DataTypeSet& types) override;
   void DataTypePreconditionChanged(DataType type) override;
+#if BUILDFLAG(IS_ANDROID)
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void SendExplicitPassphraseToPlatformClient() override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
@@ -545,10 +547,12 @@ class SyncServiceImpl : public SyncService,
   // related to trusted vault passphrase.
   bool trusted_vault_auto_upgrade_synthetic_field_trial_registered_ = false;
 
+#if BUILDFLAG(IS_ANDROID)
   // Whether we want to receive invalidations for the SESSIONS data type. This
-  // is typically false on Android (to save network traffic), but true on all
-  // other platforms.
-  bool sessions_invalidations_enabled_ = !BUILDFLAG(IS_ANDROID);
+  // is false by default on Android (to save network traffic) when
+  // kAlwaysRegisterSessionsInvalidationsAndroid is disabled.
+  bool sessions_invalidations_enabled_ = false;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Set if/when Initialize() schedules a deferred task to start the engine.
   // Cleared on the first start attempt, regardless of success and who triggered

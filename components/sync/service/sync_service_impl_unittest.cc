@@ -1939,7 +1939,12 @@ TEST_F(SyncServiceImplTest,
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kAlwaysRegisterSessionsInvalidationsAndroid);
+
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
   std::vector<FakeControllerInitParams> params;
@@ -1956,7 +1961,6 @@ TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
   service()->SetInvalidationsForSessionsEnabled(false);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 TEST_F(SyncServiceImplTest,
        ShouldAlwaysSubscribeToSessionsListingsIfFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;

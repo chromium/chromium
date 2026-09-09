@@ -176,7 +176,9 @@ class TestSyncService : public SyncService {
       const override;
   void SetCurrentDeviceCacheGuidsForAllGaiaIds(
       base::flat_set<std::string> guids);
+#if BUILDFLAG(IS_ANDROID)
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
