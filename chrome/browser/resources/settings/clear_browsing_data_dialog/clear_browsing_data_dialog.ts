@@ -148,9 +148,6 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
 const SettingsClearBrowsingDataDialogElementBase =
     RouteObserverMixinLit(WebUiListenerMixinLit(CrLitElement));
 
-export type ClearBrowsingDataDialogElement =
-    SettingsClearBrowsingDataDialogElement;
-
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
   static get is() {

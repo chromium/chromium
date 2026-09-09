@@ -68,9 +68,6 @@ export interface SettingsClearBrowsingDataTimePickerElement {
 const SettingsClearBrowsingDataTimePickerElementBase =
     PrefServiceObserverMixinLit(CrLitElement);
 
-export type ClearBrowsingDataTimePickerElement =
-    SettingsClearBrowsingDataTimePickerElement;
-
 export class SettingsClearBrowsingDataTimePickerElement extends
     SettingsClearBrowsingDataTimePickerElementBase {
   static get is() {

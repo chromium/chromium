@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsClearBrowsingDataTimePickerElement} from './clear_browsing_data_time_picker.js';
+
+export function getHtml(this: SettingsClearBrowsingDataTimePickerElement) {
+  return html`<!--_html_template_start_-->
 <div class="row" id="timePicker">
   ${this.expandedOptionList_.map(item => html`
     <cr-chip class="time-period-chip"
@@ -30,3 +40,5 @@
       `}">
   </cr-lazy-render-lit>
 </div>
+<!--_html_template_end_-->`;
+}

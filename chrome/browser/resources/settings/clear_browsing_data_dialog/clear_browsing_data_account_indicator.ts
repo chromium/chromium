@@ -21,9 +21,6 @@ import {canDeleteAccountData} from './clear_browsing_data_signin_util.js';
 const SettingsClearBrowsingDataAccountIndicatorElementBase =
     WebUiListenerMixinLit(CrLitElement);
 
-export type ClearBrowsingDataAccountIndicatorElement =
-    SettingsClearBrowsingDataAccountIndicatorElement;
-
 export class SettingsClearBrowsingDataAccountIndicatorElement extends
     SettingsClearBrowsingDataAccountIndicatorElementBase {
   static get is() {

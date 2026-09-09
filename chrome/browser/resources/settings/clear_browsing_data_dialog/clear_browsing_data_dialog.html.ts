@@ -1,5 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog.js';
+
+export function getHtml(this: SettingsClearBrowsingDataDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog id="deleteBrowsingDataDialog" close-text="$i18n{close}"
     show-on-attach ignore-popstate ignore-enter-key
     ?hidden="${this.showOtherGoogleDataDialog_}">
@@ -82,3 +90,5 @@ ${this.showOtherGoogleDataDialog_ ? html`
       @cancel="${this.onOtherGoogleDataDialogCancel_}">
   </settings-other-google-data-dialog>
 ` : ''}
+<!--_html_template_end_-->`;
+}

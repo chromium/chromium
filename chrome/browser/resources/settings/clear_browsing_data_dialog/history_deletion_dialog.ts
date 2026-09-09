@@ -26,8 +26,6 @@ export interface SettingsHistoryDeletionDialogElement {
   };
 }
 
-export type HistoryDeletionDialogElement = SettingsHistoryDeletionDialogElement;
-
 export class SettingsHistoryDeletionDialogElement extends CrLitElement {
   static get is() {
     return 'settings-history-deletion-dialog';

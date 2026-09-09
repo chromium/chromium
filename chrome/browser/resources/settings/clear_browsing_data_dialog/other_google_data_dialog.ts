@@ -43,8 +43,6 @@ export interface SettingsOtherGoogleDataDialogElement {
 const SettingsOtherGoogleDataDialogElementBase =
     WebUiListenerMixinLit(CrLitElement);
 
-export type OtherGoogleDataDialogElement = SettingsOtherGoogleDataDialogElement;
-
 export class SettingsOtherGoogleDataDialogElement extends
     SettingsOtherGoogleDataDialogElementBase {
   static get is() {
