@@ -348,10 +348,12 @@ public class SearchUiCoordinator {
      */
     public void setStatusAndNavBarColors() {
         Drawable anchorViewBackground = assertNonNull(mAnchorView).getBackground();
-        assert anchorViewBackground instanceof GradientDrawable
-                : "Unsupported background drawable.";
+        if (!(anchorViewBackground instanceof GradientDrawable gradientDrawable)) {
+            assert false : "Unsupported background drawable.";
+            return;
+        }
 
-        ColorStateList color = ((GradientDrawable) anchorViewBackground).getColor();
+        ColorStateList color = gradientDrawable.getColor();
         int anchorViewColor = assumeNonNull(color).getDefaultColor();
 
         StatusBarColorController.setStatusBarColor(

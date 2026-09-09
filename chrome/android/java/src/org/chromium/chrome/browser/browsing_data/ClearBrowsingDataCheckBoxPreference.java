@@ -68,12 +68,10 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
                     CharSequence text = textView.getText();
                     // TODO(crbug.com/40549355): On some devices the SpannableString is not applied
                     // correctly.
-                    boolean isSpanned = text instanceof Spanned;
-                    if (!isSpanned) {
+                    if (!(text instanceof Spanned spanned)) {
                         return false;
                     }
-                    ClickableSpan[] types =
-                            ((Spanned) text).getSpans(offset, offset, ClickableSpan.class);
+                    ClickableSpan[] types = spanned.getSpans(offset, offset, ClickableSpan.class);
 
                     if (types.length > 0) {
                         if (event.getAction() == MotionEvent.ACTION_UP) {

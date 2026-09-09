@@ -149,18 +149,17 @@ public class SearchActivityClientImpl implements SearchActivityClient {
 
     @Override
     public void requestOmniboxForResult(Intent intent) {
-        if (!(mContext instanceof Activity)) {
+        if (!(mContext instanceof Activity activity)) {
             Log.w(TAG, "Intent not dispatched; SearchActivityClient not associated with Activity");
             return;
         }
 
-        ((Activity) mContext)
-                .startActivityForResult(
-                        intent,
-                        getClientUniqueRequestCode(),
-                        ActivityOptions.makeCustomAnimation(
-                                        mContext, android.R.anim.fade_in, R.anim.no_anim)
-                                .toBundle());
+        activity.startActivityForResult(
+                intent,
+                getClientUniqueRequestCode(),
+                ActivityOptions.makeCustomAnimation(
+                                mContext, android.R.anim.fade_in, R.anim.no_anim)
+                        .toBundle());
     }
 
     @Override
