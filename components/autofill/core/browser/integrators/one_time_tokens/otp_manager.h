@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "url/origin.h"
 
 namespace autofill {
 
+class FormFieldData;
 class FormStructure;
 
 // The OtpManager helps the BrowserAutofillManager filling OTPs into webforms.
@@ -26,7 +26,7 @@ class OtpManager {
   OtpManager() = default;
   virtual ~OtpManager() = default;
 
-  // Invokes `callback` with the OTP value suggestions for `origin`. This
+  // Invokes `callback` with the OTP value suggestions for `field`. This
   // function returns previously received OTPs or waits for a pending OTP
   // retrieval to finish before invoking the callback. This is the UI-facing
   // function invoked by autofill UI. Concrete implementations of `OtpManager`
@@ -38,7 +38,7 @@ class OtpManager {
   // should return immediately when no OTPs are cached but the Autofill UI
   // should be updated once OTPs arrive.
   virtual void GetOtpSuggestions(const FormStructure& form,
-                                 const url::Origin& origin,
+                                 const FormFieldData& field,
                                  GetOtpSuggestionsCallback callback) = 0;
 };
 

@@ -113,7 +113,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, BothUrlsSafeSynchronously) {
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
-      main_frame_url_, frame_to_fill_url_, future.GetCallback());
+      {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester.ExpectUniqueSample(
@@ -131,7 +131,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, IdenticalUrlsCheckedOnlyOnce) {
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
-      main_frame_url_, main_frame_url_, future.GetCallback());
+      {main_frame_url_, main_frame_url_}, future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester.ExpectUniqueSample(
@@ -154,7 +154,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlUnsafeAsynchronously) {
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
-      main_frame_url_, frame_to_fill_url_, future.GetCallback());
+      {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
   ASSERT_TRUE(sb_client);
   // Report phishing for main frame URL
@@ -183,7 +183,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest,
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
-      main_frame_url_, frame_to_fill_url_, future.GetCallback());
+      {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
   ASSERT_TRUE(sb_client);
   // Report safe for main frame URL
@@ -208,7 +208,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, FirstUrlTimeout) {
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
-      main_frame_url_, frame_to_fill_url_, future.GetCallback());
+      {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
   // Advance clock right by the delay to trigger timeout.
   task_environment_.FastForwardBy(kCheckDelay);
@@ -236,7 +236,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, SecondUrlTimeout) {
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       database_manager_, /*v5_get_hash_protocol_manager=*/nullptr, kCheckDelay,
-      main_frame_url_, frame_to_fill_url_, future.GetCallback());
+      {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
   ASSERT_TRUE(sb_client);
   // First URL is safe.
@@ -273,7 +273,7 @@ TEST_F(OtpFillingSafeBrowsingCheckerClientTest, GetV5GetHashProtocolManager) {
   base::test::TestFuture<bool> future;
   auto checker_client = OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
       v5_db_manager, v5_protocol_manager.GetWeakPtr(), kCheckDelay,
-      main_frame_url_, frame_to_fill_url_, future.GetCallback());
+      {main_frame_url_, frame_to_fill_url_}, future.GetCallback());
 
   EXPECT_EQ(checker_client->GetV5GetHashProtocolManager().get(),
             &v5_protocol_manager);

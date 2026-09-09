@@ -83,9 +83,9 @@ OtpManagerImpl::~OtpManagerImpl() = default;
 
 void OtpManagerImpl::GetOtpSuggestions(
     const FormStructure& form,
-    const url::Origin& origin,
+    const FormFieldData& field,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
-  if (!OtpFieldDetector::IsOtpForm(form)) {
+  if (field.origin().opaque() || !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
     return;
   }
@@ -99,10 +99,7 @@ void OtpManagerImpl::GetOtpSuggestions(
     return;
   }
 
-
-  // TODO(crbug.com/415273270): Do not fill OTP suggestions into opaque origin
-  // iframes.
-  last_pending_field_origin_ = origin;
+  last_pending_frame_token_ = field.host_frame();
   last_pending_get_suggestions_callback_ = std::move(callback);
 
   // This queries OTPs from the backend and calls `OnOneTimeTokenReceived` to
@@ -255,8 +252,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
         << LoggingScope::kOneTimeTokens
         << "PhishGuard check initiated for OTP token delivery.";
     delegate->StartOtpPhishGuardCheck(
-        owner_->client().GetLastCommittedPrimaryMainFrameURL(),
-        last_pending_field_origin_.GetURL(),
+        last_pending_frame_token_,
         base::BindOnce(
             [](base::WeakPtr<OtpManagerImpl> self, OneTimeToken token,
                bool is_phishing_site) {

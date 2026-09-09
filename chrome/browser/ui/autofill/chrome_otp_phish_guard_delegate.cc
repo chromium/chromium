@@ -8,7 +8,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/safe_browsing/buildflags.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -22,8 +24,8 @@
 #endif
 
 namespace autofill {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 namespace {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 safe_browsing::PasswordProtectionService* GetProtectionService(
     content::WebContents* web_contents) {
   if (!web_contents) {
@@ -32,8 +34,24 @@ safe_browsing::PasswordProtectionService* GetProtectionService(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   return client ? client->GetPasswordProtectionService() : nullptr;
 }
-}  // namespace
 #endif
+
+bool IsTargetFrameEligible(content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return false;
+  }
+  auto is_eligible = [](content::RenderFrameHost* r) {
+    return r && !r->GetLastCommittedOrigin().opaque() &&
+           r->GetLastCommittedURL().is_valid() &&
+           r->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
+  };
+  content::RenderFrameHost* main_frame = rfh->GetMainFrame();
+  content::RenderFrameHost* outermost_main_frame = rfh->GetOutermostMainFrame();
+  return is_eligible(rfh) && (main_frame == rfh || is_eligible(main_frame)) &&
+         (outermost_main_frame == main_frame ||
+          is_eligible(outermost_main_frame));
+}
+}  // namespace
 
 ChromeOtpPhishGuardDelegate::ChromeOtpPhishGuardDelegate(
     content::WebContents* web_contents)
@@ -42,9 +60,16 @@ ChromeOtpPhishGuardDelegate::ChromeOtpPhishGuardDelegate(
 ChromeOtpPhishGuardDelegate::~ChromeOtpPhishGuardDelegate() = default;
 
 void ChromeOtpPhishGuardDelegate::StartOtpPhishGuardCheck(
-    const GURL& main_frame_url,
-    const GURL& frame_to_fill_url,
+    LocalFrameToken frame_to_fill,
     base::OnceCallback<void(bool)> callback) {
+  content::RenderFrameHost* rfh =
+      FindRenderFrameHostByToken(*web_contents_, frame_to_fill);
+  if (!IsTargetFrameEligible(rfh)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*is_phishing=*/true));
+    return;
+  }
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -54,10 +79,12 @@ void ChromeOtpPhishGuardDelegate::StartOtpPhishGuardCheck(
           : nullptr;
   if (safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()) &&
       database_manager) {
-    // First, check both the main frame URL and target frame-to-fill URL
+    // First, check the target frame, main frame, and outermost main frame URLs
     // against local Safe Browsing blocklists covering various threat types.
     // This provides fast, local multi-frame protection for both human and
     // actor workflows.
+    const GURL outermost_main_frame_url =
+        rfh->GetOutermostMainFrame()->GetLastCommittedURL();
     auto* v5_get_hash_protocol_manager =
         safe_browsing::V5GetHashProtocolManagerFactory::GetForProfile(profile);
     safe_browsing_checker_client_ =
@@ -67,10 +94,12 @@ void ChromeOtpPhishGuardDelegate::StartOtpPhishGuardCheck(
                 ? v5_get_hash_protocol_manager->GetWeakPtr()
                 : nullptr,
             OtpFillingSafeBrowsingCheckerClient::kDefaultCheckDelay,
-            main_frame_url, frame_to_fill_url,
+            {outermost_main_frame_url,
+             rfh->GetMainFrame()->GetLastCommittedURL(),
+             rfh->GetLastCommittedURL()},
             base::BindOnce(
                 &ChromeOtpPhishGuardDelegate::OnSafeBrowsingCheckComplete,
-                weak_factory_.GetWeakPtr(), main_frame_url,
+                weak_factory_.GetWeakPtr(), outermost_main_frame_url,
                 std::move(callback)));
     return;
   }

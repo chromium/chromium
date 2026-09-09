@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_PHISH_GUARD_DELEGATE_H_
 
 #include "base/functional/callback.h"
-#include "url/gurl.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -16,12 +16,11 @@ class OtpPhishGuardDelegate {
  public:
   virtual ~OtpPhishGuardDelegate() = default;
 
-  // Checks if the given URLs are safe from phishing or other threats.
-  // `callback` is run with `is_phishing` (true if phishing/unsafe, false if
-  // safe).
+  // Checks if the target frame to fill is safe from phishing or other
+  // threats. `callback` is run with `is_phishing` (true if phishing/unsafe,
+  // false if safe).
   virtual void StartOtpPhishGuardCheck(
-      const GURL& main_frame_url,
-      const GURL& frame_to_fill_url,
+      LocalFrameToken frame_to_fill,
       base::OnceCallback<void(bool is_phishing)> callback) = 0;
 };
 

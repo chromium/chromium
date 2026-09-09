@@ -4,6 +4,8 @@
 
 #include "chrome/browser/autofill/otp_filling_safe_browsing_checker_client.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,13 +22,12 @@ OtpFillingSafeBrowsingCheckerClient::CreateAndCheck(
     base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
         v5_get_hash_protocol_manager,
     base::TimeDelta safe_browsing_check_delay,
-    const GURL& main_frame_url,
-    const GURL& frame_to_fill_url,
+    std::vector<GURL> urls_to_check,
     ResultCallback callback) {
   auto client = base::WrapUnique(new OtpFillingSafeBrowsingCheckerClient(
       std::move(database_manager), v5_get_hash_protocol_manager,
       safe_browsing_check_delay, std::move(callback)));
-  client->CheckUrlSafety(main_frame_url, frame_to_fill_url);
+  client->CheckUrlSafety(std::move(urls_to_check));
   return client;
 }
 
@@ -60,17 +61,17 @@ OtpFillingSafeBrowsingCheckerClient::~OtpFillingSafeBrowsingCheckerClient() {
 }
 
 void OtpFillingSafeBrowsingCheckerClient::CheckUrlSafety(
-    const GURL& main_frame_url,
-    const GURL& frame_to_fill_url) {
+    std::vector<GURL> urls_to_check) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(database_manager_);
   CHECK(!timer_.IsRunning() && callback_)
       << "OtpFillingSafeBrowsingCheckerClient is strictly single-use per "
          "check.";
 
-  urls_to_check_.push_back(main_frame_url);
-  if (frame_to_fill_url != main_frame_url) {
-    urls_to_check_.push_back(frame_to_fill_url);
+  for (const GURL& url : urls_to_check) {
+    if (url.is_valid() && !std::ranges::contains(urls_to_check_, url)) {
+      urls_to_check_.push_back(url);
+    }
   }
   current_url_index_ = 0;
 

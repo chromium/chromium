@@ -22,7 +22,7 @@ class MockOtpManager : public OtpManager {
   MOCK_METHOD(void,
               GetOtpSuggestions,
               (const FormStructure& form,
-               const url::Origin& origin,
+               const FormFieldData& field,
                OtpManager::GetOtpSuggestionsCallback callback),
               (override));
 };

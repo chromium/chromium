@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/safe_browsing/buildflags.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -26,8 +27,7 @@ class ChromeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
 
   // OtpPhishGuardDelegate:
   void StartOtpPhishGuardCheck(
-      const GURL& main_frame_url,
-      const GURL& frame_to_fill_url,
+      LocalFrameToken frame_to_fill,
       base::OnceCallback<void(bool)> callback) override;
 
  private:

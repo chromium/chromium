@@ -24,9 +24,10 @@ class V5GetHashProtocolManager;
 
 namespace autofill {
 
-// Class used to check main frame and frame-to-fill safety. A URL will be
-// considered malicious/unsafe if it is present in the Safe Browsing blocklist
-// for any of the threat types defined by `threat_types_`.
+// Class used to check target frame, main frame, and outermost main frame
+// safety. A URL will be considered malicious/unsafe if it is present in the
+// Safe Browsing blocklist for any of the threat types defined by
+// `threat_types_`.
 //
 // Checker is configured to fail close. If the check takes longer than
 // `safe_browsing_check_delay_`, the URL will be reported as malicious/unsafe
@@ -56,16 +57,15 @@ class OtpFillingSafeBrowsingCheckerClient
 
   static constexpr base::TimeDelta kDefaultCheckDelay = base::Seconds(2);
 
-  // Creates an instance and starts checking the URL safety. The caller owns the
-  // returned object.
+  // Creates an instance and starts checking the safety of `urls_to_check`. The
+  // caller owns the returned object.
   static std::unique_ptr<OtpFillingSafeBrowsingCheckerClient> CreateAndCheck(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
       base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
           v5_get_hash_protocol_manager,
       base::TimeDelta safe_browsing_check_delay,
-      const GURL& main_frame_url,
-      const GURL& frame_to_fill_url,
+      std::vector<GURL> urls_to_check,
       ResultCallback callback);
 
   ~OtpFillingSafeBrowsingCheckerClient() override;
@@ -87,8 +87,7 @@ class OtpFillingSafeBrowsingCheckerClient
       ResultCallback callback);
 
   // Trigger the call to check the URLs safety.
-  void CheckUrlSafety(const GURL& main_frame_url,
-                      const GURL& frame_to_fill_url);
+  void CheckUrlSafety(std::vector<GURL> urls_to_check);
 
  private:
   // safe_browsing::SafeBrowsingDatabaseManager::Client:
