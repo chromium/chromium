@@ -2,18 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/session_crashed_bubble_view.h"
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/buildflags.h"
 #include "ui/views/focus/focus_manager.h"
@@ -108,4 +117,38 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, AlertAccessibleEvent) {
 IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest, HasCloseButton) {
   ShowUi("SessionCrashedBubble");
   EXPECT_TRUE(crash_bubble_->ShouldShowCloseButton());
+}
+
+IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
+                       RejectsRestoreAfterShutdownStarts) {
+  Profile* const profile = browser()->GetProfile();
+  ExitTypeService::GetInstanceForProfile(profile)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+  ShowUi("SessionCrashedBubble");
+
+  auto shutdown_type = browser_shutdown::SetShutdownTypeForTesting(
+      browser_shutdown::ShutdownType::kWindowClose);
+  crash_bubble_->AcceptDialog();
+
+  EXPECT_FALSE(SessionRestore::IsRestoring(profile));
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::SESSION_RESTORE));
+}
+
+IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
+                       RejectsStartupPagesAfterShutdownStarts) {
+  Profile* const profile = browser()->GetProfile();
+  ExitTypeService::GetInstanceForProfile(profile)
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+  SessionStartupPref startup_pref(SessionStartupPref::URLS);
+  startup_pref.urls.emplace_back("https://example.com/");
+  SessionStartupPref::SetStartupPref(profile, startup_pref);
+  ShowUi("SessionCrashedBubble");
+  const int initial_tab_count = browser()->tab_strip_model()->count();
+
+  auto shutdown_type = browser_shutdown::SetShutdownTypeForTesting(
+      browser_shutdown::ShutdownType::kWindowClose);
+  crash_bubble_->CancelDialog();
+
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
 }

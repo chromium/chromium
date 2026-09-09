@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -104,13 +105,14 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
             ExitTypeService::GetInstanceForProfile(profile)) {
       crashed_lock_ = exit_type_service->CreateCrashedLock();
     }
-
   }
 
   ~SessionCrashedBubbleDelegate() override { g_instance_for_test = nullptr; }
 
-
   void OpenStartupPages(BrowserWindowInterface* browser) {
+    if (RejectActionIfBrowserClosing(browser)) {
+      return;
+    }
     ignored_ = false;
     MaybeEnableUma();
     dialog_model()->host()->Close();
@@ -128,6 +130,10 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
   }
 
   void RestorePreviousSession(BrowserWindowInterface* browser) {
+    if (RejectActionIfBrowserClosing(browser)) {
+      return;
+    }
+
     ignored_ = false;
     MaybeEnableUma();
     // The call to Close() deletes this. Grab the lock so that session restore
@@ -161,6 +167,18 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
   }
 
  private:
+  bool RejectActionIfBrowserClosing(BrowserWindowInterface* browser) {
+    if (!browser_shutdown::HasShutdownStarted() &&
+        !browser->IsDeleteScheduled()) {
+      return false;
+    }
+
+    // Treat the stale action as handled rather than as a dismissed bubble.
+    ignored_ = false;
+    dialog_model()->host()->Close();
+    return true;
+  }
+
   bool ignored_ = true;
   std::unique_ptr<ExitTypeService::CrashedLock> crashed_lock_;
 };
