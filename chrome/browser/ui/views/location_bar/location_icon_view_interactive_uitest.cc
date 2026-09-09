@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -22,7 +25,9 @@ namespace {
 
 class LocationIconViewTest : public InProcessBrowserTest {
  public:
-  LocationIconViewTest() = default;
+  LocationIconViewTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kWebUILocationBar);
+  }
 
   LocationIconViewTest(const LocationIconViewTest&) = delete;
   LocationIconViewTest& operator=(const LocationIconViewTest&) = delete;
@@ -84,6 +89,9 @@ class LocationIconViewTest : public InProcessBrowserTest {
     })) << "Failed to exit fullscreen mode";
   }
 #endif  // BUILDFLAG(IS_MAC)
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that clicking the location icon a second time hides the bubble.
