@@ -11,6 +11,7 @@
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_link_memory.h"
+#include "ipcz/node_messages.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
@@ -60,6 +61,43 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodesWithoutActivation(
 std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
                                                   Ref<Node> non_broker) {
   auto [link0, link1] = LinkNodesWithoutActivation(broker, non_broker);
+  link0->Activate();
+  link1->Activate();
+  return {link0, link1};
+}
+
+std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkBrokers(Ref<Node> broker0,
+                                                    Ref<Node> broker1) {
+  IpczDriverHandle handle0, handle1;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            GetDriver().CreateTransports(
+                IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
+                IPCZ_NO_FLAGS, nullptr, &handle0, &handle1));
+
+  auto transport0 =
+      MakeRefCounted<DriverTransport>(DriverObject(GetDriver(), handle0));
+  auto transport1 =
+      MakeRefCounted<DriverTransport>(DriverObject(GetDriver(), handle1));
+
+  DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(GetDriver());
+  ABSL_ASSERT(buffer.mapping.is_valid());
+
+  auto link0 = NodeLink::CreateInactive(
+      broker0, LinkSide::kA, broker0->GetAssignedName(),
+      broker1->GetAssignedName(), Node::Type::kBroker, 0, broker1->features(),
+      transport0,
+      NodeLinkMemory::Create(broker0, LinkSide::kA, broker1->features(),
+                             std::move(buffer.mapping)));
+  auto link1 = NodeLink::CreateInactive(
+      broker1, LinkSide::kB, broker1->GetAssignedName(),
+      broker0->GetAssignedName(), Node::Type::kBroker, 0, broker0->features(),
+      transport1,
+      NodeLinkMemory::Create(broker1, LinkSide::kB, broker0->features(),
+                             buffer.memory.Map()));
+  broker0->AddConnection(broker1->GetAssignedName(),
+                         {.link = link0, .broker = link0});
+  broker1->AddConnection(broker0->GetAssignedName(),
+                         {.link = link1, .broker = link1});
   link0->Activate();
   link1->Activate();
   return {link0, link1};
@@ -301,6 +339,54 @@ TEST_F(NodeLinkTest, NotifyProxyWillStopRedundant) {
   router1->CloseRoute();
   link0->Deactivate();
   link1->Deactivate();
+}
+
+TEST_F(NodeLinkTest, BrokerRejectsIntroductionToBroker) {
+  // Two brokers connected to one another, as in a broker-to-broker handshake.
+  // A broker should never be the target of an introduction to another broker:
+  // broker-to-broker links are only ever established directly via ConnectNode.
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  auto [link0, link1] = LinkBrokers(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  auto new_transports = DriverTransport::CreatePair(GetDriver());
+  DriverMemoryWithMapping new_buffer =
+      NodeLinkMemory::AllocateMemory(GetDriver());
+  const NodeName introduced_name = node0->GenerateRandomName();
+  EXPECT_FALSE(node1->GetLink(introduced_name));
+  link0->AcceptIntroduction(introduced_name, LinkSide::kA, Node::Type::kBroker,
+                            0, Features{}, std::move(new_transports.first),
+                            std::move(new_buffer.memory));
+
+  // The introduction is rejected and no new connection is established.
+  EXPECT_FALSE(node1->GetLink(introduced_name));
+  EXPECT_TRUE(router1->IsPeerClosed());
+
+  router0->CloseRoute();
+  router1->CloseRoute();
+  node0->Close();
+  node1->Close();
+}
+
+TEST_F(NodeLinkTest, BrokerRejectsRelayFromBroker) {
+  // Relay requests are only ever sent by non-brokers to their own broker, so a
+  // broker must reject any relay request arriving over a broker-to-broker link.
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  auto [link0, link1] = LinkBrokers(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  msg::AddBlockBuffer payload;
+  link0->RelayMessage(node0->GetAssignedName(), payload);
+
+  // The relay request is rejected and the link is torn down.
+  EXPECT_TRUE(router1->IsPeerClosed());
+
+  router0->CloseRoute();
+  router1->CloseRoute();
+  node0->Close();
+  node1->Close();
 }
 
 }  // namespace

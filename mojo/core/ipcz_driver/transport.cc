@@ -682,8 +682,10 @@ scoped_refptr<Transport> Transport::Deserialize(
     return nullptr;
   }
 
-  const bool is_source_trusted = from_transport.is_peer_trusted() ||
-                                 from_transport.destination_type() == kBroker;
+  // A non-broker implicitly trusts its broker; otherwise the peer must be
+  // explicitly trusted. When both endpoints are brokers, the peer being a
+  // broker does not by itself confer any trust on this end.
+  const bool is_source_trusted = from_transport.is_source_trusted();
 
   const bool is_new_peer_trusted = header.is_peer_trusted;
   const bool is_trusted_by_peer = header.is_trusted_by_peer;
