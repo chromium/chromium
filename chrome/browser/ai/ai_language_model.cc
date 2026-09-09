@@ -16,6 +16,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -420,6 +421,20 @@ class AILanguageModel::PromptState
       return;
     }
 
+    if (logger_ && logger_->ShouldEnableDebugLogs()) {
+      for (const auto& tc : tool_calls) {
+        std::string arguments_json;
+        base::JSONWriter::Write(tc->arguments, &arguments_json);
+        OPTIMIZATION_GUIDE_LOGGER(
+            optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+            logger_.get())
+            << "Model generates tool call with PromptApi:\n"
+            << "  call_id: " << tc->call_id << "\n"
+            << "  name: " << tc->name << "\n"
+            << "  arguments: " << arguments_json;
+      }
+    }
+
     // Convert on_device_model::mojom::ToolCall to blink::mojom::ToolCall.
     std::vector<blink::mojom::ToolCallPtr> blink_tool_calls;
     blink_tool_calls.reserve(tool_calls.size());
@@ -497,7 +512,7 @@ class AILanguageModel::PromptState
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
           logger_.get())
-          << "Model generates raw response with PromptApi:\n"
+          << "Model generates text response with PromptApi:\n"
           << full_response_;
     }
     RunCallback();
