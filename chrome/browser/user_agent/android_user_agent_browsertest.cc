@@ -4,6 +4,7 @@
 
 #include <sys/utsname.h>
 
+#include "base/android/device_info.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -30,7 +31,9 @@ class ReduceUserAgentAndroidPlatformBrowserTest : public AndroidBrowserTest {
  protected:
   virtual void SetupFeatures() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion},
+        /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion,
+                              blink::features::
+                                  kAndroidDesktopUASpoofAsChromeOS},
         /*disabled_features=*/{});
   }
 
@@ -39,9 +42,15 @@ class ReduceUserAgentAndroidPlatformBrowserTest : public AndroidBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ReduceUserAgentAndroidPlatformBrowserTest,
                        NavigatorPlatform) {
-  // navigator.platform is always "Linux armv81" on Android.
-  EXPECT_EQ("Linux armv81",
-            content::EvalJs(GetActiveWebContents(), "navigator.platform"));
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
+    EXPECT_EQ("Linux x86_64",
+              content::EvalJs(GetActiveWebContents(), "navigator.platform"));
+  } else {
+    // navigator.platform is always "Linux armv81" on Android mobile.
+    EXPECT_EQ("Linux armv81",
+              content::EvalJs(GetActiveWebContents(), "navigator.platform"));
+  }
 }
 
 // Browser tests that consider kReduceUserAgentMinorVersion feature
@@ -80,5 +89,27 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceUserAgentAndroidPlatformBrowserTest,
   // implementation of GetPlatform in this test will return the un-reduced
   // value).
   EXPECT_EQ(GetPlatform(),
+            content::EvalJs(GetActiveWebContents(), "navigator.platform"));
+}
+
+// Browser tests that consider kAndroidDesktopUASpoofAsChromeOS feature
+// disabled.
+class DisableFeatureAndroidDesktopUASpoofAsChromeOSPlatformBrowserTest
+    : public ReduceUserAgentAndroidPlatformBrowserTest {
+ protected:
+  void SetupFeatures() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion},
+        /*disabled_features=*/{
+            blink::features::kAndroidDesktopUASpoofAsChromeOS});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DisableFeatureAndroidDesktopUASpoofAsChromeOSPlatformBrowserTest,
+    NavigatorPlatform) {
+  // navigator.platform is always "Linux armv81" on Android when
+  // kAndroidDesktopUASpoofAsChromeOS is disabled.
+  EXPECT_EQ("Linux armv81",
             content::EvalJs(GetActiveWebContents(), "navigator.platform"));
 }

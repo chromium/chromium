@@ -13,6 +13,10 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 #include <sys/utsname.h>
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -23,8 +27,19 @@ namespace blink {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+constexpr char kLinuxX86_64[] = "Linux x86_64";
+#endif
+
 String GetReducedNavigatorPlatform() {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAndroidDesktopUASpoofAsChromeOS)) {
+      return kLinuxX86_64;
+    }
+  }
   return "Linux armv81";
 #elif BUILDFLAG(IS_MAC)
   return "MacIntel";
@@ -33,7 +48,7 @@ String GetReducedNavigatorPlatform() {
 #elif BUILDFLAG(IS_FUCHSIA)
   return "";
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  return "Linux x86_64";
+  return kLinuxX86_64;
 #elif BUILDFLAG(IS_IOS)
   return "iPhone";
 #else
