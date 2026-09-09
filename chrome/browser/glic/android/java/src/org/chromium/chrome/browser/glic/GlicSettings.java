@@ -25,6 +25,7 @@ import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -75,6 +76,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
     private static final String PERMISSION_AUTO_BROWSE = "glic_permissions_auto_browse";
+    private static final String PERMISSION_SPARK_AUTO_BROWSE = "glic_permissions_spark_auto_browse";
     private static final String PERMISSION_ACTOR_LOGIN = "glic_actor_login_permissions";
 
     // TODO(b/498717684): Replace answer number urls with a p= identifier instead.
@@ -87,6 +89,10 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             "https://policies.google.com/terms/generative-ai/use-policy";
     private static final String AUTO_BROWSE_CONSIDER_UNEXPECTED_RESULTS_URL =
             "https://support.google.com/gemini/answer/16821166";
+    private static final String SPARK_AUTO_BROWSE_LEARN_MORE_URL =
+            "https://support.google.com/gemini/answer/17094507#spark_gic";
+    private static final String SPARK_AUTO_BROWSE_REVIEW_RISKS_URL =
+            "https://support.google.com/gemini/answer/17094507#spark_safety";
     private static final String ACTIVITY_URL =
             "https://myactivity.google.com/product/gemini?utm_source=gemini";
     private static final String EXTENSIONS_URL = "https://gemini.google.com/apps";
@@ -110,6 +116,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private @Nullable PrefService mLocalPrefs;
     private GlicKeyedService.@Nullable UserEnabledActuationOnWebObserver
             mUserEnabledActuationOnWebObserver;
+    private GlicKeyedService.@Nullable ExperimentalTriggeringObserver
+            mExperimentalTriggeringObserver;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -297,14 +305,13 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             boolean value = glicService.getUserEnabledActuationOnWeb();
             mSharedPreferencesManager.writeBoolean(
                     ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED, value);
-            autoBrowsePref.setChecked(value);
-            autoBrowsePref.setOnPreferenceChangeListener(
-                    (pref, newValue) -> {
-                        boolean boolValue = (boolean) newValue;
+            setupServiceBackedSwitch(
+                    autoBrowsePref,
+                    value,
+                    boolValue -> {
                         mSharedPreferencesManager.writeBoolean(
                                 ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED, boolValue);
                         glicService.setUserEnabledActuationOnWeb(boolValue);
-                        return true;
                     });
             mUserEnabledActuationOnWebObserver =
                     enabled -> {
@@ -324,6 +331,36 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         autoBrowseSummary,
                         getLearnMoreSpanInfo(AUTO_BROWSE_LEARN_MORE_URL, autoBrowsePref)));
         autoBrowsePref.setOnBindExpandedAreaListener(this::setupAutoBrowseExpandedArea);
+
+        // "Let Gemini Spark browse on this device" (experimental triggering).
+        // Gated on the kGlicExperimentalTriggering flag. See b/551033026.
+        ChromeExpandableSwitchPreference sparkAutoBrowsePref =
+                assertNonNull(findPreference(PERMISSION_SPARK_AUTO_BROWSE));
+        if (!GlicEnabling.shouldShowExperimentalTriggeringToggle(getProfile())) {
+            sparkAutoBrowsePref.setVisible(false);
+        } else if (glicService != null) {
+            setupServiceBackedSwitch(
+                    sparkAutoBrowsePref,
+                    glicService.getExperimentalTriggeringEnabled(),
+                    boolValue -> glicService.setExperimentalTriggeringEnabled(boolValue));
+            mExperimentalTriggeringObserver =
+                    enabled -> {
+                        if (sparkAutoBrowsePref.isChecked() != enabled) {
+                            sparkAutoBrowsePref.setChecked(enabled);
+                        }
+                    };
+            glicService.addExperimentalTriggeringObserver(mExperimentalTriggeringObserver);
+
+            String sparkSummary =
+                    getString(R.string.settings_glic_experimental_triggering_sub_label);
+            sparkAutoBrowsePref.setSummary(
+                    SpanApplier.applySpans(
+                            sparkSummary,
+                            getLearnMoreSpanInfo(
+                                    SPARK_AUTO_BROWSE_LEARN_MORE_URL, sparkAutoBrowsePref)));
+            sparkAutoBrowsePref.setOnBindExpandedAreaListener(
+                    this::setupSparkAutoBrowseExpandedArea);
+        }
 
         Preference actorLoginPref = findPreference(PERMISSION_ACTOR_LOGIN);
         if (actorLoginPref != null) {
@@ -401,6 +438,13 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         autoBrowsePref,
                         R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel,
                         AUTO_BROWSE_LEARN_MORE_URL);
+            }
+
+            if (sparkAutoBrowsePref != null) {
+                setupDisabledPreference(
+                        sparkAutoBrowsePref,
+                        R.string.settings_glic_experimental_triggering_sub_label,
+                        SPARK_AUTO_BROWSE_LEARN_MORE_URL);
             }
         }
     }
@@ -527,6 +571,14 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         mUserEnabledActuationOnWebObserver);
             }
             mUserEnabledActuationOnWebObserver = null;
+        }
+
+        if (mExperimentalTriggeringObserver != null) {
+            GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(getProfile());
+            if (glicService != null) {
+                glicService.removeExperimentalTriggeringObserver(mExperimentalTriggeringObserver);
+            }
+            mExperimentalTriggeringObserver = null;
         }
         super.onDestroy();
     }
@@ -658,6 +710,50 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         }
     }
 
+    /**
+     * Applies the shared wiring for a service-backed expandable switch preference: sets its initial
+     * checked state and installs a change listener that forwards user toggles to {@code
+     * onUserToggled}. The caller creates and registers the type-specific observer that keeps the
+     * switch in sync with the service.
+     */
+    private static void setupServiceBackedSwitch(
+            ChromeExpandableSwitchPreference pref,
+            boolean checked,
+            Callback<Boolean> onUserToggled) {
+        pref.setChecked(checked);
+        pref.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    onUserToggled.onResult((boolean) newValue);
+                    return true;
+                });
+    }
+
+    private void setupSparkAutoBrowseExpandedArea(View expandedArea) {
+        TextView considerUserResponsibility =
+                expandedArea.findViewById(
+                        R.id.glic_spark_auto_browse_consider_user_responsibility_description);
+        if (considerUserResponsibility != null
+                && considerUserResponsibility.getMovementMethod() == null) {
+            ChromeExpandableSwitchPreference sparkAutoBrowsePref =
+                    assertNonNull(findPreference(PERMISSION_SPARK_AUTO_BROWSE));
+            String text = getString(R.string.settings_glic_experimental_triggering_consider_3);
+            considerUserResponsibility.setText(
+                    SpanApplier.applySpans(
+                            text,
+                            createLinkSpanInfo(
+                                    "$1",
+                                    SPARK_AUTO_BROWSE_REVIEW_RISKS_URL,
+                                    sparkAutoBrowsePref)));
+            considerUserResponsibility.setMovementMethod(LinkMovementMethod.getInstance());
+
+            if (GlicEnabling.isDisabledByPolicy(getProfile())) {
+                considerUserResponsibility.setTextColor(sparkAutoBrowsePref.getDisabledColor());
+                // Re-enable the view so links remain clickable, even though it looks disabled.
+                considerUserResponsibility.setEnabled(true);
+            }
+        }
+    }
+
     private SpanApplier.SpanInfo createSpanInfo(
             String openTag, String url, ChromeExpandableSwitchPreference pref) {
         SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
@@ -762,6 +858,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                             GlicEnabling.shouldShowWebActuationToggle(profile);
                     if (!shouldShowWebActuation) {
                         indexData.removeEntryForKey(prefFrag, PERMISSION_AUTO_BROWSE);
+                    }
+                    if (!GlicEnabling.shouldShowExperimentalTriggeringToggle(profile)) {
+                        indexData.removeEntryForKey(prefFrag, PERMISSION_SPARK_AUTO_BROWSE);
                     }
                 }
             };

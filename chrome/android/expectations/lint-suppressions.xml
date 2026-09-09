@@ -22,6 +22,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="chrome/browser/data_sharing/android/java/res/layout/recent_activity_log_item.xml"/>
     <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_auto_browse.xml"/>
     <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_default_tab_access.xml"/>
+    <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_spark_auto_browse.xml"/>
     <ignore regexp="chrome/browser/safety_hub/android/java/res/layout/safety_hub_expandable_preference.xml"/>
     <ignore regexp="chrome/browser/ui/android/omnibox/java/res/layout/fusebox_layout.xml"/>
     <ignore regexp="components/browser_ui/settings/android/java/res/layout/chrome_expandable_switch_preference.xml"/>
@@ -402,6 +403,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="UseCompoundDrawables">
     <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_auto_browse.xml"/>
     <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_default_tab_access.xml"/>
+    <ignore regexp="chrome/browser/glic/android/java/res/layout/glic_spark_auto_browse.xml"/>
     <ignore regexp="chrome/browser/ui/android/appmenu/internal/java/res/layout/submenu_header.xml"/>
     <ignore regexp="chrome/browser/ui/android/toolbar/java/res/layout/sheet_tab_toolbar.xml"/>
   </issue>

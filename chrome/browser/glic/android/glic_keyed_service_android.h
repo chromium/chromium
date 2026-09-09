@@ -64,8 +64,12 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
   bool GetUserEnabledActuationOnWeb(JNIEnv* env);
   void SetUserEnabledActuationOnWeb(JNIEnv* env, bool enabled);
 
+  bool GetExperimentalTriggeringEnabled(JNIEnv* env);
+  void SetExperimentalTriggeringEnabled(JNIEnv* env, bool enabled);
+
   void OnGlobalShowHide();
   void OnUserEnabledActuationOnWebChanged();
+  void OnExperimentalTriggeringEnabledChanged();
   void OnAllowedStateChanged();
 
   // Returns the GlicKeyedServiceImpl java object.
@@ -81,6 +85,7 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   base::CallbackListSubscription global_show_hide_subscription_;
   base::CallbackListSubscription web_actuation_pref_subscription_;
+  base::CallbackListSubscription experimental_triggering_pref_subscription_;
   base::CallbackListSubscription allowed_changed_subscription_;
 };
 

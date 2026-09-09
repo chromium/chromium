@@ -34,6 +34,8 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     private final ObserverList<GlobalShowHideObserver> mObservers = new ObserverList<>();
     private final ObserverList<UserEnabledActuationOnWebObserver>
             mUserEnabledActuationOnWebObservers = new ObserverList<>();
+    private final ObserverList<ExperimentalTriggeringObserver> mExperimentalTriggeringObservers =
+            new ObserverList<>();
     private final ObserverList<AllowedChangedObserver> mAllowedChangedObservers =
             new ObserverList<>();
 
@@ -114,6 +116,18 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
+    public boolean getExperimentalTriggeringEnabled() {
+        if (mNativePtr == 0) return false;
+        return GlicKeyedServiceImplJni.get().getExperimentalTriggeringEnabled(mNativePtr);
+    }
+
+    @Override
+    public void setExperimentalTriggeringEnabled(boolean enabled) {
+        if (mNativePtr == 0) return;
+        GlicKeyedServiceImplJni.get().setExperimentalTriggeringEnabled(mNativePtr, enabled);
+    }
+
+    @Override
     @CalledByNative
     public boolean isGlicShortcutActive(Profile profile) {
         if (BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext())) {
@@ -171,6 +185,16 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
+    public void addExperimentalTriggeringObserver(ExperimentalTriggeringObserver observer) {
+        mExperimentalTriggeringObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeExperimentalTriggeringObserver(ExperimentalTriggeringObserver observer) {
+        mExperimentalTriggeringObservers.removeObserver(observer);
+    }
+
+    @Override
     public void addAllowedChangedObserver(AllowedChangedObserver observer) {
         mAllowedChangedObservers.addObserver(observer);
     }
@@ -184,6 +208,13 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     private void onUserEnabledActuationOnWebChanged(boolean enabled) {
         for (UserEnabledActuationOnWebObserver observer : mUserEnabledActuationOnWebObservers) {
             observer.onUserEnabledActuationOnWebChanged(enabled);
+        }
+    }
+
+    @CalledByNative
+    private void onExperimentalTriggeringEnabledChanged(boolean enabled) {
+        for (ExperimentalTriggeringObserver observer : mExperimentalTriggeringObservers) {
+            observer.onExperimentalTriggeringEnabledChanged(enabled);
         }
     }
 
@@ -231,5 +262,9 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         boolean getUserEnabledActuationOnWeb(long nativeGlicKeyedServiceAndroid);
 
         void setUserEnabledActuationOnWeb(long nativeGlicKeyedServiceAndroid, boolean enabled);
+
+        boolean getExperimentalTriggeringEnabled(long nativeGlicKeyedServiceAndroid);
+
+        void setExperimentalTriggeringEnabled(long nativeGlicKeyedServiceAndroid, boolean enabled);
     }
 }

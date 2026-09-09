@@ -68,6 +68,11 @@ GlicKeyedServiceAndroid::GlicKeyedServiceAndroid(GlicKeyedService* service)
           base::BindRepeating(
               &GlicKeyedServiceAndroid::OnUserEnabledActuationOnWebChanged,
               base::Unretained(this)));
+  experimental_triggering_pref_subscription_ =
+      service_->enabling().RegisterOnExperimentalTriggeringEnabledChanged(
+          base::BindRepeating(
+              &GlicKeyedServiceAndroid::OnExperimentalTriggeringEnabledChanged,
+              base::Unretained(this)));
   allowed_changed_subscription_ = service_->enabling().RegisterAllowedChanged(
       base::BindRepeating(&GlicKeyedServiceAndroid::OnAllowedStateChanged,
                           base::Unretained(this)));
@@ -179,6 +184,15 @@ void GlicKeyedServiceAndroid::SetUserEnabledActuationOnWeb(JNIEnv* env,
   service_->enabling().SetUserEnabledActuationOnWeb(enabled);
 }
 
+bool GlicKeyedServiceAndroid::GetExperimentalTriggeringEnabled(JNIEnv* env) {
+  return service_->enabling().GetExperimentalTriggeringEnabled();
+}
+
+void GlicKeyedServiceAndroid::SetExperimentalTriggeringEnabled(JNIEnv* env,
+                                                               bool enabled) {
+  service_->enabling().SetExperimentalTriggeringEnabled(enabled);
+}
+
 void GlicKeyedServiceAndroid::OnGlobalShowHide() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_GlicKeyedServiceImpl_onGlobalShowHide(env, java_obj_);
@@ -189,6 +203,13 @@ void GlicKeyedServiceAndroid::OnUserEnabledActuationOnWebChanged() {
   bool enabled = service_->enabling().GetUserEnabledActuationOnWeb();
   Java_GlicKeyedServiceImpl_onUserEnabledActuationOnWebChanged(env, java_obj_,
                                                                enabled);
+}
+
+void GlicKeyedServiceAndroid::OnExperimentalTriggeringEnabledChanged() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  bool enabled = service_->enabling().GetExperimentalTriggeringEnabled();
+  Java_GlicKeyedServiceImpl_onExperimentalTriggeringEnabledChanged(
+      env, java_obj_, enabled);
 }
 
 void GlicKeyedServiceAndroid::OnAllowedStateChanged() {

@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -349,6 +350,106 @@ public class GlicSettingsUnitTest {
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(GLIC_AUTO_BROWSE_SETTING_ENABLED, true));
         verify(mGlicKeyedServiceMock).setUserEnabledActuationOnWeb(false);
+    }
+
+    @Test
+    public void testSparkAutoBrowseToggle_HiddenByDefault() {
+        // shouldShowExperimentalTriggeringToggle defaults to false in the mock, so the toggle
+        // should not be shown.
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_permissions_spark_auto_browse");
+        assertFalse(
+                "Spark toggle should be hidden when experimental triggering is not allowed",
+                preference.isVisible());
+    }
+
+    @Test
+    public void testSparkAutoBrowsePermissionInitialState_Enabled() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
+        when(mGlicKeyedServiceMock.getExperimentalTriggeringEnabled()).thenReturn(true);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference =
+                fragment.findPreference("glic_permissions_spark_auto_browse");
+        assertTrue("Spark toggle should be visible when allowed", preference.isVisible());
+        assertTrue(preference.isChecked());
+    }
+
+    @Test
+    public void testSparkAutoBrowsePermissionInitialState_Disabled() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
+        when(mGlicKeyedServiceMock.getExperimentalTriggeringEnabled()).thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference =
+                fragment.findPreference("glic_permissions_spark_auto_browse");
+        assertFalse(preference.isChecked());
+    }
+
+    @Test
+    public void testSparkAutoBrowsePermissionToggle() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
+        when(mGlicKeyedServiceMock.getExperimentalTriggeringEnabled()).thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference =
+                fragment.findPreference("glic_permissions_spark_auto_browse");
+
+        // Test toggling on.
+        preference.getOnPreferenceChangeListener().onPreferenceChange(preference, true);
+        verify(mGlicKeyedServiceMock).setExperimentalTriggeringEnabled(true);
+
+        // Test toggling off.
+        preference.getOnPreferenceChangeListener().onPreferenceChange(preference, false);
+        verify(mGlicKeyedServiceMock).setExperimentalTriggeringEnabled(false);
+    }
+
+    @Test
+    public void testSparkAutoBrowseObserver_UpdatesCheckedState() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
+        when(mGlicKeyedServiceMock.getExperimentalTriggeringEnabled()).thenReturn(false);
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference preference =
+                fragment.findPreference("glic_permissions_spark_auto_browse");
+        assertFalse(preference.isChecked());
+
+        ArgumentCaptor<GlicKeyedService.ExperimentalTriggeringObserver> captor =
+                ArgumentCaptor.forClass(GlicKeyedService.ExperimentalTriggeringObserver.class);
+        verify(mGlicKeyedServiceMock).addExperimentalTriggeringObserver(captor.capture());
+
+        // Simulate a native-side change; the toggle should follow.
+        captor.getValue().onExperimentalTriggeringEnabledChanged(true);
+        assertTrue(preference.isChecked());
+    }
+
+    @Test
+    public void testSparkAutoBrowseObserver_RemovedOnDestroy() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
+        GlicSettings fragment = launchFragment();
+
+        ArgumentCaptor<GlicKeyedService.ExperimentalTriggeringObserver> captor =
+                ArgumentCaptor.forClass(GlicKeyedService.ExperimentalTriggeringObserver.class);
+        verify(mGlicKeyedServiceMock).addExperimentalTriggeringObserver(captor.capture());
+
+        mActivityScenarioRule.getScenario().moveToState(State.DESTROYED);
+        verify(mGlicKeyedServiceMock).removeExperimentalTriggeringObserver(captor.getValue());
+    }
+
+    @Test
+    public void testSearchIndex_SparkToggleHidden_RemovesEntry() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(false);
+        GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock)
+                .removeEntryForKey(
+                        GlicSettings.class.getName(), "glic_permissions_spark_auto_browse");
+    }
+
+    @Test
+    public void testSearchIndex_SparkToggleShown_KeepsEntry() {
+        when(mGlicEnablingJniMock.shouldShowExperimentalTriggeringToggle(any())).thenReturn(true);
+        GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock, never())
+                .removeEntryForKey(
+                        GlicSettings.class.getName(), "glic_permissions_spark_auto_browse");
     }
 
     private void doTestToggle(String sharedPrefKey, String profilePrefKey, String viewId) {

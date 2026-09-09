@@ -181,6 +181,17 @@ public interface GlicKeyedService {
     /** Removes an observer for user enabled actuation on web changes. */
     void removeUserEnabledActuationOnWebObserver(UserEnabledActuationOnWebObserver observer);
 
+    /** Observer for experimental triggering (Gemini Spark) enabled changes. */
+    interface ExperimentalTriggeringObserver {
+        void onExperimentalTriggeringEnabledChanged(boolean enabled);
+    }
+
+    /** Adds an observer for experimental triggering enabled changes. */
+    void addExperimentalTriggeringObserver(ExperimentalTriggeringObserver observer);
+
+    /** Removes an observer for experimental triggering enabled changes. */
+    void removeExperimentalTriggeringObserver(ExperimentalTriggeringObserver observer);
+
     /** Observer for allowed changes. */
     interface AllowedChangedObserver {
         void onAllowedStateChanged();
@@ -213,6 +224,20 @@ public interface GlicKeyedService {
      * @param enabled true to enable actuation on web.
      */
     void setUserEnabledActuationOnWeb(boolean enabled);
+
+    /**
+     * Checks if the user has enabled experimental triggering (Gemini Spark).
+     *
+     * @return true if experimental triggering is enabled.
+     */
+    boolean getExperimentalTriggeringEnabled();
+
+    /**
+     * Sets whether the user has enabled experimental triggering (Gemini Spark).
+     *
+     * @param enabled true to enable experimental triggering.
+     */
+    void setExperimentalTriggeringEnabled(boolean enabled);
 
     /**
      * Checks if the Glic toolbar button is currently active/pinned.

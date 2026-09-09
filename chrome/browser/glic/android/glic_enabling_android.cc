@@ -56,6 +56,14 @@ bool JNI_GlicEnabling_ShouldShowWebActuationToggle(JNIEnv* env,
          glic_service->enabling().ShouldShowWebActuationToggle();
 }
 
+bool JNI_GlicEnabling_ShouldShowExperimentalTriggeringToggle(JNIEnv* env,
+                                                             Profile* profile) {
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  return glic_service &&
+         glic_service->enabling().ShouldShowExperimentalTriggeringToggle();
+}
+
 bool JNI_GlicEnabling_IsDisabledByPolicy(JNIEnv* env, Profile* profile) {
   return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
 }
