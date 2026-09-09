@@ -55,18 +55,26 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
@@ -85,6 +93,9 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.LocalizationUtils;
@@ -101,6 +112,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Render tests for Vertical Tabs UI (TabVerticalViewBinder). */
@@ -1100,6 +1113,68 @@ public class VerticalTabListRenderTest {
                 "tab_strip_empty_space_context_menu_no_recently_closed");
     }
 
+    // =========================================================================================
+    // Regular Tabs Context Menu (TabContextMenuCoordinator) Tests
+    // =========================================================================================
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabContextMenu_Standard() throws IOException {
+        testTabContextMenu(
+                /* tabCount= */ 3,
+                /* anchorTabIndex= */ 1,
+                /* selectedTabIndices= */ List.of(1),
+                /* isPinned= */ false,
+                /* isGrouped= */ false,
+                /* canToggleLayout= */ true,
+                "tab_context_menu_standard");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabContextMenu_LastTab() throws IOException {
+        // Should not contain "Close tabs below".
+        testTabContextMenu(
+                /* tabCount= */ 3,
+                /* anchorTabIndex= */ 2,
+                /* selectedTabIndices= */ List.of(2),
+                /* isPinned= */ false,
+                /* isGrouped= */ false,
+                /* canToggleLayout= */ true,
+                "tab_context_menu_last_tab");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabContextMenu_SingleTab() throws IOException {
+        testTabContextMenu(
+                /* tabCount= */ 1,
+                /* anchorTabIndex= */ 0,
+                /* selectedTabIndices= */ List.of(0),
+                /* isPinned= */ false,
+                /* isGrouped= */ false,
+                /* canToggleLayout= */ true,
+                "tab_context_menu_single_tab");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabContextMenu_Pinned() throws IOException {
+        // Should contain "Unpin tab" instead of "Pin tab".
+        testTabContextMenu(
+                /* tabCount= */ 3,
+                /* anchorTabIndex= */ 0,
+                /* selectedTabIndices= */ List.of(0),
+                /* isPinned= */ true,
+                /* isGrouped= */ false,
+                /* canToggleLayout= */ true,
+                "tab_context_menu_pinned");
+    }
+
     private void testEmptySpaceContextMenu(
             int tabCount,
             @TabModel.RecentlyClosedEntryType int recentlyClosedType,
@@ -1186,6 +1261,149 @@ public class VerticalTabListRenderTest {
         CriteriaHelper.pollUiThread(() -> renderContainer[0].getHeight() > 0);
         // Capture the pixel bitmap.
         mRenderTestRule.render(renderContainer[0], goldenName + (mIsIncognito ? "_incognito" : ""));
+    }
+
+    private void testTabContextMenu(
+            int tabCount,
+            int anchorTabIndex,
+            List<Integer> selectedTabIndices,
+            boolean isPinned,
+            boolean isGrouped,
+            boolean canToggleLayout,
+            String goldenName)
+            throws IOException {
+        FrameLayout[] renderContainer = new FrameLayout[1];
+        // Need this to show "Move tab to another window".
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        TabGroupSyncService mockTabGroupSyncService = mock(TabGroupSyncService.class);
+        when(mockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
+        TabGroupSyncServiceFactory.setForTesting(mockTabGroupSyncService);
+
+        CollaborationService mockCollaborationService = mock(CollaborationService.class);
+        ServiceStatus mockServiceStatus = mock(ServiceStatus.class);
+        when(mockCollaborationService.getServiceStatus()).thenReturn(mockServiceStatus);
+        CollaborationServiceFactory.setForTesting(mockCollaborationService);
+
+        MultiInstanceOrchestrator mockOrchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mockOrchestrator);
+
+        SendTabToSelfAndroidBridge.Natives mockSendTabToSelfBridge =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        when(mockSendTabToSelfBridge.getEntryPointDisplayReason(any(), any())).thenReturn(null);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mockSendTabToSelfBridge);
+        TabContextMenuCoordinator[] coordinatorHolder = new TabContextMenuCoordinator[1];
+
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Force the -sw600dp resource qualifier bucket so DeviceFormFactor
+                        // detects SCREEN_BUCKET_TABLET on CQ phone bots.
+                        Configuration config = mActivity.getResources().getConfiguration();
+                        config.smallestScreenWidthDp = 600;
+                        mActivity
+                                .getResources()
+                                .updateConfiguration(
+                                        config, mActivity.getResources().getDisplayMetrics());
+
+                        Profile mockProfile = mock(Profile.class);
+                        TabModel tabModel = mock(TabModel.class);
+                        when(tabModel.isIncognito()).thenReturn(mIsIncognito);
+                        when(tabModel.getProfile()).thenReturn(mockProfile);
+                        when(tabModel.getCount()).thenReturn(tabCount);
+                        when(tabModel.getTabCountSupplier())
+                                .thenReturn(ObservableSuppliers.createNonNull(tabCount));
+                        when(tabModel.findFirstNonPinnedTabIndex()).thenReturn(isPinned ? 1 : 0);
+                        when(tabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+
+                        List<Tab> tabs = new ArrayList<>();
+                        Token groupId = isGrouped ? Token.createRandom() : null;
+                        for (int i = 0; i < tabCount; i++) {
+                            Tab tab =
+                                    createMockTab(
+                                            i,
+                                            "Tab " + i,
+                                            JUnitTestGURLs.SEARCH_URL,
+                                            /* isPinned= */ isPinned && i == 0,
+                                            TabAlert.NONE,
+                                            /* memoryUsageBytes= */ 0L);
+                            when(tab.getTabGroupId()).thenReturn(groupId);
+                            when(tabModel.getTabById(i)).thenReturn(tab);
+                            when(tabModel.getTabAt(i)).thenReturn(tab);
+                            tabs.add(tab);
+                        }
+                        when(tabModel.iterator()).thenAnswer(inv -> tabs.iterator());
+
+                        var anchorInfo = new AnchorInfo(anchorTabIndex, selectedTabIndices);
+
+                        MultiInstanceManager multiInstanceManager =
+                                mock(MultiInstanceManager.class);
+                        SnackbarManager snackbarManager = mock(SnackbarManager.class);
+                        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+                        when(windowAndroid.getActivity())
+                                .thenReturn(new WeakReference<>(mActivity));
+                        when(windowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
+
+                        coordinatorHolder[0] =
+                                TabContextMenuCoordinator.createContextMenuCoordinator(
+                                        () -> tabModel,
+                                        /* tabGroupListBottomSheetCoordinator= */ null,
+                                        /* tabGroupCreationCallback= */ (gId) -> {},
+                                        multiInstanceManager,
+                                        ObservableSuppliers.createMonotonic(),
+                                        windowAndroid,
+                                        mActivity,
+                                        /* tabBookmarkerSupplier= */ null,
+                                        /* reorderFunction= */ (info, toPrev) -> {},
+                                        snackbarManager,
+                                        /* activityResultTracker= */ null,
+                                        /* modalDialogManager= */ null,
+                                        TabClosingSource.VERTICAL_TAB_STRIP,
+                                        () -> canToggleLayout,
+                                        TabContextMenuCoordinator.TabStripLayoutType.VERTICAL);
+
+                        View menuContentView =
+                                coordinatorHolder[0].buildMenuView(anchorInfo, mIsIncognito);
+
+                        renderContainer[0] = new FrameLayout(mActivity);
+                        Drawable background =
+                                TabOverflowMenuCoordinator.getMenuBackground(
+                                        mActivity, mIsIncognito);
+                        renderContainer[0].setBackground(background);
+
+                        int minWidthPx =
+                                mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.tab_strip_context_menu_min_width);
+                        renderContainer[0].addView(
+                                menuContentView,
+                                new FrameLayout.LayoutParams(
+                                        minWidthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                        mActivity.setContentView(
+                                renderContainer[0],
+                                new FrameLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                    });
+
+            CriteriaHelper.pollUiThread(() -> renderContainer[0].getHeight() > 0);
+            mRenderTestRule.render(
+                    renderContainer[0], goldenName + (mIsIncognito ? "_incognito" : ""));
+
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (coordinatorHolder[0] != null) {
+                            coordinatorHolder[0].destroyMenuForTesting();
+                        }
+                    });
+            TabGroupSyncServiceFactory.setForTesting(null);
+            CollaborationServiceFactory.setForTesting(null);
+            MultiInstanceOrchestratorFactory.setInstanceForTesting(null);
+            SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null);
+        }
     }
 
     private void testTabGroupSpine(boolean isCollapsed, boolean isRtl, boolean isHeaderOffScreen)

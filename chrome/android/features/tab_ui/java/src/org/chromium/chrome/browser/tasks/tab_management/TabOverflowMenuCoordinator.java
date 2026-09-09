@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.UiUtils.getItemTitle;
 
 import android.app.Activity;
@@ -23,6 +24,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
@@ -306,6 +308,51 @@ public abstract class TabOverflowMenuCoordinator<T>
             @HorizontalOrientation int horizontalOrientation,
             Activity activity,
             boolean isIncognito) {
+
+        View contentView =
+                buildMenuView(
+                        anchorViewRectProvider,
+                        id,
+                        horizontalOverlapAnchor,
+                        verticalOverlapAnchor,
+                        animStyle,
+                        horizontalOrientation,
+                        activity,
+                        isIncognito);
+
+        ModelList modelList = assumeNonNull(mMenuHolder).getModelList();
+
+        modelList.addObserver(
+                mHierarchicalMenuController
+                .new AccessibilityListObserver(
+                        contentView,
+                        /* headerView= */ null,
+                        contentView.findViewById(R.id.tab_group_action_menu_list),
+                        /* headerModelList= */ null,
+                        modelList));
+
+        mMenuHolder.show();
+
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ this,
+                mMenuHolder,
+                mMenuHolder::setOnScrollChangeListener,
+                /* drillDownOverrideValue= */ null);
+        mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
+                contentView, this::dismiss);
+    }
+
+    /** Builds and initializes the menu view and its holder without showing the popup window. */
+    @VisibleForTesting
+    protected View buildMenuView(
+            RectProvider anchorViewRectProvider,
+            T id,
+            boolean horizontalOverlapAnchor,
+            boolean verticalOverlapAnchor,
+            @StyleRes int animStyle,
+            @HorizontalOrientation int horizontalOrientation,
+            Activity activity,
+            boolean isIncognito) {
         mCollaborationId = getCollaborationIdOrNull(id);
         mIsIncognito = isIncognito;
         mId = id;
@@ -319,8 +366,8 @@ public abstract class TabOverflowMenuCoordinator<T>
         ModelList modelList = new ModelList();
         configureMenuItems(modelList, id);
         // Apply offset from the background.
-        if (mActivity != null) {
-            offsetPopupRect(mActivity, isIncognito, anchorViewRectProvider.getRect());
+        if (activity != null) {
+            offsetPopupRect(activity, isIncognito, anchorViewRectProvider.getRect());
         }
         mMenuMaxWidth = getMenuWidth(anchorViewRectProvider.getRect().width());
         mMenuHolder =
@@ -342,25 +389,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                         /* isFlyout= */ false);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
         afterCreate();
-
-        modelList.addObserver(
-                mHierarchicalMenuController
-                .new AccessibilityListObserver(
-                        mMenuHolder.getContentView(),
-                        /* headerView= */ null,
-                        mMenuHolder.getContentView().findViewById(R.id.tab_group_action_menu_list),
-                        /* headerModelList= */ null,
-                        modelList));
-
-        mMenuHolder.show();
-
-        mHierarchicalMenuController.setupFlyoutController(
-                /* flyoutHandler= */ this,
-                mMenuHolder,
-                mMenuHolder::setOnScrollChangeListener,
-                /* drillDownOverrideValue= */ null);
-        mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
-                mMenuHolder.getContentView(), this::dismiss);
+        return mMenuHolder.getContentView();
     }
 
     /**
@@ -451,11 +480,16 @@ public abstract class TabOverflowMenuCoordinator<T>
         FlyoutController<TabOverflowMenuHolder<T>> controller =
                 mHierarchicalMenuController.getFlyoutController();
         if (controller == null) {
-            return;
+            // If no FlyoutController was set up (e.g. buildMenuView was called directly in
+            // render tests without showing the popup window), destroy the holder directly.
+            if (mMenuHolder != null) {
+                mMenuHolder.destroy();
+                mMenuHolder = null;
+            }
+        } else {
+            controller.destroy();
+            controller = null;
         }
-
-        controller.destroy();
-        controller = null;
     }
 
     /**

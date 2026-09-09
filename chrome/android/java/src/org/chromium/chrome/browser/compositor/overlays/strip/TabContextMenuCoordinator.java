@@ -13,6 +13,8 @@ import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IdRes;
@@ -1255,5 +1257,18 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     .getTabUngrouper()
                     .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
         }
+    }
+
+    @VisibleForTesting
+    public View buildMenuView(AnchorInfo anchorInfo, boolean isIncognito) {
+        return buildMenuView(
+                new RectProvider(new Rect()),
+                anchorInfo,
+                /* horizontalOverlapAnchor= */ true,
+                /* verticalOverlapAnchor= */ false,
+                /* animStyle= */ Resources.ID_NULL,
+                HorizontalOrientation.LAYOUT_DIRECTION,
+                mActivity,
+                isIncognito);
     }
 }
