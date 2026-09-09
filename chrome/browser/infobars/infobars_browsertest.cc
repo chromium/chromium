@@ -80,10 +80,6 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #endif
@@ -252,9 +248,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"session_restore", IBD::SESSION_RESTORE_INFOBAR_DELEGATE},
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-          {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
   const auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
@@ -313,15 +306,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
                 browser()->GetProfile(), base::OnceClosure()));
       }
       break;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-    case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
-      ReloadPluginInfoBarDelegate::Create(
-          GetInfoBarManager(), nullptr,
-          l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                     u"Test Plugin"));
-      break;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
     case IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE:
       ChromeSelectFilePolicy(GetWebContents()).SelectFileDenied();
@@ -545,12 +529,6 @@ IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_incognito_connectability) {
 IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_theme_installed) {
   ShowAndVerifyUi();
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_reload_plugin) {
-  ShowAndVerifyUi();
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_file_access_disabled) {
   ShowAndVerifyUi();

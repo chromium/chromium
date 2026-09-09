@@ -73,10 +73,6 @@ enum InfoBarType {
   [EnableIf=is_win|is_mac]
   kPdf,
 
-  // Reload plugin infobar.
-  [EnableIf=enable_plugins]
-  kReloadPlugin,
-
   // Session restore infobar. Can only be triggered on Win, Mac and Linux.
   [EnableIf=is_win|is_mac|is_linux]
   kSessionRestore,

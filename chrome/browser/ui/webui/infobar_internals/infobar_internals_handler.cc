@@ -66,10 +66,6 @@
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
@@ -134,9 +130,6 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kKnownInterception:
     case InfoBarType::kObsoleteSystem:
     case InfoBarType::kPageInfo:
-#if BUILDFLAG(ENABLE_PLUGINS)
-    case InfoBarType::kReloadPlugin:
-#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case InfoBarType::kPdf:
 #endif
@@ -292,13 +285,6 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "it's not already. This trigger resets any browser state that "
             "prevents the infobar from being shown, then shows the infobar. "
             "This can only be triggered on Windows or Mac.");
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  add_entry(InfoBarType::kReloadPlugin, "Reload Plugin",
-            "The Reload Plugin infobar is used to ask the user to reload a "
-            "page when a plugin has crashed or disconnected. This trigger "
-            "shows the infobar.");
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -717,16 +703,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return true;
     }
 #endif
-#if BUILDFLAG(ENABLE_PLUGINS)
-    case InfoBarType::kReloadPlugin: {
-      ReloadPluginInfoBarDelegate::Create(
-          infobars::ContentInfoBarManager::FromWebContents(web_contents),
-          &web_contents->GetController(),
-          l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                     u"Infobar Internals"));
-      return true;
-    }
-#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kSessionRestore: {
       session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()

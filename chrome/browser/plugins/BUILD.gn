@@ -31,7 +31,6 @@ source_set("plugins") {
       "plugin_prefs_factory.h",
       "plugin_response_interceptor_url_loader_throttle.h",
       "plugin_utils.h",
-      "reload_plugin_infobar_delegate.h",
     ]
 
     public_deps += [
@@ -78,7 +77,6 @@ source_set("impl") {
       "plugin_prefs_factory.cc",
       "plugin_response_interceptor_url_loader_throttle.cc",
       "plugin_utils.cc",
-      "reload_plugin_infobar_delegate.cc",
     ]
 
     deps += [

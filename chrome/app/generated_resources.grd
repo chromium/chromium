@@ -15089,13 +15089,6 @@ This can include information about installed software, files, your browser, the 
         Continue
       </message>
 
-      <message name="IDS_PLUGIN_CRASHED_PROMPT" desc="Infobar message to notify about a crashed plugin">
-       <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> has crashed
-      </message>
-      <message name="IDS_RELOAD_PAGE_WITH_PLUGIN" desc="Infobar button to reload the page where a plugin crashed or disconnected.">
-        Reload
-      </message>
-
       <!-- External Protocol Dialog -->
       <message name="IDS_EXTERNAL_PROTOCOL_TITLE" desc="External Protocol Dialog Title">
         Open <ph name="APPLICATION">$1<ex>Adobe Acrobat</ex></ph>?
