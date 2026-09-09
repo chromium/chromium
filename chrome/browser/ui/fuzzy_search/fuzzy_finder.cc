@@ -42,7 +42,7 @@ constexpr int kInitialBoundaryBonus = 16;
 constexpr int kBoundaryBonus = 8;
 
 // Bonus added for each character matched contiguously in an unbroken streak.
-constexpr int kConsecutiveBonus = 4;
+constexpr int kConsecutiveBonus = 6;
 
 // Penalty subtracted when a character does not match (substitution / typo).
 constexpr int kTypoPenalty = -12;
@@ -52,16 +52,20 @@ constexpr int kTypoPenalty = -12;
 constexpr int kSwapPenalty = -6;
 
 // Penalty subtracted when starting a gap between matched characters.
-constexpr int kGapStartPenalty = 3;
+constexpr int kGapStartPenalty = 6;
 
 // Penalty subtracted for each additional character skipped in an existing gap.
-constexpr int kGapExtensionPenalty = 1;
+constexpr int kGapExtensionPenalty = 2;
 
 // Baseline normalization bias in [0.0, 1.0] ensuring qualifying fuzzy matches
 // (where all query characters are aligned via exact matches, adjacent
 // transpositions, or substitutions) achieve a distinguishable positive score
 // range ([0.25, 1.0]) above non-matches (0.0).
 constexpr double kScoreBias = 0.25;
+
+// Minimum score cutoff threshold. Results with score below this threshold are
+// dropped to filter out weak or low-confidence matches.
+constexpr double kMinScore = 0.60;
 
 // Returns true if the query meets the standard minimum search length.
 bool HasMinQueryLength(std::u16string_view query) {
@@ -137,7 +141,7 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(
   for (FuzzySearchItem* item : searchable_items_) {
     CHECK(item);
     const double score = ScoreItem(item, normalized_query);
-    if (score > 0.0) {
+    if (score >= kMinScore) {
       results.push_back(FuzzySearchResult{item, score});
     }
   }
@@ -261,22 +265,36 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
 
   // --- Row 0: Align the first query character (j = 0) ---
   // The first character represents the base case where a new match begins.
-  // Matching at a word boundary receives an initial boundary bonus. If the
-  // character does not match, we propagate score from the left with gap
-  // penalties (opening penalty for the first skip, extension penalty for
-  // subsequent skips).
+  // Matching at a word boundary receives an initial boundary bonus.
+  // Substitutions on the first character are disallowed; non-matching
+  // characters remain gaps.
   bool in_gap = false;
   for (size_t i = 0; i < n; ++i) {
+    const int penalty = in_gap ? kGapExtensionPenalty : kGapStartPenalty;
+    const int left_score = (i > 0) ? score_matrix_[i - 1] - penalty : 0;
+
     if (query[0] == candidate[i]) {
-      score_matrix_[i] =
+      const int match_score =
           kMatchScore + (word_boundaries_[i] ? kInitialBoundaryBonus : 0);
-      consecutive_matrix_[i] = 1;
-      in_gap = false;
+      if (left_score > match_score) {
+        score_matrix_[i] = left_score;
+        consecutive_matrix_[i] = 0;
+        in_gap = true;
+      } else {
+        score_matrix_[i] = match_score;
+        consecutive_matrix_[i] = 1;
+        in_gap = false;
+      }
     } else {
-      const int penalty = in_gap ? kGapExtensionPenalty : kGapStartPenalty;
-      const int left_score = (i > 0) ? score_matrix_[i - 1] : 0;
-      score_matrix_[i] = std::max(left_score - penalty, 0);
-      in_gap = true;
+      if (left_score > 0) {
+        score_matrix_[i] = left_score;
+        consecutive_matrix_[i] = 0;
+        in_gap = true;
+      } else {
+        score_matrix_[i] = 0;
+        consecutive_matrix_[i] = 0;
+        in_gap = false;
+      }
     }
   }
 
@@ -329,8 +347,9 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
             consecutive = 2;
           }
         }
-      } else {
-        // Mismatch / substitution typo:
+      } else if (m > 3) {
+        // Mismatch / substitution typo: disallowed entirely for short queries
+        // (m <= 3) and disallowed on the first character (j == 0).
         if (score_matrix_[diag_idx] > 0) {
           diagonal_score = score_matrix_[diag_idx] + kTypoPenalty;
           consecutive = 0;
@@ -338,8 +357,17 @@ double FuzzyFinder::ComputeDpMatrixMatch(std::u16string_view query,
       }
 
       in_gap = (left_score > diagonal_score);
-      consecutive_matrix_[idx] = in_gap ? 0 : consecutive;
-      score_matrix_[idx] = std::max(0, std::max(left_score, diagonal_score));
+      if (in_gap && left_score > 0) {
+        score_matrix_[idx] = left_score;
+        consecutive_matrix_[idx] = 0;
+      } else if (!in_gap && diagonal_score > 0) {
+        score_matrix_[idx] = diagonal_score;
+        consecutive_matrix_[idx] = consecutive;
+      } else {
+        score_matrix_[idx] = 0;
+        consecutive_matrix_[idx] = 0;
+        in_gap = false;
+      }
     }
   }
 

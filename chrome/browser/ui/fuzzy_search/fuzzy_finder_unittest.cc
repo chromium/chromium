@@ -199,11 +199,10 @@ TEST_F(FuzzyFinderTest, AccentsAndDiacriticsIgnoring) {
   EXPECT_LE(results.size(), 1u);
 
   // Query with accents matches title without accents
-  auto ascii_items = CreateItems({{u"Resume Settings"}});
+  auto ascii_items = CreateItems({{u"Cafe Mode"}});
   FuzzyFinder ascii_finder(ascii_items);
-  auto ascii_results = ascii_finder.FuzzyFind(u"résumé", /*max_results=*/1);
-  EXPECT_THAT(ExtractResultTitles(ascii_results),
-              ElementsAre(u"Resume Settings"));
+  auto ascii_results = ascii_finder.FuzzyFind(u"café", /*max_results=*/1);
+  EXPECT_THAT(ExtractResultTitles(ascii_results), ElementsAre(u"Cafe Mode"));
   EXPECT_LE(ascii_results.size(), 1u);
 }
 
@@ -325,25 +324,21 @@ TEST_F(FuzzyFinderTest, LegacyFindSubstringMatching) {
 TEST_F(FuzzyFinderTest, FuzzyFindExactAndWordBoundaryRanking) {
   // Query "tab" (m = 3, max_possible = 80):
   // 1. "Tab" (exact word boundary match):
-  //    raw_score = 72, norm = 0.25 + (72/80)*0.75 = 0.9250.
+  //    raw_score = 76, norm = 0.25 + (76/80)*0.75 = 0.9625.
   // 2. "Establish" (infix match, non-boundary):
-  //    raw_score = 56, norm = 0.25 + (56/80)*0.75 = 0.7750.
-  // 3. "Tag" (typo substitution 'b' -> 'g'):
-  //    raw_score = 40, norm = 0.25 + (40/80)*0.75 = 0.6250.
+  //    raw_score = 60, norm = 0.25 + (60/80)*0.75 = 0.8125.
+  // 3. "Tag" (typo substitution 'b' -> 'g'): rejected for short queries (<= 3).
   // 4. "History" (no match): score = 0.0.
-  // Expected rank: "Tab" (0.925) > "Establish" (0.775) > "Tag" (0.625).
+  // Expected rank: "Tab" (0.9625) > "Establish" (0.8125).
   auto items = CreateItems({{u"Tab"}, {u"Establish"}, {u"Tag"}, {u"History"}});
   FuzzyFinder finder(items);
 
   auto results = finder.FuzzyFind(u"tab", /*max_results=*/4);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Tab", u"Establish", u"Tag"));
-  ASSERT_EQ(results.size(), 3u);
-  EXPECT_NEAR(results[0].score, 0.925, 0.001);
-  EXPECT_NEAR(results[1].score, 0.775, 0.001);
-  EXPECT_NEAR(results[2].score, 0.625, 0.001);
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab", u"Establish"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_NEAR(results[0].score, 0.9625, 0.001);
+  EXPECT_NEAR(results[1].score, 0.8125, 0.001);
   EXPECT_GT(results[0].score, results[1].score);
-  EXPECT_GT(results[1].score, results[2].score);
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindAcronymAndMultiWordBonus) {
@@ -358,27 +353,29 @@ TEST_F(FuzzyFinderTest, FuzzyFindAcronymAndMultiWordBonus) {
   auto results = finder.FuzzyFind(u"gpm", /*max_results=*/2);
   EXPECT_THAT(
       ExtractResultTitles(results),
-      ElementsAre(u"General Performance Monitor", u"Google Password Manager"));
+      ElementsAre(u"Google Password Manager", u"General Performance Monitor"));
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_GT(results[0].score, 0.70);
-  EXPECT_GT(results[1].score, 0.70);
+  EXPECT_GT(results[0].score, 0.55);
+  EXPECT_GT(results[1].score, 0.55);
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindTranspositionSwapTolerance) {
-  // Query "abd" (m = 3, max_possible = 80):
-  // 1. "adb" (adjacent swap 'b' and 'd'):
-  //    raw_score = 32 + 2*16 - 6 = 58, norm = 0.25 + (58/80)*0.75 = 0.79375.
-  // 2. "axd" (typo substitution 'b' -> 'x'):
-  //    raw_score = 36, norm = 0.25 + (36/80)*0.75 = 0.5875.
-  // Expected rank: "adb" (0.7938) > "axd" (0.5875).
-  auto items = CreateItems({{u"adb"}, {u"axd"}, {u"xyz"}});
+  // Query "abcd" (m = 4, max_possible = 104):
+  // 1. "acbd" (adjacent swap 'b' and 'c'):
+  //    raw_score = 32 + (2*16 - 6) + (16 + 6) = 80,
+  //    norm = 0.25 + (80/104)*0.75 = 0.8269.
+  // 2. "axcd" (typo substitution 'b' -> 'x', allowed for m > 3):
+  //    raw_score = 32 + (-12) + 16 + (16 + 6) = 58,
+  //    norm = 0.25 + (58/104)*0.75 = 0.6683.
+  // Expected rank: "acbd" (0.8269) > "axcd" (0.6683).
+  auto items = CreateItems({{u"acbd"}, {u"axcd"}, {u"xyzw"}});
   FuzzyFinder finder(items);
 
-  auto results = finder.FuzzyFind(u"abd", /*max_results=*/3);
-  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"adb", u"axd"));
+  auto results = finder.FuzzyFind(u"abcd", /*max_results=*/3);
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"acbd", u"axcd"));
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_NEAR(results[0].score, 0.79375, 0.001);
-  EXPECT_NEAR(results[1].score, 0.5875, 0.001);
+  EXPECT_NEAR(results[0].score, 0.8269, 0.001);
+  EXPECT_NEAR(results[1].score, 0.6683, 0.001);
   EXPECT_GT(results[0].score, results[1].score);
 }
 
@@ -389,15 +386,15 @@ TEST_F(FuzzyFinderTest, FuzzyFindTranspositionInitialCharacters) {
   // - Row 1: 't' matches candidate[0] (is_swap_match, j == 1):
   //          score = (16 * 2) - 6 = 26, consecutive = 2
   // - Row 2: 'b' matches candidate[2]:
-  //          score = 26 + 16 + 4 (kConsecutiveBonus) = 46
-  // - Normalized score: 0.25 + (46 / 80) * 0.75 = 0.68125.
+  //          score = 26 + 16 + 6 (kConsecutiveBonus) = 48
+  // - Normalized score: 0.25 + (48 / 80) * 0.75 = 0.70.
   auto items = CreateItems({{u"Tab"}, {u"History"}});
   FuzzyFinder finder(items);
 
   auto results = finder.FuzzyFind(u"atb", /*max_results=*/1);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab"));
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_NEAR(results[0].score, 0.68125, 0.001);
+  EXPECT_NEAR(results[0].score, 0.70, 0.001);
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindTypoTolerance) {
@@ -551,6 +548,63 @@ TEST_F(FuzzyFinderTest, FuzzyFindCaseAndAccentInsensitive) {
 
   results = finder.FuzzyFind(u"CAFE", /*max_results=*/1);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Café Mode"));
+}
+
+TEST_F(FuzzyFinderTest, ContiguousDominanceOverScatteredSubsequences) {
+  // Contiguous match ("Performance Monitor") vs scattered subsequence match
+  // ("Page Event Resource Filter") for query "perf".
+  auto items =
+      CreateItems({{u"Page Event Resource Filter"}, {u"Performance Monitor"}});
+  FuzzyFinder finder(items);
+
+  auto results = finder.FuzzyFind(u"perf", /*max_results=*/2);
+  ASSERT_EQ(results.size(), 2u);
+  // Contiguous prefix match must rank first and heavily outscore scattered
+  // match.
+  EXPECT_EQ(results[0].item->GetTitle(), u"Performance Monitor");
+  EXPECT_EQ(results[1].item->GetTitle(), u"Page Event Resource Filter");
+  EXPECT_GT(results[0].score, 0.90);
+  EXPECT_GT(results[0].score - results[1].score, 0.25);
+}
+
+TEST_F(FuzzyFinderTest, ShortQueryRejectsSingleCharacterSubstitutions) {
+  // For queries with length <= 3, arbitrary substitutions (typos) are
+  // disallowed.
+  auto items = CreateItems({{u"Tab"}, {u"Tag"}, {u"Tax"}, {u"Tad"}});
+  FuzzyFinder finder(items);
+
+  // 3-character query "tab" must match "Tab" exactly and reject "Tag", "Tax",
+  // "Tad".
+  auto results = finder.FuzzyFind(u"tab", /*max_results=*/5);
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab"));
+  EXPECT_EQ(results.size(), 1u);
+
+  // 2-character query "ta" must reject single-character substitution "to".
+  auto items2 = CreateItems({{u"Ta"}, {u"To"}});
+  FuzzyFinder finder2(items2);
+  auto results2 = finder2.FuzzyFind(u"ta", /*max_results=*/5);
+  EXPECT_THAT(ExtractResultTitles(results2), ElementsAre(u"Ta"));
+}
+
+TEST_F(FuzzyFinderTest, MinScoreCutoffFiltersWeakMatches) {
+  // Items with varying match quality for query "perf":
+  // - "Performance Monitor": Contiguous prefix match (~0.96 >= 0.60)
+  // - "Page Event Resource Filter": Word boundary scattered match (~0.67 >=
+  // 0.60)
+  // - "Operation": Low-quality match with non-boundary start and typo (< 0.60)
+  auto items = CreateItems({
+      {u"Performance Monitor"},
+      {u"Page Event Resource Filter"},
+      {u"Operation"},
+  });
+  FuzzyFinder finder(items);
+
+  // Default internal cutoff (0.60) keeps the high-quality and scattered matches
+  // while filtering out weak matches below 0.60.
+  auto results = finder.FuzzyFind(u"perf", /*max_results=*/5);
+  EXPECT_THAT(
+      ExtractResultTitles(results),
+      ElementsAre(u"Performance Monitor", u"Page Event Resource Filter"));
 }
 
 }  // namespace

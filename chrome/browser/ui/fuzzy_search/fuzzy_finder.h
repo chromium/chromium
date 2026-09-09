@@ -50,7 +50,8 @@ class FuzzyFinder {
   // which takes into account typos, letter transpositions, and word boundary
   // tolerances. Each field in a `FuzzySearchItem` is weighted differently (i.e.
   // titles have a higher influence on an item's score than synonyms or
-  // secondary text).
+  // secondary text). Any match with score below a minimum confidence threshold
+  // is dropped.
   //
   // Returns up to max_results matching items ordered by descending score.
   std::vector<FuzzySearchResult> FuzzyFind(const std::u16string& query,
