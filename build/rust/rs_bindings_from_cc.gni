@@ -248,8 +248,11 @@ template("rs_bindings_from_cc") {
     }
 
     script = "//build/rust/gni_impl/run_rs_bindings_from_cc.py"
-    inputs = [ "//third_party/rust-toolchain/bin/rs_bindings_from_cc" ]
-    sources = invoker.public_headers
+    inputs = [
+               # Public headers are inputs to this action rather than sources,
+               # so GN does not consider this target an owner of the headers.
+               "//third_party/rust-toolchain/bin/rs_bindings_from_cc",
+             ] + invoker.public_headers
     outputs = [
       _rs_out_path,
       _cc_out_path,

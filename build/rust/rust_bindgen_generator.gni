@@ -107,7 +107,6 @@ template("rust_bindgen_generator") {
                                  "public_deps",
                                  "output_name",
                                ])
-    sources = [ invoker.header ]
     if (!defined(configs)) {
       configs = []
     }
@@ -148,6 +147,11 @@ template("rust_bindgen_generator") {
 
     script = rebase_path("//build/rust/gni_impl/run_bindgen.py")
     inputs = [
+      # The header is an input to this action rather than a source, so GN's
+      # header checker does not consider this target an owner of the header.
+      # Downstream C++ targets must depend on the C++ target declaring the
+      # header as public instead.
+      invoker.header,
       _bindgen_path,
       _rustfmt_path,
       "//build/action_helpers.py",
