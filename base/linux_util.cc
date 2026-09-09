@@ -205,42 +205,27 @@ pid_t FindThreadIDWithSyscall(pid_t pid,
   return -1;
 }
 
-pid_t FindThreadID(pid_t pid, pid_t ns_tid, bool* ns_pid_supported) {
-  *ns_pid_supported = false;
-
-  std::vector<pid_t> tids;
-  if (!GetThreadsForProcess(pid, &tids)) {
+pid_t GetNamespaceThreadId(pid_t pid, pid_t tid) {
+  char buf[256];
+  base::SpanPrintf(buf, "/proc/%d/task/%d/status", pid, tid);
+  std::string status;
+  if (!ReadFileToString(FilePath(buf), &status)) {
     return -1;
   }
-
-  for (pid_t tid : tids) {
-    char buf[256];
-    base::SpanPrintf(buf, "/proc/%d/task/%d/status", pid, tid);
-    std::string status;
-    if (!ReadFileToString(FilePath(buf), &status)) {
-      return -1;
+  StringTokenizer tokenizer(status, "\n");
+  while (std::optional<std::string_view> token = tokenizer.GetNextTokenView()) {
+    if (!StartsWith(token.value(), "NSpid")) {
+      continue;
     }
-    StringTokenizer tokenizer(status, "\n");
-    while (std::optional<std::string_view> token =
-               tokenizer.GetNextTokenView()) {
-      if (!StartsWith(token.value(), "NSpid")) {
-        continue;
-      }
-
-      *ns_pid_supported = true;
-      std::vector<std::string_view> split_value_str = SplitStringPiece(
-          token.value(), "\t", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
-      DCHECK_GE(split_value_str.size(), 2u);
-      int value;
-      // The last value in the list is the PID in the namespace.
-      if (StringToInt(split_value_str.back(), &value) && value == ns_tid) {
-        // The second value in the list is the real PID.
-        if (StringToInt(split_value_str[1], &value)) {
-          return value;
-        }
-      }
-      break;
+    std::vector<std::string_view> split_value_str = SplitStringPiece(
+        token.value(), "\t", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+    DCHECK_GE(split_value_str.size(), 2u);
+    int value;
+    // The last value in the list is the thread id in the innermost namespace.
+    if (StringToInt(split_value_str.back(), &value)) {
+      return value;
     }
+    break;
   }
   return -1;
 }

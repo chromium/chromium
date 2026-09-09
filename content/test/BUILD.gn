@@ -3153,7 +3153,10 @@ test("content_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "../child/sandboxed_process_thread_type_handler_unittest.cc" ]
+    sources += [
+      "../browser/child_thread_type_switcher_linux_unittest.cc",
+      "../child/sandboxed_process_thread_type_handler_unittest.cc",
+    ]
   }
 
   if (is_linux) {

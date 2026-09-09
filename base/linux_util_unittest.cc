@@ -4,6 +4,9 @@
 
 #include "base/linux_util.h"
 
+#include <unistd.h>
+
+#include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -71,6 +74,19 @@ VARIANT_ID=workstation)";
   value = base::GetKeyValueFromOSReleaseFileForTesting("PRETTY_NAME=\"Linux\"",
                                                        kPrettyName);
   EXPECT_EQ(value, "Linux");
+}
+
+TEST(LinuxUtilTest, GetNamespaceThreadId) {
+  const pid_t pid = getpid();
+  const pid_t tid = base::PlatformThread::CurrentId().raw();
+  const pid_t ns_tid = base::GetNamespaceThreadId(pid, tid);
+  if (ns_tid == -1) {
+    GTEST_SKIP() << "Kernel does not report NSpid";
+  }
+  // Seen from inside the process, a thread's namespaced id is its own id.
+  EXPECT_EQ(ns_tid, tid);
+  // Not a thread of this process.
+  EXPECT_EQ(base::GetNamespaceThreadId(pid, 0), -1);
 }
 
 }  // namespace

@@ -4,10 +4,14 @@
 
 #include "content/browser/child_thread_type_switcher_linux.h"
 
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -16,46 +20,97 @@ namespace content {
 
 namespace {
 
-void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
-                                   base::PlatformThreadId ns_tid,
-                                   base::ThreadType thread_type) {
-  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
-
-  bool ns_pid_supported = false;
-  pid_t peer_tid =
-      base::FindThreadID(peer_pid, ns_tid.raw(), &ns_pid_supported);
-  if (peer_tid == -1) {
-    if (ns_pid_supported) {
-      DVLOG(1) << "Could not find tid";
-    }
-    return;
-  }
-
-  if (peer_tid == peer_pid && thread_type != base::ThreadType::kDefault &&
-      thread_type != base::ThreadType::kPresentation &&
-      thread_type != base::ThreadType::kAudioProcessing) {
-    // TODO(crbug.com/40226692): Consider reporting with ReceivedBadMessage().
-    DLOG(WARNING) << "Changing main thread type to another value than "
-                  << "kDefault, kInteractive or kPresentation isn't allowed";
-    return;
-  }
-
-  base::PlatformThread::SetThreadType(
-      peer_pid, base::PlatformThreadId(peer_tid), thread_type);
-}
-
-void SetThreadTypesOnLauncherThread(
-    base::ProcessId peer_pid,
-    std::vector<mojom::ThreadTypeChangePtr> changes) {
-  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
-  for (const auto& change : changes) {
-    SetThreadTypeOnLauncherThread(
-        peer_pid, base::PlatformThreadId(change->platform_thread_id),
-        change->thread_type);
-  }
+bool IsAllowedForMainThread(base::ThreadType thread_type) {
+  return thread_type == base::ThreadType::kDefault ||
+         thread_type == base::ThreadType::kPresentation ||
+         thread_type == base::ThreadType::kAudioProcessing;
 }
 
 }  // namespace
+
+// Translates the thread ids sent by the child, which are relative to its PID
+// namespace, to thread ids in the browser's namespace and applies the changes.
+// Finding the thread for a namespaced id means reading
+// /proc/<pid>/task/*/status until one matches, so translations are remembered
+// and only re-validated (one status read) when used again.
+class ChildThreadTypeSwitcher::LauncherThreadState {
+ public:
+  explicit LauncherThreadState(base::ProcessId peer_pid)
+      : peer_pid_(peer_pid) {}
+  ~LauncherThreadState() = default;
+
+  void SetThreadTypes(std::vector<mojom::ThreadTypeChangePtr> changes) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    bool refreshed = false;
+    for (const auto& change : changes) {
+      const pid_t ns_tid = change->platform_thread_id;
+      // Translations read during this batch are used as they are; older ones
+      // are re-validated first.
+      pid_t peer_tid = GetCachedThreadId(ns_tid, /*validate=*/!refreshed);
+      if (peer_tid == -1 && !refreshed) {
+        // Unknown (or stale) thread: rescan the process once per batch. New
+        // threads usually arrive together, so this also resolves the rest of
+        // the batch.
+        RefreshThreadIds();
+        refreshed = true;
+        peer_tid = GetCachedThreadId(ns_tid, /*validate=*/false);
+      }
+      if (peer_tid == -1) {
+        DVLOG(1) << "Could not find tid";
+        continue;
+      }
+      SetThreadType(base::PlatformThreadId(peer_tid), change->thread_type);
+    }
+  }
+
+ private:
+  // Returns the cached translation of `ns_tid`, or -1 if there is none. With
+  // `validate`, the entry is only returned if the thread it names still exists
+  // and still has that id in the child's namespace.
+  pid_t GetCachedThreadId(pid_t ns_tid, bool validate) {
+    auto it = thread_ids_.find(ns_tid);
+    if (it == thread_ids_.end()) {
+      return -1;
+    }
+    if (validate &&
+        base::GetNamespaceThreadId(peer_pid_, it->second) != ns_tid) {
+      // The thread exited (and its id may have been reused since).
+      thread_ids_.erase(it);
+      return -1;
+    }
+    return it->second;
+  }
+
+  void RefreshThreadIds() {
+    thread_ids_.clear();
+    std::vector<pid_t> tids;
+    if (!base::GetThreadsForProcess(peer_pid_, &tids)) {
+      return;
+    }
+    for (pid_t tid : tids) {
+      const pid_t ns_tid = base::GetNamespaceThreadId(peer_pid_, tid);
+      if (ns_tid != -1) {
+        thread_ids_[ns_tid] = tid;
+      }
+    }
+  }
+
+  void SetThreadType(base::PlatformThreadId peer_tid,
+                     base::ThreadType thread_type) {
+    if (peer_tid.raw() == peer_pid_ && !IsAllowedForMainThread(thread_type)) {
+      // TODO(crbug.com/40226692): Consider reporting with ReceivedBadMessage().
+      DLOG(WARNING) << "Changing main thread type to another value than "
+                    << "kDefault, kInteractive or kPresentation isn't allowed";
+      return;
+    }
+    base::PlatformThread::SetThreadType(peer_pid_, peer_tid, thread_type);
+  }
+
+  const base::ProcessId peer_pid_;
+  // Thread id in the child's PID namespace -> thread id in ours.
+  base::flat_map<pid_t, pid_t> thread_ids_;
+  SEQUENCE_CHECKER(sequence_checker_);
+};
 
 ChildThreadTypeSwitcher::ChildThreadTypeSwitcher() = default;
 
@@ -98,9 +153,17 @@ void ChildThreadTypeSwitcher::SetThreadTypes(
   // PostTask. All thread type changes (nice value, c-group setting) of the
   // child process are performed on the same sequence as the child process's
   // priority changes, to guarantee there's no race of c-group manipulations.
-  GetProcessLauncherTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SetThreadTypesOnLauncherThread, child_pid_,
-                                std::move(changes)));
+  if (!launcher_thread_state_) {
+    CHECK_NE(child_pid_, base::kNullProcessId);
+    launcher_thread_state_.emplace(GetTaskRunner(), child_pid_);
+  }
+  launcher_thread_state_.AsyncCall(&LauncherThreadState::SetThreadTypes)
+      .WithArgs(std::move(changes));
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+ChildThreadTypeSwitcher::GetTaskRunner() {
+  return GetProcessLauncherTaskRunner();
 }
 
 }  // namespace content

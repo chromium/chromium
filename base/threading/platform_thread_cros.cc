@@ -117,7 +117,7 @@ long sched_setattr(pid_t pid,
 }
 
 // Setup whether a thread is latency sensitive. The thread_id should
-// always be the value in the root PID namespace (see FindThreadID).
+// always be the value in the root PID namespace (see GetNamespaceThreadId).
 void SetThreadLatencySensitivity(ProcessId process_id,
                                  PlatformThreadId thread_id,
                                  ThreadType thread_type) {
@@ -144,8 +144,8 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 
   // The thread_id passed in here is either 0 (in which case we ste for current
   // thread), or is a tid that is not the NS tid but the global one. The
-  // conversion from NS tid to global tid is done by the callers using
-  // FindThreadID().
+  // conversion from NS tid to global tid is done by the caller using
+  // GetNamespaceThreadId().
   FilePath thread_dir;
   if (thread_id != kInvalidThreadId &&
       thread_id != PlatformThread::CurrentId()) {

@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_CHILD_THREAD_TYPE_SWITCHER_LINUX_H_
 #define CONTENT_BROWSER_CHILD_THREAD_TYPE_SWITCHER_LINUX_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "content/common/content_export.h"
 #include "content/common/thread_type_switcher.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,9 +43,19 @@ class CONTENT_EXPORT ChildThreadTypeSwitcher
   // mojom::ThreadTypeSwitcher:
   void SetThreadTypes(std::vector<mojom::ThreadTypeChangePtr> changes) override;
 
+ protected:
+  // The sequence the changes are applied on: the process launcher task
+  // runner. Virtual so tests can substitute their own.
+  virtual scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
+
  private:
+  class LauncherThreadState;
+
   base::ProcessId child_pid_ = base::kNullProcessHandle;
   mojo::Receiver<mojom::ThreadTypeSwitcher> receiver_{this};
+  // Applies the changes; created with the first batch, lives on the process
+  // launcher task runner.
+  base::SequenceBound<LauncherThreadState> launcher_thread_state_;
 };
 }  // namespace content
 
