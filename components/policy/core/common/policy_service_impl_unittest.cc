@@ -1580,16 +1580,18 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_InvalidType) {
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
-  PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
-                          nullptr);
-  merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
-                                  .Get(key::kExtensionSettings)
-                                  ->DeepCopy());
-  merged.AddConflictingPolicy(policy_bundle_1.Get(chrome_namespace)
-                                  .Get(key::kExtensionSettings)
-                                  ->DeepCopy());
-  expected_chrome.Set(key::kExtensionSettings, std::move(merged));
+  PolicyMap::Entry unmerged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                            POLICY_SOURCE_PLATFORM,
+                            base::Value(std::move(result)), nullptr);
+  unmerged.AddMessage(PolicyMap::MessageType::kWarning,
+                      IDS_POLICY_CONFLICT_DIFF_VALUE);
+  unmerged.AddMessage(
+      PolicyMap::MessageType::kWarning,
+      IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
+  unmerged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
+                                    .Get(key::kExtensionSettings)
+                                    ->DeepCopy());
+  expected_chrome.Set(key::kExtensionSettings, std::move(unmerged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle_1));
   provider1_.UpdatePolicy(std::move(policy_bundle_2));
@@ -1798,16 +1800,18 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_InvalidType) {
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
-  PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
-                          nullptr);
-  merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
-                                  .Get(key::kDefaultSearchProviderEncodings)
-                                  ->DeepCopy());
-  merged.AddConflictingPolicy(policy_bundle_1.Get(chrome_namespace)
-                                  .Get(key::kDefaultSearchProviderEncodings)
-                                  ->DeepCopy());
-  expected_chrome.Set(key::kDefaultSearchProviderEncodings, std::move(merged));
+  PolicyMap::Entry unmerged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                            POLICY_SOURCE_PLATFORM,
+                            base::Value(std::move(result)), nullptr);
+  unmerged.AddMessage(PolicyMap::MessageType::kWarning,
+                      IDS_POLICY_CONFLICT_DIFF_VALUE);
+  unmerged.AddMessage(PolicyMap::MessageType::kWarning,
+                      IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
+  unmerged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
+                                    .Get(key::kDefaultSearchProviderEncodings)
+                                    ->DeepCopy());
+  expected_chrome.Set(key::kDefaultSearchProviderEncodings,
+                      std::move(unmerged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle_1));
   provider1_.UpdatePolicy(std::move(policy_bundle_2));
@@ -2511,19 +2515,19 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
-  PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
-                          nullptr);
-  merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
-                                  .Get(key::kDefaultSearchProviderEncodings)
-                                  ->DeepCopy());
-  merged.AddConflictingPolicy(policy_bundle_3.Get(chrome_namespace)
-                                  .Get(key::kDefaultSearchProviderEncodings)
-                                  ->DeepCopy());
-  merged.AddConflictingPolicy(policy_bundle_1.Get(chrome_namespace)
-                                  .Get(key::kDefaultSearchProviderEncodings)
-                                  ->DeepCopy());
-  expected_chrome.Set(key::kDefaultSearchProviderEncodings, std::move(merged));
+  PolicyMap::Entry unmerged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                            POLICY_SOURCE_PLATFORM,
+                            base::Value(std::move(result)), nullptr);
+  unmerged.AddMessage(PolicyMap::MessageType::kWarning,
+                      IDS_POLICY_CONFLICT_DIFF_VALUE);
+  unmerged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
+                                    .Get(key::kDefaultSearchProviderEncodings)
+                                    ->DeepCopy());
+  unmerged.AddConflictingPolicy(policy_bundle_3.Get(chrome_namespace)
+                                    .Get(key::kDefaultSearchProviderEncodings)
+                                    ->DeepCopy());
+  expected_chrome.Set(key::kDefaultSearchProviderEncodings,
+                      std::move(unmerged));
   expected_chrome.Set(key::kCloudUserPolicyMerge,
                       policy_bundle_1.Get(chrome_namespace)
                           .Get(key::kCloudUserPolicyMerge)

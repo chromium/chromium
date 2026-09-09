@@ -284,11 +284,7 @@ base::DictValue PolicyConversionsClient::GetPolicyValue(
 
   // Policies that have at least one source that could not be merged will
   // still be treated as conflicted policies while policies that had all of
-  // their sources merged will not be considered conflicted anymore. Some
-  // policies have only one source but still appear as POLICY_SOURCE_MERGED
-  // because all policies that are listed as policies that should be merged are
-  // treated as merged regardless the number of sources. Those policies will not
-  // be treated as conflicted policies.
+  // their sources merged will not be considered conflicted anymore.
   if (policy.source == POLICY_SOURCE_MERGED) {
     bool policy_has_unmerged_source = false;
     for (const auto& conflict : policy.conflicts) {
@@ -299,8 +295,7 @@ base::DictValue PolicyConversionsClient::GetPolicyValue(
       policy_has_unmerged_source = true;
       break;
     }
-    value.Set("allSourcesMerged",
-              (policy.conflicts.size() <= 1 || !policy_has_unmerged_source));
+    value.Set("allSourcesMerged", !policy_has_unmerged_source);
   }
 
   if (std::u16string error =
