@@ -46,7 +46,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   // synchronizes full input state (`SyncNativeStateToWebUI()`). If the popup
   // was already open, sends a dedicated `SetFocus(true)` Mojo IPC to ensure
   // DOM input focus in the WebUI is restored without resetting input state.
-  void OnFocus(bool query_zps) override;
+  void OnFocus(bool query_zps, bool select_all) override;
   // Called when the native omnibox loses focus. Sends a dedicated
   // `SetFocus(false)` Mojo IPC to ensure DOM input focus in the WebUI is
   // cleared.

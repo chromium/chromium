@@ -35,6 +35,8 @@ struct OmniboxInputState {
   bool query_zps;
   // The keyword model associated with the input, if in keyword mode.
   searchbox.mojom.InputKeywordModel? keyword_model;
+  // Whether this input state update is the result of switching tabs.
+  bool is_tab_switch;
 };
 
 // Browser-side handler for the Omnibox Popup.
@@ -114,7 +116,8 @@ interface Page {
 
   // Called by the browser when focus changes within the active tab. `query_zps`
   // indicates whether to issue a Zero-Suggest autocomplete query upon focus.
-  SetFocus(bool is_focused, bool query_zps);
+  // `select_all` indicates whether to select all input text upon gaining focus.
+  SetFocus(bool is_focused, bool query_zps, bool select_all);
 
   // Clears autocomplete results and resets active query ID in WebUI.
   ClearAutocompleteMatches();

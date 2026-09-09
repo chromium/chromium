@@ -211,7 +211,8 @@ void OmniboxPopupHandler::SetInputState(
     const std::string& permanent_display_text,
     bool show_full_url,
     bool query_zps,
-    searchbox::mojom::InputKeywordModelPtr keyword_model) {
+    searchbox::mojom::InputKeywordModelPtr keyword_model,
+    bool is_tab_switch) {
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
   current_sequence_number_++;
@@ -231,6 +232,7 @@ void OmniboxPopupHandler::SetInputState(
   state->show_full_url = show_full_url;
   state->query_zps = query_zps;
   state->keyword_model = std::move(keyword_model);
+  state->is_tab_switch = is_tab_switch;
   // Extract active tab ID if in a Chrome browser window context.
   if (controller_ && controller_->client()->IsChromeOmniboxClient()) {
     auto* chrome_client =
@@ -245,8 +247,10 @@ void OmniboxPopupHandler::SetInputState(
   page_->SetInputState(std::move(state));
 }
 
-void OmniboxPopupHandler::SetFocus(bool is_focused, bool query_zps) {
-  page_->SetFocus(is_focused, query_zps);
+void OmniboxPopupHandler::SetFocus(bool is_focused,
+                                   bool query_zps,
+                                   bool select_all) {
+  page_->SetFocus(is_focused, query_zps, select_all);
 }
 
 void OmniboxPopupHandler::ClearAutocompleteMatches() {

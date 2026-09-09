@@ -39,6 +39,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     showFullUrl: false,
     queryZps: false,
     keywordModel: null,
+    isTabSwitch: false,
     ...overrides,
   };
 }
@@ -91,6 +92,62 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(-1, searchbox.selectedMatchIndex);
     assertFalse(searchbox.dropdownIsVisible);
     assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Verify queryZps = true initiates autocomplete query on focus.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'zps query',
+      queryZps: true,
+    }));
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const [, , queryText, , , , isOnFocus] =
+        testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals('zps query', queryText);
+    assertTrue(isOnFocus);
+  });
+
+  test('PreservesMatchesOnInitialStateAndClearsOnTabSwitch', async () => {
+    // Simulate matches already present.
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: searchbox.activeQueryId,
+          input: 'test',
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'test suggestion',
+            }),
+          ],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.hasMatches());
+
+    // Initial handoff from Views to WebUI on Tab 1 (isTabSwitch: false).
+    // Matches must NOT be cleared on initial state assignment.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      tabId: 1,
+      text: 'test',
+      isFocused: true,
+      userInputInProgress: false,
+      isTabSwitch: false,
+    }));
+    await microtasksFinished();
+    assertTrue(searchbox.hasMatches());
+
+    // Tab switch from Tab 1 to Tab 2 (isTabSwitch: true).
+    // Stale matches must be cleared so the dropdown does not linger across
+    // tabs.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      tabId: 2,
+      text: 'tab 2 url',
+      isFocused: true,
+      userInputInProgress: false,
+      isTabSwitch: true,
+    }));
+    await microtasksFinished();
+    assertFalse(searchbox.hasMatches());
+    assertFalse(searchbox.dropdownIsVisible);
   });
 
   test('ResetsEditHistoryOnTabSwitch', async () => {
@@ -123,6 +180,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       tabId: 2,
       text: 'tab 2 draft',
       userInputInProgress: true,
+      isTabSwitch: true,
     }));
     await microtasksFinished();
 
@@ -466,7 +524,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(5, handler.getArgs('onInputCleared')[0]);
   });
 
-  test('ExecutesDeferredFocusOnVisibilityChange', async () => {
+  test('SetInputState_ExecutesDeferredFocusOnVisibilityChange', async () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', configurable: true});
 
@@ -490,17 +548,16 @@ suite('OmniboxPopupSearchboxTest', function() {
   });
 
   // Verifies that when `setFocus(true)` IPC is received while
-  // `document.visibilityState` is hidden, focus and select-all are deferred
-  // until `visibilitychange` occurs (`DeferredFocusAction.FOCUS_AND_SELECT`).
-  test('ExecutesDeferredFocusAndSelectOnVisibilityChange', async () => {
+  // `document.visibilityState` is hidden, focus is deferred
+  // until `visibilitychange` occurs.
+  test('SetFocus_ExecutesDeferredFocusOnVisibilityChange', async () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', configurable: true});
 
     // Trigger dedicated `setFocus` IPC while document is hidden.
-    callbackRouter.setFocus(true, false);
+    callbackRouter.setFocus(true, false, false);
     await microtasksFinished();
 
-    const input = searchbox.$.input.inputElement;
     assertFalse(searchbox.shadowRoot.activeElement === searchbox.$.input);
 
     // Make visible and dispatch `visibilitychange` event.
@@ -509,17 +566,67 @@ suite('OmniboxPopupSearchboxTest', function() {
     document.dispatchEvent(new Event('visibilitychange'));
     await microtasksFinished();
 
-    // Verify both focus AND select occurred
-    // (`DeferredFocusAction.FOCUS_AND_SELECT`).
+    // Verify focus occurred.
+    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+  });
+
+  test('SetFocus_PreservesSelectionRange', async () => {
+    const testUrl = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testUrl,
+      selection: {start: 8, end: 15},
+      userInputInProgress: false,
+      isFocused: true,
+      queryZps: false,
+    }));
+    await microtasksFinished();
+
+    const input = searchbox.getInputElement().inputElement;
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
+
+    // Trigger dedicated `setFocus` IPC (e.g. refocusing or clicking top
+    // chrome).
+    callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
+    await microtasksFinished();
+
+    // Verify existing sub-selection range is preserved and not clobbered to
+    // select-all.
+    assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
+  });
+
+  test('SetFocus_SelectAllWhenRequested', async () => {
+    const testUrl = 'https://example.com';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: testUrl,
+      selection: {start: 8, end: 15},
+      userInputInProgress: false,
+      isFocused: true,
+      queryZps: false,
+    }));
+    await microtasksFinished();
+
+    const input = searchbox.getInputElement().inputElement;
+    assertEquals(8, input.selectionStart);
+    assertEquals(15, input.selectionEnd);
+
+    // Trigger dedicated `setFocus` IPC with selectAll = true.
+    callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ true);
+    await microtasksFinished();
+
+    // Verify all text is selected.
     assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
     assertEquals(0, input.selectionStart);
-    assertEquals(input.value.length, input.selectionEnd);
+    assertEquals(testUrl.length, input.selectionEnd);
   });
 
   test('SetFocus_RequeriesZpsWhenSteadyStateAndDropdownClosed', async () => {
     const testUrl = 'https://example.com';
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       text: testUrl,
+      selection: {start: 0, end: testUrl.length},
       userInputInProgress: false,
       isFocused: true,
       queryZps: false,
@@ -530,7 +637,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.dropdownIsVisible);
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ true);
+    callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -548,6 +655,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     const draftQuery = 'chrome';
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       text: draftQuery,
+      selection: {start: 0, end: draftQuery.length},
       userInputInProgress: true,
       isFocused: true,
       queryZps: false,
@@ -557,7 +665,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     searchbox.dropdownIsVisible = true;
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ true);
+    callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -571,6 +679,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     const testUrl = 'https://example.com';
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       text: testUrl,
+      selection: {start: 0, end: testUrl.length},
       userInputInProgress: false,
       isFocused: true,
       queryZps: false,
@@ -580,7 +689,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     searchbox.dropdownIsVisible = true;
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ true);
+    callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -594,6 +703,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     const testUrl = 'https://example.com';
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       text: testUrl,
+      selection: {start: 0, end: testUrl.length},
       userInputInProgress: false,
       isFocused: true,
       queryZps: false,
@@ -604,7 +714,7 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.dropdownIsVisible);
     testProxy.handler.resetResolver('queryAutocomplete');
 
-    callbackRouter.setFocus(true, /*queryZps=*/ false);
+    callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
     await microtasksFinished();
 
     const input = searchbox.getInputElement().inputElement;
@@ -1168,7 +1278,7 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertTrue(searchbox.dropdownIsVisible);
 
    // Receiving `setFocus(false)` via Mojo IPC triggers focus-loss cleanup.
-   callbackRouter.setFocus(false, false);
+   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
    await microtasksFinished();
    assertFalse(searchbox.dropdownIsVisible);
  });
@@ -2177,6 +2287,14 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('ClearsAutocompleteMatchesOnSetInputState', async () => {
+   // Initial state on Tab 1.
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     tabId: 1,
+     text: 'tab 1',
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
    // Populate autocomplete result to show dropdown.
    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
      queryId: searchbox.activeQueryId,
@@ -2187,10 +2305,12 @@ suite('OmniboxPopupSearchboxTest', function() {
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
 
-   // Update input state via Mojo (simulating tab switch / state reset).
+   // Update input state via Mojo (simulating tab switch to Tab 2).
    callbackRouter.setInputState(createDefaultOmniboxInputState({
+     tabId: 2,
      text: 'new tab input',
      isFocused: true,
+     isTabSwitch: true,
    }));
    await microtasksFinished();
 
@@ -2429,7 +2549,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
  test('FocusLostHidesAimButton', async () => {
    // Explicitly set focus and enable AIM button visibility.
-   callbackRouter.setFocus(true, /*queryZps=*/ false);
+   callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
    testProxy.page.setAimButtonVisible(true);
    await microtasksFinished();
 
@@ -2438,13 +2558,13 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertTrue(isVisible(composeButton));
 
    // When focus is lost, AIM button should be hidden.
-   callbackRouter.setFocus(false, /*queryZps=*/ false);
+   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
    await microtasksFinished();
 
    assertFalse(isVisible(composeButton));
 
    // Refocus, then type text into the Omnibox.
-   callbackRouter.setFocus(true, /*queryZps=*/ true);
+   callbackRouter.setFocus(true, /*queryZps=*/ true, /*selectAll=*/ false);
    searchbox.getInputElement().setInputText('temporary text');
    testProxy.page.setAimButtonVisible(true);
    await microtasksFinished();
@@ -2453,7 +2573,7 @@ suite('OmniboxPopupSearchboxTest', function() {
 
    // If focus is lost with temporary text in the Omnibox, then AIM button
    // should be hidden.
-   callbackRouter.setFocus(false, /*queryZps=*/ false);
+   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
    await microtasksFinished();
 
    assertFalse(isVisible(composeButton));

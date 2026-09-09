@@ -590,12 +590,13 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
     controller()->edit_model()->Unelide();
   }
 
+  const bool select_all = is_user_initiated || !omnibox_already_focused;
   if (location_bar_view_ && location_bar_view_->IsFullWebUiOmniboxReady()) {
     // Keyboard focus lives in the WebUI popup window and the
     // native textfield has `FocusBehavior::NEVER`. Delegate directly to the
     // popup view to open and focus the WebUI searchbox input.
     if (auto* popup_view = location_bar_view_->GetOmniboxPopupView()) {
-      popup_view->OnFocus(/*query_zps=*/is_user_initiated);
+      popup_view->OnFocus(/*query_zps=*/is_user_initiated, select_all);
     }
   } else {
     // On browser startup while WebUI is still initializing asynchronously,
@@ -622,7 +623,7 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   //    finishes loading and then does a renderer-initiated focus, performing
   //    a select-all here would surprisingly overwrite the user's first few
   //    typed characters. https://crbug.com/40610912.
-  if (!is_full_webui && (is_user_initiated || !omnibox_already_focused)) {
+  if (!is_full_webui && select_all) {
     SelectAll(true);
   }
 
