@@ -168,6 +168,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   DCHECK(a11y_announcer);
   DCHECK(folder_controller);
 
+  search_box_->AddObserver(this);
   AppListModelProvider::Get()->AddObserver(this);
 
   SetUseDefaultFillLayout(true);
@@ -647,6 +648,13 @@ void AppListBubbleAppsPage::OnViewVisibilityChanged(views::View* observed_view,
                                                     bool visible) {
   if (starting_view == continue_section_ || starting_view == recent_apps_) {
     UpdateSeparatorVisibility();
+  }
+}
+
+void AppListBubbleAppsPage::OnViewIsDeleting(views::View* observed_view) {
+  if (observed_view == search_box_) {
+    search_box_->RemoveObserver(this);
+    search_box_ = nullptr;
   }
 }
 

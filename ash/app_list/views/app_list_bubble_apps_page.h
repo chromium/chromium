@@ -119,6 +119,7 @@ class ASH_EXPORT AppListBubbleAppsPage
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view,
                                bool visible) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,
@@ -240,7 +241,7 @@ class ASH_EXPORT AppListBubbleAppsPage
   raw_ptr<ScrollableAppsGridView> scrollable_apps_grid_view_ = nullptr;
 
   // The search box owned by AppListBubbleView.
-  raw_ptr<SearchBoxView, DanglingUntriaged> search_box_ = nullptr;
+  raw_ptr<SearchBoxView> search_box_ = nullptr;
 
   std::unique_ptr<AppListKeyboardController> app_list_keyboard_controller_;
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
