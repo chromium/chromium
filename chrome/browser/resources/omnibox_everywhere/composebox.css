@@ -19,6 +19,8 @@
   border: 2px solid transparent;
   border-radius: 16px;
   box-sizing: border-box;
+  font-size: var(--cr-searchbox-font-size, 16px);
+  --cr-composebox-font-size: var(--cr-searchbox-font-size, 16px);
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
   --cr-composebox-background-color: var(--color-searchbox-background);
   --input-bottom-spacing: 10px;
