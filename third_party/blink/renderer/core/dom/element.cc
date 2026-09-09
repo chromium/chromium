@@ -11437,14 +11437,10 @@ const ComputedStyle* Element::StyleForPseudoElement(
 
     const ComputedStyle* layout_parent_style = request.parent_override;
     if (layout_parent_style->Display() == EDisplay::kContents) {
-      // TODO(futhark@chromium.org): Calling getComputedStyle for elements
-      // outside the flat tree should return empty styles, but currently we do
-      // not. See issue https://crbug.com/831568. We can replace the if-test
-      // with DCHECK(layout_parent) when that issue is fixed.
-      if (Element* layout_parent =
-              LayoutTreeBuilderTraversal::LayoutParentElement(*this)) {
-        layout_parent_style = layout_parent->GetComputedStyle();
-      }
+      Element* layout_parent =
+          LayoutTreeBuilderTraversal::LayoutParentElement(*this);
+      CHECK(layout_parent);
+      layout_parent_style = layout_parent->GetComputedStyle();
     }
     StyleRequest before_after_request = request;
     before_after_request.layout_parent_override = layout_parent_style;

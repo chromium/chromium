@@ -1530,9 +1530,16 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
     }
     // This is an element outside the flat tree without a parent. Should only
     // mark dirty if it has a computed style.
-    return !element->GetComputedStyle();
+    if (element->GetComputedStyle()) {
+      // We may end up with a ComputedStyle outside the flat tree for moveBefore
+      // if we move an element under a shadow host but the moved element does
+      // not have a target slot in the host's shadow tree.
+      CHECK(GetDocument().StatePreservingAtomicMoveInProgress());
+      return false;
+    }
   }
-  // Text nodes outside the flat tree do not need to be marked for style recalc.
+  // Node is outside the flat tree and does not need to be marked for style
+  // recalc.
   return true;
 }
 
