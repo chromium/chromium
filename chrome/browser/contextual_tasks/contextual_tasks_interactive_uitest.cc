@@ -1474,16 +1474,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForInputCleared(kPrimaryTab));
 }
 
-// TODO(crbug.com/516333831): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox \
-  DISABLED_AddAndSubmitMultipleContextsWithTextFromComposebox
-#else
-#define MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox \
-  AddAndSubmitMultipleContextsWithTextFromComposebox
-#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox) {
+                       AddAndSubmitMultipleContextsWithTextFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
   const GURL kGenericPageUrl1 = embedded_test_server()->GetURL("/title1.html");
   const GURL kGenericPageUrl2 = embedded_test_server()->GetURL("/title2.html");
@@ -1554,6 +1546,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       InputText(kPrimaryTab, "Query with multiple attachments"),
 
       // 6. Submit
+      WaitForSubmitButtonEnabled(kPrimaryTab),
       ClickButton(kPrimaryTab, kSubmitButton),
 
       // 7. Verify multiple inputs + query text in the final message
