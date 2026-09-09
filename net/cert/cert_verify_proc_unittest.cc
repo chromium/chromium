@@ -236,7 +236,7 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
           std::move(cert_net_fetcher), std::move(crl_set),
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-          CreateSslSystemTrustStoreChromeRoot(
+          CreateChromeOnlySystemTrustStore(
               std::make_unique<net::TrustStoreChrome>()),
           instance_params, std::nullopt);
 #endif

@@ -277,8 +277,13 @@ std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
       std::cerr << impl_name
                 << ": using Chrome Root Store (--roots are in addition).\n";
+#if BUILDFLAG(IS_CHROMEOS)
+      return net::CreateChromeOnlySystemTrustStore(
+          std::make_unique<net::TrustStoreChrome>());
+#else
       return net::CreateSslSystemTrustStoreChromeRoot(
           std::make_unique<net::TrustStoreChrome>());
+#endif
 #else
       std::cerr << impl_name << ": not supported.\n";
       [[fallthrough]];

@@ -703,6 +703,14 @@ TEST_F(CertDatabaseNSSTest, ImportCACertNotHierarchy) {
   EXPECT_EQ("Test Root CA", GetSubjectCN(cert_list[0].get()));
 }
 
+// The tests in this ifdef block all test the interaction of using
+// NSSCertDatabase to import certificates with trust settings and then trying
+// to verify relevant certificate chains. This depends on the verifier using
+// TrustStoreNSS to load certificate trust settings from NSS.
+// TODO(crbug.com/390333881): I think the server & CA cert management parts of
+// CertDatabaseNSS are only used by tests now. Try removing them entirely.
+#if BUILDFLAG(USE_NSS_SERVER_CERTS)
+
 // Test importing a server cert + chain to the NSS DB with default trust. After
 // importing, all the certs should be found in the DB and should have default
 // trust flags.
@@ -1239,6 +1247,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa4) {
   EXPECT_THAT(error, IsOk());
   EXPECT_EQ(0U, verify_result2.cert_status);
 }
+
+#endif  // BUILDFLAG(USE_NSS_SERVER_CERTS)
 
 // Importing two certificates with the same issuer and subject common name,
 // but overall distinct subject names, should succeed and generate a unique

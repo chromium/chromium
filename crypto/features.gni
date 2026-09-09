@@ -9,7 +9,7 @@ declare_args() {
   use_nss_client_certs = (is_linux || is_chromeos) && !is_castos
 
   # True if certificates from NSS are used in server authentication.
-  use_nss_server_certs = is_linux || is_chromeos
+  use_nss_server_certs = is_linux
 }
 
 declare_args() {

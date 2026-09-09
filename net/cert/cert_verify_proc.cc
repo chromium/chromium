@@ -419,7 +419,11 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
       std::move(ct_policy_enforcer),
+#if BUILDFLAG(IS_CHROMEOS)
+      CreateChromeOnlySystemTrustStore(std::move(chrome_root)),
+#else
       CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root)),
+#endif
       instance_params, std::move(time_tracker));
 }
 #endif
