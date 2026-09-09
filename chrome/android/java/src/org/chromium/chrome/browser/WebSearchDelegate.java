@@ -77,6 +77,7 @@ public class WebSearchDelegate {
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         loadUrlParams.setVerbatimHeaders(headers);
+        loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
         loadUrlParams.setTransitionType(PageTransition.GENERATED);
         return loadUrlParams;
     }

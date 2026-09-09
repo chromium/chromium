@@ -842,7 +842,7 @@ TEST_F(NavigationControllerTest, CrossOriginRedirectRemovesHeaders) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo1.com/foo");
   const GURL url2("http://foo2.com/bar");
-  const std::string kExtraHeaders = "Foo: Bar\nBaz: Qux";
+  const std::string kExtraHeaders = "Foo: Bar\nBaz: Qux\nX-Geo: w CgwI";
   std::string kExtraHeadersCRLF;
   base::ReplaceChars(kExtraHeaders, "\n", "\r\n", &kExtraHeadersCRLF);
 

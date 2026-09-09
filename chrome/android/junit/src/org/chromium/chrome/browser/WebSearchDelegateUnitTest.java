@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,6 +19,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -32,10 +36,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link WebSearchDelegate}. */
@@ -52,6 +58,7 @@ public class WebSearchDelegateUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
     @Mock private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactoryMock;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private ActivityTabProvider mActivityTabProvider;
     private SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -91,8 +98,35 @@ public class WebSearchDelegateUnitTest {
 
         mDelegate.performSearch("query");
 
-        verify(mTabModelSelector).openNewTab(any(), anyInt(), any(), anyBoolean());
+        verify(mTabModelSelector)
+                .openNewTab(
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_LONGPRESS_FOREGROUND),
+                        eq(mTab),
+                        eq(false));
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
         verify(mTracker).notifyEvent(EventConstants.WEB_SEARCH_PERFORMED);
+    }
+
+    @Test
+    public void testSearch_removesExtraHeadersOnCrossOriginRedirect() {
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArgument(2)).run();
+                            return null;
+                        })
+                .when(mDataProtectionBridgeMock)
+                .shouldAllowSearchWith(anyInt(), any(), any());
+
+        mDelegate.performSearch("sample search");
+
+        verify(mTabModelSelector)
+                .openNewTab(
+                        mLoadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_LONGPRESS_FOREGROUND),
+                        eq(mTab),
+                        eq(false));
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
     }
 
     @Test

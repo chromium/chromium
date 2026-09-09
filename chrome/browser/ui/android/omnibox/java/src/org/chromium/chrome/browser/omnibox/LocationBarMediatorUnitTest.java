@@ -1051,6 +1051,7 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
     }
 
     @Test
@@ -1112,6 +1113,7 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor.getValue().onLoadUrl(mTab, mLoadUrlParams, mLoadUrlResult);
@@ -1151,6 +1153,7 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
         assertTrue(mLoadUrlParamsCaptor.getValue().getVerbatimHeaders().contains(text));
         assertEquals(data, mLoadUrlParamsCaptor.getValue().getPostData().getEncodedNativeForm());
     }
@@ -1175,6 +1178,7 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
         String verbatimHeaders = mLoadUrlParamsCaptor.getValue().getVerbatimHeaders();
         assertTrue(verbatimHeaders.contains("Authorization: Bearer token123"));
         assertTrue(verbatimHeaders.contains("Custom-Header: custom-value"));
@@ -1242,6 +1246,7 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
     }
 
     @Test
@@ -1264,6 +1269,22 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
+    }
+
+    @Test
+    public void testLoadUrl_removesExtraHeadersOnCrossOriginRedirect() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
+
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertTrue(mLoadUrlParamsCaptor.getValue().getRemoveExtraHeadersOnCrossOriginRedirect());
     }
 
     @Test

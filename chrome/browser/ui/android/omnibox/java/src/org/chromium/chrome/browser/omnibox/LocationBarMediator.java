@@ -1173,6 +1173,7 @@ class LocationBarMediator
                                     assertNonNull(mProfileSupplier.get()),
                                     mTemplateUrlServiceSupplier.get()));
                 }
+                loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
                 loadUrlParams.setTransitionType(
                         omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
                 if (omniboxLoadUrlParams.inputStartTimestamp != 0) {
