@@ -14,9 +14,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/frame/glass_frame_service.h"
-#endif
 
 // Proposed layout implementation.
 
