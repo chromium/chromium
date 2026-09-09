@@ -20,6 +20,10 @@
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace autofill {
 
 class AutofillClient;
@@ -50,6 +54,12 @@ class OtpMetricsTracker {
   // likely unrelated to the previously detected field, so the latency metric is
   // not recorded.
   static constexpr base::TimeDelta kFieldDetectionTimeout = base::Minutes(5);
+
+  // Returns true if the user associated with `identity_manager` is eligible for
+  // OTP metric tracking (signed into Chrome with a gmail.com or google.com
+  // account).
+  static bool IsEligibleForGmailOtps(
+      const signin::IdentityManager* identity_manager);
 
   OtpMetricsTracker(
       one_time_tokens::OneTimeTokenService* one_time_token_service,

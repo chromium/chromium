@@ -21,7 +21,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/language_state.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -81,6 +83,23 @@ std::string GetPageLanguageFromClient(AutofillClient& client) {
 
 }  // namespace
 
+// static
+bool OtpMetricsTracker::IsEligibleForGmailOtps(
+    const signin::IdentityManager* identity_manager) {
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+  const std::string& email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  constexpr char kGmailDomain[] = "gmail.com";
+  constexpr char kGooglemailDomain[] = "googlemail.com";
+  return gaia::ExtractDomainName(email) == kGmailDomain ||
+         gaia::ExtractDomainName(email) == kGooglemailDomain ||
+         gaia::IsGoogleInternalAccountEmail(email);
+}
+
 OtpMetricsTracker::OtpMetricsTracker(
     one_time_tokens::OneTimeTokenService* one_time_token_service,
     AutofillClient& autofill_client)
@@ -107,6 +126,7 @@ void OtpMetricsTracker::OnOtpFieldDetected(FormGlobalId form_id,
   if (last_handled_form_id_.has_value() && *last_handled_form_id_ == form_id) {
     return;
   }
+
   ukm_source_id_ = autofill_manager.driver().GetPageUkmSourceId();
   tickle_timeout_timer_.Stop();
   speculative_page_language_.reset();

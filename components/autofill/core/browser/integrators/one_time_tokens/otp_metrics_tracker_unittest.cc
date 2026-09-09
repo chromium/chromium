@@ -22,6 +22,7 @@
 #include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -794,6 +795,45 @@ TEST_F(OtpMetricsTrackerTest, PageLanguage_FeatureDisabled) {
       OtpMetricsTracker::kPageLanguageNoTickleReceivedHistogram, 0);
   histogram_tester_.ExpectTotalCount(
       OtpMetricsTracker::kPageLanguageNoFieldDetectedHistogram, 0);
+}
+
+TEST_F(OtpMetricsTrackerTest, IsEligibleForGmailOtps_SignedOut) {
+  ASSERT_FALSE(autofill_client().GetIdentityManager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(OtpMetricsTracker::IsEligibleForGmailOtps(
+      autofill_client().GetIdentityManager()));
+}
+
+TEST_F(OtpMetricsTrackerTest, IsEligibleForGmailOtps_GmailAccount) {
+  autofill_client().identity_test_environment().MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(OtpMetricsTracker::IsEligibleForGmailOtps(
+      autofill_client().GetIdentityManager()));
+}
+
+TEST_F(OtpMetricsTrackerTest, IsEligibleForGmailOtps_GoogleAccount) {
+  autofill_client().identity_test_environment().MakePrimaryAccountAvailable(
+      "user@google.com", signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(OtpMetricsTracker::IsEligibleForGmailOtps(
+      autofill_client().GetIdentityManager()));
+}
+
+TEST_F(OtpMetricsTrackerTest, IsEligibleForGmailOtps_GooglemailAccount) {
+  autofill_client().identity_test_environment().MakePrimaryAccountAvailable(
+      "user@googlemail.com", signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(OtpMetricsTracker::IsEligibleForGmailOtps(
+      autofill_client().GetIdentityManager()));
+}
+
+TEST_F(OtpMetricsTrackerTest, IsEligibleForGmailOtps_OtherDomain) {
+  autofill_client().identity_test_environment().MakePrimaryAccountAvailable(
+      "user@example.com", signin::ConsentLevel::kSignin);
+  EXPECT_FALSE(OtpMetricsTracker::IsEligibleForGmailOtps(
+      autofill_client().GetIdentityManager()));
+}
+
+TEST_F(OtpMetricsTrackerTest, IsEligibleForGmailOtps_NullIdentityManager) {
+  EXPECT_FALSE(OtpMetricsTracker::IsEligibleForGmailOtps(nullptr));
 }
 
 }  // namespace
