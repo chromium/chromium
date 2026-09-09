@@ -416,12 +416,14 @@ bool D3DH265Accelerator::PicParamsFromRefLists(
               ref_check_ok = false;
               return;
             }
-            int poc_index =
-                poc_index_into_ref_pic_list_[pic->pic_order_cnt_val_];
-            if (poc_index < 0) {
+            int poc_index = kDxvaInvalidRefPicIndex;
+            const auto poc_it =
+                poc_index_into_ref_pic_list_.find(pic->pic_order_cnt_val_);
+            if (poc_it == poc_index_into_ref_pic_list_.end()) {
               DLOG(ERROR) << "Invalid index of POC for " << rps_name << ".";
               ref_check_ok = false;
-              poc_index = kDxvaInvalidRefPicIndex;
+            } else {
+              poc_index = poc_it->second;
             }
             dest[idx++] = poc_index;
           }
@@ -435,8 +437,7 @@ bool D3DH265Accelerator::PicParamsFromRefLists(
                          "RefPicSetLtCurr");
 
         base::span(pic_param.params.PicOrderCntValList)
-            .copy_prefix_from(
-                base::span(ref_frame_pocs_).first(kMaxRefPicListSize - 1));
+            .copy_prefix_from(base::span(ref_frame_pocs_));
       },
       *pic_params);
 
