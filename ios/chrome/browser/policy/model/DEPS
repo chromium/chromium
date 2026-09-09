@@ -9,6 +9,7 @@ include_rules = [
   "+components/policy/resources/webui/mojom/policy.mojom.h",
   "+components/themes",
   "+ios/chrome/browser/enterprise/client_certificates",
+  "+ios/chrome/browser/enterprise/connectors/reporting",
   "+ios/chrome/browser/enterprise/groups/model",
   "+ios/chrome/browser/enterprise/identifiers",
   "+ios/chrome/browser/enterprise/signals/model",

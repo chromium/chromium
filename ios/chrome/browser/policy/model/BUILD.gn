@@ -170,13 +170,18 @@ source_set("saas_usage_reporting") {
   sources = [
     "reporting/saas_usage/saas_usage_report_factory_delegate_ios.h",
     "reporting/saas_usage/saas_usage_report_factory_delegate_ios.mm",
+    "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.h",
+    "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.mm",
   ]
   deps = [
     ":model",
     "//base",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }
@@ -298,6 +303,7 @@ source_set("unit_tests") {
     "reporting/profile_report_generator_ios_unittest.mm",
     "reporting/report_generator_ios_unittest.mm",
     "reporting/report_scheduler_ios_unittest.mm",
+    "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios_unittest.mm",
     "restrict_accounts_policy_handler_unittest.cc",
     "status_provider/user_cloud_policy_status_provider_unittest.mm",
   ]
@@ -306,6 +312,7 @@ source_set("unit_tests") {
     ":constants",
     ":model",
     ":policy_util",
+    ":saas_usage_reporting",
     ":test_resources",
     ":test_support",
     "//base",
@@ -335,6 +342,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/prefs/model",
@@ -346,6 +354,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
