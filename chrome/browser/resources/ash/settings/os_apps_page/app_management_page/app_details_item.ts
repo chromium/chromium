@@ -360,6 +360,10 @@ export class AppManagementAppDetailsItem extends
    * be shown in the tooltip.
    */
   private getTooltipText_(app: App): string {
+    if (app.type === AppType.kWeb &&
+        app.publisherId?.startsWith('isolated-app://')) {
+      return app.title || '';
+    }
     switch (app.installSource) {
       case InstallSource.kBrowser:
       case InstallSource.kSync:

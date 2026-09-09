@@ -87,6 +87,22 @@ suite('<app-management-app-details-item>', () => {
     assertEquals(publisherId, infoIconTooltip.tooltipText.trim());
   });
 
+  test('IWA type from browser has info icon with app title', async () => {
+    const publisherId = 'isolated-app://pt20shjf.../';
+    const title = 'Sample IWA Title';
+    await addApp({
+      type: AppType.kWeb,
+      installSource: InstallSource.kBrowser,
+      publisherId,
+      title,
+    });
+
+    const infoIconTooltip =
+        appDetailsItem.shadowRoot!.querySelector('cr-tooltip-icon');
+    assertTrue(!!infoIconTooltip);
+    assertEquals(title, infoIconTooltip.tooltipText.trim());
+  });
+
   test(
       'IWA type from browser with parent app (data sharing explanation)',
       async () => {
