@@ -315,7 +315,15 @@ TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
   EXPECT_NE(status, 0);
 }
 
-TEST_P(UnexportableKeyTest, CertifyFailsForSoftwareSigningKey) {
+// TODO(crbug.com/558952298): Fix and re-enable on win11-arm64-rel.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_CertifyFailsForSoftwareSigningKey \
+  DISABLED_CertifyFailsForSoftwareSigningKey
+#else
+#define MAYBE_CertifyFailsForSoftwareSigningKey \
+  CertifyFailsForSoftwareSigningKey
+#endif
+TEST_P(UnexportableKeyTest, MAYBE_CertifyFailsForSoftwareSigningKey) {
   if (provider_type() != Provider::kTPM) {
     GTEST_SKIP() << "Attestation keys are only supported on TPM.";
   }
