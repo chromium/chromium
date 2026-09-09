@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/result_codes.h"
@@ -80,6 +81,12 @@ namespace internal {
 using FileMappedForLaunch = PosixFileDescriptorInfo;
 #else
 using FileMappedForLaunch = base::HandlesToInheritVector;
+#endif
+
+#if BUILDFLAG(IS_MAC)
+// Returns the suffix used to identify process-type-isolated Darwin user
+// directories.
+CONTENT_EXPORT std::string GetDarwinUserDirSuffix(std::string process_type);
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -281,6 +288,14 @@ class ChildProcessLauncherHelper
   ~ChildProcessLauncherHelper();
 
   void LaunchOnLauncherThread();
+
+#if BUILDFLAG(IS_MAC)
+  // Creates per process-type isolated directories for a child process within
+  // the Darwin system user directories (User, Cache, Temp). Updates `options`'s
+  // environment to configure the suffix, ensuring the child process uses the
+  // isolated directories. Returns true if successful.
+  void CreateProcessTypeDarwinUserDirs(base::LaunchOptions* options);
+#endif
 
   // Update command line and mapped handles if a log handle is being passed.
   void PassLoggingSwitches(base::LaunchOptions* launch_options,

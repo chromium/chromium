@@ -40,6 +40,8 @@ TEST(SandboxTypeTest, Renderer) {
   SetCommandLineFlagsForSandboxType(&command_line, Sandbox::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
   EXPECT_TRUE(command_line.HasSwitch(switches::kNoSandbox));
+
+  EXPECT_EQ(StringFromSandboxType(Sandbox::kRenderer), "renderer");
 }
 
 TEST(SandboxTypeTest, Utility) {
@@ -146,6 +148,8 @@ TEST(SandboxTypeTest, GPU) {
 
   command_line.AppendSwitch(switches::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
+
+  EXPECT_EQ(StringFromSandboxType(Sandbox::kGpu), "gpu");
 }
 
 TEST(SandboxTypeTest, Nonesuch) {

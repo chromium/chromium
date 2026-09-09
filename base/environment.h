@@ -23,6 +23,17 @@ namespace env_vars {
 // On Posix systems, this variable contains the location of the user's home
 // directory. (e.g, /home/username/).
 inline constexpr char kHome[] = "HOME";
+inline constexpr char kTmpDir[] = "TMPDIR";
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+// Used to customize the path provided by NSTemporaryDirectory() and other paths
+// retrieved from dirhelper (e.g., via confstr) on macOS.
+inline constexpr char kDirHelperUserDirSuffix[] = "DIRHELPER_USER_DIR_SUFFIX";
+
+// Historical environment variable set by build infrastructure for macOS temp
+// dir.
+inline constexpr char kMacChromiumTmpDir[] = "MAC_CHROMIUM_TMPDIR";
 #endif
 
 }  // namespace env_vars

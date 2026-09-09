@@ -27,6 +27,9 @@ SANDBOX_POLICY_EXPORT void SetCommandLineFlagsForSandboxType(
 SANDBOX_POLICY_EXPORT sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
     const base::CommandLine& command_line);
 
+SANDBOX_POLICY_EXPORT std::string StringFromSandboxType(
+    sandbox::mojom::Sandbox sandbox_type);
+
 SANDBOX_POLICY_EXPORT std::string StringFromUtilitySandboxType(
     sandbox::mojom::Sandbox sandbox_type);
 

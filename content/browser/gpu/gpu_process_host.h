@@ -51,6 +51,8 @@ class BrowserChildProcessHostImpl;
 #if BUILDFLAG(IS_MAC)
 class BrowserChildProcessBackgroundedBridge;
 class CATransactionGPUCoordinator;
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacGpuSandboxDarwinUserDirs);
 #endif
 
 class GpuProcessHost final : public BrowserChildProcessHostDelegate,

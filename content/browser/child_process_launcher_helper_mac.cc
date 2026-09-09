@@ -4,12 +4,19 @@
 
 #include "content/browser/child_process_launcher_helper.h"
 
+#include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_port_rendezvous.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/environment.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -70,7 +77,21 @@ class SandboxProfileCache {
   base::flat_map<sandbox::mojom::Sandbox, std::string> cache_ GUARDED_BY(lock_);
 };
 
+base::FilePath CreateSandboxChildDir(base::DarwinUserDirectory directory,
+                                     const std::string& suffix) {
+  base::FilePath parent_dir = base::GetDarwinUserDirectory(directory);
+  CHECK(!parent_dir.empty());
+  base::FilePath path = parent_dir.Append(suffix);
+  CHECK(base::CreateDirectory(path))
+      << "Failed to create directory at " << path;
+  return path;
+}
+
 }  // namespace
+
+std::string GetDarwinUserDirSuffix(std::string process_type) {
+  return base::StrCat({base::apple::BaseBundleID(), ".helper.", process_type});
+}
 
 std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
@@ -123,6 +144,10 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
       sandbox::policy::IsUnsandboxedSandboxType(sandbox_type);
 
   if (!no_sandbox) {
+    if (delegate_->NeedsIsolatedDarwinUserDirs()) {
+      CreateProcessTypeDarwinUserDirs(options);
+    }
+
     if (!LOG_IS_ON(INFO)) {
       // Disable os logging to com.apple.diagnosticd when logging is not
       // enabled. The system logging has a measureable performance impact.
@@ -143,8 +168,8 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
           can_cache_policy ? sandbox::SandboxSerializer::Target::kCompiled
                            : sandbox::SandboxSerializer::Target::kSource);
       compiler.SetProfile(sandbox::policy::GetSandboxProfile(sandbox_type));
-      const bool sandbox_ok =
-          SetupSandboxParameters(sandbox_type, *command_line_.get(), &compiler);
+      const bool sandbox_ok = SetupSandboxParameters(
+          sandbox_type, *command_line_.get(), options->environment, &compiler);
 
       if (!sandbox_ok) {
         LOG(ERROR) << "Sandbox setup failed.";
@@ -178,6 +203,44 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   }
 
   return true;
+}
+
+void ChildProcessLauncherHelper::CreateProcessTypeDarwinUserDirs(
+    base::LaunchOptions* options) {
+  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  CHECK(!env->GetVar(base::env_vars::kDirHelperUserDirSuffix).has_value())
+      << base::env_vars::kDirHelperUserDirSuffix
+      << " is used to create sandboxed subdirectories for child processes and "
+         "cannot be set";
+
+  auto sandbox_type =
+      sandbox::policy::SandboxTypeFromCommandLine(*command_line_);
+  std::string user_dir_suffix = GetDarwinUserDirSuffix(
+      sandbox::policy::StringFromSandboxType(sandbox_type));
+  CreateSandboxChildDir(base::DarwinUserDirectory::kUser, user_dir_suffix);
+  CreateSandboxChildDir(base::DarwinUserDirectory::kUserCache, user_dir_suffix);
+  base::FilePath temp_user_temp_dir = CreateSandboxChildDir(
+      base::DarwinUserDirectory::kUserTemp, user_dir_suffix);
+
+  // Set DIRHELPER_USER_DIR_SUFFIX to customize the path provided by
+  // NSTemporaryDirectory() and other paths retrieved from confstr.
+  //
+  // Note that DIRHELPER_USER_DIR_SUFFIX *does not* support nested paths.
+  // Providing more than one path component will cause this environment
+  // variable to be ignored.
+  options->environment[base::env_vars::kDirHelperUserDirSuffix] =
+      user_dir_suffix;
+
+  // Prevent the child process from inheriting MAC_CHROMIUM_TMPDIR if set,
+  // ensuring base::GetTempDir() in the child process falls back to
+  // NSTemporaryDirectory(), which respects DIRHELPER_USER_DIR_SUFFIX.
+  options->environment[base::env_vars::kMacChromiumTmpDir] = "";
+
+  // Set TMPDIR to the isolated temp directory path so code that inspects
+  // TMPDIR directly uses the permitted directory.
+  options->environment[base::env_vars::kTmpDir] = temp_user_temp_dir.value();
 }
 
 ChildProcessLauncherHelper::Process

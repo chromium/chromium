@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/child_process_launcher.h"
+
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "content/browser/child_process_launcher.h"
+#include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -17,6 +20,11 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "sandbox/policy/sandbox_type.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/files/file_util.h"
+#endif
 
 namespace {
 
@@ -96,5 +104,46 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
   EXPECT_EQ(last_entry->GetPageType(), PAGE_TYPE_NORMAL);
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url);
 }
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that isolated Darwin user directories are created for sandboxed
+// child processes that require them (like the GPU process).
+IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest,
+                       IsolatedDarwinUserDirs) {
+  if (!base::FeatureList::IsEnabled(kMacGpuSandboxDarwinUserDirs)) {
+    GTEST_SKIP() << "Sandboxed directories will not be created for the GPU "
+                    "process on macOS when kMacGpuSandboxDarwinUserDirs is "
+                    "disabled.";
+  }
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::string expected_prefix = internal::GetDarwinUserDirSuffix(
+      sandbox::policy::StringFromSandboxType(sandbox::mojom::Sandbox::kGpu));
+  auto FindIsolatedDirsInParent =
+      [&](const base::FilePath& dir_path) -> std::vector<base::FilePath> {
+    std::vector<base::FilePath> results;
+    base::FileEnumerator enumerator(dir_path, /*recursive=*/false,
+                                    base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath entry = enumerator.Next(); !entry.empty();
+         entry = enumerator.Next()) {
+      if (entry.BaseName().value().find(expected_prefix) == 0) {
+        results.push_back(entry);
+      }
+    }
+    return results;
+  };
+
+  std::vector<base::FilePath> user_dirs = FindIsolatedDirsInParent(
+      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser));
+  std::vector<base::FilePath> user_cache_dirs = FindIsolatedDirsInParent(
+      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache));
+  std::vector<base::FilePath> user_temp_dirs = FindIsolatedDirsInParent(
+      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserTemp));
+
+  EXPECT_EQ(user_dirs.size(), 1u);
+  EXPECT_EQ(user_cache_dirs.size(), 1u);
+  EXPECT_EQ(user_temp_dirs.size(), 1u);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content
