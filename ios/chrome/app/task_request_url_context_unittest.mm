@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -449,5 +450,30 @@ TEST_F(TaskRequestForURLContextTest, TestFileURLContextExecution) {
             GURL("file:///path/to/test.pdf"));
   EXPECT_EQ(tab_opener.urlLoadParams.web_params.virtual_url,
             GURL("chrome://external-file/test.pdf"));
+  EXPECT_TRUE(tab_opener.dismissOmnibox);
+}
+
+// Tests that an external action OpenNTP URL execution opens the NTP.
+TEST_F(TaskRequestForURLContextTest, TestExternalActionOpenNTPExecution) {
+  NSURL* url =
+      [NSURL URLWithString:@"googlechrome://ChromeExternalAction/OpenNTP"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL(kChromeUINewTabURL));
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
   EXPECT_TRUE(tab_opener.dismissOmnibox);
 }

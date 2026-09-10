@@ -142,7 +142,7 @@ void RecordExternalActionMetrics(NSURL* url) {
     NSString* path = ExtractSinglePathComponent(url);
 
     if ([path isEqualToString:kExternalActionOpenNTP]) {
-      // TODO(crbug.com/493816082): Add implementation.
+      externalGURL = GURL(kChromeUINewTabURL);
     } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
       // TODO(crbug.com/493816082): Add implementation.
     } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
