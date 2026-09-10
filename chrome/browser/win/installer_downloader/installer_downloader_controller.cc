@@ -173,10 +173,13 @@ void InstallerDownloaderController::RegisterInfoBar() {
                        ? omnibox::kChromeProductIcon
                        : vector_icons::kProductRefreshIcon)
           .SetScope(infobars::InfoBarScope::kGlobal)
-          // The infobar should not be shown on guest profiles.
+          // The infobar should not be shown on guest profiles and non normal
+          // browser type.
           .SetBrowserFilter(
               base::BindRepeating([](BrowserWindowInterface* browser) {
-                return !browser->GetProfile()->IsGuestSession();
+                return browser->GetType() ==
+                           BrowserWindowInterface::TYPE_NORMAL &&
+                       !browser->GetProfile()->IsGuestSession();
               }))
           .SetExpireOnNavigation(false)
           // InstallerDownloaderController is registered as a global feature and
