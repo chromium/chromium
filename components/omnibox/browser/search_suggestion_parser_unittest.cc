@@ -1794,3 +1794,44 @@ TEST(SearchSuggestionParserTest,
                              SuggestionIs(u"christopher doe")));
   }
 }
+
+TEST(SearchSuggestionParserTest, ParseSuggestResultsWithRichImageStyle) {
+  omnibox::SuggestTemplateInfo template_info;
+  template_info.set_style(omnibox::SuggestTemplateInfo::RICH_IMAGE);
+  template_info.mutable_image()->set_url("https://example.com/image.png");
+
+  std::string base64_encoded = SerializeAndEncodeProto(template_info);
+
+  std::string json_data = base::StrCat({R"([
+      "cat",
+      ["cute cat"],
+      [""],
+      [],
+      {
+        "google:suggestdetail": [
+          {
+            "google:suggesttemplate": ")",
+                                        base64_encoded, R"("
+          }
+        ]
+      }])"});
+
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  CHECK(root_val.has_value());
+  CHECK(root_val.value().is_list());
+  TestSchemeClassifier scheme_classifier;
+  AutocompleteInput input(u"cat", metrics::OmniboxEventProto::NTP,
+                          scheme_classifier);
+
+  SearchSuggestionParser::Results results;
+  ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
+      root_val->GetList(), input, scheme_classifier,
+      /*default_result_relevance=*/400,
+      /*is_keyword_result=*/false, {.allow_empty_suggestion = false},
+      &results));
+  ASSERT_EQ(1U, results.suggest_results.size());
+  ASSERT_TRUE(results.suggest_results[0].suggest_template_info().has_value());
+  EXPECT_EQ(omnibox::SuggestTemplateInfo::RICH_IMAGE,
+            results.suggest_results[0].suggest_template_info()->style());
+}

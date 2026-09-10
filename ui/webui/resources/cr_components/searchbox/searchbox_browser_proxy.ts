@@ -12,6 +12,7 @@
  * these Mojo-based searchbox types.
  */
 
+import {SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Action, AutocompleteMatch, AutocompleteResult, MatchKeywordModel, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -47,6 +48,7 @@ export function createAutocompleteMatch(
     tailSuggestCommonPrefix: null,
     keywordModel: null,
     fuseboxAction: null,
+    suggestStyle: SuggestStyle.kUnspecified,
   };
 
   return Object.assign(base, modifiers);

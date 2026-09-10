@@ -810,7 +810,40 @@ TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
   AutocompleteMatch match = map.begin()->second;
   EXPECT_EQ(suggest_template_info.image().dominant_color(),
             match.image_dominant_color);
-  EXPECT_EQ("gs_ssp=abc", match.search_terms_args->additional_query_params);
+  EXPECT_EQ(omnibox::SuggestTemplateInfo::DEFAULT,
+            match.suggest_template->style());
+}
+
+TEST_F(BaseSearchProviderTest, SuggestTemplateInfoRichImagePopulatesMatch) {
+  TemplateURLData data;
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  auto template_url = std::make_unique<TemplateURL>(data);
+
+  TestBaseSearchProvider::MatchMap map;
+  std::u16string query = u"cute cat";
+
+  omnibox::SuggestTemplateInfo suggest_template_info;
+  suggest_template_info.set_style(omnibox::SuggestTemplateInfo::RICH_IMAGE);
+  suggest_template_info.mutable_image()->set_url("http://example.com/cat.png");
+
+  SearchSuggestionParser::SuggestResult result(
+      query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_NATIVE_CHROME,
+      /*subtypes=*/{}, /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  result.SetSuggestTemplateInfo(suggest_template_info);
+  provider_->AddMatchToMap(
+      result, AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  ASSERT_EQ(1U, map.size());
+  const AutocompleteMatch& match = map.begin()->second;
+  ASSERT_TRUE(match.suggest_template.has_value());
+  EXPECT_EQ(omnibox::SuggestTemplateInfo::RICH_IMAGE,
+            match.suggest_template->style());
+  EXPECT_EQ("http://example.com/cat.png", match.image_url.spec());
 }
 
 TEST_F(BaseSearchProviderTest, AnswerAndImageOnlyPopulatedForGoogle) {
