@@ -776,6 +776,18 @@ void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
                                             content::WebContents* new_contents,
                                             int index,
                                             int reason) {
+  // A new tab's WebContents is created and starts loading before the WebUI
+  // creates its embedding element and attaches it as an embedded WebContents.
+  // The WebUI layout therefore cannot size the tab until after loading has
+  // started. Seed an unsized foreground tab from the outgoing tab so its
+  // initial layout does not use a zero-sized viewport.
+  if (old_contents && new_contents->GetSize().IsZero()) {
+    const gfx::Size old_size = old_contents->GetContainerBounds().size();
+    if (!old_size.IsEmpty()) {
+      new_contents->Resize(gfx::Rect(old_size));
+    }
+  }
+
   // New tabs have their ColorProviderSource set to the Widget initially.
   // Set the ColorProviderSource back to |this| when they're first activated.
   // This is a no-op if it's already set to |this|.
