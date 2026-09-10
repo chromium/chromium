@@ -104,7 +104,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // ui::ImplicitAnimationObserver overrides:
   void OnImplicitAnimationsCompleted() override;
 
-  const gfx::ShadowDetails* details_for_testing() const {
+  const decoration::ShadowDetails* details_for_testing() const {
     return details_ ? &details_.value() : nullptr;
   }
 
@@ -150,7 +150,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // The details of the shadow image that's currently set on |shadow_layer()|.
   // This will be nullopt until a positive elevation has been set.
-  std::optional<gfx::ShadowDetails> details_;
+  std::optional<decoration::ShadowDetails> details_;
 
   // The style of shadow. Use MD style by default.
   Style style_ = Style::kMaterialDesign;

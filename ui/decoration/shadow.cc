@@ -258,10 +258,10 @@ void Shadow::UpdateShadowAppearance() {
                                : std::nullopt,
       is_pill_shaped);
   const auto& details =
-      gfx::ShadowDetails::Get(size_adjusted_rounded_corners, values);
+      decoration::ShadowDetails::Get(size_adjusted_rounded_corners, values);
 
   const gfx::Insets aperture_insets =
-      gfx::ShadowDetails::GetNineboxApertureInsets(
+      decoration::GetNineboxApertureInsetsForShadows(
           details.values, size_adjusted_rounded_corners);
 
   // Update |shadow_layer()| if details changed and it has been updated in
@@ -314,8 +314,8 @@ void Shadow::UpdateShadowAppearance() {
   // Occlude the region inside the bounding box. Occlusion uses shadow layer
   // space. See nine_patch_layer.h for more context on what's going on here.
   gfx::Rect occlusion_bounds(shadow_layer_bounds.size());
-  gfx::Insets corner_insets = gfx::ShadowDetails::GetInsetsForRoundedCorners(
-      size_adjusted_rounded_corners);
+  gfx::Insets corner_insets =
+      decoration::GetInsetsForRoundedCorners(size_adjusted_rounded_corners);
   occlusion_bounds.Inset(-margins + corner_insets);
   shadow_layer()->UpdateNinePatchOcclusion(occlusion_bounds);
 

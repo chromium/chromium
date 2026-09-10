@@ -20,32 +20,32 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 
-namespace gfx {
+namespace ui::decoration {
 namespace {
 
 // Creates an image with the given shadows painted around a round rect with
 // the given corner radius. The image will be just large enough to paint the
 // shadows appropriately with a 1px square region reserved for "content".
-class ShadowNineboxSource : public CanvasImageSource {
+class NineboxImageSource : public gfx::CanvasImageSource {
  public:
-  ShadowNineboxSource(const std::vector<ShadowValue>& shadows,
-                      gfx::RoundedCornersF& rounded_corners)
-      : CanvasImageSource(CalculateSize(shadows, rounded_corners)),
+  NineboxImageSource(const std::vector<gfx::ShadowValue>& shadows,
+                     gfx::RoundedCornersF& rounded_corners)
+      : gfx::CanvasImageSource(CalculateSize(shadows, rounded_corners)),
         shadows_(shadows),
         rounded_corners_(rounded_corners) {
     DCHECK(!shadows.empty());
   }
 
-  ShadowNineboxSource(const ShadowNineboxSource&) = delete;
-  ShadowNineboxSource& operator=(const ShadowNineboxSource&) = delete;
+  NineboxImageSource(const NineboxImageSource&) = delete;
+  NineboxImageSource& operator=(const NineboxImageSource&) = delete;
 
-  ~ShadowNineboxSource() override {}
+  ~NineboxImageSource() override = default;
 
   // CanvasImageSource overrides:
-  void Draw(Canvas* canvas) override {
+  void Draw(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
-    flags.setLooper(CreateShadowDrawLooper(shadows_));
-    Insets insets = -ShadowValue::GetMargin(shadows_);
+    flags.setLooper(gfx::CreateShadowDrawLooper(shadows_));
+    gfx::Insets insets = -gfx::ShadowValue::GetMargin(shadows_);
     gfx::Rect bounds(size());
     bounds.Inset(insets);
 
@@ -67,19 +67,18 @@ class ShadowNineboxSource : public CanvasImageSource {
   }
 
  private:
-  static Size CalculateSize(const std::vector<ShadowValue>& shadows,
-                            const gfx::RoundedCornersF& rounded_corners) {
+  static gfx::Size CalculateSize(const std::vector<gfx::ShadowValue>& shadows,
+                                 const gfx::RoundedCornersF& rounded_corners) {
     // The "content" area (the middle tile in the 3x3 grid) is a single pixel.
     gfx::Rect bounds(0, 0, 1, 1);
 
     // Add enough space to render the full range of blur and the corner
     // rounding.
-    bounds.Inset(
-        -ShadowDetails::GetNineboxApertureInsets(shadows, rounded_corners));
+    bounds.Inset(-GetNineboxApertureInsetsForShadows(shadows, rounded_corners));
     return bounds.size();
   }
 
-  const std::vector<ShadowValue> shadows_;
+  const std::vector<gfx::ShadowValue> shadows_;
 
   const gfx::RoundedCornersF rounded_corners_;
 };
@@ -101,7 +100,7 @@ struct ShadowDetailsKey {
   }
 
   gfx::RoundedCornersF rounded_corners;
-  ShadowValues values;
+  gfx::ShadowValues values;
 };
 
 // Map from shadow details key to a cached shadow.
@@ -132,7 +131,7 @@ const ShadowDetails& ShadowDetails::Get(
     int elevation,
     const gfx::RoundedCornersF& rounded_corners,
     bool is_pill_shaped) {
-  return Get(rounded_corners, ShadowValue::MakeMdShadowValues(
+  return Get(rounded_corners, gfx::ShadowValue::MakeMdShadowValues(
                                   elevation, SK_ColorBLACK, is_pill_shaped));
 }
 
@@ -151,24 +150,27 @@ const ShadowDetails& ShadowDetails::Get(
   });
 
   auto source =
-      std::make_unique<ShadowNineboxSource>(values, key.rounded_corners);
+      std::make_unique<NineboxImageSource>(values, key.rounded_corners);
   const gfx::Size image_size = source->size();
-  auto nine_patch_image = ImageSkia(std::move(source), image_size);
+  auto nine_patch_image = gfx::ImageSkia(std::move(source), image_size);
   auto [inserted_iter, success] =
       g_shadow_cache.Get().try_emplace(key, values, nine_patch_image);
   DCHECK(success);
   return inserted_iter->second;
 }
 
-// static
-gfx::Insets ShadowDetails::GetNineboxApertureInsets(
+size_t ShadowDetails::GetDetailsCacheSizeForTest() {
+  return g_shadow_cache.Get().size();
+}
+
+gfx::Insets GetNineboxApertureInsetsForShadows(
     const gfx::ShadowValues& shadows,
     const gfx::RoundedCornersF& rounded_corners) {
   DCHECK(!shadows.empty());
 
   // We need enough space to render the full range of blur and the corner
   // rounding.
-  const gfx::Insets blur_region = ShadowValue::GetBlurRegion(shadows);
+  const gfx::Insets blur_region = gfx::ShadowValue::GetBlurRegion(shadows);
   const bool is_pill_shaped = shadows.front().is_pill_shaped();
 #if DCHECK_IS_ON()
   // `is_pill_shaped` describes the shape of the content around which the
@@ -194,7 +196,7 @@ gfx::Insets ShadowDetails::GetNineboxApertureInsets(
   // TODO(crbug.com/516866009) Ideally, we should use the same image for
   // pilled vs non-pilled content. Investigate why different shadows are
   // generated.
-  const gfx::Insets margins = ShadowValue::GetMargin(shadows);
+  const gfx::Insets margins = gfx::ShadowValue::GetMargin(shadows);
   const gfx::Insets outer_blur = -margins;
   const gfx::Insets inner_blur = blur_region - outer_blur;
   return gfx::Insets::TLBR(
@@ -205,7 +207,7 @@ gfx::Insets ShadowDetails::GetNineboxApertureInsets(
       outer_blur.right() + std::max(inner_blur.right(), corner_insets.right()));
 }
 
-gfx::Insets ShadowDetails::GetInsetsForRoundedCorners(
+gfx::Insets GetInsetsForRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {
   return gfx::Insets::TLBR(
       base::ClampRound(std::max(rounded_corners.upper_left(),
@@ -218,8 +220,4 @@ gfx::Insets ShadowDetails::GetInsetsForRoundedCorners(
                                 rounded_corners.lower_right())));
 }
 
-size_t ShadowDetails::GetDetailsCacheSizeForTest() {
-  return g_shadow_cache.Get().size();
-}
-
-}  // namespace gfx
+}  // namespace ui::decoration

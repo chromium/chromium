@@ -185,7 +185,7 @@ class DragImageItemView : public views::View {
   }
 
  private:
-  const gfx::ShadowDetails& GetShadowDetails() const {
+  const ui::decoration::ShadowDetails& GetShadowDetails() const {
     return drag_drop::GetDragImageShadowDetails(kDragImageItemViewCornerRadius);
   }
 

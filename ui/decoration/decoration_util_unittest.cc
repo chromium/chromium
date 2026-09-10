@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/shadow_value.h"
 
-namespace gfx {
+namespace ui::decoration {
 
 // Tests the ShadowDetailsKey works properly for shadow details cache.
 TEST(ShadowUtilTest, ShadowDetailsKey) {
@@ -41,9 +41,9 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
 
   // Add fifth shadow details with a different key shadow blur than the first
   // details.
-  const ShadowValues& values_1 = details[0].values;
-  ShadowValues new_blur_values = {
-      ShadowValue(values_1[0].offset(), /*blur=*/20, values_1[0].color()),
+  const gfx::ShadowValues& values_1 = details[0].values;
+  gfx::ShadowValues new_blur_values = {
+      gfx::ShadowValue(values_1[0].offset(), /*blur=*/20, values_1[0].color()),
       values_1[1]};
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(2), new_blur_values));
@@ -51,9 +51,9 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
 
   // Add sixth shadow details with a different ambient color than the second
   // details.
-  const ShadowValues& values_2 = details[1].values;
-  ShadowValues new_color_values = {
-      ShadowValue(values_2[0].offset(), values_2[0].blur(), SK_ColorBLUE),
+  const gfx::ShadowValues& values_2 = details[1].values;
+  gfx::ShadowValues new_color_values = {
+      gfx::ShadowValue(values_2[0].offset(), values_2[0].blur(), SK_ColorBLUE),
       values_2[1]};
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(2), new_color_values));
@@ -67,4 +67,4 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
   EXPECT_EQ(7u, ShadowDetails::GetDetailsCacheSizeForTest());
 }
 
-}  // namespace gfx
+}  // namespace ui::decoration
