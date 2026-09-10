@@ -13,30 +13,26 @@
 #include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/browser/gcm/gcm_profile_service_factory.h"
-#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
-#include "components/gcm_driver/gcm_profile_service.h"
-#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 
 namespace ash {
 namespace {
 
-std::unique_ptr<boca::FCMHandler> CreateFcmHandler(Profile* profile) {
-  gcm::GCMDriver* gcm_driver =
-      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
-  instance_id::InstanceIDDriver* instance_id_driver =
-      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver();
+std::unique_ptr<boca::FCMHandler> CreateFcmHandler(
+    gcm::GCMDriver* gcm_driver,
+    instance_id::InstanceIDDriver* instance_id_driver) {
   return std::make_unique<boca::FCMHandlerImpl>(gcm_driver, instance_id_driver);
 }
 
 }  // namespace
 
-BocaReceiverService::BocaReceiverService(Profile* profile)
-    : fcm_handler_(CreateFcmHandler(profile)),
+BocaReceiverService::BocaReceiverService(
+    Profile* profile,
+    gcm::GCMDriver* gcm_driver,
+    instance_id::InstanceIDDriver* instance_id_driver)
+    : fcm_handler_(CreateFcmHandler(gcm_driver, instance_id_driver)),
       remoting_client_(
           std::make_unique<boca::SpotlightRemotingClientManagerImpl>(
               // TODO(crbug.com/445415017): Replace `SpotlightOAuthTokenFetcher`

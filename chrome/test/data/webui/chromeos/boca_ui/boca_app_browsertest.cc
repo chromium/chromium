@@ -22,6 +22,8 @@
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -29,6 +31,8 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/manta/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,7 +62,10 @@ std::unique_ptr<KeyedService> BuildBocaManagerWithIdentity(
 
   return std::make_unique<ash::BocaManager>(
       profile, g_browser_process->local_state(),
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetApplicationLocale(),
+      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver());
 }
 
 std::string GetRequestBodyString(

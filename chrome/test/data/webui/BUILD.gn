@@ -241,8 +241,11 @@ source_set("browser_tests") {
       ]
       deps += [
         "//chrome/browser/ash/boca",
+        "//chrome/browser/gcm",
         "//chromeos/ash/components/boca/proto",
         "//chromeos/ash/components/boca/session_api",
+        "//components/gcm_driver",
+        "//components/gcm_driver/instance_id",
       ]
     }
   } else if (!is_android) {

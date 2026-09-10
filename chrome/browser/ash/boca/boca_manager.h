@@ -21,6 +21,14 @@
 
 class Profile;
 
+namespace gcm {
+class GCMDriver;
+}  // namespace gcm
+
+namespace instance_id {
+class InstanceIDDriver;
+}  // namespace instance_id
+
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -45,9 +53,14 @@ class BocaManager : public KeyedService {
       std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager,
       Profile* profile);
 
+  // `gcm_driver` and `instance_id_driver` are supplied by
+  // BocaManagerFactory, which owns the dependency on the //chrome
+  // Profile-keyed factories that vend them.
   BocaManager(Profile* profile,
               PrefService* global_prefs,
-              const std::string& application_locale);
+              const std::string& application_locale,
+              gcm::GCMDriver* gcm_driver,
+              instance_id::InstanceIDDriver* instance_id_driver);
   ~BocaManager() override;
 
   // KeyedService:

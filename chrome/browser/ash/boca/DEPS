@@ -12,8 +12,6 @@ include_rules = [
   "+chrome/browser/extensions/test_extension_environment.h",
   "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/feedback/show_feedback_page.h",
-  "+chrome/browser/gcm/gcm_profile_service_factory.h",
-  "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles/profile.h",
@@ -40,8 +38,18 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # The keyed-service factories are the //chrome seam for GCM: they
+  # DependsOn() the Profile-keyed GCM factories and pass the resulting
+  # gcm::GCMDriver / instance_id::InstanceIDDriver (both //components) into
+  # the services they build.
   "boca_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/gcm/gcm_profile_service_factory.h",
+    "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
+  ],
+  "boca_receiver_service_factory\\.cc": [
+    "+chrome/browser/gcm/gcm_profile_service_factory.h",
+    "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   ],
 
   "content_settings_handler_unittest\\.cc": [

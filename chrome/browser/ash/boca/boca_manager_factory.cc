@@ -13,6 +13,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -52,9 +54,12 @@ BocaManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(boca_util::IsEnabled(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
-  auto service =
-      std::make_unique<BocaManager>(profile, g_browser_process->local_state(),
-                                    g_browser_process->GetApplicationLocale());
+  auto service = std::make_unique<BocaManager>(
+      profile, g_browser_process->local_state(),
+      g_browser_process->GetApplicationLocale(),
+      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver());
   return service;
 }
 

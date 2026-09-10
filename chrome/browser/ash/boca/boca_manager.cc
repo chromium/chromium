@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/boca/spotlight/spotlight_crd_manager_impl.h"
 #include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chrome/browser/gcm/gcm_profile_service_factory.h"
-#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
@@ -41,9 +39,7 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/gcm_driver/gcm_driver.h"
-#include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
-#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/live_caption/google_api_translation_dispatcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
@@ -148,7 +144,9 @@ BocaManager::BocaManager(
 
 BocaManager::BocaManager(Profile* profile,
                          PrefService* global_prefs,
-                         const std::string& application_locale)
+                         const std::string& application_locale,
+                         gcm::GCMDriver* gcm_driver,
+                         instance_id::InstanceIDDriver* instance_id_driver)
     : session_client_impl_(std::make_unique<boca::SessionClientImpl>(
           profile->GetURLLoaderFactory(),
           IdentityManagerFactory::GetForProfile(profile))),
@@ -203,11 +201,6 @@ BocaManager::BocaManager(Profile* profile,
       boca_session_manager_.get(),
       std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
 
-  gcm::GCMDriver* gcm_driver =
-      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
-  instance_id::InstanceIDDriver* instance_id_driver =
-      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver();
   invalidation_service_impl_ = std::make_unique<boca::InvalidationServiceImpl>(
       gcm_driver, instance_id_driver, boca_session_manager_.get());
   AddObservers(user);

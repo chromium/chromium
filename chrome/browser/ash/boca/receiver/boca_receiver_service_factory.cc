@@ -9,6 +9,8 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 
 namespace ash {
 
@@ -41,7 +43,10 @@ std::unique_ptr<KeyedService>
 BocaReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<BocaReceiverService>(profile);
+  return std::make_unique<BocaReceiverService>(
+      profile, gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver());
 }
 
 }  // namespace ash

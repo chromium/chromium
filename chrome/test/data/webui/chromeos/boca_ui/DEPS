@@ -1,0 +1,6 @@
+include_rules = [
+  # boca_app_browsertest.cc builds a BocaManager through its production
+  # constructor, which takes the GCM drivers; getting them means naming both
+  # the Profile-keyed factories and the driver types.
+  "+components/gcm_driver",
+]
