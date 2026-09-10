@@ -18,7 +18,6 @@ source_set("app_menu") {
     "action_app_menu_search_bar_view.h",
     "action_app_menu_zoom_view.h",
     "bookmarks_dynamic_menu.h",
-    "profile_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
     "send_tab_to_self_dynamic_menu.h",
     "tab_group_dynamic_menu.h",
@@ -57,7 +56,6 @@ source_set("impl") {
     "action_app_menu_search_bar_view.cc",
     "action_app_menu_zoom_view.cc",
     "bookmarks_dynamic_menu.cc",
-    "profile_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
     "send_tab_to_self_dynamic_menu.cc",
     "tab_group_dynamic_menu.cc",
@@ -67,7 +65,6 @@ source_set("impl") {
     ":app_menu",
     "//base",
     "//build:branding_buildflags",
-    "//chrome/app:branded_strings",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
@@ -90,10 +87,8 @@ source_set("impl") {
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/sessions",
     "//chrome/browser/sharing_hub",
-    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
-    "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_table",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -128,10 +123,8 @@ source_set("impl") {
     "//components/saved_tab_groups/public",
     "//components/sessions",
     "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
-    "//components/sync/service",
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
@@ -154,13 +147,6 @@ source_set("impl") {
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions" ]
   }
-
-  if (!is_chromeos) {
-    deps += [
-      "//chrome/browser/ui/webui/signin:signin_ui_error",
-      "//chrome/browser/ui/webui/signin:signin_utils",
-    ]
-  }
 }
 
 if (toolkit_views) {
@@ -173,7 +159,6 @@ if (toolkit_views) {
       "action_app_menu_test_base.cc",
       "action_app_menu_test_base.h",
       "action_app_menu_unittest.cc",
-      "profile_dynamic_menu_unittest.cc",
     ]
 
     deps = [
@@ -181,11 +166,9 @@ if (toolkit_views) {
       ":impl",
       "//base",
       "//base/test:test_support",
-      "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/browser",
       "//chrome/browser/favicon",
-      "//chrome/browser/signin",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:test_support",
@@ -196,13 +179,11 @@ if (toolkit_views) {
       "//components/favicon/core/test:test_support",
       "//components/saved_tab_groups/public",
       "//components/saved_tab_groups/test_support",
-      "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/tabs:test_support",
       "//testing/gtest",
       "//ui/actions:actions_headers",
       "//ui/base",
-      "//ui/base:test_support",
       "//ui/views",
     ]
   }
