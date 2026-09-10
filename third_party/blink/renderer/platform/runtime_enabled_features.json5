@@ -5479,6 +5479,11 @@
       name: "ScrollTopLeftInterop",
       status: "stable",
     },
+    // Limits the number of scroll-to-text-fragment directives parsed per URL.
+    {
+      name: "ScrollToTextFragmentDirectiveLimit",
+      status: "stable",
+    },
     // Only consider unique case-insensitive scroll-to-text fragments.
     {
       name: "ScrollToTextFragmentUniqueFragments",

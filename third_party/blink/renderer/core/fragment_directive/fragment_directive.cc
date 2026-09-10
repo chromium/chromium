@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_range_selection.h"
@@ -22,6 +23,16 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+
+// The maximum number of directives parsed from a fragment directive string.
+// Each text directive requires a search over the document's text when
+// invoked, so the number of directives a single navigation can request must
+// be bounded.
+constexpr wtf_size_t kMaxDirectivesCount = 16;
+
+}  // namespace
 
 FragmentDirective::FragmentDirective(Document& owner_document)
     : owner_document_(&owner_document) {}
@@ -171,6 +182,11 @@ void FragmentDirective::ParseDirectives(const StringView& fragment_directive) {
   HeapVector<Member<Directive>> new_directives;
   HashSet<String> text_directives;
   for (const auto& directive_string : directive_strings) {
+    if (RuntimeEnabledFeatures::ScrollToTextFragmentDirectiveLimitEnabled() &&
+        new_directives.size() >= kMaxDirectivesCount) {
+      break;
+    }
+
     if (directive_string.starts_with("text=")) {
       String value = directive_string.substr(5).ToString();
       if (value.empty() ||
@@ -185,6 +201,9 @@ void FragmentDirective::ParseDirectives(const StringView& fragment_directive) {
       }
     }
   }
+
+  base::UmaHistogramExactLinear("Blink.FragmentDirective.DirectiveCount",
+                                new_directives.size(), kMaxDirectivesCount + 1);
 
   directives_ = std::move(new_directives);
 }

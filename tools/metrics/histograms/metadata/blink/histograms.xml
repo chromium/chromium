@@ -2954,6 +2954,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FragmentDirective.DirectiveCount" units="directives"
+    expires_after="2027-03-10">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    The number of valid directives parsed from a URL fragment directive.
+    Recorded once per navigation with a fragment directive.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Frame.GetCanonicalUrlRendererTime" units="microseconds"
     expires_after="2023-09-03">
   <owner>carlosk@chromium.org</owner>
