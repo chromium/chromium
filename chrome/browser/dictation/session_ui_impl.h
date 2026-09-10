@@ -37,6 +37,7 @@ class SessionUiImpl : public SessionUi {
   void UpdateAudioLevel(float audio_level) override;
   void OnStartedStream(content::GlobalDOMNodeId target_id) override;
 
+  void CreateBubbleUi();
   void OnDictationBubbleCloseClicked();
   void OnToggleActiveStreamClicked();
   void OnSessionStateChanged(SessionState state);
