@@ -21,11 +21,14 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/frame_view.h"
 
 // `DrivePickerDialogDelegate` configures a window-modal dialog containing the
 // `WebContents` view. It suppresses standard Chrome dialog decorations (title,
@@ -42,6 +45,18 @@ class DrivePickerDialogDelegate : public views::DialogDelegate {
     set_margins(gfx::Insets());
     SetContentsView(std::move(contents_view));
     SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  }
+
+  std::unique_ptr<views::FrameView> CreateFrameView(
+      views::Widget* widget) override {
+    auto frame =
+        std::make_unique<views::BubbleFrameView>(gfx::Insets(), gfx::Insets());
+    auto border = std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::FLOAT, views::BubbleBorder::NO_SHADOW);
+    border->set_rounded_corners(gfx::RoundedCornersF(0));
+    frame->SetBubbleBorder(std::move(border));
+    frame->SetBackgroundColor(SK_ColorTRANSPARENT);
+    return frame;
   }
 };
 
@@ -129,14 +144,6 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   if (parent_widget) {
     browser_widget_observation_.Observe(parent_widget);
-  }
-
-  if (auto* frame_view = picker_widget_->widget_delegate()
-                             ->AsDialogDelegate()
-                             ->GetBubbleFrameView()) {
-    frame_view->SetBackgroundColor(SK_ColorTRANSPARENT);
-    // Ensure the dialog frame itself is rectangular to match the picker's look.
-    frame_view->SetRoundedCorners(gfx::RoundedCornersF(0));
   }
 
   picker_widget_->Show();
