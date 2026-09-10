@@ -4,10 +4,12 @@
 
 package org.chromium.base.test;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.WindowManager;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
@@ -16,6 +18,8 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.io.File;
 
@@ -81,6 +85,9 @@ public class ScreenshotOnFailureStatement extends Statement {
                 }
             }
 
+            // Make screenshots work on incognito windows.
+            PostTask.runSynchronously(TaskTraits.UI_DEFAULT, ScreenshotOnFailureStatement::clearFlagSecure);
+
             // The Vega standalone VR headset can't take screenshots normally (they just show a
             // black screen with the VR overlay), so instead, use VrCore's RecorderService.
             if (Build.DEVICE.equals("vega")) {
@@ -98,6 +105,12 @@ public class ScreenshotOnFailureStatement extends Statement {
 
             Log.d(TAG, String.format("Saving screenshot of test failure, %s", screenshotFile));
             uiDevice.takeScreenshot(screenshotFile);
+        }
+    }
+
+    private static void clearFlagSecure() {
+        for (Activity activity : ActivityFinisher.snapshotActivities()) {
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
     }
 
