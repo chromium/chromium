@@ -17,10 +17,7 @@ export function getHtml(this: TextMenuElement) {
     .closeOnClick="${false}"
     @font-change="${this.onFontChange_}"
     @line-spacing-change="${this.onLineSpacingChange_}"
-    @letter-spacing-change="${this.onLetterSpacingChange_}"
-    @line-focus-style-change="${this.onLineFocusStyleChange_}"
-    @line-focus-toggle-change="${this.onLineFocusToggleChange_}"
-    @line-focus-movement-change="${this.onLineFocusMovementChange_}">
+    @letter-spacing-change="${this.onLetterSpacingChange_}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on
