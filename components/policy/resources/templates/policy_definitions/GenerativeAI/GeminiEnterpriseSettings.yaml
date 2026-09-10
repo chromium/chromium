@@ -10,10 +10,10 @@ desc: |-
   Configures the connection settings for <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
   To configure <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph>, administrators must provide either:
-  * The <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL (<ph name="URL">url</ph>), OR
-  * All three legacy parameters together: <ph name="PROJECT_ID">project_id</ph>, <ph name="APP_ID">app_id</ph>, and <ph name="LOCATION">location</ph>. Specifying only a partial subset of these three parameters without a URL will cause the policy to be rejected.
+  * The <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> web application URL (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph>), OR
+  * All three legacy parameters together: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE">project_id</ph>, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE">app_id</ph>, and <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE">location</ph>. Specifying only a partial subset of these three parameters without a URL will cause the policy to be rejected.
 
-  If both the <ph name="URL">url</ph> parameter and the legacy parameters are configured, the <ph name="URL">url</ph> parameter takes precedence.
+  If both the <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph> parameter and the legacy parameters are configured, the <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE">url</ph> parameter takes precedence.
 
   If this policy is set, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> will be configured for users signed in with a managed account or managed browser.
 
