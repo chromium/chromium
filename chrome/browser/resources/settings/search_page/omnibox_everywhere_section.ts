@@ -122,6 +122,15 @@ export class SettingsOmniboxEverywhereSectionElement extends
     };
   }
 
+  protected async onMainToggleChange_(event: Event) {
+    const target = event.target as SettingsToggleButtonElement;
+    const isChecked = target.checked;
+    await PrefService.getInstance().setPrefValue(
+        'omnibox_everywhere.launch_on_startup', isChecked);
+    await PrefService.getInstance().setPrefValue(
+        'omnibox_everywhere.background_mode', isChecked);
+  }
+
   protected async onShowShortcutsToggleChange_(event: Event) {
     const target = event.target as SettingsToggleButtonElement;
     const isChecked = target.checked;

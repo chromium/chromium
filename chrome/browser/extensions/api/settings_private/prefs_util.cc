@@ -586,6 +586,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ntp_prefs::kNtpShortcutsVisible] =
       settings_api::PrefType::kBoolean;
 
