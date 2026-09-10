@@ -5,7 +5,9 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
 
+#include <array>
 #include <cstdint>
+#include <string_view>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
@@ -111,19 +113,19 @@ static constexpr size_t kDebugKeyMaxLength = 8ull;
 struct PA_DEBUGKV_ALIGN DebugKv {
   // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
   // reports.
-  char k[kDebugKeyMaxLength] = {};  // Not necessarily 0-terminated.
+  std::array<char, kDebugKeyMaxLength> k = {};  // Not necessarily 0-terminated.
   uint64_t v = 0;
 
-  DebugKv(const char* key, uint64_t value) : v(value) {
+  DebugKv(std::string_view key, uint64_t value) : v(value) {
     // Fill with ' ', so that the stack dump is nicer to read.  Not using
     // memset() on purpose, this header is included from *many* places.
     for (char& c : k) {
       c = ' ';
     }
 
-    for (size_t index = 0; index < sizeof k; index++) {
-      PA_UNSAFE_TODO(k[index]) = PA_UNSAFE_TODO(key[index]);
-      if (PA_UNSAFE_TODO(key[index]) == '\0') {
+    for (size_t index = 0; index < k.size() && index < key.size(); index++) {
+      k[index] = key[index];
+      if (key[index] == '\0') {
         break;
       }
     }
