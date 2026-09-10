@@ -1030,9 +1030,10 @@ TEST_P(GlyphDataRangeTest, Data) {
   const GlyphDataRange::Reader reader(glyphs);
   ASSERT_EQ(glyphs.size(), reader.size());
   const auto [range_begin, range_end] = glyphs.NonCompactGlyphPointers();
-  unsigned start_glyph = CheckedDistance(run.glyph_data_.begin(), range_begin);
+  const auto& run_glyphs = run.glyph_data_.NonCompactGlyphs();
+  unsigned start_glyph = CheckedDistance(run_glyphs.data(), range_begin);
   EXPECT_EQ(data.start_glyph, start_glyph);
-  unsigned end_glyph = CheckedDistance(run.glyph_data_.begin(), range_end);
+  unsigned end_glyph = CheckedDistance(run_glyphs.data(), range_end);
   EXPECT_EQ(data.end_glyph, end_glyph);
   for (unsigned i = 0; i < reader.size(); ++i) {
     const HarfBuzzRunGlyphData glyph_data = reader[i];

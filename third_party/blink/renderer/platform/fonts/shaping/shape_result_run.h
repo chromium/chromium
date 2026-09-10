@@ -39,8 +39,9 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_index_result.h"
@@ -151,7 +152,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     run->glyph_data_.CopyFromRange(glyphs);
 
     InlineLayoutUnit total_advance;
-    for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_) {
+    for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_.MutableGlyphs()) {
       glyph_data.character_index -= start;
       total_advance += glyph_data.advance;
     }
@@ -177,15 +178,17 @@ struct PLATFORM_EXPORT ShapeResultRun final
     const int index_adjust = other.start_index_ - start_index_;
     if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
+      auto& merged_glyphs = run->glyph_data_.MutableGlyphs();
       const unsigned num_glyphs_to_adjust = other.glyph_data_.size();
       for (unsigned i = 0; i < num_glyphs_to_adjust; ++i) {
-        run->glyph_data_[i].character_index += index_adjust;
+        merged_glyphs[i].character_index += index_adjust;
       }
     } else {
       run->glyph_data_.CopyFrom(glyph_data_, other.glyph_data_);
-      const unsigned num_glyphs = run->glyph_data_.size();
-      for (unsigned i = glyph_data_.size(); i < num_glyphs; ++i) {
-        run->glyph_data_[i].character_index += index_adjust;
+      auto& merged_glyphs = run->glyph_data_.MutableGlyphs();
+      const unsigned first_glyph_to_adjust = glyph_data_.size();
+      for (unsigned i = first_glyph_to_adjust; i < merged_glyphs.size(); ++i) {
+        merged_glyphs[i].character_index += index_adjust;
       }
     }
     run->width_ = width_ + other.width_;
@@ -203,13 +206,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   void ExpandRangeToIncludePartialGlyphs(int offset, int* from, int* to) const {
+    const auto& glyphs = glyph_data_.NonCompactGlyphs();
     int end = offset + num_characters_;
     int start;
 
     if (IsLtr()) {
       start = offset + num_characters_;
-      for (unsigned i = 0; i < glyph_data_.size(); ++i) {
-        int index = offset + glyph_data_[i].character_index;
+      for (const HarfBuzzRunGlyphData& glyph : glyphs) {
+        int index = offset + glyph.character_index;
         if (start == index) {
           continue;
         }
@@ -223,8 +227,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     } else {
       start = offset + num_characters_;
-      for (unsigned i = 0; i < glyph_data_.size(); ++i) {
-        int index = offset + glyph_data_[i].character_index;
+      for (const HarfBuzzRunGlyphData& glyph : glyphs) {
+        int index = offset + glyph.character_index;
         if (start == index) {
           continue;
         }
@@ -290,15 +294,17 @@ struct PLATFORM_EXPORT ShapeResultRun final
     unsigned size() const { return data_.size(); }
     bool IsEmpty() const { return size() == 0; }
 
-    HarfBuzzRunGlyphData& operator[](unsigned index) {
-      return data_[index];
-    }
     const HarfBuzzRunGlyphData& operator[](unsigned index) const {
       return data_[index];
     }
-    const HarfBuzzRunGlyphData& front() const { return data_.front(); }
-    HarfBuzzRunGlyphData& back() { return data_.back(); }
-    const HarfBuzzRunGlyphData& back() const { return data_.back(); }
+    HarfBuzzRunGlyphData& MutableGlyphAt(unsigned index) {
+      return data_[index];
+    }
+    const HeapVector<HarfBuzzRunGlyphData>& NonCompactGlyphs() const {
+      return data_;
+    }
+
+    HeapVector<HarfBuzzRunGlyphData>& MutableGlyphs() { return data_; }
 
     bool HasNonZeroOffsets() const { return OffsetsVector(); }
     bool HasGraphemes() const { return Graphemes(); }
@@ -327,6 +333,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return offsets ? base::span<const GlyphOffset>(*offsets)
                      : base::span<const GlyphOffset>();
     }
+    base::span<GlyphOffset> Offsets() {
+      auto* offsets = OffsetsVector();
+      return offsets ? base::span<GlyphOffset>(*offsets)
+                     : base::span<GlyphOffset>();
+    }
 
     template <bool has_non_zero_glyph_offsets>
     GlyphOffsetIterator<has_non_zero_glyph_offsets> GetOffsets() const {
@@ -348,15 +359,11 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
       if (other1.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        base::span<GlyphOffset>(*OffsetsVector())
-            .first(first_size)
-            .copy_from(other1.Offsets());
+        Offsets().first(first_size).copy_from(other1.Offsets());
       }
       if (other2.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
-        base::span<GlyphOffset>(*OffsetsVector())
-            .subspan(first_size, second_size)
-            .copy_from(other2.Offsets());
+        Offsets().subspan(first_size, second_size).copy_from(other2.Offsets());
       }
     }
 
@@ -369,55 +376,34 @@ struct PLATFORM_EXPORT ShapeResultRun final
         ClearOffsets();
       } else {
         AllocateOffsets();
-        std::ranges::copy(range.Offsets(), OffsetsVector()->begin());
+        Offsets().copy_from(range.Offsets());
       }
     }
 
-    void AddOffsetHeightAt(unsigned index, float delta) {
+    NOINLINE void AddOffsetHeightAt(unsigned index, float delta) {
       DCHECK_NE(delta, 0.0f);
       AllocateOffsetsIfNeeded();
-      (*OffsetsVector())[index].set_y((*OffsetsVector())[index].y() + delta);
+      base::span<GlyphOffset> offsets = Offsets();
+      offsets[index].set_y(offsets[index].y() + delta);
     }
 
-    void AddOffsetWidthAt(unsigned index, float delta) {
+    NOINLINE void AddOffsetWidthAt(unsigned index, float delta) {
       DCHECK_NE(delta, 0.0f);
       AllocateOffsetsIfNeeded();
-      (*OffsetsVector())[index].set_x((*OffsetsVector())[index].x() + delta);
+      base::span<GlyphOffset> offsets = Offsets();
+      offsets[index].set_x(offsets[index].x() + delta);
     }
 
     void SetOffsetAt(unsigned index, GlyphOffset offset) {
-      if (!HasNonZeroOffsets()) {
-        if (offset.IsZero()) {
-          return;
-        }
-        AllocateOffsets();
+      if (!HasNonZeroOffsets() && offset.IsZero()) {
+        return;
       }
-      (*OffsetsVector())[index] = offset;
-    }
-
-    // Vector<HarfBuzzRunGlyphData> like functions
-    using iterator = HarfBuzzRunGlyphData*;
-    using const_iterator = const HarfBuzzRunGlyphData*;
-    iterator begin() { return data_.data(); }
-    iterator end() { return base::to_address(base::span(data_).end()); }
-    const_iterator begin() const { return data_.data(); }
-    const_iterator end() const {
-      return base::to_address(base::span(data_).end());
-    }
-
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-    reverse_iterator rbegin() { return std::make_reverse_iterator(end()); }
-    reverse_iterator rend() { return std::make_reverse_iterator(begin()); }
-    const_reverse_iterator rbegin() const {
-      return std::make_reverse_iterator(end());
-    }
-    const_reverse_iterator rend() const {
-      return std::make_reverse_iterator(begin());
+      AllocateOffsetsIfNeeded();
+      Offsets()[index] = offset;
     }
 
     void Reverse() {
-      std::ranges::reverse(*this);
+      std::ranges::reverse(MutableGlyphs());
       if (HasNonZeroOffsets()) {
         OffsetsVector()->Reverse();
       }
@@ -519,7 +505,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   void CheckConsistency() const {
-    for (const HarfBuzzRunGlyphData& glyph : glyph_data_) {
+    for (const HarfBuzzRunGlyphData& glyph : glyph_data_.NonCompactGlyphs()) {
       DCHECK_LT(glyph.character_index, num_characters_);
     }
   }
@@ -564,13 +550,14 @@ static_assert(std::is_trivially_destructible_v<ShapeResultRun>);
 
 inline GlyphDataRange::Reader::Reader(const GlyphDataRange& range) {
   if (range.run_) {
-    glyphs_ = base::span<const HarfBuzzRunGlyphData>(range.run_->glyph_data_)
+    glyphs_ = base::span<const HarfBuzzRunGlyphData>(
+                  range.run_->glyph_data_.NonCompactGlyphs())
                   .subspan(range.index_, range.size_);
   }
 }
 
 inline GlyphDataRange::Reader::Reader(const ShapeResultRun& run)
-    : glyphs_(run.glyph_data_) {}
+    : glyphs_(run.glyph_data_.NonCompactGlyphs()) {}
 
 }  // namespace blink
 

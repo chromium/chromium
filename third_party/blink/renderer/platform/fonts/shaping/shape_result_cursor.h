@@ -77,7 +77,7 @@ class PLATFORM_EXPORT ShapeResultCursor {
     return GlyphData(glyph_index_);
   }
   HarfBuzzRunGlyphData& MutableGlyphData(wtf_size_t i) {
-    return run_->glyph_data_[i];
+    return run_->glyph_data_.MutableGlyphAt(i);
   }
   HarfBuzzRunGlyphData& MutableGlyphData() {
     return MutableGlyphData(glyph_index_);

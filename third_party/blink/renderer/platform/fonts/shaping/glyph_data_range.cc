@@ -19,7 +19,8 @@ GlyphDataRange::NonCompactGlyphPointers() const {
     return {};
   }
   const base::span<const HarfBuzzRunGlyphData> glyphs =
-      base::span<const HarfBuzzRunGlyphData>(run_->glyph_data_)
+      base::span<const HarfBuzzRunGlyphData>(
+          run_->glyph_data_.NonCompactGlyphs())
           .subspan(index_, size_);
   return {glyphs.data(), base::to_address(glyphs.end())};
 }
@@ -40,7 +41,8 @@ void GlyphDataRange::ExpandInto(base::span<HarfBuzzRunGlyphData> dest) const {
   if (!size_) {
     return;
   }
-  dest.copy_from(base::span<const HarfBuzzRunGlyphData>(run_->glyph_data_)
+  dest.copy_from(base::span<const HarfBuzzRunGlyphData>(
+                     run_->glyph_data_.NonCompactGlyphs())
                      .subspan(index_, size_));
 }
 

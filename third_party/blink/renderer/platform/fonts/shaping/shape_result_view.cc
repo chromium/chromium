@@ -38,21 +38,25 @@ void ShapeResultView::RunInfoPart::Trace(Visitor* visitor) const {
 
 unsigned ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
     unsigned offset) const {
-  if (offset >= NumCharacters())
+  if (offset >= NumCharacters()) {
     return NumCharacters();
+  }
   offset += offset_;
-  const GlyphDataRange::Reader reader = CreateReader();
+  const auto [begin, end] = range_.NonCompactGlyphPointers();
+  const auto is_safe = [offset](const HarfBuzzRunGlyphData& glyph) {
+    return glyph.IsSafeToBreakBefore() && glyph.character_index <= offset;
+  };
   if (GetRunInfo()->IsLtr()) {
-    for (const auto& glyph : base::Reversed(reader)) {
-      if (glyph.IsSafeToBreakBefore() && glyph.character_index <= offset) {
-        return glyph.character_index - offset_;
-      }
+    const auto rbegin = std::make_reverse_iterator(end);
+    const auto rend = std::make_reverse_iterator(begin);
+    const auto glyph = std::find_if(rbegin, rend, is_safe);
+    if (glyph != rend) {
+      return glyph->character_index - offset_;
     }
   } else {
-    for (const auto& glyph : reader) {
-      if (glyph.IsSafeToBreakBefore() && glyph.character_index <= offset) {
-        return glyph.character_index - offset_;
-      }
+    const auto* const glyph = std::find_if(begin, end, is_safe);
+    if (glyph != end) {
+      return glyph->character_index - offset_;
     }
   }
 
@@ -191,7 +195,8 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
         part_run->canvas_rotation_, part_run->script_, part.start_index_,
         part.NumGlyphs(), part.num_characters_);
     new_run->glyph_data_.CopyFromRange(part.range_);
-    for (HarfBuzzRunGlyphData& glyph_data : new_run->glyph_data_) {
+    for (HarfBuzzRunGlyphData& glyph_data :
+         new_run->glyph_data_.MutableGlyphs()) {
       DCHECK_GE(glyph_data.character_index, part.offset_);
       glyph_data.character_index -= part.offset_;
       DCHECK_LT(glyph_data.character_index, part.num_characters_);
