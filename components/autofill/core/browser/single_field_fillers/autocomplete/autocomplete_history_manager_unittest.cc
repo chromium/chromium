@@ -20,12 +20,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -145,13 +147,28 @@ class AutocompleteHistoryManagerTest : public testing::Test {
                              date_last_used);
   }
 
+  void SetBlockedPolicy(std::string_view url_pattern,
+                        std::vector<std::string_view> blocked_types) {
+    base::ListValue blocked_list;
+    base::DictValue entry;
+    entry.Set("url_pattern", url_pattern);
+    base::ListValue types;
+    for (std::string_view type : blocked_types) {
+      types.Append(type);
+    }
+    entry.Set("blocked_types", std::move(types));
+    blocked_list.Append(std::move(entry));
+    prefs_->SetManagedPref(prefs::kAutofillTypesBlocked,
+                           std::move(blocked_list));
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockAutofillClient autofill_client_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
-  std::unique_ptr<PrefService> prefs_;
+  std::unique_ptr<test::AutofillTestingPrefService> prefs_;
   FormFieldData test_field_;
   FormData test_form_data_;
 };
@@ -296,6 +313,149 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     /*form=*/nullptr);
+}
+
+// Tests that autocomplete history is not saved on form submission when the
+// domain's contact_info policy category is blocked.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnWillSubmitFormWithFields_BlockedByPolicy_Domain) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST, .value = u"John"}},
+      .url = "https://blocked.com/form.html",
+      .main_frame_origin = url::Origin::Create(GURL("https://blocked.com")),
+  });
+  FormStructure form_structure(form_data);
+  test_api(form_structure).SetFieldTypes({NAME_FIRST});
+
+  SetBlockedPolicy("blocked.com", {"contact_info"});
+
+  // The database should receive zero AddFormFields calls since the site is
+  // blocked for contact_info.
+  EXPECT_CALL(*web_data_service_, AddFormFields).Times(0);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form_data.fields(),
+                                                    &form_structure);
+}
+
+// Tests that autocomplete history saving is globally blocked when wildcard "*"
+// is configured for the contact_info category in enterprise policy.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnWillSubmitFormWithFields_BlockedByPolicy_Wildcard) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST, .value = u"John"}},
+      .url = "https://example.com/form.html",
+  });
+  FormStructure form_structure(form_data);
+  test_api(form_structure).SetFieldTypes({NAME_FIRST});
+
+  SetBlockedPolicy("*", {"contact_info"});
+
+  // Expect zero saves across any domain for contact_info fields.
+  EXPECT_CALL(*web_data_service_, AddFormFields).Times(0);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form_data.fields(),
+                                                    &form_structure);
+}
+
+// Tests that uncategorized fields (e.g. search fields) are not blocked when
+// only contact_info is blocked by enterprise policy.
+TEST_F(
+    AutocompleteHistoryManagerTest,
+    OnWillSubmitFormWithFields_AllowedForUncategorizedFieldsWhenContactInfoBlocked) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = UNKNOWN_TYPE,
+                  .name = u"search",
+                  .value = u"my query"}},
+      .url = "https://blocked.com/form.html",
+      .main_frame_origin = url::Origin::Create(GURL("https://blocked.com")),
+  });
+  FormStructure form_structure(form_data);
+  test_api(form_structure).SetFieldTypes({UNKNOWN_TYPE});
+
+  SetBlockedPolicy("blocked.com", {"contact_info"});
+
+  // The search field is uncategorized (UNKNOWN_TYPE) and should be saved.
+  EXPECT_CALL(
+      *web_data_service_,
+      AddFormFields(ElementsAre(Property(&FormFieldData::name, u"search"))));
+  autocomplete_manager_->OnWillSubmitFormWithFields(form_data.fields(),
+                                                    &form_structure);
+}
+
+// Tests that unparsed form submissions (where form is null) are saved even
+// when contact_info is blocked via wildcard.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnWillSubmitFormWithFields_AllowedWhenFormIsNull) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormFieldData search_field = test::GetFormFieldData({
+      .role = UNKNOWN_TYPE,
+      .name = u"search",
+      .value = u"my query",
+  });
+
+  SetBlockedPolicy("*", {"contact_info"});
+
+  EXPECT_CALL(
+      *web_data_service_,
+      AddFormFields(ElementsAre(Property(&FormFieldData::name, u"search"))));
+  autocomplete_manager_->OnWillSubmitFormWithFields({search_field},
+                                                    /*form=*/nullptr);
+}
+
+// Tests that when submitting a form with multiple fields belonging to different
+// categories (contact_info vs payments), only the fields corresponding to
+// unblocked categories are saved into autocomplete history.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnWillSubmitFormWithFields_BlockedByPolicy_PerFieldCategory) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST, .name = u"first_name", .value = u"John"},
+                 {.role = CREDIT_CARD_NAME_FULL,
+                  .name = u"card_name",
+                  .value = u"John Doe"}},
+      .url = "https://example.com/form.html",
+      .main_frame_origin = url::Origin::Create(GURL("https://example.com")),
+  });
+  FormStructure form_structure(form_data);
+  test_api(form_structure).SetFieldTypes({NAME_FIRST, CREDIT_CARD_NAME_FULL});
+
+  SetBlockedPolicy("example.com", {"payments"});
+
+  // Only the name_field (contact_info) should be saved; card_name_field
+  // (payments) is blocked.
+  EXPECT_CALL(*web_data_service_, AddFormFields(ElementsAre(Property(
+                                      &FormFieldData::name, u"first_name"))));
+  autocomplete_manager_->OnWillSubmitFormWithFields(form_data.fields(),
+                                                    &form_structure);
+}
+
+// Tests that if a field maps to multiple categories (e.g. NAME_FIRST maps to
+// both contact_info and identity_docs), autocomplete saving is blocked if ANY
+// of those categories is blocked by policy (here, only identity_docs).
+TEST_F(AutocompleteHistoryManagerTest,
+       OnWillSubmitFormWithFields_BlockedByPolicy_MultiCategoryField) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST, .value = u"John"}},
+      .url = "https://example.com/form.html",
+      .main_frame_origin = url::Origin::Create(GURL("https://example.com")),
+  });
+  FormStructure form_structure(form_data);
+  test_api(form_structure).SetFieldTypes({NAME_FIRST});
+
+  // Block only identity_docs (contact_info remains unblocked).
+  SetBlockedPolicy("example.com", {"identity_docs"});
+
+  EXPECT_CALL(*web_data_service_, AddFormFields).Times(0);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form_data.fields(),
+                                                    &form_structure);
 }
 
 // Verify that we don't save invalid values in Autocomplete.

@@ -53,7 +53,7 @@ class AutocompleteSuggestionGeneratorTest : public Test {
     RecreateGenerator();
   }
 
-  AutofillClient& client() { return autofill_client_; }
+  TestAutofillClient& client() { return autofill_client_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   AutocompleteEntry GetAutocompleteEntry(
@@ -434,6 +434,218 @@ TEST_P(AutocompleteSuggestionGeneratorLabelSensitiveTest,
                                   suggestions_generated_callback.Get());
 
   loop.Run();
+}
+
+// Tests that autocomplete suggestions are blocked for contact info fields when
+// the contact_info category is blocked by policy for the current origin.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       GenerateAutocompleteSuggestions_BlockedByPolicy_ContactInfo) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormFieldData field_data = test::CreateTestFormField(
+      /*label=*/"", "First Name", "SomePrefix", FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  AutofillField autofill_field(field_data);
+  autofill_field.SetTypeTo(AutofillType(NAME_FIRST), std::nullopt);
+
+  // Block contact_info policy category for the origin.
+  client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo, true);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  // Expect an empty list of suggestions because the field's policy category is
+  // blocked.
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())));
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr, &autofill_field,
+                                  client(),
+                                  suggestions_generated_callback.Get());
+}
+
+// Tests that autocomplete suggestions are NOT blocked for generic /
+// unclassified fields (or when trigger_autofill_field is null) when
+// contact_info is blocked.
+TEST_F(
+    AutocompleteSuggestionGeneratorTest,
+    GenerateAutocompleteSuggestions_AllowedForUncategorizedFieldsWhenContactInfoBlocked) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormFieldData field_data = test::CreateTestFormField(
+      /*label=*/"", "Search", "SomePrefix", FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  // Block contact_info policy category for the origin.
+  client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo, true);
+
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(field_data.name(), u"SomePrefixOne")};
+  std::unique_ptr<WDTypedResult> mocked_results =
+      std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
+          AUTOFILL_VALUE_RESULT, expected_values);
+
+  EXPECT_CALL(
+      *web_data_service(),
+      GetFormValuesForElementName(field_data.name(), field_data.value(), _, _))
+      .WillOnce([&](auto, auto, int, DbCallback callback) {
+        task_environment().GetMainThreadTaskRunner()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
+                                      std::move(mocked_results)));
+        return kDbQueryId;
+      });
+
+  base::RunLoop loop;
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       UnorderedElementsAre(
+                           HasSingleSuggestionWithMainText(u"SomePrefixOne")))))
+      .WillOnce([&loop]() { loop.Quit(); });
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
+                                  suggestions_generated_callback.Get());
+
+  loop.Run();
+}
+
+// Tests that autocomplete suggestions are blocked for payment-specific fields
+// (e.g. CREDIT_CARD_NAME_FULL) when the payments policy category is blocked.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       GenerateAutocompleteSuggestions_BlockedByPolicy_Payments) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormFieldData field_data = test::CreateTestFormField(
+      /*label=*/"", "Name on Card", "SomePrefix", FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  AutofillField autofill_field(field_data);
+  autofill_field.SetTypeTo(AutofillType(CREDIT_CARD_NAME_FULL), std::nullopt);
+
+  // Block only payments category by policy.
+  client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kPayments, true);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  // Expect empty suggestions because CREDIT_CARD_NAME_FULL maps to kPayments.
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())));
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr, &autofill_field,
+                                  client(),
+                                  suggestions_generated_callback.Get());
+}
+
+// Tests that autocomplete suggestions remain active on address fields (e.g.
+// NAME_FIRST) when a different category (e.g. payments) is blocked by policy.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       GenerateAutocompleteSuggestions_AllowedWhenDifferentCategoryBlocked) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormFieldData field_data = test::CreateTestFormField(
+      /*label=*/"", "First Name", "SomePrefix", FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  AutofillField autofill_field(field_data);
+  autofill_field.SetTypeTo(AutofillType(NAME_FIRST), std::nullopt);
+
+  // Block payments by policy. Address/contact_info remains allowed.
+  client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kPayments, true);
+
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(field_data.name(), u"SomePrefixOne")};
+  std::unique_ptr<WDTypedResult> mocked_results =
+      std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
+          AUTOFILL_VALUE_RESULT, expected_values);
+
+  EXPECT_CALL(
+      *web_data_service(),
+      GetFormValuesForElementName(field_data.name(), field_data.value(), _, _))
+      .WillOnce([&](auto, auto, int, DbCallback callback) {
+        task_environment().GetMainThreadTaskRunner()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
+                                      std::move(mocked_results)));
+        return kDbQueryId;
+      });
+
+  base::RunLoop loop;
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  // Expect suggestions to be generated successfully since NAME_FIRST is
+  // contact_info.
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       UnorderedElementsAre(
+                           HasSingleSuggestionWithMainText(u"SomePrefixOne")))))
+      .WillOnce([&loop]() { loop.Quit(); });
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr, &autofill_field,
+                                  client(),
+                                  suggestions_generated_callback.Get());
+
+  loop.Run();
+}
+
+// Tests that if a field maps to multiple categories (e.g. NAME_FIRST maps to
+// both contact_info and identity_docs), autocomplete suggestions are blocked if
+// ANY category is blocked by policy (here, only identity_docs).
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       GenerateAutocompleteSuggestions_BlockedByPolicy_MultiCategoryField) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+  FormFieldData field_data = test::CreateTestFormField(
+      /*label=*/"", "First Name", "SomePrefix", FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  AutofillField autofill_field(field_data);
+  autofill_field.SetTypeTo(AutofillType(NAME_FIRST), std::nullopt);
+
+  // Block only identity_docs (contact_info remains unblocked).
+  client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kIdentityDocs, true);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())));
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr, &autofill_field,
+                                  client(),
+                                  suggestions_generated_callback.Get());
 }
 
 }  // namespace autofill

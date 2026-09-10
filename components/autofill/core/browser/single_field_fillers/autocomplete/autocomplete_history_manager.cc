@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/autocomplete_suggestion_generator.h"
@@ -274,6 +275,7 @@ bool IsHtmlFieldTypeSaveable(const AutofillField* field) {
 //  - neither empty nor whitespace-only value
 //  - text field
 //  - autocomplete is not disabled
+//  - field data category is not blocked by policy for the form's URL
 //  - field type is eligible (e.g. not a CVC or promo code)
 //  - field was not autofilled by a structured product (e.g., Address,
 //    Payments)
@@ -282,7 +284,8 @@ bool IsHtmlFieldTypeSaveable(const AutofillField* field) {
 //    this way it is consistent for all platforms)
 //  - not a presentation field
 bool IsFieldValueSaveable(const FormFieldData& field,
-                          const FormStructure* form) {
+                          const FormStructure* form,
+                          const PrefService* pref_service) {
   // Only save values from text-like input elements that are not password
   // or number inputs.
   if (!field.IsTextInputElement() || field.IsPasswordInputElement() ||
@@ -312,6 +315,20 @@ bool IsFieldValueSaveable(const FormFieldData& field,
 
   const AutofillField* autofill_field =
       form ? form->GetFieldById(field.global_id()) : nullptr;
+
+  if (pref_service && form && autofill_field) {
+    const GURL& url = form->main_frame_origin().GetURL();
+    if (std::ranges::any_of(
+            AutofillPolicyService::GetAutofillPolicyDataCategoriesForType(
+                autofill_field->Type()),
+            [&](AutofillClient::AutofillPolicyDataCategory category) {
+              return AutofillPolicyService::
+                  IsAutofillTypeBlockedByPolicyFromPref(*pref_service, url,
+                                                        category);
+            })) {
+      return false;
+    }
+  }
 
   // Reject fields with types that are ineligible for autocomplete such as
   // credit card numbers, CVCs, IBANs, or promo codes.
@@ -441,7 +458,7 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
   std::vector<FormFieldData> autocomplete_saveable_fields;
   autocomplete_saveable_fields.reserve(fields.size());
   for (const FormFieldData& field : fields) {
-    if (IsFieldValueSaveable(field, form)) {
+    if (IsFieldValueSaveable(field, form, pref_service_)) {
       autocomplete_saveable_fields.push_back(field);
     }
   }

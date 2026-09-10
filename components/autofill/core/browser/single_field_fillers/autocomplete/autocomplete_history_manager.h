@@ -46,7 +46,8 @@ class AutocompleteHistoryManager : public KeyedService {
   // Generates autocomplete suggestions for the given `trigger_field` in `form`.
   // This is achieved through an async DB query. `client` checks if the
   // requirements for generating autocomplete suggestions are met (e.g.
-  // autocomplete is enabled). Since autocomplete suggestions are always
+  // autocomplete is enabled and the field's data category is not blocked by
+  // policy for the current URL). Since autocomplete suggestions are always
   // generated last, the `on_suggestions_returned` callback may be called with
   // the suggestions for `field` or with an empty vector if no suggestions are
   // available.
@@ -63,7 +64,9 @@ class AutocompleteHistoryManager : public KeyedService {
 
   // Saves the `fields` of `form` that are eligible to be saved as new or
   // updated Autocomplete entries, which can then be served in the future as
-  // suggestions. This update is dependent on if Autocomplete is enabled or not.
+  // suggestions. This update is dependent on if Autocomplete is enabled or not,
+  // and whether the field's data category is blocked by enterprise policy or
+  // user settings for the form's URL.
   // `fields` may be empty.
   virtual void OnWillSubmitFormWithFields(
       const std::vector<FormFieldData>& fields,

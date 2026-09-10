@@ -199,6 +199,7 @@ class AutofillClient {
     kTravel,
     // Autofill AI shopping details (e.g. orders, shipments).
     kShopping,
+    kMaxValue = kShopping,
   };
   // LINT.ThenChange(//components/autofill/core/browser/permissions/autofill_policy_service.cc:AutofillPolicyDataCategory,//components/autofill/core/browser/permissions/autofill_policy_service_unittest.cc:AutofillPolicyDataCategory)
 

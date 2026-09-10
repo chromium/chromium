@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -17,6 +18,8 @@ class GURL;
 class PrefService;
 
 namespace autofill {
+
+class AutofillType;
 
 // Evaluates whether Autofill is allowed for a given data category and URL,
 // combining both user settings and enterprise policies.
@@ -49,6 +52,11 @@ class AutofillPolicyService : public KeyedService {
   [[nodiscard]] bool IsAutofillTypeBlockedByPolicy(
       const GURL& url,
       AutofillClient::AutofillPolicyDataCategory category) const;
+
+  // Returns the AutofillPolicyDataCategories that `type` matches. If `type`
+  // does not match any category (e.g. UNKNOWN_TYPE), an empty set is returned.
+  [[nodiscard]] static DenseSet<AutofillClient::AutofillPolicyDataCategory>
+  GetAutofillPolicyDataCategoriesForType(const AutofillType& type);
 
  private:
   void OnAutofillPolicyChanged();

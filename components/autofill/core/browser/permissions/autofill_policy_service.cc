@@ -11,7 +11,11 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -163,6 +167,26 @@ bool EvaluatePolicyList(const base::ListValue& policy_list,
   });
 }
 
+// Maps an Autofill AI EntityType to its corresponding policy data category.
+AutofillClient::AutofillPolicyDataCategory
+GetAutofillPolicyDataCategoryForEntityType(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+      return AutofillClient::AutofillPolicyDataCategory::kIdentityDocs;
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kKnownTravelerNumber:
+      return AutofillClient::AutofillPolicyDataCategory::kTravel;
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      return AutofillClient::AutofillPolicyDataCategory::kShopping;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 AutofillPolicyService::AutofillPolicyService(PrefService* prefs)
@@ -235,6 +259,31 @@ bool AutofillPolicyService::IsAutofillTypeBlockedByPolicy(
         return entry.pattern.Matches(url) &&
                std::ranges::contains(entry.blocked_categories, category);
       });
+}
+
+// static
+DenseSet<AutofillClient::AutofillPolicyDataCategory>
+AutofillPolicyService::GetAutofillPolicyDataCategoriesForType(
+    const AutofillType& type) {
+  DenseSet<AutofillClient::AutofillPolicyDataCategory> categories;
+
+  if (type.GetAddressType() != UNKNOWN_TYPE) {
+    categories.insert(AutofillClient::AutofillPolicyDataCategory::kContactInfo);
+  }
+
+  if (type.GetCreditCardType() != UNKNOWN_TYPE ||
+      type.GetTypes().contains(IBAN_VALUE)) {
+    categories.insert(AutofillClient::AutofillPolicyDataCategory::kPayments);
+  }
+
+  for (EntityType entity_type : DenseSet<EntityType>::all()) {
+    if (type.GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
+      categories.insert(
+          GetAutofillPolicyDataCategoryForEntityType(entity_type));
+    }
+  }
+
+  return categories;
 }
 
 void AutofillPolicyService::OnAutofillPolicyChanged() {

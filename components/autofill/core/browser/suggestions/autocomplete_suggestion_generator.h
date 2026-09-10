@@ -37,6 +37,10 @@ class AutocompleteSuggestionGenerator : public SuggestionGenerator {
       scoped_refptr<AutofillWebDataService> profile_database);
   ~AutocompleteSuggestionGenerator() override;
 
+  // Generates autocomplete suggestions for the given `trigger_field` in `form`.
+  // No suggestions are generated if Autocomplete is disabled or if any of the
+  // field's data categories are blocked by enterprise policy or user settings
+  // for the current URL.
   void GenerateSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
