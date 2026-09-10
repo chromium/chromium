@@ -4,7 +4,6 @@
 
 #include "chrome/browser/lens/lens_identity_delegation_helper.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
@@ -66,7 +65,6 @@ class LensIdentityDelegationHelperTest : public testing::Test {
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_SignedOut) {
-  base::HistogramTester histogram_tester;
   base::test::TestFuture<std::vector<std::string>> future;
   FetchIdentityDelegationHeaders(
       profile_.get(), identity_test_env_.identity_manager(),
@@ -74,32 +72,6 @@ TEST_F(LensIdentityDelegationHelperTest,
 
   // Signed out: should only return Origin header.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kSignedOut, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.SignedOut", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchCookies", 0);
-}
-
-TEST_F(LensIdentityDelegationHelperTest,
-       FetchIdentityDelegationHeaders_NullProfileOrIdentityManager) {
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<std::vector<std::string>> future;
-  FetchIdentityDelegationHeaders(nullptr, nullptr, "https://www.google.com",
-                                 std::nullopt, future.GetCallback());
-
-  EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kSignedOut, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.SignedOut", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
@@ -117,7 +89,6 @@ TEST_F(LensIdentityDelegationHelperTest,
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_SignedIn_NoCookie) {
-  base::HistogramTester histogram_tester;
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   // Force update cookie jar accounts in IdentityManager.
@@ -131,20 +102,10 @@ TEST_F(LensIdentityDelegationHelperTest,
 
   // Signed in but no cookie: should only return Origin header.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kNoSapisidCookie, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.NoSapisidCookie", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchCookies", 1);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(LensIdentityDelegationHelperTest, GenerateSapisidHash_GoldenTest) {
-  base::HistogramTester histogram_tester;
   // Use fixed inputs to verify the hash algorithm.
   std::string email = "user@gmail.com";
   std::string sapisid = "sapisid_cookie_value";
@@ -167,13 +128,10 @@ TEST_F(LensIdentityDelegationHelperTest, GenerateSapisidHash_GoldenTest) {
   EXPECT_EQ(
       hash.value(),
       "SAPISIDHASH 1781265600000_9bd27681bae726e0f13c8da3f7ec536243912710_e");
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToGenerateSapisidHash", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_SignedIn_WithCookie) {
-  base::HistogramTester histogram_tester;
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.SetCookieAccounts(
@@ -193,18 +151,6 @@ TEST_F(LensIdentityDelegationHelperTest,
   EXPECT_TRUE(headers[3].starts_with("SAPISIDHASH "));
   EXPECT_EQ(headers[4], "X-Goog-AuthUser");
   EXPECT_EQ(headers[5], "0");  // Index 0 in cookie jar
-
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kSuccess, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.Success", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchCookies", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToGenerateSapisidHash", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
@@ -236,7 +182,6 @@ TEST_F(LensIdentityDelegationHelperTest,
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_MultipleAccounts_NoPrimaryMatch) {
-  base::HistogramTester histogram_tester;
   // No primary account (web-only sign-in)
   // Cookie jar has user1 (index 0) and user2 (index 1)
   identity_test_env_.SetCookieAccounts(
@@ -251,18 +196,10 @@ TEST_F(LensIdentityDelegationHelperTest,
 
   // Should fall back to signed-out behavior (Origin header only).
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kAccountError, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.AccountError", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_PrimaryAccount_PersistentError) {
-  base::HistogramTester histogram_tester;
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.SetCookieAccounts(
@@ -283,18 +220,10 @@ TEST_F(LensIdentityDelegationHelperTest,
   // Persistent error on primary account: should fall back to signed-out
   // behavior.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kAccountError, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.AccountError", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_SpecificIndex_PersistentError) {
-  base::HistogramTester histogram_tester;
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.SetCookieAccounts(
@@ -315,18 +244,10 @@ TEST_F(LensIdentityDelegationHelperTest,
   // Persistent error on candidate account: should fall back to signed-out
   // behavior.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kAccountError, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.AccountError", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,
        FetchIdentityDelegationHeaders_SpecificIndex_SignedOutCookieAccount) {
-  base::HistogramTester histogram_tester;
   identity_test_env_.SetCookieAccounts(
       {{"user1@gmail.com", GaiaId("gaia_id_1"), /*signed_out=*/true}});
   SetSapisidCookie("sapisid_value");
@@ -338,13 +259,6 @@ TEST_F(LensIdentityDelegationHelperTest,
 
   // Signed out account in cookie jar: should fall back to signed-out behavior.
   EXPECT_THAT(future.Get(), ElementsAre("Origin", "https://www.google.com"));
-  histogram_tester.ExpectUniqueSample(
-      "Lens.IdentityDelegation.FetchHeadersStatus",
-      LensIdentityDelegationFetchStatus::kAccountError, 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders", 1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.IdentityDelegation.TimeToFetchHeaders.AccountError", 1);
 }
 
 TEST_F(LensIdentityDelegationHelperTest,

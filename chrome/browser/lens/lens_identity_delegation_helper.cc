@@ -5,10 +5,7 @@
 #include "chrome/browser/lens/lens_identity_delegation_helper.h"
 
 #include "base/compiler_specific.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,53 +39,14 @@ std::optional<net::CanonicalCookie> GetCookie(
   return std::nullopt;
 }
 
-void RecordFetchHeadersMetrics(lens::LensIdentityDelegationFetchStatus status,
-                               base::TimeDelta duration) {
-  base::UmaHistogramEnumeration("Lens.IdentityDelegation.FetchHeadersStatus",
-                                status);
-  base::UmaHistogramTimes("Lens.IdentityDelegation.TimeToFetchHeaders",
-                          duration);
-  std::string_view status_str;
-  switch (status) {
-    case lens::LensIdentityDelegationFetchStatus::kSuccess:
-      status_str = "Success";
-      break;
-    case lens::LensIdentityDelegationFetchStatus::kSignedOut:
-      status_str = "SignedOut";
-      break;
-    case lens::LensIdentityDelegationFetchStatus::kAccountError:
-      status_str = "AccountError";
-      break;
-    case lens::LensIdentityDelegationFetchStatus::kNoSapisidCookie:
-      status_str = "NoSapisidCookie";
-      break;
-    case lens::LensIdentityDelegationFetchStatus::kHashFailed:
-      status_str = "HashFailed";
-      break;
-    case lens::LensIdentityDelegationFetchStatus::kNoCookieManager:
-      status_str = "NoCookieManager";
-      break;
-  }
-  base::UmaHistogramTimes(
-      base::StrCat({"Lens.IdentityDelegation.TimeToFetchHeaders.", status_str}),
-      duration);
-}
-
 // Callback for CookieManager::GetCookieList.
 void OnCookiesFetched(
     const std::string& email,
     const std::string& origin,
     size_t account_index,
-    base::TimeTicks fetch_start_time,
-    base::TimeTicks cookie_fetch_start_time,
     base::OnceCallback<void(std::vector<std::string>)> callback,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
-  base::UmaHistogramTimes("Lens.IdentityDelegation.TimeToFetchCookies",
-                          base::TimeTicks::Now() - cookie_fetch_start_time);
-
-  base::TimeDelta fetch_duration = base::TimeTicks::Now() - fetch_start_time;
-
   std::optional<net::CanonicalCookie> sapisid_cookie =
       GetCookie(cookie_list, "SAPISID");
 
@@ -101,9 +59,6 @@ void OnCookiesFetched(
   if (!sapisid_cookie.has_value()) {
     // If no SAPISID cookie, return only the Origin header (signed-out
     // behavior).
-    RecordFetchHeadersMetrics(
-        lens::LensIdentityDelegationFetchStatus::kNoSapisidCookie,
-        fetch_duration);
     std::move(callback).Run(headers);
     return;
   }
@@ -117,11 +72,6 @@ void OnCookiesFetched(
     headers.push_back(auth_header.value());
     headers.push_back("X-Goog-AuthUser");
     headers.push_back(base::NumberToString(account_index));
-    RecordFetchHeadersMetrics(lens::LensIdentityDelegationFetchStatus::kSuccess,
-                              fetch_duration);
-  } else {
-    RecordFetchHeadersMetrics(
-        lens::LensIdentityDelegationFetchStatus::kHashFailed, fetch_duration);
   }
 
   std::move(callback).Run(headers);
@@ -158,7 +108,6 @@ std::optional<std::string> GenerateSapisidHash(
   }
 
   char* out_hash = nullptr;
-  base::TimeTicks start_time = base::TimeTicks::Now();
   int result =
       generate_func(email.c_str(), sapisid_cookie.c_str(), origin.c_str(),
                     timestamp.InMillisecondsSinceUnixEpoch(), &out_hash);
@@ -169,9 +118,6 @@ std::optional<std::string> GenerateSapisidHash(
     return std::nullopt;
   }
 
-  base::UmaHistogramMicrosecondsTimes(
-      "Lens.IdentityDelegation.TimeToGenerateSapisidHash",
-      base::TimeTicks::Now() - start_time);
   std::string hash_str(out_hash);
   free_func(out_hash);
   return hash_str;
@@ -186,25 +132,20 @@ void FetchIdentityDelegationHeaders(
     const std::string& origin,
     std::optional<size_t> authuser_index,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
-  base::TimeTicks fetch_start_time = base::TimeTicks::Now();
   std::string canonical_origin =
       origin.empty() ? "" : url::Origin::Create(GURL(origin)).Serialize();
 
-  auto return_signed_out_headers =
-      [&canonical_origin, &callback,
-       fetch_start_time](LensIdentityDelegationFetchStatus status) {
-        RecordFetchHeadersMetrics(status,
-                                  base::TimeTicks::Now() - fetch_start_time);
-        std::vector<std::string> headers;
-        if (!canonical_origin.empty()) {
-          headers.push_back("Origin");
-          headers.push_back(canonical_origin);
-        }
-        std::move(callback).Run(std::move(headers));
-      };
+  auto return_signed_out_headers = [&canonical_origin, &callback]() {
+    std::vector<std::string> headers;
+    if (!canonical_origin.empty()) {
+      headers.push_back("Origin");
+      headers.push_back(canonical_origin);
+    }
+    std::move(callback).Run(std::move(headers));
+  };
 
   if (!profile || !identity_manager) {
-    return_signed_out_headers(LensIdentityDelegationFetchStatus::kSignedOut);
+    return_signed_out_headers();
     return;
   }
 
@@ -216,7 +157,7 @@ void FetchIdentityDelegationHeaders(
       cookie_jar_info.GetValidSignedInAccounts();
 
   if (accounts.empty()) {
-    return_signed_out_headers(LensIdentityDelegationFetchStatus::kSignedOut);
+    return_signed_out_headers();
     return;
   }
 
@@ -255,7 +196,7 @@ void FetchIdentityDelegationHeaders(
   }
 
   if (!found_account) {
-    return_signed_out_headers(LensIdentityDelegationFetchStatus::kAccountError);
+    return_signed_out_headers();
     return;
   }
 
@@ -267,20 +208,21 @@ void FetchIdentityDelegationHeaders(
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   if (!cookie_manager) {
-    return_signed_out_headers(
-        LensIdentityDelegationFetchStatus::kNoCookieManager);
+    return_signed_out_headers();
     return;
   }
 
   // Use google.com as the GURL for cookie retrieval.
   GURL google_url("https://google.com");
-  base::TimeTicks cookie_fetch_start_time = base::TimeTicks::Now();
+  // We MUST use the selected account's email to generate the SAPISIDHASH.
+  // The X-Goog-AuthUser header tells the backend which identity's email should
+  // be used to verify the signature against the SAPISID cookie.
   cookie_manager->GetCookieList(
       google_url, net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection(),
       base::BindOnce(&OnCookiesFetched, selected_account.raw_email,
-                     canonical_origin, true_authuser_index, fetch_start_time,
-                     cookie_fetch_start_time, std::move(callback)));
+                     canonical_origin, true_authuser_index,
+                     std::move(callback)));
 }
 
 }  // namespace lens
