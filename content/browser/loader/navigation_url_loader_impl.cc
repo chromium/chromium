@@ -1425,8 +1425,19 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
   TRACE_EVENT("navigation", "NavigationURLLoaderImpl::OnReceiveResponse",
               perfetto::Flow::FromPointer(this));
   DCHECK(!cached_metadata);
-  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
-  DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());
+  if (loader_holder_.HasExclusiveTask()) {
+    // Receiving a response while an exclusive task (such as header parsing
+    // for a redirect or an interceptor check) is in flight violates the
+    // URLLoaderClient protocol. Cancel immediately.
+    if (loader_holder_.url_loader()) {
+      loader_holder_.url_loader()->CancelWithError(
+          net::ERR_UNEXPECTED,
+          std::string_view(base::NumberToString(net::ERR_UNEXPECTED)));
+    } else {
+      OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNEXPECTED));
+    }
+    return;
+  }
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request().is_outermost_main_frame);
 
@@ -1567,27 +1578,32 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
 void NavigationURLLoaderImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
-  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
-  DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
                         resource_request().is_outermost_main_frame);
   net::Error error = net::OK;
 
-  bool bypass_redirect_checks =
-      base::FeatureList::IsEnabled(features::kBypassRedirectChecksPerRequest)
-          ? head->bypass_redirect_checks
-          : bypass_redirect_checks_;
-
-  if (url_.SchemeIsBlob()) {
+  if (loader_holder_.HasExclusiveTask()) {
+    // A redirect shouldn't be received while another exclusive task is already
+    // in flight. Receiving an overlapping redirect from a network service
+    // violates the URLLoaderClient protocol. Fail the navigation immediately.
+    error = net::ERR_UNEXPECTED;
+  } else if (url_.SchemeIsBlob()) {
     // Loading a blob URL never produces a redirect.
     error = net::ERR_UNSAFE_REDIRECT;
-  } else if (!bypass_redirect_checks &&
-             !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
-    error = net::ERR_UNSAFE_REDIRECT;
-  } else if (--redirect_limit_ == 0) {
-    error = net::ERR_TOO_MANY_REDIRECTS;
-    if (redirect_info.is_signed_exchange_fallback_redirect) {
-      UMA_HISTOGRAM_BOOLEAN("SignedExchange.FallbackRedirectLoop", true);
+  } else {
+    bool bypass_redirect_checks =
+        base::FeatureList::IsEnabled(features::kBypassRedirectChecksPerRequest)
+            ? head->bypass_redirect_checks
+            : bypass_redirect_checks_;
+
+    if (!bypass_redirect_checks &&
+        !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
+      error = net::ERR_UNSAFE_REDIRECT;
+    } else if (--redirect_limit_ == 0) {
+      error = net::ERR_TOO_MANY_REDIRECTS;
+      if (redirect_info.is_signed_exchange_fallback_redirect) {
+        UMA_HISTOGRAM_BOOLEAN("SignedExchange.FallbackRedirectLoop", true);
+      }
     }
   }
   if (error != net::OK) {
@@ -1602,8 +1618,9 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
           error, std::string_view(base::NumberToString(error)));
     } else {
       // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
-      DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(),
-                            LoaderHolder::State::kLoadingViaReceiver);
+      DUMP_WILL_BE_CHECK(loader_holder_.state() ==
+                             LoaderHolder::State::kLoadingViaReceiver ||
+                         loader_holder_.state() == LoaderHolder::State::kNone);
       // TODO(crbug.com/40118809): Make sure ResetWithReason() is called
       // on the original `url_loader_`.
       OnComplete(network::URLLoaderCompletionStatus(error));
