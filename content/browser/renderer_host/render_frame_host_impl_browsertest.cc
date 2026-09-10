@@ -9153,26 +9153,27 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
             "");
 
   // Update the name using a pagehide handler to ensure that it occurs while the
-  // RenderFrameHost is in the BackForwardCache. This typically shouldn't occur
-  // and the name update should therefore be blocked.
+  // RenderFrameHost is in the BackForwardCache. The name update should be
+  // blocked, and the RenderFrameHost should be evicted from the
+  // BackForwardCache.
   EXPECT_TRUE(ExecJs(
       render_frame_host,
       "window.onpagehide = function() { window.name = 'unused_name'; }"));
 
-  // Navigate so that the current RenderFrameHost is cached.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  EXPECT_TRUE(render_frame_host->IsInBackForwardCache());
+  scoped_refptr<BrowsingContextState> browsing_context_state =
+      render_frame_host->browsing_context_state();
+  RenderFrameDeletedObserver delete_observer(render_frame_host);
 
-  std::string frame_name =
-      render_frame_host->browsing_context_state()->frame_name();
-  std::string unique_name = render_frame_host->browsing_context_state()
-                                ->current_replication_state()
-                                .unique_name;
+  // Navigate so that the current RenderFrameHost is cached and subsequently
+  // evicted due to the name update in pagehide.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  delete_observer.WaitUntilDeleted();
 
   // Verify that the frame name and unique name haven't been changed, even
   // though a name change was triggered by the Javascript.
-  EXPECT_EQ(frame_name, "page_name");
-  EXPECT_EQ(unique_name, "");
+  EXPECT_EQ(browsing_context_state->frame_name(), "page_name");
+  EXPECT_EQ(browsing_context_state->current_replication_state().unique_name,
+            "");
 }
 
 // Test that, when the RenderFrameHostImpl is in a pending delete state, the

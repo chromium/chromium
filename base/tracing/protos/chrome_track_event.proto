@@ -750,6 +750,8 @@ message BackForwardCacheCanStoreDocumentResult {
     RFH_ENFORCE_INSECURE_NAVIGATIONS_SET = 73;
     RFH_HAD_STICKY_USER_ACTIVATION_BEFORE_NAVIGATION_CHANGED = 74;
     RFH_UPDATE_AD_FRAME_STATUS = 75;
+    RFH_DID_CHANGE_NAME = 76;
+    RFH_DID_CHANGE_OPENER = 77;
   }
 
   optional BackForwardCacheNotRestoredReason

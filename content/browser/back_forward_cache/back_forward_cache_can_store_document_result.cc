@@ -219,6 +219,10 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
           RFH_HAD_STICKY_USER_ACTIVATION_BEFORE_NAVIGATION_CHANGED;
     case Reason::kRfhUpdateAdFrameStatus:
       return ProtoEnum::RFH_UPDATE_AD_FRAME_STATUS;
+    case Reason::kRfhDidChangeName:
+      return ProtoEnum::RFH_DID_CHANGE_NAME;
+    case Reason::kRfhDidChangeOpener:
+      return ProtoEnum::RFH_DID_CHANGE_OPENER;
   }
   NOTREACHED();
 }
@@ -493,6 +497,10 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Rfh: HadStickyUserActivationBeforeNavigationChanged";
     case Reason::kRfhUpdateAdFrameStatus:
       return "Rfh: UpdateAdFrameStatus";
+    case Reason::kRfhDidChangeName:
+      return "Rfh: DidChangeName";
+    case Reason::kRfhDidChangeOpener:
+      return "Rfh: DidChangeOpener";
   }
 }
 
@@ -624,6 +632,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kRfhEnforceInsecureRequestPolicy:
     case Reason::kRfhHadStickyUserActivationBeforeNavigationChanged:
     case Reason::kRfhUpdateAdFrameStatus:
+    case Reason::kRfhDidChangeName:
+    case Reason::kRfhDidChangeOpener:
     case Reason::kUnknown:
       return "masked";
   }

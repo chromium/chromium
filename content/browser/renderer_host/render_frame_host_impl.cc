@@ -8560,11 +8560,13 @@ void RenderFrameHostImpl::DidChangeBackgroundColor(
 
 void RenderFrameHostImpl::DidChangeName(const std::string& name,
                                         const std::string& unique_name) {
-  // Frame name updates used to occur in the FrameTreeNode; however, as they
-  // now occur in RenderFrameHostImpl (and by extension, BrowsingContextState),
-  // ensure that invalid updates (i.e. when in the BackForwardCache or in a
-  // pending deletion state) are not applied.
-  if (IsInBackForwardCache() || IsPendingDeletion()) {
+  // Frame name updates used to occur in the FrameTreeNode; however, as they now
+  // occur in RenderFrameHostImpl (and by extension, BrowsingContextState),
+  // ensure that invalid updates (i.e. when in speculative, pending deletion, or
+  // back/forward cached state) are not applied.
+  if (!CanApplyFrameReplicationUpdate(
+          this,
+          BackForwardCacheMetrics::NotRestoredReason::kRfhDidChangeName)) {
     return;
   }
   if (GetParent() != nullptr) {
@@ -10123,9 +10125,9 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 
 void RenderFrameHostImpl::DidChangeOpener(
     const std::optional<blink::LocalFrameToken>& opener_frame_token) {
-  // `owner_` could be null when we get this message asynchronously from the
-  // renderer in pending deletion state.
-  if (!owner_) {
+  if (!CanApplyFrameReplicationUpdate(
+          this,
+          BackForwardCacheMetrics::NotRestoredReason::kRfhDidChangeOpener)) {
     return;
   }
 
