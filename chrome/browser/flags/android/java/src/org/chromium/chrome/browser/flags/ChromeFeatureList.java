@@ -1038,8 +1038,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBottomSheetAsBrowserControls =
             newCachedFlag(BOTTOM_SHEET_AS_BROWSER_CONTROLS, true);
     public static final CachedFlag sBottomSheetOnDesktopWindowing =
-            newCachedFlag(
-                    BOTTOM_SHEET_ON_DESKTOP_WINDOWING, false, /* defaultValueInTests= */ true);
+            newCachedFlag(BOTTOM_SHEET_ON_DESKTOP_WINDOWING, /* defaultValue= */ true);
     public static final CachedFlag sBrowserControlsDebugging =
             newCachedFlag(BROWSER_CONTROLS_DEBUGGING, false);
     public static final CachedFlag sBrowserControlsHidingToken =
