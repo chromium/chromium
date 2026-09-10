@@ -1593,16 +1593,6 @@ inline constexpr char kMagiChromePasskeySignInDescription[] =
     "Enables the MagiChrome passkey sign-in experiment, enabling either the "
     "Autofill promo flow or the native Views banner flow.";
 
-inline constexpr char kMediaPlaybackWhileNotVisiblePermissionPolicyName[] =
-    "media-playback-while-not-visible permission policy";
-inline constexpr char
-    kMediaPlaybackWhileNotVisiblePermissionPolicyDescription[] =
-        "Enables the media-playback-while-not-visible permission policy. This "
-        "permission policy will pause any media being played by any disallowed "
-        "iframes which are not currently rendered. See"
-        "https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/"
-        "IframeMediaPause/iframe_media_pausing.md for more information.";
-
 inline constexpr char kCollaborationEntrepriseV2Name[] =
     "Collaboration Entreprise V2";
 inline constexpr char kCollaborationEntrepriseV2Description[] =

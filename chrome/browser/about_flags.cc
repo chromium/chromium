@@ -11718,14 +11718,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnCrossDeviceFallbackUrlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kWebAuthnCrossDeviceFallbackUrl)},
 
-    {"media-playback-while-not-visible-permission-policy",
-     flag_descriptions::kMediaPlaybackWhileNotVisiblePermissionPolicyName,
-     flag_descriptions::
-         kMediaPlaybackWhileNotVisiblePermissionPolicyDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kMediaPlaybackWhileNotVisiblePermissionPolicy)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-adaptive-frame-rate",
      flag_descriptions::kAndroidAdaptiveFrameRateName,
