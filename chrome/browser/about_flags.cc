@@ -3888,16 +3888,9 @@ const FeatureEntry::FeatureVariation kGlicTabGroupsVariations[] = {
 
 const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Enabled (Defaults: Explain CTA + Settings)", switches::kEnableFeatures,
-     "GlicSelectionPrompt:updates_only/false"},
-    {"Enabled with Updates Only", switches::kEnableFeatures,
-     "GlicSelectionPrompt"},
-    {"Enabled with Copy Buttons", switches::kEnableFeatures,
-     "GlicSelectionPrompt:show_copy_buttons/true/updates_only/false"},
-    {"Enabled (CTA: Tell me about this)", switches::kEnableFeatures,
-     "GlicSelectionPrompt:cta/tell_me_about_this/updates_only/false"},
-    {"Enabled (Inline Fulfillment)", switches::kEnableFeatures,
-     "GlicSelectionPrompt:inline_fulfillment/true/updates_only/false"}};
+    {"Enabled", switches::kEnableFeatures,
+     "GlicSelectionPrompt:updates_only/false,GlicShakeTrigger,GlicSelectionOverlayPrompt,GlicSelectionSmallChip"}
+    };
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
