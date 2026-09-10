@@ -16,6 +16,8 @@ For platform-specific implementations and embedder orchestrations, see:
 - [Android Web Apps (WebAPKs and TWAs) Architecture](docs/android_architecture.md)
 - [Web Apps Core Concepts](/docs/webapps/README.md) - Universal and
   cross-platform Progressive Web App documentation.
+- [Harness Setup](_agents/README.md) - Enable the WebApps AI agent harness in
+  your workspace.
 
 ## Architectural Layering & Delegate Pattern
 

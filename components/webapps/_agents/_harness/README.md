@@ -45,31 +45,64 @@ _harness/
 
 ## How to Use
 
-Put an `"inherits"` entry for your project in your `.agents/agents.json` (or
-`_agents/agents.json`) file. Here is an example for the 'webapps' team:
+To enable a project's harness in your workspace, add `"inherits"` entries for
+`<PRODUCT_AREA_DIR>/_agents/agents.json` and
+`<PRODUCT_AREA_DIR>/_agents/skills.json` to your workspace root `.agents/`
+configuration files.
+
+### 1. Configure `.agents/agents.json`
+
+Put an `"inherits"` entry for your project in your `.agents/agents.json` file:
 
 ```json
 {
   "inherits": [
     {
-      "path": "components/webapps/_agents/_harness/agents.json"
+      "path": "<PRODUCT_AREA_DIR>/_agents/agents.json"
     }
   ]
   , ... your other stuff...
 }
 ```
 
-And put an `"inherits"` entry for your project in your `.agents/skills.json` (or
-`_agents/skills.json`) file. Here is an example for the 'webapps' team:
+Run from `src/`:
+
+```bash
+PRODUCT_AREA_DIR="<path from src/ to product area here>"
+command -v jq >/dev/null 2>&1 || { echo "Error: jq is required but not installed." >&2; false; } && {
+  mkdir -p .agents
+  [ -s .agents/agents.json ] || echo "{}" > .agents/agents.json
+  jq --arg p "${PRODUCT_AREA_DIR%/}/_agents/agents.json" \
+    'if (.inherits // []) | any(.path? == $p) then . else .inherits += [{"path": $p}] end' \
+    .agents/agents.json > .agents/agents.json.tmp && mv .agents/agents.json.tmp .agents/agents.json
+}
+```
+
+### 2. Configure `.agents/skills.json`
+
+Put an `"inherits"` entry for your project in your `.agents/skills.json` file:
 
 ```json
 {
   "inherits": [
     {
-      "path": "components/webapps/_agents/_harness/skills.json"
+      "path": "<PRODUCT_AREA_DIR>/_agents/skills.json"
     }
   ]
   , ... your other stuff...
+}
+```
+
+Run from `src/`:
+
+```bash
+PRODUCT_AREA_DIR="<path from src/ to product area here>"
+command -v jq >/dev/null 2>&1 || { echo "Error: jq is required but not installed." >&2; false; } && {
+  mkdir -p .agents
+  [ -s .agents/skills.json ] || echo "{}" > .agents/skills.json
+  jq --arg p "${PRODUCT_AREA_DIR%/}/_agents/skills.json" \
+    'if (.inherits // []) | any(.path? == $p) then . else .inherits += [{"path": $p}] end' \
+    .agents/skills.json > .agents/skills.json.tmp && mv .agents/skills.json.tmp .agents/skills.json
 }
 ```
 
