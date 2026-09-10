@@ -470,6 +470,50 @@ void ReportParentProcessName() {
   }
 }
 
+void MaybeUpdateIsolationStateFromFieldTrial() {
+  std::string group_name;
+  base::FieldTrial* trial =
+      base::FeatureList::GetFieldTrial(features::kIsolatedProcess);
+  if (trial) {
+    group_name = trial->group_name();
+  }
+
+  const std::string old_group_name =
+      g_browser_process->local_state()->GetString(
+          prefs::kPreviousIsolationState);
+
+  if (group_name == old_group_name) {
+    return;
+  }
+
+  // If an enterprise administrator has set a Mandatory policy,
+  // do not allow a field trial to override it.
+  if (g_browser_process->local_state()->IsManagedPreference(
+          prefs::kProcessIsolationEnabled)) {
+    return;
+  }
+
+  // Only persist `prefs::kPreviousIsolationState` after
+  // `SetIsolationState` completes successfully. Persisting it
+  // before the re-encryption and registry update completes would leave
+  // the profile in an inconsistent state if shutdown or failure
+  // occurs mid-operation, preventing retry on subsequent startups.
+  chrome::SetIsolationState(
+      base::FeatureList::IsEnabled(features::kIsolatedProcess)
+          ? chrome::IsolationState::kProcessIsolation
+          : chrome::IsolationState::kIsolationDisabled,
+      g_browser_process->local_state(),
+      base::BindOnce(
+          [](std::string new_group_name,
+             base::expected<chrome::IsolationState, HRESULT> result) {
+            if (result.has_value()) {
+              g_browser_process->local_state()->SetString(
+                  prefs::kPreviousIsolationState, new_group_name);
+            }
+          },
+          std::move(group_name)));
+}
+
 // This error message is not localized because we failed to load the
 // localization data files.
 const char kMissingLocaleDataTitle[] = "Missing File Error";
@@ -748,38 +792,8 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       base::BindOnce(&ReportParentProcessName));
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(FROM_HERE, base::BindOnce([]() {
-                   std::string group_name;
-                   base::FieldTrial* trial = base::FeatureList::GetFieldTrial(
-                       features::kIsolatedProcess);
-                   if (trial) {
-                     group_name = trial->group_name();
-                   }
-
-                   const std::string old_group_name =
-                       g_browser_process->local_state()->GetString(
-                           prefs::kPreviousIsolationState);
-
-                   if (group_name == old_group_name) {
-                     return;
-                   }
-
-                   // If an enterprise administrator has set a Mandatory policy,
-                   // do not allow a field trial to override it.
-                   if (g_browser_process->local_state()->IsManagedPreference(
-                           prefs::kProcessIsolationEnabled)) {
-                     return;
-                   }
-
-                   g_browser_process->local_state()->SetString(
-                       prefs::kPreviousIsolationState, group_name);
-
-                   chrome::SetIsolationState(
-                       base::FeatureList::IsEnabled(features::kIsolatedProcess)
-                           ? chrome::IsolationState::kProcessIsolation
-                           : chrome::IsolationState::kIsolationDisabled,
-                       g_browser_process->local_state(), base::DoNothing());
-                 }));
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&MaybeUpdateIsolationStateFromFieldTrial));
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
