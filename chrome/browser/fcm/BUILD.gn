@@ -3,8 +3,22 @@
 # found in the LICENSE file.
 
 source_set("fcm") {
+  sources = [
+    "fcm_service_factory.cc",
+    "fcm_service_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/fcm",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles",
+    "//components/keyed_service/core",
+    "//content/public/browser",
   ]
 }

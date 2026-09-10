@@ -152,6 +152,7 @@ include_rules = [
   "+components/exo",
   "+components/external_intents",
   "+components/facilitated_payments/core/features",
+  "+components/fcm",
   "+components/favicon_base",
   "+components/favicon/android",
   "+components/favicon/content",

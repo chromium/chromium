@@ -962,6 +962,7 @@ source_set("core") {
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/external_protocol",
     "//chrome/browser/favicon",
+    "//chrome/browser/fcm",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/first_run",
     "//chrome/browser/gcm",
