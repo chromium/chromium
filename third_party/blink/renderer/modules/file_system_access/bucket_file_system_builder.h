@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/file_system.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {

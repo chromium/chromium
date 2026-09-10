@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 
 namespace blink {

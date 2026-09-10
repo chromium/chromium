@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -256,13 +255,6 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   Member<DOMWrapperWorld> world_;
 
   Member<V8PerContextData> per_context_data_;
-
-  // v8::Context has an internal field to this ScriptState* as a raw pointer,
-  // which is out of scope of Blink GC, but it must be a strong reference.  We
-  // use |reference_from_v8_context_| to represent this strong reference.  The
-  // lifetime of |reference_from_v8_context_| and the internal field must match
-  // exactly.
-  SelfKeepAlive<ScriptState> reference_from_v8_context_{{}, this};
 
   // Serves as a unique ID for this context, which can be used to name the
   // context in browser/renderer communications.
