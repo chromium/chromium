@@ -5821,10 +5821,6 @@ test("unit_tests") {
   }
 
   if (is_android) {
-    sources += [
-      "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",
-    ]
-
     deps += [
       ":test_support_java",
       ":test_support_jni_headers",

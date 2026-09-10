@@ -147,6 +147,17 @@ source_set("unittests") {
     }
   }
 
+  if (is_android) {
+    sources += [ "android/cdm/media_drm_origin_id_manager_unittest.cc" ]
+    deps += [
+      ":impl",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+    ]
+  }
+
   if (is_android || is_chromeos || is_win) {
     sources += [ "protected_media_identifier_permission_context_unittest.cc" ]
     deps += [
