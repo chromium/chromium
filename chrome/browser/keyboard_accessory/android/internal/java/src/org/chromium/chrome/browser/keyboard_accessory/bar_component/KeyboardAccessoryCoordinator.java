@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.NavigationDirection;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
@@ -565,5 +566,23 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      */
     @Nullable Integer getSelectedSuggestionForTesting() {
         return mModel.get(KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX);
+    }
+
+    /**
+     * Navigates to the next or previous suggestion in the accessory bar.
+     *
+     * <p>This is a relative, stateful navigation method used for keyboard-driven navigation (e.g.
+     * arrow keys). Because external callers (such as the C++ controller) do not know which
+     * suggestions are currently visible, grouped, or filtered in the accessory bar, this method
+     * finds the currently selected item among visible bar items, advances cyclically in the given
+     * direction, and notifies the {@link AutofillDelegate} so that the preview in the web content
+     * is updated.
+     *
+     * @param direction The {@link NavigationDirection} indicating whether to navigate forward or
+     *     backward.
+     * @return True if a suggestion was selected; false otherwise.
+     */
+    public boolean navigateSuggestions(@NavigationDirection int direction) {
+        return mMediator.navigateSuggestions(direction);
     }
 }

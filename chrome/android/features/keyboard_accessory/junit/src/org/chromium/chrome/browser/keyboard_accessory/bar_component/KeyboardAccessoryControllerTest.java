@@ -16,7 +16,9 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -71,6 +73,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.NavigationDirection;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -87,6 +90,7 @@ import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetrics
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AutofillAiPayload;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillProfile;
@@ -1435,6 +1439,176 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.setSelectedSuggestion(null);
         verify(mMockPropertyObserver, times(2))
                 .onPropertyChanged(mModel, SELECTED_SUGGESTION_INDEX);
+    }
+
+    @Test
+    public void testNavigateSuggestions() {
+        // Navigation returns false when there are no suggestions.
+        mCoordinator.setSuggestions(List.of(), mMockAutofillDelegate);
+        assertFalse(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        assertFalse(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 1")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(0)
+                        .build();
+        AutofillSuggestion suggestion2 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 2")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(1)
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Navigate forward (Right arrow): notifies delegate for suggestion 1 (index 0).
+        // Navigation does not update visual selection directly.
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(0);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+
+        // Navigate forward again: notifies delegate for suggestion 2 (index 1).
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(1, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(1);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
+
+        // Navigate forward again: wraps around to suggestion 1 (index 0).
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate, times(2)).suggestionSelectionStateChanged(0, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(0);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+
+        // Navigate backward (Left arrow): wraps around to suggestion 2 (index 1).
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        verify(mMockAutofillDelegate, times(2)).suggestionSelectionStateChanged(1, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+
+        // Reset selection and navigate backward: selects first suggestion (suggestion 1, index 0).
+        mCoordinator.setSelectedSuggestion(null);
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.BACKWARD));
+        verify(mMockAutofillDelegate, times(3)).suggestionSelectionStateChanged(0, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(0);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+    }
+
+    @Test
+    public void testNavigateSuggestionsWithFilteredSuggestions() {
+        AutofillSuggestion addressSuggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 1")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(1)
+                        .build();
+        AutofillSuggestion addressSuggestion2 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 2")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(2)
+                        .build();
+
+        // Suggestions with original indices 1 and 2 (suggestion at index 0 was filtered out by the
+        // backend).
+        mCoordinator.setSuggestions(
+                List.of(addressSuggestion1, addressSuggestion2), mMockAutofillDelegate);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Navigate forward: should notify Address1 (original index 1) without updating visual
+        // selection.
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(1, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(1);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
+
+        // Navigate forward again: should notify Address2 (original index 2).
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(2, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(2);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(2));
+
+        // Navigate forward again: wraps around to Address1 (original index 1).
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate, times(2)).suggestionSelectionStateChanged(1, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(2));
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(1);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
+    }
+
+    @Test
+    public void testNavigateSuggestionsSkipsDisabledSuggestions() {
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 1")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(0)
+                        .build();
+        AutofillSuggestion unselectableSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 2")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setAcceptability(Acceptability.UNSELECTABLE_AND_UNACCEPTABLE)
+                        .setOriginalIndex(1)
+                        .build();
+        AutofillSuggestion suggestion3 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 3")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(2)
+                        .build();
+
+        // Suggestions with an unselectable suggestion at index 1.
+        mCoordinator.setSuggestions(
+                List.of(suggestion1, unselectableSuggestion, suggestion3), mMockAutofillDelegate);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Navigate forward: should notify Suggestion 1 (index 0) without updating visual selection.
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+
+        // Simulate backend instructing the UI to update the selected suggestion.
+        mCoordinator.setSelectedSuggestion(0);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+
+        // Navigate forward again: skips unselectable suggestion and notifies Suggestion 3 (index
+        // 2).
+        assertTrue(mCoordinator.navigateSuggestions(NavigationDirection.FORWARD));
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(2, true);
+        assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+
+        // Verify that the unselectable suggestion at index 1 was never selected.
+        verify(mMockAutofillDelegate, never()).suggestionSelectionStateChanged(eq(1), anyBoolean());
     }
 
     private int getGenerationImpressionCount() {

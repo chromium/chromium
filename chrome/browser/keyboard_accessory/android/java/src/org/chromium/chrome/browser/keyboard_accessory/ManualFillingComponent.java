@@ -8,6 +8,7 @@ import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -27,6 +28,8 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -184,6 +187,14 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param delegate The {@link AutofillDelegate} to call for interaction with the suggestions.
      */
     void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate);
+
+    /** Direction for navigating suggestions in the keyboard accessory bar. */
+    @IntDef({NavigationDirection.FORWARD, NavigationDirection.BACKWARD})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface NavigationDirection {
+        int FORWARD = 0;
+        int BACKWARD = 1;
+    }
 
     /**
      * Signals that the accessory has permission to show.

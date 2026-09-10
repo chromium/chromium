@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.NavigationDirection;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.BarVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.TabSwitchingDelegate;
@@ -75,6 +76,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -106,6 +108,7 @@ class KeyboardAccessoryMediator
     private final ObserverList<KeyboardAccessoryVisualStateProvider.Observer> mVisualObservers =
             new ObserverList<>();
 
+    private @Nullable WeakReference<AutofillDelegate> mAutofillDelegate;
     private @TriState int mHasFilteredTouchEvent;
 
     KeyboardAccessoryMediator(
@@ -156,6 +159,7 @@ class KeyboardAccessoryMediator
         // TODO(crbug.com/542535472): Identify and restore the selected element across suggestion
         // updates to avoid losing selection on async loads.
         setSelectedSuggestion(null);
+        mAutofillDelegate = new WeakReference<>(delegate);
         List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
         retainedItems.addAll(toBarItems(suggestions, delegate));
         setBarContents(retainedItems);
@@ -191,6 +195,81 @@ class KeyboardAccessoryMediator
             barItem.setSelectedSuggestion(suggestionIndex);
         }
         mModel.set(SELECTED_SUGGESTION_INDEX, suggestionIndex);
+    }
+
+    /**
+     * Collects all enabled {@link AutofillBarItem} instances currently present in the accessory
+     * bar, flattening them across standalone items and nested groups (e.g. {@link GroupBarItem}).
+     */
+    private List<AutofillBarItem> getEnabledAutofillBarItems() {
+        List<AutofillBarItem> items = new ArrayList<>();
+        for (BarItem barItem : mModel.get(BAR_ITEMS)) {
+            for (ActionBarItem actionItem : barItem.getActionBarItems()) {
+                if (actionItem instanceof AutofillBarItem autofillItem
+                        && autofillItem.isEnabled()) {
+                    items.add(autofillItem);
+                }
+            }
+        }
+        return items;
+    }
+
+    /**
+     * Returns the index of the currently selected {@link AutofillBarItem} within the provided list
+     * of items, or {@code null} if none is selected.
+     */
+    private static @Nullable Integer getSelectedAutofillItemIndex(
+            List<AutofillBarItem> items, @Nullable Integer selectedSuggestionIndex) {
+        if (selectedSuggestionIndex == null) {
+            return null;
+        }
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getOriginalIndex() == selectedSuggestionIndex) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Navigates cyclically to the next or previous suggestion in the accessory bar.
+     *
+     * <p>Unlike {@link #setSelectedSuggestion}, which performs absolute visual selection for a
+     * known backend index, this method handles relative keyboard navigation (e.g. Arrow Left /
+     * Right). Because the keyboard event originates externally without knowledge of the accessory
+     * bar's UI state (e.g. which suggestions are actually visible, filtered, or grouped), the
+     * mediator determines the next visible item and notifies {@link
+     * AutofillDelegate#suggestionSelectionStateChanged} so that the Autofill backend updates the
+     * preview on the web page.
+     *
+     * @param direction The direction to navigate (FORWARD or BACKWARD).
+     * @return True if a suggestion was selected; false if there are no suggestions to navigate or
+     *     no delegate is attached.
+     */
+    boolean navigateSuggestions(@NavigationDirection int direction) {
+        AutofillDelegate delegate = mAutofillDelegate != null ? mAutofillDelegate.get() : null;
+        if (delegate == null) {
+            return false;
+        }
+
+        List<AutofillBarItem> items = getEnabledAutofillBarItems();
+        if (items.isEmpty()) {
+            return false;
+        }
+
+        @Nullable Integer currentIndex =
+                getSelectedAutofillItemIndex(items, mModel.get(SELECTED_SUGGESTION_INDEX));
+        int targetIndex;
+        if (currentIndex == null) {
+            targetIndex = 0;
+        } else {
+            int step = (direction == NavigationDirection.FORWARD) ? 1 : -1;
+            targetIndex = Math.floorMod(currentIndex + step, items.size());
+        }
+
+        AutofillBarItem target = items.get(targetIndex);
+        delegate.suggestionSelectionStateChanged(target.getOriginalIndex(), true);
+        return true;
     }
 
     @Override
