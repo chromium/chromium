@@ -5544,7 +5544,8 @@ message SigninExperiencePolicies {
   optional ProfileSeparationSettings profile_separation_settings = 2;
 
   // Value for the `ProfileSeparationDataMigrationSettings` policy.
-  optional ProfileSeparationDataMigrationSettings profile_separation_data_migration_settings = 3;
+  optional ProfileSeparationDataMigrationSettings
+      profile_separation_data_migration_settings = 3;
 
   // Value for the `BrowserThemeColor` policy.
   optional string browser_theme_color = 4;
