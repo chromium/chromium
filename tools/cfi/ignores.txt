@@ -53,8 +53,8 @@ type:*SkBlockComRef*
 type:*RemoveIUnknown*
 src:*atlcomcli.h
 
-# TODO(crbug.com/504680934): Figure out, probably add _LIBCPP_NO_CFI upstream,
-# roll in, then remove this. Fires when called from __assume_valid_range.
+# TODO(crbug.com/504680934): Remove once we rolled in
+# https://github.com/llvm/llvm-project/pull/220296
 fun:*__assume_aligned*
 
 # src/base/win/event_trace_provider_unittest.cc
@@ -66,12 +66,9 @@ fun:*internal_default_instance*
 # CAtlArray<T> casts to uninitialized T*.
 src:*atlcoll.h
 
-# Temporarily disable CFI check in std::__allocate_unique_temporary_buffer
-# until upstream adds an annotation, crbug.com/367439556
-fun:*__allocate_unique_temporary_buffer*
-
 # Temporarily disable CFI unrelated/derived cast in std::shared_ptr
-# until upstream restores _LIBCPP_NO_CFI on __get_elem
+# until upstream restores _LIBCPP_NO_CFI on __get_elem, see
+# https://github.com/llvm/llvm-project/pull/200401#pullrequestreview-5155315035
 src:*third_party/libc*/*shared_ptr.h
 
 # https://github.com/grpc/grpc/issues/19375
