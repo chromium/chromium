@@ -1,13 +1,13 @@
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [rowheader1] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [rowheader1] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [rowheader1] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [columnheader2] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [columnheader2] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [columnheader2] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [columnheader3] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [columnheader3] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [columnheader3] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [columnheader4] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=UNDEFINED] on [columnheader4] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [columnheader4] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SORT_DIRECTION] on [columnheader5] class_name=android.view.View
