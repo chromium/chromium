@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/components/default_pinned_apps/default_pinned_apps.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -311,6 +312,10 @@ void AddGeminiAppPinIfNeeded(
     ShelfControllerHelper* helper,
     app_list::AppListSyncableService* syncable_service) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!chromeos::features::IsGeminiAppPreinstallEnabled()) {
+    return;
+  }
+
   if (!profile->GetPrefs()
            ->GetList(ash::prefs::kShelfGeminiAppPinRolls)
            .empty()) {

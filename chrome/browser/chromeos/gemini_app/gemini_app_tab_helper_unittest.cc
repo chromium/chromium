@@ -14,10 +14,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,19 +28,33 @@ namespace {
 using ::base::Bucket;
 using ::base::BucketsAreArray;
 using ::testing::Bool;
+using ::testing::Combine;
 using ::testing::WithParamInterface;
 }  // namespace
 
 // GeminiAppTabHelperTest ------------------------------------------------------
 
-// Base class for tests of the `GeminiAppTabHelper` parameterized by whether
-// the profile is off the record.
+// Base class for tests of the `GeminiAppTabHelper` parameterized by:
+// (a) whether the Gemini app preinstallation feature is enabled.
+// (b) whether the profile is off the record.
 class GeminiAppTabHelperTest
     : public ChromeRenderViewHostTestHarness,
-      public WithParamInterface</*is_profile_off_the_record=*/bool> {
+      public WithParamInterface<
+          std::tuple</*is_gemini_app_preinstall_enabled=*/bool,
+                     /*is_profile_off_the_record=*/bool>> {
  public:
+  GeminiAppTabHelperTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        chromeos::features::kGeminiAppPreinstall,
+        IsGeminiAppPreinstallEnabled());
+  }
+
+  // Returns whether the Gemini app preinstallation feature is enabled given
+  // test parameterization.
+  bool IsGeminiAppPreinstallEnabled() const { return std::get<0>(GetParam()); }
+
   // Returns whether the profile is off the record given test parameterization.
-  bool IsProfileOffTheRecord() const { return GetParam(); }
+  bool IsProfileOffTheRecord() const { return std::get<1>(GetParam()); }
 
  private:
   // ChromeRenderViewHostTestHarness:
@@ -59,11 +75,16 @@ class GeminiAppTabHelperTest
 
     GeminiAppTabHelper::MaybeCreateForWebContents(web_contents());
   }
+
+  // Used to conditionally enable/disable the Gemini app preinstallation
+  // feature based on test parameterization.
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GeminiAppTabHelperTest,
-                         /*is_profile_off_the_record=*/Bool());
+                         Combine(/*is_gemini_app_preinstall_enabled=*/Bool(),
+                                 /*is_profile_off_the_record=*/Bool()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -105,9 +126,10 @@ TEST_P(GeminiAppTabHelperTest, RecordsPageVisitHistograms) {
   EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
               BucketsAreArray(histogram_buckets));
 
-  // Navigate to each `page` `url` and verify that histograms are recorded iff
-  // the profile is not off the record.
-  bool record = !IsProfileOffTheRecord();
+  // Navigate to each `page` `url` and verify that histograms are recorded iff:
+  // (a) the Gemini app preinstallation feature is enabled, and
+  // (b) the profile is not off the record.
+  bool record = IsGeminiAppPreinstallEnabled() && !IsProfileOffTheRecord();
   for (const auto& [url, page] : page_urls) {
     auto histogram_buckets_it = std::ranges::find(
         histogram_buckets, static_cast<base::HistogramBase::Sample32>(page),

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -46,7 +47,8 @@ GeminiAppTabHelper::~GeminiAppTabHelper() = default;
 // static
 void GeminiAppTabHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!IsOffTheRecord(web_contents)) {
+  if (chromeos::features::IsGeminiAppPreinstallEnabled() &&
+      !IsOffTheRecord(web_contents)) {
     GeminiAppTabHelper::CreateForWebContents(web_contents);
   }
 }

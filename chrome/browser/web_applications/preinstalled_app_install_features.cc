@@ -40,9 +40,6 @@ constexpr const std::string_view kShippedPreinstalledAppInstallFeatures[] = {
 
     // Enables installing the Cursive device on managed stylus-enabled devices.
     "CursiveManagedStylusPreinstall",
-
-    // Enables installing the Gemini app.
-    "GeminiAppPreinstall",
 };
 
 bool g_always_enabled_for_testing = false;
@@ -58,6 +55,7 @@ constexpr const raw_ref<const base::Feature> kPreinstalledAppInstallFeatures[] =
     {
 #if BUILDFLAG(IS_CHROMEOS)
         raw_ref(chromeos::features::kCloudGamingDevice),
+        raw_ref(chromeos::features::kGeminiAppPreinstall),
 #endif
 };
 

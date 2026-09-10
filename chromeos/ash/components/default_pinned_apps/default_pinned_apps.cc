@@ -20,7 +20,9 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
   std::vector<StaticAppId> app_ids;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  app_ids.push_back(ash::kGeminiAppId);
+  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
+    app_ids.push_back(ash::kGeminiAppId);
+  }
   app_ids.push_back(ash::kNotebookLmAppId);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
