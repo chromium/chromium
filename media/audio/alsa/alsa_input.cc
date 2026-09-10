@@ -23,7 +23,7 @@
 
 namespace media {
 
-static const snd_pcm_format_t kAlsaSampleFormat = SND_PCM_FORMAT_S16;
+constexpr snd_pcm_format_t kAlsaSampleFormat = SND_PCM_FORMAT_S16;
 
 static constexpr int kNumPacketsInRingBuffer = 3;
 

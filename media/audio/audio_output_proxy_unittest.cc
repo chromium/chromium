@@ -47,13 +47,13 @@ using media::TestAudioThread;
 
 namespace {
 
-static const int kTestCloseDelayMs = 10;
+constexpr int kTestCloseDelayMs = 10;
 
 // Delay between callbacks to AudioSourceCallback::OnMoreData.
-static const int kOnMoreDataCallbackDelayMs = 10;
+constexpr int kOnMoreDataCallbackDelayMs = 10;
 
 // Let start run long enough for many OnMoreData callbacks to occur.
-static const int kStartRunTimeMs = kOnMoreDataCallbackDelayMs * 10;
+constexpr int kStartRunTimeMs = kOnMoreDataCallbackDelayMs * 10;
 
 // Dummy function.
 std::unique_ptr<media::AudioDebugRecorder> RegisterDebugRecording(
@@ -744,9 +744,9 @@ TEST_F(AudioOutputResamplerTest, HighLatencyFallbackFailed) {
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
 #if BUILDFLAG(IS_WIN)
-  static const int kFallbackCount = 2;
+  constexpr int kFallbackCount = 2;
 #else
-  static const int kFallbackCount = 1;
+  constexpr int kFallbackCount = 1;
 #endif
   EXPECT_CALL(manager(), MakeAudioOutputStream(_, _, _))
       .Times(kFallbackCount)
@@ -780,9 +780,9 @@ TEST_F(AudioOutputResamplerTest, AllFallbackFailed) {
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
 #if BUILDFLAG(IS_WIN)
-  static const int kFallbackCount = 3;
+  constexpr int kFallbackCount = 3;
 #else
-  static const int kFallbackCount = 2;
+  constexpr int kFallbackCount = 2;
 #endif
   EXPECT_CALL(manager(), MakeAudioOutputStream(_, _, _))
       .Times(kFallbackCount)
@@ -858,9 +858,9 @@ TEST_F(AudioOutputResamplerTest, FallbackRecovery) {
 
   // Trigger the fallback mechanism until a fake output stream is created.
 #if BUILDFLAG(IS_WIN)
-  static const int kFallbackCount = 2;
+  constexpr int kFallbackCount = 2;
 #else
-  static const int kFallbackCount = 1;
+  constexpr int kFallbackCount = 1;
 #endif
   EXPECT_CALL(manager(), MakeAudioOutputStream(_, _, _))
       .Times(kFallbackCount)

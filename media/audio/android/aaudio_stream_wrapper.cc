@@ -660,7 +660,7 @@ bool AAudioStreamWrapper::Stop() {
   // success of this wait.
   aaudio_stream_state_t current_state = AAUDIO_STREAM_STATE_STOPPING;
   aaudio_stream_state_t next_state = AAUDIO_STREAM_STATE_UNINITIALIZED;
-  static const int64_t kTimeoutNanoseconds = 1e8;
+  constexpr int64_t kTimeoutNanoseconds = 1e8;
   result = AAudioStream_waitForStateChange(aaudio_stream_, current_state,
                                            &next_state, kTimeoutNanoseconds);
 

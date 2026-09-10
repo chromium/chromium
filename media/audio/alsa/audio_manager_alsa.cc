@@ -30,10 +30,10 @@
 namespace media {
 
 // Maximum number of output streams that can be open simultaneously.
-static const int kMaxOutputStreams = 50;
+constexpr int kMaxOutputStreams = 50;
 
 // Default sample rate for input and output streams.
-static const int kDefaultSampleRate = 48000;
+constexpr int kDefaultSampleRate = 48000;
 
 // Since "default", "pulse" and "dmix" devices are virtual devices mapped to
 // real devices, we remove them from the list to avoiding duplicate counting.
@@ -86,7 +86,7 @@ bool AudioManagerAlsa::GetAudioOutputDeviceNames(
 
 AudioParameters AudioManagerAlsa::GetInputStreamParameters(
     const std::string& device_id) {
-  static const int kDefaultInputBufferSize = 1024;
+  constexpr int kDefaultInputBufferSize = 1024;
 
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
@@ -100,7 +100,7 @@ const std::string_view AudioManagerAlsa::GetName() {
 bool AudioManagerAlsa::GetAlsaAudioDevices(StreamType type,
                                            AudioDeviceNames* device_names) {
   // Constants specified by the ALSA API for device hints.
-  static const char kPcmInterfaceName[] = "pcm";
+  constexpr char kPcmInterfaceName[] = "pcm";
   int card = -1;
 
   // Loop through the physical sound cards to get ALSA device hints.
@@ -133,9 +133,9 @@ bool AudioManagerAlsa::GetAlsaAudioDevices(StreamType type,
 void AudioManagerAlsa::GetAlsaDevicesInfo(AudioManagerAlsa::StreamType type,
                                           void** hints,
                                           AudioDeviceNames* device_names) {
-  static const char kIoHintName[] = "IOID";
-  static const char kNameHintName[] = "NAME";
-  static const char kDescriptionHintName[] = "DESC";
+  constexpr char kIoHintName[] = "IOID";
+  constexpr char kNameHintName[] = "NAME";
+  constexpr char kDescriptionHintName[] = "DESC";
 
   const std::string_view unwanted_device_type =
       UnwantedDeviceTypeWhenEnumerating(type);
@@ -253,8 +253,8 @@ std::string_view AudioManagerAlsa::UnwantedDeviceTypeWhenEnumerating(
 
 bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
     AudioManagerAlsa::StreamType stream) {
-  static const char kPcmInterfaceName[] = "pcm";
-  static const char kIoHintName[] = "IOID";
+  constexpr char kPcmInterfaceName[] = "pcm";
+  constexpr char kIoHintName[] = "IOID";
   void** hints = nullptr;
   bool has_device = false;
   int card = -1;
@@ -333,7 +333,7 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
     const AudioParameters& input_params) {
   // TODO(tommi): Support |output_device_id|.
   DLOG_IF(ERROR, !output_device_id.empty()) << "Not implemented!";
-  static const int kDefaultOutputBufferSize = 2048;
+  constexpr int kDefaultOutputBufferSize = 2048;
   ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = kDefaultSampleRate;
   int buffer_size = kDefaultOutputBufferSize;

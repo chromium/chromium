@@ -149,12 +149,12 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     // amount of logs.
     if (!had_socket_error_) {
       had_socket_error_ = true;
-      static const char* socket_send_failure_message =
+      constexpr char kSocketSendFailureMessage[] =
           "ASR: No room in socket buffer.";
-      PLOG(WARNING) << socket_send_failure_message;
-      log_callback_.Run(socket_send_failure_message);
+      PLOG(WARNING) << kSocketSendFailureMessage;
+      log_callback_.Run(kSocketSendFailureMessage);
       TRACE_EVENT_INSTANT("audio",
-                          perfetto::StaticString(socket_send_failure_message));
+                          perfetto::StaticString(kSocketSendFailureMessage));
     }
   } else {
     had_socket_error_ = false;

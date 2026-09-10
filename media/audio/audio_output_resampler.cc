@@ -132,7 +132,7 @@ AudioParameters GetFallbackHighLatencyOutputParams(
   // Choose AudioParameters appropriate for opening the device in high latency
   // mode.  |kMinLowLatencyFrameSize| is arbitrarily based on Pepper Flash's
   // MAXIMUM frame size for low latency.
-  static const int kMinLowLatencyFrameSize = 2048;
+  constexpr int kMinLowLatencyFrameSize = 2048;
   const int frames_per_buffer = std::max(
       original_output_params.frames_per_buffer(), kMinLowLatencyFrameSize);
 

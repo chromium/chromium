@@ -848,7 +848,7 @@ void InputController::DoLogAudioLevels(float level_dbfs,
     LogMicrophoneMuteResult(MICROPHONE_IS_NOT_MUTED);
   }
 
-  static const float kSilenceThresholdDBFS = -72.24719896f;
+  constexpr float kSilenceThresholdDBFS = -72.24719896f;
   SendLogMessage(base::StringPrintf(
       "%s => (average audio level=%.2f dBFS%s)", __func__, level_dbfs,
       level_dbfs < kSilenceThresholdDBFS ? " <=> low audio input level" : ""));

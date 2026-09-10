@@ -199,7 +199,7 @@ class AudioContext::StatsUpdateRestrictor {
 
   // Should only be called from the audio thread.
   bool CheckAndConsumeRateLimit() {
-    static const base::TimeDelta kMinTimeBetweenStatUpdates = base::Seconds(1);
+    constexpr base::TimeDelta kMinTimeBetweenStatUpdates = base::Seconds(1);
     base::TimeTicks now_time = clock_->NowTicks();
     if (now_time - last_update_time_ < kMinTimeBetweenStatUpdates) {
       return false;

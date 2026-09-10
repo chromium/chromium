@@ -45,18 +45,18 @@ namespace {
 // 44     (n)    <sample data>
 
 // We write 16 bit PCM only.
-static const uint16_t kBytesPerSample = 2;
+constexpr uint16_t kBytesPerSample = 2;
 
-static const uint32_t kWavHeaderSize = 44;
-static const uint32_t kFmtChunkSize = 16;
+constexpr uint32_t kWavHeaderSize = 44;
+constexpr uint32_t kFmtChunkSize = 16;
 // 4 bytes for ID + 4 bytes for size.
-static const uint32_t kChunkHeaderSize = 8;
-static const uint16_t kWavFormatPcm = 1;
+constexpr uint32_t kChunkHeaderSize = 8;
+constexpr uint16_t kWavFormatPcm = 1;
 
-static const uint8_t kRiff[] = {'R', 'I', 'F', 'F'};
-static const uint8_t kWave[] = {'W', 'A', 'V', 'E'};
-static const uint8_t kFmt[] = {'f', 'm', 't', ' '};
-static const uint8_t kData[] = {'d', 'a', 't', 'a'};
+constexpr uint8_t kRiff[] = {'R', 'I', 'F', 'F'};
+constexpr uint8_t kWave[] = {'W', 'A', 'V', 'E'};
+constexpr uint8_t kFmt[] = {'f', 'm', 't', ' '};
+constexpr uint8_t kData[] = {'d', 'a', 't', 'a'};
 
 using WavHeaderBuffer = std::array<char, kWavHeaderSize>;
 
@@ -68,9 +68,8 @@ void WriteWavHeader(WavHeaderBuffer* buf,
                     uint64_t samples) {
   // We'll need to add (kWavHeaderSize - kChunkHeaderSize) to payload to
   // calculate Riff chunk size.
-  static const uint32_t kMaxBytesInPayload =
-      std::numeric_limits<uint32_t>::max() -
-      (kWavHeaderSize - kChunkHeaderSize);
+  constexpr uint32_t kMaxBytesInPayload = std::numeric_limits<uint32_t>::max() -
+                                          (kWavHeaderSize - kChunkHeaderSize);
   const uint64_t bytes_in_payload_64 = samples * kBytesPerSample;
 
   // In case payload is too large and causes uint32_t overflow, we just specify

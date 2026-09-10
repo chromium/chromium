@@ -24,7 +24,7 @@ namespace {
 // The maximum number of bytes which we're allowed to send to the browser
 // before getting acknowledgement back from the browser that they've been
 // successfully sent.
-static const size_t kMaxUnacknowledgedBytesSent = 10 * 1024 * 1024;  // 10 MB.
+constexpr size_t kMaxUnacknowledgedBytesSent = 10 * 1024 * 1024;  // 10 MB.
 }  // namespace
 
 MIDIDispatcher::MIDIDispatcher(ExecutionContext* execution_context)

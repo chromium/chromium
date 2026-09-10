@@ -70,10 +70,10 @@ bool IsCatapLoopbackAudioEnabledForDevice(const std::string& device_id) {
 }  // namespace
 
 // Maximum number of output streams that can be open simultaneously.
-static const int kMaxOutputStreams = 50;
+constexpr int kMaxOutputStreams = 50;
 
 // Default sample-rate on most Apple hardware.
-static const int kFallbackSampleRate = 44100;
+constexpr int kFallbackSampleRate = 44100;
 
 static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
                                              uint32_t* channels,
@@ -92,7 +92,7 @@ static AudioObjectPropertyAddress GetAudioObjectPropertyAddress(
   return property_address;
 }
 
-static const AudioObjectPropertyAddress kNoiseReductionPropertyAddress = {
+constexpr AudioObjectPropertyAddress kNoiseReductionPropertyAddress = {
     'nzca', kAudioDevicePropertyScopeInput, kAudioObjectPropertyElementMain};
 
 // Get IO buffer size range from HAL given device id and scope.
@@ -1504,7 +1504,7 @@ int AudioManagerMac::HardwareSampleRateForDevice(AudioDeviceID device_id) {
   Float64 nominal_sample_rate;
   UInt32 info_size = sizeof(nominal_sample_rate);
 
-  static const AudioObjectPropertyAddress kNominalSampleRateAddress = {
+  constexpr AudioObjectPropertyAddress kNominalSampleRateAddress = {
       kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
       kAudioObjectPropertyElementMain};
   OSStatus result =

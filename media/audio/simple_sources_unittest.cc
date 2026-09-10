@@ -24,8 +24,8 @@ namespace media {
 
 // Validate that the SineWaveAudioSource writes the expected values.
 TEST(SimpleSources, SineWaveAudioSource) {
-  static const uint32_t samples = 1024;
-  static const int freq = 200;
+  constexpr uint32_t samples = 1024;
+  constexpr int freq = 200;
 
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Mono(),
@@ -58,7 +58,7 @@ TEST(SimpleSources, SineWaveAudioSource) {
 TEST(SimpleSources, SineWaveAudioCapped) {
   SineWaveAudioSource source(1, 200, AudioParameters::kTelephoneSampleRate);
 
-  static const int kSampleCap = 100;
+  constexpr int kSampleCap = 100;
   source.CapSamples(kSampleCap);
 
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(1, 2 * kSampleCap);

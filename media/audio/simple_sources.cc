@@ -60,11 +60,11 @@ base::HeapArray<uint8_t> ReadWavFile(const base::FilePath& wav_filename) {
 
 // These values are based on experiments for local-to-local
 // PeerConnection to demonstrate audio/video synchronization.
-static const int kBeepDurationMilliseconds = 20;
-static const int kBeepFrequency = 400;
+constexpr int kBeepDurationMilliseconds = 20;
+constexpr int kBeepFrequency = 400;
 
 // Intervals between two automatic beeps.
-static const int kAutomaticBeepIntervalInMs = 500;
+constexpr int kAutomaticBeepIntervalInMs = 500;
 
 // Automatic beep will be triggered every |kAutomaticBeepIntervalInMs| unless
 // users explicitly call BeepOnce(), which will disable the automatic beep.

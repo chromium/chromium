@@ -238,7 +238,7 @@ void InputSyncWriter::Close() {
 
 void InputSyncWriter::CheckTimeSinceLastWrite() {
 #if !BUILDFLAG(IS_ANDROID)
-  static const base::TimeDelta kLogDelayThreadhold = base::Milliseconds(500);
+  constexpr base::TimeDelta kLogDelayThreadhold = base::Milliseconds(500);
 
   base::TimeTicks new_write_time = base::TimeTicks::Now();
   if (last_write_time_.is_null()) {

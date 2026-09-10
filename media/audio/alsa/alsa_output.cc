@@ -555,10 +555,10 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
 
 std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {
   // Constants specified by the ALSA API for device hints.
-  static const int kGetAllDevices = -1;
-  static const char kPcmInterfaceName[] = "pcm";
-  static const char kIoHintName[] = "IOID";
-  static const char kNameHintName[] = "NAME";
+  constexpr int kGetAllDevices = -1;
+  constexpr char kPcmInterfaceName[] = "pcm";
+  constexpr char kIoHintName[] = "IOID";
+  constexpr char kNameHintName[] = "NAME";
 
   const auto wanted_device = GuessSpecificDeviceName(channels);
   if (wanted_device.empty()) {
