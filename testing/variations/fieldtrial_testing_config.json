@@ -19382,21 +19382,6 @@
             ]
         }
     ],
-    "ThrottleMainFrameTo60HzDesktopAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ThrottleMainFrameTo60HzDesktopAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "ToolbarCaptureFixForSPAs": [
         {
             "platforms": [
