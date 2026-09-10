@@ -329,7 +329,6 @@ enum class EFillSizeType : unsigned {
   kContain,
   kCover,
   kSizeLength,
-  kSizeNone
 };
 
 // CSS3 Background Position

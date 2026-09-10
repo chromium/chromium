@@ -514,9 +514,6 @@ void BackgroundImageGeometry::CalculateFillTileSize(
       }
       return;
     }
-    case EFillSizeType::kSizeNone:
-      // This value should only be used while resolving style.
-      NOTREACHED();
   }
 
   NOTREACHED();

@@ -59,10 +59,7 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       origin_(static_cast<unsigned>(FillLayer::InitialFillOrigin(type))),
       compositing_operator_(static_cast<unsigned>(
           FillLayer::InitialFillCompositingOperator(type))),
-      size_type_(
-          use_initial_values
-              ? static_cast<unsigned>(FillLayer::InitialFillSizeType(type))
-              : static_cast<unsigned>(EFillSizeType::kSizeNone)),
+      size_type_(static_cast<unsigned>(FillLayer::InitialFillSizeType(type))),
       blend_mode_(static_cast<unsigned>(FillLayer::InitialFillBlendMode(type))),
       background_x_origin_(static_cast<unsigned>(BackgroundEdgeOrigin::kLeft)),
       background_y_origin_(static_cast<unsigned>(BackgroundEdgeOrigin::kTop)),
@@ -75,6 +72,7 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       mask_mode_set_(use_initial_values),
       pos_x_set_(use_initial_values),
       pos_y_set_(use_initial_values),
+      size_set_(use_initial_values),
       background_x_origin_set_(false),
       background_y_origin_set_(false),
       compositing_operator_set_(use_initial_values ||
@@ -115,6 +113,7 @@ FillLayer::FillLayer(const FillLayer& o)
       mask_mode_set_(o.mask_mode_set_),
       pos_x_set_(o.pos_x_set_),
       pos_y_set_(o.pos_y_set_),
+      size_set_(o.size_set_),
       background_x_origin_set_(o.background_x_origin_set_),
       background_y_origin_set_(o.background_y_origin_set_),
       compositing_operator_set_(o.compositing_operator_set_),
@@ -167,6 +166,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   mask_mode_set_ = o.mask_mode_set_;
   pos_x_set_ = o.pos_x_set_;
   pos_y_set_ = o.pos_y_set_;
+  size_set_ = o.size_set_;
 
   type_ = o.type_;
 

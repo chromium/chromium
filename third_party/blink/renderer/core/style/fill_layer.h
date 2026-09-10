@@ -114,11 +114,8 @@ class CORE_EXPORT FillLayer {
   bool IsRepeatSet() const { return repeat_set_; }
   bool IsMaskModeSet() const { return mask_mode_set_; }
   bool IsCompositingOperatorSet() const { return compositing_operator_set_; }
-
   bool IsBlendModeSet() const { return blend_mode_set_; }
-  bool IsSizeSet() const {
-    return size_type_ != static_cast<unsigned>(EFillSizeType::kSizeNone);
-  }
+  bool IsSizeSet() const { return size_set_; }
 
   void SetImage(StyleImage* i) {
     image_ = i;
@@ -175,11 +172,10 @@ class CORE_EXPORT FillLayer {
     blend_mode_ = static_cast<unsigned>(b);
     blend_mode_set_ = true;
   }
-  void SetSizeType(EFillSizeType b) { size_type_ = static_cast<unsigned>(b); }
-  void SetSizeLength(const LengthSize& length) { size_length_ = length; }
   void SetSize(const FillSize& f) {
     size_type_ = static_cast<unsigned>(f.type);
     size_length_ = f.size;
+    size_set_ = true;
   }
 
   void ClearImage() {
@@ -202,9 +198,7 @@ class CORE_EXPORT FillLayer {
   void ClearMaskMode() { mask_mode_set_ = false; }
   void ClearCompositingOperator() { compositing_operator_set_ = false; }
   void ClearBlendMode() { blend_mode_set_ = false; }
-  void ClearSize() {
-    size_type_ = static_cast<unsigned>(EFillSizeType::kSizeNone);
-  }
+  void ClearSize() { size_set_ = false; }
 
   FillLayer& operator=(const FillLayer&);
   FillLayer(const FillLayer&);
@@ -356,6 +350,7 @@ class CORE_EXPORT FillLayer {
   unsigned mask_mode_set_ : 1;
   unsigned pos_x_set_ : 1;
   unsigned pos_y_set_ : 1;
+  unsigned size_set_ : 1;
   unsigned background_x_origin_set_ : 1;
   unsigned background_y_origin_set_ : 1;
   unsigned compositing_operator_set_ : 1;

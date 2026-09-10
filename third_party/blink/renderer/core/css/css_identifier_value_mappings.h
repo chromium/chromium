@@ -926,7 +926,6 @@ inline CSSIdentifierValue::CSSIdentifierValue(EFillSizeType fill_size)
     case EFillSizeType::kCover:
       value_id_ = CSSValueID::kCover;
       break;
-    case EFillSizeType::kSizeNone:
     case EFillSizeType::kSizeLength:
     default:
       NOTREACHED();

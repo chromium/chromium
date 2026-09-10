@@ -155,46 +155,46 @@ void CSSToStyleMap::MapFillMaskMode(StyleResolverState&,
 void CSSToStyleMap::MapFillSize(StyleResolverState& state,
                                 FillLayer* layer,
                                 const CSSValue& value) {
+  FillSize fill_size;
+  fill_size.size = FillLayer::InitialFillSizeLength(layer->GetType());
+
   if (value.IsInitialValue()) {
-    layer->SetSizeType(FillLayer::InitialFillSizeType(layer->GetType()));
-    layer->SetSizeLength(FillLayer::InitialFillSizeLength(layer->GetType()));
+    fill_size.type = FillLayer::InitialFillSizeType(layer->GetType());
+    layer->SetSize(fill_size);
     return;
   }
 
-  EFillSizeType fill_size_type = EFillSizeType::kSizeLength;
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kContain:
-        fill_size_type = EFillSizeType::kContain;
+        fill_size.type = EFillSizeType::kContain;
         break;
       case CSSValueID::kCover:
-        fill_size_type = EFillSizeType::kCover;
+        fill_size.type = EFillSizeType::kCover;
         break;
       default:
         // 'auto' is handled below.
         break;
     }
   }
-  layer->SetSizeType(fill_size_type);
 
-  if (fill_size_type != EFillSizeType::kSizeLength) {
-    layer->SetSizeLength(FillLayer::InitialFillSizeLength(layer->GetType()));
+  if (fill_size.type != EFillSizeType::kSizeLength) {
+    layer->SetSize(fill_size);
     return;
   }
 
-  Length first_length;
-  Length second_length;
-
   if (auto* pair = DynamicTo<CSSValuePair>(value)) {
-    first_length =
-        StyleBuilderConverter::ConvertLengthOrAuto(state, pair->First());
-    second_length =
-        StyleBuilderConverter::ConvertLengthOrAuto(state, pair->Second());
+    fill_size.size.SetWidth(
+        StyleBuilderConverter::ConvertLengthOrAuto(state, pair->First()));
+    fill_size.size.SetHeight(
+        StyleBuilderConverter::ConvertLengthOrAuto(state, pair->Second()));
   } else {
-    first_length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
+    fill_size.size.SetWidth(
+        StyleBuilderConverter::ConvertLengthOrAuto(state, value));
+    fill_size.size.SetHeight(Length::Auto());
   }
 
-  layer->SetSizeLength(LengthSize(first_length, second_length));
+  layer->SetSize(fill_size);
 }
 
 void CSSToStyleMap::MapFillPositionX(StyleResolverState& state,

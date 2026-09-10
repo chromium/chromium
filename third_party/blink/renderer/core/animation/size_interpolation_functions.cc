@@ -93,9 +93,6 @@ InterpolationValue SizeInterpolationFunctions::ConvertFillSizeSide(
       return ConvertKeyword(CSSValueID::kContain);
     case EFillSizeType::kCover:
       return ConvertKeyword(CSSValueID::kCover);
-    case EFillSizeType::kSizeNone:
-    default:
-      NOTREACHED();
   }
 }
 
