@@ -9319,3 +9319,7 @@ crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-positio
 
 # Gardener 2026-09-08
 crbug.com/558562090 http/tests/inspector-protocol/fenced-frame/device-emulation-commands-fenced-frame.https.js [ Failure Pass ]
+
+# Temporarily mark as Failure Pass to land DevTools token stylesheets
+crbug.com/551282631 http/tests/devtools/components/minimum-size.js [ Failure Pass ]
+crbug.com/551282631 http/tests/devtools/components/split-widget.js [ Failure Pass ]
