@@ -3653,6 +3653,7 @@ void WebGLRenderingContextBase::frontFace(GLenum mode) {
 void WebGLRenderingContextBase::generateMipmap(GLenum target) {
   if (isContextLost())
     return;
+  MaybeEndPixelLocalStorageImplicit();
   if (!ValidateTextureBinding("generateMipmap", target))
     return;
   ContextGL()->GenerateMipmap(target);
