@@ -64,6 +64,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -214,11 +215,23 @@ struct TestParams {
   bool trust_first_onboarding_arm2 = false;
   bool auto_open_pdf = false;
   bool enable_no_web_ui_loader = false;
+  bool no_webview = false;
 };
 
 class WithTestParams : public testing::WithParamInterface<TestParams> {
  public:
-  WithTestParams() {}
+  WithTestParams() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().no_webview) {
+      enabled_features.push_back(features::kGlicNoWebview);
+      enabled_features.push_back(pwc::mojom::features::kPrivilegedWebContents);
+    }
+    if (!enabled_features.empty() || !disabled_features.empty()) {
+      test_param_features_.InitWithFeatures(enabled_features,
+                                            disabled_features);
+    }
+  }
 
   static std::string PrintTestVariant(
       const ::testing::TestParamInfo<TestParams>& info) {
@@ -237,6 +250,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.enable_no_web_ui_loader) {
       result.push_back("EnableNoWebUiLoader");
+    }
+    if (info.param.no_webview) {
+      result.push_back("NoWebview");
     }
     if (result.empty()) {
       return "Default";
@@ -275,6 +291,8 @@ class GlicApiTest : public GlicApiBrowserTest,
   GlicApiTest()
       : GlicApiBrowserTest(GlicTestJsPath("./glic_api_browsertest.js")) {
     embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&SorryPageRequestHandler));
+    embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&SorryPageRequestHandler));
     scoped_vmodule_switches_.InitWithSwitches("*glic*=1");
     features_.InitWithFeaturesAndParameters(
@@ -1602,6 +1620,9 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTest {
 // method.
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                        testErrorShownOnMojoPipeError) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest();
 
@@ -2060,6 +2081,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsWithTwoTabs) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnPreload) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   auto container =
       coordinator().GetWebContentsWarmingPoolForTesting().TakeContainer();
   ASSERT_TRUE(container);
@@ -2562,6 +2586,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testDisableDragResize) {
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ExecuteJsTest();
   ASSERT_OK(WaitUntilCanResize(false));
@@ -2763,6 +2790,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReportClientTransientError) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   // Open Glic
   ToggleGlicForActiveTab();
   ASSERT_OK(WaitForGlicOpen());
@@ -2828,6 +2858,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
 
 #define MAYBE_testSorryPageBeforeInitialize testSorryPageBeforeInitialize
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageBeforeInitialize) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set(
@@ -2862,6 +2895,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageBeforeInitialize) {
 #define MAYBE_testSorryPageAfterInitialize testSorryPageAfterInitialize
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageAfterInitialize) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest({
       .params = base::Value(base::DictValue().Set(
@@ -2890,6 +2926,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testSorryPageAfterInitialize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   GlicClientConnectionObserver connection_observer(instance);
   ExecuteJsTest({
@@ -2910,6 +2949,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
 #define MAYBE_testNoClientCreated testNoClientCreated
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
@@ -2925,6 +2967,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
 #define MAYBE_testNoBootstrap testNoBootstrap
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoBootstrap) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Flaky in kGlicNoWebview";
+  }
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
@@ -3219,6 +3264,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFails) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
@@ -3260,6 +3308,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCloseAndOpenWhileOpening) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   GlicClientConnectionObserver connection_observer(instance);
   ExecuteJsTest();
@@ -3307,6 +3358,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
 #endif
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   WebUIStateListener listener(&instance->host());
@@ -3323,6 +3377,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
 // TODO(b/544866316): Consider moving this to a different test suite
 // since it does not use the JS test runner.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCookieSyncFails) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   glic::GlicHistogramTester histogram_tester;
   GlicTestEnvironment::GetService(GetProfile())
       ->SetResultForFutureCookieSync(false);
@@ -3383,6 +3440,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK(OpenGlicForActiveTab());
   const GURL cross_origin_rpc_url =
       embedded_https_test_server().GetURL("b.com", "/fake-rpc/cors");
@@ -3476,6 +3536,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_EQ(GetPopupCount(), 0);
   ExecuteJsTest();
@@ -3537,6 +3600,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRefreshSignInCookies) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSignInPauseState) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_OK(OpenGlicForActiveTab());
   // Check that Glic web client is open and can retrieve the user's info.
   ExecuteJsTest();
@@ -3976,6 +4042,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiMultiProfileTest, testGetContextCrossProfile) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnFullLoad) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   ASSERT_TRUE(
       coordinator().GetWebContentsWarmingPoolForTesting().MaybeStartWarming(
           GlicWarmingTrigger::kStartup));
@@ -4473,6 +4542,9 @@ class GlicApiUnresponsiveTest : public GlicApiTest {
 #define MAYBE_testUnresponsive testUnresponsive
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiUnresponsiveTest, MAYBE_testUnresponsive) {
+  if (GetParam().no_webview) {
+    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
+  }
   GlicHistogramTester histogram_tester;
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   GlicClientConnectionObserver connection_observer(instance);
@@ -4897,7 +4969,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
 }
 
 auto DefaultTestParamSet() {
+#if BUILDFLAG(IS_ANDROID)
   return testing::Values(TestParams{});
+#else
+  return testing::Values(TestParams{}, TestParams{.no_webview = true});
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(,
