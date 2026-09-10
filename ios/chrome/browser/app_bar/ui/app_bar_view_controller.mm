@@ -218,6 +218,10 @@ UIColor* AssistantHighlightBackgroundColor() {
   UIView* _trailingSpacer;
   // The button currently being previewed by a context menu.
   __weak UIButton* _previewedButton;
+  // The bounds size during the last layout pass.
+  CGSize _lastLayoutBoundsSize;
+  // The preferred content size category during the last layout pass.
+  UIContentSizeCategory _lastContentSizeCategory;
   // Whether the Gemini floaty is currently active/invoked.
   BOOL _geminiFloatyInvoked;
 }
@@ -323,11 +327,16 @@ UIColor* AssistantHighlightBackgroundColor() {
     return;
   }
   _buttonsTitleAlpha = targetAlpha;
-  [self setNeedsUpdateConfiguration:_assistantButton
-                  animationDuration:duration];
-  [self setNeedsUpdateConfiguration:_openNewTabButton
-                  animationDuration:duration];
-  [self setNeedsUpdateConfiguration:_tabGridButton animationDuration:duration];
+
+  void (^updateAlphaBlock)(void) = ^{
+    [self updateButtonsTitleAlpha];
+  };
+
+  if (duration > 0) {
+    [UIView animateWithDuration:duration animations:updateAlphaBlock];
+  } else {
+    updateAlphaBlock();
+  }
 }
 
 #pragma mark - Public
@@ -372,12 +381,17 @@ UIColor* AssistantHighlightBackgroundColor() {
                 _fullscreenProgress];
     }
   }
-  [self.view setNeedsLayout];
-  [self.view layoutIfNeeded];
+
+  [self updateAssistantButtonTitleIfNeeded];
+  [self updateTabGridButtonTitleIfNeeded];
+  [self updateOpenNewTabButtonTitleIfNeeded];
 
   [self setNeedsUpdateConfiguration:_assistantButton animationDuration:0];
   [self setNeedsUpdateConfiguration:_openNewTabButton animationDuration:0];
   [self setNeedsUpdateConfiguration:_tabGridButton animationDuration:0];
+
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 - (void)updateCornerRadius:(CGFloat)cornerRadius {
@@ -528,9 +542,17 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
-  [self updateAssistantButtonTitleIfNeeded];
-  [self updateTabGridButtonTitleIfNeeded];
-  [self updateOpenNewTabButtonTitleIfNeeded];
+  CGSize boundsSize = self.view.bounds.size;
+  UIContentSizeCategory contentSizeCategory =
+      self.traitCollection.preferredContentSizeCategory;
+  if (!CGSizeEqualToSize(boundsSize, _lastLayoutBoundsSize) ||
+      ![contentSizeCategory isEqualToString:_lastContentSizeCategory]) {
+    _lastLayoutBoundsSize = boundsSize;
+    _lastContentSizeCategory = contentSizeCategory;
+    [self updateAssistantButtonTitleIfNeeded];
+    [self updateTabGridButtonTitleIfNeeded];
+    [self updateOpenNewTabButtonTitleIfNeeded];
+  }
 }
 
 #pragma mark - AppBarConsumer
@@ -659,16 +681,9 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  if (!IsGlassToolbarEnabled()) {
-    [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
-  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
-  if (!IsGlassToolbarEnabled()) {
-    [self setButtonsTitleAlpha:animator.finalProgress
-             animationDuration:animator.duration];
-  }
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
@@ -681,9 +696,6 @@ UIColor* AssistantHighlightBackgroundColor() {
     if (!agent->animation_duration().is_zero()) {
       [self.view layoutIfNeeded];
     }
-  } else {
-    [self setButtonsTitleAlpha:_fullscreenProgress
-             animationDuration:agent->animation_duration().InSecondsF()];
   }
 }
 
@@ -717,13 +729,13 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Updates the height constraint based on the orientation and triggers layout.
 - (void)updateHeightConstraintForCurrentOrientation {
-  UIView* layoutView = self.view.superview ?: self.view;
-  if (_isRotated) {
-    _heightConstraint.constant = AppBarHeightLandscape();
-  } else {
-    _heightConstraint.constant = [self currentAppBarHeightPortrait];
+  CGFloat targetHeight =
+      _isRotated ? AppBarHeightLandscape() : [self currentAppBarHeightPortrait];
+  if (_heightConstraint.constant == targetHeight) {
+    return;
   }
-  [layoutView layoutIfNeeded];
+  _heightConstraint.constant = targetHeight;
+  [self.view.superview layoutIfNeeded];
 }
 
 // Clears the currently previewed button and updates its configuration.
@@ -1006,6 +1018,16 @@ UIColor* AssistantHighlightBackgroundColor() {
   CGFloat textAlpha = highlightAlpha * targetAlpha;
 
   button.titleLabel.alpha = textAlpha;
+}
+
+// Updates title alpha for all app bar buttons.
+- (void)updateButtonsTitleAlpha {
+  [self updateTitleAlphaForButton:_assistantButton
+                   highlightAlpha:ButtonHighlightAlpha(_assistantButton)];
+  [self updateTitleAlphaForButton:_openNewTabButton
+                   highlightAlpha:ButtonHighlightAlpha(_openNewTabButton)];
+  [self updateTitleAlphaForButton:_tabGridButton
+                   highlightAlpha:ButtonHighlightAlpha(_tabGridButton)];
 }
 
 // Updates the vertical content insets of a button configuration based on the

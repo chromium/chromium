@@ -528,6 +528,32 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonAccessibilityLabel) {
               l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI));
 }
 
+// Tests that when labels are hidden (e.g. assistant container invoked),
+// viewWillLayoutSubviews does not cause infinite re-entrancy or crashes due to
+// title updaters repeatedly modifying button configurations.
+TEST_F(AppBarViewControllerTest, TestIdempotentTitleUpdatesWithHiddenLabels) {
+  [layout_state_ setAssistantContainerInvoked:YES
+                                      passKey:LayoutStateTestPassKeyFactory::
+                                                  CreateSceneKey()];
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  // Trigger multiple layout passes to verify idempotency and absence of
+  // infinite recursion.
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+
+  UIButton* assistantButton = [view_controller_ valueForKey:@"assistantButton"];
+  EXPECT_EQ(assistantButton.configuration.title, nil);
+
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_EQ(assistantButton.configuration.title, nil);
+}
 
 using AppBarViewControllerTestManual = PlatformTest;
 
@@ -611,20 +637,15 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMetricsIncognito) {
   EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
 }
 
-// Tests that updateForFullscreenProgress updates the button title alpha.
+// Tests that updateForFullscreenProgress preserves button title alpha when the
+// App Bar hides as a unit in fullscreen.
 TEST_F(AppBarViewControllerTest,
-       TestUpdateForFullscreenProgressUpdatesTitleAlpha) {
+       TestUpdateForFullscreenProgressPreservesTitleAlpha) {
+  // Initial alpha should remain unchanged during scroll progress updates
+  // when App Bar hides as a unit.
   [view_controller_ updateForFullscreenProgress:0.5];
   NSNumber* buttonsTitleAlpha =
       [view_controller_ valueForKey:@"buttonsTitleAlpha"];
-  EXPECT_EQ(buttonsTitleAlpha.doubleValue, 0.5);
-
-  [view_controller_ updateForFullscreenProgress:0.0];
-  buttonsTitleAlpha = [view_controller_ valueForKey:@"buttonsTitleAlpha"];
-  EXPECT_EQ(buttonsTitleAlpha.doubleValue, 0.0);
-
-  [view_controller_ updateForFullscreenProgress:1.0];
-  buttonsTitleAlpha = [view_controller_ valueForKey:@"buttonsTitleAlpha"];
   EXPECT_EQ(buttonsTitleAlpha.doubleValue, 1.0);
 }
 
