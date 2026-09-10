@@ -84,6 +84,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -1622,5 +1623,102 @@ public class TabPersistentStoreUnitTest {
         verify(mBackgroundTabPool).getAllPlaceholderTabIds();
         verify(mBackgroundTabPool).loadTab(101);
         verify(mNormalTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
+    }
+
+    @Test
+    public void testSeenTabUrlMap_lifecycleAndMetrics() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
+
+        TabRestoreDetails details1 =
+                new TabRestoreDetails(
+                        /* id= */ 1,
+                        /* originalIndex= */ 0,
+                        /* isIncognito= */ TriState.FALSE,
+                        REGULAR_TAB_STRING_1,
+                        /* fromMerge= */ false);
+        TabRestoreDetails details2 =
+                new TabRestoreDetails(
+                        /* id= */ 2,
+                        /* originalIndex= */ 1,
+                        /* isIncognito= */ TriState.FALSE,
+                        REGULAR_TAB_STRING_1,
+                        /* fromMerge= */ false);
+        mPersistentStore.addTabToRestoreForTesting(details1);
+        mPersistentStore.addTabToRestoreForTesting(details2);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(1);
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(mNormalTabCreator.createNewTab(
+                        any(), eq(TabLaunchType.FROM_RESTORE), isNull(), anyInt()))
+                .thenReturn(tab1, tab2);
+        when(mNormalTabModel.indexOf(any())).thenReturn(0);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.Startup.UniqueUrlCount.Regular", /* value= */ 2);
+
+        mPersistentStore.restoreTabs(/* setActiveTab= */ true);
+
+        // Map is populated during restore.
+        Map<String, Integer> seenMap = mPersistentStore.getSeenTabUrlMapForTesting();
+        assertThat(seenMap).containsExactly(REGULAR_TAB_STRING_1, 1);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRestoreTab_nullSeenTabUrlMap_noCrash() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
+
+        TabRestoreDetails details =
+                new TabRestoreDetails(
+                        /* id= */ 1,
+                        /* originalIndex= */ 0,
+                        /* isIncognito= */ TriState.FALSE,
+                        REGULAR_TAB_STRING_1,
+                        /* fromMerge= */ false);
+
+        // Calling restoreTab directly while mSeenTabUrlMap is null should not throw NPE.
+        mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
+        assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
+
+        // Calling restoreTab after clearState() where mSeenTabUrlMap is nulled should also be safe.
+        mPersistentStore.clearState();
+        assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
+        mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
+
+        // Calling restoreTab after destroy() where mSeenTabUrlMap is nulled should also be safe.
+        mPersistentStore.destroy();
+        assertNull(mPersistentStore.getSeenTabUrlMapForTesting());
+        mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
     }
 }

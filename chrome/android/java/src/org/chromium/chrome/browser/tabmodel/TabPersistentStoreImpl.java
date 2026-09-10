@@ -176,8 +176,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     private final Set<Integer> mSeenTabIds = new HashSet<>();
-    // Counts distinct URLs.
-    private final Map<String, Integer> mSeenTabUrlMap = new HashMap<>();
     private final @TabOrchestratorType int mOrchestratorType;
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
@@ -219,6 +217,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private boolean mLoadInProgress;
     private long mTabRestoreStartTime = INVALID_TIME;
     @Nullable AsyncTask<@Nullable TabState> mPrefetchTabStateActiveTabTask;
+    // Counts distinct URLs.
+    private @Nullable Map<String, Integer> mSeenTabUrlMap;
 
     /**
      * Creates an instance of a TabPersistentStore.
@@ -638,6 +638,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
+        if (mDestroyed) return;
+        if (mSeenTabUrlMap == null && !mTabsToRestore.isEmpty()) {
+            mSeenTabUrlMap = new HashMap<>();
+        }
         if (mBackgroundTabIds.isEmpty()) {
             mBackgroundTabIds =
                     BackgroundTabRestorationHelper.fetchBackgroundTabIds(
@@ -855,8 +859,11 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
         // Track duplicate tab urls in the regular tab models.
         if (!isIncognito) {
-            mSeenTabUrlMap.put(
-                    tabToRestore.url, mSeenTabUrlMap.getOrDefault(tabToRestore.url, 0) + 1);
+            Map<String, Integer> seenTabUrlMap = mSeenTabUrlMap;
+            if (seenTabUrlMap != null) {
+                seenTabUrlMap.put(
+                        tabToRestore.url, seenTabUrlMap.getOrDefault(tabToRestore.url, 0) + 1);
+            }
         }
 
         boolean isFromReparenting = isTabReparenting(tabToRestore.id, isIncognito);
@@ -978,6 +985,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void clearState() {
+        mSeenTabUrlMap = null;
         new TabPersistentStoreImplCleaner().clearState(mPersistencePolicy, mSequencedTaskRunner);
         onStateLoaded();
     }
@@ -1134,6 +1142,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
         mTabsToSave.clear();
         mTabsToRestore.clear();
+        mSeenTabUrlMap = null;
         if (mSaveTabTask != null) mSaveTabTask.cancel(false);
         // Same reason as mTabBatchLoader: SaveListTask writes via FileChannel.
         if (mSaveListTask != null) mSaveListTask.cancel(false);
@@ -1623,7 +1632,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 saveState();
             }
         } else {
-            ArrayList<TabRestoreDetails> details = new ArrayList<>();
+            List<TabRestoreDetails> details = new ArrayList<>(BATCH_RESTORE_SIZE);
             for (int i = 0; i < BATCH_RESTORE_SIZE && !mTabsToRestore.isEmpty(); i++) {
                 details.add(mTabsToRestore.removeFirst());
             }
@@ -1683,12 +1692,15 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     private void recordUniqueTabUrlMetrics() {
+        Map<String, Integer> seenTabUrlMap = mSeenTabUrlMap;
+        if (seenTabUrlMap == null) return;
+        mSeenTabUrlMap = null;
+
         String clientTag = toClientTag(mOrchestratorType);
-        for (Entry<String, Integer> entry : mSeenTabUrlMap.entrySet()) {
+        for (Entry<String, Integer> entry : seenTabUrlMap.entrySet()) {
             RecordHistogram.recordCount1000Histogram(
                     "Tabs.Startup.UniqueUrlCount." + clientTag, entry.getValue());
         }
-        mSeenTabUrlMap.clear();
     }
 
     /**
@@ -2170,6 +2182,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     public void setSequencedTaskRunnerForTesting(SequencedTaskRunner sequencedTaskRunner) {
         mSequencedTaskRunner = sequencedTaskRunner;
+    }
+
+    @Nullable Map<String, Integer> getSeenTabUrlMapForTesting() {
+        return mSeenTabUrlMap;
     }
 
     /** Information about a tab in a closed window instance. */
