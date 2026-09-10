@@ -32,7 +32,6 @@ namespace ash {
 using cros_disks::DeviceType;
 using cros_disks::FormatError;
 using cros_disks::MountError;
-using cros_disks::PartitionError;
 using cros_disks::RenameError;
 
 // Enum describing types of mount used by cros-disks.
@@ -250,10 +249,6 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
   // The argument is the unmount error code.
   typedef base::OnceCallback<void(MountError error_code)> UnmountCallback;
 
-  // A callback to handle the result of SinglePartitionFormat.
-  // The argument is the partition error code.
-  using PartitionCallback = base::OnceCallback<void(PartitionError error_code)>;
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when a mount event signal is received.
@@ -334,11 +329,6 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
                       const std::string& filesystem,
                       const std::string& label,
                       chromeos::VoidDBusMethodCallback callback) = 0;
-
-  // Calls SinglePartitionFormat async method. |callback| is called when
-  // response received.
-  virtual void SinglePartitionFormat(const std::string& device_path,
-                                     PartitionCallback callback) = 0;
 
   // Calls Rename method. On completion, |callback| is called, with |true| on
   // success, or with |false| otherwise.

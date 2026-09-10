@@ -750,9 +750,6 @@ BASE_FEATURE(kFilesLocalImageSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables materialized views in Files App.
 BASE_FEATURE(kFilesMaterializedViews, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables partitioning of removable disks in file manager.
-BASE_FEATURE(kFilesSinglePartitionFormat, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable background cleanup for old files in Trash.
 BASE_FEATURE(kFilesTrashAutoCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 

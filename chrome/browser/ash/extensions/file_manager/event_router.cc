@@ -1010,20 +1010,6 @@ void EventRouter::OnFormatCompleted(const std::string& device_path,
   // Do nothing.
 }
 
-void EventRouter::OnPartitionStarted(const std::string& device_path,
-                                     const std::string& device_label,
-                                     bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Do nothing.
-}
-
-void EventRouter::OnPartitionCompleted(const std::string& device_path,
-                                       const std::string& device_label,
-                                       bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Do nothing.
-}
-
 void EventRouter::OnRenameStarted(const std::string& device_path,
                                   const std::string& device_label,
                                   bool success) {

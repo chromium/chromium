@@ -851,46 +851,6 @@ void VolumeManager::OnFormatEvent(
   NOTREACHED() << "Unexpected FormatEvent " << event;
 }
 
-void VolumeManager::OnPartitionEvent(
-    ash::disks::DiskMountManager::PartitionEvent event,
-    ash::PartitionError error,
-    const std::string& device_path,
-    const std::string& device_label) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnPartitionEvent: " << event << ", error = " << error
-           << ", device_path = " << device_path;
-
-  switch (event) {
-    case ash::disks::DiskMountManager::PARTITION_STARTED:
-      for (auto& observer : observers_) {
-        observer.OnPartitionStarted(device_path, device_label,
-                                    error == ash::PartitionError::kSuccess);
-      }
-      return;
-
-    case ash::disks::DiskMountManager::PARTITION_COMPLETED:
-      // If partitioning failed, try to mount the device so the user can retry.
-      // MountPath auto-detects filesystem format if second argument is
-      // empty. The third argument (mount label) is not used in a disk mount
-      // operation.
-      if (error != ash::PartitionError::kSuccess) {
-        disk_mount_manager_->MountPath(
-            device_path, {}, {}, {}, ash::MountType::kDevice,
-            GetExternalStorageAccessMode(
-                profile_, GetDeviceIdFromDevicePath(device_path)),
-            base::DoNothing());
-      }
-
-      for (auto& observer : observers_) {
-        observer.OnPartitionCompleted(device_path, device_label,
-                                      error == ash::PartitionError::kSuccess);
-      }
-      return;
-  }
-
-  NOTREACHED() << "Unexpected PartitionEvent " << event;
-}
-
 void VolumeManager::OnRenameEvent(
     ash::disks::DiskMountManager::RenameEvent event,
     ash::RenameError error,

@@ -16,9 +16,7 @@ import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {VolumeInfo} from '../../background/js/volume_info.js';
-import type {EntryList, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
-import {bytesToString, str, strf} from '../../common/js/translations.js';
+import {bytesToString, strf} from '../../common/js/translations.js';
 import type {FileSystemType} from '../../common/js/volume_manager_types.js';
 import {validateExternalDriveName} from '../js/file_rename.js';
 
@@ -33,15 +31,6 @@ export interface FilesFormatDialog {
   label_: string;
   formatType_: chrome.fileManagerPrivate.FormatFileSystemType;
   spaceUsed_: string;
-  isErase_: boolean;
-}
-
-function getVolumeInfoDisplayRoot(entry: Entry|FilesAppEntry): DirectoryEntry|
-    null {
-  if ('volumeInfo' in entry) {
-    return (entry.volumeInfo as VolumeInfo).displayRoot || null;
-  }
-  return null;
 }
 
 export class FilesFormatDialog extends PolymerElement {
@@ -69,16 +58,10 @@ export class FilesFormatDialog extends PolymerElement {
         type: String,
         value: '',
       },
-
-      isErase_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   private volumeInfo_: VolumeInfo|null = null;
-  private root_: EntryList|null = null;
 
   override ready() {
     super.ready();
@@ -100,50 +83,9 @@ export class FilesFormatDialog extends PolymerElement {
       return;
     }
 
-    if (this.isErase_) {
-      chrome.fileManagerPrivate.singlePartitionFormat(
-          this.root_?.devicePath || '', this.formatType_, this.label_);
-    } else {
-      chrome.fileManagerPrivate.formatVolume(
-          this.volumeInfo_?.volumeId || '', this.formatType_, this.label_);
-    }
+    chrome.fileManagerPrivate.formatVolume(
+        this.volumeInfo_?.volumeId || '', this.formatType_, this.label_);
     this.$.dialog.close();
-  }
-
-
-  /**
-   * Used to set "single-partition-format" attribute on element.
-   * It is used to check flag status in the tests.
-   */
-  getSinglePartitionFormat() {
-    if (isSinglePartitionFormatEnabled()) {
-      return 'single-partition-format';
-    }
-    return '';
-  }
-
-  getConfirmLabel(isErase: boolean) {
-    if (isSinglePartitionFormatEnabled()) {
-      if (isErase) {
-        return str('REPARTITION_DIALOG_CONFIRM_LABEL');
-      } else {
-        return str('FORMAT_DIALOG_CONFIRM_SHORT_LABEL');
-      }
-    } else {
-      return str('FORMAT_DIALOG_CONFIRM_LABEL');
-    }
-  }
-
-  getDialogMessage(isErase: boolean) {
-    if (isSinglePartitionFormatEnabled()) {
-      if (isErase) {
-        return str('REPARTITION_DIALOG_MESSAGE');
-      } else {
-        return str('FORMAT_PARTITION_DIALOG_MESSAGE');
-      }
-    } else {
-      return str('FORMAT_DIALOG_MESSAGE');
-    }
   }
 
   getStrf(token: string, value: string): string {
@@ -154,7 +96,6 @@ export class FilesFormatDialog extends PolymerElement {
    * Shows the dialog for drive represented by |volumeInfo|.
    */
   showModal(volumeInfo: VolumeInfo) {
-    this.isErase_ = false;
     this.label_ = '';
     this.formatType_ = chrome.fileManagerPrivate.FormatFileSystemType.VFAT;
     this.spaceUsed_ = '';
@@ -173,44 +114,6 @@ export class FilesFormatDialog extends PolymerElement {
           });
     }
 
-    this.$.dialog.showModal();
-  }
-
-  /**
-   * Shows the dialog for erasing device.
-   */
-  showEraseModal(root: EntryList) {
-    this.isErase_ = true;
-    this.label_ = '';
-    this.formatType_ = chrome.fileManagerPrivate.FormatFileSystemType.VFAT;
-    this.spaceUsed_ = '';
-
-    this.root_ = root;
-    this.title = root.label;
-    const childVolumes = this.root_.getUiChildren();
-    let totalSpaceUsed = 0;
-
-    const getSpaceUsedRequests = childVolumes.map((childVolume) => {
-      return new Promise((resolve: (value: void) => void) => {
-        const displayRoot = getVolumeInfoDisplayRoot(childVolume);
-        if (displayRoot) {
-          chrome.fileManagerPrivate.getDirectorySize(
-              displayRoot, (spaceUsed: number) => {
-                totalSpaceUsed += spaceUsed;
-                if (totalSpaceUsed > 0) {
-                  this.spaceUsed_ = bytesToString(totalSpaceUsed);
-                }
-                resolve();
-              });
-        }
-      });
-    });
-
-    Promise.all(getSpaceUsedRequests).then(() => {
-      if (window.IN_TEST) {
-        this.$['warning-container'].setAttribute('fully-initialized', '');
-      }
-    });
     this.$.dialog.showModal();
   }
 }

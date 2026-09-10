@@ -222,10 +222,6 @@ class VolumeManager
                      ash::FormatError error,
                      const std::string& device_path,
                      const std::string& device_label) override;
-  void OnPartitionEvent(ash::disks::DiskMountManager::PartitionEvent event,
-                        ash::PartitionError error,
-                        const std::string& device_path,
-                        const std::string& device_label) override;
   void OnRenameEvent(ash::disks::DiskMountManager::RenameEvent event,
                      ash::RenameError error,
                      const std::string& device_path,

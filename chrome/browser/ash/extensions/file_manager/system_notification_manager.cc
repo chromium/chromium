@@ -420,8 +420,7 @@ void SystemNotificationManager::HandleDeviceEvent(
       break;
 
     case fmp::DeviceEventType::kFormatSuccess:
-    case fmp::DeviceEventType::kFormatFail:
-    case fmp::DeviceEventType::kPartitionFail: {
+    case fmp::DeviceEventType::kFormatFail: {
       // Hide the formatting notification.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
@@ -435,10 +434,7 @@ void SystemNotificationManager::HandleDeviceEvent(
       } else {
         message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
                                   UTF8ToUTF16(event.device_label));
-        RecordDeviceNotificationMetric(
-            event.type == fmp::DeviceEventType::kFormatFail
-                ? DeviceNotificationUmaType::FORMAT_FAIL
-                : DeviceNotificationUmaType::PARTITION_FAIL);
+        RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_FAIL);
       }
       notification = CreateNotification(
           id,
@@ -447,11 +443,6 @@ void SystemNotificationManager::HandleDeviceEvent(
           std::move(message));
       break;
     }
-
-    case fmp::DeviceEventType::kPartitionStart:
-    case fmp::DeviceEventType::kPartitionSuccess:
-      // No-op.
-      break;
 
     case fmp::DeviceEventType::kRenameFail:
       notification = CreateNotification(

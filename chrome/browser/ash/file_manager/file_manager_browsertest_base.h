@@ -158,9 +158,6 @@ class FileManagerBrowserTestBase
     // Whether test should enable sharesheet.
     bool enable_sharesheet = true;
 
-    // Whether test needs the single partition format feature.
-    bool single_partition_format = false;
-
     // Whether test should enable trash.
     bool enable_trash = false;
 

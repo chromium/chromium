@@ -95,11 +95,6 @@ TestCase& TestCase::DontObserveFileTasks() {
   return *this;
 }
 
-TestCase& TestCase::EnableSinglePartitionFormat() {
-  options.single_partition_format = true;
-  return *this;
-}
-
 // Show the startup browser. Some tests invoke the file picker dialog during
 // the test. Requesting a file picker from a background page is forbidden by
 // the apps platform, and it's a bug that these tests do so.
@@ -257,10 +252,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.photos_documents_provider) {
     full_name += "_PhotosDocumentsProvider";
-  }
-
-  if (options.single_partition_format) {
-    full_name += "_SinglePartitionFormat";
   }
 
   if (options.enable_drive_trash) {

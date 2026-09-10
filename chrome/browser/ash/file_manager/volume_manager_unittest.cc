@@ -126,8 +126,6 @@ class LoggingObserver : public VolumeManagerObserver {
       VOLUME_UNMOUNTED,
       FORMAT_STARTED,
       FORMAT_COMPLETED,
-      PARTITION_STARTED,
-      PARTITION_COMPLETED,
       RENAME_STARTED,
       RENAME_COMPLETED
     };
@@ -233,28 +231,6 @@ class LoggingObserver : public VolumeManagerObserver {
                          bool success) override {
     Event event;
     event.type_ = Event::FORMAT_COMPLETED;
-    event.device_path_ = device_path;
-    event.device_label_ = device_label;
-    event.success_ = success;
-    events_.push_back(event);
-  }
-
-  void OnPartitionStarted(const std::string& device_path,
-                          const std::string& device_label,
-                          bool success) override {
-    Event event;
-    event.type_ = Event::PARTITION_STARTED;
-    event.device_path_ = device_path;
-    event.device_label_ = device_label;
-    event.success_ = success;
-    events_.push_back(event);
-  }
-
-  void OnPartitionCompleted(const std::string& device_path,
-                            const std::string& device_label,
-                            bool success) override {
-    Event event;
-    event.type_ = Event::PARTITION_COMPLETED;
     event.device_path_ = device_path;
     event.device_label_ = device_label;
     event.success_ = success;
@@ -921,75 +897,6 @@ TEST_F(VolumeManagerTest, OnFormatEvent_CompletedFailed) {
   EXPECT_FALSE(event.success());
 
   // When "format" is done, VolumeManager requests to mount it.
-  ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
-  const FakeDiskMountManager::MountRequest& mount_request =
-      disk_mount_manager_->mount_requests()[0];
-  EXPECT_EQ("device1", mount_request.source_path);
-  EXPECT_EQ("", mount_request.source_format);
-  EXPECT_EQ("", mount_request.mount_label);
-  EXPECT_EQ(ash::MountType::kDevice, mount_request.type);
-}
-
-TEST_F(VolumeManagerTest, OnPartitionEvent_Started) {
-  ScopedLoggingObserver observer(volume_manager());
-
-  volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_STARTED,
-                                     ash::PartitionError::kSuccess, "device1",
-                                     "label1");
-
-  ASSERT_EQ(1U, observer.events().size());
-  const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_STARTED, event.type());
-  EXPECT_EQ("device1", event.device_path());
-  EXPECT_EQ("label1", event.device_label());
-  EXPECT_TRUE(event.success());
-}
-
-TEST_F(VolumeManagerTest, OnPartitionEvent_StartFailed) {
-  ScopedLoggingObserver observer(volume_manager());
-
-  volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_STARTED,
-                                     ash::PartitionError::kUnknownError,
-                                     "device1", "label1");
-
-  ASSERT_EQ(1U, observer.events().size());
-  const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_STARTED, event.type());
-  EXPECT_EQ("device1", event.device_path());
-  EXPECT_EQ("label1", event.device_label());
-  EXPECT_FALSE(event.success());
-}
-
-TEST_F(VolumeManagerTest, OnPartitionEvent_Completed) {
-  ScopedLoggingObserver observer(volume_manager());
-
-  volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_COMPLETED,
-                                     ash::PartitionError::kSuccess, "device1",
-                                     "label1");
-
-  ASSERT_EQ(1U, observer.events().size());
-  const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_COMPLETED, event.type());
-  EXPECT_EQ("device1", event.device_path());
-  EXPECT_EQ("label1", event.device_label());
-  EXPECT_TRUE(event.success());
-}
-
-TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
-  ScopedLoggingObserver observer(volume_manager());
-
-  volume_manager()->OnPartitionEvent(DiskMountManager::PARTITION_COMPLETED,
-                                     ash::PartitionError::kUnknownError,
-                                     "device1", "label1");
-
-  ASSERT_EQ(1U, observer.events().size());
-  const LoggingObserver::Event& event = observer.events()[0];
-  EXPECT_EQ(LoggingObserver::Event::PARTITION_COMPLETED, event.type());
-  EXPECT_EQ("device1", event.device_path());
-  EXPECT_EQ("label1", event.device_label());
-  EXPECT_FALSE(event.success());
-
-  // When "partitioning" fails, VolumeManager requests to mount it for retry.
   ASSERT_EQ(1U, disk_mount_manager_->mount_requests().size());
   const FakeDiskMountManager::MountRequest& mount_request =
       disk_mount_manager_->mount_requests()[0];

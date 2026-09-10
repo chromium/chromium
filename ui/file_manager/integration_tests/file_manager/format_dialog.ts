@@ -25,11 +25,6 @@ async function setupFormatDialogTest(): Promise<string> {
  * @param usbLabel Label of usb to format.
  */
 async function openFormatDialog(appId: string, usbLabel: string) {
-  if (await remoteCall.isSinglePartitionFormat(appId)) {
-    await openFormatDialogWithSinglePartitionFormat(appId, usbLabel, 'FAKEUSB');
-    return;
-  }
-
   // Focus the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
@@ -39,36 +34,6 @@ async function openFormatDialog(appId: string, usbLabel: string) {
 
   // Click on the format menu item.
   const formatItemQuery = '#roots-context-menu:not([hidden])' +
-      ' cr-menu-item[command="#format"]:not([hidden]):not([disabled])';
-  await remoteCall.waitAndClickElement(appId, formatItemQuery);
-
-  // Check the dialog is open.
-  await remoteCall.waitForElement(
-      appId, ['files-format-dialog', 'cr-dialog[open]']);
-}
-
-/**
- * Opens a format dialog for the USB with label |usbLabel| and device with
- * label |deviceLabel|.
- *
- * @param appId Files app window ID.
- * @param usbLabel Label of usb to format.
- * @param deviceLabel Label of the parent device of usb.
- */
-async function openFormatDialogWithSinglePartitionFormat(
-    appId: string, usbLabel: string, deviceLabel: string) {
-  // Focus the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId);
-  await directoryTree.focusTree();
-
-  // Expand device tree entry to access partition entry.
-  await directoryTree.expandTreeItemByLabel(deviceLabel);
-
-  // Right click on the USB's directory tree entry.
-  await directoryTree.showContextMenuForItemByLabel(usbLabel);
-
-  // Click on the format menu item.
-  const formatItemQuery = '#directory-tree-context-menu:not([hidden])' +
       ' cr-menu-item[command="#format"]:not([hidden]):not([disabled])';
   await remoteCall.waitAndClickElement(appId, formatItemQuery);
 
@@ -313,12 +278,8 @@ export async function formatDialogGearMenu() {
   const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
-  let usbNavigationPath = '/fake-usb';
-  if (await remoteCall.isSinglePartitionFormat(appId)) {
-    usbNavigationPath = '/FAKEUSB/fake-usb';
-  }
   // Navigate to the USB via the directory tree.
-  await directoryTree.navigateToPath(usbNavigationPath);
+  await directoryTree.navigateToPath('/fake-usb');
 
   // Click on the gear menu button.
   await remoteCall.waitAndClickElement(appId, '#gear-button:not([hidden])');

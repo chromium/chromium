@@ -129,13 +129,12 @@ found in the LICENSE file.
   }
 </style>
 
-<cr-dialog id="dialog" close-text="$i18n{CLOSE_LABEL}"
-           single-partition-format$="[[getSinglePartitionFormat()]]">
+<cr-dialog id="dialog" close-text="$i18n{CLOSE_LABEL}">
   <div slot="title">
     [[getStrf('FORMAT_DIALOG_TITLE', title)]]
   </div>
   <div slot="body">
-    <div>[[getDialogMessage(isErase_)]]</div>
+    <div>$i18n{FORMAT_DIALOG_MESSAGE}</div>
     <div id="warning-container" hidden="[[!spaceUsed_]]" role="alert">
       <iron-icon id="warning-icon" icon="cr:warning"></iron-icon>
       <div id="warning-message">
@@ -163,7 +162,7 @@ found in the LICENSE file.
     </cr-button>
     <cr-button class="action-button" on-click="format"
         id="format-button">
-      [[getConfirmLabel(isErase_)]]
+      $i18n{FORMAT_DIALOG_CONFIRM_LABEL}
     </cr-button>
   </div>
 </cr-dialog>

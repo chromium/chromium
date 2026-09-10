@@ -164,11 +164,6 @@ void FakeDiskMountManager::FormatMountedDevice(const std::string& mount_path,
                                                FormatFileSystemType filesystem,
                                                const std::string& label) {}
 
-void FakeDiskMountManager::SinglePartitionFormatDevice(
-    const std::string& device_path,
-    FormatFileSystemType filesystem,
-    const std::string& label) {}
-
 void FakeDiskMountManager::RenameMountedDevice(const std::string& mount_path,
                                                const std::string& volume_name) {
 }

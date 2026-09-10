@@ -7949,11 +7949,6 @@ inline constexpr char kFilesMaterializedViewsName[] =
 inline constexpr char kFilesMaterializedViewsDescription[] =
     "Enable materialized views in Files App.";
 
-inline constexpr char kFilesSinglePartitionFormatName[] =
-    "Enable Partitioning of Removable Disks.";
-inline constexpr char kFilesSinglePartitionFormatDescription[] =
-    "Enable partitioning of removable disks into single partition.";
-
 inline constexpr char kFilesTrashAutoCleanupName[] = "Trash auto cleanup";
 inline constexpr char kFilesTrashAutoCleanupDescription[] =
     "Enable background cleanup for old files in Trash.";

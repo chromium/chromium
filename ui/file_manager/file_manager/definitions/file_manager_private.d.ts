@@ -145,9 +145,6 @@ declare global {
         RENAME_START = 'rename_start',
         RENAME_SUCCESS = 'rename_success',
         RENAME_FAIL = 'rename_fail',
-        PARTITION_START = 'partition_start',
-        PARTITION_SUCCESS = 'partition_success',
-        PARTITION_FAIL = 'partition_fail',
       }
 
       export enum DriveSyncErrorType {
@@ -889,10 +886,6 @@ declare global {
 
       export function formatVolume(
           volumeId: string, filesystem: FormatFileSystemType,
-          volumeLabel: string): void;
-
-      export function singlePartitionFormat(
-          deviceStoragePath: string, filesystem: FormatFileSystemType,
           volumeLabel: string): void;
 
       export function renameVolume(volumeId: string, newName: string): void;

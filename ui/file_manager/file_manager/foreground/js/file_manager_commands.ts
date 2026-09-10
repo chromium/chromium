@@ -17,7 +17,7 @@ import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandR
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
-import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
@@ -33,7 +33,7 @@ import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {type ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
 import {type CommandHandlerDeps, MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
-import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getEventEntry, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
+import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
 import type {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
 import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
@@ -230,56 +230,7 @@ export class FormatCommand extends FilesCommand {
         location && isRoot && location.rootType === RootType.REMOVABLE;
     event.canExecute = !!removableRoot && (isUnrecognizedVolume || writable);
 
-    if (isSinglePartitionFormatEnabled()) {
-      let isDevice = false;
-      if (root && root instanceof EntryList) {
-        // root entry is device node if it has child (partition).
-        isDevice = !!removableRoot && root.getUiChildren().length > 0;
-      }
-      // Disable format command on device when SinglePartitionFormat on,
-      // erase command will be available.
-      event.command.setHidden(!removableRoot || isDevice);
-    } else {
-      event.command.setHidden(!removableRoot);
-    }
-  }
-}
-
-/**
- * Deletes removable device partition, creates single partition and formats it.
- */
-export class EraseDeviceCommand extends FilesCommand {
-  execute(event: CommandEvent, fileManager: CommandHandlerDeps) {
-    const root = getEventEntry(event, fileManager);
-
-    if (root && root instanceof EntryList) {
-      fileManager.ui.formatDialog.showEraseModal(root);
-    }
-  }
-
-  override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
-    if (!isSinglePartitionFormatEnabled()) {
-      event.canExecute = false;
-      event.command.setHidden(true);
-      return;
-    }
-    const root = getEventEntry(event, fileManager);
-    const location = root && fileManager.volumeManager.getLocationInfo(root);
-    const writable = location && !location.isReadOnly;
-    const isRoot = location && location.isRootEntry;
-
-    const removableRoot =
-        location && isRoot && location.rootType === RootType.REMOVABLE;
-
-    let isDevice = false;
-    if (root && root instanceof EntryList) {
-      // root entry is device node if it has child (partition).
-      isDevice = !!removableRoot && root.getUiChildren().length > 0;
-    }
-
-    event.canExecute = !!removableRoot && !writable;
-    // Enable the command if this is a removable and device node.
-    event.command.setHidden(!removableRoot || !isDevice);
+    event.command.setHidden(!removableRoot);
   }
 }
 

@@ -125,31 +125,6 @@ void DeviceEventRouter::OnFormatCompleted(const std::string& device_path,
                 device_path, device_label);
 }
 
-void DeviceEventRouter::OnPartitionStarted(const std::string& device_path,
-                                           const std::string& device_label,
-                                           bool success) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (success) {
-    OnDeviceEvent(file_manager_private::DeviceEventType::kPartitionStart,
-                  device_path, device_label);
-  } else {
-    OnDeviceEvent(file_manager_private::DeviceEventType::kPartitionFail,
-                  device_path, device_label);
-  }
-}
-
-void DeviceEventRouter::OnPartitionCompleted(const std::string& device_path,
-                                             const std::string& device_label,
-                                             bool success) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  OnDeviceEvent(success
-                    ? file_manager_private::DeviceEventType::kPartitionSuccess
-                    : file_manager_private::DeviceEventType::kPartitionFail,
-                device_path, device_label);
-}
-
 void DeviceEventRouter::OnRenameStarted(const std::string& device_path,
                                         const std::string& device_label,
                                         bool success) {

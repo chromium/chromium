@@ -852,41 +852,6 @@ FileManagerPrivateFormatVolumeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateSinglePartitionFormatFunction::Run() {
-  using extensions::api::file_manager_private::SinglePartitionFormat::Params;
-  const std::optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const DiskMountManager::Disks& disks =
-      DiskMountManager::GetInstance()->disks();
-
-  DiskMountManager::Disks::const_iterator it = disks.begin();
-  for (; it != disks.end(); ++it) {
-    if (it->get()->storage_device_path() == params->device_storage_path &&
-        it->get()->is_parent()) {
-      break;
-    }
-  }
-
-  if (it == disks.end()) {
-    return RespondNow(Error("Device not found"));
-  }
-
-  const ash::disks::Disk* const device_disk = it->get();
-  DCHECK(device_disk);
-
-  if (device_disk->is_read_only()) {
-    return RespondNow(Error("Invalid device"));
-  }
-
-  DiskMountManager::GetInstance()->SinglePartitionFormatDevice(
-      device_disk->device_path(),
-      ApiFormatFileSystemToChromeEnum(params->filesystem),
-      params->volume_label);
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
 FileManagerPrivateRenameVolumeFunction::Run() {
   using extensions::api::file_manager_private::RenameVolume::Params;
   const std::optional<Params> params = Params::Create(args());

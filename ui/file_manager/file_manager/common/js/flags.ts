@@ -43,13 +43,6 @@ export function isGoogleOneOfferFilesBannerEligibleAndEnabled() {
 }
 
 /**
- * Returns true if FilesSinglePartitionFormat flag is enabled.
- */
-export function isSinglePartitionFormatEnabled() {
-  return isFlagEnabled('FILES_SINGLE_PARTITION_FORMAT_ENABLED');
-}
-
-/**
  * Returns whether the DriveFsBulkPinning feature flag is enabled.
  */
 export function isDriveFsBulkPinningEnabled() {

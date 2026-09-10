@@ -143,13 +143,7 @@ enum DeviceEventType {
   // Rename succeeded.
   rename_success,
   // Rename failed.
-  rename_fail,
-  // Partition started.
-  partition_start,
-  // Partition succeeded.
-  partition_success,
-  // Partition failed.
-  partition_fail
+  rename_fail
 };
 
 // Drive sync error type.
@@ -1742,15 +1736,6 @@ interface Functions {
   // |filesystem| Filesystem type to be formatted to.
   // |volumeLabel| Label of the drive after formatting.
   static void formatVolume(DOMString volumeId,
-                           FormatFileSystemType filesystem,
-                           DOMString volumeLabel);
-
-  // Deletes partitions of removable device, creates a new partition and format
-  // it.
-  // |deviceStoragePath| Storage path of the device to be formatted.
-  // |filesystem| Filesystem type to be formatted to.
-  // |volumeLabel| Label of the drive after formatting.
-  static void singlePartitionFormat(DOMString deviceStoragePath,
                            FormatFileSystemType filesystem,
                            DOMString volumeLabel);
 

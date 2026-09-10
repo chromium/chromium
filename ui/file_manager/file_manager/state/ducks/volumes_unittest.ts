@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {isInteractiveVolume, isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
@@ -257,7 +255,8 @@ export async function testAddDriveVolume(done: () => void) {
 }
 
 /** Tests that single partition volume can be added correctly. */
-async function addVolumeForSinglePartitionRemovable(done: () => void) {
+export async function testAddVolumeForSinglePartitionRemovable(
+    done: () => void) {
   const initialState = getEmptyState();
   const store = setupStore(initialState);
 
@@ -270,49 +269,21 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
   // Expect the volume is in the store.
   const myFilesFileData = createMyFilesDataWithEntryList();
   const volumeEntry = new VolumeEntry(volumeInfo);
-  const parentEntry = new EntryList(
-      volumeMetadata.driveLabel || '', RootType.REMOVABLE,
-      volumeMetadata.devicePath);
-
-  // There should be a parent wrapper if the flag is on.
-  const hasParentWrapper = isSinglePartitionFormatEnabled();
-  if (hasParentWrapper) {
-    parentEntry.addEntry(volumeEntry);
-  }
 
   const want: Partial<State> = {
     allEntries: {
       // Single partition volume.
       [volumeEntry.toURL()]: {
         ...convertEntryToFileData(volumeEntry),
-        // When there is a parent wrapper, icon and ejectable values are
-        // different.
-        ...(hasParentWrapper ? {
-          icon: ICON_TYPES.UNKNOWN_REMOVABLE,
-          isEjectable: false,
-        } :
-                               {
-                                 icon: ICON_TYPES.USB,
-                                 isEjectable: true,
-                               }),
+        icon: ICON_TYPES.USB,
+        isEjectable: true,
       },
       // My Files entry list.
       [myFilesFileData.key]: myFilesFileData,
-      // Parent wrapper entry.
-      ...(hasParentWrapper ? {
-        [parentEntry.toURL()]: {
-          ...convertEntryToFileData(parentEntry),
-          isEjectable: true,
-          canExpand: true,
-          children: [volumeEntry.toURL()],
-        },
-      } :
-                             {}),
     },
     volumes: {
       [volumeInfo.volumeId]: {
         ...convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata),
-        ...(hasParentWrapper ? {prefixKey: parentEntry.toURL()} : {}),
       },
     },
   };
@@ -324,22 +295,9 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
   done();
 }
 
-/** Run the above test with FilesSinglePartitionFormat flag off. */
-export async function testAddVolumeForSinglePartitionRemovableWithFlagOff(
-    done: () => void) {
-  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: false});
-  addVolumeForSinglePartitionRemovable(done);
-}
-
-/** Run the above test with FilesSinglePartitionFormat flag on. */
-export async function testAddVolumeForSinglePartitionRemovableWithFlagOn(
-    done: () => void) {
-  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: true});
-  addVolumeForSinglePartitionRemovable(done);
-}
-
 /** Tests that multiple partition volumes can be added correctly. */
-async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
+export async function testAddVolumeForMultipleUsbPartitionsGrouping(
+    done: () => void) {
   const store = setupStore();
   // Dispatch an action to add partition-1 volume.
   const {volumeManager} = window.fileManager;
@@ -440,21 +398,6 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
                                     }));
 
   done();
-}
-
-/** Run the above test with FilesSinglePartitionFormat flag off. */
-export async function testAddVolumeForMultipleUsbPartitionsGroupingWithFlagOff(
-    done: () => void) {
-  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: false});
-  addVolumeForMultipleUsbPartitionsGrouping(done);
-}
-
-
-/** Run the above test with FilesSinglePartitionFormat flag on. */
-export async function testAddVolumeForMultipleUsbPartitionsGroupingWithFlagOn(
-    done: () => void) {
-  loadTimeData.overrideValues({FILES_SINGLE_PARTITION_FORMAT_ENABLED: true});
-  addVolumeForMultipleUsbPartitionsGrouping(done);
 }
 
 /**

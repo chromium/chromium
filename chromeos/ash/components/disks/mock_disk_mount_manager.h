@@ -68,10 +68,6 @@ class MockDiskMountManager : public DiskMountManager {
               (const std::string&, FormatFileSystemType, const std::string&),
               (override));
   MOCK_METHOD(void,
-              SinglePartitionFormatDevice,
-              (const std::string&, FormatFileSystemType, const std::string&),
-              (override));
-  MOCK_METHOD(void,
               RenameMountedDevice,
               (const std::string&, const std::string&),
               (override));

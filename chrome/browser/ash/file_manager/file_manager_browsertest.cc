@@ -320,7 +320,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayUsb")
             .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
         TestCase("fileDisplayUsbPartition"),
-        TestCase("fileDisplayUsbPartition").EnableSinglePartitionFormat(),
         TestCase("fileDisplayUsbPartitionSort"),
         TestCase("fileDisplayPartitionFileTable"),
         TestCase("fileSearch"),
@@ -739,12 +738,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuCrostini"),
         TestCase("dirContextMenuPlayFiles"),
         TestCase("dirContextMenuUsbs"),
-        TestCase("dirContextMenuUsbs").EnableSinglePartitionFormat(),
         TestCase("dirContextMenuFsp"),
         TestCase("dirContextMenuDocumentsProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("dirContextMenuUsbDcim"),
-        TestCase("dirContextMenuUsbDcim").EnableSinglePartitionFormat(),
         TestCase("dirContextMenuMtp"),
         TestCase("dirContextMenuMyDrive"),
         TestCase("dirContextMenuSharedDrive"),
@@ -883,9 +880,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/40783093): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("transferDragAndHoverTreeItemFakeEntry")
-            .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
-        TestCase("transferDragAndHoverTreeItemFakeEntry")
-            .EnableSinglePartitionFormat()
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
 #endif
         TestCase("transferDragFileListItemSelects")
@@ -1448,21 +1442,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FormatDialog, /* format_dialog.ts */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("formatDialog"),
-        TestCase("formatDialogIsModal"),
-        TestCase("formatDialogEmpty"),
-        TestCase("formatDialogCancel"),
-        TestCase("formatDialogNameLength"),
-        TestCase("formatDialogNameInvalid"),
-        TestCase("formatDialogGearMenu"),
-        TestCase("formatDialog").EnableSinglePartitionFormat(),
-        TestCase("formatDialogIsModal").EnableSinglePartitionFormat(),
-        TestCase("formatDialogEmpty").EnableSinglePartitionFormat(),
-        TestCase("formatDialogCancel").EnableSinglePartitionFormat(),
-        TestCase("formatDialogNameLength").EnableSinglePartitionFormat(),
-        TestCase("formatDialogNameInvalid").EnableSinglePartitionFormat(),
-        TestCase("formatDialogGearMenu").EnableSinglePartitionFormat()));
+    ::testing::Values(TestCase("formatDialog"),
+                      TestCase("formatDialogIsModal"),
+                      TestCase("formatDialogEmpty"),
+                      TestCase("formatDialogCancel"),
+                      TestCase("formatDialogNameLength"),
+                      TestCase("formatDialogNameInvalid"),
+                      TestCase("formatDialogGearMenu")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Trash, /* trash.ts */

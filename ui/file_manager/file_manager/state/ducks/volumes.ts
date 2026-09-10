@@ -6,7 +6,7 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {isOneDriveId, isSameEntry} from '../../common/js/entry_utils.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
+import {isGuestOsEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import type {GetActionFactoryPayload} from '../../common/js/util.js';
 import {RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -130,17 +130,12 @@ function appendChildIfNotExisted(
 
 /**
  * Given a volume info, check if we need to group it into a wrapper.
- *
- * When the "SinglePartitionFormat" flag is on, we always group removable volume
- * even there's only 1 partition, otherwise the group only happens when there
- * are more than 1 partition in the same device.
+ * Grouping only happens when there are more than 1 partition in the same
+ * device.
  */
 function shouldGroupRemovable(
     volumes: State['volumes'], volumeInfo: VolumeInfo,
     volumeMetadata: chrome.fileManagerPrivate.VolumeMetadata): boolean {
-  if (isSinglePartitionFormatEnabled()) {
-    return true;
-  }
   const groupingKey = removableGroupKey(volumeMetadata);
   return Object.values<Volume>(volumes).some(v => {
     return (

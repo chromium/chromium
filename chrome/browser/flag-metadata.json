@@ -5204,11 +5204,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "files-single-partition-format",
-    "owners": [ "austinct@chromium.org" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "files-trash-auto-cleanup",
     "owners": [
       "benreich@chromium.org",

@@ -1398,17 +1398,6 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
-   * Returns true if the SinglePartitionFormat flag is on.
-   * @param appId Files app windowId.
-   */
-  async isSinglePartitionFormat(appId: string) {
-    const dialog =
-        await this.waitForElement(appId, ['files-format-dialog', 'cr-dialog']);
-    const flag = dialog.attributes['single-partition-format'] || '';
-    return !!flag;
-  }
-
-  /**
    * Shows hidden files to facilitate tests again the .Trash directory.
    */
   async showHiddenFiles(appId: string, check: boolean = true) {

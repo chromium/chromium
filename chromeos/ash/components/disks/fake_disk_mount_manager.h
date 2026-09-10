@@ -96,9 +96,6 @@ class FakeDiskMountManager : public DiskMountManager {
   void FormatMountedDevice(const std::string& mount_path,
                            FormatFileSystemType filesystem,
                            const std::string& label) override;
-  void SinglePartitionFormatDevice(const std::string& device_path,
-                                   FormatFileSystemType filesystem,
-                                   const std::string& label) override;
   void RenameMountedDevice(const std::string& mount_path,
                            const std::string& volume_name) override;
   void UnmountDeviceRecursively(
