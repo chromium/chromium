@@ -113,7 +113,7 @@ void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
     auto* pdf_helper =
         pdf::PDFDocumentHelper::GetForCurrentDocument(&render_frame_host);
     if (pdf_helper) {
-      // Get the text of the first page and send it to the main frame for
+      // Get the text of the first page and send it to the render frame for
       // language detection.
       pdf_helper->GetPageText(
           0, base::BindOnce(&ChromePDFDocumentHelperClient::OnPdfTextExtracted,
@@ -132,22 +132,12 @@ void ChromePDFDocumentHelperClient::OnPdfTextExtracted(
     return;
   }
 
-  content::WebContents* web_contents = GetWebContentsToUse(*render_frame_host);
-  if (!web_contents) {
-    return;
-  }
-
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  if (!main_frame) {
-    return;
-  }
-
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-  main_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
   // TODO(b/502015383): Use the actual PDF language tag.
   chrome_render_frame->PdfPageCaptured(text, /*pdf_lang=*/"",
-                                       main_frame->GetLastCommittedURL());
+                                       render_frame_host->GetLastCommittedURL());
 }
 
 void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
