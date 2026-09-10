@@ -50,7 +50,7 @@ constexpr base::TimeDelta kScrimEntranceOpacityAnimationDurationMs =
 // The elevation of the shadow for the phantom window should match that of an
 // active window.
 // The shadow ninebox requires a minimum size to work well. See
-// ui/compositor_extra/shadow.cc
+// ui/decoration/shadow.cc
 constexpr int kMinWidthWithShadow = 2 * wm::kShadowElevationActiveWindow;
 constexpr int kMinHeightWithShadow = 4 * wm::kShadowElevationActiveWindow;
 

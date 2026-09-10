@@ -55,7 +55,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor_extra/decoration_util.h"
+#include "ui/decoration/decoration_util.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"

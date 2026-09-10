@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/decoration_util.h"
+#include "ui/decoration/decoration_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/shadow_value.h"

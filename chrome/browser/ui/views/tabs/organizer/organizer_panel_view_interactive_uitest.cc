@@ -37,7 +37,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/interactive_views_test.h"

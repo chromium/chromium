@@ -4,7 +4,7 @@ include_rules = [
   "+ui/aura",
   "+ui/color",
   "+ui/compositor",
-  "+ui/compositor_extra",
+  "+ui/decoration",
   "+ui/gfx",
   "+ui/lottie/animation.h",
   "+ui/platform_window",

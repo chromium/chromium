@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 

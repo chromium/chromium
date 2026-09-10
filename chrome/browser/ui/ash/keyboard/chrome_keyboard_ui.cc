@@ -20,7 +20,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/shadow_types.h"
 

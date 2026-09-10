@@ -33,7 +33,7 @@ static_library("keyboard") {
     "//extensions/browser",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/common",
-    "//ui/compositor_extra",
+    "//ui/decoration",
     "//url",
   ]
 }

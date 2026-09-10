@@ -61,7 +61,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui:webui_util",
     "//components/saved_tab_groups/public",
     "//ui/actions",
-    "//ui/compositor_extra",
+    "//ui/decoration",
     "//ui/views/controls/webview",
     "//url",
   ]
@@ -127,7 +127,7 @@ source_set("interactive_ui_tests") {
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//ui/base",
-    "//ui/compositor_extra",
+    "//ui/decoration",
     "//ui/views",
   ]
   if (enable_extensions) {

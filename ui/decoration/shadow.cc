@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -10,7 +10,7 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_not_drawn.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor_extra/decoration_util.h"
+#include "ui/decoration/decoration_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
@@ -231,7 +231,7 @@ void Shadow::UpdateShadowAppearance() {
       std::min(rounded_corners_.lower_right(), max_radius),
       std::min(rounded_corners_.lower_left(), max_radius));
 
-  // The ninebox assumption breaks down when the window is too small for the
+  // The ninebox assumption breaks down when the content is too small for the
   // desired elevation. The height/width of |blur_region| will be 4 * elevation
   // (see ShadowDetails::Get), so cap elevation at the most we can handle.
   const bool is_pill_shaped =

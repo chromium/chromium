@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_COMPOSITOR_EXTRA_SHADOW_H_
-#define UI_COMPOSITOR_EXTRA_SHADOW_H_
+#ifndef UI_DECORATION_SHADOW_H_
+#define UI_DECORATION_SHADOW_H_
 
 #include <memory>
 #include <optional>
@@ -13,7 +13,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/compositor_extra/decoration_util.h"
+#include "ui/decoration/decoration_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -174,4 +174,4 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
 }  // namespace ui
 
-#endif  // UI_COMPOSITOR_EXTRA_SHADOW_H_
+#endif  // UI_DECORATION_SHADOW_H_

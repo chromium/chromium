@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_COMPOSITOR_EXTRA_DECORATION_UTIL_H_
-#define UI_COMPOSITOR_EXTRA_DECORATION_UTIL_H_
+#ifndef UI_DECORATION_DECORATION_UTIL_H_
+#define UI_DECORATION_DECORATION_UTIL_H_
 
 #include <cstddef>
 
@@ -80,4 +80,4 @@ struct ShadowDetails {
 
 }  // namespace gfx
 
-#endif  // UI_COMPOSITOR_EXTRA_DECORATION_UTIL_H_
+#endif  // UI_DECORATION_DECORATION_UTIL_H_

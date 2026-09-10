@@ -197,7 +197,7 @@ source_set("app_list") {
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/color",
     "//ui/compositor",
-    "//ui/compositor_extra",
+    "//ui/decoration",
     "//ui/display",
     "//ui/display/manager",
     "//ui/display/util",

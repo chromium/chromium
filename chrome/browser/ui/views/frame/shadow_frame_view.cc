@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/view_shadow.h"
 

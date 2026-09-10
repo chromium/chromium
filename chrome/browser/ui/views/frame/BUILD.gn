@@ -21,7 +21,7 @@ source_set("shadow") {
     "//base",
     "//chrome/browser/ui/animation",
     "//chrome/browser/ui/color:color_headers",
-    "//ui/compositor_extra",
+    "//ui/decoration",
     "//ui/gfx:color_utils",
     "//ui/views",
   ]

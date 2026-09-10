@@ -10,7 +10,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"

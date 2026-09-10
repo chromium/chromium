@@ -72,7 +72,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/test/test_utils.h"
-#include "ui/compositor_extra/shadow.h"
+#include "ui/decoration/shadow.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"

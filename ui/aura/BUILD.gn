@@ -303,8 +303,8 @@ test("aura_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "../compositor_extra/decoration_util_unittest.cc",
-    "../compositor_extra/shadow_unittest.cc",
+    "../decoration/decoration_util_unittest.cc",
+    "../decoration/shadow_unittest.cc",
     "client/screen_position_client_unittest.cc",
     "gestures/gesture_recognizer_unittest.cc",
     "test/aura_test_suite.h",
@@ -331,7 +331,7 @@ test("aura_unittests") {
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_types",
     "//ui/compositor:test_support",
-    "//ui/compositor_extra",
+    "//ui/decoration",
     "//ui/display:test_support",
     "//ui/events:gesture_detection",
     "//ui/events:test_support",
