@@ -4,28 +4,12 @@ Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/autofill_save_iban_scroll_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
-    <!-- Drag handlebar -->
-    <ImageView
-        android:id="@+id/autofill_save_iban_drag_handler"
-        android:importantForAccessibility="no"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/autofill_bottom_sheet_drag_handlebar_spacing_top"
-        android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handle_color" />
-
-    <ScrollView
-        android:id="@+id/autofill_save_iban_scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <LinearLayout
             android:orientation="vertical"
@@ -149,4 +133,3 @@ found in the LICENSE file.
 
         </LinearLayout>
     </ScrollView>
-</LinearLayout>

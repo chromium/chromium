@@ -58,6 +58,11 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public int getVerticalScrollOffset() {
         return mScrollView.getScrollY();
     }

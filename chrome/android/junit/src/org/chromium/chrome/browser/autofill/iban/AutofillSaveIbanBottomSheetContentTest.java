@@ -58,6 +58,11 @@ public class AutofillSaveIbanBottomSheetContentTest {
     }
 
     @Test
+    public void testShowHandlebar() {
+        assertTrue(mContent.showHandlebar());
+    }
+
+    @Test
     public void testNoVerticalScrollOffset() {
         assertThat(mContent.getVerticalScrollOffset(), equalTo(0));
     }
