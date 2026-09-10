@@ -286,8 +286,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   bool IsPdfDrawDebouncerRunning() const {
     return controller_->pdf_draw_debouncer_->IsRunning();
   }
-  bool IsNodePendingDeletion(ui::AXNodeID node_id) const {
-    return controller_->displayed_nodes_pending_deletion_.contains(node_id);
+  bool IsNodePendingDeletion(ui::AXNodeID node_id) {
+    return model().displayed_nodes_pending_deletion().contains(node_id);
   }
   void RecordSessionMetricsIfShownOrRecentlyHidden(bool recently_hidden) {
     controller_->RecordSessionMetricsIfShownOrRecentlyHidden(recently_hidden);
@@ -6679,6 +6679,189 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnNodeWillBeDeleted(active_tree, active_node);
 
   // Verify that node ID 2 WAS added to displayed_nodes_pending_deletion_.
+  EXPECT_TRUE(IsNodePendingDeletion(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnNodeDeleted_InactiveTree_Ignored) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  // Create an inactive tree.
+  ui::AXTreeID inactive_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Create a node with ID 2 in the active tree, and mark it as visible.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData node_active = test::TextNode(/* id= */ 2);
+  update.nodes = {std::move(node_active)};
+  AccessibilityEventReceived({std::move(update)});
+
+  // Set display node list to contain node ID 2.
+  model().Reset({2});
+  model().ComputeDisplayNodeIdsForDistilledTree();
+  ASSERT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+
+  // Get active tree pointer.
+  const auto& tree_infos = model().tree_infos_for_testing();
+  auto it = tree_infos.find(tree_id_);
+  ASSERT_NE(it, tree_infos.end());
+  ui::AXTree* active_tree = it->second->manager->ax_tree();
+
+  ui::AXNode* active_node = active_tree->GetFromId(2);
+  ASSERT_NE(active_node, nullptr);
+
+  // Call OnNodeWillBeDeleted for node 2 on the active tree.
+  controller().OnNodeWillBeDeleted(active_tree, active_node);
+  EXPECT_TRUE(IsNodePendingDeletion(2));
+
+  // Now, construct a node with ID 2 in the inactive tree.
+  ui::AXTreeUpdate inactive_update;
+  test::SetUpdateTreeID(&inactive_update, inactive_tree_id);
+  inactive_update.root_id = 2;
+  ui::AXNodeData node_inactive = test::TextNode(/* id= */ 2);
+  inactive_update.nodes = {std::move(node_inactive)};
+
+  std::vector<ui::AXEvent> events;
+  std::vector<ui::AXTreeUpdate> inactive_updates = {inactive_update};
+  model().ApplyAccessibilityUpdates(inactive_tree_id, inactive_updates, events);
+
+  auto inactive_it = tree_infos.find(inactive_tree_id);
+  ASSERT_NE(inactive_it, tree_infos.end());
+  ui::AXTree* inactive_tree = inactive_it->second->manager->ax_tree();
+
+  // Call OnNodeDeleted for node 2 on the inactive tree.
+  controller().OnNodeDeleted(inactive_tree, 2);
+
+  // Verify that node ID 2 was NOT deleted from
+  // displayed_nodes_pending_deletion_ because the tree ID didn't match the
+  // active tree ID.
+  EXPECT_TRUE(IsNodePendingDeletion(2));
+
+  // Call OnNodeDeleted for node 2 on the active tree.
+  controller().OnNodeDeleted(active_tree, 2);
+
+  // Verify that node ID 2 was deleted from displayed_nodes_pending_deletion_.
+  EXPECT_FALSE(IsNodePendingDeletion(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_ClearsDisplayedNodesPendingDeletion) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  // Create a node with ID 2 in the active tree, and mark it as visible.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData node_active = test::TextNode(/* id= */ 2);
+  update.nodes = {std::move(node_active)};
+  AccessibilityEventReceived({std::move(update)});
+
+  // Set display node list to contain node ID 2.
+  model().Reset({2});
+  model().ComputeDisplayNodeIdsForDistilledTree();
+  ASSERT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+
+  // Get active tree pointer.
+  const auto& tree_infos = model().tree_infos_for_testing();
+  auto it = tree_infos.find(tree_id_);
+  ASSERT_NE(it, tree_infos.end());
+  ui::AXTree* active_tree = it->second->manager->ax_tree();
+
+  ui::AXNode* active_node = active_tree->GetFromId(2);
+  ASSERT_NE(active_node, nullptr);
+
+  // Call OnNodeWillBeDeleted for node 2 on the active tree.
+  controller().OnNodeWillBeDeleted(active_tree, active_node);
+  EXPECT_TRUE(IsNodePendingDeletion(2));
+
+  // Change active tree ID.
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       ukm::kInvalidSourceId, false);
+
+  // Verify that displayed_nodes_pending_deletion_ is cleared.
+  EXPECT_FALSE(IsNodePendingDeletion(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnAXTreeDestroyed_ActiveTree_ClearsDisplayedNodesPendingDeletion) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  // Create a node with ID 2 in the active tree, and mark it as visible.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData node_active = test::TextNode(/* id= */ 2);
+  update.nodes = {std::move(node_active)};
+  AccessibilityEventReceived({std::move(update)});
+
+  // Set display node list to contain node ID 2.
+  model().Reset({2});
+  model().ComputeDisplayNodeIdsForDistilledTree();
+  ASSERT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+
+  // Get active tree pointer.
+  const auto& tree_infos = model().tree_infos_for_testing();
+  auto it = tree_infos.find(tree_id_);
+  ASSERT_NE(it, tree_infos.end());
+  ui::AXTree* active_tree = it->second->manager->ax_tree();
+
+  ui::AXNode* active_node = active_tree->GetFromId(2);
+  ASSERT_NE(active_node, nullptr);
+
+  // Call OnNodeWillBeDeleted for node 2 on the active tree.
+  controller().OnNodeWillBeDeleted(active_tree, active_node);
+  EXPECT_TRUE(IsNodePendingDeletion(2));
+
+  // Destroy the active tree.
+  controller().OnAXTreeDestroyed(tree_id_);
+
+  // Verify that displayed_nodes_pending_deletion_ is cleared.
+  EXPECT_FALSE(IsNodePendingDeletion(2));
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    OnAXTreeDestroyed_InactiveTree_DoesNotClearDisplayedNodesPendingDeletion) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  // Create a node with ID 2 in the active tree, and mark it as visible.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData node_active = test::TextNode(/* id= */ 2);
+  update.nodes = {std::move(node_active)};
+  AccessibilityEventReceived({std::move(update)});
+
+  // Set display node list to contain node ID 2.
+  model().Reset({2});
+  model().ComputeDisplayNodeIdsForDistilledTree();
+  ASSERT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+
+  // Get active tree pointer.
+  const auto& tree_infos = model().tree_infos_for_testing();
+  auto it = tree_infos.find(tree_id_);
+  ASSERT_NE(it, tree_infos.end());
+  ui::AXTree* active_tree = it->second->manager->ax_tree();
+
+  ui::AXNode* active_node = active_tree->GetFromId(2);
+  ASSERT_NE(active_node, nullptr);
+
+  // Call OnNodeWillBeDeleted for node 2 on the active tree.
+  controller().OnNodeWillBeDeleted(active_tree, active_node);
+  EXPECT_TRUE(IsNodePendingDeletion(2));
+
+  // Register and destroy an inactive tree.
+  ui::AXTreeID inactive_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate inactive_update;
+  test::SetUpdateTreeID(&inactive_update, inactive_tree_id);
+  ui::AXNodeData inactive_node;
+  inactive_node.id = 1;
+  inactive_update.root_id = inactive_node.id;
+  inactive_update.nodes = {std::move(inactive_node)};
+  std::vector<ui::AXEvent> events;
+  std::vector<ui::AXTreeUpdate> inactive_updates = {std::move(inactive_update)};
+  model().ApplyAccessibilityUpdates(inactive_tree_id, inactive_updates, events);
+  ASSERT_TRUE(model().ContainsTree(inactive_tree_id));
+
+  controller().OnAXTreeDestroyed(inactive_tree_id);
+
+  // Verify that displayed_nodes_pending_deletion_ still contains node 2.
   EXPECT_TRUE(IsNodePendingDeletion(2));
 }
 

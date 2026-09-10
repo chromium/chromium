@@ -226,8 +226,7 @@ void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
     return;
   }
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
-  if (model_.GetCurrentlyVisibleNodes()->contains(node_id)) {
-    displayed_nodes_pending_deletion_.insert(node_id);
+  if (model_.OnNodeWillBeDeleted(node_id)) {
     if (!read_aloud_model_.speech_playing()) {
       ExecuteJavaScript("chrome.readingMode.onNodeWillBeDeleted(" +
                         base::ToString(node_id) + ")");
@@ -239,15 +238,14 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
                                               ui::AXNodeID node_id) {
   // Node deletions are ignored for Readability because the Readability panel
   // renders a static HTML snapshot and does not dynamically update its content.
-  if (model_.is_readability_next_distillation_method()) {
+  if (model_.is_readability_next_distillation_method() ||
+      tree->GetAXTreeID() != model_.active_tree_id()) {
     return;
   }
 
-  if (!displayed_nodes_pending_deletion_.contains(node_id)) {
+  if (!model_.OnNodeDeleted(node_id)) {
     return;
   }
-
-  displayed_nodes_pending_deletion_.erase(node_id);
 
   // For Google Docs, we extract text from the "annotated canvas" element
   // nodes, which hold the currently visible text on screen. As the user
@@ -257,7 +255,7 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
   // unexpected behavior (e.g., an empty side panel). Therefore, Google Docs
   // require special handling to ensure correct text extraction and avoid
   // these issues.
-  if (!displayed_nodes_pending_deletion_.empty() || IsGoogleDocs()) {
+  if (!model_.displayed_nodes_pending_deletion().empty() || IsGoogleDocs()) {
     return;
   }
 

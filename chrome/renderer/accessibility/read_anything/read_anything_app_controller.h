@@ -600,10 +600,6 @@ class ReadAnythingAppController
   // Model that holds Read Aloud state for this controller.
   ReadAloudAppModel read_aloud_model_;
 
-  // Set of nodes that will be deleted that are also displayed. A draw will
-  // occur when the set becomes empty.
-  std::set<ui::AXNodeID> displayed_nodes_pending_deletion_;
-
   bool waiting_for_tree_id_ = false;
 
   // Tracks whether the rendered text blocks ready metric has been recorded for

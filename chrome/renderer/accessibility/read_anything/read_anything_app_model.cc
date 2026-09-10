@@ -145,6 +145,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
 void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
   content_node_ids_ = std::move(content_node_ids);
   display_node_ids_.clear();
+  displayed_nodes_pending_deletion_.clear();
   screen2x_distiller_running_ = false;
   requires_post_process_selection_ = false;
   selections_from_reading_mode_ = 0;
@@ -849,6 +850,7 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     // TODO(crbug.com/40802192): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
+    displayed_nodes_pending_deletion_.clear();
   }
 
   for (ui::AXTree* const ax_tree = it->second->manager->ax_tree();
@@ -1017,9 +1019,11 @@ void ReadAnythingAppModel::SetActiveTreeId(ui::AXTreeID active_tree_id) {
   // Unserialize any updates on the previous active tree;
   // Otherwise, this can cause tree inconsistency issues if reading mode later
   // incorrectly receives updates from the old tree.
-  if (active_tree_id_ != active_tree_id &&
-      active_tree_id_ != ui::AXTreeIDUnknown() && ContainsActiveTree()) {
-    UnserializePendingUpdates(active_tree_id_);
+  if (active_tree_id_ != active_tree_id) {
+    if (active_tree_id_ != ui::AXTreeIDUnknown() && ContainsActiveTree()) {
+      UnserializePendingUpdates(active_tree_id_);
+    }
+    displayed_nodes_pending_deletion_.clear();
   }
 
   active_tree_id_ = std::move(active_tree_id);
@@ -1372,6 +1376,15 @@ const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
           SidePanelDistillationMode::kSelection)
              ? &selection_node_ids_
              : &display_node_ids_;
+}
+
+bool ReadAnythingAppModel::OnNodeWillBeDeleted(ui::AXNodeID node_id) {
+  return GetCurrentlyVisibleNodes()->contains(node_id) &&
+         displayed_nodes_pending_deletion_.insert(node_id).second;
+}
+
+bool ReadAnythingAppModel::OnNodeDeleted(ui::AXNodeID node_id) {
+  return displayed_nodes_pending_deletion_.erase(node_id) > 0;
 }
 
 void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {

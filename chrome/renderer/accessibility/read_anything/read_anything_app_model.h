@@ -595,6 +595,18 @@ class ReadAnythingAppModel {
 
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
 
+  // Records that a visible node will be deleted. Returns true if the node was
+  // visible and scheduled for deletion.
+  bool OnNodeWillBeDeleted(ui::AXNodeID node_id);
+
+  // Records that a node was deleted. Returns true if the node was in
+  // `displayed_nodes_pending_deletion_`.
+  bool OnNodeDeleted(ui::AXNodeID node_id);
+
+  const std::set<ui::AXNodeID>& displayed_nodes_pending_deletion() const {
+    return displayed_nodes_pending_deletion_;
+  }
+
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
@@ -998,6 +1010,9 @@ class ReadAnythingAppModel {
   // nodes will be displayed in the Read Anything app if there is no user
   // selection or if the users selection is contained within these nodes.
   std::set<ui::AXNodeID> display_node_ids_;
+
+  // Set of displayed nodes that will be deleted.
+  std::set<ui::AXNodeID> displayed_nodes_pending_deletion_;
 
   // If the user's selection contains nodes outside of display_node_ids, this
   // contains all nodes between the start and end nodes of the selection.

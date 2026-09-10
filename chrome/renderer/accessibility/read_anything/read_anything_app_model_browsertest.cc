@@ -766,6 +766,92 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
   ASSERT_TRUE(std::ranges::contains(model().content_node_ids(), 4));
 }
 
+TEST_F(ReadAnythingAppModelTest, OnNodeWillBeDeleted_VisibleNode_ReturnsTrue) {
+  ProcessDisplayNodes({2});
+  ASSERT_TRUE(model().GetCurrentlyVisibleNodes()->contains(2));
+
+  EXPECT_TRUE(model().OnNodeWillBeDeleted(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       OnNodeWillBeDeleted_NonVisibleNode_ReturnsFalse) {
+  ProcessDisplayNodes({2});
+  ASSERT_FALSE(model().GetCurrentlyVisibleNodes()->contains(3));
+
+  EXPECT_FALSE(model().OnNodeWillBeDeleted(3));
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().contains(3));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       OnNodeDeleted_PendingNode_ErasesAndReturnsTrue) {
+  ProcessDisplayNodes({2});
+  ASSERT_TRUE(model().OnNodeWillBeDeleted(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+
+  EXPECT_TRUE(model().OnNodeDeleted(2));
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().contains(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, OnNodeDeleted_NotPendingNode_ReturnsFalse) {
+  EXPECT_FALSE(model().OnNodeDeleted(2));
+}
+
+TEST_F(ReadAnythingAppModelTest, Reset_ClearsPendingDeletionNodes) {
+  ProcessDisplayNodes({2});
+  ASSERT_TRUE(model().OnNodeWillBeDeleted(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+
+  model().Reset({1});
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().contains(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetActiveTreeId_ClearsPendingDeletionNodes) {
+  ProcessDisplayNodes({2});
+  ASSERT_TRUE(model().OnNodeWillBeDeleted(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+
+  model().SetActiveTreeId(ui::AXTreeID::CreateNewAXTreeID());
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().contains(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       OnAXTreeDestroyed_ActiveTree_ClearsPendingDeletionNodes) {
+  ProcessDisplayNodes({2});
+  ASSERT_TRUE(model().OnNodeWillBeDeleted(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+
+  model().OnAXTreeDestroyed(tree_id_);
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().contains(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       OnAXTreeDestroyed_InactiveTree_DoesNotClearPendingDeletionNodes) {
+  ProcessDisplayNodes({2});
+  ASSERT_TRUE(model().OnNodeWillBeDeleted(2));
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+
+  ui::AXTreeID inactive_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, inactive_tree_id);
+  ui::AXNodeData node;
+  node.id = 1;
+  update.root_id = node.id;
+  update.nodes = {std::move(node)};
+  ApplyAccessibilityUpdates(inactive_tree_id, {std::move(update)});
+  ASSERT_TRUE(model().ContainsTree(inactive_tree_id));
+
+  model().OnAXTreeDestroyed(inactive_tree_id);
+  EXPECT_TRUE(model().displayed_nodes_pending_deletion().contains(2));
+  EXPECT_FALSE(model().displayed_nodes_pending_deletion().empty());
+}
+
 TEST_F(ReadAnythingAppModelTest,
        PostProcessSelectionFromReadingMode_DoesNotDraw) {
   // Initial state.
