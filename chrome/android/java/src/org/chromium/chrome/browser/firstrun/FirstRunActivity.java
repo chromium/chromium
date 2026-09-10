@@ -50,8 +50,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -315,13 +315,11 @@ public class FirstRunActivity extends FirstRunActivityBase
         assert !mPostNativeAndPolicyPagesCreated;
         assert areNativeAndPoliciesInitialized();
 
-        // Initialize SigninChecker, to kick off sign-in for child accounts as early as possible.
-        //
-        // TODO(b/245912657): explicitly sign in supervised users in {@link
-        // FullscreenSigninMediator#handleContinueWithNative} rather than relying on SigninChecker.
+        // SyncErrorNotifier must be explicitly initialized.
+        // TODO(crbug.com/40736034): Move the initializations elsewhere.
         Profile originalProfile =
                 assumeNonNull(getProfileProviderSupplier().get()).getOriginalProfile();
-        SigninCheckerProvider.get(originalProfile);
+        SyncErrorNotifier.getForProfile(originalProfile);
 
         assumeNonNull(mFreProperties);
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);

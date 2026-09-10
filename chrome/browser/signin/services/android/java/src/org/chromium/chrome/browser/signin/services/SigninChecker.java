@@ -30,11 +30,8 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
     // Counter to record the number of child account checks done for tests.
     private int mNumOfChildAccountChecksDone;
 
-    /**
-     * Please use {@link SigninCheckerProvider} to get {@link SigninChecker} instance instead of
-     * creating it manually.
-     */
-    public SigninChecker(SigninManager signinManager) {
+    /** This class is managed by {@link SigninManagerImpl}. */
+    SigninChecker(SigninManager signinManager) {
         mSigninManager = signinManager;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);

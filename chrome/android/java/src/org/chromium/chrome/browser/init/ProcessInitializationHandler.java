@@ -103,7 +103,7 @@ import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidg
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.share.send_tab_to_self.OtherDevicesShortcutControllerFactory;
-import org.chromium.chrome.browser.signin.SigninCheckerProvider;
+import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
@@ -745,8 +745,9 @@ public class ProcessInitializationHandler {
         // initialization order.
         tasks.add(() -> IncognitoTabLauncher.updateComponentEnabledState(profile));
 
-        // Initialize the SigninChecker.
-        tasks.add(() -> SigninCheckerProvider.get(profile));
+        // SyncErrorNotifier must be explicitly initialized.
+        // TODO(crbug.com/40736034): Move the initializations elsewhere.
+        tasks.add(() -> SyncErrorNotifier.getForProfile(profile));
 
         // Initialize the OtherDevicesShortcutController.
         tasks.add(() -> OtherDevicesShortcutControllerFactory.getForProfile(profile));

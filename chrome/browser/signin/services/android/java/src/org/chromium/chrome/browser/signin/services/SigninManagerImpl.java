@@ -80,6 +80,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final PrefService mPrefService;
+    private final SigninChecker mSigninChecker;
 
     /**
      * Will be set during the sign in process, and nulled out when there is not a pending sign in.
@@ -136,6 +137,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         }
         mPrefChangeRegistrar = new PrefChangeRegistrar(mPrefService);
         mPrefChangeRegistrar.addObserver(Pref.SIGNIN_ALLOWED, this::notifySignInAllowedChanged);
+        mSigninChecker = new SigninChecker(this);
     }
 
     /**
@@ -145,9 +147,14 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     @VisibleForTesting
     @CalledByNative
     void destroy() {
+        mSigninChecker.destroy();
         mAccountManagerFacade.removeObserver(this);
         mPrefChangeRegistrar.destroy();
         mNativeSigninManagerAndroid = 0;
+    }
+
+    SigninChecker getSigninCheckerForTesting() {
+        return mSigninChecker;
     }
 
     /** Implements {@link AccountsChangeObserver}. */

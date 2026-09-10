@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -11,7 +11,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,14 +20,14 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -38,7 +37,8 @@ import org.chromium.components.signin.test.util.TestAccounts;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(
+        reason = "Tests sign-in checks done at Chrome start-up or when accounts change on device.")
 public class SigninCheckerTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -46,27 +46,37 @@ public class SigninCheckerTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
-    public final AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
-
-    @Before
-    public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(SigninCheckerProvider::resetForTesting);
-    }
 
     @After
     public void tearDown() {
         if (mSigninTestRule.getPrimaryAccount() != null) {
             mSigninTestRule.forceSignOut();
         }
-        ThreadUtils.runOnUiThreadBlocking(SigninCheckerProvider::resetForTesting);
     }
 
     private void initSigninChecker() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> SigninCheckerProvider.get(mActivityTestRule.getProfile(false)));
+                () ->
+                        IdentityServicesProvider.get()
+                                .getSigninManager(mActivityTestRule.getProfile(false)));
+    }
+
+    private int getNumOfChildAccountChecksDone() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninManagerImpl signinManager =
+                            (SigninManagerImpl)
+                                    IdentityServicesProvider.get()
+                                            .getSigninManager(mActivityTestRule.getProfile(false));
+                    assert signinManager != null;
+                    SigninChecker checker = signinManager.getSigninCheckerForTesting();
+                    assert checker != null;
+                    return checker.getNumOfChildAccountChecksDoneForTests();
+                });
     }
 
     @Test
@@ -81,10 +91,7 @@ public class SigninCheckerTest {
                 () -> {
                     return TestAccounts.CHILD_ACCOUNT.equals(mSigninTestRule.getPrimaryAccount());
                 });
-        Assert.assertEquals(
-                2,
-                SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
-                        .getNumOfChildAccountChecksDoneForTests());
+        Assert.assertEquals(2, getNumOfChildAccountChecksDone());
     }
 
     @Test
@@ -98,10 +105,7 @@ public class SigninCheckerTest {
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
-        Assert.assertEquals(
-                1,
-                SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
-                        .getNumOfChildAccountChecksDoneForTests());
+        Assert.assertEquals(1, getNumOfChildAccountChecksDone());
         Assert.assertNull(mSigninTestRule.getPrimaryAccount());
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
@@ -121,10 +125,7 @@ public class SigninCheckerTest {
         initSigninChecker();
         UserActionTester actionTester = new UserActionTester();
 
-        Assert.assertEquals(
-                1,
-                SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
-                        .getNumOfChildAccountChecksDoneForTests());
+        Assert.assertEquals(1, getNumOfChildAccountChecksDone());
         Assert.assertNull(mSigninTestRule.getPrimaryAccount());
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
@@ -144,9 +145,6 @@ public class SigninCheckerTest {
                 });
 
         // The check should be done twice at account addition and once during force sign-in.
-        Assert.assertEquals(
-                3,
-                SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
-                        .getNumOfChildAccountChecksDoneForTests());
+        Assert.assertEquals(3, getNumOfChildAccountChecksDone());
     }
 }

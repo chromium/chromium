@@ -30,14 +30,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.signin.SigninCheckerProvider;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -70,21 +65,10 @@ public class FamilyLinkControlsTest {
 
     @Before
     public void setUp() {
-
         // Initialize the browser.
         SiteSettingsTestUtils.startSiteSettingsMenu("").finish();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
-
-        // Wait for SigninChecker to be initialized
-        CriteriaHelper.pollUiThread(
-                () ->
-                        IdentityServicesProvider.get()
-                                .getSigninManager(ProfileManager.getLastUsedRegularProfile())
-                                .getIdentityManager()
-                                .hasPrimaryAccount());
     }
 
     @Test

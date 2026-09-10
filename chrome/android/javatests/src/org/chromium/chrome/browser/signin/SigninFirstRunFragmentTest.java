@@ -84,6 +84,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
@@ -96,7 +97,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
@@ -161,7 +161,6 @@ public class SigninFirstRunFragmentTest {
     @Mock private PolicyLoadListener mPolicyLoadListenerMock;
     @Mock private OneshotSupplierImpl<Boolean> mChildAccountStatusListenerMock;
     @Mock private SigninManager mSigninManagerMock;
-    @Mock private SigninChecker mSigninCheckerMock;
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
     @Mock private ProfileProvider mProfileProvider;
@@ -183,6 +182,8 @@ public class SigninFirstRunFragmentTest {
 
     @Before
     public void setUp() {
+        FirstRunStatus.setFirstRunTriggeredForTesting(true);
+
         // SigninTestRule requires access to Profile which in turn requires browser process to be
         // initialized. Calling this method in #setUpBeforeActivityLaunched() method causes a
         // crash.
@@ -195,7 +196,6 @@ public class SigninFirstRunFragmentTest {
                 new OwnedState(/* isDeviceOwned= */ false, /* isProfileOwned= */ false));
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunUtilsJni.setInstanceForTesting(mFirstRunUtils);
-        SigninCheckerProvider.setForTests(mSigninCheckerMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
