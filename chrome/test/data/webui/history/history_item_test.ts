@@ -262,6 +262,7 @@ suite('<history-item> integration test', function() {
     const endActorIcon =
         items[1]!.shadowRoot.querySelector<HTMLElement>('#icons #actor-icon');
     assertTrue(isVisible(startActorIcon));
+    assertEquals('CR-ICON', startActorIcon!.tagName);
     assertFalse(isVisible(endActorIcon));
 
     // Verify expand button for actor visit item.

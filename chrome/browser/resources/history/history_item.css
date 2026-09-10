@@ -157,13 +157,13 @@
 }
 
 #title-and-domain #actor-icon {
-  --cr-icon-size: 12px;
-  --cr-tooltip-icon-fill-color: var(--color-sys-on-tonal-container,
+  --iron-icon-fill-color: var(--color-sys-on-tonal-container,
       var(--cr-fallback-color-on-tonal-container));
   align-items: center;
   background-color: var(--color-sys-surface1,
       var(--cr-fallback-color-surface1));
   border-radius: 50%;
+  box-sizing: border-box;
   display: flex;
   flex: none;
   height: var(--actor-icon-size);
@@ -172,7 +172,7 @@
       var(--favicon-size) - var(--actor-icon-size) +
       var(--actor-icon-floating-offset));
   justify-content: center;
-  padding-inline-start: 0;
+  padding: 2px;
   position: absolute;
   z-index: 1;
 }

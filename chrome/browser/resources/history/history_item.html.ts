@@ -49,11 +49,8 @@ export function getHtml(this: HistoryItemElement) {
                 aria-describedby="${this.getAriaDescribedByForHeading_()}">
               <div class="website-icon" id="icon"></div>
               ${this.shouldShowActorIconNextToFavicon_() ? html`
-                <cr-tooltip-icon id="actor-icon"
-                    icon-class="${this.actorIconClass_()}"
-                    tooltip-text="$i18n{actorTaskTooltip}"
-                    icon-aria-label="$i18n{actorTaskTooltip}">
-                </cr-tooltip-icon>
+                <cr-icon id="actor-icon" icon="${this.actorIconClass_()}">
+                </cr-icon>
               ` : ''}
               <history-searched-label class="website-title"
                   title="${this.item?.title}"
