@@ -68,7 +68,9 @@ build_webui("build") {
   in_folder = "."
 
   static_files = [
+    "chip.html",
     "input_plate.html",
+    "lens_button.html",
     "manifest.json",
   ]
 
