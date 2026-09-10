@@ -3300,6 +3300,7 @@ test("base_perftests") {
   sources = [
     "byte_conversions_perftest.cc",
     "hash/hash_perftest.cc",
+    "i18n/language_tag_perftest.cc",
     "json/json_perftest.cc",
     "memory/shared_memory_region_perftest.cc",
     "message_loop/message_pump_perftest.cc",
@@ -3321,6 +3322,7 @@ test("base_perftests") {
   deps = [
     ":base",
     ":debugging_buildflags",
+    ":i18n",
     "//base/test:test_support",
     "//base/test:test_support_perf",
     "//testing/gtest",
