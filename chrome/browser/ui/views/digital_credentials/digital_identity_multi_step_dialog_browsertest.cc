@@ -13,11 +13,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "device/fido/cable/v2_constants.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -280,6 +283,24 @@ class ProviderDestroyerOnWidgetClosingObserver : public views::WidgetObserver {
   base::OnceClosure destruction_callback_;
 };
 
+class ProviderDestroyerOnChildViewAddedObserver : public views::ViewObserver {
+ public:
+  explicit ProviderDestroyerOnChildViewAddedObserver(
+      base::OnceClosure destruction_callback)
+      : destruction_callback_(std::move(destruction_callback)) {}
+
+  void OnChildViewAdded(views::View* observed_view,
+                        views::View* child) override {
+    observed_view->RemoveObserver(this);
+    if (destruction_callback_) {
+      std::move(destruction_callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure destruction_callback_;
+};
+
 }  // namespace
 
 // Regression test for UAF in
@@ -332,6 +353,54 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
   // Clean up if the widget is still alive.
   if (weak_widget) {
     weak_widget->RemoveObserver(&observer);
+    views::test::WidgetDestroyedWaiter(weak_widget.get()).Wait();
+  }
+}
+
+// Regression test for UAF in
+// DigitalIdentityProviderDesktop::OnCableEvent when the provider is
+// synchronously destroyed during ShowConnectingToPhoneDialog.
+IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
+                       OnCableEventOwnerDestroyedDuringDialogUpdate) {
+  auto provider = std::make_unique<TestDigitalIdentityProviderDesktop>();
+
+  base::RunLoop run_loop;
+  // Show the dialog via the real ShowQrCodeDialog flow.
+  provider->SetUpAndShowQrDialog(GetActiveWebContents(),
+                                 run_loop.QuitClosure());
+
+  views::Widget* widget = nullptr;
+  {
+    DigitalIdentityMultiStepDialog* dialog = provider->GetDialog();
+    DigitalIdentityMultiStepDialog::TestApi dialog_test_api(dialog);
+    widget = dialog_test_api.GetWidget();
+  }
+  ASSERT_TRUE(widget);
+  base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
+
+  views::View* contents_view = static_cast<views::ScrollView*>(
+                                   widget->widget_delegate()->GetContentsView())
+                                   ->contents();
+  ASSERT_TRUE(contents_view);
+
+  // Set up the observer to synchronously destroy the provider when
+  // ShowConnectingToPhoneDialog updates the contents view.
+  ProviderDestroyerOnChildViewAddedObserver observer(base::BindOnce(
+      [](std::unique_ptr<TestDigitalIdentityProviderDesktop>* provider) {
+        provider->reset();
+      },
+      base::Unretained(&provider)));
+  contents_view->AddObserver(&observer);
+
+  // Trigger OnCableEvent. Without the fix, this causes a UAF as
+  // ShowConnectingToPhoneDialog destroys `provider`, and subsequent member
+  // access in OnCableEvent reads freed memory.
+  provider->OnCableEvent(device::cablev2::Event::kPhoneConnected);
+
+  EXPECT_FALSE(provider);
+
+  // Clean up if the widget is still alive.
+  if (weak_widget) {
     views::test::WidgetDestroyedWaiter(weak_widget.get()).Wait();
   }
 }
