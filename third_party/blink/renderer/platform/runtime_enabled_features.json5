@@ -4209,6 +4209,15 @@
       name: "ModifyParagraphCrossEditingoundary",
       status: "stable",
     },
+    // Stops caching failed module fetches (network error, non-ok status, or
+    // MIME type mismatch), so a later import re-fetches instead of reusing the
+    // failure.
+    // https://html.spec.whatwg.org/C/#fetch-a-single-module-script
+    // https://crbug.com/534781954
+    {
+      name: "ModuleMapDoNotCacheFailedFetch",
+      status: "experimental",
+    },
     // ModulePreloadReferrer enables modulepreload to send proper referrer
     // headers as specified in the HTML spec.
     // https://crbug.com/441933555

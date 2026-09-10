@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -21,8 +22,8 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
                                public ModuleScriptLoaderClient {
 
  public:
-  explicit Entry(ModuleMap*);
-  ~Entry() override {}
+  Entry(ModuleMap*, const Key& key);
+  ~Entry() override = default;
 
   void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override {
@@ -48,13 +49,16 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
   Member<ModuleScript> module_script_;
   Member<ModuleMap> map_;
 
+  // Key under which this entry is stored in `map_`; used to evict on failure.
+  const Key key_;
+
   // Correspond to the HTML spec: "fetching" state.
   bool is_fetching_ = true;
 
   HeapHashSet<Member<SingleModuleClient>> clients_;
 };
 
-ModuleMap::Entry::Entry(ModuleMap* map) : map_(map) {
+ModuleMap::Entry::Entry(ModuleMap* map, const Key& key) : map_(map), key_(key) {
   DCHECK(map_);
 }
 
@@ -93,6 +97,19 @@ void ModuleMap::Entry::NotifyNewSingleModuleFinished(
   module_script_ = module_script;
   is_fetching_ = false;
 
+  // A null `module_script_` means the fetch failed (network error, non-ok
+  // status, or MIME type mismatch). Such failures must not be cached, so remove
+  // the entry and let a later import re-fetch. `this` is garbage-collected, so
+  // the removal doesn't destroy it, and the clients below are still notified
+  // with the null module script.
+  // <spec href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script"
+  // step="9">If moduleScript is null, then remove moduleMap[(url, moduleType)];
+  // otherwise set moduleMap[(url, moduleType)] to moduleScript.</spec>
+  if (!module_script_ &&
+      RuntimeEnabledFeatures::ModuleMapDoNotCacheFailedFetchEnabled()) {
+    map_->RemoveEntry(key_, this);
+  }
+
   for (const auto& client : clients_) {
     DispatchFinishedNotificationAsync(client, import_phase);
   }
@@ -122,6 +139,18 @@ void ModuleMap::Trace(Visitor* visitor) const {
   visitor->Trace(loader_registry_);
 }
 
+ModuleMap::Entry* ModuleMap::GetOrCreateEntry(const Key& key,
+                                              bool* is_new_entry) {
+  MapImpl::AddResult result = map_.insert(key, nullptr);
+  *is_new_entry = result.is_new_entry;
+  if (!result.is_new_entry) {
+    return result.stored_value->value.Get();
+  }
+  Entry* entry = MakeGarbageCollected<Entry>(this, key);
+  result.stored_value->value = entry;
+  return entry;
+}
+
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script">
 void ModuleMap::FetchSingleModuleScript(
     const ModuleScriptFetchRequest& request,
@@ -137,14 +166,16 @@ void ModuleMap::FetchSingleModuleScript(
   // <spec step="2">If moduleMap[url] is "fetching", wait in parallel until that
   // entry's value changes, then queue a task on the networking task source to
   // proceed with running the following steps.</spec>
-  MapImpl::AddResult result = map_.insert(
-      std::make_pair(request.Url(), request.GetExpectedModuleType()), nullptr);
-  Member<Entry>& entry = result.stored_value->value;
-  if (result.is_new_entry) {
-    entry = MakeGarbageCollected<Entry>(this);
-
+  const Key key =
+      std::make_pair(request.Url(), request.GetExpectedModuleType());
+  // `entry` stays valid across the Fetch() below (which may synchronously evict
+  // it from `map_`) because it is an on-stack strong reference.
+  bool is_new_entry = false;
+  Entry* entry = GetOrCreateEntry(key, &is_new_entry);
+  if (is_new_entry) {
     // Steps 4-9 loads a new single module script.
-    // Delegates to ModuleScriptLoader via Modulator.
+    // Delegates to ModuleScriptLoader via Modulator. This may synchronously
+    // complete the fetch and, on failure, remove this entry from `map_`.
     ModuleScriptLoader::Fetch(request, fetch_client_settings_object_fetcher,
                               level, modulator_, custom_fetch_type,
                               loader_registry_, entry);
@@ -171,11 +202,18 @@ ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url,
 void ModuleMap::AddEntry(const KURL& url,
                          ModuleType type,
                          ModuleScript* script) {
-  Entry* entry = MakeGarbageCollected<Entry>(this);
+  const Key key = std::make_pair(url, type);
+  Entry* entry = MakeGarbageCollected<Entry>(this, key);
   entry->SetModuleScript(script);
 
   // TODO(crbug.com/448174611) - what should happen with duplicate entries?
-  map_.insert(std::make_pair(url, type), entry);
+  map_.insert(key, entry);
+}
+
+void ModuleMap::RemoveEntry(const Key& key, Entry* entry_to_remove) {
+  CHECK(map_.Contains(key));
+  CHECK_EQ(map_.at(key), entry_to_remove);
+  map_.erase(key);
 }
 
 }  // namespace blink
