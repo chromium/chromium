@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -1189,6 +1190,10 @@ void DesktopWindowTreeHostWin::HandleCreate() {
 }
 
 void DesktopWindowTreeHostWin::HandleDestroying() {
+  if (called_handle_destroying_) {
+    return;
+  }
+  called_handle_destroying_ = true;
   drag_drop_client_->OnNativeWidgetDestroying(GetHWND());
   if (native_widget_delegate_) {
     native_widget_delegate_->OnNativeWidgetDestroying();
@@ -1200,6 +1205,14 @@ void DesktopWindowTreeHostWin::HandleDestroying() {
 }
 
 void DesktopWindowTreeHostWin::HandleDestroyed() {
+  if (!called_handle_destroying_ &&
+      base::FeatureList::IsEnabled(features::kHandleMissingWmDestroy)) {
+    // In anomalous destruction cases (such as external subclassing or
+    // third-party hooks dropping WM_DESTROY), WM_NCDESTROY may arrive without a
+    // preceding WM_DESTROY. Ensure that HandleDestroying() is called before the
+    // host and widget are destroyed.
+    HandleDestroying();
+  }
   desktop_native_widget_aura_->OnHostClosed();
 }
 

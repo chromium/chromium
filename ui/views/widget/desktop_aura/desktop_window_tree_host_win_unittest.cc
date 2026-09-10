@@ -4,10 +4,7 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
-// clang-format off
-#include "base/test/scoped_feature_list.h"
 #include <windows.h>
-// clang-format on
 
 #include <oleacc.h>
 
@@ -18,6 +15,7 @@
 #include "base/functional/function_ref.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/windows_version.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -791,6 +789,49 @@ TEST_F(DesktopWindowTreeHostWinTest, ExcludeContextWindowsFromCapture) {
 
   tooltip_widget.CloseNow();
   parent_widget.CloseNow();
+}
+
+namespace {
+
+WNDPROC g_original_wndproc = nullptr;
+
+LRESULT CALLBACK DropWmDestroyWndProc(HWND hwnd,
+                                      UINT message,
+                                      WPARAM w_param,
+                                      LPARAM l_param) {
+  if (message == WM_DESTROY) {
+    // Drop WM_DESTROY to simulate anomalous window destruction (such as from
+    // third-party hooks or external subclassing) where WM_DESTROY is dropped
+    // before WM_NCDESTROY is delivered.
+    return 0;
+  }
+  return ::CallWindowProc(g_original_wndproc, hwnd, message, w_param, l_param);
+}
+
+}  // namespace
+
+// Verifies that when features::kHandleMissingWmDestroy is enabled, receiving
+// WM_NCDESTROY without a preceding WM_DESTROY is safely handled and does not
+// crash at CHECK(widget_destroying_handled_).
+TEST_F(DesktopWindowTreeHostWinTest, MissingWmDestroyDoesNotCrash) {
+  base::test::ScopedFeatureList feature_list(features::kHandleMissingWmDestroy);
+
+  Widget widget;
+  HWND widget_hwnd = InitTestWidget(
+      widget, CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                           Widget::InitParams::TYPE_WINDOW));
+
+  // Install a WndProc hook that intercepts and drops WM_DESTROY.
+  g_original_wndproc = reinterpret_cast<WNDPROC>(
+      ::SetWindowLongPtr(widget_hwnd, GWLP_WNDPROC,
+                         reinterpret_cast<LONG_PTR>(&DropWmDestroyWndProc)));
+  ASSERT_NE(g_original_wndproc, nullptr);
+
+  // Destroying the window sends WM_DESTROY (dropped by our hook) followed by
+  // WM_NCDESTROY. Ensure this cleanly destroys the widget without crashing.
+  ::DestroyWindow(widget_hwnd);
+  EXPECT_TRUE(widget.IsClosed());
+  g_original_wndproc = nullptr;
 }
 
 }  // namespace test

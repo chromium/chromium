@@ -398,6 +398,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Optional brush for filling the window background if the redirection surface
   // is present.
   HBRUSH background_paint_brush_ = nullptr;
+
+  // True if HandleDestroying() has been called.
+  bool called_handle_destroying_ = false;
 };
 
 }  // namespace views
