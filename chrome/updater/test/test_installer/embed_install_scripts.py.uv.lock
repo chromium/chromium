@@ -1,0 +1,4 @@
+pywin32==300 \
+    --hash=sha256:3af2b7d0144eb8c5bdaf30a59e6cb422fd5cdf445f5b768874254cd3543d0ac5 \
+    --hash=sha256:bcd70511a0296fce8d240a64625b705e9bcbacbfec59251a195a6fd269d420df \
+    --hash=sha256:fbb3b1b0fbd0b4fc2a3d1d81fe0783e30062c1abed1d17c32b7879d55858cfae

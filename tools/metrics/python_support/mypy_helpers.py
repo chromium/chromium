@@ -27,7 +27,7 @@ _IGNORE_LIST_PATH = _SRC_ROOT.joinpath(
 
 # Specs of venv paths are applied in order of the list
 _VPYTHON_SPEC_FILES: List[pathlib.Path] = [
-  _SRC_ROOT.joinpath('tools/metrics/python_support/mypy_helpers_vpython_spec')
+  _SRC_ROOT.joinpath('tools/metrics/python_support/vpython.toml')
 ]
 
 # In order to resolve imports coming from the setup_modules.py and its tooling

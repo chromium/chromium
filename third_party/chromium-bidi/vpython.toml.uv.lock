@@ -1,0 +1,109 @@
+anys==0.3.0 \
+    --hash=sha256:ae4124d98ab0449a457d1563e86c9f9baa059707bf7bd65248d594b1fdc2a5c2
+blinker==1.9.0 \
+    --hash=sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc
+    # via flask
+click==8.4.1 \
+    --hash=sha256:482be17c6991b8c19c5429a1e995d9b0efdbb63172824c41f99965dc0ade8ec2
+    # via flask
+colorama==0.4.6 ; sys_platform == 'win32' \
+    --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6 \
+    --hash=sha256:8a5a9494346d7ae2d8f599e4661738007d2df56dbbf4ccbbf7a6a23679a3a302
+    # via
+    #   click
+    #   pytest
+flask==3.1.3 \
+    --hash=sha256:f4bcbefc124291925f1a26446da31a5178f9483862233b23c0c96a20701f670c
+icdiff==2.0.10 \
+    --hash=sha256:fd8ce592d94261c435e2a410f668a41ec3be4527878f8df01100797021d8edb0
+    # via pytest-icdiff
+iniconfig==2.3.0 \
+    --hash=sha256:e6ae3625a739878eeb4baf25f17a0b4e9d985421e45b897d1332ed7478f822d9 \
+    --hash=sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12
+    # via pytest
+itsdangerous==2.2.0 \
+    --hash=sha256:7534e7e1f113f941290f43d6316e978e99fa1e7ba1dc9af312dd8ecbf921c2e1
+    # via flask
+jinja2==3.1.6 \
+    --hash=sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67
+    # via flask
+markupsafe==3.0.3 \
+    --hash=sha256:0b644d8a74aba6346eddca42c9925f2a8860efc0b10c47b1dcec5f12a234df14 \
+    --hash=sha256:29f2ebec73faccd9b937cdb8841d7af0df8c502c4c8597aa49c13815c1154fde \
+    --hash=sha256:57f1f8e6ba1058a12ca0287df24839747656cccd82f5171e7667b3b56ec3e7a6 \
+    --hash=sha256:65b9df1037d6a3c9fb37a9a7a4bc433d0f8fec30e96fe2e9b877ab84b80fe072 \
+    --hash=sha256:6e46a1c5506c6bae8fb6662df3539baae030e2c79a7748a9fe85cfc4d792bef9 \
+    --hash=sha256:cf4cc68e011226c4dbd881532667042c279a93387ca97285a0ceaccf1bf1c9ae
+    # via
+    #   flask
+    #   jinja2
+    #   werkzeug
+mypy==1.6.0 \
+    --hash=sha256:9e1589ca150a51d9d00bb839bfeca2f7a04f32cd62fad87a847bc0818e15d7dc
+mypy-extensions==1.1.0 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
+    --hash=sha256:4ec363d206d93f233330fa7f08eefe9a382dd1e326112a94244f95ec2f22f10e
+    # via mypy
+packaging==26.2 \
+    --hash=sha256:5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e
+    # via
+    #   pytest
+    #   pytest-rerunfailures
+pillow==12.2.0 \
+    --hash=sha256:6e6b2a0c538fc200b38ff9eb6628228b77908c319a005815f2dde585a0664b60 \
+    --hash=sha256:71cde9a1e1551df7d34a25462fc60325e8a11a82cc2e2f54578e5e9a1e153d65 \
+    --hash=sha256:8bd7903a5f2a4545f6fd5935c90058b89d30045568985a71c79f5fd6edf9b91e \
+    --hash=sha256:8be29e59487a79f173507c30ddf57e733a357f67881430449bb32614075a40ab \
+    --hash=sha256:f490f9368b6fc026f021db16d7ec2fbf7d89e2edb42e8ec09d2c60505f5729c7 \
+    --hash=sha256:f490f9368b6fc026f021db16d7ec2fbf7d89e2edb42e8ec09d2c60505f5729c7
+pluggy==1.6.0 \
+    --hash=sha256:88349c39e440567519b15b27a781bcd3430de6bae17c44c37e758795be96dc5a \
+    --hash=sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
+    # via pytest
+pprintpp==0.4.0 \
+    --hash=sha256:b6b4dcdd0c0c0d75e4d7b2f21a9e933e5b2ce62b26e1a54537f9651ae5a5c01d
+    # via pytest-icdiff
+pytest==7.4.2 \
+    --hash=sha256:1d881c6124e08ff0a1bb75ba3ec0bfd8b5354a01c194ddd5a0a870a48d99b002
+    # via
+    #   pytest-asyncio
+    #   pytest-icdiff
+    #   pytest-repeat
+    #   pytest-rerunfailures
+    #   pytest-shard
+    #   pytest-timeout
+    #   syrupy
+pytest-asyncio==0.21.1 \
+    --hash=sha256:8666c1c8ac02631d7c51ba282e0c69a8a452b211ffedf2599099845da5c5c37b
+pytest-httpserver==1.0.8 \
+    --hash=sha256:24cd3d9f6a0b927c7bfc400d0b3fda7442721b8267ce29942bf307b190f0bb09
+pytest-icdiff==0.8 \
+    --hash=sha256:8fac8667d7042270c23019580b4b5dfd81e1c3e5a9bc9d5df6ac4a49788d42f2
+pytest-repeat==0.9.4 \
+    --hash=sha256:c1738b4e412a6f3b3b9e0b8b29fcd7a423e50f87381ad9307ef6f5a8601139f3
+pytest-rerunfailures==12.0 \
+    --hash=sha256:9a1afd04e21b8177faf08a9bbbf44de7a0fe3fc29f8ddbe83b9684bd5f8f92a9
+pytest-shard==0.1.2 \
+    --hash=sha256:407a1df385cebe1feb9b4d2e7eeee8b044f8a24f0919421233159a17c59be2b9
+pytest-timeout==2.2.0 \
+    --hash=sha256:bde531e096466f49398a59f2dde76fa78429a09a12411466f88a07213e220de2
+syrupy==4.5.0 \
+    --hash=sha256:ea6a237ef374bacebbdb4049f73bf48e3dda76eabd4621a6d104d43077529de6
+typing-extensions==4.15.0 \
+    --hash=sha256:3b54e157664af21be3fe447ad494c33b4bf65ba2fb51bb25b77a8c2baee1f9ef \
+    --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
+    # via mypy
+websockets==11.0.3 \
+    --hash=sha256:2d83f366f370f0c8111c4e823b60d6ab40cfa7b3aac1209d1f627735177d71cd
+werkzeug==3.1.6 \
+    --hash=sha256:7ddf3357bb9564e407607f988f683d72038551200c704012bb9a4c523d42f131
+    # via
+    #   flask
+    #   pytest-httpserver

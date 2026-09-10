@@ -196,9 +196,11 @@ def main():
         pytest_cmd = list(python_bin_parts)
         python_spec = args.python_spec
         if not python_spec and python_bin_parts[0] == "vpython3":
-            default_spec = os.path.join(repo_root, ".vpython3")
-            if os.path.exists(default_spec):
-                python_spec = default_spec
+            for spec_name in ("vpython.toml", ".vpython3"):
+                cand = os.path.join(repo_root, spec_name)
+                if os.path.exists(cand):
+                    python_spec = cand
+                    break
 
         if python_spec and python_bin_parts[0] == "vpython3":
             pytest_cmd.extend(["-vpython-spec", python_spec])

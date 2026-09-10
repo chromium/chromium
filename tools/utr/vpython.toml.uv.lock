@@ -1,0 +1,64 @@
+colorama==0.4.6 \
+    --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6 \
+    --hash=sha256:8a5a9494346d7ae2d8f599e4661738007d2df56dbbf4ccbbf7a6a23679a3a302
+deprecated==1.2.13 \
+    --hash=sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d \
+    --hash=sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d \
+    --hash=sha256:e51fc169eb5e800fdaa2331aad9247847c5ce1b0b6c08770e562e2edfe24fbae
+    # via opentelemetry-api
+googleapis-common-protos==1.69.2 \
+    --hash=sha256:0b30452ff9c7a27d80bfc5718954063e8ab53dd3697093d3bc99581f5fd24212 \
+    --hash=sha256:2900d9cd6e7520950cacb16f6739657e34c2e378d6825aea5cf09c52e56ea57d
+importlib-metadata==6.0.0 \
+    --hash=sha256:4b41589aa4a3a03cc4c9282a3db3f2420f59d6f004d7e08db4e3450c8ebe66a0 \
+    --hash=sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad
+    # via opentelemetry-api
+markdown-it-py==2.2.0 \
+    --hash=sha256:5a35f8d1870171d9acc47b99612dc146129b631baf04970128b568f190d0cc30 \
+    --hash=sha256:dcccc496b810913d915b1cefacc210aba0b715889992d3ebc44e603ad461dd1d
+    # via rich
+mdurl==0.1.2 \
+    --hash=sha256:83258797dcf54b946a39e95c4d46d5787308d38d129cdd5d25ad13f576a8c705 \
+    --hash=sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8
+    # via markdown-it-py
+opentelemetry-api==1.18.0 \
+    --hash=sha256:1f15348fc33231509faa27dc7ea624ea6e7cfb2acacff7956be84ece4984628a \
+    --hash=sha256:d05bcc94ec239fd76fd90d784c5e3ad081a8a1ac2ffc8a2c83a49ace052d1492
+    # via opentelemetry-sdk
+opentelemetry-sdk==1.18.0 \
+    --hash=sha256:867dd5045c62693b2b3bf8bdaf120e9009a76fa077a619908f1cea033b0e635c \
+    --hash=sha256:a097cc1e0db6ff33b4d250a9350dc17975d24a22aa667fca2866e60c51306723
+opentelemetry-semantic-conventions==0.39b0 \
+    --hash=sha256:0dd7a9dc0dfde2335f643705bba8f7c44182c797bc208b7601f0b8e8211cfd5c \
+    --hash=sha256:ef3e492851c9df4c9ff119970f5c777a309750d90aac0f4ed8a929debef99cd7
+    # via opentelemetry-sdk
+protobuf==4.25.1 \
+    --hash=sha256:a19731d5e83ae4737bb2a089605e636077ac001d18781b3cf489b9546c7c80d6 \
+    --hash=sha256:ff433d2aa814b498df6c54a8e14b716522b3ea61cb1a16950a25770374383eb1
+    # via googleapis-common-protos
+pygments==2.19.2 \
+    --hash=sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b \
+    --hash=sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b \
+    --hash=sha256:caeea602fa072944e8e680d200d4df56b050a04e6c2f08918706d99fb508fbe7
+    # via rich
+rich==13.2.0 \
+    --hash=sha256:7c963f0d03819221e9ac561e1bc866e3f95a02248c1234daa48954e6d381c003 \
+    --hash=sha256:fdf50fa5c036da8a4219122f88d0acca746552ef4fa4736513348a1438f7440c
+setuptools==75.6.0 \
+    --hash=sha256:95e7b6c4ee1eb64afe479ba9f0c89ef4fb8e0da33319d829ecb2ad1dcd131dfd \
+    --hash=sha256:ce74b49e8f7110f9bf04883b730f4765b774ef3ef28f722cce7c273d253aaf7d
+    # via
+    #   opentelemetry-api
+    #   opentelemetry-sdk
+typing-extensions==4.15.0 \
+    --hash=sha256:3b54e157664af21be3fe447ad494c33b4bf65ba2fb51bb25b77a8c2baee1f9ef \
+    --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
+    # via opentelemetry-sdk
+wrapt==1.15.0 \
+    --hash=sha256:4ecce923f62d7555d38a7992d05764787ee7754409678406691063c5347e7cce \
+    --hash=sha256:64b1df0f83706b4ef4cfb4fb0e4c2669100fd7ecacfb59e091fad300d4e04640
+    # via deprecated
+zipp==3.17.0 \
+    --hash=sha256:0e923e726174922dce09c53c59ad483ff7bbb8e572e00c7f7c46b88556409f31 \
+    --hash=sha256:ea4a343df7c3b46a5b672d917df7c961e90acdb22ad4a1ea00eeada870269da8
+    # via importlib-metadata

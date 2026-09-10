@@ -1,6 +1,15 @@
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+# /// script
+# requires-python = '>=3.8,<3.9'
+# dependencies = [
+#   'selenium==3.14.0',
+#   'urllib3==1.24.3',
+#   'psutil==5.7.2'
+# ]
+# ///
+
 """
 This script runs Chrome and automatically navigates through the given list of
 URLs the specified number of times.
@@ -24,22 +33,6 @@ Note: must be at end of command, following options terminator "--". The options
 terminator stops command-line options from being interpreted as options for this
 script, which would cause an unrecognized-argument error.
 """
-
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/selenium-py2_py3"
-#   version: "version:3.14.0"
-# >
-# wheel: <
-#   name: "infra/python/wheels/urllib3-py2_py3"
-#   version: "version:1.24.3"
-# >
-# wheel: <
-#   name: "infra/python/wheels/psutil/${vpython_platform}"
-#   version: "version:5.7.2"
-# >
-# [VPYTHON:END]
 
 import argparse
 import os

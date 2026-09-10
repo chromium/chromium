@@ -2,21 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/hypothesis-py3"
-#   version: "version:6.9.1"
-# >
-# wheel: <
-#   name: "infra/python/wheels/attrs-py2_py3"
-#   version: "version:20.3.0"
-# >
-# wheel: <
-#   name: "infra/python/wheels/sortedcontainers-py3"
-#   version: "version:2.4.0"
-# >
-# [VPYTHON:END]
+# /// script
+# requires-python = '>=3.8,<3.9'
+# dependencies = [
+#   'hypothesis==6.9.1',
+#   'attrs==20.3.0',
+#   'sortedcontainers==2.4.0'
+# ]
+# ///
 """Tests for condition."""
 
 import itertools

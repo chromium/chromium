@@ -1,4 +1,34 @@
 #!/usr/bin/env vpython3
+# /// script
+# requires-python = '>=3.8,<3.9'
+# dependencies = [
+#   'cachetools==2.0.1',
+#   'certifi==2020.11.8',
+#   'charset-normalizer==2.0.4',
+#   'enum34==1.1.6',
+#   'google-api-python-client==2.2.0',
+#   'google-api-core==1.31.5',
+#   'google-auth-httplib2==0.1.0',
+#   'google-auth==1.25.0',
+#   'googleapis-common-protos==1.52.0',
+#   'httplib2==0.19.1',
+#   'idna==2.8',
+#   'infra-libs==2.4.0',
+#   'oauth2client==3.0.0',
+#   'packaging==16.8',
+#   'protobuf==3.20.0',
+#   'pyasn1==0.4.5',
+#   'pyasn1-modules==0.2.4',
+#   'pyparsing==2.4.7',
+#   'pytz==2018.4',
+#   'requests==2.31.0',
+#   'rsa==3.4.2',
+#   'six==1.15.0',
+#   'uritemplate==3.0.0',
+#   'urllib3==1.24.3'
+# ]
+# ///
+
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -455,8 +485,8 @@ class NetworkTrafficAnnotationsDoc:
             "avoidWidowAndOrphan": False,
           },
           "fields": (
-              "namedStyleType,lineSpacing,direction,spacingMode,spaceBelow,"
-              "avoidWidowAndOrphan"
+            "namedStyleType,lineSpacing,direction,spacingMode,spaceBelow,"
+            "avoidWidowAndOrphan"
           ),
         }
       }

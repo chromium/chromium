@@ -36,6 +36,7 @@ if (is_win) {
       "create_test_installer_gn_wrapper.py",
       "create_test_standalone_msi_installer_gn_wrapper.py",
       "embed_install_scripts.py",
+      "embed_install_scripts.py.uv.lock",
     ]
 
     deps = [ ":test_meta_installer" ]
@@ -65,6 +66,8 @@ if (is_win) {
     action(app_name + "_installer") {
       inputs = [
         script,
+        "$root_build_dir/test_installer/embed_install_scripts.py",
+        "$root_build_dir/test_installer/embed_install_scripts.py.uv.lock",
         invoker.setup_script,
       ]
 

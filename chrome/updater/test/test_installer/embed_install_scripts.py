@@ -3,13 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:300"
-# >
-# [VPYTHON:END]
+# /// script
+# requires-python = '>=3.8,<3.9'
+# dependencies = [
+#   'pywin32==300'
+# ]
+# ///
 """An utility to embed setup scripts as the installer resources.
 
 The scripts are embedded as resources at "SCRIPT\\BATCH" or "SCRIPT\\POWERSHELL"

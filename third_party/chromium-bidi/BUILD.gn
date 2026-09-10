@@ -85,7 +85,8 @@ script_test("webdriver_bidi_e2e_tests") {
   ]
 
   data = [
-    ".vpython3",
+    "vpython.toml",
+    "vpython.toml.uv.lock",
     "pytest.ini",
     "tests/",
     "tools/",

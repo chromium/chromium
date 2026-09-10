@@ -1,0 +1,13 @@
+requires-python = '>=3.11,<3.12'
+dependencies = [
+  'mypy==1.17.1',
+  'parameterized==0.7.1',
+  'pluggy==1.5.0',
+  'iniconfig==1.1.1',
+  'mypy-extensions==1.1.0',
+  'pathspec==0.9.0',
+  'typing-extensions==4.14.0',
+  'packaging==24.2',
+  'pbr==3.0.0',
+  'six==1.15.0'
+]
