@@ -36,7 +36,7 @@ class AutofillKeyboardAccessoryView {
   virtual void Show() = 0;
 
   // Ask to confirm a deletion. Triggers the callback upon the user confirming
-  // or declining the deletion. The detection callback parameter specifies
+  // or declining the deletion. The deletion callback parameter specifies
   // whether the deletion was confirmed or declined.
   virtual void ConfirmDeletion(
       const std::u16string& confirmation_title,
@@ -44,6 +44,16 @@ class AutofillKeyboardAccessoryView {
       const std::u16string& confirmation_body_link,
       const std::u16string& confirm_button_text,
       base::OnceCallback<void(bool)> deletion_callback) = 0;
+
+  // Shows the Autofill AI suggestion details dialog. Triggers
+  // `suppression_callback` with true if the user confirmed suppression
+  // ("Remove from Chrome"), or false if dismissed ("Got it").
+  virtual void ShowAutofillAiSuggestionDetails(
+      const std::u16string& title,
+      const std::u16string& body,
+      const std::u16string& confirm_button_text,
+      const std::u16string& primary_button_text,
+      base::OnceCallback<void(bool)> suppression_callback) = 0;
 };
 
 }  // namespace autofill

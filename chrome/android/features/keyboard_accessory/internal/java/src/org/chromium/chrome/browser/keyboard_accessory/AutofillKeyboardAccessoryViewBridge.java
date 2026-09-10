@@ -92,6 +92,14 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     }
 
     @Override
+    public void showAutofillAiSuggestionDetails(int listIndex) {
+        mSelectedListIndex = null;
+        if (mNativeAutofillKeyboardAccessory == 0) return;
+        AutofillKeyboardAccessoryViewBridgeJni.get()
+                .autofillAiSuggestionDetailsRequested(mNativeAutofillKeyboardAccessory, listIndex);
+    }
+
+    @Override
     public void suggestionSelectionStateChanged(int listIndex, boolean isSelected) {
         if (mNativeAutofillKeyboardAccessory == 0) {
             return;
@@ -126,6 +134,12 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .onDeletionDialogClosed(mNativeAutofillKeyboardAccessory, confirmed);
+    }
+
+    private void onAutofillAiSuppressionDialogClosed(boolean confirmed) {
+        if (mNativeAutofillKeyboardAccessory == 0) return;
+        AutofillKeyboardAccessoryViewBridgeJni.get()
+                .onAutofillAiSuppressionDialogClosed(mNativeAutofillKeyboardAccessory, confirmed);
     }
 
     private CharSequence createMessageWithLink(String body, String link) {
@@ -243,6 +257,34 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     }
 
     /**
+     * Shows an Autofill AI suggestion details / suppression confirmation dialog.
+     *
+     * @param title The title for the dialog.
+     * @param body The body of the dialog.
+     * @param confirmButtonText The text displayed on the negative suppression button (e.g., "Remove
+     *     from Chrome").
+     * @param primaryButtonText The text displayed on the primary acknowledgment button (e.g., "Got
+     *     it").
+     */
+    @CalledByNative
+    private void showAutofillAiSuggestionDetails(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String body,
+            @JniType("std::u16string") String confirmButtonText,
+            @JniType("std::u16string") String primaryButtonText) {
+        if (mManualFillingComponent == null) {
+            return;
+        }
+        mManualFillingComponent.showAutofillAiSuggestionDetails(
+                title,
+                body,
+                confirmButtonText,
+                primaryButtonText,
+                () -> this.onAutofillAiSuppressionDialogClosed(/* confirmed= */ true),
+                () -> this.onAutofillAiSuppressionDialogClosed(/* confirmed= */ false));
+    }
+
+    /**
      * Creates an Autofill suggestion.
      *
      * @param label Suggested text. The text that's going to be filled in the focused field, with a
@@ -325,6 +367,12 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         void deletionRequested(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
 
         void onDeletionDialogClosed(
+                long nativeAutofillKeyboardAccessoryViewImpl, boolean confirmed);
+
+        void autofillAiSuggestionDetailsRequested(
+                long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
+
+        void onAutofillAiSuppressionDialogClosed(
                 long nativeAutofillKeyboardAccessoryViewImpl, boolean confirmed);
 
         void openSettingsForEntityType(

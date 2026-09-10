@@ -250,13 +250,25 @@ void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
     const std::u16string& confirmation_title,
     const std::u16string& confirmation_body,
     const std::u16string& confirmation_body_link,
-    const std::u16string& confirmation_button_text,
+    const std::u16string& confirm_button_text,
     base::OnceCallback<void(bool)> deletion_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   deletion_callback_ = std::move(deletion_callback);
   Java_AutofillKeyboardAccessoryViewBridge_confirmDeletion(
       env, java_object_, confirmation_title, confirmation_body,
-      confirmation_body_link, confirmation_button_text);
+      confirmation_body_link, confirm_button_text);
+}
+
+void AutofillKeyboardAccessoryViewImpl::ShowAutofillAiSuggestionDetails(
+    const std::u16string& title,
+    const std::u16string& body,
+    const std::u16string& confirm_button_text,
+    const std::u16string& primary_button_text,
+    base::OnceCallback<void(bool)> suppression_callback) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  autofill_ai_suppression_callback_ = std::move(suppression_callback);
+  Java_AutofillKeyboardAccessoryViewBridge_showAutofillAiSuggestionDetails(
+      env, java_object_, title, body, confirm_button_text, primary_button_text);
 }
 
 void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(JNIEnv* env,
@@ -295,6 +307,23 @@ void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(JNIEnv* env,
     return;
   }
   std::move(deletion_callback_).Run(confirmed);
+}
+
+void AutofillKeyboardAccessoryViewImpl::AutofillAiSuggestionDetailsRequested(
+    JNIEnv* env,
+    int32_t list_index) {
+  // TODO(crbug.com/556058028): Forward to controller_ once implemented.
+}
+
+void AutofillKeyboardAccessoryViewImpl::OnAutofillAiSuppressionDialogClosed(
+    JNIEnv* env,
+    bool confirmed) {
+  if (autofill_ai_suppression_callback_.is_null()) {
+    LOG(DFATAL) << "OnAutofillAiSuppressionDialogClosed called but no dialog "
+                   "is pending!";
+    return;
+  }
+  std::move(autofill_ai_suppression_callback_).Run(confirmed);
 }
 
 void AutofillKeyboardAccessoryViewImpl::ViewDismissed(JNIEnv* env) {

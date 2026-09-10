@@ -40,6 +40,14 @@ public interface AutofillDelegate {
     void deleteSuggestion(int listIndex);
 
     /**
+     * Initiates the flow to show Autofill AI suggestion details (such as attribution and
+     * suppression dialog).
+     *
+     * @param listIndex The index of the suggestion.
+     */
+    default void showAutofillAiSuggestionDetails(int listIndex) {}
+
+    /**
      * Informs the controller the AutofillPopup received a {@code
      * TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED} accessibility event.
      */

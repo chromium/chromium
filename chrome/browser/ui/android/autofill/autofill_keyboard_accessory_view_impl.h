@@ -45,6 +45,12 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
       const std::u16string& confirmation_body_link,
       const std::u16string& confirm_button_text,
       base::OnceCallback<void(bool)> deletion_callback) override;
+  void ShowAutofillAiSuggestionDetails(
+      const std::u16string& title,
+      const std::u16string& body,
+      const std::u16string& confirm_button_text,
+      const std::u16string& primary_button_text,
+      base::OnceCallback<void(bool)> suppression_callback) override;
 
   // --------------------------------------------------------------------------
   // Methods called from Java via JNI
@@ -64,6 +70,12 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
   // Called when the user closes the deletion dialog.
   void OnDeletionDialogClosed(JNIEnv* env, bool confirmed);
 
+  // Called when showing Autofill AI suggestion details was requested.
+  void AutofillAiSuggestionDetailsRequested(JNIEnv* env, int32_t list_index);
+
+  // Called when the user closes the Autofill AI suppression dialog.
+  void OnAutofillAiSuppressionDialogClosed(JNIEnv* env, bool confirmed);
+
   // Called when this view was dismissed.
   void ViewDismissed(JNIEnv* env);
 
@@ -77,6 +89,9 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
 
   // Invoked when the user confirms or declines the deletion process.
   base::OnceCallback<void(bool)> deletion_callback_;
+
+  // Invoked when the user confirms or declines the Autofill AI suppression.
+  base::OnceCallback<void(bool)> autofill_ai_suppression_callback_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
