@@ -342,6 +342,7 @@ gfx::ImageSkia BrowserFrameView::GetFrameImage(
 gfx::ImageSkia BrowserFrameView::GetFrameOverlayImage(
     BrowserFrameActiveState active_state) const {
   if (GetBrowserView()->GetIncognito() ||
+      GetBrowserView()->GetEnterpriseIsolatedMode() ||
       !GetBrowserView()->GetIsNormalType()) {
     return gfx::ImageSkia();
   }
