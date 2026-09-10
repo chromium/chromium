@@ -144,7 +144,14 @@ void RecordExternalActionMetrics(NSURL* url) {
     if ([path isEqualToString:kExternalActionOpenNTP]) {
       externalGURL = GURL(kChromeUINewTabURL);
     } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
-      // TODO(crbug.com/493816082): Add implementation.
+      // If Chrome is already set as default browser, just open the NTP.
+      if (IsChromeLikelyDefaultBrowser()) {
+        externalGURL = GURL(kChromeUINewTabURL);
+      } else {
+        externalGURL = GURL();
+        postOpeningAction =
+            TabOpeningPostOpeningAction::EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
+      }
     } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
       // TODO(crbug.com/493816082): Add implementation.
     } else if (IsAppSwitcherAISummarizationEnabled() &&

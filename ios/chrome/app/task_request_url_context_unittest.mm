@@ -17,6 +17,8 @@
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -37,6 +39,8 @@ class TaskRequestForURLContextTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+
+    ClearDefaultBrowserPromoData();
 
     ResetEnableNewStartupFlowEnabledForTesting();
     scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
@@ -62,6 +66,7 @@ class TaskRequestForURLContextTest : public PlatformTest {
     profile_state_ = nil;
     profile_.reset();
     ResetEnableNewStartupFlowEnabledForTesting();
+    ClearDefaultBrowserPromoData();
     PlatformTest::TearDown();
   }
 
@@ -475,5 +480,67 @@ TEST_F(TaskRequestForURLContextTest, TestExternalActionOpenNTPExecution) {
   EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
   EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL(kChromeUINewTabURL));
   EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+  EXPECT_TRUE(tab_opener.dismissOmnibox);
+}
+
+// Tests that an external action DefaultBrowserSettings URL opens the NTP when
+// Chrome is likely the default browser.
+TEST_F(TaskRequestForURLContextTest,
+       TestExternalActionDefaultBrowserSettingsWhenLikelyDefault) {
+  LogOpenHTTPURLFromExternalURL();
+
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"googlechrome://ChromeExternalAction/DefaultBrowserSettings"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL(kChromeUINewTabURL));
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+  EXPECT_TRUE(tab_opener.dismissOmnibox);
+}
+
+// Tests that an external action DefaultBrowserSettings URL triggers the show
+// browser settings completion action when Chrome is not the default browser.
+TEST_F(TaskRequestForURLContextTest,
+       TestExternalActionDefaultBrowserSettingsWhenNotDefault) {
+  ClearDefaultBrowserPromoData();
+
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"googlechrome://ChromeExternalAction/DefaultBrowserSettings"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+  EXPECT_EQ(tab_opener.completionAction,
+            TabOpeningPostOpeningAction::EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS);
+  EXPECT_TRUE(tab_opener.completionActionExecuted);
   EXPECT_TRUE(tab_opener.dismissOmnibox);
 }

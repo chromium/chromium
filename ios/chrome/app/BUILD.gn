@@ -241,6 +241,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/browser/intelligence/features",
