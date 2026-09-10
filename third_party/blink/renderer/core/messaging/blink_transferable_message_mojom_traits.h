@@ -103,4 +103,16 @@ class CORE_EXPORT
 
 }  // namespace mojo
 
+namespace blink::mojom::internal {
+
+// Share one tag address across components via blink_core to avoid tag
+// mismatches triggering serialization, which would drop in-process Wasm
+// attachments.
+extern template struct CORE_EXTERN_TEMPLATE_EXPORT
+    TransferableMessage_UnserializedMessageContext<
+        ::blink::BlinkTransferableMessage,
+        ::blink::mojom::TransferableMessageDataView>;
+
+}  // namespace blink::mojom::internal
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_BLINK_TRANSFERABLE_MESSAGE_MOJOM_TRAITS_H_

@@ -14,6 +14,15 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+namespace blink::mojom::internal {
+
+template struct CORE_TEMPLATE_EXPORT
+    TransferableMessage_UnserializedMessageContext<
+        ::blink::BlinkTransferableMessage,
+        ::blink::mojom::TransferableMessageDataView>;
+
+}  // namespace blink::mojom::internal
+
 namespace mojo {
 
 namespace {

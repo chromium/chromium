@@ -371,11 +371,6 @@ GCedMessagePortArray* MessagePort::EntanglePorts(
   return connector_->handle().value();
 }
 
-void MessagePort::DispatchMessageEventForTesting(
-    BlinkTransferableMessage message) {
-  DispatchMessageEvent(std::move(message));
-}
-
 void MessagePort::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
   EventTarget::Trace(visitor);

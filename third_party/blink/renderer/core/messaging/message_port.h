@@ -143,9 +143,6 @@ class CORE_EXPORT MessagePort : public EventTarget,
   // For testing only: allows inspection of the entangled channel.
   ::MojoHandle EntangledHandleForTesting() const;
 
-  // Dispatches directly without Mojo serialization to preserve attachments.
-  void DispatchMessageEventForTesting(BlinkTransferableMessage message);
-
   void Trace(Visitor*) const override;
 
   void SetIsSharedWorkerPort(bool is_shared_worker_port) {

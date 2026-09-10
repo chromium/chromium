@@ -2420,6 +2420,19 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.cc',
+            'third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h',
+        ],
+        'allowed': [
+            # Allow the shared Mojo types needed to explicitly instantiate the
+            # unserialized message context in blink_core. These types have no
+            # mojom::blink equivalents.
+            'blink::mojom::internal',
+            'blink::mojom::TransferableMessageDataView',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/webrtc/rtc_logging_mojom_traits.h'
         ],
         'allowed': ['blink::mojom::RTCMetadataDataView'],

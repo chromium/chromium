@@ -150,10 +150,14 @@ class MessagePortAudioWorkletOriginTest : public PageTestBase {
     wait->AddEventListener(port, event_type_names::kMessageerror);
     wait->AddCompletionClosure(run_loop.QuitClosure());
 
-    // Dispatch directly to preserve Wasm attachments. Cross-component Mojo tag
-    // mismatches can force serialization, dropping those attachments and
-    // skipping the Wasm origin check in these tests.
-    port->DispatchMessageEventForTesting(std::move(message));
+    // Call WrapAsMessage() from the test and deserialize in blink_core to
+    // exercise the cross-component tag check in component builds.
+    mojo::Message mojo_message =
+        mojom::blink::TransferableMessage::WrapAsMessage(std::move(message));
+    if (!static_cast<mojo::MessageReceiver*>(port)->Accept(&mojo_message)) {
+      ADD_FAILURE() << "Failed to deserialize the transferable message";
+      return AtomicString();
+    }
     run_loop.Run();
     return wait->GetLastEvent()->type();
   }
@@ -244,11 +248,30 @@ TEST_F(MessagePortAudioWorkletOriginTest,
   ASSERT_FALSE(scope->DocumentSecurityOrigin()->IsOpaque());
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
-  EXPECT_EQ(DispatchMessageToPort(
-                *scope, MakeWasmModuleMessage(script_state,
-                                              scope->DocumentSecurityOrigin(),
-                                              scope->GetAgentClusterID())),
+  BlinkTransferableMessage message =
+      MakeWasmModuleMessage(script_state, scope->DocumentSecurityOrigin(),
+                            scope->GetAgentClusterID());
+  scoped_refptr<SerializedScriptValue> original_value = message.message;
+  bool checked_value = false;
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue& value,
+              ExecutionContext* execution_context, bool can_deserialize) {
+            // A Mojo serialization fallback would replace the value and drop
+            // its Wasm attachments, even if dispatch still produced "message".
+            EXPECT_EQ(&value, original_value.get());
+            EXPECT_EQ(execution_context, scope);
+            EXPECT_EQ(value.GetOriginCheckRequirement(),
+                      SerializedScriptValue::OriginCheckRequirement::
+                          kAllowRelatedAudioWorklet);
+            EXPECT_TRUE(can_deserialize);
+            checked_value = true;
+            return can_deserialize;
+          }));
+
+  EXPECT_EQ(DispatchMessageToPort(*scope, std::move(message)),
             event_type_names::kMessage);
+  EXPECT_TRUE(checked_value);
 }
 
 TEST_F(MessagePortAudioWorkletOriginTest,
