@@ -141,10 +141,9 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.url = NULL_STR.equals(url) ? null : new GURL(url);
             if (state.url != null && !state.url.isValid()) state.url = null;
 
+            @Nullable ByteBuffer rawBuffer = tabStateFlatBuffer.webContentsStateBytesAsByteBuffer();
             ByteBuffer webContentsStateBuffer =
-                    tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
-                            ? ByteBuffer.allocateDirect(0)
-                            : tabStateFlatBuffer.webContentsStateBytesAsByteBuffer().slice();
+                    rawBuffer == null ? ByteBuffer.allocateDirect(0) : rawBuffer.slice();
             if (mIsEncrypted || !webContentsStateBuffer.isDirect()) {
                 ByteBuffer buffer = ByteBuffer.allocateDirect(webContentsStateBuffer.remaining());
                 buffer.put(webContentsStateBuffer);
