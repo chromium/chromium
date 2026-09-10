@@ -98,13 +98,15 @@ AutofillAiSaveUpdateEntityFlowManager::
 void AutofillAiSaveUpdateEntityFlowManager::OfferSave(
     EntityInstance entity,
     std::optional<EntityInstance> old_entity,
-    AutofillClient::EntityImportPromptResultCallback prompt_result_callback) {
+    AutofillClient::EntityImportPromptResultCallback prompt_result_callback,
+    LegalMessageLines public_passes_notice) {
   if (prompt_result_callback_) {
     return;
   }
   prompt_result_callback_ = std::move(prompt_result_callback);
   autofill_message_controller_->Show(
-      CreateMessageModel(std::move(entity), std::move(old_entity)));
+      CreateMessageModel(std::move(entity), std::move(old_entity),
+                         std::move(public_passes_notice)));
 }
 
 void AutofillAiSaveUpdateEntityFlowManager::ShowLocalSaveNotification() {
@@ -124,7 +126,8 @@ void AutofillAiSaveUpdateEntityFlowManager::ShowLocalSaveNotification() {
 std::unique_ptr<AutofillMessageModel>
 AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
     EntityInstance entity,
-    std::optional<EntityInstance> old_entity) {
+    std::optional<EntityInstance> old_entity,
+    LegalMessageLines public_passes_notice) {
   // Binding with base::Unretained(this) is safe here because
   // AutofillAiSaveUpdateEntityMessageController owns message_. Callbacks won't
   // be called after the current object is destroyed.
@@ -152,21 +155,22 @@ AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
       base::BindOnce(
           &AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction,
           weak_ptr_factory_.GetWeakPtr(), std::move(entity),
-          std::move(old_entity)),
+          std::move(old_entity), std::move(public_passes_notice)),
       base::BindOnce(&AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
     EntityInstance entity,
-    std::optional<EntityInstance> old_entity) {
+    std::optional<EntityInstance> old_entity,
+    LegalMessageLines public_passes_notice) {
   auto prompt_view_android =
       std::make_unique<AutofillAiSaveUpdateEntityPromptViewAndroid>(
           web_contents_);
   save_update_entity_prompt_controller_ =
       std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
           web_contents_, std::move(prompt_view_android), std::move(entity),
-          std::move(old_entity), app_locale_,
+          std::move(old_entity), std::move(public_passes_notice), app_locale_,
           std::move(prompt_result_callback_));
   save_update_entity_prompt_controller_->DisplayPrompt();
 }

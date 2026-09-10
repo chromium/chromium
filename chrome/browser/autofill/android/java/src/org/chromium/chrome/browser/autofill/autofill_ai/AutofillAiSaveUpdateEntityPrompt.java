@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
@@ -29,11 +30,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -328,6 +331,31 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
                                         mContext, _ -> mController.onWalletLinkClicked())));
         sourceNoticeView.setText(sourceNoticeWithLink, TextView.BufferType.SPANNABLE);
         sourceNoticeView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Sets the legal message in the prompt.
+     *
+     * @param legalMessageLines the list of legal message lines to display.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void setPublicPassesNotice(@JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
+        TextView legalMessageView = mDialogView.findViewById(R.id.autofill_ai_public_passes_notice);
+        if (legalMessageLines.isEmpty()) {
+            legalMessageView.setVisibility(View.GONE);
+            return;
+        }
+
+        SpannableStringBuilder stringBuilder =
+                AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                        mContext,
+                        legalMessageLines,
+                        /* underlineLinks= */ true,
+                        url -> AutofillUiUtils.openLink(mContext, url));
+        legalMessageView.setText(stringBuilder);
+        legalMessageView.setVisibility(View.VISIBLE);
+        legalMessageView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /** Dismisses the prompt without returning any user response. */

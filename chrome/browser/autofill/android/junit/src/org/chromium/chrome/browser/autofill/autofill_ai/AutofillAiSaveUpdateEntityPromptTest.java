@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -282,6 +283,51 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         spans[0].onClick(sourceNoticeView);
         verify(mPromptControllerJni)
                 .onWalletLinkClicked(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+    }
+
+    @Test
+    @SmallTest
+    public void publicPassesNotice_default_viewIsGone() {
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        TextView publicPassesNoticeView =
+                dialogView.findViewById(R.id.autofill_ai_public_passes_notice);
+        assertEquals(View.GONE, publicPassesNoticeView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void publicPassNotice_empty_viewIsGone() {
+        mPrompt.setPublicPassesNotice(Collections.emptyList());
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        TextView publicPassNoticeView =
+                dialogView.findViewById(R.id.autofill_ai_public_passes_notice);
+        assertEquals(View.GONE, publicPassNoticeView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void publicPassesNotice_nonEmpty_viewIsVisible() {
+        LegalMessageLine line =
+                new LegalMessageLine(
+                        "Legal message with a link.",
+                        List.of(new LegalMessageLine.Link(22, 26, "https://example.com")));
+        mPrompt.setPublicPassesNotice(List.of(line));
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        TextView publicPassesNoticeView =
+                dialogView.findViewById(R.id.autofill_ai_public_passes_notice);
+        assertEquals(View.VISIBLE, publicPassesNoticeView.getVisibility());
+        assertEquals("Legal message with a link.", publicPassesNoticeView.getText().toString());
+
+        SpannableString spannableString = (SpannableString) publicPassesNoticeView.getText();
+        ClickableSpan[] spans =
+                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
+        assertThat(spans.length, is(1));
     }
 
     @Test

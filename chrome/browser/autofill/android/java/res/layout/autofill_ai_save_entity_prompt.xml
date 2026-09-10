@@ -35,6 +35,19 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"
             android:breakStrategy="balanced" />
 
+        <org.chromium.ui.widget.TextViewWithClickableSpans
+            android:id="@+id/autofill_ai_public_passes_notice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dialog_padding_sides"
+            android:layout_marginTop=
+                "@dimen/autofill_entity_attribute_top_padding"
+            android:layout_marginStart="@dimen/dialog_padding_sides"
+            android:layout_below="@id/autofill_ai_entity_source_notice"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+            android:breakStrategy="balanced"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
 </ScrollView>

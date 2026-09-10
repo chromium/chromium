@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 
 namespace content {
 class WebContents;
@@ -52,7 +53,8 @@ class AutofillAiSaveUpdateEntityFlowManager {
   void OfferSave(
       EntityInstance entity,
       std::optional<EntityInstance> old_entity,
-      AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
+      AutofillClient::EntityImportPromptResultCallback prompt_result_callback,
+      LegalMessageLines public_passes_notice = {});
 
   // Shows a modal dialog to notify the user that the entity was saved locally
   // instead of uploading it to Google Wallet.
@@ -60,13 +62,15 @@ class AutofillAiSaveUpdateEntityFlowManager {
 
  private:
   void OnMessagePrimaryAction(EntityInstance entity,
-                              std::optional<EntityInstance> old_entity);
+                              std::optional<EntityInstance> old_entity,
+                              LegalMessageLines public_passes_notice);
 
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<AutofillMessageModel> CreateMessageModel(
       EntityInstance entity,
-      std::optional<EntityInstance> old_entity);
+      std::optional<EntityInstance> old_entity,
+      LegalMessageLines public_passes_notice);
 
   void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
 

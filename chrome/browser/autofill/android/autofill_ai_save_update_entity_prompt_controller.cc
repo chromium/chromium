@@ -45,12 +45,14 @@ AutofillAiSaveUpdateEntityPromptController::
         std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
         EntityInstance entity_instance,
         std::optional<EntityInstance> old_entity_instance,
+        LegalMessageLines public_passes_notice,
         std::string app_locale,
         AutofillClient::EntityImportPromptResultCallback prompt_result_callback)
     : web_contents_(web_contents),
       prompt_view_(std::move(prompt_view)),
       entity_instance_(std::move(entity_instance)),
       old_entity_instance_(std::move(old_entity_instance)),
+      public_passes_notice_(std::move(public_passes_notice)),
       app_locale_(std::move(app_locale)),
       prompt_result_callback_(std::move(prompt_result_callback)),
       java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
@@ -128,6 +130,17 @@ bool AutofillAiSaveUpdateEntityPromptController::IsWalletableEntity() const {
 
 bool AutofillAiSaveUpdateEntityPromptController::IsUpdatePrompt() const {
   return old_entity_instance_.has_value();
+}
+
+const LegalMessageLines&
+AutofillAiSaveUpdateEntityPromptController::GetPublicPassesNotice() const {
+  return public_passes_notice_;
+}
+
+bool AutofillAiSaveUpdateEntityPromptController::
+    IsEligibleForWalletPassDisclosure() const {
+  return autofill::IsEligibleForWalletPassDisclosure(
+      /*is_save_prompt=*/!IsUpdatePrompt(), entity_instance_);
 }
 
 const EntityInstance&

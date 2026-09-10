@@ -122,8 +122,8 @@ class AutofillAiImportDataControllerImplTest : public DialogBrowserTest {
     } else if (name == "SaveNewVehicleEntity") {
       controller_->ShowPrompt(
           test::GetVehicleEntityInstance(save_new_vehicle_options_),
-          std::nullopt, /*close_on_accept=*/true,
-          legal_message_lines_, base::NullCallback());
+          std::nullopt, /*close_on_accept=*/true, public_passes_notice_,
+          base::NullCallback());
       return;
     }
     NOTREACHED();
@@ -144,15 +144,15 @@ class AutofillAiImportDataControllerImplTest : public DialogBrowserTest {
     save_new_vehicle_options_ = save_new_vehicle_options;
   }
 
-  void SetLegalMessageLines(LegalMessageLines legal_message_lines) {
-    legal_message_lines_ = std::move(legal_message_lines);
+  void SetPublicPassesNotice(LegalMessageLines public_passes_notice) {
+    public_passes_notice_ = std::move(public_passes_notice);
   }
 
  private:
   base::test::ScopedFeatureList scoped_features_;
   test::PassportEntityOptions save_new_passport_options_ = {};
   test::VehicleOptions save_new_vehicle_options_ = {};
-  LegalMessageLines legal_message_lines_;
+  LegalMessageLines public_passes_notice_;
   raw_ptr<AutofillAiImportDataControllerImpl> controller_ = nullptr;
 };
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
                        LegalMessageLines) {
-  SetLegalMessageLines({TestLegalMessageLine("Test legal message")});
+  SetPublicPassesNotice({TestLegalMessageLine("Test legal message")});
   SetNewVehicleOptions(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   ShowUi("SaveNewVehicleEntity");
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
                        OnLegalMessageLinkClicked) {
-  SetLegalMessageLines({TestLegalMessageLine("Test legal message")});
+  SetPublicPassesNotice({TestLegalMessageLine("Test legal message")});
   SetNewVehicleOptions(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   ShowUi("SaveNewVehicleEntity");

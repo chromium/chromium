@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 
 namespace content {
 class WebContents;
@@ -37,6 +38,7 @@ class AutofillAiSaveUpdateEntityPromptController {
       std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view,
       EntityInstance entity_instance,
       std::optional<EntityInstance> old_entity_instance,
+      LegalMessageLines public_passes_notice,
       std::string app_locale,
       AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
   AutofillAiSaveUpdateEntityPromptController(
@@ -58,6 +60,9 @@ class AutofillAiSaveUpdateEntityPromptController {
   // wallet server.
   bool IsWalletableEntity() const;
   bool IsUpdatePrompt() const;
+
+  const LegalMessageLines& GetPublicPassesNotice() const;
+  bool IsEligibleForWalletPassDisclosure() const;
 
   const EntityInstance& entity_instance() const;
 
@@ -82,6 +87,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;
   const EntityInstance entity_instance_;
   const std::optional<EntityInstance> old_entity_instance_;
+  const LegalMessageLines public_passes_notice_;
   const std::string app_locale_;
   AutofillClient::EntityImportUIContext ui_context_;
   // If the user explicitly accepted/dismissed/edited the entity.
