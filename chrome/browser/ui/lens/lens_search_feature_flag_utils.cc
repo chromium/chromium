@@ -47,14 +47,11 @@ bool IsEnUs() {
 namespace lens {
 
 bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
-  // If not AIM eligible or fusebox eligible, return false.
-  // TODO(crbug.com/545228855): Checking fusebox eligibility is a temporary
-  // measure. A new bit should be introduced to the AIM eligibility service for
-  // CSB independent of cobrowse and fusebox.
+  // If not AIM eligible or CSB eligible, return false.
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
-      !aim_eligibility_service->IsFuseboxEligible()) {
+      !aim_eligibility_service->IsCsbEligible()) {
     return false;
   }
 
@@ -79,11 +76,8 @@ bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
 bool IsAimM3Enabled(Profile* profile) {
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/545228855): Checking fusebox eligibility is a temporary
-  // measure. A new bit should be introduced to the AIM eligibility service for
-  // CSB independent of cobrowse and fusebox.
   if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
-      !aim_eligibility_service->IsFuseboxEligible()) {
+      !aim_eligibility_service->IsCsbEligible()) {
     return false;
   }
 

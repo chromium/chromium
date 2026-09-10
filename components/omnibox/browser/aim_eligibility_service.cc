@@ -526,6 +526,14 @@ bool AimEligibilityService::IsFuseboxEligible() const {
   return IsEligibleByServer(GetMostRecentResponse().is_fusebox_eligible());
 }
 
+bool AimEligibilityService::IsCsbEligible() const {
+  if (!GetMostRecentResponse().has_is_contextual_searchbox_eligible()) {
+    return IsFuseboxEligible();
+  }
+  return IsEligibleByServer(
+      GetMostRecentResponse().is_contextual_searchbox_eligible());
+}
+
 bool AimEligibilityService::IsAimUrl(
     const GURL& url,
     std::optional<contextual_tasks::HostOverride> host_override) const {

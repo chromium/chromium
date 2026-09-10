@@ -930,6 +930,33 @@ TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureDisabled) {
   EXPECT_TRUE(aim_eligibility_service_->IsFuseboxEligible());
 }
 
+TEST_F(AimEligibilityServiceTest, IsCsbEligible) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  response.set_is_contextual_searchbox_eligible(true);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
+  EXPECT_TRUE(aim_eligibility_service_->IsCsbEligible());
+
+  omnibox::AimEligibilityResponse response2;
+  response2.set_is_eligible(true);
+  response2.set_is_contextual_searchbox_eligible(false);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response2));
+  EXPECT_FALSE(aim_eligibility_service_->IsCsbEligible());
+
+  // If field is not filled, fall back to IsFuseboxEligible().
+  omnibox::AimEligibilityResponse response3;
+  response3.set_is_eligible(true);
+  response3.set_is_fusebox_eligible(true);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response3));
+  EXPECT_TRUE(aim_eligibility_service_->IsCsbEligible());
+
+  omnibox::AimEligibilityResponse response4;
+  response4.set_is_eligible(true);
+  response4.set_is_fusebox_eligible(false);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response4));
+  EXPECT_FALSE(aim_eligibility_service_->IsCsbEligible());
+}
+
 TEST_F(AimEligibilityServiceTest, IsIetfBcp47) {
   // Valid BCP 47 strings (no underscores)
   EXPECT_TRUE(AimEligibilityServiceFriend::IsIetfBcp47("en"));
