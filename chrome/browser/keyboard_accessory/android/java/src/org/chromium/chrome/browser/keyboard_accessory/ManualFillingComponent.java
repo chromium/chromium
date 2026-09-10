@@ -270,6 +270,26 @@ public interface ManualFillingComponent extends BackPressHandler {
             Runnable declinedCallback);
 
     /**
+     * Show an Autofill AI suggestion details dialog with suppression action.
+     *
+     * @param title A title of the suggestion details dialog.
+     * @param body The body of the suggestion details dialog.
+     * @param confirmButtonText The text on the negative/secondary suppression button (e.g. "Remove
+     *     from Chrome").
+     * @param primaryButtonText The text on the positive/primary acknowledgment button (e.g. "Got
+     *     it").
+     * @param confirmedCallback A {@link Runnable} to trigger upon confirming suppression.
+     * @param declinedCallback A {@link Runnable} to trigger upon dismissing/acknowledging.
+     */
+    void showAutofillAiSuggestionDetails(
+            String title,
+            String body,
+            String confirmButtonText,
+            String primaryButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback);
+
+    /**
      * Returns the amount that the keyboard will be extended by the filling component when shown.
      * i.e. The height of any accessories to be shown on top of the keyboard.
      */

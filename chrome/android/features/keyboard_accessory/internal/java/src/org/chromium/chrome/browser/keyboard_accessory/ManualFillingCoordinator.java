@@ -247,6 +247,17 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 title, message, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
+    @Override
+    public void showAutofillAiSuggestionDetails(
+            String title,
+            String body,
+            String confirmButtonText,
+            String primaryButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {
+        // TODO(crbug.com/556058028): Forward to mMediator once implemented.
+    }
+
     ManualFillingMediator getMediatorForTesting() {
         return mMediator;
     }

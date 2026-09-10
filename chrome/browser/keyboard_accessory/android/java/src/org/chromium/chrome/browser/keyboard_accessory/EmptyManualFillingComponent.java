@@ -130,6 +130,15 @@ public class EmptyManualFillingComponent implements ManualFillingComponent {
             Runnable declinedCallback) {}
 
     @Override
+    public void showAutofillAiSuggestionDetails(
+            String title,
+            String body,
+            String confirmButtonText,
+            String primaryButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {}
+
+    @Override
     public int getKeyboardExtensionHeight() {
         return 0;
     }
