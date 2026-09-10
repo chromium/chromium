@@ -3117,13 +3117,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Prompt.Chat.ContextAttachment" enum="Boolean"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
+  <summary>
+    Records whether prompts sent in Gemini Chat include page context. Logged
+    when a request is sent.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Prompt.ContextAttachment" enum="Boolean"
     expires_after="2027-01-24">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
-    Records whether prompts sent to Gemini include page context.
+    Records whether prompts sent to Gemini (Chat or Live) include page context.
+    Logged when a request is sent.
   </summary>
 </histogram>
 
@@ -3142,6 +3154,17 @@ chromium-metrics-reviews@google.com.
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records the number of images sent by the user in a Gemini prompt.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Prompt.Live.ContextAttachment" enum="Boolean"
+    expires_after="2027-02-22">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
+  <summary>
+    Records whether prompts sent in Gemini Live include page context when user
+    speech finishes (i.e., request is sent) and Gemini begins thinking.
   </summary>
 </histogram>
 

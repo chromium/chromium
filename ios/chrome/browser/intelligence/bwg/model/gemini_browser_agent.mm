@@ -1215,6 +1215,14 @@ void GeminiBrowserAgent::HandleDormantStatus(
 void GeminiBrowserAgent::LogLiveStatusTransition(
     ios::provider::GeminiClientMode old_status,
     ios::provider::GeminiClientMode new_status) {
+  if (new_status == ios::provider::GeminiClientMode::kThinking &&
+      old_status != ios::provider::GeminiClientMode::kThinking) {
+    bool has_attached_context =
+        ios::provider::GetCurrentPageContextAttachmentState() ==
+        ios::provider::GeminiPageContextAttachmentState::kAttached;
+    RecordGeminiLivePromptSent(has_attached_context);
+  }
+
   if (old_status == ios::provider::GeminiClientMode::kResponding &&
       new_status != ios::provider::GeminiClientMode::kResponding) {
     if (!live_response_start_time_.is_null()) {
@@ -1386,10 +1394,16 @@ void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
   }
 
   if (mode == ios::provider::GeminiViewMode::kLive) {
-    RecordLiveSessionStarted();
-    if (live_session_start_time_.is_null()) {
-      live_session_start_time_ = base::TimeTicks::Now();
-      live_turn_count_ = 0;
+    // We make sure the user already consented to Live, as the Live FRE causes
+    // a mode switch, and if the user dismisses it, metrics will be recorded
+    // without the user having ever used Live.
+    if (gemini::DidUserConsentToGeminiLive(
+            browser_->GetProfile()->GetPrefs())) {
+      RecordLiveSessionStarted();
+      if (live_session_start_time_.is_null()) {
+        live_session_start_time_ = base::TimeTicks::Now();
+        live_turn_count_ = 0;
+      }
     }
     if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded) {
       ResetFullscreenDisabler();

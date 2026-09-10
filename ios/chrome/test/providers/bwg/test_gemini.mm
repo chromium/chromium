@@ -52,6 +52,8 @@ void CheckGeminiEligibility(AuthenticationService* auth_service,
 
 static GeminiViewState g_current_view_state = GeminiViewState::kUnknown;
 static GeminiViewMode g_current_mode = GeminiViewMode::kUnknown;
+static GeminiPageContextAttachmentState g_current_attachment_state =
+    GeminiPageContextAttachmentState::kUnknown;
 static std::optional<gemini::EntryPoint>
     g_last_update_prompt_action_entry_point;
 static NSString* g_last_update_prompt_action_prompt = nil;
@@ -63,6 +65,7 @@ static NSDate* g_mock_refill_date = nil;
 void ResetGemini() {
   g_current_mode = GeminiViewMode::kUnknown;
   g_current_view_state = GeminiViewState::kUnknown;
+  g_current_attachment_state = GeminiPageContextAttachmentState::kUnknown;
   g_last_update_prompt_action_entry_point.reset();
   g_last_update_prompt_action_prompt = nil;
   g_last_update_prompt_action_should_auto_submit = NO;
@@ -71,7 +74,9 @@ void ResetGemini() {
 }
 
 void UpdatePageAttachmentState(
-    GeminiPageContextAttachmentState gemini_attachment_state) {}
+    GeminiPageContextAttachmentState gemini_attachment_state) {
+  g_current_attachment_state = gemini_attachment_state;
+}
 
 // Mock value used by unit tests to override the return value of IsProtectedUrl.
 static bool g_mock_protected_url = false;
@@ -144,7 +149,7 @@ GeminiClientMode GetCurrentClientMode() {
 }
 
 GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState() {
-  return GeminiPageContextAttachmentState::kUnknown;
+  return g_current_attachment_state;
 }
 
 void SwitchToMode(GeminiViewMode mode, bool animated) {

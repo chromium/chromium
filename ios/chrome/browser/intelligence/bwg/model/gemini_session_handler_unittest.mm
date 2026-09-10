@@ -179,7 +179,11 @@ TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded) {
                                        false, 1);
   histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, true,
                                        1);
+  histogram_tester_.ExpectUniqueSample(kPromptChatContextAttachmentHistogram,
+                                       true, 1);
   histogram_tester_.ExpectUniqueSample(kPromptTabsAttachedCountHistogram, 1, 1);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("MobileGeminiChatPromptSent"));
 }
 
 // Tests that Nano Banana metrics are recorded correctly.
@@ -208,6 +212,8 @@ TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
                                        true, 1);
   histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, false,
                                        1);
+  histogram_tester_.ExpectUniqueSample(kPromptChatContextAttachmentHistogram,
+                                       false, 1);
   histogram_tester_.ExpectUniqueSample(kPromptTabsAttachedCountHistogram, 0, 1);
 }
 

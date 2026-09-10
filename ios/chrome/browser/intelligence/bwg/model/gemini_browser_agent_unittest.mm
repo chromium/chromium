@@ -1176,6 +1176,87 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiLiveUserDidBargeIn) {
             ios::provider::GeminiClientMode::kTranscribing);
 }
 
+// Tests that OnProcessingStatusChanged records prompt context attachment
+// Tests that OnProcessingStatusChanged records prompt context attachment
+// metrics when transitioning to kThinking in Live mode.
+TEST_F(GeminiBrowserAgentTest,
+       TestOnProcessingStatusChangedThinkingLivePromptMetric) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  SetIsFloatyInvoked(true);
+
+  // Switch to Live mode.
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kLive,
+                              /*animated=*/false);
+  ASSERT_TRUE(gemini_browser_agent_->IsInGeminiLiveMode());
+
+  // By default, page context is attached.
+  ios::provider::UpdatePageAttachmentState(
+      ios::provider::GeminiPageContextAttachmentState::kAttached);
+
+  // Transitioning to kTranscribing should not record prompt sent metrics yet.
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kTranscribing,
+      ios::provider::GeminiDormantReason::kUnknown);
+
+  histogram_tester.ExpectTotalCount(kPromptContextAttachmentHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPromptLiveContextAttachmentHistogram, 0);
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiPromptSent"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiLivePromptSent"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiChatPromptSent"));
+
+  // Transitioning to kThinking records the Live prompt sent metric.
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kThinking,
+      ios::provider::GeminiDormantReason::kUnknown);
+
+  histogram_tester.ExpectUniqueSample(kPromptContextAttachmentHistogram, true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(kPromptLiveContextAttachmentHistogram,
+                                      true, 1);
+  histogram_tester.ExpectTotalCount(kPromptChatContextAttachmentHistogram, 0);
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiPromptSent"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiLivePromptSent"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiChatPromptSent"));
+
+  // Consecutive kThinking call should not record duplicate metrics.
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kThinking,
+      ios::provider::GeminiDormantReason::kUnknown);
+
+  histogram_tester.ExpectTotalCount(kPromptContextAttachmentHistogram, 1);
+  histogram_tester.ExpectTotalCount(kPromptLiveContextAttachmentHistogram, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiPromptSent"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiLivePromptSent"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiChatPromptSent"));
+
+  // Transition to responding, then detach context and transition to
+  // thinking again.
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kResponding,
+      ios::provider::GeminiDormantReason::kUnknown);
+  ios::provider::UpdatePageAttachmentState(
+      ios::provider::GeminiPageContextAttachmentState::kDetached);
+
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kThinking,
+      ios::provider::GeminiDormantReason::kUnknown);
+
+  histogram_tester.ExpectBucketCount(kPromptContextAttachmentHistogram, false,
+                                     1);
+  histogram_tester.ExpectBucketCount(kPromptLiveContextAttachmentHistogram,
+                                     false, 1);
+  histogram_tester.ExpectTotalCount(kPromptContextAttachmentHistogram, 2);
+  histogram_tester.ExpectTotalCount(kPromptLiveContextAttachmentHistogram, 2);
+  histogram_tester.ExpectTotalCount(kPromptChatContextAttachmentHistogram, 0);
+  EXPECT_EQ(2, user_action_tester.GetActionCount("MobileGeminiPromptSent"));
+  EXPECT_EQ(2, user_action_tester.GetActionCount("MobileGeminiLivePromptSent"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiChatPromptSent"));
+}
+
 // Tests that fullscreen is disabled when floaty is invoked, and re-enabled
 // once the UI appears.
 TEST_F(GeminiBrowserAgentTest, TestFloatyReenablesFullscreenWhenUIAppears) {

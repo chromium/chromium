@@ -20068,6 +20068,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiChatPromptSent">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user sends a prompt in a Gemini Chat session. This
+    includes both the first prompt and subsequent prompts in a conversation. iOS
+    only.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointAutomatic">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
@@ -20340,6 +20350,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiLivePromptSent">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the user sends a prompt in a Gemini Live voice session (i.e.
+    when user speech finishes and Gemini begins thinking). iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiLiveSessionStarted">
   <owner>tarekmakkouk@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -20403,8 +20422,9 @@ should be able to be added at any place in this file.
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
   <description>
-    Reported when the user sends a prompt in a Gemini session. This includes
-    both the first prompt and subsequent prompts in a conversation. iOS only.
+    Reported when the user sends a prompt in a Gemini session (Chat or Live).
+    This includes both the first prompt and subsequent prompts in a
+    conversation. iOS only.
   </description>
 </action>
 

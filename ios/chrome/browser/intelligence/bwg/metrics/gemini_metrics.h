@@ -320,6 +320,12 @@ extern const char kPromptLongPressImageIncludedHistogram[];
 // UMA histogram key for IOS.Gemini.Prompt.ContextAttachment.
 extern const char kPromptContextAttachmentHistogram[];
 
+// UMA histogram key for IOS.Gemini.Prompt.Chat.ContextAttachment.
+extern const char kPromptChatContextAttachmentHistogram[];
+
+// UMA histogram key for IOS.Gemini.Prompt.Live.ContextAttachment.
+extern const char kPromptLiveContextAttachmentHistogram[];
+
 // UMA histogram key for IOS.Gemini.Prompt.TabsAttachedCount.
 extern const char kPromptTabsAttachedCountHistogram[];
 
@@ -757,6 +763,9 @@ void RecordGeminiLiveTurnCount(int turn_count);
 // Records the accumulated duration of Gemini Live mode segments within
 // a single Gemini interaction.
 void RecordGeminiLiveAccumulatedDuration(base::TimeDelta duration);
+
+// Records that the user sent a prompt in a Gemini Live session.
+void RecordGeminiLivePromptSent(bool has_page_context);
 
 // Records whether query submission is blocked while page context is loading.
 void RecordBlockQuerySubmissionWhileLoading(bool block_submission);
