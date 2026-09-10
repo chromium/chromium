@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -90,8 +89,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
-            std::make_unique<FakeAuthenticationServiceDelegate>()));
+        AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -172,9 +170,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         incognito_safe_area_provider_;
   }
 
-  void TearDown() override {
-    [coordinator_ stop];
-  }
+  void TearDown() override { [coordinator_ stop]; }
 
   UIViewController* GetViewController() { return coordinator_.viewController; }
 

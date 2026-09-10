@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
@@ -110,10 +109,8 @@ void GridMediatorTestClass::SetUp() {
                             FakeTabRestoreService::GetTestingFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateMockSyncService));
-  builder.AddTestingFactory(
-      AuthenticationServiceFactory::GetInstance(),
-      AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
-          std::make_unique<FakeAuthenticationServiceDelegate>()));
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                             ios::HistoryServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SessionRestorationServiceFactory::GetInstance(),
