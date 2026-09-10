@@ -392,6 +392,20 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       )
       yield test_args.query, HTML_FILENAME, [test_args]
 
+  def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
+    retry_from_super = super()._ShouldForceRetryOnFailureFirstTest()
+    # Force RetryOnFailure of the first test on a shard on Win11/NVIDIA GTX 1660
+    # due to slow startup / websocket timeouts. See crbug.com/558821843.
+    try:
+      tags = self.GetPlatformTags(self.browser)
+      retry_on_config = 'win11' in tags and 'nvidia-0x2184' in tags
+    except Exception:  # pylint: disable=broad-except
+      logging.warning(
+        'Failed to determine platform tags, assuming no first test retry'
+      )
+      retry_on_config = False
+    return retry_from_super or retry_on_config
+
   def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
     # Instances of WebGpuMessageTimeoutError:
     # https://luci-analysis.appspot.com/p/chromium/rules/b9130da14f0fcab5d6ee415d209bf71b
