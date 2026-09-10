@@ -65,6 +65,9 @@
 
 namespace {
 const gfx::VectorIcon& GetTaskInProgressIcon() {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNewIcon)) {
+    return kCursorSparkIcon;
+  }
   return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
 }
 }  // namespace

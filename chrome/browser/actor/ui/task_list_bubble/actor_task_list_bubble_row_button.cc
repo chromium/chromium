@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,9 +45,13 @@ const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
   if (glic::GlicActorTaskIconManager::RequiresAttention(state)) {
     return features::IsRoundedIconsEnabled() ? kHourglassIcon
                                              : kHourglassOldIcon;
-  } else if (state == actor::ActorTask::State::kFinished) {
+  }
+  if (state == actor::ActorTask::State::kFinished) {
     return features::IsRoundedIconsEnabled() ? kTaskSparkIcon
                                              : kTaskSparkOldIcon;
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNewIcon)) {
+    return kCursorSparkIcon;
   }
   return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
 }
