@@ -13,6 +13,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -253,7 +254,7 @@ class NotificationChannelsProviderAndroid
 
   using PendingCallback = base::OnceCallback<void(base::OnceClosure)>;
   // This is a list of postponed calls to update cached_channels_.
-  std::queue<PendingCallback> pending_operations_;
+  base::queue<PendingCallback> pending_operations_;
 
   // PrefService associated with this instance.
   raw_ptr<PrefService> pref_service_;
