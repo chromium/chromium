@@ -971,6 +971,99 @@ void MapperAcerAppMode(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
+void MapperValve1(const Gamepad& input, Gamepad* mapped) {
+  enum Valve1Buttons {
+    VALVE1_BUTTON_LEFT_TOUCHPAD = BUTTON_INDEX_COUNT,
+    VALVE1_BUTTON_RIGHT_TOUCHPAD,
+    VALVE1_BUTTON_LEFT_GRIP,
+    VALVE1_BUTTON_RIGHT_GRIP,
+    VALVE1_BUTTON_COUNT
+  };
+  enum Valve1Axes {
+    VALVE1_AXIS_LEFT_TOUCHPAD_X = AXIS_INDEX_COUNT,
+    VALVE1_AXIS_LEFT_TOUCHPAD_Y,
+    VALVE1_AXIS_COUNT
+  };
+
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[2];
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[3];
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = input.buttons[4];
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = input.buttons[5];
+  mapped->buttons[BUTTON_INDEX_LEFT_SHOULDER] = input.buttons[6];
+  mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] = input.buttons[7];
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = AxisToButton(input.axes[7]);
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = AxisToButton(input.axes[6]);
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[10];
+  mapped->buttons[BUTTON_INDEX_START] = input.buttons[11];
+  mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = input.buttons[13];
+  mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[14];
+  mapped->buttons[BUTTON_INDEX_DPAD_UP] = input.buttons[15];
+  mapped->buttons[BUTTON_INDEX_DPAD_DOWN] = input.buttons[16];
+  mapped->buttons[BUTTON_INDEX_DPAD_LEFT] = input.buttons[17];
+  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] = input.buttons[18];
+  mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
+
+  mapped->buttons[VALVE1_BUTTON_LEFT_TOUCHPAD] = input.buttons[0];
+  mapped->buttons[VALVE1_BUTTON_LEFT_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
+  mapped->buttons[VALVE1_BUTTON_RIGHT_TOUCHPAD] = input.buttons[1];
+  mapped->buttons[VALVE1_BUTTON_RIGHT_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
+  mapped->buttons[VALVE1_BUTTON_LEFT_GRIP] = input.buttons[19];
+  mapped->buttons[VALVE1_BUTTON_RIGHT_GRIP] = input.buttons[20];
+
+  mapped->buttons_length = VALVE1_BUTTON_COUNT;
+  mapped->axes_length = VALVE1_AXIS_COUNT;
+}
+
+void MapperValve2(const Gamepad& input, Gamepad* mapped) {
+  enum Valve2Buttons {
+    VALVE2_BUTTON_QUICK_ACCESS = BUTTON_INDEX_COUNT,
+    VALVE2_BUTTON_LEFT_TOUCHPAD,
+    VALVE2_BUTTON_RIGHT_TOUCHPAD,
+    VALVE2_BUTTON_LEFT_GRIP,
+    VALVE2_BUTTON_RIGHT_GRIP,
+    VALVE2_BUTTON_LEFT_GRIP2,
+    VALVE2_BUTTON_RIGHT_GRIP2,
+    VALVE2_BUTTON_COUNT
+  };
+
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[3];
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[4];
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = input.buttons[5];
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = input.buttons[6];
+  mapped->buttons[BUTTON_INDEX_LEFT_SHOULDER] = input.buttons[7];
+  mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] = input.buttons[8];
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = AxisToButton(input.axes[9]);
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = AxisToButton(input.axes[8]);
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[11];
+  mapped->buttons[BUTTON_INDEX_START] = input.buttons[12];
+  mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = input.buttons[14];
+  mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[15];
+  mapped->buttons[BUTTON_INDEX_DPAD_UP] = input.buttons[16];
+  mapped->buttons[BUTTON_INDEX_DPAD_DOWN] = input.buttons[17];
+  mapped->buttons[BUTTON_INDEX_DPAD_LEFT] = input.buttons[18];
+  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] = input.buttons[19];
+  mapped->buttons[BUTTON_INDEX_META] = input.buttons[13];
+
+  mapped->buttons[VALVE2_BUTTON_QUICK_ACCESS] = input.buttons[2];
+  mapped->buttons[VALVE2_BUTTON_LEFT_TOUCHPAD] = input.buttons[0];
+  mapped->buttons[VALVE2_BUTTON_LEFT_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
+  mapped->buttons[VALVE2_BUTTON_RIGHT_TOUCHPAD] = input.buttons[1];
+  mapped->buttons[VALVE2_BUTTON_RIGHT_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
+  mapped->buttons[VALVE2_BUTTON_LEFT_GRIP] = input.buttons[20];
+  mapped->buttons[VALVE2_BUTTON_RIGHT_GRIP] = input.buttons[21];
+  mapped->buttons[VALVE2_BUTTON_LEFT_GRIP2] = input.buttons[22];
+  mapped->buttons[VALVE2_BUTTON_RIGHT_GRIP2] = input.buttons[23];
+
+  mapped->buttons_length = VALVE2_BUTTON_COUNT;
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
 constexpr struct MappingData {
   GamepadId gamepad_id;
   GamepadStandardMappingFunction function;
@@ -1091,6 +1184,20 @@ constexpr struct MappingData {
     {GamepadId::kElecomProduct200f, MapperElecomWiredDirectInput},
     // Elecom JC-U4113SBK (DirectInput mode)
     {GamepadId::kElecomProduct2010, MapperElecomWirelessDirectInput},
+    // Valve Steam Controller 2015
+    {GamepadId::kValveProduct1102, MapperValve1},
+    // Valve Steam Controller 2015 (Wireless)
+    {GamepadId::kValveProduct1142, MapperValve1},
+    // Valve Steam Deck
+    {GamepadId::kValveProduct1205, MapperValve2},
+    // Valve Steam Controller 2026 (Wired)
+    {GamepadId::kValveProduct1302, MapperValve2},
+    // Valve Steam Controller 2026 (Bluetooth)
+    {GamepadId::kValveProduct1303, MapperValve2},
+    // Valve Steam Controller 2026 (Wireless)
+    {GamepadId::kValveProduct1304, MapperValve2},
+    // Valve Steam Controller 2026 (Steam Machine integrated wireless)
+    {GamepadId::kValveProduct1305, MapperValve2},
 };
 
 }  // namespace

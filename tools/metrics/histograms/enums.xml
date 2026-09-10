@@ -4568,6 +4568,12 @@ shown properly on the user-facing crash UI.
   <int value="655831364" label="XiaomiProduct3144"/>
   <int value="674627585" label="OuyaProduct0001"/>
   <int value="685641986" label="ValveProduct1102"/>
+  <int value="685642050" label="ValveProduct1142"/>
+  <int value="685642245" label="ValveProduct1205"/>
+  <int value="685642498" label="ValveProduct1302"/>
+  <int value="685642499" label="ValveProduct1303"/>
+  <int value="685642500" label="ValveProduct1304"/>
+  <int value="685642501" label="ValveProduct1305"/>
   <int value="740433920" label="QanbaProduct2000"/>
   <int value="768096288" label="8BitdoProduct3820"/>
   <int value="781547301" label="ScufProduct7725"/>
