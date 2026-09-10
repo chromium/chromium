@@ -45,10 +45,8 @@
 #include "net/log/test_net_log.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/test/url_request/url_request_failed_job.h"
 #include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request_context_builder.h"
-#include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -205,7 +203,6 @@ class SessionServiceImplTest : public ::testing::Test,
   void TearDown() override {
     // Reset the `network_delegate_` to avoid a dangling pointer.
     network_delegate_ = nullptr;
-    net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
   TestNetworkDelegate* network_delegate() { return network_delegate_; }
@@ -5417,111 +5414,4 @@ TEST_F(SessionServiceImplTestWithoutSingleSignOn,
       "Net.DeviceBoundSessions.RegistrationResult.SingleSignOn", 0);
 }
 
-TEST_F(SessionServiceImplTest,
-       DeferredRequestRefreshTimeout_UnblocksSingleRequestAndPreservesSession) {
-  URLRequestFailedJob::AddUrlHandlerForHostname("example.com");
-
-  GURL hanging_refresh_url = URLRequestFailedJob::GetMockHttpsUrlForHostname(
-      ERR_IO_PENDING, "example.com");
-  AddSessionsForTesting({{kSessionId, hanging_refresh_url.spec(), kOrigin}});
-
-  const SchemefulSite site(kTestUrl);
-  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
-
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
-                               net::handles::kInvalidNetworkHandle);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-
-  HttpRequestHeaders extra_headers;
-  DbscRequest dbsc_request(request.get());
-  std::optional<SessionService::DeferralParams> maybe_deferral =
-      service().ShouldDefer(dbsc_request, &extra_headers,
-                            FirstPartySetMetadata());
-  ASSERT_TRUE(maybe_deferral);
-
-  base::test::TestFuture<RefreshResult> future;
-  service().DeferRequestForRefresh(
-      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
-      future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(base::Seconds(20));
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Take(), RefreshResult::kUnreachable);
-
-  // Assert that the session credentials are still preserved.
-  const Session* session =
-      service().GetSession({site, Session::Id(kSessionId)});
-  ASSERT_TRUE(session);
-  EXPECT_EQ(*session->id(), kSessionId);
-}
-
-TEST_F(
-    SessionServiceImplTest,
-    DeferredRequestRefreshTimeout_UnblocksMultipleRequestsAndPreservesSession) {
-  URLRequestFailedJob::AddUrlHandlerForHostname("example.com");
-
-  GURL hanging_refresh_url = URLRequestFailedJob::GetMockHttpsUrlForHostname(
-      ERR_IO_PENDING, "example.com");
-  AddSessionsForTesting({{kSessionId, hanging_refresh_url.spec(), kOrigin}});
-
-  const SchemefulSite site(kTestUrl);
-  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
-
-  net::TestDelegate delegate1;
-  std::unique_ptr<URLRequest> request1 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation,
-                               net::handles::kInvalidNetworkHandle);
-  request1->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  DbscRequest dbsc_request1(request1.get());
-
-  net::TestDelegate delegate2;
-  std::unique_ptr<URLRequest> request2 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation,
-                               net::handles::kInvalidNetworkHandle);
-  request2->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  DbscRequest dbsc_request2(request2.get());
-
-  net::TestDelegate delegate3;
-  std::unique_ptr<URLRequest> request3 =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate3, kDummyAnnotation,
-                               net::handles::kInvalidNetworkHandle);
-  request3->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  DbscRequest dbsc_request3(request3.get());
-
-  base::test::TestFuture<RefreshResult> future1;
-  base::test::TestFuture<RefreshResult> future2;
-  base::test::TestFuture<RefreshResult> future3;
-
-  service().DeferRequestForRefresh(
-      dbsc_request1, SessionService::DeferralParams(Session::Id(kSessionId)),
-      future1.GetCallback());
-  service().DeferRequestForRefresh(
-      dbsc_request2, SessionService::DeferralParams(Session::Id(kSessionId)),
-      future2.GetCallback());
-  service().DeferRequestForRefresh(
-      dbsc_request3, SessionService::DeferralParams(Session::Id(kSessionId)),
-      future3.GetCallback());
-
-  EXPECT_FALSE(future1.IsReady());
-  EXPECT_FALSE(future2.IsReady());
-  EXPECT_FALSE(future3.IsReady());
-
-  FastForwardBy(base::Seconds(20));
-
-  EXPECT_TRUE(future1.IsReady());
-  EXPECT_TRUE(future2.IsReady());
-  EXPECT_TRUE(future3.IsReady());
-  EXPECT_EQ(future1.Take(), RefreshResult::kUnreachable);
-  EXPECT_EQ(future2.Take(), RefreshResult::kUnreachable);
-  EXPECT_EQ(future3.Take(), RefreshResult::kUnreachable);
-
-  // Assert that the session credentials are still preserved.
-  const Session* session =
-      service().GetSession({site, Session::Id(kSessionId)});
-  ASSERT_TRUE(session);
-  EXPECT_EQ(*session->id(), kSessionId);
-}
 }  // namespace net::device_bound_sessions

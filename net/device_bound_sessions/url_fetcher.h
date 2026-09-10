@@ -6,8 +6,6 @@
 #define NET_DEVICE_BOUND_SESSIONS_URL_FETCHER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "net/base/net_export.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
@@ -24,15 +22,11 @@ namespace net::device_bound_sessions {
 
 class NET_EXPORT URLFetcher : public URLRequest::Delegate {
  public:
-  // If positive, `timeout` configures a watchdog timer that cancels the request
-  // with `net::ERR_TIMED_OUT` if it does not complete within the specified
-  // duration. Non-positive durations disable the watchdog timer.
   URLFetcher(const URLRequestContext* context,
              GURL url,
              const url::Origin& referring_origin,
              std::optional<net::NetLogSource> net_log_source,
-             bool is_refresh,
-             base::TimeDelta timeout = base::TimeDelta());
+             bool is_refresh);
   ~URLFetcher() override;
 
   void Start(base::OnceClosure complete_callback);
@@ -74,17 +68,12 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
                                        scoped_refptr<SSLPrivateKey> key,
                                        bool cancel);
 
-  void OnTimeout();
-  void Complete(int net_error);
-
   std::unique_ptr<URLRequest> request_;
   scoped_refptr<IOBuffer> buf_;
   std::string data_received_;
   int net_error_ = OK;
   base::OnceClosure callback_;
   const url::Origin referring_origin_;
-  const base::TimeDelta timeout_;
-  base::OneShotTimer watchdog_timer_;
 
   base::WeakPtrFactory<URLFetcher> weak_factory_{this};
 };

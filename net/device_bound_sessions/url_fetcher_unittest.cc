@@ -12,11 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "net/base/features.h"
@@ -34,8 +32,6 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/test/url_request/url_request_failed_job.h"
-#include "net/test/url_request/url_request_mock_data_job.h"
-#include "net/test/url_request/url_request_mock_http_job.h"
 #include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -54,13 +50,8 @@ namespace {
 
 class URLFetcherTest : public TestWithTaskEnvironment {
  protected:
-  URLFetcherTest()
-      : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        context_(CreateTestURLRequestContextBuilder()->Build()) {
+  URLFetcherTest() : context_(CreateTestURLRequestContextBuilder()->Build()) {
     URLRequestFailedJob::AddUrlHandler();
-    URLRequestMockHTTPJob::AddUrlHandlers(GetTestNetDataDirectory());
-    URLRequestMockDataJob::AddUrlHandler();
   }
 
   ~URLFetcherTest() override {
@@ -283,28 +274,6 @@ TEST_F(URLFetcherTest, RedirectInsecureProtocolDowngradeBlocked) {
   EXPECT_EQ(fetcher->data_received(), "");
 }
 
-TEST_F(URLFetcherTest,
-       RedirectInsecureProtocolDowngradeBlocked_DisarmsWatchdog) {
-  GURL initial_url = URLRequestMockHTTPJob::GetMockUrl(
-      "url_request_unittest/redirect302-to-echo");
-  constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), initial_url, url::Origin::Create(initial_url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-
-  EXPECT_EQ(fetcher->net_error(), ERR_UNSAFE_REDIRECT);
-  EXPECT_EQ(fetcher->data_received(), "");
-
-  // Assert that the watchdog timer was stopped upon rejection and does not
-  // fire later.
-  FastForwardBy(kTimeout * 2);
-  EXPECT_EQ(fetcher->net_error(), ERR_UNSAFE_REDIRECT);
-}
-
 TEST_F(URLFetcherTest, ImmediateErrorInOnResponseStarted) {
   GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
       URLRequestFailedJob::READ_SYNC, ERR_FAILED);
@@ -318,165 +287,6 @@ TEST_F(URLFetcherTest, ImmediateErrorInOnResponseStarted) {
 
   EXPECT_EQ(fetcher->net_error(), ERR_FAILED);
   EXPECT_EQ(fetcher->data_received(), "");
-}
-
-TEST_F(URLFetcherTest, Start_WatchdogTimeout_HeadersStalled) {
-  EmbeddedTestServer server;
-  server.RegisterRequestHandler(
-      base::BindRepeating([](const test_server::HttpRequest& request)
-                              -> std::unique_ptr<test_server::HttpResponse> {
-        return std::make_unique<test_server::HungResponse>();
-      }));
-  ASSERT_TRUE(server.Start());
-
-  GURL url = server.GetURL("/");
-  constexpr base::TimeDelta kTimeout = base::Seconds(2);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(kTimeout);
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(fetcher->net_error(), ERR_TIMED_OUT);
-}
-
-TEST_F(URLFetcherTest, Start_WatchdogTimeout_BodyStalled) {
-  EmbeddedTestServer server;
-  server.RegisterRequestHandler(
-      base::BindRepeating([](const test_server::HttpRequest& request)
-                              -> std::unique_ptr<test_server::HttpResponse> {
-        return std::make_unique<test_server::HungAfterHeadersHttpResponse>();
-      }));
-  ASSERT_TRUE(server.Start());
-
-  GURL url = server.GetURL("/");
-  constexpr base::TimeDelta kTimeout = base::Seconds(2);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(kTimeout);
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(fetcher->net_error(), ERR_TIMED_OUT);
-}
-
-TEST_F(URLFetcherTest, Start_WatchdogTimeout_AcrossRedirect) {
-  EmbeddedTestServer server;
-  server.RegisterRequestHandler(
-      base::BindRepeating([](const test_server::HttpRequest& request)
-                              -> std::unique_ptr<test_server::HttpResponse> {
-        if (request.relative_url == "/redirect-to-hung") {
-          auto response = std::make_unique<test_server::BasicHttpResponse>();
-          response->set_code(HTTP_FOUND);
-          response->AddCustomHeader("Location", "/hung");
-          return response;
-        } else if (request.relative_url == "/hung") {
-          return std::make_unique<test_server::HungResponse>();
-        }
-        return nullptr;
-      }));
-  ASSERT_TRUE(server.Start());
-
-  GURL initial_url = server.GetURL("/redirect-to-hung");
-  constexpr base::TimeDelta kTimeout = base::Seconds(2);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), initial_url, url::Origin::Create(initial_url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(kTimeout);
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(fetcher->net_error(), ERR_TIMED_OUT);
-}
-
-TEST_F(URLFetcherTest, Start_SuccessfulFetch_DisarmsWatchdog) {
-  GURL url =
-      URLRequestMockHTTPJob::GetMockUrl("url_request_unittest/simple.html");
-  constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(fetcher->net_error(), OK);
-  EXPECT_EQ(fetcher->data_received(), "hello\n");
-
-  FastForwardBy(kTimeout * 2);
-  EXPECT_EQ(fetcher->net_error(), OK);
-}
-
-TEST_F(URLFetcherTest, Start_NetworkError_DisarmsWatchdog) {
-  GURL url = URLRequestFailedJob::GetMockHttpUrl(ERR_CONNECTION_FAILED);
-  constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(fetcher->net_error(), ERR_CONNECTION_FAILED);
-
-  FastForwardBy(kTimeout * 2);
-  EXPECT_EQ(fetcher->net_error(), ERR_CONNECTION_FAILED);
-}
-
-TEST_F(URLFetcherTest, Start_CustomTimeout_TimesOutAtConfiguredDuration) {
-  EmbeddedTestServer server;
-  server.RegisterRequestHandler(
-      base::BindRepeating([](const test_server::HttpRequest& request)
-                              -> std::unique_ptr<test_server::HttpResponse> {
-        return std::make_unique<test_server::HungResponse>();
-      }));
-  ASSERT_TRUE(server.Start());
-
-  GURL url = server.GetURL("/");
-  constexpr base::TimeDelta kShortTimeout = base::Milliseconds(300);
-  static_assert(kShortTimeout == (kShortTimeout / 2) * 2,
-                "kShortTimeout is not divisible by 2");
-
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, kShortTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(kShortTimeout / 2);
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(kShortTimeout / 2);
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(fetcher->net_error(), ERR_TIMED_OUT);
-}
-
-TEST_F(URLFetcherTest, Start_ZeroTimeout_WatchdogDisabled) {
-  GURL url = URLRequestFailedJob::GetMockHttpUrlWithFailurePhase(
-      URLRequestFailedJob::START, ERR_IO_PENDING);
-  auto fetcher = std::make_unique<URLFetcher>(
-      context(), url, url::Origin::Create(url), std::nullopt,
-      /*is_refresh=*/false, /*timeout=*/base::TimeDelta());
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
 }
 
 class URLFetcherDeferralBypassTest : public base::test::WithFeatureOverride,
@@ -510,14 +320,6 @@ TEST_P(URLFetcherDeferralBypassTest, ModeIsAllowedWhenNotRefresh) {
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(URLFetcherDeferralBypassTest);
 
-// Note: This fixture runs an `EmbeddedTestServer(TYPE_HTTPS)` on a background
-// thread and therefore uses the default `TimeSource::SYSTEM_TIME`. Under
-// `TimeSource::MOCK_TIME`, `TaskEnvironment` advances virtual time whenever the
-// main thread becomes idle waiting for localhost socket I/O from the background
-// server thread, causing `SSLConnectJob::kSSLHandshakeTimeout` (30s) to expire
-// prematurely before TLS handshakes complete. Client certificate tests
-// requiring mock time (such as watchdog timeout tests) use
-// `URLRequestMockDataJob` under `URLFetcherTest`.
 class URLFetcherClientCertTest : public TestWithTaskEnvironment {
  public:
   using ClientCertHandlerCallback =
@@ -666,81 +468,6 @@ TEST_F(URLFetcherClientCertTest, CertificateSelectionNoSessionService) {
   run_loop.Run();
 
   EXPECT_EQ(fetcher->net_error(), ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-}
-
-TEST_F(URLFetcherClientCertTest,
-       CertSelectionCallbackInvokedAfterFetcherDestroyed) {
-  SelectClientCertificateCallback saved_cert_callback;
-  base::RunLoop cert_requested_run_loop;
-  ClientCertHandlerCallback client_cert_handler = base::BindLambdaForTesting(
-      [&](const GURL&, scoped_refptr<SSLCertRequestInfo>,
-          SelectClientCertificateCallback cert_callback) {
-        saved_cert_callback = std::move(cert_callback);
-        cert_requested_run_loop.Quit();
-      });
-
-  ASSERT_NO_FATAL_FAILURE(SetUpServerAndContext(client_cert_handler,
-                                                /*has_session_service=*/true));
-  ASSERT_NE(context()->device_bound_session_service(), nullptr);
-
-  auto fetcher = CreateDefaultFetcher();
-
-  fetcher->Start(base::DoNothing());
-  cert_requested_run_loop.Run();
-  ASSERT_TRUE(saved_cert_callback);
-
-  // Destroy the fetcher while cert selection is pending.
-  fetcher.reset();
-
-  // Invoking the cert selection callback after the fetcher has been destroyed
-  // must safely do nothing and not crash.
-  std::move(saved_cert_callback).Run(nullptr, nullptr, /*cancel=*/false);
-}
-
-// This test verifies that the watchdog timeout fires if client certificate
-// selection stalls. It uses `URLRequestMockDataJob` under `URLFetcherTest`
-// (which enables `TimeSource::MOCK_TIME`) rather than
-// `URLFetcherClientCertTest`'s `EmbeddedTestServer(TYPE_HTTPS)`, because
-// `MOCK_TIME` desynchronizes from background socket threads and causes
-// premature TLS handshake timeouts. In-memory mocking via
-// `URLRequestMockDataJob` allows testing the full 20-second watchdog duration
-// deterministically in zero wall-clock time.
-TEST_F(URLFetcherTest, Start_WatchdogTimeout_CertSelectionStalled) {
-  SelectClientCertificateCallback saved_cert_callback;
-  base::RunLoop cert_requested_run_loop;
-  auto builder = CreateTestURLRequestContextBuilder();
-  builder->set_unexportable_key_service(
-      std::make_unique<unexportable_keys::FakeUnexportableKeyService>());
-  builder->set_has_device_bound_session_service(true);
-  builder->set_device_bound_sessions_client_cert_handler(
-      base::BindLambdaForTesting(
-          [&](const GURL&, scoped_refptr<SSLCertRequestInfo>,
-              SelectClientCertificateCallback cert_callback) {
-            saved_cert_callback = std::move(cert_callback);
-            cert_requested_run_loop.Quit();
-          }));
-  auto context = builder->Build();
-  ASSERT_NE(context->device_bound_session_service(), nullptr);
-
-  constexpr base::TimeDelta kTimeout = base::Seconds(20);
-  GURL url = URLRequestMockDataJob::GetMockUrlForClientCertificateRequest();
-  auto fetcher = std::make_unique<URLFetcher>(
-      context.get(), url, url::Origin::Create(url),
-      /*net_log_source=*/std::nullopt, /*is_refresh=*/false, kTimeout);
-
-  base::test::TestFuture<void> future;
-  fetcher->Start(future.GetCallback());
-  cert_requested_run_loop.Run();
-  ASSERT_TRUE(saved_cert_callback);
-  EXPECT_FALSE(future.IsReady());
-
-  FastForwardBy(kTimeout);
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(fetcher->net_error(), ERR_TIMED_OUT);
-
-  // Invoking the cert selection callback after the watchdog timeout has already
-  // cancelled the request must not crash or trigger undefined behavior.
-  std::move(saved_cert_callback).Run(nullptr, nullptr, /*cancel=*/false);
 }
 
 }  // namespace

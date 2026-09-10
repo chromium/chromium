@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -67,8 +66,7 @@ URLFetcher::URLFetcher(const URLRequestContext* context,
                        GURL url,
                        const url::Origin& referring_origin,
                        std::optional<net::NetLogSource> net_log_source,
-                       bool is_refresh,
-                       base::TimeDelta timeout)
+                       bool is_refresh)
     : request_(context->CreateRequest(url,
                                       IDLE,
                                       this,
@@ -79,8 +77,7 @@ URLFetcher::URLFetcher(const URLRequestContext* context,
                                       /*is_for_websockets=*/false,
                                       net_log_source)),
       buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)),
-      referring_origin_(referring_origin),
-      timeout_(timeout) {
+      referring_origin_(referring_origin) {
   if (is_refresh &&
       base::FeatureList::IsEnabled(
           net::features::
@@ -94,32 +91,7 @@ URLFetcher::~URLFetcher() = default;
 
 void URLFetcher::Start(base::OnceClosure complete_callback) {
   callback_ = std::move(complete_callback);
-  CHECK(callback_);
-  if (timeout_.is_positive()) {
-    // SAFETY: `watchdog_timer_` is owned by `this` and destroyed before `this`.
-    watchdog_timer_.Start(
-        FROM_HERE, timeout_,
-        base::BindOnce(&URLFetcher::OnTimeout, base::Unretained(this)));
-  }
   request_->Start();
-}
-
-void URLFetcher::OnTimeout() {
-  Complete(net::ERR_TIMED_OUT);
-}
-
-void URLFetcher::Complete(int net_error) {
-  if (!callback_) {
-    return;
-  }
-  watchdog_timer_.Stop();
-  net_error_ = net_error;
-  // Move `callback_` out immediately to avoid re-entrancy issues.
-  base::ScopedClosureRunner runner(std::move(callback_));
-  if (net_error != OK && request_->is_pending()) {
-    request_->CancelWithError(net_error);
-  }
-  // `this` may be deleted when `runner` runs at scope exit.
 }
 
 void URLFetcher::OnReceivedRedirect(URLRequest* request,
@@ -127,20 +99,14 @@ void URLFetcher::OnReceivedRedirect(URLRequest* request,
                                     bool* defer_redirect) {
   CHECK_EQ(request, request_.get());
 
-  // If `callback_` is null, the watchdog timer has already fired and invoked
-  // `OnTimeout()`, which cancelled the request with `ERR_TIMED_OUT`.
-  if (!callback_) {
-    return;
-  }
-
   // 1. Strict Protocol-Downgrade Defense:
   // DBSC authentication state and cryptographic headers are strictly bound to
   // authenticated, cryptographic origins. Redirects targeting unencrypted or
   // non-trustworthy (HTTP) transports are rejected immediately to guarantee
   // zero plaintext leakage of session cookies and tokens.
   if (!IsSecure(redirect_info.new_url)) {
+    request->CancelWithError(net::ERR_UNSAFE_REDIRECT);
     *defer_redirect = true;
-    Complete(net::ERR_UNSAFE_REDIRECT);
     return;
   }
 
@@ -165,11 +131,10 @@ void URLFetcher::OnReceivedRedirect(URLRequest* request,
 }
 
 void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
-  if (!callback_) {
-    return;
-  }
+  net_error_ = net_error;
   if (net_error != OK) {
-    Complete(net_error);
+    std::move(callback_).Run();
+    // `this` may be deleted.
     return;
   }
 
@@ -180,15 +145,14 @@ void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
     // `this` may be deleted.
     return;
   } else if (bytes_read_or_error != ERR_IO_PENDING) {
-    Complete(bytes_read_or_error);
+    net_error_ = bytes_read_or_error;
+    std::move(callback_).Run();
+    // `this` may be deleted.
     return;
   }
 }
 
 void URLFetcher::OnReadCompleted(URLRequest* request, int bytes_read_or_error) {
-  if (!callback_) {
-    return;
-  }
   if (bytes_read_or_error > 0) {
     data_received_.append(buf_->data(), bytes_read_or_error);
   }
@@ -200,14 +164,13 @@ void URLFetcher::OnReadCompleted(URLRequest* request, int bytes_read_or_error) {
     }
   }
 
-  if (bytes_read_or_error == 0) {
-    // 0 bytes indicates EOF; the request completed successfully.
-    Complete(net::OK);
-    return;
+  if (bytes_read_or_error < 0 && bytes_read_or_error != ERR_IO_PENDING) {
+    net_error_ = bytes_read_or_error;
   }
 
   if (bytes_read_or_error != ERR_IO_PENDING) {
-    Complete(bytes_read_or_error);
+    std::move(callback_).Run();
+    // `this` may be deleted.
     return;
   }
 }
@@ -218,15 +181,9 @@ std::string URLFetcher::TakeDataReceived() {
 
 void URLFetcher::OnCertificateRequested(URLRequest* request,
                                         SSLCertRequestInfo* cert_request_info) {
-  // If `callback_` is null, the watchdog timer has already fired and invoked
-  // `OnTimeout()`, which cancelled the request with `ERR_TIMED_OUT`.
-  if (!callback_) {
-    return;
-  }
-
   SessionService* service = request->context()->device_bound_session_service();
   if (!service) {
-    Complete(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+    request->CancelWithError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
     return;
   }
 
@@ -240,14 +197,8 @@ void URLFetcher::ContinueWithSelectedCertificate(
     scoped_refptr<X509Certificate> cert,
     scoped_refptr<SSLPrivateKey> key,
     bool cancel) {
-  // If `callback_` is null, the watchdog timer has already fired and invoked
-  // `OnTimeout()`, which cancelled the request with `ERR_TIMED_OUT`.
-  if (!callback_) {
-    return;
-  }
-
   if (cancel) {
-    Complete(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+    request_->CancelWithError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   } else if (cert && key) {
     request_->ContinueWithCertificate(std::move(cert), std::move(key));
   } else {
