@@ -204,7 +204,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       {"homeButtonAccName", IDS_ACCNAME_HOME},
       {"homeButtonTooltip", IDS_TOOLTIP_HOME},
       {"locationAccName", IDS_ACCNAME_LOCATION},
-      {"mediaButtonTooltip", IDS_GLOBAL_MEDIA_CONTROLS_ICON_TOOLTIP_TEXT},
       {"overflowButtonTooltip", IDS_TOOLTIP_OVERFLOW_BUTTON},
       {"performanceInterventionButtonAccName",
        IDS_PERFORMANCE_INTERVENTION_BUTTON_ACCNAME},
@@ -248,8 +247,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       "enableAvatarButton",
       features::IsWebUIAvatarButtonEnabled() &&
           AvatarToolbarButtonInterface::CanShowForProfile(profile));
-  source->AddBoolean("enableMediaButton",
-                     features::IsWebUIMediaButtonEnabled());
   source->AddBoolean("enableExtensionsContainer",
                      features::IsWebUIExtensionsContainerEnabled());
   source->AddBoolean("enablePerformanceInterventionButton",
@@ -576,8 +573,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        PermissionChipView::kIndicatorChipElementId,
        kToolbarBatterySaverButtonElementId,
        kExtensionsMenuButtonElementId,
-       kToolbarActionViewElementId,
-       kToolbarMediaButtonElementId});
+       kToolbarActionViewElementId});
   auto result = webui_toolbar::GetPinnedToolbarActionElementIds();
   std::vector<ui::ElementIdentifier> content_setting_identifiers =
       ContentSettingImageModel::GetAllElementIdentifiers();

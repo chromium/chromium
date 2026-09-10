@@ -84,10 +84,6 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
 
   onPerformanceInterventionButtonMousePressed() {}
 
-  onMediaButtonClicked(_isMouseInteraction: boolean) {}
-
-  onMediaButtonMousePressed() {}
-
   onLocationBarFocusWithinChanged(_focusInside: boolean) {}
 
   onLhsChipMousePressed(id: LhsChipIdentifier, _isMiddleClick: boolean) {

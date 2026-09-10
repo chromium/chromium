@@ -100,10 +100,6 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   onPerformanceInterventionButtonClicked(_isMouseInteraction: boolean) {}
 
   onPerformanceInterventionButtonMousePressed() {}
-
-  onMediaButtonClicked(_isMouseInteraction: boolean) {}
-
-  onMediaButtonMousePressed() {}
 }
 
 class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {

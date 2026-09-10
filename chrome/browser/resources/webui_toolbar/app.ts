@@ -13,7 +13,6 @@ import './pinned_toolbar_actions.js';
 import './extensions.js';
 import './app_menu_button.js';
 import './avatar_button.js';
-import './media_button.js';
 import './overflow_button.js';
 import '/shared/icon_table.js';
 import '/shared/icon_from_table.js';
@@ -182,7 +181,6 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
     selector: '#performance-intervention',
     id: 'kToolbarPerformanceInterventionButtonElementId',
   },
-  {selector: '#media', id: 'kToolbarMediaButtonElementId'},
 ];
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
@@ -315,7 +313,6 @@ export class ToolbarAppElement extends AppElementBase {
       isExtensionsContainerEnabled_: {type: Boolean},
       isAvatarButtonEnabled_: {type: Boolean},
       isPerformanceInterventionButtonEnabled_: {type: Boolean},
-      isMediaButtonEnabled_: {type: Boolean},
       isInitialized_: {type: Boolean},
       isInitializedSyncForTesting_: {type: Boolean},
       initialSyncBootSuccess_: {type: Boolean},
@@ -345,8 +342,6 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enableAvatarButton');
   protected accessor isPerformanceInterventionButtonEnabled_: boolean =
       loadTimeData.getBoolean('enablePerformanceInterventionButton');
-  protected accessor isMediaButtonEnabled_: boolean =
-      loadTimeData.getBoolean('enableMediaButton');
   /**
    * Tracks whether the element has received its first navigation state
    * update from the browser and completed its initial visual render.
@@ -472,11 +467,6 @@ export class ToolbarAppElement extends AppElementBase {
       hasLinearGradientRing: false,
     },
     overflowButtonControlState: {
-      isContextMenuVisible: false,
-    },
-    mediaControlState: {
-      enabled: true,
-      shouldBeShown: false,
       isContextMenuVisible: false,
     },
     layoutConstantsVersion:
@@ -681,7 +671,6 @@ export class ToolbarAppElement extends AppElementBase {
       '#battery-saver',
       '#performance-intervention',
       '#avatar',
-      '#media',
       '#overflow',
       '#app-menu',
     ];

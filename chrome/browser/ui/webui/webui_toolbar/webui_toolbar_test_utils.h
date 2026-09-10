@@ -205,11 +205,6 @@ class MockToolbarUIServiceDelegate
               OnPerformanceInterventionButtonMousePressed,
               (),
               (override));
-  MOCK_METHOD(void,
-              OnMediaButtonClicked,
-              (bool is_mouse_interaction),
-              (override));
-  MOCK_METHOD(void, OnMediaButtonMousePressed, (), (override));
 };
 
 class MockBrowserControlsServiceDelegate
