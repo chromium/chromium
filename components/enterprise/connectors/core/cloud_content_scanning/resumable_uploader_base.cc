@@ -176,6 +176,32 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
   AssertCalledOnUIThread();
 }
 
+ResumableUploadRequestBase::ResumableUploadRequestBase(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    scoped_refptr<network::ResourceRequestBody> request_body,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             request_body,
+                             histogram_suffix,
+                             traffic_annotation,
+                             base::DoNothing(),
+                             ui_task_runner),
+      verdict_received_callback_(std::move(verdict_received_callback)),
+      content_uploaded_callback_(std::move(content_uploaded_callback)),
+      get_data_result_(ScanRequestUploadResult::kSuccess),
+      force_sync_upload_(force_sync_upload) {
+  AssertCalledOnUIThread();
+}
+
 ResumableUploadRequestBase::~ResumableUploadRequestBase() = default;
 
 void ResumableUploadRequestBase::OnSendContentCompleted(
@@ -208,11 +234,22 @@ void ResumableUploadRequestBase::SetMetadataRequestHeaders(
   CHECK(request);
 
   // Page, string and file requests should have non-zero `data_size_`.
-  DCHECK_GT(data_size_, (uint64_t)0);
+  // Network requests don't currently attach a size as they can represent
+  // chunked data of unknown size.
+  switch (data_source_) {
+    case FILE:
+    case STRING:
+    case PAGE:
+    case IMAGE:
+      DCHECK_GT(data_size_, (uint64_t)0);
+      break;
+    case NETWORK_REQUEST:
+      break;
+  }
 
   request->headers.SetHeader(kUploadProtocolHeader, "resumable");
   request->headers.SetHeader(kUploadCommandHeader, "start");
-  if (hash_computation_is_synchronous_) {
+  if (hash_computation_is_synchronous_ && data_size_ != 0) {
     // When the request already has hash, let the server know the content size,
     // since there will not need to be an empty final file upload.
     // TODO(b/496284950): Remove this header entirely once webprotect accepts
@@ -266,6 +303,8 @@ std::string ResumableUploadRequestBase::GetRequestType() {
       return "Print";
     case IMAGE:
       return "Image";
+    case NETWORK_REQUEST:
+      return "NetworkRequest";
   }
 }
 
@@ -403,6 +442,7 @@ void ResumableUploadRequestBase::SendContentSoon() {
     // use multipart uploads.
     case IMAGE:
     case STRING:
+    case NETWORK_REQUEST:
       SendContentNow(std::move(request));
       break;
     default:
@@ -449,15 +489,19 @@ void ResumableUploadRequestBase::SendContentNow(
     data_pipe_getter_->Clone(data_pipe_getter.InitWithNewPipeAndPassReceiver());
     request->request_body = new network::ResourceRequestBody();
     request->request_body->AppendDataPipe(std::move(data_pipe_getter));
+  } else if (request_body_) {
+    request->request_body = request_body_;
   }
 
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
   url_loader_->SetAllowHttpErrorResults(true);
 
-  // No data pipe and no hash callback indicates data_ is an image.
-  if (!data_pipe_getter_ && hash_computation_is_synchronous_) {
-    url_loader_->AttachStringForUpload(data_, kImageContentType);
+  if (data_source_ == IMAGE || data_source_ == STRING) {
+    DCHECK(!data_pipe_getter_);
+    DCHECK(!request_body_);
+    url_loader_->AttachStringForUpload(
+        data_, data_source_ == IMAGE ? kImageContentType : kUploadContentType);
   }
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(

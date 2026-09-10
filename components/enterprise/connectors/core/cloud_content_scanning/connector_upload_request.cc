@@ -78,6 +78,25 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation) {}
 
+ConnectorUploadRequest::ConnectorUploadRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    scoped_refptr<network::ResourceRequestBody> request_body,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : base_url_(base_url),
+      metadata_(metadata),
+      data_source_(NETWORK_REQUEST),
+      request_body_(request_body),
+      histogram_suffix_(histogram_suffix),
+      callback_(std::move(callback)),
+      ui_task_runner_(ui_task_runner),
+      url_loader_factory_(url_loader_factory),
+      traffic_annotation_(traffic_annotation) {}
+
 ConnectorUploadRequest::~ConnectorUploadRequest() {
   // Take ownership of the file in `data_pipe_getter_` if there is one to close
   // it on another thread since it makes blocking calls.

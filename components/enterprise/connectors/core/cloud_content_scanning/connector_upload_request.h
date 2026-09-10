@@ -14,6 +14,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -36,6 +37,7 @@ class ConnectorUploadRequest {
     FILE = 1,
     PAGE = 2,
     IMAGE = 3,
+    NETWORK_REQUEST = 4,
   };
 
   using Callback = base::OnceCallback<
@@ -86,6 +88,18 @@ class ConnectorUploadRequest {
       Callback callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
+  // Creates a  ConnectorUploadRequest, which will upload `metadata` and the
+  // network request in `request_body` to the given `base_url`.
+  ConnectorUploadRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      Callback callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
   ConnectorUploadRequest(const ConnectorUploadRequest&) = delete;
   ConnectorUploadRequest& operator=(const ConnectorUploadRequest&) = delete;
   ConnectorUploadRequest(ConnectorUploadRequest&&) = delete;
@@ -129,6 +143,10 @@ class ConnectorUploadRequest {
 
   // Memory to upload. Only populated for PAGE requests.
   base::ReadOnlySharedMemoryRegion page_region_;
+
+  // The body of the network request being evaluated. Only populated for
+  // NETWORK_REQUEST requests.
+  scoped_refptr<network::ResourceRequestBody> request_body_;
 
   // Size of the file or page region.
   uint64_t data_size_ = 0;

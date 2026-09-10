@@ -30,7 +30,9 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_data_pipe_getter.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -100,6 +102,26 @@ class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
             "metadata",
             get_data_result,
             std::move(page_region),
+            "DummySuffix",
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            std::move(verdict_received_callback),
+            std::move(content_uploaded_callback),
+            force_sync_upload,
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+
+  MockResumableUploadRequestBase(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      ResumableUploadRequestBase::VerdictReceivedCallback
+          verdict_received_callback,
+      ResumableUploadRequestBase::ContentUploadedCallback
+          content_uploaded_callback,
+      bool force_sync_upload)
+      : ResumableUploadRequestBase(
+            url_loader_factory,
+            GURL("https://google.com"),
+            "metadata",
+            std::move(request_body),
             "DummySuffix",
             TRAFFIC_ANNOTATION_FOR_TESTS,
             std::move(verdict_received_callback),
@@ -472,6 +494,290 @@ TEST_F(ResumableUploadStringRequestTest,
                                "image/png");
 }
 
+TEST_F(ResumableUploadRequestBaseTest,
+       GeneratesCorrectMetadataHeaders_NetworkRequest) {
+  network::ResourceRequest resource_request;
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  auto request = std::make_unique<MockResumableUploadRequestBase>(
+      nullptr, request_body, base::DoNothing(), base::DoNothing(), false);
+  request->set_access_token("test-token");
+  request->SetMetadataRequestHeaders(&resource_request);
+
+  ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
+  EXPECT_THAT(resource_request.headers.GetHeader("X-Goog-Upload-Protocol"),
+              testing::Optional(std::string("resumable")));
+
+  ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Command"));
+  EXPECT_THAT(resource_request.headers.GetHeader("X-Goog-Upload-Command"),
+              testing::Optional(std::string("start")));
+
+  ASSERT_TRUE(
+      resource_request.headers.HasHeader("X-Goog-Upload-Header-Content-Type"));
+  EXPECT_THAT(
+      resource_request.headers.GetHeader("X-Goog-Upload-Header-Content-Type"),
+      testing::Optional(std::string("application/octet-stream")));
+
+  // Since data_size_ is 0 for network requests, no content length header should
+  // be set.
+  EXPECT_FALSE(resource_request.headers.HasHeader(
+      "X-Goog-Upload-Header-Content-Length"));
+
+  ASSERT_TRUE(resource_request.headers.HasHeader("Authorization"));
+  EXPECT_THAT(resource_request.headers.GetHeader("Authorization"),
+              testing::Optional(std::string("Bearer test-token")));
+}
+
+TEST_F(ResumableUploadRequestBaseTest, NetworkRequestStreamsDataPipe) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  const std::string kPayload = "streamed network body data via pipe";
+
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+  auto test_data_pipe_getter = std::make_unique<network::TestDataPipeGetter>(
+      kPayload, data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+
+  scoped_refptr<network::ResourceRequestBody> content_upload_request_body;
+  std::string content_upload_method;
+  std::string content_upload_command;
+  std::string content_upload_offset;
+  bool verdict_called = false;
+  bool content_uploaded_called = false;
+
+  auto verdict_callback = base::BindLambdaForTesting(
+      [&](bool success, int http_status, const std::string& response_data) {
+        EXPECT_TRUE(success);
+        EXPECT_EQ(net::HTTP_OK, http_status);
+        EXPECT_EQ("final_response", response_data);
+        verdict_called = true;
+      });
+
+  auto content_callback = base::BindLambdaForTesting([&]() {
+    content_uploaded_called = true;
+    run_loop.Quit();
+  });
+
+  auto request = std::make_unique<MockResumableUploadRequestBase>(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      request_body, std::move(verdict_callback), std::move(content_callback),
+      /*force_sync_upload=*/false);
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        if (req.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (req.url == GURL(kUploadUrl)) {
+          content_upload_request_body = req.request_body;
+          content_upload_method = req.method;
+          content_upload_command =
+              req.headers.GetHeader("X-Goog-Upload-Command")
+                  .value_or(std::string());
+          content_upload_offset = req.headers.GetHeader("X-Goog-Upload-Offset")
+                                      .value_or(std::string());
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+
+  request->Start();
+  run_loop.Run();
+
+  EXPECT_TRUE(verdict_called);
+  EXPECT_TRUE(content_uploaded_called);
+  EXPECT_EQ(content_upload_method, "POST");
+  EXPECT_EQ(content_upload_command, "upload, finalize");
+  EXPECT_EQ(content_upload_offset, "0");
+  ASSERT_TRUE(content_upload_request_body);
+  EXPECT_EQ(kPayload,
+            GetBodyFromResourceRequestBody(*content_upload_request_body));
+  EXPECT_EQ(request->GetUploadInfo(), "Resumable - Full content scan");
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ResumableRequest.ContentCheck.NetworkRequest.Duration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix", net::HTTP_OK,
+      1);
+}
+
+TEST_F(ResumableUploadRequestBaseTest, NetworkRequestStreamsLargeDataPipe) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  // Create a large payload (100 KB) to ensure chunked streaming across multiple
+  // reads.
+  const std::string kPayload(100 * 1024, 'A');
+
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+  auto test_data_pipe_getter = std::make_unique<network::TestDataPipeGetter>(
+      kPayload, data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+
+  scoped_refptr<network::ResourceRequestBody> content_upload_request_body;
+  std::string content_upload_method;
+  std::string content_upload_command;
+  std::string content_upload_offset;
+  bool verdict_called = false;
+  bool content_uploaded_called = false;
+
+  auto verdict_callback = base::BindLambdaForTesting(
+      [&](bool success, int http_status, const std::string& response_data) {
+        EXPECT_TRUE(success);
+        EXPECT_EQ(net::HTTP_OK, http_status);
+        EXPECT_EQ("final_response", response_data);
+        verdict_called = true;
+      });
+
+  auto content_callback = base::BindLambdaForTesting([&]() {
+    content_uploaded_called = true;
+    run_loop.Quit();
+  });
+
+  auto request = std::make_unique<MockResumableUploadRequestBase>(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      request_body, std::move(verdict_callback), std::move(content_callback),
+      /*force_sync_upload=*/false);
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        if (req.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (req.url == GURL(kUploadUrl)) {
+          content_upload_request_body = req.request_body;
+          content_upload_method = req.method;
+          content_upload_command =
+              req.headers.GetHeader("X-Goog-Upload-Command")
+                  .value_or(std::string());
+          content_upload_offset = req.headers.GetHeader("X-Goog-Upload-Offset")
+                                      .value_or(std::string());
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+
+  request->Start();
+  run_loop.Run();
+
+  EXPECT_TRUE(verdict_called);
+  EXPECT_TRUE(content_uploaded_called);
+  EXPECT_EQ(content_upload_method, "POST");
+  EXPECT_EQ(content_upload_command, "upload, finalize");
+  EXPECT_EQ(content_upload_offset, "0");
+  ASSERT_TRUE(content_upload_request_body);
+  EXPECT_EQ(kPayload,
+            GetBodyFromResourceRequestBody(*content_upload_request_body));
+  EXPECT_EQ(request->GetUploadInfo(), "Resumable - Full content scan");
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ResumableRequest.ContentCheck.NetworkRequest.Duration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix", net::HTTP_OK,
+      1);
+}
+
+TEST_F(ResumableUploadRequestBaseTest, NetworkRequestStreamsEmptyDataPipe) {
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  const std::string kPayload = "";
+
+  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+  auto test_data_pipe_getter = std::make_unique<network::TestDataPipeGetter>(
+      kPayload, data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
+
+  scoped_refptr<network::ResourceRequestBody> content_upload_request_body;
+  bool verdict_called = false;
+  bool content_uploaded_called = false;
+
+  auto verdict_callback = base::BindLambdaForTesting(
+      [&](bool success, int http_status, const std::string& response_data) {
+        EXPECT_TRUE(success);
+        EXPECT_EQ(net::HTTP_OK, http_status);
+        EXPECT_EQ("final_response", response_data);
+        verdict_called = true;
+      });
+
+  auto content_callback = base::BindLambdaForTesting([&]() {
+    content_uploaded_called = true;
+    run_loop.Quit();
+  });
+
+  auto request = std::make_unique<MockResumableUploadRequestBase>(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      request_body, std::move(verdict_callback), std::move(content_callback),
+      /*force_sync_upload=*/false);
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        if (req.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (req.url == GURL(kUploadUrl)) {
+          content_upload_request_body = req.request_body;
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+
+  request->Start();
+  run_loop.Run();
+
+  EXPECT_TRUE(verdict_called);
+  EXPECT_TRUE(content_uploaded_called);
+  ASSERT_TRUE(content_upload_request_body);
+  EXPECT_EQ(kPayload,
+            GetBodyFromResourceRequestBody(*content_upload_request_body));
+  EXPECT_EQ(request->GetUploadInfo(), "Resumable - Full content scan");
+}
+
 class ResumableUploadSendMetadataRequestTest
     : public ResumableUploadRequestBaseTest,
       public testing::WithParamInterface<bool> {
@@ -594,7 +900,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
       /*expected_bucket_count=*/1);
 }
 
-enum class UploadRequestType { kFile, kPage, kString };
+enum class UploadRequestType { kFile, kPage, kString, kNetworkRequest };
 
 class ResumableUploadSendContentRequestBaseTest
     : public ResumableUploadRequestBaseTest,
@@ -636,6 +942,13 @@ class ResumableUploadSendContentRequestBaseTest
             TRAFFIC_ANNOTATION_FOR_TESTS, std::move(verdict_received_callback),
             std::move(content_uploaded_callback), force_sync_upload,
             base::SingleThreadTaskRunner::GetCurrentDefault());
+      case UploadRequestType::kNetworkRequest:
+        return std::make_unique<MockResumableUploadRequestBase>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_),
+            CreateNetworkRequestBody(GetContent()),
+            std::move(verdict_received_callback),
+            std::move(content_uploaded_callback), force_sync_upload);
     }
   }
 
@@ -647,18 +960,32 @@ class ResumableUploadSendContentRequestBaseTest
         return "page content";
       case UploadRequestType::kString:
         return "string content";
+      case UploadRequestType::kNetworkRequest:
+        return "network request content";
     }
+  }
+
+  scoped_refptr<network::ResourceRequestBody> CreateNetworkRequestBody(
+      const std::string& content) {
+    mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+    test_data_pipe_getter_ = std::make_unique<network::TestDataPipeGetter>(
+        content, data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
+    auto body = base::MakeRefCounted<network::ResourceRequestBody>();
+    body->AppendDataPipe(std::move(data_pipe_getter_remote));
+    return body;
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<network::TestDataPipeGetter> test_data_pipe_getter_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          ResumableUploadSendContentRequestBaseTest,
                          testing::Values(UploadRequestType::kFile,
                                          UploadRequestType::kPage,
-                                         UploadRequestType::kString));
+                                         UploadRequestType::kString,
+                                         UploadRequestType::kNetworkRequest));
 
 TEST_P(ResumableUploadSendContentRequestBaseTest,
        HandlesSuccessfulContentScan) {
@@ -668,6 +995,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest,
   std::string content_upload_method;
   std::string content_upload_command;
   std::string content_upload_offset;
+
+  scoped_refptr<network::ResourceRequestBody> content_upload_request_body;
 
   auto callback =
       base::BindLambdaForTesting([&run_loop](bool success, int http_status,
@@ -699,6 +1028,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest,
         } else if (request.url == GURL(kUploadUrl)) {
           if (GetRequestType() == UploadRequestType::kString) {
             content_upload_body = network::GetUploadData(request);
+          } else if (GetRequestType() == UploadRequestType::kNetworkRequest) {
+            content_upload_request_body = request.request_body;
           }
           content_upload_method = request.method;
           content_upload_command =
@@ -721,12 +1052,22 @@ TEST_P(ResumableUploadSendContentRequestBaseTest,
   request->Start();
   run_loop.Run();
 
-  if (GetRequestType() == UploadRequestType::kString) {
-    EXPECT_EQ(GetContent(), content_upload_body);
-  } else {
-    EXPECT_EQ(GetContent(), GetBodyFromFileOrPageRequest(
-                                request->data_pipe_getter_for_testing()));
+  switch (GetRequestType()) {
+    case UploadRequestType::kString:
+      EXPECT_EQ(GetContent(), content_upload_body);
+      break;
+    case UploadRequestType::kFile:
+    case UploadRequestType::kPage:
+      EXPECT_EQ(GetContent(), GetBodyFromFileOrPageRequest(
+                                  request->data_pipe_getter_for_testing()));
+      break;
+    case UploadRequestType::kNetworkRequest:
+      ASSERT_TRUE(content_upload_request_body);
+      EXPECT_EQ(GetContent(),
+                GetBodyFromResourceRequestBody(*content_upload_request_body));
+      break;
   }
+
   EXPECT_EQ(content_upload_method, "POST");
   EXPECT_EQ(content_upload_command, "upload, finalize");
   EXPECT_EQ(content_upload_offset, "0");
@@ -739,7 +1080,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest,
 }
 
 TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFileTooLarge) {
-  if (GetRequestType() == UploadRequestType::kString) {
+  if (GetRequestType() == UploadRequestType::kString ||
+      GetRequestType() == UploadRequestType::kNetworkRequest) {
     GTEST_SKIP();
   }
   base::HistogramTester histogram_tester;
@@ -784,7 +1126,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFileTooLarge) {
 }
 
 TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesEncryptedFile) {
-  if (GetRequestType() == UploadRequestType::kString) {
+  if (GetRequestType() == UploadRequestType::kString ||
+      GetRequestType() == UploadRequestType::kNetworkRequest) {
     GTEST_SKIP();
   }
   base::HistogramTester histogram_tester;
@@ -887,6 +1230,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFailedContentScan) {
   std::string content_upload_command;
   std::string content_upload_offset;
 
+  scoped_refptr<network::ResourceRequestBody> content_upload_request_body;
+
   auto callback =
       base::BindLambdaForTesting([&run_loop](bool success, int http_status,
                                              const std::string& response_data) {
@@ -916,6 +1261,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFailedContentScan) {
         } else if (request.url == GURL(kUploadUrl)) {
           if (GetRequestType() == UploadRequestType::kString) {
             content_upload_body = network::GetUploadData(request);
+          } else if (GetRequestType() == UploadRequestType::kNetworkRequest) {
+            content_upload_request_body = request.request_body;
           }
           content_upload_method = request.method;
           content_upload_command =
@@ -936,12 +1283,22 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFailedContentScan) {
   request->Start();
   run_loop.Run();
 
-  if (GetRequestType() == UploadRequestType::kString) {
-    EXPECT_EQ(GetContent(), content_upload_body);
-  } else {
-    EXPECT_EQ(GetContent(), GetBodyFromFileOrPageRequest(
-                                request->data_pipe_getter_for_testing()));
+  switch (GetRequestType()) {
+    case UploadRequestType::kString:
+      EXPECT_EQ(GetContent(), content_upload_body);
+      break;
+    case UploadRequestType::kFile:
+    case UploadRequestType::kPage:
+      EXPECT_EQ(GetContent(), GetBodyFromFileOrPageRequest(
+                                  request->data_pipe_getter_for_testing()));
+      break;
+    case UploadRequestType::kNetworkRequest:
+      ASSERT_TRUE(content_upload_request_body);
+      EXPECT_EQ(GetContent(),
+                GetBodyFromResourceRequestBody(*content_upload_request_body));
+      break;
   }
+
   EXPECT_EQ(content_upload_method, "POST");
   EXPECT_EQ(content_upload_command, "upload, finalize");
   EXPECT_EQ(content_upload_offset, "0");
@@ -955,7 +1312,8 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFailedContentScan) {
 
 TEST_P(ResumableUploadSendContentRequestBaseTest,
        HandlesEncryptedFileContentUploadIfEnabled) {
-  if (GetRequestType() == UploadRequestType::kString) {
+  if (GetRequestType() == UploadRequestType::kString ||
+      GetRequestType() == UploadRequestType::kNetworkRequest) {
     GTEST_SKIP();
   }
 

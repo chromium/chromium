@@ -7,12 +7,19 @@
 
 #include <string>
 
+namespace network {
+class ResourceRequestBody;
+}  // namespace network
+
 namespace enterprise_connectors {
 
 class ConnectorDataPipeGetter;
 
 std::string GetBodyFromFileOrPageRequest(
     ConnectorDataPipeGetter* data_pipe_getter);
+
+std::string GetBodyFromResourceRequestBody(
+    const network::ResourceRequestBody& request_body);
 
 }  // namespace enterprise_connectors
 

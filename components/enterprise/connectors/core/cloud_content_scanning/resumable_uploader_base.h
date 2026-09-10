@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+#include "services/network/public/cpp/resource_request_body.h"
 
 namespace enterprise_connectors {
 
@@ -70,6 +71,21 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       const std::string& metadata,
       const std::string& data,
       ConnectorUploadRequest::DataSource data_source,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
+  // the network request to the given `base_url`, and its `request_body` if
+  // necessary.
+  ResumableUploadRequestBase(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,
