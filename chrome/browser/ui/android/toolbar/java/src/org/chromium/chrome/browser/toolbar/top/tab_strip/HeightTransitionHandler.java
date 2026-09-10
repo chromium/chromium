@@ -192,7 +192,7 @@ class HeightTransitionHandler {
         if (mTabStripSuppressed == suppress) return;
 
         mTabStripSuppressed = suppress;
-        requestTransition();
+        requestTransition(/* isVerticalTabToggle= */ true);
     }
 
     /** Return the current tab strip height. */
@@ -218,21 +218,21 @@ class HeightTransitionHandler {
                 ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
 
         if (TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting != null) {
-            requestTransition();
+            requestTransition(/* isVerticalTabToggle= */ false);
         }
     }
 
-    private void requestTransition() {
+    private void requestTransition(boolean isVerticalTabToggle) {
         if (canForceTransitionDuringStartup()) {
-            maybeUpdateTabStripVisibility();
+            maybeUpdateTabStripVisibility(isVerticalTabToggle);
         } else {
             mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
                     mCallbackController.makeCancelable(
-                            delegate -> maybeUpdateTabStripVisibility()));
+                            delegate -> maybeUpdateTabStripVisibility(isVerticalTabToggle)));
         }
     }
 
-    private void maybeUpdateTabStripVisibility() {
+    private void maybeUpdateTabStripVisibility(boolean isVerticalTabToggle) {
         // Do not allow callback to pass through when object is destroyed.
         if (mIsDestroyed) return;
 
@@ -260,37 +260,34 @@ class HeightTransitionHandler {
         controlContainerView().setMinimumHeight(maxHeight);
 
         boolean isCapturingDisabled = mControlContainer.isCapturingDisabled();
-        if (isCapturingDisabled || canForceTransitionDuringStartup()) {
-            updateTabStrip(tabStripHeight);
+        if (isCapturingDisabled) {
+            updateTabStrip(tabStripHeight, isVerticalTabToggle);
+            return;
         }
 
-        if (!isCapturingDisabled) {
-            // When we are forcing a transition height update during start up, skip waiting for the
-            // toolbar capture, since the native scene layer is not ready at this point.
-            if (canForceTransitionDuringStartup()) {
-                updateTabStrip(tabStripHeight);
-            }
-
-            // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
-            // stale e.g. still with the previous window width. Force invalidate the toolbar capture
-            // to make sure the it's up-to-date with the latest Android view.
-            var resourceAdapter = mControlContainer.getToolbarResourceAdapter();
-            DynamicResourceReadyOnceCallback.onNext(
-                    resourceAdapter, (resource) -> updateTabStrip(tabStripHeight));
-
-            // Post the invalidate to make sure another layout pass is done. This is to make sure
-            // the omnibox has the URL text updated to the final width of location bar after the
-            // toolbar tablet button animations.
-            // TODO(crbug.com/41493621): Trigger bitmap capture without mHandler#post.
-            // TODO(crbug.com/41494086): Remove #invalidate after CaptureObservers respect a null
-            // dirtyRect input.
-            mHandler.post(
-                    mCallbackController.makeCancelable(
-                            () -> {
-                                resourceAdapter.invalidate(null);
-                                resourceAdapter.triggerBitmapCapture();
-                            }));
+        if (canForceTransitionDuringStartup()) {
+            updateTabStrip(tabStripHeight, isVerticalTabToggle);
         }
+
+        // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
+        // stale e.g. still with the previous window width. Force invalidate the toolbar capture
+        // to make sure the it's up-to-date with the latest Android view.
+        var resourceAdapter = mControlContainer.getToolbarResourceAdapter();
+        DynamicResourceReadyOnceCallback.onNext(
+                resourceAdapter, (resource) -> updateTabStrip(tabStripHeight, isVerticalTabToggle));
+
+        // Post the invalidate to make sure another layout pass is done. This is to make sure
+        // the omnibox has the URL text updated to the final width of location bar after the
+        // toolbar tablet button animations.
+        // TODO(crbug.com/41493621): Trigger bitmap capture without mHandler#post.
+        // TODO(crbug.com/41494086): Remove #invalidate after CaptureObservers respect a null
+        // dirtyRect input.
+        mHandler.post(
+                mCallbackController.makeCancelable(
+                        () -> {
+                            resourceAdapter.invalidate(null);
+                            resourceAdapter.triggerBitmapCapture();
+                        }));
     }
 
     void onTabStripSizeChanged(
@@ -308,7 +305,7 @@ class HeightTransitionHandler {
             // In a desktop window, do not block the height transition when transition token is in
             // use and instead trigger the transition immediately so that the strip top padding is
             // updated as needed.
-            requestTransition();
+            requestTransition(/* isVerticalTabToggle= */ false);
         } else {
             int oldToken = mOnLayoutToken;
             mOnLayoutToken = mDeferTransitionTokenHolder.acquireToken();
@@ -320,7 +317,7 @@ class HeightTransitionHandler {
     private void onTokenUpdate() {
         // Block new request for transitions as long as there's any token left.
         if (mDeferTransitionTokenHolder.hasTokens()) return;
-        requestTransition();
+        requestTransition(/* isVerticalTabToggle= */ false);
     }
 
     private View controlContainerView() {
@@ -343,15 +340,17 @@ class HeightTransitionHandler {
      * </ul>
      *
      * @param targetHeight The target height for the tab strip transition.
+     * @param isVerticalTabToggle Whether the transition is triggered by vertical tab toggle.
      */
-    private void updateTabStrip(int targetHeight) {
+    // TODO(crbug.com/559323059): Clean up isVerticalTabToggle.
+    private void updateTabStrip(int targetHeight, boolean isVerticalTabToggle) {
         if (mIsDestroyed) return;
 
         mTabStripTransitionHandler.onTransitionRequested(
                 targetHeight,
                 mTopPadding,
                 mUpdateStripVisibility,
-                mTabStripSuppressed,
+                isVerticalTabToggle,
                 () -> {
                     // Acknowledge and record the new height when transition start signal.
                     // This difference in timing is necessary, since the mTabStripHeight is used

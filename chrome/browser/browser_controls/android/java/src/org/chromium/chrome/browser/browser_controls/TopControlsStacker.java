@@ -282,8 +282,11 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         updateTopControlsHeight(animate);
 
         // When reposition happening when browser controls is overriding offsets, we need to
-        // reposition immediately.
-        if (shouldUpdateOffsets) {
+        // reposition immediately. Also reposition immediately when not animating so all layers
+        // assume their resting offsets without waiting for animation frames.
+        // TODO(crbug.com/559323059): Avoid repositioning immediately in favor of allowing
+        // animations for VT->HT transitions.
+        if (shouldUpdateOffsets || !animate) {
             repositionLayers(
                     mBrowserControlsSizer.getTopControlOffset(),
                     mBrowserControlsSizer.getTopControlsMinHeightOffset(),

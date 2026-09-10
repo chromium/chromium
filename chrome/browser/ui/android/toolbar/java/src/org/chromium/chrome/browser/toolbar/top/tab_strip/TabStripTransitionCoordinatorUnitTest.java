@@ -198,6 +198,9 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         verifyFadeTransitionState(/* expectedScrimOpacity= */ 1f);
         assertEquals("Height requested should be 0.", 0, mTestHandler.heightRequested);
+        assertTrue(
+                "Vertical tab toggle should be true when suppressing tab strip",
+                mTestHandler.isVerticalTabToggleRequested);
     }
 
     @Test
@@ -217,6 +220,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyFadeTransitionState(/* expectedScrimOpacity= */ 1f);
         assertEquals("Height requested should be 0.", 0, mTestHandler.heightRequested);
+        assertTrue(mTestHandler.isVerticalTabToggleRequested);
 
         mTestHandler.reset();
 
@@ -228,6 +232,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Height requested should be restored.",
                 expectedHeight,
                 mTestHandler.heightRequested);
+        assertTrue(mTestHandler.isVerticalTabToggleRequested);
     }
 
     @Test
@@ -973,6 +978,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         mCoordinator.suppressTabStrip(true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
+        assertTrue(mTestHandler.isVerticalTabToggleRequested);
         // The fade transition should NOT be requested when tab strip suppression changes in non-DW
         // mode.
         assertEquals(
@@ -1416,16 +1422,18 @@ public class TabStripTransitionCoordinatorUnitTest {
         public int controlContainerHeight = NOTHING_OBSERVED;
         public boolean applyScrimOverlay;
         public int topPadding;
+        public boolean isVerticalTabToggleRequested;
 
         @Override
         public void onTransitionRequested(
                 int newHeight,
                 int topPadding,
                 boolean applyScrimOverlay,
-                boolean isTabStripSuppressed,
+                boolean isVerticalTabToggle,
                 Runnable transitionStartedCallback) {
             this.heightRequested = newHeight;
             this.applyScrimOverlay = applyScrimOverlay;
+            this.isVerticalTabToggleRequested = isVerticalTabToggle;
             if (transitionStartedCallback != null) {
                 transitionStartedCallback.run();
             }
@@ -1438,6 +1446,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         void reset() {
             heightRequested = NOTHING_OBSERVED;
             controlContainerHeight = NOTHING_OBSERVED;
+            isVerticalTabToggleRequested = false;
         }
     }
 
