@@ -80,7 +80,8 @@ export function getHtml(this: HistoryItemElement) {
                   aria-controls="collapse"
                   focus-row-control focus-type="expand-button"
                   @click="${this.onExpandClick_}"
-                  aria-expanded="${this.isExpanded_}">
+                  aria-expanded="${this.isExpanded_}"
+                  aria-describedby="${this.getAriaDescribedByForActions_()}">
               </cr-icon-button>
             `: ''}
           </div>
