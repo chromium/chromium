@@ -147,13 +147,6 @@ Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     return nullptr;
   }
 
-  // TODO(crbug.com/40901295): Support start delay.
-  AnimationTimeDelta start_delay =
-      candidate->effect()->SpecifiedTiming().start_delay.AsTimeValue();
-  if (start_delay.InSecondsF() > 0.f) {
-    return nullptr;
-  }
-
   if (CompositorMayHaveIncorrectDamageRect(element)) {
     return nullptr;
   }

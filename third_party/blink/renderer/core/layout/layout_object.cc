@@ -238,7 +238,8 @@ bool HasNativeBackgroundPainter(Node* node) {
          ElementAnimations::CompositedPaintStatus::kComposited;
 }
 
-bool NeedsForcedUpdateForBackgroundPainter(Node* node) {
+bool NeedsForcedUpdateForBackgroundPainter(Node* node,
+                                           bool background_color_changed) {
   Element* element = To<Element>(node);
   ElementAnimations* element_animations = element->GetElementAnimations();
   CHECK(element_animations);
@@ -247,6 +248,16 @@ bool NeedsForcedUpdateForBackgroundPainter(Node* node) {
   CHECK(npw_data);
   if (npw_data->NeedsKeyframeSnapshotUpdate()) {
     return true;
+  }
+
+  if (background_color_changed) {
+    const Animation* animation = npw_data->GetAnimation();
+    CHECK(animation);
+    if (!animation->effect()->Progress().has_value()) {
+      // Color change due to a style update while the animation is not in
+      // effect.
+      return true;
+    }
   }
 
   return false;
@@ -277,7 +288,8 @@ StyleDifference AdjustForCompositableAnimationPaint(
 
   bool skip_background_color_paint_invalidation =
       HasNativeBackgroundPainter(node)
-          ? !NeedsForcedUpdateForBackgroundPainter(node)
+          ? !NeedsForcedUpdateForBackgroundPainter(
+                node, diff.background_color_changed)
           : !diff.background_color_changed;
   if (!skip_background_color_paint_invalidation)
     diff.SetNeedsNormalPaintInvalidation();
