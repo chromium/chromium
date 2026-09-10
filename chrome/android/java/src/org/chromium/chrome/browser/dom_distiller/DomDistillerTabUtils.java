@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -28,7 +30,7 @@ public class DomDistillerTabUtils {
     private static @Nullable Integer sHeuristics;
 
     /** Used to specify whether mobile friendly is enabled for testing purposes. */
-    private static @Nullable Boolean sExcludeMobileFriendlyForTesting;
+    private static @TriState int sExcludeMobileFriendlyForTesting;
 
     @DistillerHeuristicsType private static @Nullable Integer sHeuristicsForTesting;
 
@@ -110,15 +112,17 @@ public class DomDistillerTabUtils {
      *     disabled.
      */
     public static boolean shouldExcludeMobileFriendly(Tab tab) {
-        if (sExcludeMobileFriendlyForTesting != null) return sExcludeMobileFriendlyForTesting;
+        if (sExcludeMobileFriendlyForTesting != TriState.NOT_SET) {
+            return sExcludeMobileFriendlyForTesting == TriState.TRUE;
+        }
 
         return !isReaderModeAccessibilitySettingEnabled(tab.getProfile())
                 && getDistillerHeuristics() == DistillerHeuristicsType.ADABOOST_MODEL;
     }
 
-    public static void setExcludeMobileFriendlyForTesting(Boolean excludeForTesting) {
-        sExcludeMobileFriendlyForTesting = excludeForTesting;
-        ResettersForTesting.register(() -> sExcludeMobileFriendlyForTesting = null);
+    public static void setExcludeMobileFriendlyForTesting(boolean excludeForTesting) {
+        sExcludeMobileFriendlyForTesting = TriStateUtils.from(excludeForTesting);
+        ResettersForTesting.register(() -> sExcludeMobileFriendlyForTesting = TriState.NOT_SET);
     }
 
     /** Set a test value of DistillerHeuristicsType. */
