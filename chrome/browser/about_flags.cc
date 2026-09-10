@@ -10024,7 +10024,8 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     {"cws-review-prompting-native-ui",
      flag_descriptions::kCWSReviewPromptingNativeUIName,
-     flag_descriptions::kCWSReviewPromptingNativeUIDescription, kOsDesktop,
+     flag_descriptions::kCWSReviewPromptingNativeUIDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(extensions_features::kCWSReviewPromptingNativeUI)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
