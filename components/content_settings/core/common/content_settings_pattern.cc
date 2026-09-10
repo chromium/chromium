@@ -300,7 +300,15 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
     return false;
   }
 
-  while (canonicalized_host.length() > 1 && canonicalized_host.ends_with(".")) {
+  // Omit a single ending dot as long as there is at least one non-dot character
+  // before it, which is in line with the behavior of net::TrimEndingDot; but
+  // consider two ending dots an invalid pattern, otherwise canonicalization of
+  // a canonical pattern would not be idempotent.
+  if (base::EndsWith(canonicalized_host, "..", base::CompareCase::SENSITIVE)) {
+    return false;
+  } else if (canonicalized_host.size() >= 2u &&
+             base::EndsWith(canonicalized_host, ".",
+                            base::CompareCase::SENSITIVE)) {
     canonicalized_host.pop_back();
   }
 
@@ -625,9 +633,11 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
     return parts_.is_path_wildcard || parts_.path == local_url->path();
   }
 
-  // Match the host part, removing all trailing dots.
+  // Match the host part. Code is the same as url::TrimEndingDot but that method
+  // unnecessarily creates a new std::string.
   std::string_view trimmed_host = local_url->host();
-  while (trimmed_host.length() > 1 && trimmed_host.back() == '.') {
+  size_t len = trimmed_host.length();
+  if (len > 1 && trimmed_host[len - 1] == '.') {
     trimmed_host.remove_suffix(1);
   }
 
