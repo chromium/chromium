@@ -51,6 +51,8 @@ const std::string DeviceTrustErrorToString(DeviceTrustError error) {
       return errors::kFailedToParseChallenge;
     case DeviceTrustError::kFailedToCreateResponse:
       return errors::kFailedToCreateResponse;
+    case DeviceTrustError::kTooManyRequests:
+      return errors::kTooManyRequests;
   }
 }
 

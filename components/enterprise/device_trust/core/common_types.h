@@ -39,13 +39,14 @@ enum class DTAttestationResult {
   kMaxValue = kSuccessNoSignature,
 };
 
-// Enum representing all possible errors that may cause the generation of a
-// challenge response to fail as part of the device identity attestation flow.
+// Errors that may prevent a device identity attestation request from producing
+// a challenge response.
 enum class DeviceTrustError {
   kUnknown = 0,
   kTimeout,
   kFailedToParseChallenge,
-  kFailedToCreateResponse
+  kFailedToCreateResponse,
+  kTooManyRequests,
 };
 
 // Used to convert an attestation `error` to a string. This function will return

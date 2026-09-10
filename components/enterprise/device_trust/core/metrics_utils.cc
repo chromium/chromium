@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/enterprise/device_trust/core/common_types.h"
@@ -40,6 +41,11 @@ DTHandshakeResult ResponseToResult(const DeviceTrustResponse& response) {
       return DTHandshakeResult::kFailedToParseChallenge;
     case DeviceTrustError::kFailedToCreateResponse:
       return DTHandshakeResult::kFailedToCreateResponse;
+    case DeviceTrustError::kTooManyRequests:
+      // Admission failure: the request was rejected before the browser-server
+      // handshake began, so there is no handshake outcome to report. Callers
+      // must not log handshake metrics for local admission failures.
+      NOTREACHED();
   }
 }
 
