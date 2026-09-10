@@ -11,6 +11,7 @@ import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.TextResolver;
 
 /** A {@link TextResolver} that resolves either a normal or plural string resource. */
@@ -19,6 +20,7 @@ public class ResourceTextResolver implements TextResolver {
     private final @StringRes int mStringResId;
     private final @PluralsRes int mPluralResId;
     private final int mCount;
+    private @Nullable CharSequence mCachedText;
 
     /**
      * @param stringResId The string resource ID.
@@ -41,11 +43,16 @@ public class ResourceTextResolver implements TextResolver {
 
     @Override
     public CharSequence resolve(Context context) {
-        if (mStringResId != Resources.ID_NULL) {
-            return context.getString(mStringResId);
-        } else if (mPluralResId != Resources.ID_NULL) {
-            return context.getResources().getQuantityString(mPluralResId, mCount, mCount);
+        if (mCachedText != null) {
+            return mCachedText;
         }
-        return "";
+        if (mStringResId != Resources.ID_NULL) {
+            mCachedText = context.getString(mStringResId);
+        } else if (mPluralResId != Resources.ID_NULL) {
+            mCachedText = context.getResources().getQuantityString(mPluralResId, mCount, mCount);
+        } else {
+            mCachedText = "";
+        }
+        return mCachedText;
     }
 }

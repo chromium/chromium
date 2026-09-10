@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.ui.actions;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -16,52 +16,69 @@ import android.content.res.Resources;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link ResourceTextResolver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ResourceTextResolverUnitTest {
+    private static final int STRING_RES_ID = 123;
+    private static final int PLURAL_RES_ID = 456;
+    private static final String STRING_VALUE = "Test String";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+
+    @Before
+    public void setUp() {
+        when(mContext.getResources()).thenReturn(mResources);
+        when(mContext.getString(STRING_RES_ID)).thenReturn(STRING_VALUE);
+        when(mResources.getQuantityString(eq(PLURAL_RES_ID), anyInt(), anyInt()))
+                .thenAnswer(
+                        inv -> {
+                            int count = inv.getArgument(1);
+                            return count == 1 ? "1 item" : count + " items";
+                        });
+    }
 
     @Test
     @SmallTest
     public void testResolveString() {
-        Context mockContext = mock(Context.class);
-        Resources mockResources = mock(Resources.class);
-        doReturn(mockResources).when(mockContext).getResources();
-
-        int stringResId = 123;
-        String expectedString = "Expected String";
-        doReturn(expectedString).when(mockContext).getString(eq(stringResId));
-
-        ResourceTextResolver resolver = new ResourceTextResolver(stringResId);
-        assertEquals(expectedString, resolver.resolve(mockContext));
+        ResourceTextResolver resolver = new ResourceTextResolver(STRING_RES_ID);
+        assertEquals(STRING_VALUE, resolver.resolve(mContext));
     }
 
     @Test
     @SmallTest
     public void testResolvePluralString() {
-        Context mockContext = mock(Context.class);
-        Resources mockResources = mock(Resources.class);
-        doReturn(mockResources).when(mockContext).getResources();
-
-        int pluralResId = 456;
-        when(mockResources.getQuantityString(eq(pluralResId), anyInt(), anyInt()))
-                .thenAnswer(
-                        (InvocationOnMock invocation) -> {
-                            int count = invocation.getArgument(1);
-                            return count == 1 ? "1 item" : count + " items";
-                        });
-
         int[] counts = {0, 1, 2, 5, 10, 100};
 
+        ResourceTextResolver resolver = null;
         for (int count : counts) {
-            String expectedString = count == 1 ? "1 item" : count + " items";
-            ResourceTextResolver resolver = new ResourceTextResolver(pluralResId, count);
-            assertEquals(expectedString, resolver.resolve(mockContext));
+            String expected = count == 1 ? "1 item" : count + " items";
+            resolver = new ResourceTextResolver(PLURAL_RES_ID, count);
+            assertEquals(expected, resolver.resolve(mContext));
         }
+
+        int lastCount = counts[counts.length - 1];
+        String expected = lastCount + " items";
+        assertEquals(expected, resolver.resolve(mContext));
+        verify(mResources, times(1)).getQuantityString(PLURAL_RES_ID, lastCount, lastCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testResolveNull_returnsEmptyString() {
+        ResourceTextResolver resolver = new ResourceTextResolver(Resources.ID_NULL);
+        assertEquals("", resolver.resolve(mContext));
     }
 }
