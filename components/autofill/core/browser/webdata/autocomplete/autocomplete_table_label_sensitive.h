@@ -50,11 +50,13 @@ constexpr MatchingType ToSafeMatchingType(
 // suggestion in the UI layer and report appropriate metrics.
 class AutocompleteSearchResultLabelSensitive {
  public:
-  AutocompleteSearchResultLabelSensitive(std::u16string value,
-                                         MatchingType matching_type,
-                                         std::u16string query_name,
-                                         std::u16string query_label,
-                                         int count);
+  AutocompleteSearchResultLabelSensitive(
+      std::u16string value,
+      MatchingType matching_type,
+      std::u16string query_name,
+      std::u16string query_label,
+      int count,
+      base::Time date_last_used = base::Time());
   ~AutocompleteSearchResultLabelSensitive();
 
   AutocompleteSearchResultLabelSensitive(
@@ -76,6 +78,7 @@ class AutocompleteSearchResultLabelSensitive {
     return query_label_;
   }
   int count() const { return count_; }
+  base::Time date_last_used() const { return date_last_used_; }
 
   bool operator==(const AutocompleteSearchResultLabelSensitive& other) const {
     return value_ == other.value_;
@@ -98,7 +101,8 @@ class AutocompleteSearchResultLabelSensitive {
                        // name and label suggestions first).
   std::u16string query_name_;
   std::u16string query_label_;
-  int count_;
+  int count_ = 0;
+  base::Time date_last_used_;
 };
 
 // This class manages the Autocomplete table.

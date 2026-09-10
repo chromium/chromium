@@ -141,9 +141,6 @@ TEST_F(SingleFieldFillRouterTest,
 // OnSingleFieldSuggestionSelected call.
 TEST_F(SingleFieldFillRouterTest,
        RouteToAutocompleteHistoryManager_OnSingleFieldSuggestionSelected) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillLabelSensitiveAutocomplete);
   EXPECT_CALL(history_manager(), OnSingleFieldSuggestionSelected);
 
   Suggestion suggestion(u"Value", SuggestionType::kAutocompleteEntry);

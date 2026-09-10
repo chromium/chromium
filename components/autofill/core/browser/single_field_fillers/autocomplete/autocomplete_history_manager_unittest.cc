@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -55,12 +56,15 @@ using ::autofill::test::CreateTestFormField;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Not;
+using ::testing::Property;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 using MockSuggestionsReturnedCallback =
@@ -768,9 +772,51 @@ TEST_F(AutocompleteHistoryManagerTest,
       /*date_last_used=*/base::Time::Now() - base::Days(10));
 
   EXPECT_CALL(*(web_data_service_.get()),
-              AddFormFields(testing::ElementsAre(testing::AllOf(
-                  testing::Property(&FormFieldData::name, test_field_.name()),
-                  testing::Property(&FormFieldData::value, u"TestValue")))));
+              AddFormFields(ElementsAre(
+                  AllOf(Property(&FormFieldData::name, test_field_.name()),
+                        Property(&FormFieldData::value, u"TestValue")))));
+
+  autocomplete_manager_->OnSingleFieldSuggestionSelected(suggestion);
+}
+
+// Test that upon accepting a label-sensitive autocomplete suggestion, we
+// correctly log the number of days since its last usage.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnSingleFieldSuggestionSelected_ShouldLogDays_LabelSensitive) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+
+  Suggestion suggestion(u"TestValue", SuggestionType::kAutocompleteEntry);
+  suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"TestValue", MatchingType::kNameAndLabel, test_field_.name(),
+      test_field_.label(), /*count=*/1,
+      /*date_last_used=*/base::Time::Now() - base::Days(10));
+
+  base::HistogramTester histogram_tester;
+  autocomplete_manager_->OnSingleFieldSuggestionSelected(suggestion);
+  histogram_tester.ExpectBucketCount("Autocomplete.DaysSinceLastUse", 10, 1);
+}
+
+// Test that upon accepting a label-sensitive autocomplete suggestion, we
+// correctly update the entry's metadata in the database.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnSingleFieldSuggestionSelected_UpdatesMetadata_LabelSensitive) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+
+  Suggestion suggestion(u"TestValue", SuggestionType::kAutocompleteEntry);
+  suggestion.payload = AutocompleteSearchResultLabelSensitive(
+      u"TestValue", MatchingType::kNameAndLabel, test_field_.name(),
+      test_field_.label(), /*count=*/1,
+      /*date_last_used=*/base::Time::Now() - base::Days(10));
+
+  EXPECT_CALL(*(web_data_service_.get()),
+              AddFormFields(ElementsAre(
+                  AllOf(Property(&FormFieldData::name, test_field_.name()),
+                        Property(&FormFieldData::label, test_field_.label()),
+                        Property(&FormFieldData::value, u"TestValue")))));
 
   autocomplete_manager_->OnSingleFieldSuggestionSelected(suggestion);
 }
@@ -853,7 +899,7 @@ TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
 
   base::RunLoop run_loop;
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), testing::IsEmpty()))
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), IsEmpty()))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_form_data_, /*form=*/nullptr, test_field_,
@@ -894,7 +940,7 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
       });
 
   MockSuggestionsReturnedCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), testing::SizeIs(1)));
+  EXPECT_CALL(mock_callback, Run(test_field_.global_id(), SizeIs(1)));
 
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_form_data_, /*form=*/nullptr, test_field_,
@@ -1061,9 +1107,9 @@ TEST_F(AutocompleteHistoryManagerTest, ClassificationBasedFiltering) {
   // Only the last field (NAME_FIRST) is saveable in Autocomplete.
   // Credit card numbers, CVC, Loyalty card (autofilled), Merchant Promo, and
   // IBAN fields are skipped.
-  EXPECT_CALL(*(web_data_service_.get()),
-              AddFormFields(testing::ElementsAre(
-                  testing::Property(&FormFieldData::value, u"John"))));
+  EXPECT_CALL(
+      *(web_data_service_.get()),
+      AddFormFields(ElementsAre(Property(&FormFieldData::value, u"John"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);
@@ -1088,9 +1134,9 @@ TEST_F(AutocompleteHistoryManagerTest,
   form_structure.field(1)->SetTypeTo(
       AutofillType(UNKNOWN_TYPE), AutofillPredictionSource::kRationalization);
 
-  EXPECT_CALL(*(web_data_service_.get()),
-              AddFormFields(testing::ElementsAre(
-                  testing::Property(&FormFieldData::value, u"111"))));
+  EXPECT_CALL(
+      *(web_data_service_.get()),
+      AddFormFields(ElementsAre(Property(&FormFieldData::value, u"111"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);
@@ -1108,9 +1154,9 @@ TEST_F(AutocompleteHistoryManagerTest, LoyaltyCardManualEntryIsSaved) {
   test_api(form_structure).SetFieldTypes({LOYALTY_MEMBERSHIP_ID});
 
   // Since last_modifier is NOT kAutofill, it should be saved.
-  EXPECT_CALL(*(web_data_service_.get()),
-              AddFormFields(testing::ElementsAre(
-                  testing::Property(&FormFieldData::value, u"999"))));
+  EXPECT_CALL(
+      *(web_data_service_.get()),
+      AddFormFields(ElementsAre(Property(&FormFieldData::value, u"999"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);
@@ -1147,8 +1193,8 @@ TEST_F(AutocompleteHistoryManagerTest, PreventSavingAutofilledFields) {
   // Field(0) is skipped because it was autofilled by address Autofill.
   // Field(1) is skipped because it was autocompleted (and not edited).
   EXPECT_CALL(*(web_data_service_.get()),
-              AddFormFields(testing::ElementsAre(testing::Property(
-                  &FormFieldData::value, u"john.doe@example.com"))));
+              AddFormFields(ElementsAre(
+                  Property(&FormFieldData::value, u"john.doe@example.com"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);
@@ -1185,8 +1231,8 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Field(0) is skipped because it was autofilled by address Autofill and
   // edited.
   EXPECT_CALL(*(web_data_service_.get()),
-              AddFormFields(testing::ElementsAre(
-                  testing::Property(&FormFieldData::value, u"DoeEdited"))));
+              AddFormFields(
+                  ElementsAre(Property(&FormFieldData::value, u"DoeEdited"))));
 
   autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
                                                     &form_structure);

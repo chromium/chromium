@@ -61,18 +61,22 @@ bool CompareAutocompleteEntries(const AutocompleteEntryLabelSensitive& a,
                                      b.key().value(), b_created, b_used);
 }
 
+// Drops sub-second precision, as the database stores time with only
+// second-level precision.
+Time DropSubSecondPrecision(Time time) {
+  return Time::FromTimeT(time.ToTimeT());
+}
+
 AutocompleteEntryLabelSensitive MakeAutocompleteEntryLabelSensitiveForTest(
     const std::u16string& name,
     const std::u16string& label,
     const std::u16string& value,
     Time date_created,
     Time date_last_used) {
-  // Drop sub-second precision, as the database stores time with only
-  // second-level precision.
   return AutocompleteEntryLabelSensitive(
       AutocompleteKeyLabelSensitive(name, label, value),
-      Time::FromTimeT(date_created.ToTimeT()),
-      Time::FromTimeT(date_last_used.ToTimeT()));
+      DropSubSecondPrecision(date_created),
+      DropSubSecondPrecision(date_last_used));
 }
 
 // Checks that `actual` and `expected` contain the same elements.
@@ -107,6 +111,25 @@ auto EqualsSearchResult(std::u16string value,
                &AutocompleteSearchResultLabelSensitive::query_name, name),
       Property("AutocompleteSearchResultLabelSensitive::query_label",
                &AutocompleteSearchResultLabelSensitive::query_label, label));
+}
+
+auto EqualsSearchResult(std::u16string value,
+                        std::u16string name,
+                        std::u16string label,
+                        int count,
+                        base::Time date_last_used) {
+  return AllOf(
+      Property("AutocompleteSearchResultLabelSensitive::value",
+               &AutocompleteSearchResultLabelSensitive::value, value),
+      Property("AutocompleteSearchResultLabelSensitive::count",
+               &AutocompleteSearchResultLabelSensitive::count, count),
+      Property("AutocompleteSearchResultLabelSensitive::query_name",
+               &AutocompleteSearchResultLabelSensitive::query_name, name),
+      Property("AutocompleteSearchResultLabelSensitive::query_label",
+               &AutocompleteSearchResultLabelSensitive::query_label, label),
+      Property("AutocompleteSearchResultLabelSensitive::date_last_used",
+               &AutocompleteSearchResultLabelSensitive::date_last_used,
+               date_last_used));
 }
 
 class AutocompleteTableLabelSensitiveTest : public testing::Test {
@@ -448,7 +471,7 @@ TEST_F(AddFormFieldValuesTest, InsertsWithCorrectNormalizedLabel) {
 using GetFormValuesForElementNameAndLabelTest =
     AutocompleteTableLabelSensitiveTest;
 
-// GetFormValuesForElementNameAndLabel returns the correct set of suggestions
+// `GetFormValuesForElementNameAndLabel` returns the correct set of suggestions
 // for a given name/label and empty value prefix.
 TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsSuggestion) {
   ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
@@ -574,6 +597,29 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, NormalizesLabelBeforeQuerying) {
 
   EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
                            kDefaultValue, kDefaultName, field.label(), 1)));
+}
+
+// GetFormValuesForElementNameAndLabel returns the most recent date_last_used
+// (minimum age) among matching entries for the suggestion.
+TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsMostRecentDateLastUsed) {
+  FormFieldData field = CreateDefaultField();
+  ASSERT_TRUE(SubmitFormField(field));
+
+  // Advance time and reinforce the field.
+  AdvanceClock(base::Seconds(1000));
+  ASSERT_TRUE(SubmitFormField(field));
+
+  const base::Time expected_date_last_used =
+      DropSubSecondPrecision(base::Time::Now());
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, /*prefix=*/std::u16string(),
+      /*limit=*/10, entries));
+
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           kDefaultValue, kDefaultName, kDefaultLabel, 2,
+                           expected_date_last_used)));
 }
 
 using GetCountOfValuesContainedBetweenTest =
@@ -1060,8 +1106,7 @@ TEST_F(RemoveFormElementTest, RemovesEntry) {
 TEST_F(RemoveFormElementTest, DoesNothingIfEntryDoesNotExist) {
   // The database stores timestamps with second precision. The test needs to
   // do the same to be able to compare entries.
-  base::Time seconds_precision_now = base::Time::FromSecondsSinceUnixEpoch(
-      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  base::Time seconds_precision_now = DropSubSecondPrecision(base::Time::Now());
 
   ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
 
@@ -1228,8 +1273,7 @@ using GetAutocompleteEntryLabelSensitiveTest =
 TEST_F(GetAutocompleteEntryLabelSensitiveTest, ReturnsEntry) {
   // The database stores timestamps with second precision. The test needs to
   // do the same to be able to compare entries.
-  base::Time seconds_precision_now = base::Time::FromSecondsSinceUnixEpoch(
-      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  base::Time seconds_precision_now = DropSubSecondPrecision(base::Time::Now());
 
   ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
 

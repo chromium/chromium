@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -469,20 +470,40 @@ void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
   CHECK_EQ(suggestion.type, SuggestionType::kAutocompleteEntry);
-  const AutocompleteEntry& entry =
-      CHECK_DEREF(std::get_if<AutocompleteEntry>(&suggestion.payload));
-  // The AutocompleteEntry was found, use it to log the DaysSinceLastUsed.
-  base::TimeDelta time_delta = base::Time::Now() - entry.date_last_used();
-  AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    const AutocompleteSearchResultLabelSensitive& entry =
+        CHECK_DEREF(std::get_if<AutocompleteSearchResultLabelSensitive>(
+            &suggestion.payload));
+    base::TimeDelta time_delta = base::Time::Now() - entry.date_last_used();
+    AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
 
-  if (profile_database_) {
-    // Form submission will skip saving any fields that were autofilled.
-    // Therefore, we must update the autocomplete entry's metadata immediately
-    // when the suggestion is selected.
-    FormFieldData field;
-    field.set_name(entry.key().name());
-    field.set_value(entry.key().value());
-    profile_database_->AddFormFields({field});
+    if (profile_database_) {
+      // Form submission will skip saving any fields that were autofilled.
+      // Therefore, we must update the autocomplete entry's metadata immediately
+      // when the suggestion is selected.
+      FormFieldData field;
+      field.set_name(entry.query_name());
+      field.set_label(entry.query_label());
+      field.set_value(entry.value());
+      profile_database_->AddFormFields({field});
+    }
+  } else {
+    const AutocompleteEntry& entry =
+        CHECK_DEREF(std::get_if<AutocompleteEntry>(&suggestion.payload));
+    // The AutocompleteEntry was found, use it to log the DaysSinceLastUsed.
+    base::TimeDelta time_delta = base::Time::Now() - entry.date_last_used();
+    AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
+
+    if (profile_database_) {
+      // Form submission will skip saving any fields that were autofilled.
+      // Therefore, we must update the autocomplete entry's metadata immediately
+      // when the suggestion is selected.
+      FormFieldData field;
+      field.set_name(entry.key().name());
+      field.set_value(entry.key().value());
+      profile_database_->AddFormFields({field});
+    }
   }
 }
 

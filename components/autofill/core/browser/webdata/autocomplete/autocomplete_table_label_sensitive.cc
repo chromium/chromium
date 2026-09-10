@@ -135,12 +135,14 @@ AutocompleteSearchResultLabelSensitive::AutocompleteSearchResultLabelSensitive(
     const MatchingType matching_type,
     std::u16string query_name,
     std::u16string query_label,
-    const int count)
+    const int count,
+    base::Time date_last_used)
     : value_(std::move(value)),
       matching_type_(matching_type),
       query_name_(std::move(query_name)),
       query_label_(std::move(query_label)),
-      count_(count) {}
+      count_(count),
+      date_last_used_(date_last_used) {}
 
 AutocompleteSearchResultLabelSensitive::
     ~AutocompleteSearchResultLabelSensitive() = default;
@@ -241,7 +243,8 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
       "  END AS matching_type, "
       "  name AS query_name, "
       "  label AS query_label, "
-      "  MAX(count) AS max_count "
+      "  MAX(count) AS max_count, "
+      "  MAX(date_last_used) AS max_date_last_used "
       "FROM autocomplete, inputs "
       "WHERE (name = inputs._name OR (label != '' AND label_normalized = "
       "inputs._label)) AND value_lower LIKE inputs._prefix ESCAPE '\\' "
@@ -273,7 +276,8 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
         /*matching_type=*/ToSafeMatchingType(s.ColumnInt(1)),
         /*query_name=*/s.ColumnString16(2),
         /*query_label=*/s.ColumnString16(3),
-        /*count=*/s.ColumnInt(4));
+        /*count=*/s.ColumnInt(4),
+        /*date_last_used=*/base::Time::FromTimeT(s.ColumnInt64(5)));
     if (seen_results.insert(current_result).second) {
       entries.push_back(current_result);
     }
