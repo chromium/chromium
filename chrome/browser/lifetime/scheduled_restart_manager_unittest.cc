@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -344,6 +345,90 @@ TEST_F(ScheduledRestartManagerTest, ScheduleChangedCallbacksNotified) {
   EXPECT_EQ(callback_count, 4);
   manager.CancelSchedule();
   EXPECT_EQ(callback_count, 4);
+}
+
+TEST_F(ScheduledRestartManagerTest, BlockerMappings) {
+  using SmartBlocker =
+      smart_restart::ExtendedRestartabilityState::SmartRestartBlocker;
+  using Blocker = ScheduledRestartBlocker;
+
+  ExtendedRestartabilityState state;
+  EXPECT_TRUE(ScheduledRestartManager::GetActiveBlockers(state).empty());
+
+  state.AddBlocker(SmartBlocker::kDownload);
+  EXPECT_EQ(ScheduledRestartManager::GetActiveBlockers(state),
+            ScheduledRestartManager::BlockerSet({Blocker::kDownload}));
+
+  state.blockers.Clear();
+  state.AddBlocker(SmartBlocker::kMedia);
+  EXPECT_EQ(ScheduledRestartManager::GetActiveBlockers(state),
+            ScheduledRestartManager::BlockerSet({Blocker::kMedia}));
+
+  state.blockers.Clear();
+  state.AddBlocker(SmartBlocker::kAudible);
+  EXPECT_EQ(ScheduledRestartManager::GetActiveBlockers(state),
+            ScheduledRestartManager::BlockerSet({Blocker::kAudibleTab}));
+
+  state.blockers.Clear();
+  state.AddBlocker(SmartBlocker::kCapturingVideo);
+  EXPECT_EQ(ScheduledRestartManager::GetActiveBlockers(state),
+            ScheduledRestartManager::BlockerSet({Blocker::kVideoCapture}));
+
+  state.blockers.Clear();
+  state.AddBlocker(SmartBlocker::kCapturingAudio);
+  EXPECT_EQ(ScheduledRestartManager::GetActiveBlockers(state),
+            ScheduledRestartManager::BlockerSet({Blocker::kAudioCapture}));
+
+  // Multiple blockers simultaneously.
+  state.AddBlocker(SmartBlocker::kDownload);
+  EXPECT_EQ(ScheduledRestartManager::GetActiveBlockers(state),
+            ScheduledRestartManager::BlockerSet(
+                {Blocker::kAudioCapture, Blocker::kDownload}));
+
+  // Unrelated blocker (e.g. kIncognito or kAppWindow) does not map to a
+  // scheduled restart blocker.
+  state.blockers.Clear();
+  state.AddBlocker(SmartBlocker::kIncognito);
+  EXPECT_TRUE(ScheduledRestartManager::GetActiveBlockers(state).empty());
+}
+
+TEST_F(ScheduledRestartManagerTest,
+       Telemetry_ExecutionOutcome_CanceledBeforeExecution) {
+  base::HistogramTester histogram_tester;
+  FakeUpgradeDetector detector;
+  detector.SetUpgradeAvailable();
+
+  {
+    ScheduledRestartManager manager(detector);
+    manager.ScheduleRestartOnIdle();
+    // Explicit cancel before execution (e.g. user clicked Restart Now)
+    manager.CancelSchedule();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.ScheduledRestart.ExecutionOutcome",
+      ScheduledRestartExecutionOutcome::kCanceledBeforeExecution, 1);
+  histogram_tester.ExpectTotalCount(
+      "Session.ScheduledRestart.BlockerEncountered", 0);
+}
+
+TEST_F(ScheduledRestartManagerTest,
+       Telemetry_ExecutionOutcome_CanceledOnDestruction) {
+  base::HistogramTester histogram_tester;
+  FakeUpgradeDetector detector;
+  detector.SetUpgradeAvailable();
+
+  {
+    ScheduledRestartManager manager(detector);
+    manager.ScheduleRestartOnIdle();
+    // Destructor runs without executing restart
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.ScheduledRestart.ExecutionOutcome",
+      ScheduledRestartExecutionOutcome::kCanceledBeforeExecution, 1);
+  histogram_tester.ExpectTotalCount(
+      "Session.ScheduledRestart.BlockerEncountered", 0);
 }
 
 }  // namespace scheduled_restart

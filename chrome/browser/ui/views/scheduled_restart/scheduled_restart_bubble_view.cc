@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -49,13 +50,27 @@ base::RepeatingClosure& GetRelaunchCallbackForTesting() {
   return *callback;
 }
 
+void RecordDialogChoice(
+    ScheduledRestartBubbleView::ScheduledRestartDialogChoice choice) {
+  base::UmaHistogramEnumeration("Session.ScheduledRestart.DialogChoice",
+                                choice);
+}
+
 class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
  public:
   ScheduledRestartDialogDelegate() = default;
-  ~ScheduledRestartDialogDelegate() override = default;
+  ~ScheduledRestartDialogDelegate() override {
+    if (!action_taken_) {
+      action_taken_ = true;
+      RecordDialogChoice(
+          ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed);
+    }
+  }
 
   void OnRestartNowClicked() {
     action_taken_ = true;
+    RecordDialogChoice(
+        ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kRestartNow);
     base::RecordAction(base::UserMetricsAction("ScheduledRestart_RestartNow"));
     if (GetRelaunchCallbackForTesting()) {
       GetRelaunchCallbackForTesting().Run();  // IN-TEST
@@ -67,6 +82,8 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
   void OnRestartWhenIdleClicked(base::WeakPtr<BrowserWindowInterface> browser,
                                 const ui::Event& event) {
     action_taken_ = true;
+    RecordDialogChoice(ScheduledRestartBubbleView::
+                           ScheduledRestartDialogChoice::kScheduledOnIdle);
     base::RecordAction(base::UserMetricsAction("ScheduledRestart_Scheduled"));
     auto* srm =
         g_browser_process && g_browser_process->GetFeatures()
@@ -92,6 +109,9 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
 
   void OnClose() {
     if (!action_taken_) {
+      action_taken_ = true;
+      RecordDialogChoice(
+          ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed);
       base::RecordAction(base::UserMetricsAction("ScheduledRestart_Close"));
     }
   }

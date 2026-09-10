@@ -24,6 +24,19 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kRestartWhenIdleButtonId);
 // immediately.
 class ScheduledRestartBubbleView {
  public:
+  // Represents the choice selected by the user in the dialog for UMA logging.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ScheduledRestartDialogChoice)
+  enum class ScheduledRestartDialogChoice {
+    kDismissed = 0,
+    kRestartNow = 1,
+    kScheduledOnIdle = 2,
+    kMaxValue = kScheduledOnIdle,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:ScheduledRestartDialogChoice)
+
   ScheduledRestartBubbleView() = delete;
   ScheduledRestartBubbleView(const ScheduledRestartBubbleView&) = delete;
   ScheduledRestartBubbleView& operator=(const ScheduledRestartBubbleView&) =

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_view.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -89,6 +90,7 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
                        RestartNowAcceptsAndTriggersRelaunch) {
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   bool relaunch_called = false;
   ScheduledRestartBubbleView::set_relaunch_callback_for_testing(
@@ -105,10 +107,14 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
   EXPECT_TRUE(relaunch_called);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ScheduledRestart_RestartNow"));
+  histogram_tester.ExpectUniqueSample(
+      "Session.ScheduledRestart.DialogChoice",
+      ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kRestartNow, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
                        RestartWhenIdleSchedulesRestart) {
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   auto widget = ScheduledRestartBubbleView::ShowBubble(browser());
   ASSERT_TRUE(widget);
@@ -132,10 +138,16 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_EQ(ToastId::kScheduledRestartOnIdle,
             toast_controller->GetCurrentToastId());
+  histogram_tester.ExpectUniqueSample(
+      "Session.ScheduledRestart.DialogChoice",
+      ScheduledRestartBubbleView::ScheduledRestartDialogChoice::
+          kScheduledOnIdle,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
                        DismissBubbleDoesNotScheduleOrRestart) {
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   auto widget = ScheduledRestartBubbleView::ShowBubble(browser());
   ASSERT_TRUE(widget);
@@ -147,6 +159,9 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
 
   EXPECT_FALSE(manager()->is_scheduled());
   EXPECT_EQ(1, user_action_tester.GetActionCount("ScheduledRestart_Close"));
+  histogram_tester.ExpectUniqueSample(
+      "Session.ScheduledRestart.DialogChoice",
+      ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed, 1);
 }
 
 }  // namespace scheduled_restart

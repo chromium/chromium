@@ -65,6 +65,37 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/sessions/core/command_storage_backend.h:WriteStatus) -->
 
+<!-- LINT.IfChange(ScheduledRestartBlocker) -->
+
+<enum name="ScheduledRestartBlocker">
+  <int value="0" label="Download"/>
+  <int value="1" label="Media"/>
+  <int value="2" label="Audible Tab"/>
+  <int value="3" label="Video Capture"/>
+  <int value="4" label="Audio Capture"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/lifetime/scheduled_restart_manager.h:ScheduledRestartBlocker) -->
+
+<!-- LINT.IfChange(ScheduledRestartDialogChoice) -->
+
+<enum name="ScheduledRestartDialogChoice">
+  <int value="0" label="Dismissed"/>
+  <int value="1" label="Restart Now"/>
+  <int value="2" label="Scheduled on Idle"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_view.h:ScheduledRestartDialogChoice) -->
+
+<!-- LINT.IfChange(ScheduledRestartExecutionOutcome) -->
+
+<enum name="ScheduledRestartExecutionOutcome">
+  <int value="0" label="Success on Idle"/>
+  <int value="1" label="Canceled Before Execution"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/lifetime/scheduled_restart_manager.h:ScheduledRestartExecutionOutcome) -->
+
 <enum name="SessionCrashedBubbleUserAction">
   <int value="0" label="The bubble was shown"/>
   <int value="1" label="There was an error when showing the bubble"/>

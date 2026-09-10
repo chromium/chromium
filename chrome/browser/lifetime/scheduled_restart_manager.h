@@ -7,12 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -47,6 +49,33 @@ enum class ScheduledRestartMode {
   kNone,
   kOnIdle,
 };
+
+// Represents the execution outcome of a scheduled restart.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ScheduledRestartExecutionOutcome)
+enum class ScheduledRestartExecutionOutcome {
+  kSuccessOnIdle = 0,
+  kCanceledBeforeExecution = 1,
+  kMaxValue = kCanceledBeforeExecution,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:ScheduledRestartExecutionOutcome)
+
+// Represents blocker reasons encountered while waiting for an idle restart.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ScheduledRestartBlocker)
+enum class ScheduledRestartBlocker {
+  kDownload = 0,
+  kMedia = 1,
+  kAudibleTab = 2,
+  kVideoCapture = 3,
+  kAudioCapture = 4,
+  kMaxValue = kAudioCapture,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:ScheduledRestartBlocker)
 
 // Manages deferred, scheduled browser restarts after Chrome updates.
 //
@@ -109,9 +138,18 @@ class ScheduledRestartManager : public UpgradeObserver,
   // Registers Local State preferences used by ScheduledRestartManager.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  using BlockerSet =
+      base::EnumSet<ScheduledRestartBlocker,
+                    /*MinEnumValue=*/ScheduledRestartBlocker::kDownload,
+                    /*MaxEnumValue=*/ScheduledRestartBlocker::kMaxValue>;
+
   // Returns true if the restart can proceed given the current restartability
   // state (e.g. no active downloads, media, audio, or video capturing).
   static bool AllowsScheduledRestart(
+      const smart_restart::ExtendedRestartabilityState& state);
+
+  // Returns the set of active scheduled restart blockers present in `state`.
+  static BlockerSet GetActiveBlockers(
       const smart_restart::ExtendedRestartabilityState& state);
 
   // Returns the duration of user inactivity required to trigger an idle
@@ -165,7 +203,15 @@ class ScheduledRestartManager : public UpgradeObserver,
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingClosureList schedule_changed_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  // Uses base::Time instead of base::TimeTicks so that elapsed time includes
+  // system suspend duration across all desktop platforms when measuring
+  // TimeToUpdateAfterScheduled.
+  base::Time schedule_start_time_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_executing_restart_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Tracks unique blocker types encountered while waiting for an idle restart
+  // to execute. Emitted to UMA once upon schedule completion (success or
+  // cancellation).
+  BlockerSet encountered_blockers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

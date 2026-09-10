@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -15,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -72,6 +74,26 @@ std::optional<uint16_t> ParseTimeToMinutes(std::string_view time_str) {
   return static_cast<uint16_t>(hour * 60 + minute);
 }
 
+void RecordExecutionMetrics(
+    ScheduledRestartExecutionOutcome outcome,
+    const ScheduledRestartManager::BlockerSet& blockers) {
+  base::UmaHistogramEnumeration("Session.ScheduledRestart.ExecutionOutcome",
+                                outcome);
+  for (ScheduledRestartBlocker blocker : blockers) {
+    base::UmaHistogramEnumeration("Session.ScheduledRestart.BlockerEncountered",
+                                  blocker);
+  }
+}
+
+// Records the elapsed wall-clock duration from schedule creation to restart
+// execution. Restarts executing under 10s fall into the underflow bucket (idle
+// threshold is 30s in test mode and 5m in production).
+void RecordTimeToUpdate(base::TimeDelta elapsed) {
+  base::UmaHistogramCustomTimes(
+      "Session.ScheduledRestart.TimeToUpdateAfterScheduled", elapsed,
+      /*min=*/base::Seconds(10), /*max=*/base::Days(7), /*buckets=*/50);
+}
+
 }  // namespace
 
 using ::smart_restart::ExtendedRestartabilityState;
@@ -96,6 +118,34 @@ bool ScheduledRestartManager::AllowsScheduledRestart(
        ExtendedRestartabilityState::SmartRestartBlocker::kAudible,
        ExtendedRestartabilityState::SmartRestartBlocker::kCapturingVideo,
        ExtendedRestartabilityState::SmartRestartBlocker::kCapturingAudio});
+}
+
+// static
+ScheduledRestartManager::BlockerSet ScheduledRestartManager::GetActiveBlockers(
+    const ExtendedRestartabilityState& state) {
+  using SmartBlocker =
+      smart_restart::ExtendedRestartabilityState::SmartRestartBlocker;
+
+  struct BlockerMapping {
+    SmartBlocker smart_blocker;
+    ScheduledRestartBlocker blocker;
+  };
+
+  static constexpr BlockerMapping kBlockerMappings[] = {
+      {SmartBlocker::kDownload, ScheduledRestartBlocker::kDownload},
+      {SmartBlocker::kMedia, ScheduledRestartBlocker::kMedia},
+      {SmartBlocker::kAudible, ScheduledRestartBlocker::kAudibleTab},
+      {SmartBlocker::kCapturingVideo, ScheduledRestartBlocker::kVideoCapture},
+      {SmartBlocker::kCapturingAudio, ScheduledRestartBlocker::kAudioCapture},
+  };
+
+  BlockerSet result;
+  for (const auto& [smart_blocker, blocker] : kBlockerMappings) {
+    if (state.blockers.Has(smart_blocker)) {
+      result.Put(blocker);
+    }
+  }
+  return result;
 }
 
 // static
@@ -226,6 +276,11 @@ ScheduledRestartManager::ScheduledRestartManager(
 
 ScheduledRestartManager::~ScheduledRestartManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (mode_ != ScheduledRestartMode::kNone && !is_executing_restart_) {
+    RecordExecutionMetrics(
+        ScheduledRestartExecutionOutcome::kCanceledBeforeExecution,
+        encountered_blockers_);
+  }
 }
 
 void ScheduledRestartManager::ScheduleRestartOnIdle() {
@@ -242,6 +297,17 @@ void ScheduledRestartManager::SetSchedule(ScheduledRestartMode mode) {
   if (mode_ == mode) {
     return;
   }
+  if (mode == ScheduledRestartMode::kNone) {
+    if (!is_executing_restart_) {
+      RecordExecutionMetrics(
+          ScheduledRestartExecutionOutcome::kCanceledBeforeExecution,
+          encountered_blockers_);
+    }
+    schedule_start_time_ = base::Time();
+  } else {
+    schedule_start_time_ = base::Time::Now();
+  }
+  encountered_blockers_.Clear();
   mode_ = mode;
   UpdateMonitoringState();
   schedule_changed_callbacks_.Notify();
@@ -287,7 +353,12 @@ void ScheduledRestartManager::OnIdleStateChange(
 }
 
 void ScheduledRestartManager::MaybeExecuteRestart() {
-  if (is_executing_restart_ || browser_shutdown::IsTryingToQuit()) {
+  if (is_executing_restart_) {
+    return;
+  }
+
+  if (browser_shutdown::IsTryingToQuit()) {
+    CancelSchedule();
     return;
   }
 
@@ -298,7 +369,20 @@ void ScheduledRestartManager::MaybeExecuteRestart() {
   // or video capture). The scheduled restart state is preserved so Chrome can
   // try again on subsequent idle events.
   if (!AllowsScheduledRestart(state)) {
+    encountered_blockers_.PutAll(GetActiveBlockers(state));
     return;
+  }
+
+  RecordExecutionMetrics(ScheduledRestartExecutionOutcome::kSuccessOnIdle,
+                         encountered_blockers_);
+
+  if (!schedule_start_time_.is_null()) {
+    base::TimeDelta elapsed = base::Time::Now() - schedule_start_time_;
+    // Guard against wall-clock rollback / negative durations from manual time
+    // adjustments or daylight saving time shifts.
+    if (!elapsed.is_negative()) {
+      RecordTimeToUpdate(elapsed);
+    }
   }
 
   is_executing_restart_ = true;

@@ -390,6 +390,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Session.ScheduledRestart.BlockerEncountered"
+    enum="ScheduledRestartBlocker" expires_after="2027-08-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records unique blocker types (e.g. downloads, active audio/video capture)
+    encountered while an idle restart was scheduled. Recorded once per blocker
+    type upon schedule termination (either when the restart successfully
+    executes or when the schedule is canceled before execution).
+  </summary>
+</histogram>
+
+<histogram name="Session.ScheduledRestart.DialogChoice"
+    enum="ScheduledRestartDialogChoice" expires_after="2027-08-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the choice selected by the user when presented with the scheduled
+    restart relaunch recommendation dialog.
+  </summary>
+</histogram>
+
+<histogram name="Session.ScheduledRestart.ExecutionOutcome"
+    enum="ScheduledRestartExecutionOutcome" expires_after="2027-08-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the terminal execution outcome of a scheduled restart.
+
+    Recorded exactly once per scheduled restart lifecycle: either when an idle
+    restart successfully executes or when an active schedule is canceled before
+    execution (e.g. via immediate relaunch or browser shutdown).
+  </summary>
+</histogram>
+
+<histogram name="Session.ScheduledRestart.TimeToUpdateAfterScheduled"
+    units="ms" expires_after="2027-08-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the elapsed wall-clock duration from when the user scheduled a
+    restart until the restart callback actually executed. Recorded once upon
+    successful relaunch, and not on blocked or canceled attempts.
+  </summary>
+</histogram>
+
 <histogram name="Session.SessionCrashed.Bubble"
     enum="SessionCrashedBubbleUserAction" expires_after="2027-05-29">
   <owner>miketaylr@chromium.org</owner>
