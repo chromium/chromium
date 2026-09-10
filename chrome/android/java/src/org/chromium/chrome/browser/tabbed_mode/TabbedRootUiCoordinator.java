@@ -1455,12 +1455,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mSideUiStateProviderSupplier.get());
         }
 
-        mForcedSigninController =
-                new ForcedSigninController(
-                        mActivity,
-                        mProfileSupplier.asNonNull().get().getOriginalProfile(),
-                        SigninAndHistorySyncActivityLauncherImpl.get());
-
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)) {
             mEnterpriseSignalsDisclaimerController =
                     EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
@@ -2936,8 +2930,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // Any promo that has a force-show feature flag should be added to this list (and of course
         // any promo that you want to trigger at every startup (temporarily for debugging and/or
         // development).
-        if (FullscreenSigninPromoLauncher.launchPromoIfForced(
-                mActivity, profile, SigninAndHistorySyncActivityLauncherImpl.get())) {
+
+        mForcedSigninController =
+                new ForcedSigninController(
+                        mActivity,
+                        mProfileSupplier.asNonNull().get().getOriginalProfile(),
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        mActivityLifecycleDispatcher);
+        if (mForcedSigninController.showFullscreenSigninPromptIfForced()) {
             return true;
         }
         if (PwaRestorePromoUtils.maybeForceShowPromo(profile, mWindowAndroid)) {
