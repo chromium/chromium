@@ -1398,6 +1398,38 @@ TEST_F(NameInfoTest, AssigningNameInfoWithAlternativeName) {
             u"alt_familyalt_given");
 }
 
+// Tests that moving a NameInfo object via move constructor and move assignment
+// properly transfers its values and alternative names.
+TEST_F(NameInfoTest, MovingNameInfoWithAlternativeName) {
+  NameInfo jp_profile =
+      CreateNameInfo(u"John", u"", u"Doe", u"", u"alt_given", u"alt_family",
+                     u"alt_familyalt_given",
+                     /*should_support_alternative_name=*/true);
+
+  // Test move construction.
+  NameInfo moved_constructed_profile(std::move(jp_profile));
+  EXPECT_EQ(moved_constructed_profile.GetRawInfo(NAME_FIRST), u"John");
+  EXPECT_EQ(moved_constructed_profile.GetRawInfo(NAME_LAST), u"Doe");
+  EXPECT_EQ(moved_constructed_profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
+            u"alt_given");
+  EXPECT_EQ(moved_constructed_profile.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
+            u"alt_family");
+  EXPECT_EQ(moved_constructed_profile.GetRawInfo(ALTERNATIVE_FULL_NAME),
+            u"alt_familyalt_given");
+
+  // Test move assignment.
+  NameInfo moved_assigned_profile(/*alternative_names_supported=*/false);
+  moved_assigned_profile = std::move(moved_constructed_profile);
+  EXPECT_EQ(moved_assigned_profile.GetRawInfo(NAME_FIRST), u"John");
+  EXPECT_EQ(moved_assigned_profile.GetRawInfo(NAME_LAST), u"Doe");
+  EXPECT_EQ(moved_assigned_profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME),
+            u"alt_given");
+  EXPECT_EQ(moved_assigned_profile.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
+            u"alt_family");
+  EXPECT_EQ(moved_assigned_profile.GetRawInfo(ALTERNATIVE_FULL_NAME),
+            u"alt_familyalt_given");
+}
+
 struct GetStorableTypeOfTestCase {
   FieldType input;
   std::optional<FieldType> expected;

@@ -799,7 +799,7 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
 
   if (name_ != merged_name) {
     MergeFormGroupTokenQuality(merged_name, profile);
-    name_ = merged_name;
+    name_ = std::move(merged_name);
     modified = true;
   }
 

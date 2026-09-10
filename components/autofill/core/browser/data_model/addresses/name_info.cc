@@ -424,6 +424,8 @@ NameInfo::NameInfo(const NameInfo& info)
   *this = info;
 }
 
+NameInfo::NameInfo(NameInfo&& info) noexcept = default;
+
 NameInfo::NameInfo(std::unique_ptr<NameFull> name,
                    std::unique_ptr<AlternativeFullName> alternative_name)
     : name_(std::move(name)), alternative_name_(std::move(alternative_name)) {}
@@ -443,6 +445,8 @@ NameInfo& NameInfo::operator=(const NameInfo& info) {
 
   return *this;
 }
+
+NameInfo& NameInfo::operator=(NameInfo&& info) noexcept = default;
 
 NameInfo::~NameInfo() = default;
 

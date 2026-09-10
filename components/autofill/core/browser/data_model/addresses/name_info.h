@@ -40,9 +40,11 @@ class NameInfo : public FormGroup {
                                                      ALTERNATIVE_FAMILY_NAME};
   explicit NameInfo(bool alternative_names_supported);
   NameInfo(const NameInfo& info);
+  NameInfo(NameInfo&& info) noexcept;
   NameInfo(std::unique_ptr<NameFull> name,
            std::unique_ptr<AlternativeFullName> alternative_name);
   NameInfo& operator=(const NameInfo& info);
+  NameInfo& operator=(NameInfo&& info) noexcept;
   ~NameInfo() override;
 
   // Populates `result_name_info` with the result of merging the names in
@@ -186,7 +188,7 @@ class NameInfo : public FormGroup {
 
   // This data structures store structured representation of the name and
   // alternative (e.g. phonetic) name.
-  const std::unique_ptr<NameFull> name_;
+  std::unique_ptr<NameFull> name_;
   // Exists only if `this` supports alternative names. Currently it is
   // only used for japanese profiles.
   std::unique_ptr<AlternativeFullName> alternative_name_;
