@@ -5711,6 +5711,10 @@
       status: "experimental",
     },
     {
+      // V8 Code Cache for resource requests passing through Service Worker.
+      name: "ServiceWorkerCodeCache",
+    },
+    {
       // Support for Service Worker APIs in Dedicated Workers.
       // See https://chromestatus.com/feature/6497653025931264
       // See https://issues.chromium.org/issues/40364838

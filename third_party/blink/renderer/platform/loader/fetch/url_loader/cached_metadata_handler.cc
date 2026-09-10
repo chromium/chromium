@@ -12,6 +12,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -131,6 +132,11 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
     const ResourceResponse& response,
     mojom::blink::CodeCacheType code_cache_type,
     scoped_refptr<const SecurityOrigin> requestor_origin) {
+  if (!RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled() &&
+      response.WasFetchedViaServiceWorker()) {
+    return std::make_unique<NullCachedMetadataSender>();
+  }
+
   // Non-ServiceWorker scripts and passthrough SW responses use the site
   // isolated code cache.
   if (!response.WasFetchedViaServiceWorker() ||
@@ -171,6 +177,11 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
 bool ShouldUseIsolatedCodeCache(
     mojom::blink::RequestContextType request_context,
     const ResourceResponse& response) {
+  if (!RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled() &&
+      response.WasFetchedViaServiceWorker()) {
+    return false;
+  }
+
   // Service worker script has its own code cache.
   if (request_context == mojom::blink::RequestContextType::SERVICE_WORKER)
     return false;
