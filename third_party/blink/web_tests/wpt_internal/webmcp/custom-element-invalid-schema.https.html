@@ -68,10 +68,9 @@
       },
       required: []
     };
-    const tool = await waitForFormToolSchemaToMatch(JSON.stringify(expected_schema_obj));
+    const tool = await waitForFormToolSchemaToMatch(expected_schema_obj);
 
-    let schema = JSON.parse(tool.inputSchema);
-    let properties = schema['properties'];
+    const properties = tool.inputSchema['properties'];
     assert_equals(typeof properties, 'object');
     assert_equals(properties['invalid-param-empty'], undefined);
     assert_equals(properties['invalid-param-nonsense'], undefined);
