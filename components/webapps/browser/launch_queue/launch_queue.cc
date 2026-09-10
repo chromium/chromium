@@ -132,6 +132,7 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
           delegate_->GetPathInfo(launch_params.dir()));
     }
 
+    CHECK_EQ(launch_params.paths().size(), launch_params.can_write().size());
     for (size_t i = 0; i < launch_params.paths().size(); ++i) {
       bool can_write = launch_params.can_write()[i];
       content::FileSystemAccessEntryFactory::UserAction action =

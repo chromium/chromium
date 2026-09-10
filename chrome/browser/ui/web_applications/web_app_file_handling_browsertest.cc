@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -14,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -37,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/embedder_support/switches.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -201,15 +204,10 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
               content::EvalJs(web_contents_.get(),
                               "window.launchParams.files[0].name"));
-    std::string check_permissions_js(
-        // clang-format off
-        "(async () => {"
-        "  return await window.launchParams.files[0].queryPermission("
-        "             {mode: 'readwrite'}) === 'granted';"
-        "})()");
-    // clang-format on
-    EXPECT_TRUE(content::EvalJs(web_contents_.get(), check_permissions_js)
-                    .ExtractBool());
+    EXPECT_EQ("granted", EvalJs(web_contents_.get(), R"(
+        window.launchParams.files[0].queryPermission({mode: 'read'}))"));
+    EXPECT_EQ("prompt", EvalJs(web_contents_.get(), R"(
+        window.launchParams.files[0].queryPermission({mode: 'readwrite'}))"));
   }
 
   GURL GetLaunchParamsTargetUrl() {
@@ -537,6 +535,67 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     AttachTestConsumer(web_contents_);
   }
   EXPECT_FALSE(HasLaunchParams());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       FileLaunchParamsPermissionsAndAccess) {
+  InstallFileHandlingPWA();
+  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::WriteFile(test_file_path, "sample_data"));
+  }
+
+  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+
+  // Reading the file contents succeeds with read permission.
+  EXPECT_EQ("sample_data",
+            content::EvalJs(
+                web_contents_.get(),
+                "(async () => {"
+                "  const file = await window.launchParams.files[0].getFile();"
+                "  return await file.text();"
+                "})()"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       FileLaunchParamsWritePermissionDeniedFails) {
+  InstallFileHandlingPWA();
+  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::WriteFile(test_file_path, "sample_data"));
+  }
+
+  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+
+  // Auto-deny permission prompts for the web contents so that createWritable()
+  // immediately fails without waiting for user interaction.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
+      ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
+
+  // Verify that attempting to write without permission fails and does not
+  // modify the file on disk.
+  EXPECT_EQ("NotAllowedError", EvalJs(web_contents_.get(), R"(
+      (async () => {
+        try {
+          const writable = await window.launchParams.files[0].createWritable();
+          await writable.write('unauthorized_write');
+          await writable.close();
+          return 'success';
+        } catch (e) {
+          return e.name;
+        }
+      })())"));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string content;
+    EXPECT_TRUE(base::ReadFileToString(test_file_path, &content));
+    EXPECT_EQ("sample_data", content);
+  }
 }
 
 }  // namespace web_app

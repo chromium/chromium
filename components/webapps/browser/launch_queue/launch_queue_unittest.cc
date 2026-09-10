@@ -163,4 +163,45 @@ TEST_F(LaunchQueueTest, EnqueueInvalidParams) {
   EXPECT_TRUE(fake_launch_service_.files().empty());
 }
 
+TEST_F(LaunchQueueTest, LaunchParamsDefaultWritePermissions) {
+  LaunchParams params;
+  params.set_paths({base::FilePath(FILE_PATH_LITERAL("file1.txt")),
+                    base::FilePath(FILE_PATH_LITERAL("file2.txt"))});
+  EXPECT_EQ(2u, params.paths().size());
+  ASSERT_EQ(2u, params.can_write().size());
+  EXPECT_FALSE(params.can_write()[0]);
+  EXPECT_FALSE(params.can_write()[1]);
+
+  params.set_paths_with_permissions(
+      {base::FilePath(FILE_PATH_LITERAL("file3.txt")),
+       base::FilePath(FILE_PATH_LITERAL("file4.txt"))},
+      {true, false});
+  EXPECT_EQ(2u, params.paths().size());
+  ASSERT_EQ(2u, params.can_write().size());
+  EXPECT_TRUE(params.can_write()[0]);
+  EXPECT_FALSE(params.can_write()[1]);
+
+  params.clear_paths();
+  EXPECT_TRUE(params.paths().empty());
+  EXPECT_TRUE(params.can_write().empty());
+}
+
+TEST_F(LaunchQueueTest, EnqueueValidParamsWithFiles) {
+  GURL launch_url("https://example.com/launch");
+  LaunchParams params =
+      CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
+  base::FilePath file_path(FILE_PATH_LITERAL("test_file.txt"));
+  params.set_paths({file_path});
+
+  EXPECT_CALL(*delegate_, GetPathInfo(file_path))
+      .WillOnce(testing::Return(content::PathInfo(file_path)));
+
+  launch_queue_->Enqueue(std::move(params));
+  launch_queue_->FlushForTesting();
+
+  EXPECT_TRUE(fake_launch_service_.enqueue_called());
+  EXPECT_EQ(fake_launch_service_.launched_url(), launch_url);
+  EXPECT_EQ(1u, fake_launch_service_.files().size());
+}
+
 }  // namespace webapps

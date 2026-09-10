@@ -291,6 +291,7 @@ source_set("browser_tests") {
     "//chrome/browser/banners:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
+    "//chrome/browser/file_system_access",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/permissions",
     "//chrome/browser/picture_in_picture",
