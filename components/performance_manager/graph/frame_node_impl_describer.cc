@@ -88,7 +88,7 @@ base::DictValue FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_capturing_media_stream",
           impl->is_capturing_media_stream_.value());
   ret.Set("viewport_intersection",
-          ViewportIntersectionToString(impl->viewport_intersection_.value()));
+          ViewportIntersectionToString(impl->GetViewportIntersection()));
   ret.Set("visibility", impl->visibility_->ToString());
   ret.Set("is_intersecting_large_area", impl->IsIntersectingLargeArea());
   ret.Set("is_important", impl->is_important_.value());
