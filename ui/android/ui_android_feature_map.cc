@@ -33,6 +33,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
     &ui::kMaximumWindowForGestureNavDetection,
+    &ui::kPointerLockMouseScaling,
     &ui::kRefactorMinWidthContextOverride,
     &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,

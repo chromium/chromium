@@ -466,8 +466,8 @@ public class EventForwarderTest {
                         downTime,
                         eventTime,
                         MotionEvent.ACTION_MOVE,
-                        /* x= */ 1,
-                        /* y= */ -1,
+                        /* x= */ 1 * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
+                        /* y= */ -1 * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
                         /* metaState= */ 0);
         expectedEvent1.setSource(InputDevice.SOURCE_MOUSE);
 
@@ -478,8 +478,12 @@ public class EventForwarderTest {
                         downTime,
                         eventTime,
                         MotionEvent.ACTION_MOVE,
-                        /* x= */ moveEvent.getX() * 2,
-                        /* y= */ moveEvent.getY() * 2,
+                        /* x= */ moveEvent.getX()
+                                * 2
+                                * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
+                        /* y= */ moveEvent.getY()
+                                * 2
+                                * PointerLockEventHelper.MOUSE_MOVEMENT_SCALE_FACTOR,
                         /* metaState= */ 0);
         expectedEvent2.setSource(InputDevice.SOURCE_MOUSE);
 

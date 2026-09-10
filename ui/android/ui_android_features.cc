@@ -47,6 +47,8 @@ BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
 BASE_FEATURE(kMaximumWindowForGestureNavDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPointerLockMouseScaling, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRefactorMinWidthContextOverride,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
