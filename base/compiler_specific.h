@@ -921,28 +921,6 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define PACKED_OBJ
 #endif
 
-// Annotates a function indicating that the returned pointer will never be null.
-// This may allow the compiler to assume null checks on the caller side are
-// unnecessary.
-//
-// In practice, this is usually better-handled by returning a value or
-// reference, which enforce such guarantees at the type level.
-//
-// See also:
-//   https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-returns_005fnonnull-function-attribute
-//   https://clang.llvm.org/docs/AttributeReference.html#nullability-attributes
-//
-// Usage:
-// ```
-//   // The following function will never return `nullptr`.
-//   RETURNS_NONNULL int* Func();
-// ```
-#if __has_cpp_attribute(gnu::returns_nonnull)
-#define RETURNS_NONNULL [[gnu::returns_nonnull]]
-#else
-#define RETURNS_NONNULL
-#endif
-
 // Annotates a function indicating it is const, meaning that it has no
 // observable side effects and its return value depends only on its arguments.
 // Const functions may not read external memory other than unchanging objects
