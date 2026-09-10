@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -448,21 +450,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        ButtonShowsAfterSidePanelWasClosed) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
-      AddInstrumentedTab(kSecondTab, GetTestURL()),
-      SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
-      CreateTaskForTab(0),
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
-      SimulateOpeningContextualTaskSidePanel(),
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
-      SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
-                       ButtonShowsWhenSignedOut) {
-  RunTestSequence(
-      InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
@@ -1065,5 +1052,46 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       ButtonHiddenWhenSidePanelIsRightAligned) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      // Set Contextual Tasks side panel alignment to the right. The left-docked
+      // ephemeral button should be hidden.
+      Do([&]() {
+        base::DictValue new_overrides =
+            browser()
+                ->GetProfile()
+                ->GetPrefs()
+                ->GetDict(prefs::kSidePanelAlignmentOverrides)
+                .Clone();
+        new_overrides.Set(
+            SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks), true);
+        browser()->GetProfile()->GetPrefs()->SetDict(
+            prefs::kSidePanelAlignmentOverrides, std::move(new_overrides));
+      }),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      // Restore alignment to the left. The button should reappear.
+      Do([&]() {
+        base::DictValue new_overrides =
+            browser()
+                ->GetProfile()
+                ->GetPrefs()
+                ->GetDict(prefs::kSidePanelAlignmentOverrides)
+                .Clone();
+        new_overrides.Set(
+            SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks), false);
+        browser()->GetProfile()->GetPrefs()->SetDict(
+            prefs::kSidePanelAlignmentOverrides, std::move(new_overrides));
+      }),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
