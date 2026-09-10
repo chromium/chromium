@@ -172,6 +172,13 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
     return token_;
   }
 
+  // Returns the initiator URL for the worker script's ResourceTiming entry.
+  // Used only by the ResourceTimingInitiator feature; returns an empty URL when
+  // the feature is disabled.
+  const KURL& WorkerScriptInitiatorUrl() const {
+    return worker_script_initiator_url_;
+  }
+
   // Returns the ExecutionContextToken that uniquely identifies the parent
   // context that created this dedicated worker.
   std::optional<ExecutionContextToken> GetParentExecutionContextToken()
@@ -189,6 +196,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
     DocumentPolicy::DocumentPolicyBundle creator_document_policy;
     bool parent_is_isolated_context = false;
     bool direct_sockets_force_enabled_in_parent = false;
+    KURL dedicated_worker_script_initiator_url;
   };
 
   static ParsedCreationParams ParseCreationParams(
@@ -250,6 +258,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
 
   // The timestamp taken when DedicatedWorker::Start() was called.
   base::TimeTicks dedicated_worker_start_time_;
+
+  // Initiator URL for this worker's script ResourceTiming entry.
+  KURL worker_script_initiator_url_;
 };
 
 template <>

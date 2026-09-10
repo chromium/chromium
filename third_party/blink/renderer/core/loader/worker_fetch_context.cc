@@ -253,6 +253,10 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 // FrameFetchContext::FillInitiatorInfo().
 void WorkerFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
   CHECK(RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled());
+  // Top-level worker scripts loaded by WorkerMainScriptLoader bypass this
+  // method. Their initiator information is set directly in FetchParameters.
+  // Worker subresources go through ResourceFetcher::StartLoad(), which calls
+  // this method before creating their ResourceLoader.
   if (initiator_info.is_imported_module && !initiator_info.referrer.empty()) {
     // Initiator is a referrer of an imported js file.
     initiator_info.initiator_url = KURL(initiator_info.referrer);

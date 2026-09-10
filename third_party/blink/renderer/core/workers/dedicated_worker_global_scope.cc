@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -148,6 +149,8 @@ DedicatedWorkerGlobalScope::ParseCreationParams(
       creation_params->direct_sockets_force_enabled_in_parent;
   parsed_creation_params.creator_document_policy =
       std::move(creation_params->creator_document_policy);
+  parsed_creation_params.dedicated_worker_script_initiator_url =
+      std::move(creation_params->dedicated_worker_script_initiator_url);
 
   parsed_creation_params.creation_params = std::move(creation_params);
   return parsed_creation_params;
@@ -204,7 +207,12 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           parsed_creation_params.parent_storage_access_api_status),
       creator_document_policy_(
           std::move(parsed_creation_params.creator_document_policy)),
-      dedicated_worker_start_time_(dedicated_worker_start_time) {
+      dedicated_worker_start_time_(dedicated_worker_start_time),
+      worker_script_initiator_url_(std::move(
+          parsed_creation_params.dedicated_worker_script_initiator_url)) {
+  CHECK(RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled() ||
+        worker_script_initiator_url_.IsEmpty());
+
   // TODO(mkwst): This needs a specification.
   if (!parsed_creation_params.parent_is_isolated_context) {
     is_isolated_context_ = false;

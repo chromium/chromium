@@ -227,6 +227,9 @@ class CORE_EXPORT DedicatedWorker final
   // The timestamp taken when Start() is called.
   base::TimeTicks start_time_;
 
+  // Initiator URL for the worker script's ResourceTiming entry.
+  KURL worker_script_initiator_url_;
+
   // Whether the worker is frozen due to a call from this context.
   bool requested_frozen_ = false;
 

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -174,6 +175,11 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     FetchParameters fetch_params(
         std::move(request),
         ResourceLoaderOptions(execution_context.GetCurrentWorld()));
+    if (auto* dedicated_worker_global_scope =
+            DynamicTo<DedicatedWorkerGlobalScope>(execution_context)) {
+      fetch_params.MutableOptions().initiator_info.initiator_url =
+          dedicated_worker_global_scope->WorkerScriptInitiatorUrl();
+    }
     worker_main_script_loader_ = MakeGarbageCollected<WorkerMainScriptLoader>();
     worker_main_script_loader_->Start(
         fetch_params, std::move(worker_main_script_load_params),

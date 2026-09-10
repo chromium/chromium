@@ -183,6 +183,8 @@ void WorkerMainScriptLoader::OnComplete(
     mojom::blink::ResourceTimingInfoPtr timing_info = CreateResourceTimingInfo(
         start_time_, initial_request_url_, &resource_response_);
     timing_info->response_end = status.completion_time;
+    timing_info->initiator_url =
+        resource_loader_options_.initiator_info.initiator_url;
     fetch_context_->AddResourceTiming(std::move(timing_info),
                                       fetch_initiator_type_names::kOther);
   }

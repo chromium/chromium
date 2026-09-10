@@ -268,6 +268,10 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // i.e. when DedicatedWorkerStart() was called.
   std::optional<base::TimeTicks> dedicated_worker_start_time;
 
+  // Initiator URL for the dedicated worker script's ResourceTiming entry.
+  // Shared and service worker scripts have no ResourceTiming entry.
+  KURL dedicated_worker_script_initiator_url;
+
   // The parent ExecutionContext's Storage Access API status.
   const net::StorageAccessApiStatus parent_storage_access_api_status;
 
