@@ -186,11 +186,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
               IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE)
                        message:
                            l10n_util::GetNSString(
-                               base::FeatureList::IsEnabled(
-                                   autofill::features::
-                                       kAutofillEnableWalletBranding)
-                                   ? IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_FROM_WALLET_DESCRIPTION
-                                   : IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION)
+                               IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_FROM_WALLET_DESCRIPTION)
                 preferredStyle:UIAlertControllerStyleActionSheet];
 
   __weak __typeof(self) weakSelf = self;

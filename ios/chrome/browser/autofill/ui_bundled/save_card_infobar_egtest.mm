@@ -819,7 +819,7 @@ void FillAndSubmitXframeCreditCardForm() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME))]
+                     IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey

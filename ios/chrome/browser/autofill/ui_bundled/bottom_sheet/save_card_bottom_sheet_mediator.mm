@@ -260,10 +260,7 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   return base::SysUTF16ToNSString(
       _saveCardBottomSheetModel->is_for_upload()
           ? l10n_util::GetStringUTF16(
-                base::FeatureList::IsEnabled(
-                    autofill::features::kAutofillEnableWalletBranding)
-                    ? IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME
-                    : IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
+                IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)
           : l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_CHROME_LOGO_ACCESSIBLE_NAME));
 }

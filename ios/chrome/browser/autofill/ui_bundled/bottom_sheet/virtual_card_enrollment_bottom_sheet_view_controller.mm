@@ -168,10 +168,6 @@ CGFloat const kCreditCardCellHeight = 64;
       addArrangedSubview:[[UIView alloc]
                              initWithFrame:CGRectMake(0, 0, 0, kLogoPadding)]];
 
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableWalletBranding)) {
-    [aboveTitleStackView addArrangedSubview:[self createGooglePayLogoView]];
-  }
   CGFloat logoIllustrationSpacerHeight =
       kLogoPadding + kIllustrationPadding - aboveTitleStackView.spacing;
   [aboveTitleStackView
@@ -186,35 +182,8 @@ CGFloat const kCreditCardCellHeight = 64;
   return aboveTitleStackView;
 }
 
-- (UIImageView*)createGooglePayLogoView {
-  UIImageView* logoImageTitleView =
-      [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
-  logoImageTitleView.contentMode = UIViewContentModeCenter;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  logoImageTitleView.isAccessibilityElement = YES;
-  logoImageTitleView.accessibilityLabel =
-      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
-#endif
-  return logoImageTitleView;
-}
-
 - (UIView*)createVerticalSpacerView:(CGFloat)height {
   return [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, height)];
-}
-
-// Returns the google pay badge image corresponding to the current
-// UIUserInterfaceStyle (light/dark mode).
-- (UIImage*)googlePayBadgeImage {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  Symbol symbol = base::FeatureList::IsEnabled(
-                      autofill::features::kAutofillEnableGradientGoogleLogos)
-                      ? SymbolGooglePayV2
-                      : SymbolGooglePay;
-  return MakeSymbolMulticolor(
-      SymbolWithPointSize(symbol, kCreditCardCellHeight - 2 * kLogoPadding));
-#else
-  return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
-#endif
 }
 
 - (UIImageView*)createIllustrationView {
