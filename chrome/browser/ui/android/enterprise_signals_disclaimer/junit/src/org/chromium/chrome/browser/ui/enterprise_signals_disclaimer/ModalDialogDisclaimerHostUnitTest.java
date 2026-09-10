@@ -5,15 +5,22 @@
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import androidx.activity.OnBackPressedCallback;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -24,8 +31,11 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +49,8 @@ public class ModalDialogDisclaimerHostUnitTest {
 
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private EnterpriseSignalsDisclaimerView mView;
-    @Mock private Consumer<Boolean> mDialogDismissedCallback;
+    @Mock private Consumer<@DismissalCause Integer> mDialogDismissedCallback;
+    @Captor private ArgumentCaptor<PropertyModel> mDialogModelCaptor;
 
     private ModalDialogDisclaimerHost mHost;
 
@@ -60,12 +71,6 @@ public class ModalDialogDisclaimerHostUnitTest {
                     new ParameterSet()
                             .value(DialogDismissalCause.DISMISSED_BY_NATIVE)
                             .name("DismissedByNative"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.NAVIGATE_BACK)
-                            .name("NavigateBack"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.TOUCH_OUTSIDE)
-                            .name("TouchOutside"),
                     new ParameterSet().value(DialogDismissalCause.TAB_SWITCHED).name("TabSwitched"),
                     new ParameterSet()
                             .value(DialogDismissalCause.TAB_DESTROYED)
@@ -78,14 +83,17 @@ public class ModalDialogDisclaimerHostUnitTest {
                             .name("NotAttachedToWindow"),
                     new ParameterSet().value(DialogDismissalCause.NAVIGATE).name("Navigate"),
                     new ParameterSet()
+                            .value(DialogDismissalCause.NAVIGATE_BACK)
+                            .name("NavigateBack"),
+                    new ParameterSet()
+                            .value(DialogDismissalCause.TOUCH_OUTSIDE)
+                            .name("TouchOutside"),
+                    new ParameterSet()
                             .value(DialogDismissalCause.WEB_CONTENTS_DESTROYED)
                             .name("WebContentsDestroyed"),
                     new ParameterSet()
                             .value(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED)
                             .name("DialogInteractionDeferred"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED)
-                            .name("ActionOnDialogCompleted"),
                     new ParameterSet()
                             .value(DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE)
                             .name("ActionOnDialogNotPossible"),
@@ -98,6 +106,18 @@ public class ModalDialogDisclaimerHostUnitTest {
     @Before
     public void setUp() {
         mHost = new ModalDialogDisclaimerHost(mModalDialogManager, mView, mDialogDismissedCallback);
+        doAnswer(
+                        invocation -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            int cause = invocation.getArgument(1);
+                            if (model != null
+                                    && model.get(ModalDialogProperties.CONTROLLER) != null) {
+                                model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, cause);
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .dismissDialog(any(), anyInt());
     }
 
     @Test
@@ -115,15 +135,23 @@ public class ModalDialogDisclaimerHostUnitTest {
     }
 
     @Test
-    public void testHide_dismissesDialogAndSetsInactive() {
+    public void testDismiss_dismissesDialogAndSetsInactive() {
         mHost.show();
         Assert.assertTrue(mHost.isActive());
 
-        mHost.hide();
+        mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
 
         Assert.assertFalse(mHost.isActive());
         verify(mModalDialogManager)
                 .dismissDialog(any(), eq(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED));
+    }
+
+    @Test
+    public void testDismiss_invokesCallbackWithDismissalCause() {
+        mHost.show();
+        mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
+
+        verify(mDialogDismissedCallback).accept(DismissalCause.TAPPED_ACCEPT);
     }
 
     @Test
@@ -136,22 +164,64 @@ public class ModalDialogDisclaimerHostUnitTest {
         Assert.assertFalse(mHost.isActive());
         verify(mModalDialogManager)
                 .dismissDialog(any(), eq(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED));
+        verify(mDialogDismissedCallback, never()).accept(any());
     }
 
     @Test
-    public void testOnDismiss_touchOutsideReason_invokesCallbackWithTrue() {
+    public void testDestroy_calledAfterDismiss_doesNotDismissDialogAgain() {
+        mHost.show();
+        mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
+
+        verify(mModalDialogManager, times(1)).dismissDialog(any(), anyInt());
+
+        mHost.destroy();
+
+        verify(mModalDialogManager, times(1)).dismissDialog(any(), anyInt());
+    }
+
+    @Test
+    public void testOnDismiss_touchOutside_invokesCallbackWithDismissedByTapOutside() {
         mHost.show();
         Assert.assertTrue(mHost.isActive());
 
         mHost.onDismiss(null, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
         Assert.assertFalse(mHost.isActive());
-        verify(mDialogDismissedCallback).accept(true);
+        verify(mDialogDismissedCallback).accept(DismissalCause.DISMISSED_BY_TAP_OUTSIDE);
+    }
+
+    @Test
+    public void testBackPressedHandler_invokesCallbackWithDismissedByBackPress() {
+        mHost.show();
+        Assert.assertTrue(mHost.isActive());
+
+        verify(mModalDialogManager)
+                .showDialog(
+                        mDialogModelCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(ModalDialogManager.ModalDialogPriority.HIGH));
+        PropertyModel dialogModel = mDialogModelCaptor.getValue();
+        OnBackPressedCallback backPressCallback =
+                dialogModel.get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER);
+        Assert.assertNotNull(backPressCallback);
+        Assert.assertTrue(backPressCallback.isEnabled());
+
+        backPressCallback.handleOnBackPressed();
+
+        Assert.assertFalse(mHost.isActive());
+        verify(mDialogDismissedCallback).accept(DismissalCause.DISMISSED_BY_BACK_PRESS);
+        verify(mModalDialogManager)
+                .dismissDialog(
+                        eq(dialogModel), eq(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED));
+
+        // Subsequent onDismiss call should not trigger the callback again.
+        mHost.onDismiss(dialogModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
+        verify(mDialogDismissedCallback, times(1)).accept(any());
     }
 
     @Test
     @UseMethodParameter(OtherDismissalCausesParams.class)
-    public void testOnDismiss_otherReason_invokesCallbackWithFalse(
+    public void testOnDismiss_otherReason_invokesCallbackWithDismissedWithoutUserAction(
             @DialogDismissalCause int dismissalCause) {
         mHost.show();
         Assert.assertTrue(mHost.isActive());
@@ -159,7 +229,8 @@ public class ModalDialogDisclaimerHostUnitTest {
         mHost.onDismiss(null, dismissalCause);
 
         Assert.assertFalse(mHost.isActive());
-        verify(mDialogDismissedCallback).accept(false);
+        verify(mDialogDismissedCallback)
+                .accept(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
     }
 
     @Test
@@ -169,6 +240,6 @@ public class ModalDialogDisclaimerHostUnitTest {
         mHost.onDismiss(null, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         mHost.onDismiss(null, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
-        verify(mDialogDismissedCallback, times(1)).accept(true);
+        verify(mDialogDismissedCallback, times(1)).accept(DismissalCause.DISMISSED_BY_TAP_OUTSIDE);
     }
 }

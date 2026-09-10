@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
+import androidx.activity.OnBackPressedCallback;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -24,19 +27,23 @@ class ModalDialogDisclaimerHost
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mDialogModel;
     private boolean mIsActive;
-    private @Nullable Consumer<Boolean> mDialogDismissedCallback;
+    private @Nullable Consumer<@DismissalCause Integer> mDialogDismissedCallback;
+    private @Nullable @DismissalCause Integer mDismissalCause;
 
     public ModalDialogDisclaimerHost(
             ModalDialogManager modalDialogManager,
             EnterpriseSignalsDisclaimerView view,
-            Consumer<Boolean> dialogDismissedCallback) {
+            Consumer<@DismissalCause Integer> onDialogDismissedCallback) {
         mModalDialogManager = modalDialogManager;
-        mDialogDismissedCallback = dialogDismissedCallback;
+        mDialogDismissedCallback = onDialogDismissedCallback;
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(
+                                ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                                createBackPressedCallback())
                         .build();
         mDialogModel = dialogModel;
         mIsActive = false;
@@ -58,16 +65,21 @@ class ModalDialogDisclaimerHost
     }
 
     @Override
-    public void hide() {
+    public void dismiss(@DismissalCause int dismissalCause) {
+        mIsActive = false;
+        mDismissalCause = dismissalCause;
         mModalDialogManager.dismissDialog(
                 mDialogModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
-        mIsActive = false;
     }
 
     @Override
     public void destroy() {
         mDialogDismissedCallback = null;
-        hide();
+        if (mIsActive) {
+            mModalDialogManager.dismissDialog(
+                    mDialogModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
+        }
+        mIsActive = false;
     }
 
     // ModalDialogProperties.Controller implementation.
@@ -82,9 +94,36 @@ class ModalDialogDisclaimerHost
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         mIsActive = false;
         if (mDialogDismissedCallback != null) {
-            mDialogDismissedCallback.accept(
-                    dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+            @DismissalCause
+            int cause =
+                    (mDismissalCause != null)
+                            ? mDismissalCause
+                            : getDismissalCauseFromDialogDismissalCause(dismissalCause);
+            var callback = mDialogDismissedCallback;
             mDialogDismissedCallback = null;
+            callback.accept(cause);
         }
+    }
+
+    private static @DismissalCause int getDismissalCauseFromDialogDismissalCause(
+            @DialogDismissalCause int dismissalCause) {
+        assert dismissalCause != DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED;
+        if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+            // Back press is handled by the OnBackPressedCallback.
+            return DismissalCause.DISMISSED_BY_TAP_OUTSIDE;
+        } else {
+            return DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION;
+        }
+    }
+
+    // Because `onDialogDismiss` bundles touch outside and back press together, we need to handle
+    // back press separately to get the correct dismissal cause.
+    private OnBackPressedCallback createBackPressedCallback() {
+        return new OnBackPressedCallback(/* enabled= */ true) {
+            @Override
+            public void handleOnBackPressed() {
+                dismiss(EnterpriseSignalsDisclaimerHost.DismissalCause.DISMISSED_BY_BACK_PRESS);
+            }
+        };
     }
 }

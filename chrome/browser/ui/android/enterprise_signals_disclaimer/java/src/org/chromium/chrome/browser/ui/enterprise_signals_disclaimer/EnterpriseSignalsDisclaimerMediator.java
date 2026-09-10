@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -36,23 +35,36 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     // TODO(b/537182192): Replace with a p-link.
     static final String LEARN_MORE_LINK = "https://support.google.com/chrome/a/answer/16191236";
 
+    /** Delegate for the enterprise signals disclaimer mediator. */
+    interface Delegate {
+        /**
+         * Opens the info page for the given URL in CTT.
+         *
+         * @param url The URL of the webpage to show.
+         */
+        void showInfoPage(String url);
+
+        /** Called when the user taps the accept button. */
+        void onAccept();
+
+        /** Called when the user taps the decline button. */
+        void onDecline();
+    }
+
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private final AccountInfo mPrimaryAccount;
-    private final EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
+    private final Delegate mDelegate;
     private final SigninManager mSigninManager;
-    private @Nullable Runnable mHideDialogCallback;
     private boolean mIsDecisionHandled;
 
     EnterpriseSignalsDisclaimerMediator(
             Context context,
             IdentityManager identityManager,
-            EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
-            SigninManager signinManager,
-            Runnable hideDialogCallback) {
+            EnterpriseSignalsDisclaimerMediator.Delegate delegate,
+            SigninManager signinManager) {
         mDelegate = delegate;
         mSigninManager = signinManager;
-        mHideDialogCallback = hideDialogCallback;
         mPrimaryAccount = Objects.requireNonNull(identityManager.getPrimaryAccountInfo());
 
         // Puts the badge in the bottom right corner of the profile picture.
@@ -138,20 +150,15 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
         EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
                 mPrimaryAccount.getGaiaId());
 
-        if (mHideDialogCallback != null) {
-            mHideDialogCallback.run();
-            mHideDialogCallback = null;
-        }
+        mDelegate.onAccept();
     }
 
     /** Called when the user explicitly clicks the Cancel button in the UI. */
     private void onCancelButtonClicked() {
         if (mIsDecisionHandled) return;
+
         signOutUser();
-        if (mHideDialogCallback != null) {
-            mHideDialogCallback.run();
-            mHideDialogCallback = null;
-        }
+        mDelegate.onDecline();
     }
 
     /** Performs sign-out when the user declined/dismissed the disclaimer. */

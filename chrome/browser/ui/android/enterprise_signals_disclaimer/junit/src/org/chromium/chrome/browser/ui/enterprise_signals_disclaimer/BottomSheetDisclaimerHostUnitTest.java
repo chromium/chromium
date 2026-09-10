@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -44,22 +46,11 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private EnterpriseSignalsDisclaimerBottomSheetView mSheetContent;
-    @Mock private Consumer<Boolean> mSheetDismissedCallback;
+    @Mock private Consumer<@DismissalCause Integer> mSheetDismissedCallback;
 
     @Captor private ArgumentCaptor<Runnable> mDestroyedCallbackCaptor;
 
     private BottomSheetDisclaimerHost mHost;
-
-    public static class UserActionReasonsParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(StateChangeReason.SWIPE).name("Swipe"),
-                    new ParameterSet().value(StateChangeReason.BACK_PRESS).name("BackPress"),
-                    new ParameterSet().value(StateChangeReason.TAP_SCRIM).name("TapScrim"),
-                    new ParameterSet().value(StateChangeReason.CLOSE_BUTTON).name("CloseButton"));
-        }
-    }
 
     public static class NonUserActionReasonsParams implements ParameterProvider {
         @Override
@@ -70,10 +61,7 @@ public class BottomSheetDisclaimerHostUnitTest {
                     new ParameterSet().value(StateChangeReason.COMPOSITED_UI).name("CompositedUi"),
                     new ParameterSet().value(StateChangeReason.VR).name("Vr"),
                     new ParameterSet().value(StateChangeReason.PROMOTE_TAB).name("PromoteTab"),
-                    new ParameterSet().value(StateChangeReason.OMNIBOX_FOCUS).name("OmniboxFocus"),
-                    new ParameterSet()
-                            .value(StateChangeReason.INTERACTION_COMPLETE)
-                            .name("InteractionComplete"));
+                    new ParameterSet().value(StateChangeReason.OMNIBOX_FOCUS).name("OmniboxFocus"));
         }
     }
 
@@ -103,12 +91,28 @@ public class BottomSheetDisclaimerHostUnitTest {
     }
 
     @Test
-    public void testHide_hidesContent() {
+    public void testDismiss_hidesContent() {
         mHost.show();
 
-        mHost.hide();
+        mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
 
-        verify(mBottomSheetController).hideContent(eq(mSheetContent), eq(true));
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mSheetContent), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mSheetDismissedCallback, never()).accept(any());
+    }
+
+    @Test
+    public void testDismiss_invokesCallbackWithDismissalCause() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+
+        mHost.show();
+        mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
+        verify(mSheetDismissedCallback, never()).accept(any());
+
+        mHost.onSheetClosed(StateChangeReason.INTERACTION_COMPLETE);
+
+        verify(mSheetDismissedCallback).accept(DismissalCause.TAPPED_ACCEPT);
     }
 
     @Test
@@ -121,6 +125,20 @@ public class BottomSheetDisclaimerHostUnitTest {
         Assert.assertFalse(mHost.isActive());
         verify(mBottomSheetController).removeObserver(mHost);
         verify(mBottomSheetController).hideContent(eq(mSheetContent), eq(false));
+        verify(mSheetDismissedCallback, never()).accept(any());
+    }
+
+    @Test
+    public void testDestroy_calledAfterDismiss_doesNotHideContentAgain() {
+        mHost.show();
+        mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
+
+        mHost.destroy();
+
+        verify(mBottomSheetController, times(1))
+                .hideContent(
+                        eq(mSheetContent), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mBottomSheetController, never()).hideContent(eq(mSheetContent), eq(false));
     }
 
     @Test
@@ -149,21 +167,52 @@ public class BottomSheetDisclaimerHostUnitTest {
     }
 
     @Test
-    @UseMethodParameter(UserActionReasonsParams.class)
-    public void testSheetClosed_userActionReason_invokesCallbackWithTrue(
-            @StateChangeReason int reason) {
+    public void testSheetClosed_swipe_invokesCallbackWithDismissedBySwipeDown() {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
 
         mHost.show();
         mHost.onSheetOpened(StateChangeReason.NONE);
-        mHost.onSheetClosed(reason);
+        mHost.onSheetClosed(StateChangeReason.SWIPE);
 
-        verify(mSheetDismissedCallback).accept(true);
+        verify(mSheetDismissedCallback).accept(DismissalCause.DISMISSED_BY_SWIPE_DOWN);
+    }
+
+    @Test
+    public void testSheetClosed_backPress_invokesCallbackWithDismissedByBackPress() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+
+        mHost.show();
+        mHost.onSheetOpened(StateChangeReason.NONE);
+        mHost.onSheetClosed(StateChangeReason.BACK_PRESS);
+
+        verify(mSheetDismissedCallback).accept(DismissalCause.DISMISSED_BY_BACK_PRESS);
+    }
+
+    @Test
+    public void testSheetClosed_tapScrim_invokesCallbackWithDismissedByTapOutside() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+
+        mHost.show();
+        mHost.onSheetOpened(StateChangeReason.NONE);
+        mHost.onSheetClosed(StateChangeReason.TAP_SCRIM);
+
+        verify(mSheetDismissedCallback).accept(DismissalCause.DISMISSED_BY_TAP_OUTSIDE);
+    }
+
+    @Test
+    public void testSheetClosed_closeButton_invokesCallbackWithDismissedByCloseButton() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+
+        mHost.show();
+        mHost.onSheetOpened(StateChangeReason.NONE);
+        mHost.onSheetClosed(StateChangeReason.CLOSE_BUTTON);
+
+        verify(mSheetDismissedCallback).accept(DismissalCause.DISMISSED_BY_CLOSE_BUTTON);
     }
 
     @Test
     @UseMethodParameter(NonUserActionReasonsParams.class)
-    public void testSheetClosed_nonUserActionReason_invokesCallbackWithFalse(
+    public void testSheetClosed_nonUserActionReason_invokesCallbackWithDismissedWithoutUserAction(
             @StateChangeReason int reason) {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
 
@@ -171,6 +220,7 @@ public class BottomSheetDisclaimerHostUnitTest {
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(reason);
 
-        verify(mSheetDismissedCallback).accept(false);
+        verify(mSheetDismissedCallback)
+                .accept(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
     }
 }

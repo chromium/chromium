@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -21,7 +22,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * disclaimer previously.
  */
 @NullMarked
-public class EnterpriseSignalsDisclaimerCoordinator {
+public class EnterpriseSignalsDisclaimerCoordinator
+        implements EnterpriseSignalsDisclaimerMediator.Delegate {
     /** Delegate for the enterprise signals disclaimer. */
     public interface Delegate {
         /**
@@ -35,6 +37,7 @@ public class EnterpriseSignalsDisclaimerCoordinator {
     private final EnterpriseSignalsDisclaimerMediator mMediator;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final EnterpriseSignalsDisclaimerHost mDisclaimerHost;
+    private final Delegate mDelegate;
     private boolean mIsDestroyed;
     private @Nullable Runnable mOnDestroyCallback;
 
@@ -57,8 +60,8 @@ public class EnterpriseSignalsDisclaimerCoordinator {
             SigninManager signinManager,
             Delegate delegate,
             Runnable onDestroyCallback) {
-        mIsDestroyed = false;
         mOnDestroyCallback = onDestroyCallback;
+        mDelegate = delegate;
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
 
@@ -80,7 +83,7 @@ public class EnterpriseSignalsDisclaimerCoordinator {
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
-                        context, identityManager, delegate, signinManager, mDisclaimerHost::hide);
+                        context, identityManager, /* delegate= */ this, signinManager);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), view, EnterpriseSignalsDisclaimerViewBinder::bind);
@@ -102,6 +105,13 @@ public class EnterpriseSignalsDisclaimerCoordinator {
         return !mIsDestroyed && mDisclaimerHost.isActive();
     }
 
+    private void onDialogDismissed(@DismissalCause int dismissalCause) {
+        if (shouldSignOutBasedOnDismissalCause(dismissalCause)) {
+            mMediator.signOutUser();
+        }
+        destroy();
+    }
+
     /** Destroys the coordinator, hiding the sheet and cleaning up resources. */
     public void destroy() {
         if (mIsDestroyed) {
@@ -117,15 +127,27 @@ public class EnterpriseSignalsDisclaimerCoordinator {
         }
     }
 
-    private void onDialogDismissed(boolean reasonWasUserAction) {
-        if (mIsDestroyed) {
-            return;
-        }
-        if (reasonWasUserAction) {
-            // The user should not be signed out if the dialog is being dismissed by an external
-            // force - for instance, the Controller being destroyed.
-            mMediator.signOutUser();
-        }
-        destroy();
+    // EnterpriseSignalsDisclaimerMediator.Delegate implementation.
+    @Override
+    public void showInfoPage(String url) {
+        mDelegate.showInfoPage(url);
+    }
+
+    @Override
+    public void onAccept() {
+        mDisclaimerHost.dismiss(DismissalCause.TAPPED_ACCEPT);
+    }
+
+    @Override
+    public void onDecline() {
+        mDisclaimerHost.dismiss(DismissalCause.TAPPED_SIGN_OUT);
+    }
+
+    private static boolean shouldSignOutBasedOnDismissalCause(@DismissalCause int dismissalCause) {
+        // If the user taps sign out explicitly, the Mediator will already start the sign out flow.
+        return dismissalCause == DismissalCause.DISMISSED_BY_BACK_PRESS
+                || dismissalCause == DismissalCause.DISMISSED_BY_SWIPE_DOWN
+                || dismissalCause == DismissalCause.DISMISSED_BY_TAP_OUTSIDE
+                || dismissalCause == DismissalCause.DISMISSED_BY_CLOSE_BUTTON;
     }
 }
