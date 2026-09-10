@@ -740,6 +740,74 @@ TEST_F(H265ParserTest, SpsOverwritesInvalidatesPps) {
   EXPECT_EQ(parser_.GetPPS(pps_id), nullptr);
 }
 
+TEST(H265ProfileTierLevelTest, GetMaxLumaPsMatchesTableA8) {
+  H265ProfileTierLevel ptl;
+  ptl.general_level_idc = 156;  // 5.2
+  EXPECT_EQ(ptl.GetMaxLumaPs(), 8912896);
+  ptl.general_level_idc = 186;  // 6.2
+  EXPECT_EQ(ptl.GetMaxLumaPs(), 35651584);
+  ptl.general_level_idc = 189;  // 6.3
+  EXPECT_EQ(ptl.GetMaxLumaPs(), 80216064);
+  ptl.general_level_idc = 210;  // 7
+  EXPECT_EQ(ptl.GetMaxLumaPs(), 142606336);
+  ptl.general_level_idc = 216;  // 7.2
+  EXPECT_EQ(ptl.GetMaxLumaPs(), 142606336);
+}
+
+TEST_F(H265ParserTest, AcceptsFrameDimensionsAboveLevel62Cap) {
+  H265SPS sps = {};
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 216;  // 7.2
+  // 16888 is the level 6.2 per-dimension cap; 7.2 allows up to 33776.
+  sps.pic_width_in_luma_samples = 20000;
+  sps.pic_height_in_luma_samples = 64;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.log2_diff_max_min_luma_coding_block_size = 3;
+  sps.log2_diff_max_min_luma_transform_block_size = 3;
+  sps.sps_max_dec_pic_buffering_minus1[0] = 0;
+
+  H26xAnnexBBitstreamBuilder builder;
+  BuildPackedH265SPS(builder, sps);
+  builder.Flush();
+
+  parser_.SetStream(builder.data());
+  H265NALU nalu;
+  ASSERT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  int sps_id;
+  ASSERT_EQ(parser_.ParseSPS(&sps_id), H265Parser::kOk);
+  const H265SPS* parsed = parser_.GetSPS(sps_id);
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(parsed->pic_width_in_luma_samples, 20000);
+}
+
+TEST_F(H265ParserTest, Level63AllowsLargerDpbFor8k) {
+  H265SPS sps = {};
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 189;  // 6.3
+  sps.pic_width_in_luma_samples = 7680;
+  sps.pic_height_in_luma_samples = 4320;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.log2_diff_max_min_luma_coding_block_size = 3;
+  sps.log2_diff_max_min_luma_transform_block_size = 3;
+  // Equation A-2 with MaxLumaPs of 6.3 yields max_dpb_size = 12, so
+  // sps_max_dec_pic_buffering_minus1 may be 11. With the 6.2 MaxLumaPs this
+  // same picture would only allow 5 and ParseSPS would reject the SPS.
+  sps.sps_max_dec_pic_buffering_minus1[0] = 11;
+
+  H26xAnnexBBitstreamBuilder builder;
+  BuildPackedH265SPS(builder, sps);
+  builder.Flush();
+
+  parser_.SetStream(builder.data());
+  H265NALU nalu;
+  ASSERT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  int sps_id;
+  ASSERT_EQ(parser_.ParseSPS(&sps_id), H265Parser::kOk);
+  const H265SPS* parsed = parser_.GetSPS(sps_id);
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(parsed->max_dpb_size, 12u);
+}
+
 class H265CrossSliceTest : public H265ParserTest {
  protected:
   void BuildSpsAndPps(H26xAnnexBBitstreamBuilder& builder) {
