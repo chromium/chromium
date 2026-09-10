@@ -57,6 +57,7 @@ import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.search.SearchBoxProperties;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -66,10 +67,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Non-render tests for {@link BookmarkSearchBoxRow}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-// TODO(crbug.com/428281174): The top content is blocked by system UI on B+.
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-        message = "crbug.com/428281174")
 public class BookmarkSearchBoxRowTest {
     /** Needed because CoreMatchers.equalTo does not correctly handle CharSequences. */
     private static Matcher<CharSequence> withText(CharSequence text) {
@@ -168,6 +165,11 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/428281174): Re-enable when clicking search_text reliably grants focus on
+    // Android 16+ phones (touches obstructed by top system UI).
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428281174")
     public void testFocusAndEnter() {
         onView(withId(R.id.search_text)).perform(click());
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
@@ -223,6 +225,8 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/557319392): Touch injection is flaky on Desktop Freeform.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testShoppingChipToggleCallback() {
         setProperty(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, false);
         onView(withId(R.id.shopping_filter_chip)).perform(click());
@@ -248,6 +252,11 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/428281174): Re-enable when clicking clear_text_button reliably triggers the
+    // runnable on Android 16+ phones (touches obstructed by top system UI).
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/428281174")
     public void testClearSearchTextButtonAndRunnable() {
         onView(withId(R.id.clear_text_button)).check(matches(not(isDisplayed())));
 
