@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -25,12 +26,13 @@ public class AccountMenuProperties {
     private AccountMenuProperties() {}
 
     /** Item types supported by the Account Menu RecyclerView. */
-    @IntDef({ItemType.MENU_ITEM, ItemType.DIVIDER, ItemType.PROMO_CARD})
+    @IntDef({ItemType.MENU_ITEM, ItemType.DIVIDER, ItemType.PROMO_CARD, ItemType.IDENTITY_CARD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemType {
         int MENU_ITEM = 0;
         int DIVIDER = 1;
         int PROMO_CARD = 2;
+        int IDENTITY_CARD = 3;
     }
 
     /** Properties for menu items in the Account Menu. */
@@ -75,6 +77,22 @@ public class AccountMenuProperties {
             return new PropertyModel.Builder(ALL_KEYS)
                     .with(ON_SIGNIN_CLICK_LISTENER, onSigninClickListener)
                     .build();
+        }
+    }
+
+    /** Properties for the signed-in identity card item in the Account Menu. */
+    public static class IdentityCardProperties {
+        /** Profile data for the signed-in user. */
+        public static final WritableObjectPropertyKey<DisplayableProfileData> PROFILE_DATA =
+                new WritableObjectPropertyKey<>();
+
+        public static final PropertyKey[] ALL_KEYS = {PROFILE_DATA};
+
+        private IdentityCardProperties() {}
+
+        /** Factory helper to create an IdentityCard PropertyModel. */
+        public static PropertyModel createModel(DisplayableProfileData profileData) {
+            return new PropertyModel.Builder(ALL_KEYS).with(PROFILE_DATA, profileData).build();
         }
     }
 }

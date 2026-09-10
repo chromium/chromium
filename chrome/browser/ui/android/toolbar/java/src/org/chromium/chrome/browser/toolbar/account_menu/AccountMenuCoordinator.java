@@ -67,6 +67,10 @@ public class AccountMenuCoordinator {
                 new LayoutViewBuilder<>(R.layout.account_menu_promo_card),
                 AccountMenuViewBinder::bindPromoCard);
         mAdapter.registerType(
+                ItemType.IDENTITY_CARD,
+                new LayoutViewBuilder<>(R.layout.account_menu_identity_card),
+                AccountMenuViewBinder::bindIdentityCard);
+        mAdapter.registerType(
                 ItemType.MENU_ITEM,
                 new LayoutViewBuilder<>(R.layout.account_menu_item),
                 AccountMenuViewBinder::bindMenuItem);

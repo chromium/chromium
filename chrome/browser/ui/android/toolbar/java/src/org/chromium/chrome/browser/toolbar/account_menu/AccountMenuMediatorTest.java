@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -46,15 +47,18 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -64,8 +68,12 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link AccountMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
 public class AccountMenuMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private Activity mActivity;
     @Mock private WindowAndroid mWindowAndroid;
@@ -92,6 +100,9 @@ public class AccountMenuMediatorTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
+        doReturn(mAccountManagerTestRule.getIdentityManager())
+                .when(mIdentityServicesProvider)
+                .getIdentityManager(mProfile);
         doReturn(true).when(mSigninManager).isSigninAllowed();
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mOrchestrator);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
@@ -262,5 +273,22 @@ public class AccountMenuMediatorTest {
         assertEquals(
                 R.string.menu_passwords_and_autofill,
                 mModelList.get(1).model.get(MenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testSignedIn_showsIdentityCard() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        mMediator.updateMenuItems();
+
+        assertEquals(4, mModelList.size());
+        ListItem item = mModelList.get(0);
+        assertEquals(ItemType.IDENTITY_CARD, item.type);
+        DisplayableProfileData profileData = item.model.get(IdentityCardProperties.PROFILE_DATA);
+        assertNotNull(profileData);
+        assertEquals(TestAccounts.ACCOUNT1.getFullName(), profileData.getFullName());
+        assertEquals(TestAccounts.ACCOUNT1.getEmail(), profileData.getAccountEmail());
     }
 }

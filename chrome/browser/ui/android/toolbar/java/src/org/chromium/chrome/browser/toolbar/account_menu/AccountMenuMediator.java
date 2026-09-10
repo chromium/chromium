@@ -15,13 +15,16 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.IdentityCardProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.PromoCardProperties;
@@ -36,6 +39,8 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -55,6 +60,7 @@ public class AccountMenuMediator {
             mSigninCoordinatorSupplier;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final Runnable mDismissCallback;
+    private @Nullable ProfileDataCache mProfileDataCache;
 
     public AccountMenuMediator(
             Context context,
@@ -119,17 +125,43 @@ public class AccountMenuMediator {
             return;
         }
 
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager != null) {
+            AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
+            if (accountInfo != null) {
+                addIdentityCard(identityManager, accountInfo);
+                return;
+            }
+        }
+
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (signinManager != null && signinManager.isSigninAllowed()) {
-            mModelList.add(
-                    new ListItem(
-                            ItemType.PROMO_CARD,
-                            PromoCardProperties.createModel(
-                                    v -> {
-                                        mDismissCallback.run();
-                                        startSigninFlow();
-                                    })));
+            addPromoCard();
         }
+    }
+
+    private void addIdentityCard(IdentityManager identityManager, AccountInfo accountInfo) {
+        if (mProfileDataCache == null) {
+            mProfileDataCache =
+                    ProfileDataCache.createWithoutBadge(
+                            mContext, identityManager, R.dimen.account_menu_avatar_size);
+        }
+        DisplayableProfileData profileData = mProfileDataCache.getById(accountInfo.getId());
+        mModelList.add(
+                new ListItem(
+                        ItemType.IDENTITY_CARD, IdentityCardProperties.createModel(profileData)));
+    }
+
+    private void addPromoCard() {
+        mModelList.add(
+                new ListItem(
+                        ItemType.PROMO_CARD,
+                        PromoCardProperties.createModel(
+                                v -> {
+                                    mDismissCallback.run();
+                                    startSigninFlow();
+                                })));
     }
 
     private void startSigninFlow() {
