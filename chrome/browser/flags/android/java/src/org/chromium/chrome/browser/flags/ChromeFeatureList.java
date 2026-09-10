@@ -2441,6 +2441,18 @@ public abstract class ChromeFeatureList {
                             "remote_group_operations", false);
     public static final MutableBooleanParamWithSafeDefault sInlinePdfV2EnableFormFilling =
             sInlinePdfV2.newBooleanParam("enable_form_filling", false);
+    public static final MutableBooleanParamWithSafeDefault
+            sOnDemandBackgroundTabContextCaptureLimitConcurrentLoadIfNeeded =
+                    sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
+                            "limit_concurrent_load_if_needed", true);
+    public static final MutableIntParamWithSafeDefault
+            sOnDemandBackgroundTabContextCaptureMaximumConcurrentLoadIfNeeded =
+                    sOnDemandBackgroundTabContextCaptureOptimization.newIntParam(
+                            "maximum_concurrent_load_if_needed", 4);
+    public static final MutableIntParamWithSafeDefault
+            sOnDemandBackgroundTabContextCaptureMinimumConcurrentLoadIfNeeded =
+                    sOnDemandBackgroundTabContextCaptureOptimization.newIntParam(
+                            "minimum_concurrent_load_if_needed", 1);
     public static final MutableBooleanParamWithSafeDefault sOnDemandBackgroundTabEnableFirstPaint =
             sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
                     "enable_first_paint", true);
