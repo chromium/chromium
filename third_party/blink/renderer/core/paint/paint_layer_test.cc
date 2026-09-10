@@ -1627,7 +1627,7 @@ TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {
   const ComputedStyle& old_style = target_object->StyleRef();
   ComputedStyleBuilder new_style_builder(old_style);
   new_style_builder.SetHasCurrentTransformAnimation(true);
-  target_object->SetStyle(new_style_builder.TakeStyle());
+  target_object->SetStyle(*new_style_builder.TakeStyle());
 
   EXPECT_NE(nullptr, target_paint_layer->Transform());
 }

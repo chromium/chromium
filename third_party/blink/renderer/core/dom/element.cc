@@ -6020,7 +6020,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (needs_reinsert) {
       layout_object->Remove();
     }
-    layout_object->SetStyle(layout_style, apply_changes);
+    layout_object->SetStyle(*layout_style, apply_changes);
     if (needs_reinsert) {
       LayoutTreeBuilderTraversal::ParentLayoutObject(*this)->AddChild(
           layout_object,

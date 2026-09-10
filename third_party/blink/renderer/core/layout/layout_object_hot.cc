@@ -116,7 +116,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
 
     UpdateAnonymousChildStyle(child, new_style_builder);
 
-    child->SetStyle(new_style_builder.TakeStyle());
+    child->SetStyle(*new_style_builder.TakeStyle());
   }
 
   PseudoId pseudo_id = StyleRef().StyleType();

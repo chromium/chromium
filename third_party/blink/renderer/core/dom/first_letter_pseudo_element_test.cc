@@ -179,7 +179,7 @@ TEST_P(FirstLetterTextTest, All) {
   ComputedStyleBuilder builder(layout_body->StyleRef());
   builder.SetPseudoElementStyles(
       1 << (kPseudoIdFirstLetter - kFirstPublicPseudoId));
-  layout_body->SetStyle(builder.TakeStyle(),
+  layout_body->SetStyle(*builder.TakeStyle(),
                         LayoutObject::ApplyStyleChanges::kNo);
 
   LayoutText* layout_text =

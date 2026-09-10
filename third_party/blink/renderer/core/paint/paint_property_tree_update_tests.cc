@@ -1650,7 +1650,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   // Simulates starting a composite animation.
   builder.SetHasCurrentTransformAnimation(true);
   builder.SetIsRunningTransformAnimationOnCompositor(true);
-  target->SetStyle(builder.TakeStyle());
+  target->SetStyle(*builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1680,7 +1680,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   builder.SetTransform(transform);
   builder.SetTransformOrigin(
       TransformOrigin(Length::Fixed(70), Length::Fixed(30), 0));
-  target->SetStyle(builder.TakeStyle());
+  target->SetStyle(*builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   {
@@ -1707,7 +1707,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   builder = ComputedStyleBuilder(target->StyleRef());
   builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
-  target->SetStyle(builder.TakeStyle());
+  target->SetStyle(*builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   UpdateAllLifecyclePhasesExceptPaint();

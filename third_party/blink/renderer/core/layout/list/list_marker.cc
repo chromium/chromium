@@ -293,11 +293,11 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     if (!child) {
       LayoutListMarkerImage* image =
           LayoutListMarkerImage::CreateAnonymous(marker.GetDocument());
-      const ComputedStyle* image_style =
-          marker.GetDocument()
-              .GetStyleResolver()
-              .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
-                                               EDisplay::kInline);
+      const ComputedStyle& image_style =
+          *marker.GetDocument()
+               .GetStyleResolver()
+               .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
+                                                EDisplay::kInline);
       image->SetStyle(image_style);
       image->SetImageResource(
           MakeGarbageCollected<LayoutImageResourceStyleImage>(
@@ -318,8 +318,8 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   // |LayoutObject::PropagateStyleToAnonymousChildren()| to avoid unexpected
   // full layout due by style difference. See http://crbug.com/980399
   const auto& style_parent = child ? *child->Parent() : marker;
-  const ComputedStyle* text_style =
-      marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+  const ComputedStyle& text_style =
+      *marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           style_parent.StyleRef(), marker.StyleRef().Display());
   if (IsA<LayoutTextFragment>(child))
     return child->SetStyle(text_style);
@@ -329,7 +329,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
 
   auto* const new_text = LayoutTextFragment::CreateAnonymous(
       marker.GetDocument(), StringImpl::empty_, 0, 0);
-  new_text->SetStyle(std::move(text_style));
+  new_text->SetStyle(text_style);
   marker.AddChild(new_text);
   marker_text_type_ = kUnresolved;
 }

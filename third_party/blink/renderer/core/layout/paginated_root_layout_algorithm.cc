@@ -250,7 +250,7 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
     ignore_author_page_style = true;
     page_container_style = document.GetStyleResolver().StyleForPage(
         page_index, page_name, 1.0, ignore_author_page_style);
-    page_container->SetStyle(page_container_style,
+    page_container->SetStyle(*page_container_style,
                              LayoutObject::ApplyStyleChanges::kNo);
     page_containing_block_size =
         DesiredPageContainingBlockSize(document, *page_container_style);

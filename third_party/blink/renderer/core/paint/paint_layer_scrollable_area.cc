@@ -2230,7 +2230,7 @@ void PaintLayerScrollableArea::UpdateScrollCornerStyle() {
       scroll_corner_ = LayoutCustomScrollbarPart::CreateAnonymous(
           GetLayoutBox()->GetDocument(), this);
     }
-    scroll_corner_->SetStyle(std::move(corner));
+    scroll_corner_->SetStyle(*corner);
   } else if (scroll_corner_) {
     scroll_corner_->Destroy();
     scroll_corner_ = nullptr;
@@ -2355,7 +2355,7 @@ void PaintLayerScrollableArea::UpdateResizerStyle(
       resizer_ = LayoutCustomScrollbarPart::CreateAnonymous(
           GetLayoutBox()->GetDocument(), this);
     }
-    resizer_->SetStyle(std::move(resizer));
+    resizer_->SetStyle(*resizer);
   } else if (resizer_) {
     resizer_->Destroy();
     resizer_ = nullptr;

@@ -439,7 +439,7 @@ void Text::RecalcTextStyle(const StyleRecalcChange change) {
       // display:contents text child changed.
       SetNeedsReattachLayoutTree();
     } else {
-      layout_text->SetStyle(new_style);
+      layout_text->SetStyle(*new_style);
       if (NeedsStyleRecalc())
         layout_text->SetTextIfNeeded(data());
     }

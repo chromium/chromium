@@ -2763,7 +2763,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   ComputedStyleBuilder builder(layout_object->StyleRef());
   builder.SetColumnCount(3);
   builder.SetColumnWidth(80);
-  layout_object->SetStyle(builder.TakeStyle(),
+  layout_object->SetStyle(*builder.TakeStyle(),
                           LayoutObject::ApplyStyleChanges::kNo);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesInput::Unconstrained()).sizes;
   ASSERT_TRUE(sizes.has_value());
@@ -2773,7 +2773,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   // Only column-count set.
   builder = ComputedStyleBuilder(layout_object->StyleRef());
   builder.SetHasAutoColumnWidth();
-  layout_object->SetStyle(builder.TakeStyle(),
+  layout_object->SetStyle(*builder.TakeStyle(),
                           LayoutObject::ApplyStyleChanges::kNo);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesInput::Unconstrained()).sizes;
   ASSERT_TRUE(sizes.has_value());
@@ -2784,7 +2784,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   builder = ComputedStyleBuilder(layout_object->StyleRef());
   builder.SetColumnWidth(80);
   builder.SetHasAutoColumnCount();
-  layout_object->SetStyle(builder.TakeStyle(),
+  layout_object->SetStyle(*builder.TakeStyle(),
                           LayoutObject::ApplyStyleChanges::kNo);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesInput::Unconstrained()).sizes;
   ASSERT_TRUE(sizes.has_value());

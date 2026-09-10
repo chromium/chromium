@@ -66,7 +66,7 @@ void SkeletonPseudoElement::DidRecalcStyle(const StyleRecalcChange) {
       // an effect as the hosting document's page color-scheme is currently
       // used.
       SetCanvasAndColorScheme(GetDocument(), builder, used_color_scheme);
-      layout_object->SetStyle(builder.TakeStyle());
+      layout_object->SetStyle(*builder.TakeStyle());
     }
   }
 }

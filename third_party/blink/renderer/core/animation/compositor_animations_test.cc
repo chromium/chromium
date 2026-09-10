@@ -886,7 +886,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   ComputedStyleBuilder builder(*style);
   builder.AddPaintImage(style_image);
-  element_->GetLayoutObject()->SetStyle(builder.TakeStyle());
+  element_->GetLayoutObject()->SetStyle(*builder.TakeStyle());
 
   // The image is added for testing off-thread paint worklet supporting
   // custom property animation case. The style doesn't have a real

@@ -3736,7 +3736,7 @@ bool StyleEngine::RecalcHighlightStylesForSizeContainer(Element& container) {
       new_style != &style) {
     container.SetComputedStyle(new_style);
     if (LayoutObject* layout_object = container.GetLayoutObject()) {
-      layout_object->SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
+      layout_object->SetStyle(*new_style, LayoutObject::ApplyStyleChanges::kNo);
     }
   }
 
@@ -4281,7 +4281,7 @@ void StyleEngine::ViewportDefiningElementDidChange() {
     // This update is also necessary if the first body element changes because
     // another body element is inserted or removed.
     layout_object->SetStyle(
-        ComputedStyleBuilder(layout_object->StyleRef()).TakeStyle());
+        *ComputedStyleBuilder(layout_object->StyleRef()).TakeStyle());
   }
 }
 
@@ -4752,9 +4752,9 @@ void StyleEngine::UpdateViewportStyle() {
     return;
   }
 
-  const ComputedStyle* viewport_style = resolver_->StyleForViewport();
+  const ComputedStyle& viewport_style = *resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
-          viewport_style, &GetDocument().GetLayoutView()->StyleRef()) !=
+          &viewport_style, &GetDocument().GetLayoutView()->StyleRef()) !=
       ComputedStyle::Difference::kEqual) {
     GetDocument().GetLayoutView()->SetStyle(viewport_style);
   }

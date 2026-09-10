@@ -2254,7 +2254,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and new ComputedStyle like paint and size invalidations. If kNo, just set
   // the ComputedStyle member.
   enum class ApplyStyleChanges { kNo, kYes };
-  void SetStyle(const ComputedStyle*,
+  void SetStyle(const ComputedStyle&,
                 ApplyStyleChanges = ApplyStyleChanges::kYes);
 
   // Set the style of the object if it's generated content.
@@ -2268,7 +2268,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // that node with the new ComputedStyle. Modifying the ComputedStyle of a node
   // outside of style recalc can break invariants in the style engine, so this
   // function must not gain any new call sites.
-  void SetModifiedStyleOutsideStyleRecalc(const ComputedStyle*,
+  void SetModifiedStyleOutsideStyleRecalc(const ComputedStyle&,
                                           ApplyStyleChanges);
 
   // This function returns an enclosing non-anonymous LayoutBlock for this
@@ -3516,10 +3516,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Updates only the local style ptr of the object.  Does not update the state
   // of the object, and so only should be called when the style is known not to
   // have changed (or from SetStyle).
-  void SetStyleInternal(const ComputedStyle* style) {
+  void SetStyleInternal(const ComputedStyle& style) {
     NOT_DESTROYED();
-    CHECK(style);
-    style_ = std::move(style);
+    style_ = style;
   }
 
   // Set style to null. This is needed during object construction in some

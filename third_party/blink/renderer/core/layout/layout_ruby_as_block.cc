@@ -27,7 +27,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), EDisplay::kRuby);
-    inline_ruby->SetStyle(new_style_builder.TakeStyle());
+    inline_ruby->SetStyle(*new_style_builder.TakeStyle());
     LayoutBlockFlow::AddChild(inline_ruby);
   } else if (before_child == inline_ruby) {
     inline_ruby->AddChild(child, inline_ruby->SlowFirstChild());
@@ -54,7 +54,7 @@ void LayoutRubyAsBlock::StyleDidChange(
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             new_style, inline_ruby->StyleRef().Display());
     UpdateAnonymousChildStyle(inline_ruby, new_style_builder);
-    inline_ruby->SetStyle(new_style_builder.TakeStyle());
+    inline_ruby->SetStyle(*new_style_builder.TakeStyle());
   }
 }
 

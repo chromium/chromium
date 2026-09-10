@@ -3701,7 +3701,7 @@ void StyleResolver::PropagateStyleToViewport() {
   }
   if (changed || update_scrollbar_style) {
     GetDocument().GetLayoutView()->SetStyle(
-        new_viewport_style_builder.TakeStyle());
+        *new_viewport_style_builder.TakeStyle());
   }
 }
 #undef PROPAGATE_VALUE

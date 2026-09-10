@@ -36,7 +36,7 @@ LayoutTextCombine* LayoutTextCombine::CreateAnonymous(LayoutText* text_child) {
       document.GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           text_child->StyleRef(), EDisplay::kInlineBlock);
   StyleAdjuster::AdjustStyleForTextCombine(new_style_builder);
-  layout_object->SetStyle(new_style_builder.TakeStyle());
+  layout_object->SetStyle(*new_style_builder.TakeStyle());
   layout_object->AddChild(text_child);
   LayoutTextCombine::AssertStyleIsValid(text_child->StyleRef());
   return layout_object;

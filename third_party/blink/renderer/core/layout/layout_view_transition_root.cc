@@ -23,7 +23,7 @@ LayoutViewTransitionRoot::LayoutViewTransitionRoot(Document& document)
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           GetDocument().GetLayoutView()->StyleRef(), EDisplay::kBlock);
-  SetStyle(new_style_builder.TakeStyle());
+  SetStyle(*new_style_builder.TakeStyle());
 }
 
 LayoutViewTransitionRoot::~LayoutViewTransitionRoot() = default;
@@ -46,7 +46,7 @@ void LayoutViewTransitionRoot::UpdateSnapshotStyle(
       Length::Fixed(snapshot_containing_block_rect.Height()));
   new_style_builder.SetPointerEvents(EPointerEvents::kNone);
 
-  SetStyle(new_style_builder.TakeStyle());
+  SetStyle(*new_style_builder.TakeStyle());
 }
 
 }  // namespace blink

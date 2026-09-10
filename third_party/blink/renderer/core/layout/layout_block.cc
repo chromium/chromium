@@ -650,7 +650,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
                                                   new_display);
 
   parent->UpdateAnonymousChildStyle(nullptr, new_style_builder);
-  const ComputedStyle* new_style = new_style_builder.TakeStyle();
+  const ComputedStyle& new_style = *new_style_builder.TakeStyle();
 
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {

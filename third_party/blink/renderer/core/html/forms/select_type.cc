@@ -1080,12 +1080,12 @@ String MenuListSelectType::UpdateTextStyleInternal() {
     }
 
     if (builder) {
-      const ComputedStyle* new_style = builder->TakeStyle();
+      const ComputedStyle& new_style = *builder->TakeStyle();
       if (auto* inner_layout = inner_element.GetLayoutObject()) {
         inner_layout->SetModifiedStyleOutsideStyleRecalc(
             new_style, LayoutObject::ApplyStyleChanges::kYes);
       } else {
-        inner_element.SetComputedStyle(std::move(new_style));
+        inner_element.SetComputedStyle(&new_style);
       }
     }
   }

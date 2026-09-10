@@ -284,7 +284,7 @@ void CustomScrollbar::UpdateScrollbarPart(ScrollbarPart part_type) {
   }
 
   if (part_layout_object)
-    part_layout_object->SetStyle(part_style);
+    part_layout_object->SetStyle(*part_style);
 }
 
 gfx::Rect CustomScrollbar::ButtonRect(ScrollbarPart part_type) const {

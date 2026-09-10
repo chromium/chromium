@@ -348,7 +348,7 @@ class OOFCandidateStyleIterator {
   void ActivateStyle(const ComputedStyle& new_style) {
     LayoutObject* layout_object = element_->GetLayoutObject();
     if (new_style != layout_object->StyleRef()) {
-      layout_object->SetStyle(&new_style, LayoutObject::ApplyStyleChanges::kNo);
+      layout_object->SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
       // We need to invalidate layout in order to avoid invalid cache hits, as
       // our style isn't part of the LayoutResult cache key.
       layout_object->SetNeedsLayout(

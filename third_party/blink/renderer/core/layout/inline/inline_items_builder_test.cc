@@ -58,7 +58,7 @@ class InlineItemsBuilderTest : public RenderingTest {
     ComputedStyleBuilder builder(*style_);
     builder.SetWhiteSpace(whitespace);
     style_ = builder.TakeStyle();
-    block_flow_->SetStyle(style_, LayoutObject::ApplyStyleChanges::kNo);
+    block_flow_->SetStyle(*style_, LayoutObject::ApplyStyleChanges::kNo);
   }
 
   const ComputedStyle* GetStyle(EWhiteSpace whitespace) {
@@ -76,7 +76,7 @@ class InlineItemsBuilderTest : public RenderingTest {
 
   void AppendText(const String& text, InlineItemsBuilder* builder) {
     LayoutText* layout_text =
-        LayoutText::CreateEmptyAnonymous(GetDocument(), style_);
+        LayoutText::CreateEmptyAnonymous(GetDocument(), *style_);
     anonymous_objects_->push_back(layout_text);
     builder->AppendText(text, layout_text);
   }
@@ -108,7 +108,7 @@ class InlineItemsBuilderTest : public RenderingTest {
     for (Input& input : inputs) {
       if (!input.layout_text) {
         input.layout_text = LayoutText::CreateEmptyAnonymous(
-            GetDocument(), GetStyle(input.whitespace));
+            GetDocument(), *GetStyle(input.whitespace));
         anonymous_objects.push_back(input.layout_text);
       }
       builder.AppendText(input.text, input.layout_text);
@@ -493,7 +493,7 @@ static LayoutInline* CreateLayoutInline(
       document.GetStyleResolver().CreateComputedStyleBuilder();
   initialize_style(builder);
   LayoutInline* const node = LayoutInline::CreateAnonymous(document);
-  node->SetStyle(builder.TakeStyle(), LayoutObject::ApplyStyleChanges::kNo);
+  node->SetStyle(*builder.TakeStyle(), LayoutObject::ApplyStyleChanges::kNo);
   node->SetIsInLayoutNGInlineFormattingContext(true);
   return node;
 }

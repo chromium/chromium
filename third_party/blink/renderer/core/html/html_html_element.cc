@@ -163,16 +163,16 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     auto* const text_combine =
         DynamicTo<LayoutTextCombine>(layout_text->Parent());
     if (text_combine) [[unlikely]] {
-      layout_text->SetStyle(&text_combine->StyleRef());
+      layout_text->SetStyle(text_combine->StyleRef());
       continue;
     }
-    layout_text->SetStyle(&new_style);
+    layout_text->SetStyle(new_style);
   }
 
   // Note: We should not call |Node::SetComputedStyle()| because computed
   // style keeps original style instead.
   // See wm-propagation-body-computed-root.html
-  layout_object->SetStyle(&new_style);
+  layout_object->SetStyle(new_style);
 
   // TODO(crbug.com/371033184): We should propagate `writing-mode` and
   // `direction` to ComputedStyles of pseudo-elements of `this`.

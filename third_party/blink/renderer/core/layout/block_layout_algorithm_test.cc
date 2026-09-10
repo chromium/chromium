@@ -80,7 +80,7 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     auto* layout_object = element->GetLayoutObject();
     ComputedStyleBuilder builder(layout_object->StyleRef());
     update(builder);
-    layout_object->SetStyle(builder.TakeStyle(),
+    layout_object->SetStyle(*builder.TakeStyle(),
                             LayoutObject::ApplyStyleChanges::kNo);
     layout_object->SetNeedsLayout("");
     UpdateAllLifecyclePhasesForTest();

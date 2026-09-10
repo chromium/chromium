@@ -3304,7 +3304,7 @@ void Document::Initialize() {
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
   UpdateForcedColors();
-  const ComputedStyle* style = GetStyleResolver().StyleForViewport();
+  const ComputedStyle& style = *GetStyleResolver().StyleForViewport();
   layout_view_ = MakeGarbageCollected<LayoutView>(this);
   SetLayoutObject(layout_view_);
 
