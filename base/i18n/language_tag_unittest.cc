@@ -557,6 +557,10 @@ TEST(LanguageTagTest, UndefinedLanguageTag) {
 }
 
 TEST(LanguageTagTest, CanCreateFixedFlatSet) {
+  static_assert(GetKnownLanguageTag("en-US") < GetKnownLanguageTag("pt-BR"),
+                "Comparison en-US < pt-BR failed!");
+  static_assert(GetKnownLanguageTag("en-US") != GetKnownLanguageTag("pt-BR"),
+                "Comparison en-US != pt-BR failed!");
   constexpr auto kLanguageTagsSet = base::MakeFixedFlatSet<LanguageTag>({
       GetKnownLanguageTag("en-US"),
       GetKnownLanguageTag("pt-BR"),

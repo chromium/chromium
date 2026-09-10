@@ -22,8 +22,7 @@ TEST(ImmutableStringTest, DefaultConstructor) {
 }
 
 TEST(ImmutableStringTest, ConstevalConstructorEmpty) {
-  constexpr ImmutableString str =
-      ImmutableString(ImmutableString::ForceStackString(), {""});
+  constexpr ImmutableString str = ImmutableString({""});
   EXPECT_EQ(str.AsString(), "");
 }
 
@@ -33,15 +32,13 @@ TEST(ImmutableStringTest, ConstexprConstructor) {
 }
 
 TEST(ImmutableStringTest, ConstevalConstructorSmall) {
-  constexpr ImmutableString str =
-      ImmutableString(ImmutableString::ForceStackString(), {"hello"});
+  constexpr ImmutableString str = ImmutableString({"hello"});
   EXPECT_EQ(str.AsString(), "hello");
 }
 
 TEST(ImmutableStringTest, ConstevalConstructorWithOtherConstant) {
   constexpr std::string_view kStr = "hello";
-  constexpr ImmutableString str =
-      ImmutableString(ImmutableString::ForceStackString(), {kStr});
+  constexpr ImmutableString str = ImmutableString({kStr});
   EXPECT_EQ(str.AsString(), "hello");
 }
 
@@ -68,13 +65,41 @@ TEST(ImmutableStringTest, JoinPartsLarge) {
 }
 
 TEST(ImmutableStringTest, CopyAndMove) {
-  constexpr ImmutableString str1 =
-      ImmutableString(ImmutableString::ForceStackString(), {"test"});
+  constexpr ImmutableString str1 = ImmutableString({"test"});
   ImmutableString str2(str1);
   EXPECT_EQ(str2.AsString(), "test");
 
   ImmutableString str3 = std::move(str1);
   EXPECT_EQ(str3.AsString(), "test");
+}
+
+TEST(ImmutableStringTest, LargeStringAtCompileTimeConstexprVariable) {
+  constexpr ImmutableString str = ImmutableString(
+      ImmutableString::ForceConstevalConstructor{},
+      "this is a very long string that exceeds the stack limit");
+  EXPECT_EQ(str.AsString(),
+            "this is a very long string that exceeds the stack limit");
+}
+
+TEST(ImmutableStringTest, LargeStringAtCompileTimeStaticAssert) {
+  static_assert([] {
+    constexpr ImmutableString str =
+        ImmutableString(ImmutableString::ForceConstevalConstructor{},
+                        "123456789123456789123456789");
+    return str.AsString() == "123456789123456789123456789";
+  }() == true);
+}
+
+TEST(ImmutableStringTest, LargeStringAtCompileTimeCopy) {
+  auto get_str = [] {
+    constexpr ImmutableString str =
+        ImmutableString(ImmutableString::ForceConstevalConstructor{},
+                        "123456789123456789123456789");
+    return str;
+  };
+
+  const ImmutableString copy_str = get_str();
+  EXPECT_EQ(copy_str.AsString(), "123456789123456789123456789");
 }
 
 }  // namespace base::i18n_internal

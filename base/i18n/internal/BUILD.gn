@@ -7,7 +7,6 @@ component("internal") {
     "bcp47_known_subtags.h",
     "bcp47_parser.h",
     "bcp47_subtags_reader.h",
-    "immutable_string.cc",
     "immutable_string.h",
     "legacy_icu_converter.cc",
     "legacy_icu_converter.h",

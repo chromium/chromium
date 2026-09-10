@@ -241,11 +241,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // Constexpr Constructor that expects the span of string-views and constructs
   // tha ImmutableString on its own.
   constexpr explicit LanguageTag(base::span<const std::string_view> parts)
-      : tag_(std::is_constant_evaluated()
-                 ? i18n_internal::ImmutableString(
-                       i18n_internal::ImmutableString::ForceStackString{},
-                       parts)
-                 : i18n_internal::ImmutableString(parts)) {}
+      : tag_(i18n_internal::ImmutableString(parts)) {}
 
   // The BCP47 language tag, e.g. "pt-BR".
   // Supports language, script, region, variants and extensions.
