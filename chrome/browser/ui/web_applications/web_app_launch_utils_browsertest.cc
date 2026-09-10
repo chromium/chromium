@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -24,6 +26,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace web_app {
 namespace {
@@ -150,6 +154,84 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ReparentingUrl>& param_info) {
       return ToString(param_info.param);
     });
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTestBase,
+                       ReparentWebContentsWindowClosedOnShow) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/web_apps/simple/index.html");
+  webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), app_url);
+
+  content::WebContents* to_reparent =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+
+  // Create a second tab so browser() remains open after detaching to_reparent.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+
+  BrowserWindowInterface* app_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
+          GenerateApplicationNameFromAppId(app_id),
+          /*trusted_source=*/true, gfx::Rect(), profile(),
+          /*user_gesture=*/true));
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ASSERT_TRUE(browser_view);
+  views::Widget* target_widget = browser_view->GetWidget();
+  ASSERT_TRUE(target_widget);
+
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_shown_callback(base::BindRepeating(
+      [](views::Widget* target_widget, views::Widget* shown_widget) {
+        if (shown_widget == target_widget) {
+          shown_widget->CloseNow();
+        }
+      },
+      target_widget));
+
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      app_browser);
+  ReparentWebContentsIntoBrowserImpl(browser(), to_reparent, app_browser);
+  browser_destroyed_observer.Wait();
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTestBase,
+                       ReparentWebContentsIntoAppBrowserWindowClosedOnShow) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/web_apps/simple/index.html");
+  webapps::AppId app_id = InstallWebAppInNewTabAndClose(browser(), app_url);
+
+  content::WebContents* to_reparent =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+
+  // Create a second tab so browser() remains open after detaching to_reparent.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  bool closed_app_widget = false;
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (!closed_app_widget) {
+          BrowserView* browser_view =
+              BrowserView::GetBrowserViewForNativeWindow(
+                  widget->GetNativeWindow());
+          if (browser_view && browser_view->browser()->GetType() ==
+                                  BrowserWindowInterface::Type::TYPE_APP) {
+            closed_app_widget = true;
+            widget->CloseNow();
+          }
+        }
+      }));
+
+  BrowserWindowInterface* result =
+      ReparentWebContentsIntoAppBrowser(to_reparent, app_id);
+  EXPECT_TRUE(closed_app_widget);
+  EXPECT_EQ(result, nullptr);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+}
 
 }  // namespace
 }  // namespace web_app

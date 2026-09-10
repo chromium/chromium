@@ -145,10 +145,12 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
     chrome::NewTab(source_browser, NewTabTypes::kNoUserAction);
   }
 
+  base::WeakPtr<BrowserWindowInterface> target_browser_weak =
+      target_browser->GetWeakPtr();
   ReparentWebContentsIntoBrowserImpl(
       source_browser, contents, target_browser,
       /*insert_as_pinned_home_tab=*/insert_as_pinned_home_tab);
-  return target_browser;
+  return target_browser_weak.get();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -383,7 +385,13 @@ void ReparentWebContentsIntoBrowserImpl(BrowserWindowInterface* source_browser,
     apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(web_contents);
   }
 #endif
+  base::WeakPtr<BrowserWindowInterface> target_browser_weak =
+      target_browser->GetWeakPtr();
   target_browser->GetWindow()->Show();
+
+  if (!target_browser_weak) {
+    return;
+  }
 
   // The window will be registered correctly, however the tab will not be
   // correctly tracked. We need to do a reset to get the tab correctly tracked
@@ -641,6 +649,9 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
   BrowserWindowInterface* reparented_browser =
       ReparentWebContentsIntoAppBrowser(contents, browser, app_id,
                                         as_pinned_home_tab);
+  if (!reparented_browser) {
+    return nullptr;
+  }
 
   UpdateLaunchMetricsAndStats(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,

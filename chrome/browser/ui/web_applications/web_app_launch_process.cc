@@ -7,6 +7,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/memory/values_equivalent.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -234,7 +235,11 @@ content::WebContents* WebAppLaunchProcess::Run() {
     browser = CreateBrowserForLaunch();
     is_new_browser = true;
   }
+  base::WeakPtr<BrowserWindowInterface> browser_weak = browser->GetWeakPtr();
   browser->GetWindow()->Show();
+  if (!browser_weak) {
+    return nullptr;
+  }
 
   WindowOpenDisposition navigation_disposition =
       GetNavigationDisposition(is_new_browser);
