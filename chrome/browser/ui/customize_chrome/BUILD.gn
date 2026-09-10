@@ -35,7 +35,6 @@ source_set("customize_chrome_base") {
 
   deps = [
     # Does not actually depend on //ui/views for is_android.
-    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
   ]
 

@@ -95,23 +95,6 @@ source_set("side_panel_views_dependent") {
   }
 }
 
-source_set("side_panel_ui_provider") {
-  sources = [
-    "side_panel_ui_provider.cc",
-    "side_panel_ui_provider.h",
-  ]
-  deps = [
-    ":side_panel",
-    ":side_panel_views_dependent",
-    "//chrome/browser/ui/browser_window",
-  ]
-  if (is_android) {
-    deps += [ "//chrome/browser/ui/side_panel/internal/android" ]
-  } else {
-    deps += [ "//chrome/browser/ui/views/side_panel" ]
-  }
-}
-
 source_set("test_support") {
   testonly = true
   sources = [
@@ -129,11 +112,17 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "side_panel_entry_key_unittest.cc" ]
+  sources = [
+    "side_panel_entry_key_unittest.cc",
+    "side_panel_ui_unittest.cc",
+  ]
 
   deps = [
     ":side_panel",
+    ":test_support",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/actions:actions_headers",
   ]

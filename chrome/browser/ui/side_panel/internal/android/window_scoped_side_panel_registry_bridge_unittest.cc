@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/side_panel/test/android/native_unit_test_support_jni/WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

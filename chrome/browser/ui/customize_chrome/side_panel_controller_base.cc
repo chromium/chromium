@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -161,7 +160,7 @@ void SidePanelControllerBase::CloseSidePanel() {
 
 SidePanelUI* SidePanelControllerBase::GetSidePanelUI() const {
   auto* browser = tab_->GetBrowserWindowInterface();
-  return browser ? SidePanelUIProvider::From(browser) : nullptr;
+  return browser ? SidePanelUI::From(browser) : nullptr;
 }
 
 void SidePanelControllerBase::SetEntryChangedCallback(

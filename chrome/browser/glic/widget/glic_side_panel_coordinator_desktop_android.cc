@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -281,7 +280,7 @@ bool GlicSidePanelCoordinatorDesktopAndroid::IsGlicSidePanelActive() {
 SidePanelUI* GlicSidePanelCoordinatorDesktopAndroid::GetWindowSidePanelUI()
     const {
   if (auto* window = tab_->GetBrowserWindowInterface()) {
-    return SidePanelUIProvider::From(window);
+    return SidePanelUI::From(window);
   }
   return nullptr;
 }

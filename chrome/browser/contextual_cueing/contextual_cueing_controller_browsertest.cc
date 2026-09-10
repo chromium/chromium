@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -1744,7 +1743,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   SeedExecutionResult(MakeCompleteResponse());
 
   // Open side panel.
-  auto* side_panel_ui = SidePanelUIProvider::From(browser());
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Show(SidePanelEntryId::kBookmarks);
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1800,7 +1799,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   }));
 
   // Open the side panel (we use Bookmarks here as a standard global entry).
-  auto* side_panel_ui = SidePanelUIProvider::From(browser());
+  auto* side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Show(SidePanelEntryId::kBookmarks);
 

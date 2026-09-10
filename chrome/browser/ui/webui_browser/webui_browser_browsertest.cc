@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar.mojom.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
@@ -711,4 +713,12 @@ IN_PROC_BROWSER_TEST_F(
             ui::ColorProviderKey::UserColorSource::kBaseline);
   EXPECT_EQ(key.custom_theme, nullptr);
   CloseBrowserSynchronously(isolated_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
+                       SidePanelUIReturnsWebUIBrowserSidePanelUI) {
+  auto* window = WebUIBrowserWindow::FromBrowser(browser());
+  ASSERT_TRUE(window);
+
+  EXPECT_EQ(SidePanelUI::From(browser()), window->GetWebUIBrowserSidePanelUI());
 }

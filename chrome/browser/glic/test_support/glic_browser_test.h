@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
@@ -354,7 +353,7 @@ class GlicBrowserTestMixin : public T {
 
     // Disable side panel animations on supported platforms.
     if (IsSidePanelEnabled()) {
-      SidePanelUI* side_panel_ui = SidePanelUIProvider::From(GetBrowser());
+      SidePanelUI* side_panel_ui = SidePanelUI::From(GetBrowser());
       CHECK(side_panel_ui);
       side_panel_ui->SetNoDelaysForTesting(true);
       side_panel_ui->DisableAnimationsForTesting();

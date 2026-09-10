@@ -441,7 +441,6 @@ source_set("ui_impl") {
       ":jni_headers",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
-      "//chrome/browser/ui/side_panel:side_panel_ui_provider",
       "//chrome/browser/ui/side_panel/android",
       "//components/messages/android",
     ]

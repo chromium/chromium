@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -944,7 +943,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
     return ContextualCueingDecision::kInfobarVisible;
   }
 
-  if (auto* side_panel_ui = SidePanelUIProvider::From(window);
+  if (auto* side_panel_ui = SidePanelUI::From(window);
       side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because side panel is visible.");
@@ -1429,7 +1428,7 @@ void ContextualCueingController::ObserveSidePanel() {
     return;
   }
   if (auto* window = tab_->GetBrowserWindowInterface()) {
-    if (auto* side_panel_ui = SidePanelUIProvider::From(window)) {
+    if (auto* side_panel_ui = SidePanelUI::From(window)) {
       side_panel_shown_subscription_ = side_panel_ui->RegisterSidePanelShown(
           base::BindRepeating(&ContextualCueingController::OnSidePanelShown,
                               weak_ptr_factory_.GetWeakPtr()));

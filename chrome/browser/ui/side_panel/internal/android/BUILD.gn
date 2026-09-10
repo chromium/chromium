@@ -9,7 +9,6 @@ source_set("android") {
   visibility = [
     ":*",
     "//chrome/browser/android:*",
-    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel/internal:*",
   ]
   sources = [
@@ -131,7 +130,7 @@ source_set("unit_tests") {
     "//chrome/browser/tab_list:test_support",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/android/tab_model:test_support",
-    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_jni",
     "//components/tabs:test_support",
@@ -153,7 +152,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/side_panel",
-    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/android",
     "//chrome/browser/ui/side_panel/test/android:browser_test_support",

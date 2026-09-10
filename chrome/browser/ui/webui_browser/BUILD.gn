@@ -191,6 +191,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/devtools",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/common:chrome_features",

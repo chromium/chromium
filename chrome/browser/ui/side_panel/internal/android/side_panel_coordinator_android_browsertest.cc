@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 #include "components/sessions/core/session_id.h"
@@ -362,9 +361,8 @@ class SidePanelCoordinatorAndroidBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       TestSidePanelUIProvider) {
-  SidePanelUI* side_panel_ui =
-      SidePanelUIProvider::From(GetLastActiveBrowser());
+                       TestSidePanelUI) {
+  SidePanelUI* side_panel_ui = SidePanelUI::From(GetLastActiveBrowser());
   EXPECT_NE(nullptr, side_panel_ui);
 }
 

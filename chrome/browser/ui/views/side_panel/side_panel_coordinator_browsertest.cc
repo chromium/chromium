@@ -44,7 +44,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -306,9 +306,9 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
       contextual_registries_;
 };
 
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, TestSidePanelUIProvider) {
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, TestSidePanelUI) {
   Init();
-  EXPECT_EQ(SidePanelUIProvider::From(browser()), coordinator());
+  EXPECT_EQ(SidePanelUI::From(browser()), coordinator());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {

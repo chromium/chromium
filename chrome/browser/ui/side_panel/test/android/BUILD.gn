@@ -97,6 +97,5 @@ source_set("integration_test_support") {
     "//base",
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/ui/side_panel",
-    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
   ]
 }

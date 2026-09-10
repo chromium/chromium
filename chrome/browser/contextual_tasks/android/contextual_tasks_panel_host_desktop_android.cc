@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -243,7 +242,7 @@ void ContextualTasksPanelHostDesktopAndroid::MaybeRegisterEntry() {
 }
 
 SidePanelUI* ContextualTasksPanelHostDesktopAndroid::GetSidePanelUI() const {
-  return SidePanelUIProvider::From(browser_window_);
+  return SidePanelUI::From(browser_window_);
 }
 
 SidePanelNativeView ContextualTasksPanelHostDesktopAndroid::CreateView(

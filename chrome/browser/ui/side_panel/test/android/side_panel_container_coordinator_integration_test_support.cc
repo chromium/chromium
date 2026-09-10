@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/side_panel/test/android/integration_test_support_jni_headers/SidePanelContainerCoordinatorIntegrationTestSupport_jni.h"
 
 static void
@@ -18,8 +17,7 @@ JNI_SidePanelContainerCoordinatorIntegrationTestSupport_ShowSidePanel(
     bool suppress_animations) {
   CHECK(tab);
 
-  auto* side_panel_ui =
-      SidePanelUIProvider::From(tab->GetBrowserWindowInterface());
+  auto* side_panel_ui = SidePanelUI::From(tab->GetBrowserWindowInterface());
   CHECK(side_panel_ui);
 
   side_panel_ui->Show(SidePanelEntry::Key(SidePanelEntry::Id::kSidePanelDev),
@@ -34,8 +32,7 @@ JNI_SidePanelContainerCoordinatorIntegrationTestSupport_CloseSidePanel(
     bool suppress_animations) {
   CHECK(tab);
 
-  auto* side_panel_ui =
-      SidePanelUIProvider::From(tab->GetBrowserWindowInterface());
+  auto* side_panel_ui = SidePanelUI::From(tab->GetBrowserWindowInterface());
   CHECK(side_panel_ui);
 
   side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
