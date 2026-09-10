@@ -19,6 +19,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_constants.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_model.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,7 +66,7 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
 
 class InstallerDownloaderControllerTest : public testing::Test {
  protected:
-  InstallerDownloaderControllerTest() {
+  void SetUp() override {
     auto download_manager = std::make_unique<content::MockDownloadManager>();
     mock_download_manager_ = download_manager.get();
     profile_.SetDownloadManagerForTesting(std::move(download_manager));
@@ -465,6 +466,33 @@ TEST_F(InstallerDownloaderControllerTest, ReengagementMetricsLogCorrectCycle) {
   histograms.ExpectUniqueSample(
       "Windows.InstallerDownloader.Reengagement.RequestAccepted",
       /*cycle=*/2, /*expected_count=*/1);
+}
+
+class InstallerDownloaderControllerMigratedTest
+    : public InstallerDownloaderControllerTest {
+ protected:
+  InstallerDownloaderControllerMigratedTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{"MigratedInstallerDownloader", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for the infobar staying hidden after startup until a new tab
+// was opened. The startup trigger runs when the first tab is inserted, which is
+// before the freshly created window has been shown and activated, so gating the
+// eligibility check on there being an *active* browser window dropped that
+// attempt.
+TEST_F(InstallerDownloaderControllerMigratedTest,
+       ChecksEligibilityWithoutActiveBrowserWindow) {
+  EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run()).Times(0);
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(1);
+
+  controller_->MaybeShowInfoBar();
 }
 
 }  // namespace

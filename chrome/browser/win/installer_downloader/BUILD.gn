@@ -123,6 +123,7 @@ source_set("unit_tests") {
     ":prefs",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/infobars",
     "//chrome/browser/ui/views/infobars",
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//chrome/test:test_support",
