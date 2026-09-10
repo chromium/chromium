@@ -149,6 +149,17 @@ void ToastService::RegisterToasts(
                                   IDS_CLEAR_BROWSING_DATA_TOAST_BODY)
           .Build());
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  toast_registry_->RegisterToast(
+      ToastId::kScheduledRestartOnIdle,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? kChromeProductIcon
+                                      : kBrowserLogoOldIcon,
+                                  IDS_RELAUNCH_RECOMMENDED_SCHEDULED_IDLE_TOAST)
+          .AddGlobalScoped()
+          .Build());
+#endif
+
   // TODO(crbug.com/357930023): This registration only partially implements the
   // non-milestone update toast for testing purposes and will need to be
   // updated.

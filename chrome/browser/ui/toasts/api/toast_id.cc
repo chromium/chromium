@@ -121,6 +121,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "AtMemorySpiiFetchErrorMessage";
     case ToastId::kEmailVerificationLoading:
       return "EmailVerificationLoading";
+    case ToastId::kScheduledRestartOnIdle:
+      return "ScheduledRestartOnIdle";
   }
 
   NOTREACHED();

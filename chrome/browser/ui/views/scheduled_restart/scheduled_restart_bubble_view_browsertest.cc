@@ -10,6 +10,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -124,6 +126,12 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
   EXPECT_EQ(manager()->mode(), ScheduledRestartMode::kOnIdle);
   EXPECT_EQ(1, user_action_tester.GetActionCount("ScheduledRestart_Scheduled"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("ScheduledRestart_Close"));
+
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(ToastId::kScheduledRestartOnIdle,
+            toast_controller->GetCurrentToastId());
 }
 
 IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,

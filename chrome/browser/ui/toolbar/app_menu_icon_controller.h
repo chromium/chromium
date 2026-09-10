@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -106,6 +107,7 @@ class AppMenuIconController : public GlobalErrorObserver,
   const raw_ptr<Delegate> delegate_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       global_error_observation_{this};
+  base::CallbackListSubscription schedule_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_ICON_CONTROLLER_H_

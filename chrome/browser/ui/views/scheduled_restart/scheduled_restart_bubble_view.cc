@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -17,7 +18,10 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/grit/branded_strings.h"
@@ -28,6 +32,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
@@ -59,7 +64,8 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
     chrome::AttemptRelaunch();
   }
 
-  void OnRestartWhenIdleClicked(const ui::Event& event) {
+  void OnRestartWhenIdleClicked(base::WeakPtr<BrowserWindowInterface> browser,
+                                const ui::Event& event) {
     action_taken_ = true;
     base::RecordAction(base::UserMetricsAction("ScheduledRestart_Scheduled"));
     auto* srm =
@@ -68,6 +74,16 @@ class ScheduledRestartDialogDelegate : public ui::DialogModelDelegate {
             : nullptr;
     if (srm) {
       srm->ScheduleRestartOnIdle();
+    }
+    if (browser) {
+      if (auto* browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser.get())) {
+        browser_view->contents_web_view()->RequestFocus();
+      }
+      if (auto* toast_controller = ToastController::From(browser.get())) {
+        toast_controller->MaybeShowToast(
+            ToastParams(ToastId::kScheduledRestartOnIdle));
+      }
     }
     if (dialog_model() && dialog_model()->host()) {
       dialog_model()->host()->Close();
@@ -119,7 +135,7 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
       .AddExtraButton(
           base::BindRepeating(
               &ScheduledRestartDialogDelegate::OnRestartWhenIdleClicked,
-              base::Unretained(delegate_ptr)),
+              base::Unretained(delegate_ptr), browser->GetWeakPtr()),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_RELAUNCH_RECOMMENDED_RESTART_WHEN_IDLE))

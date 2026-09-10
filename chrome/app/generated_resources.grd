@@ -17910,6 +17910,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE" desc="The body text for the scheduled restart reminder bubble dialog." translateable="false">
         Restart now to finish updating, or restart next time you're idle for 5 minutes. Your open tabs and windows will restore. Incognito windows won't reopen.
       </message>
+      <message name="IDS_APP_MENU_BUTTON_RESTART_SCHEDULED" desc="Short label next to app-menu button when a scheduled restart is pending." translateable="false">
+        Restart scheduled
+      </message>
     </if>
 
     <!-- Idle timeout dialog. -->

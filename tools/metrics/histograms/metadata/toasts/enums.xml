@@ -117,6 +117,7 @@ chromium-metrics-reviews@google.com.
   <int value="55" label="Showed AtMemory SPII fetch error message"/>
   <int value="56" label="Dictation no microphone detected error"/>
   <int value="57" label="Email verification loading"/>
+  <int value="58" label="Scheduled restart on idle toast"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

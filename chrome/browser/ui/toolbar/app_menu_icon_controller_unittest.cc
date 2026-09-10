@@ -4,24 +4,39 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/global_features_test_support.h"
+#include "chrome/browser/lifetime/scheduled_restart_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #endif
 
 namespace {
@@ -86,6 +101,25 @@ class FakeMenuGlobalError : public GlobalError {
   Severity severity_;
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class TestGlobalFeatures : public GlobalFeatures {
+ public:
+  explicit TestGlobalFeatures(UpgradeDetector* upgrade_detector)
+      : upgrade_detector_(upgrade_detector) {}
+  ~TestGlobalFeatures() override = default;
+
+ protected:
+  std::unique_ptr<scheduled_restart::ScheduledRestartManager>
+  CreateScheduledRestartManager() override {
+    return std::make_unique<scheduled_restart::ScheduledRestartManager>(
+        *upgrade_detector_);
+  }
+
+ private:
+  raw_ptr<UpgradeDetector> upgrade_detector_;
+};
+#endif
+
 }  // namespace
 
 
@@ -103,13 +137,23 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
  protected:
   AppMenuIconControllerTest()
 #if BUILDFLAG(IS_WIN)
-      : install_details_(false, GetParam()){}
-#else
-      = default;
+      : install_details_(false, GetParam())
 #endif
+  {
+    CreateProfile();
+  }
+
+  void TearDown() override {
+    ResetProfile();
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif
+  }
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
-  Profile* profile() { return &profile_; }
+  Profile* profile() { return profile_.get(); }
+  void ResetProfile() { profile_.reset(); }
+  void CreateProfile() { profile_ = std::make_unique<TestingProfile>(); }
 
   // Returns true if the test is apparently running as an unstable channel.
   bool IsUnstableChannel() {
@@ -139,7 +183,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 
   FakeUpgradeDetector upgrade_detector_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 // Tests that the controller's delegate is notified with the proper icon type
@@ -252,4 +296,89 @@ TEST_P(AppMenuIconControllerTest, GlobalErrorMediumOrHighShowsError) {
   EXPECT_EQ(state.severity, AppMenuIconController::Severity::kHigh);
   error_service->RemoveGlobalError(&high);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_P(AppMenuIconControllerTest,
+       ScheduledRestartUpdatesMenuLabelAndClampsColor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kScheduledRestart);
+
+  // Reset profile before reinitializing GlobalFeatures to avoid dangling
+  // references in keyed services to the replaced GlobalFeatures.
+  ResetProfile();
+  {
+    test::ScopedGlobalFeaturesOverride features_override(base::BindRepeating(
+        [](UpgradeDetector* detector) -> std::unique_ptr<GlobalFeatures> {
+          return std::make_unique<TestGlobalFeatures>(detector);
+        },
+        upgrade_detector()));
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+    CreateProfile();
+
+    auto* manager = TestingBrowserProcess::GetGlobal()
+                        ->GetFeatures()
+                        ->scheduled_restart_manager();
+    ASSERT_TRUE(manager);
+
+    {
+      ::testing::NiceMock<MockAppMenuIconControllerDelegate> mock_delegate;
+      AppMenuIconController controller(upgrade_detector(), profile(),
+                                       &mock_delegate);
+
+      // Set high upgrade annoyance level.
+      BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
+
+      auto state_before = controller.GetTypeAndSeverity();
+      EXPECT_EQ(state_before.type,
+                AppMenuIconController::IconType::kUpgradeNotification);
+      EXPECT_EQ(state_before.severity, AppMenuIconController::Severity::kHigh);
+
+      // Activate Idle scheduled restart.
+      manager->ScheduleRestartOnIdle();
+
+      auto state_after = controller.GetTypeAndSeverity();
+      EXPECT_EQ(state_after.type,
+                AppMenuIconController::IconType::kUpgradeNotification);
+      // Severity should be clamped to kLow under Option A.
+      EXPECT_EQ(state_after.severity, AppMenuIconController::Severity::kLow);
+
+      // Label and tooltip should show "Restart scheduled".
+      std::u16string expected_label =
+          l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_RESTART_SCHEDULED);
+      EXPECT_EQ(AppMenuIconController::GetIconLabel(state_after.type,
+                                                    state_after.severity),
+                expected_label);
+      EXPECT_EQ(AppMenuIconController::GetIconTooltip(state_after.type,
+                                                      state_after.severity),
+                expected_label);
+
+      manager->CancelSchedule();
+      auto state_cancelled = controller.GetTypeAndSeverity();
+      EXPECT_EQ(state_cancelled.type,
+                AppMenuIconController::IconType::kUpgradeNotification);
+      // Severity should unclamp back to kHigh upon schedule cancellation.
+      EXPECT_EQ(state_cancelled.severity,
+                AppMenuIconController::Severity::kHigh);
+      EXPECT_NE(AppMenuIconController::GetIconLabel(state_cancelled.type,
+                                                    state_cancelled.severity),
+                expected_label);
+      EXPECT_NE(AppMenuIconController::GetIconTooltip(state_cancelled.type,
+                                                      state_cancelled.severity),
+                expected_label);
+    }
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif
+
+    ResetProfile();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  }
+  // Restore default GlobalFeatures and profile for subsequent tests.
+  TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+      /*profile_manager=*/false);
+  CreateProfile();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif  // !BUILDFLAG(IS_CHROMEOS)

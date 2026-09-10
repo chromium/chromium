@@ -37,6 +37,8 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/enterprise",
       "//chrome/browser/lifetime",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/toolbar",
