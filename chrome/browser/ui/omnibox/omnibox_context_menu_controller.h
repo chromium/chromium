@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/mojom/omnibox_everywhere.mojom-forward.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/input_state.h"
@@ -287,7 +288,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   OmniboxController* GetOmniboxController() const;
   OmniboxEditModel* GetEditModel();
-  void OpenAiMode(OmniboxEditModel::AimActivation activation);
+  void OpenAiMode(
+      OmniboxEditModel::AimActivation activation,
+      omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state);
   virtual OmniboxPopupUI* GetOmniboxPopupUI() const;
   virtual bool IsLoomnibox() const;
   virtual ContextualSearchboxHandler* GetContextualSearchboxHandler() const;
