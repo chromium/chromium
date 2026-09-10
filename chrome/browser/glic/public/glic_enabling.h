@@ -234,6 +234,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
                                           std::string_view session_country,
                                           const AccountInfo& account_info);
 
+  // Returns true if the device is running in retail demo mode on Android
+  // Desktop.
+  static bool IsRetailDemoModeDesktop();
+
   // Returns true if the user was previously determined to be ineligible for
   // Glic.
   static bool WasPreviouslyNotAllowed(Profile* profile);

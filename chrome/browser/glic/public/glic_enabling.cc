@@ -76,6 +76,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace glic {
@@ -408,8 +409,10 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
 
   result.feature_flag_enabled = base::FeatureList::IsEnabled(features::kGlic);
   if (country_override.has_value()) {
-    result.allowed_by_country_filter = EvaluateCountryEnablement(
-        country_override->first, country_override->second);
+    result.allowed_by_country_filter =
+        GlicEnabling::IsRetailDemoModeDesktop() ||
+        EvaluateCountryEnablement(country_override->first,
+                                  country_override->second);
   } else {
     result.allowed_by_country_filter = global_enabling.IsCountryEnabled();
   }
@@ -561,6 +564,16 @@ GlicEnabling::ScopedBypassEnablementChecksForTesting::
 // static
 void GlicEnabling::SetSystemRequirementMetForTesting(std::optional<bool> met) {
   g_system_requirement_met_for_testing = met;
+}
+
+// static
+bool GlicEnabling::IsRetailDemoModeDesktop() {
+#if BUILDFLAG(IS_ANDROID)
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
+         base::android::device_info::is_retail_demo_mode();
+#else
+  return false;
+#endif
 }
 
 // static
@@ -819,6 +832,10 @@ bool GlicEnabling::IsOsVersionSupported() {
 
 bool GlicGlobalEnabling::IsCountryEnabled() {
   if (is_country_enabled_) {
+    return true;
+  }
+  if (GlicEnabling::IsRetailDemoModeDesktop()) {
+    is_country_enabled_ = true;
     return true;
   }
   LastCheckedCountries current_countries{delegate_->GetPermanentCountryCode(),
@@ -1368,7 +1385,8 @@ bool GlicEnabling::HasConsented() const {
 // static
 prefs::FreStatus GlicEnabling::GetCompletedFre(Profile* profile) {
   if (base::FeatureList::IsEnabled(
-          features::kGlicExperimentalTriggeringOptInBypass)) {
+          features::kGlicExperimentalTriggeringOptInBypass) ||
+      IsRetailDemoModeDesktop()) {
     return prefs::FreStatus::kCompleted;
   }
   return static_cast<prefs::FreStatus>(

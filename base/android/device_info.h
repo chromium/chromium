@@ -36,6 +36,7 @@ BASE_EXPORT bool is_xr();
 BASE_EXPORT bool was_launched_on_large_display();  // >= 600dp
 BASE_EXPORT bool is_tablet();
 BASE_EXPORT std::string device_name();
+BASE_EXPORT bool is_retail_demo_mode();
 
 // For testing use only.
 BASE_EXPORT void set_is_xr_for_testing();
