@@ -5,10 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_
 
-#include "base/memory/weak_ptr.h"
-#include "components/origin_gating/core/origin_gating_checker.h"
+#import "base/memory/weak_ptr.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
 
 namespace actor {
+
+// Custom predicates used by the Actor service origin gating checker.
+enum class ActorCustomPredicate {
+  kSafetyList,
+};
 
 // iOS implementation of OriginGatingChecker::Delegate
 class ActorOriginGatingCheckerDelegateIOS
@@ -44,5 +49,9 @@ class ActorOriginGatingCheckerDelegateIOS
       this};
 };
 }  // namespace actor
+
+template <>
+inline const origin_gating::CustomPredicateDomain origin_gating::
+    CustomPredicateDomain::kInstance<actor::ActorCustomPredicate> = {};
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ORIGIN_GATING_CHECKER_DELEGATE_IOS_H_

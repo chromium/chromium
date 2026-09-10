@@ -15,6 +15,8 @@
 #import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -113,6 +115,9 @@ class ActorService : public KeyedService {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Returns the OriginGatingChecker instance for gating navigation actions.
+  origin_gating::OriginGatingChecker* GetOriginGatingChecker();
+
  private:
   friend class ActorServiceTest;
 
@@ -160,6 +165,13 @@ class ActorService : public KeyedService {
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;
+
+  // Helper to build the configuration and custom predicates for the checker.
+  static origin_gating::OriginGatingConfiguration CreateOriginGatingConfig();
+
+  // Delegate and checker for origin gating.
+  ActorOriginGatingCheckerDelegateIOS origin_gating_delegate_;
+  std::unique_ptr<origin_gating::OriginGatingChecker> origin_gating_checker_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorService> weak_ptr_factory_{this};
