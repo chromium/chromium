@@ -74,6 +74,8 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   showExtensionContextMenu() {}
   onPerformanceInterventionButtonClicked() {}
   onPerformanceInterventionButtonMousePressed() {}
+  onMediaButtonClicked(_isMouseInteraction: boolean) {}
+  onMediaButtonMousePressed() {}
   onLocationBarFocusWithinChanged() {}
   onLhsChipMousePressed() {}
   onLhsChipClicked() {}

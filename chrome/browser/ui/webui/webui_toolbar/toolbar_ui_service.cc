@@ -436,4 +436,16 @@ void ToolbarUIService::OnPerformanceInterventionButtonMousePressed() {
     delegate_->OnPerformanceInterventionButtonMousePressed();
   }
 }
+
+void ToolbarUIService::OnMediaButtonClicked(bool is_mouse_interaction) {
+  if (delegate_) {
+    delegate_->OnMediaButtonClicked(is_mouse_interaction);
+  }
+}
+
+void ToolbarUIService::OnMediaButtonMousePressed() {
+  if (delegate_) {
+    delegate_->OnMediaButtonMousePressed();
+  }
+}
 }  // namespace toolbar_ui_api

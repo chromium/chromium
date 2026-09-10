@@ -50,6 +50,7 @@ source_set("toolbar") {
     "webui_back_forward_control.h",
     "webui_battery_saver_control.h",
     "webui_home_control.h",
+    "webui_media_toolbar_button.h",
     "webui_overflow_button.h",
     "webui_performance_intervention_control.h",
     "webui_pinned_toolbar_actions.h",
@@ -72,6 +73,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/global_error",
+    "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/performance_controls",
     "//chrome/browser/ui/toolbar",
@@ -84,6 +86,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/glic",
+    "//chrome/browser/ui/views/global_media_controls:media_toolbar_button",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/profiles:avatar_toolbar_button_types",
     "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers",
@@ -157,6 +160,7 @@ source_set("impl") {
     "webui_back_forward_control.cc",
     "webui_battery_saver_control.cc",
     "webui_home_control.cc",
+    "webui_media_toolbar_button.cc",
     "webui_overflow_button.cc",
     "webui_performance_intervention_control.cc",
     "webui_pinned_toolbar_actions.cc",
@@ -432,8 +436,14 @@ if (!is_android) {
         "webui_toolbar_web_view_test_base.h",
       ]
 
+      if (is_win || is_mac || is_linux) {
+        sources += [ "webui_media_toolbar_button_browsertest.cc" ]
+      }
+
       deps += [
         "//chrome/browser/ui:toolbar_controller_util",
+        "//chrome/browser/ui/global_media_controls",
+        "//chrome/browser/ui/views/global_media_controls",
         "//chrome/browser/ui/views/performance_controls",
         "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
         "//chrome/browser/ui/webui:webui_util",
@@ -487,6 +497,10 @@ if (!is_android && !is_chromeos_device) {
         "webui_toolbar_web_view_test_base.cc",
         "webui_toolbar_web_view_test_base.h",
       ]
+
+      if (is_win || is_mac || is_linux) {
+        sources += [ "webui_media_toolbar_button_interactive_uitest.cc" ]
+      }
     }
 
     if (is_chromeos) {
@@ -544,7 +558,10 @@ if (!is_android && !is_chromeos_device) {
       "//ui/views",
     ]
     if (toolkit_views) {
-      deps += [ "//chrome/browser/ui:toolbar_controller_util" ]
+      deps += [
+        "//chrome/browser/ui:toolbar_controller_util",
+        "//chrome/browser/ui/views/global_media_controls",
+      ]
     }
     if (use_aura) {
       deps += [ "//ui/aura:test_support" ]

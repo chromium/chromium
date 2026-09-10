@@ -371,6 +371,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       app_menu_control_(*this),
       battery_saver_control_(this),
       avatar_control_(this),
+      media_control_(this),
       location_bar_(std::move(location_bar)),
       extensions_container_(this),
       back_control_(this, BackForwardButton::Direction::kBack),
@@ -422,6 +423,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::AvatarControlState::New();
   last_queued_state_.overflow_button_control_state =
       toolbar_ui_api::mojom::OverflowButtonControlState::New();
+  last_queued_state_.media_control_state =
+      toolbar_ui_api::mojom::MediaControlState::New();
 
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
@@ -557,6 +560,11 @@ void WebUIToolbarWebView::AddedToWidget() {
     if (features::IsWebUIExtensionsContainerEnabled()) {
       extensions_container_.Init(web_contents());
     }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    if (features::IsWebUIMediaButtonEnabled()) {
+      media_control_.Init();
+    }
+#endif
 
     // Safe-initialize page-dependent controls if the WebUI finished loading
     // early when the widget was still null during `OnPageInitialized()` due to
@@ -635,6 +643,9 @@ void WebUIToolbarWebView::HandleContextMenu(
       break;
     case toolbar_ui_api::mojom::ContextMenuType::kBatterySaver:
       battery_saver_control_.ShowBubble(screen_rect);
+      break;
+    case toolbar_ui_api::mojom::ContextMenuType::kMedia:
+      media_control_.HandleContextMenu(screen_rect, source);
       break;
     case toolbar_ui_api::mojom::ContextMenuType::
         kPinnedActionNewIncognitoWindow:
@@ -937,6 +948,14 @@ void WebUIToolbarWebView::OnPerformanceInterventionButtonMousePressed() {
   performance_intervention_control_.OnMousePressed();
 }
 
+void WebUIToolbarWebView::OnMediaButtonClicked(bool is_mouse_interaction) {
+  media_control_.OnClicked(is_mouse_interaction);
+}
+
+void WebUIToolbarWebView::OnMediaButtonMousePressed() {
+  media_control_.OnMousePressed();
+}
+
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
 }
@@ -947,6 +966,11 @@ WebUIToolbarWebView::GetAvatarToolbarButtonInterface() {
 }
 
 MediaToolbarButton* WebUIToolbarWebView::GetMediaToolbarButton() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (features::IsWebUIMediaButtonEnabled()) {
+    return &media_control_;
+  }
+#endif
   return nullptr;
 }
 
@@ -1627,6 +1651,14 @@ void WebUIToolbarWebView::OnAvatarControlStateChanged(
     toolbar_ui_api::mojom::AvatarControlStatePtr state) {
   if (!mojo::Equals(state, last_queued_state_.avatar_control_state)) {
     last_queued_state_.avatar_control_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnMediaControlStateChanged(
+    toolbar_ui_api::mojom::MediaControlStatePtr state) {
+  if (!mojo::Equals(state, last_queued_state_.media_control_state)) {
+    last_queued_state_.media_control_state = std::move(state);
     PostPushNavigationState();
   }
 }

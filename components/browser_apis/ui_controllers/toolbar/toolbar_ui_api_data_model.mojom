@@ -27,6 +27,7 @@ enum ContextMenuType {
   kForward,
   kHome,
   kBatterySaver,
+  kMedia,
 
   // Pinned toolbar action buttons
   kPinnedActionNewIncognitoWindow,
@@ -236,6 +237,16 @@ struct PerformanceInterventionControlState {
   // when it becomes visible and stay in the active color until the user clicks
   // on the button.
   bool is_active;
+};
+
+// State of media button that shows up in toolbar when a tab is playing media.
+struct MediaControlState {
+  // If disabled, the icon is drawn grey.
+  bool enabled = true;
+  // Determines if the button should be shown.
+  bool should_be_shown = false;
+  // Whether the context menu is currently showing.
+  bool is_context_menu_visible = false;
 };
 
 // The type of icon state for the app menu. These values drive the visual
@@ -782,6 +793,7 @@ struct NavigationControlsState {
   AppMenuControlState app_menu_control_state;
   AvatarControlState avatar_control_state;
   OverflowButtonControlState overflow_button_control_state;
+  MediaControlState media_control_state;
   bool battery_saver_button_visible;
   LocationBarState location_bar_state;
   // State of extensions.
