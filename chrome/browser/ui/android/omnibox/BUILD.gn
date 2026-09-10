@@ -478,7 +478,6 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.omnibox"
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarUiTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewRenderTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewTest.java",
@@ -536,6 +535,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/OmniboxChipViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxUrlUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegateImplUnitTest.java",
