@@ -471,9 +471,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
   }
 
   const bool is_button_eligible =
-      contextual_tasks::EntryPointEligibilityManager::From(
-          browser_window_interface_)
-          ->AreEntryPointsEligible();
+      contextual_tasks::IsContextualTasksUIEnabled();
 
   ContextualTasksEphemeralButtonController* const controller =
       ContextualTasksEphemeralButtonController::From(browser_window_interface_);
