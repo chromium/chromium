@@ -239,6 +239,7 @@ void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
       LockRoot, false,
       internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
 
+  internal::PartitionTlsRegistry::GetLock().Acquire();
   internal::ThreadCacheRegistry::GetLock().Acquire();
   g_leak_size_map_lock.Acquire();
 }
@@ -247,6 +248,7 @@ void ReleaseLocks(bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
   UnlockOrReinit(g_leak_size_map_lock, in_child);
   // In reverse order, even though there are no lock ordering dependencies.
   UnlockOrReinit(internal::ThreadCacheRegistry::GetLock(), in_child);
+  UnlockOrReinit(internal::PartitionTlsRegistry::GetLock(), in_child);
   internal::PartitionRootEnumerator::Instance().Enumerate(
       UnlockOrReinitRoot, in_child,
       internal::PartitionRootEnumerator::EnumerateOrder::kReverse);

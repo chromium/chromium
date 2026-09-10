@@ -16,6 +16,7 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_lock.h"
 
 #if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
@@ -31,6 +32,28 @@
 namespace partition_alloc::internal {
 
 class ThreadCache;
+struct PartitionTls;
+
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsRegistry {
+ public:
+  static PartitionTlsRegistry& Instance();
+
+  inline constexpr PartitionTlsRegistry();
+
+  void Register(PartitionTls* tls);
+  void Unregister(PartitionTls* tls);
+
+  static internal::Lock& GetLock() { return Instance().lock_; }
+
+  bool IsRegisteredForTesting(PartitionTls* tls);
+  void ResetForTesting();
+
+ private:
+  internal::Lock lock_;
+  PartitionTls* list_head_ PA_GUARDED_BY(GetLock()) = nullptr;
+};
+
+constexpr PartitionTlsRegistry::PartitionTlsRegistry() = default;
 
 constexpr inline size_t kMaxThreadCacheIndex = 4;
 
@@ -44,6 +67,11 @@ constexpr inline size_t kThreadCacheStorageSize = 2048;
 #endif
 
 struct PartitionTls {
+  // Pointers for PartitionTlsRegistry's intrusive doubly-linked list.
+  PartitionTls* next_ PA_GUARDED_BY(PartitionTlsRegistry::GetLock()) = nullptr;
+  PartitionTls* prev_ PA_GUARDED_BY(PartitionTlsRegistry::GetLock()) = nullptr;
+  bool is_registered PA_GUARDED_BY(PartitionTlsRegistry::GetLock()) = false;
+
   alignas(uint64_t) std::array<std::array<uint8_t, kThreadCacheStorageSize>,
                                kMaxThreadCacheIndex> thread_cache_storage = {};
   bool disallow_allocations = false;

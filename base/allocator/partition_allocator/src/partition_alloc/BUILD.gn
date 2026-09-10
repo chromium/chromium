@@ -514,6 +514,7 @@ if (is_clang_or_gcc) {
       "partition_stats.cc",
       "partition_stats.h",
       "partition_superpage_extent_entry.h",
+      "partition_tls.cc",
       "partition_tls.h",
       "random.cc",
       "random.h",
