@@ -76,8 +76,15 @@ export class OmniboxEverywhereComposeboxElement extends
         type: Boolean,
         reflect: true,
       },
+      isActive: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-active',
+      },
     };
   }
+
+  accessor isActive: boolean = true;
 
   /**
    * Entrypoint name used by SearchAnimatedGlowElement and

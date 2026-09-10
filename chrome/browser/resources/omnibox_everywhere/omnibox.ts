@@ -135,9 +135,15 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         attribute: 'is-context-menu-open',
       },
+      isActive: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-active',
+      },
     };
   }
 
+  accessor isActive: boolean = true;
   override accessor virtualFocusEnabled: boolean =
       loadTimeData.valueExists('omniboxEverywhereVirtualFocusNavigation') &&
       loadTimeData.getBoolean('omniboxEverywhereVirtualFocusNavigation');

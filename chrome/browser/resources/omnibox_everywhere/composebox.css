@@ -51,7 +51,7 @@
 #composebox {
   /* Transparent so search-animated-glow behind it (z-index: 1) can render
    * the background and energy glow effect via composebox-background. */
-  background-color: transparent;
+  background-color: var(--omnibox-inactive-hover-overlay, transparent);
   border-radius: inherit;
   display: flex;
   flex-direction: column;
@@ -214,4 +214,9 @@ cr-composebox-dropdown::part(match-icon-container) {
 
 cr-composebox-dropdown::part(match-text-container) {
   padding-inline-start: 8px;
+}
+
+:host(:not([is-active])),
+:host(:not([is-active])) cr-composebox-input::part(icon-container) {
+  -webkit-app-region: no-drag;
 }

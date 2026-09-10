@@ -12,6 +12,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
   ${
       this.isComposeboxMode_ ? html`
     <omnibox-everywhere-composebox id="composebox" searchbox-next-enabled
+        ?is-active="${this.isActive_}"
         searchbox-layout-mode="${this.searchboxLayoutMode_}"
         .state="${this.composeboxState_}"
         .clearAllInputsWhenSubmittingQuery="${true}"
@@ -28,6 +29,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
   ` :
                                html`
     <omnibox-everywhere-omnibox id="searchbox"
+        ?is-active="${this.isActive_}"
         @open-composebox="${this.onOpenComposebox_}"
         @open-voice-search="${this.onOpenVoiceSearch_}"
         .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"

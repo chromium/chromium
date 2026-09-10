@@ -97,7 +97,10 @@
 }
 
 #inputWrapper {
-  background-color: var(--color-searchbox-background);
+  background: linear-gradient(
+          var(--omnibox-inactive-hover-overlay, transparent),
+          var(--omnibox-inactive-hover-overlay, transparent)),
+      var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
   display: flex;
@@ -257,7 +260,10 @@ cr-composebox-contextual-entrypoint-and-menu {
 }
 
 #inputContainer {
-  background-color: var(--color-searchbox-background);
+  background: linear-gradient(
+          var(--omnibox-inactive-hover-overlay, transparent),
+          var(--omnibox-inactive-hover-overlay, transparent)),
+      var(--color-searchbox-background);
   border-radius: 16px;
   box-shadow: var(--cr-searchbox-shadow);
   display: flex;
@@ -370,5 +376,11 @@ cr-searchbox-input::part(icon),
 #composeButton {
   -webkit-app-region: drag;
   -webkit-user-drag: none;
+}
+
+:host(:not([is-active])),
+:host(:not([is-active])) cr-searchbox-input::part(icon),
+:host(:not([is-active])) #composeButton {
+  -webkit-app-region: no-drag;
 }
 
