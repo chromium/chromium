@@ -7686,7 +7686,7 @@
   {
     "name": "omnibox-https-upgrades",
     "owners": ["meacer@chromium.org", "trusty-transport@chromium.org" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 170
   },
   {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
