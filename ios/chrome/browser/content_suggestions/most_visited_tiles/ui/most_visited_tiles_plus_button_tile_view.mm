@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_tile_view.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_item.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
@@ -25,6 +26,7 @@
       self.imageBackgroundView.layer.cornerRadius =
           kMostVisitedTileImageContainerSquareCornerRadius;
       [self setImageBackgroundSize:kMagicStackImageContainerWidth];
+      [self setTitleSpacing:kMostVisitedIconTitleSpacingUICleanup];
     } else {
       self.imageBackgroundView.layer.cornerRadius =
           kMagicStackImageContainerWidth / 2;

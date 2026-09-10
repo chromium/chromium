@@ -6,6 +6,8 @@ source_set("public") {
   sources = [
     "metrics.h",
     "metrics.mm",
+    "most_visited_tiles_constants.h",
+    "most_visited_tiles_constants.mm",
     "pinned_site_action.h",
   ]
   deps = [ "//base" ]

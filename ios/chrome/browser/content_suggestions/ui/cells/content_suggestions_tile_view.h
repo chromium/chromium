@@ -35,6 +35,9 @@ enum class ContentSuggestionsTileType {
 // Sets the height and width of the tile view's image background.
 - (void)setImageBackgroundSize:(CGFloat)size;
 
+// Sets the vertical spacing between the tile's icon container and title.
+- (void)setTitleSpacing:(CGFloat)spacing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_CONTENT_SUGGESTIONS_TILE_VIEW_H_

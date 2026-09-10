@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
@@ -35,7 +36,9 @@
 
 @end
 
-@implementation MostVisitedTileView
+@implementation MostVisitedTileView {
+  UIStackView* _stackView;
+}
 
 @synthesize configuration = _configuration;
 
@@ -53,15 +56,9 @@
       self.titleLabel.numberOfLines = 1;
     }
 
-    UIStackView* stackView = [[UIStackView alloc] init];
-    stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    stackView.axis = UILayoutConstraintAxisVertical;
-    stackView.spacing = 10;
-    stackView.alignment = UIStackViewAlignmentCenter;
-    stackView.distribution = UIStackViewDistributionFill;
-
-    [stackView addArrangedSubview:self.imageContainerView];
-    [stackView addArrangedSubview:self.titleLabel];
+    _stackView = [self createStackView];
+    [_stackView addArrangedSubview:self.imageContainerView];
+    [_stackView addArrangedSubview:self.titleLabel];
 
     [NSLayoutConstraint activateConstraints:@[
       [self.imageContainerView.widthAnchor
@@ -70,8 +67,8 @@
           constraintEqualToAnchor:self.imageContainerView.widthAnchor],
     ]];
 
-    [self addSubview:stackView];
-    AddSameConstraints(stackView, self);
+    [self addSubview:_stackView];
+    AddSameConstraints(_stackView, self);
 
     _faviconView = [[FaviconView alloc] init];
     _faviconView.font = [UIFont systemFontOfSize:22];
@@ -96,6 +93,13 @@
     [self setConfiguration:config];
   }
   return self;
+}
+
+- (void)setTitleSpacing:(CGFloat)size {
+  if (size == _stackView.spacing) {
+    return;
+  }
+  _stackView.spacing = size;
 }
 
 #pragma mark - UIContentView
@@ -271,6 +275,18 @@
   [attributedString
       appendAttributedString:[[NSAttributedString alloc] initWithString:title]];
   return attributedString;
+}
+
+- (UIStackView*)createStackView {
+  UIStackView* stackView = [[UIStackView alloc] init];
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.axis = UILayoutConstraintAxisVertical;
+  stackView.spacing = IsNewTabPageUICleanupEnabled()
+                          ? kMostVisitedIconTitleSpacingUICleanup
+                          : kMostVisitedIconTitleSpacing;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.distribution = UIStackViewDistributionFill;
+  return stackView;
 }
 
 @end
