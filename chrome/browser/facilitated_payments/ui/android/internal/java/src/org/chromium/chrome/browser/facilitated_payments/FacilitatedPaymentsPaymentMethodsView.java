@@ -22,6 +22,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -32,6 +34,11 @@ import org.chromium.ui.base.LocalizationUtils;
  */
 @NullMarked
 class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.FACILITATED_PAYMENTS_PAYMENT_METHODS)
+                    .build();
+
     // Contains everything to be shown in the bottom sheet. Includes the drag handler.
     private final LinearLayout mView;
     // Holds the screens to be displayed in the bottom sheet. To show different screens, simply swap
@@ -172,6 +179,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     @Override
     public @Nullable View getToolbarView() {
         return null;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
