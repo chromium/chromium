@@ -24,6 +24,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.internal.bytecode.SandboxConfig;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+@NullMarked
 class TestListComputer extends Computer {
     private static class DescriptionInfo {
         public final Description description;
@@ -57,7 +59,7 @@ class TestListComputer extends Computer {
     private static final @Nullable Class<Annotation> CHROME_DISABLED_ANNOTATION = initAnnotation();
 
     @SuppressWarnings("unchecked")
-    private static Class<Annotation> initAnnotation() {
+    private static @Nullable Class<Annotation> initAnnotation() {
         try {
             return (Class<Annotation>) Class.forName("org.chromium.base.test.util.DisabledTest");
         } catch (ClassNotFoundException e) {
@@ -78,7 +80,6 @@ class TestListComputer extends Computer {
         List<Class<?>> shadows = new ArrayList<>();
         LooperMode.Mode looperMode = Mode.PAUSED;
         GraphicsMode.Mode graphicsMode = GraphicsMode.Mode.LEGACY;
-        String qualifiers = "";
         ArrayList<Annotation> allAnnotations = new ArrayList<>();
         allAnnotations.addAll(Arrays.asList(description.getTestClass().getAnnotations()));
         allAnnotations.addAll(description.getAnnotations());
@@ -88,7 +89,6 @@ class TestListComputer extends Computer {
             } else if (annotation instanceof Config config) {
                 shadows.addAll(Arrays.asList(config.shadows()));
                 instrumentedPackages.addAll(Arrays.asList(config.instrumentedPackages()));
-                qualifiers = config.qualifiers();
             } else if (annotation instanceof LooperMode mode) {
                 looperMode = mode.value();
             } else if (annotation instanceof GraphicsMode mode) {
@@ -119,10 +119,7 @@ class TestListComputer extends Computer {
                 sdkSuffix = methodName.substring(startIdx, endIdx + 1);
             }
         }
-        if (!qualifiers.isEmpty()) {
-            qualifiers = "." + qualifiers;
-        }
-        return graphicsMode + "/" + looperMode + qualifiers + sdkSuffix;
+        return graphicsMode + "/" + looperMode + sdkSuffix;
     }
 
     private void throwShadowException(String shadowClass, String shadowingClass) {

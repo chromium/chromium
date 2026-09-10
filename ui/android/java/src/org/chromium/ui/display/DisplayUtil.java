@@ -163,6 +163,7 @@ public abstract class DisplayUtil {
                 DisplayUtil.pxToDp(displayAndroid, DisplayUtil.getSmallestWidth(displayAndroid));
         sIsGlobalDefaultDisplayTabletSized =
                 smallestWidth >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        ResettersForTesting.register(() -> sIsGlobalDefaultDisplayTabletSized = null);
         return sIsGlobalDefaultDisplayTabletSized;
     }
 

@@ -136,6 +136,7 @@ public class DisplayAndroidManager {
             // reference sDisplayAndroidManager during initialize().
             sDisplayAndroidManager = new DisplayAndroidManager();
             sDisplayAndroidManager.initialize();
+            ResettersForTesting.register(() -> resetInstanceForTesting());
         }
         return sDisplayAndroidManager;
     }
