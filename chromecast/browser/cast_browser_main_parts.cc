@@ -102,6 +102,8 @@
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
 #include "net/android/network_change_notifier_factory_android.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device_observer_android.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include "chromecast/net/network_change_notifier_factory_fuchsia.h"
 #else
@@ -376,6 +378,11 @@ CastBrowserMainParts::CastBrowserMainParts(
 }
 
 CastBrowserMainParts::~CastBrowserMainParts() {
+#if BUILDFLAG(IS_ANDROID)
+  if (ui::DeviceDataManager::HasInstance()) {
+    ui::InputDeviceObserverAndroid::GetInstance()->Shutdown();
+  }
+#endif
   if (cast_content_browser_client_->GetMediaTaskRunner() &&
       media_pipeline_backend_manager_) {
     // Make sure that media_pipeline_backend_manager_ is destroyed after any
@@ -491,6 +498,9 @@ int CastBrowserMainParts::PreCreateThreads() {
   child_exit_observer_ = std::make_unique<crash_reporter::ChildExitObserver>();
   child_exit_observer_->RegisterClient(
       std::make_unique<crash_reporter::ChildProcessCrashObserver>());
+  if (!ui::DeviceDataManager::HasInstance()) {
+    ui::InputDeviceObserverAndroid::GetInstance()->Initialize();
+  }
 #endif
 
   service_connector_ = cast_content_browser_client_->CreateServiceConnector();

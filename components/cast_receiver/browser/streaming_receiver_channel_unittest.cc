@@ -429,4 +429,28 @@ TEST_F(StreamingReceiverChannelTest, BufferPendingMessagesWhenReceiverNull) {
   EXPECT_EQ(test_receiver.buffer()[0].first, "test_control_message");
 }
 
+TEST_F(StreamingReceiverChannelTest, SystemMessageDoesNotOverwriteSenderId) {
+  // Simulate receiving an internal system message from "system-0" on another namespace.
+  std::string system_msg = cast_streaming::SerializeCastMessage(
+      "system-0", "urn:x-cast:com.google.cast.system", "{}");
+  EXPECT_TRUE(client_port_->PostMessage(system_msg));
+
+  // Send an input event.
+  InputEvent event;
+  event.set_timestamp_ms(2000);
+  channel_->SendInputEvent(event);
+
+  ASSERT_TRUE(client_receiver_.RunUntilMessageCountEqual(2));
+  std::string sender_id;
+  std::string message_namespace;
+  std::string data;
+  ASSERT_TRUE(cast_streaming::DeserializeCastMessage(
+      client_receiver_.buffer()[1].first, &sender_id, &message_namespace,
+      &data));
+
+  // Verify the input event was sent to "test-sender" (the phone) and NOT "system-0"!
+  EXPECT_EQ(sender_id, "test-sender");
+  EXPECT_EQ(message_namespace, "test_input_event_label");
+}
+
 }  // namespace cast_receiver

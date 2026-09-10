@@ -111,6 +111,7 @@
 #include "base/android/device_info.h"
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
 #include "components/crash/core/app/crashpad.h"
+#include "components/input/features.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -164,6 +165,7 @@ CastContentBrowserClient::CastContentBrowserClient(
 #if BUILDFLAG(IS_ANDROID)
   extra_enable_features.push_back(
       &::media::kUseTaskRunnerForMojoAudioDecoderService);
+  extra_disable_features.push_back(&input::features::kInputOnViz);
 
   if (base::android::device_info::is_tv()) {
     // Use the software decoder provided by MediaCodec instead of the built in

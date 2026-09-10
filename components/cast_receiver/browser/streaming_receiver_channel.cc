@@ -116,11 +116,10 @@ bool StreamingReceiverChannel::OnMessage(
 
   if (cast_streaming::DeserializeCastMessage(message, &sender_id,
                                              &message_namespace, &data)) {
-    if (!sender_id.empty()) {
-      last_sender_id_ = sender_id;
-    }
-
     if (message_namespace == kExoBootstrapNamespace) {
+      if (!sender_id.empty()) {
+        exo_sender_id_ = sender_id;
+      }
       std::string decoded;
       if (!base::Base64Decode(data, &decoded)) {
         LOG(ERROR) << "Failed to Base64 decode Exo bootstrap payload.";
@@ -210,7 +209,7 @@ bool StreamingReceiverChannel::SendProtoMessage(
     return false;
   }
 
-  SendMessage(last_sender_id_, ns, base::Base64Encode(serialized));
+  SendMessage(exo_sender_id_, ns, base::Base64Encode(serialized));
   return true;
 }
 
@@ -279,7 +278,7 @@ void StreamingReceiverChannel::SendBootstrapResponse(
 
   std::string serialized;
   if (response.SerializeToString(&serialized)) {
-    SendMessage(last_sender_id_, kExoBootstrapNamespace,
+    SendMessage(exo_sender_id_, kExoBootstrapNamespace,
                 base::Base64Encode(serialized));
   }
 

@@ -118,7 +118,7 @@ class StreamingReceiverChannel
 
   raw_ptr<cast_api_bindings::MessagePort::Receiver> receiver_ = nullptr;
   std::vector<PendingMessage> pending_messages_;
-  std::string last_sender_id_ = "SystemSender";
+  std::string exo_sender_id_;
   int64_t next_transaction_id_ = 1;
 
   std::unique_ptr<SubChannelHandler> input_event_handler_;

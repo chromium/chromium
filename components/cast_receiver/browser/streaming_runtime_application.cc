@@ -25,10 +25,19 @@ namespace {
 constexpr char kCastTransportBindingName[] = "cast.__platform__.cast_transport";
 
 constexpr char kStreamingPageUrlTemplate[] =
-    "data:text/html;charset=UTF-8, <video style='position:absolute; "
-    "top:50%%; left:50%%; transform:translate(-50%%,-50%%); "
-    "max-width:100%%; max-height:100%%; min-width: 100%%; min-height: 100%%' "
-    "src='%s'></video>";
+    "data:text/html;charset=UTF-8,<!DOCTYPE html><html><head><meta "
+    "name='viewport' content='width=device-width,initial-scale=1.0,"
+    "maximum-scale=1.0,user-scalable=no'><style>html,body,video{margin:0;"
+    "padding:0;width:100%%;height:100%%;overflow:hidden;touch-action:none;"
+    "user-select:none;-webkit-user-select:none;}</style></head><body><video "
+    "style='position:absolute;top:50%%;left:50%%;transform:translate(-50%%,-"
+    "50%%);max-width:100%%;max-height:100%%;min-width:100%%;min-height:100%%' "
+    "src='%s'></video><script>const p=(e)=>{e.preventDefault();};"
+    "window.addEventListener('touchstart',p,{passive:false});"
+    "window.addEventListener('touchmove',p,{passive:false});"
+    "window.addEventListener('touchend',p,{passive:false});"
+    "window.addEventListener('touchcancel',p,{passive:false});"
+    "</script></body></html>";
 
 }  // namespace
 

@@ -12,6 +12,7 @@
 #include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_receiver/browser/public/streaming_config_manager.h"
 #include "components/cast_receiver/browser/streaming_receiver_channel.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,6 +135,10 @@ TEST_F(StreamingRuntimeApplicationTest, LaunchWithExtendedInput) {
   base::MockCallback<RuntimeApplication::StatusCallback> callback;
   EXPECT_CALL(callback, Run(_));
   static_cast<RuntimeApplication&>(app).Launch(callback.Get());
+
+  std::string nav_url = web_contents()->GetVisibleURL().spec();
+  EXPECT_THAT(nav_url, testing::HasSubstr("touch-action:none"));
+  EXPECT_THAT(nav_url, testing::HasSubstr("user-scalable=no"));
 }
 
 TEST_F(StreamingRuntimeApplicationTest, LaunchWithExtendedInputNoDataManager) {
