@@ -15,6 +15,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -254,12 +255,14 @@ public class TabArchiverImpl implements TabArchiver {
         List<Tab> singleTabsToClose = new ArrayList<>();
         List<Tab> archivedTabs = new ArrayList<>();
         Set<Token> archivedTabGroupIds = new HashSet<>();
+        int archivedGroupTabsCount = 0;
         // Add tabs to the archived tab model first to prevent tab loss if the operation is aborted.
         for (Tab tab : tabs) {
             // Do not add tabs that are part of tab groups to the archived tab model.
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId != null) {
                 archivedTabGroupIds.add(tabGroupId);
+                archivedGroupTabsCount++;
                 continue;
             }
 
@@ -274,8 +277,10 @@ public class TabArchiverImpl implements TabArchiver {
             }
 
             TabState tabState = prepareTabState(tab);
+            if (tabState == null) continue;
             Tab archivedTab =
-                    mArchivedTabCreator.createFrozenTab(tabState, tabId, INVALID_TAB_INDEX);
+                    mArchivedTabCreator.createFrozenTab(
+                            tabState, tabId, TabModel.INVALID_TAB_INDEX);
             archivedTabs.add(archivedTab);
             singleTabsToClose.add(tab);
         }
@@ -298,7 +303,6 @@ public class TabArchiverImpl implements TabArchiver {
                     "TabGroups.TabGroupDeclutter.ArchivedTabGroups", archivedTabGroups);
         }
 
-        int tabCount = tabs.size();
         // Once the archived tabs are added, do a bulk closure from the regular tab model.
         regularTabModel
                 .getTabRemover()
@@ -318,7 +322,8 @@ public class TabArchiverImpl implements TabArchiver {
                             /* allowDialog= */ false);
         }
 
-        RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabArchived.TabCount", archivedTabs.size() + archivedGroupTabsCount);
         initializePersistedTabDataAsync(archivedTabs);
     }
 
@@ -329,28 +334,39 @@ public class TabArchiverImpl implements TabArchiver {
             boolean updateTimestamp,
             boolean areTabsBeingOpened) {
         ThreadUtils.assertOnUiThread();
+        List<Tab> tabsToClose = new ArrayList<>();
         int tabCount = 0;
         for (Tab tab : tabs) {
-            // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
-            if (updateTimestamp) {
-                tab.setTimestampMillis(System.currentTimeMillis());
+            TabState tabState = prepareTabState(tab);
+            if (tabState == null) {
+                continue;
             }
 
-            TabState tabState = prepareTabState(tab);
+            if (updateTimestamp) {
+                tabState.timestampMillis = mClock.currentTimeMillis();
+            }
+
             // Restore tab at the "start" of the list.
             Tab newTab =
                     tabCreator.createFrozenTab(
                             tabState, tab.getId(), areTabsBeingOpened ? INVALID_TAB_INDEX : 0);
             if (newTab != null) {
+                // Update the timestamp so that the tab isn't immediately re-archived on the next
+                // pass.
+                if (updateTimestamp) {
+                    newTab.setTimestampMillis(mClock.currentTimeMillis());
+                }
+
                 tabCount++;
                 newTab.onTabRestoredFromArchivedTabModel();
+                tabsToClose.add(tab);
             }
         }
 
         mArchivedTabModel
                 .getTabRemover()
                 .closeTabs(
-                        TabClosureParams.closeTabs(tabs).allowUndo(false).build(),
+                        TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build(),
                         /* allowDialog= */ false);
         RecordHistogram.recordCount1000Histogram("Tabs.ArchivedTabRestored.TabCount", tabCount);
     }
@@ -555,24 +571,26 @@ public class TabArchiverImpl implements TabArchiver {
 
     private boolean isTabEligibleForArchive(
             Map<GURL, Long> tabUrlToLastActiveTimestampMap, Tab tab) {
-        TabState tabState = TabStateExtractor.from(tab);
-        if (tabState == null || tabState.contentsState == null) return false;
+        try (TraceEvent e = TraceEvent.scoped("TabArchiverImpl::isTabEligibleForArchive")) {
+            if (!tab.isInitialized() || tab.isDestroyed()) return false;
+            if (tab.getWebContents() == null && tab.getWebContentsState() == null) return false;
 
-        long timestampMillis = tab.getTimestampMillis();
-        int tabAgeDays = timestampMillisToDays(timestampMillis);
-        boolean isTabTimestampEligibleForArchive =
-                isTimestampWithinTargetHours(
-                        timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
-        boolean isDuplicateTabEligibleForArchive =
-                mTabArchiveSettings.isArchiveDuplicateTabsEnabled()
-                        ? isDuplicateTab(tabUrlToLastActiveTimestampMap, tab)
-                        : false;
-        RecordHistogram.recordCount1000Histogram(
-                "Tabs.TabArchiveEligibilityCheck.AfterNDays", tabAgeDays);
-        if (isDuplicateTabEligibleForArchive) {
-            RecordUserAction.record("Tabs.ArchivedDuplicateTab");
+            long timestampMillis = tab.getTimestampMillis();
+            int tabAgeDays = timestampMillisToDays(timestampMillis);
+            boolean isTabTimestampEligibleForArchive =
+                    isTimestampWithinTargetHours(
+                            timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
+            boolean isDuplicateTabEligibleForArchive =
+                    mTabArchiveSettings.isArchiveDuplicateTabsEnabled()
+                            ? isDuplicateTab(tabUrlToLastActiveTimestampMap, tab)
+                            : false;
+            RecordHistogram.recordCount1000Histogram(
+                    "Tabs.TabArchiveEligibilityCheck.AfterNDays", tabAgeDays);
+            if (isDuplicateTabEligibleForArchive) {
+                RecordUserAction.record("Tabs.ArchivedDuplicateTab");
+            }
+            return isTabTimestampEligibleForArchive || isDuplicateTabEligibleForArchive;
         }
-        return isTabTimestampEligibleForArchive || isDuplicateTabEligibleForArchive;
     }
 
     @Contract("null -> false")
@@ -644,13 +662,19 @@ public class TabArchiverImpl implements TabArchiver {
     }
 
     /** Extracts the tab state and prepares it for archive/restore. */
-    private TabState prepareTabState(Tab tab) {
-        TabState tabState = assumeNonNull(TabStateExtractor.from(tab));
-        // Strip the parent id to avoid ordering issues within the tab model.
-        tabState.parentId = Tab.INVALID_TAB_ID;
-        // Strip the root id to avoid re-using the old rootId from the tab state file.
-        tabState.rootId = Tab.INVALID_TAB_ID;
-        return tabState;
+    @VisibleForTesting
+    @Nullable TabState prepareTabState(Tab tab) {
+        try (TraceEvent e = TraceEvent.scoped("TabArchiverImpl::prepareTabState")) {
+            TabState tabState = TabStateExtractor.from(tab);
+            if (tabState == null || tabState.contentsState == null) {
+                return null;
+            }
+            // Strip the parent id to avoid ordering issues within the tab model.
+            tabState.parentId = Tab.INVALID_TAB_ID;
+            // Strip the root id to avoid reusing the old rootId from the tab state file.
+            tabState.rootId = Tab.INVALID_TAB_ID;
+            return tabState;
+        }
     }
 
     @VisibleForTesting
