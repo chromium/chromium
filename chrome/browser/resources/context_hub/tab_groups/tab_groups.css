@@ -380,3 +380,103 @@ cr-expand-button {
 .readonly-tab:hover {
   background-color: transparent;
 }
+
+/* Feedback Dialog Styles */
+#feedback-dialog {
+  --cr-dialog-width: 540px;
+}
+
+.feedback-dialog-title {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+}
+
+.dialog-subtitle {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.feedback-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-section-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.feedback-section-label {
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.required-indicator {
+  color: var(--google-red-600);
+  margin-left: 2px;
+}
+
+cr-slider {
+  width: 100%;
+}
+
+.defect-select {
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.defect-select:focus {
+  border-color: var(--google-blue-600);
+  outline: none;
+}
+
+#feedback-comments {
+  --cr-textarea-background-color: var(--cr-card-background-color);
+  width: 100%;
+}
+
+#rater-input {
+  width: 100%;
+}
+
+.sheet-paste-hint {
+  background-color: var(--cr-fallback-color-surface1);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 6px;
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 8px 12px;
+}
+
+.copy-success-pill {
+  background-color: rgba(19, 115, 51, 0.12);
+  border-radius: 12px;
+  color: var(--google-green-700);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
