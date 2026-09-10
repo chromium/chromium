@@ -604,6 +604,12 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [ChromeEarlGrey waitForWebStateContainingText:"Vehicle"];
 }
 
+// Loads simple contenteditable page on localhost.
+- (void)loadContentEditablePage {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/contenteditable.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"contenteditable"];
+}
+
 #pragma mark - Tests
 
 // Tests that tapping on a password related field opens the keyboard accessory
@@ -1383,6 +1389,32 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
   [ChromeEarlGrey closeCurrentTab];
+}
+
+// Tests navigation buttons are available for a `contenteditable` element.
+- (void)testDefaultInputViewEnabled {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad since this feature is iPhone only.");
+  }
+  [self loadContentEditablePage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("editor")];
+  id<GREYMatcher> previousButton = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)),
+      grey_ancestor(
+          grey_accessibilityID(kFormInputAccessoryViewAccessibilityID)),
+      nil);
+  id<GREYMatcher> nextButton = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)),
+      grey_ancestor(
+          grey_accessibilityID(kFormInputAccessoryViewAccessibilityID)),
+      nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:previousButton];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:nextButton];
 }
 
 @end

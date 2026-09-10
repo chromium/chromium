@@ -22,6 +22,7 @@ data/http_server_files/chromium_logo_page.html
 data/http_server_files/complex_document.pdf
 data/http_server_files/console.html
 data/http_server_files/console_with_iframe.html
+data/http_server_files/contenteditable.html
 data/http_server_files/context_menu.html
 data/http_server_files/credit_card.html
 data/http_server_files/credit_card_autofocused.html

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Default Input View Test Page</title>
+</head>
+
+<body>
+    <!-- A HTML page to verify whether our keyboard accessory view shows up with navigation buttons
+     when the elements with `contenteditable` attribute is focused. -->
+    <div>
+        <select id="select">
+            <option>An option</option>
+        </select>
+    </div>
+    <h1>contenteditable</h1>
+    <div style="border-style: groove;" contenteditable="" id="editor">
+    </div>
+</body>
+
+</html>
