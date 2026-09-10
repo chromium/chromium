@@ -11,7 +11,7 @@ dictionary SocketProperties {
   // Flag indicating if the socket is left open when the event page of
   // the application is unloaded (see
   // <a href="http://developer.chrome.com/apps/app_lifecycle.html">Manage App
-  // Lifecycle</a>). The default value is "false." When the application is
+  // Lifecycle</a>). The default value is "false". When the application is
   // loaded, any sockets previously opened with persistent=true can be fetched
   // with <code>getSockets</code>.
   boolean persistent;
@@ -79,7 +79,7 @@ dictionary SocketInfo {
   DOMString name;
 
   // The size of the buffer used to receive data. If no buffer size has been
-  // specified explictly, the value is not provided.
+  // specified explicitly, the value is not provided.
   long bufferSize;
 
   // Flag indicating whether a connected socket blocks its peer from sending
@@ -268,7 +268,7 @@ interface Tcp {
   // Event raised when data has been received for a given socket.
   static attribute OnReceiveEvent onReceive;
 
-  // Event raised when a network error occured while the runtime was waiting
+  // Event raised when a network error occurred while the runtime was waiting
   // for data on the socket address and port. Once this event is raised, the
   // socket is set to <code>paused</code> and no more <code>onReceive</code>
   // events are raised for this socket.
