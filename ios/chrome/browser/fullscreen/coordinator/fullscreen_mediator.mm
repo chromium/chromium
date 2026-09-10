@@ -509,9 +509,11 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 - (void)snap {
   CGFloat topProgress = _browserAgent->top_progress();
   CGFloat bottomProgress = _browserAgent->bottom_progress();
-  if ((topProgress == 0.0 && bottomProgress == 0.0) ||
-      (topProgress == 1.0 && bottomProgress == 1.0)) {
-    return;
+  if (_lastContentOffset != 0) {
+    if ((topProgress == 0.0 && bottomProgress == 0.0) ||
+        (topProgress == 1.0 && bottomProgress == 1.0)) {
+      return;
+    }
   }
 
   if (IsFullscreenEasedTransitionsEnabled()) {
@@ -539,7 +541,8 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
   if (_scrollTotal > kFullscreenSnapThreshold) {
     snapType = SnapType::kEnter;
-  } else if (_scrollTotal < -kFullscreenSnapThreshold) {
+  } else if (_scrollTotal < -kFullscreenSnapThreshold ||
+             _lastContentOffset == 0) {
     snapType = SnapType::kExit;
   } else {
     CGFloat progress = topProgress;
