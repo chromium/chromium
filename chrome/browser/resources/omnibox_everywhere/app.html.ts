@@ -46,9 +46,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
   ${
       this.showFreModal_ ? html`
     <fre-modal
-        @close="${this.onFreClose_}"
-        @accept-hotkey="${this.onFreAcceptHotkey_}"
-        @open-settings="${this.onFreOpenSettings_}">
+        @close="${this.onFreClose_}">
     </fre-modal>
   ` : ''}
 </div>

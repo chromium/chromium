@@ -53,7 +53,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                    bool meta_key,
                    bool shift_key,
                    bool is_voice_search) override;
-  void DismissFre() override;
+  void DismissFre(searchbox::mojom::FreStage stage) override;
   void OpenHotkeySettings() override;
 
   // SearchboxHandler:

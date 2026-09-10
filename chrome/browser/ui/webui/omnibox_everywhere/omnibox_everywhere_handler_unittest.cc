@@ -279,21 +279,20 @@ TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {
 
 TEST_F(OmniboxEverywhereHandlerTest, DismissPromoUpdatesFrePreference) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
-      omnibox_everywhere::prefs::kFreDismissed));
+      omnibox_everywhere::prefs::kFreIntroDismissed));
 
-  handler_->DismissFre();
+  handler_->DismissFre(searchbox::mojom::FreStage::kIntroModal);
 
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      omnibox_everywhere::prefs::kFreDismissed));
+      omnibox_everywhere::prefs::kFreIntroDismissed));
 }
 
 TEST_F(OmniboxEverywhereHandlerTest, FrePromoStateGatedByImpressionCount) {
-  profile()->GetPrefs()->SetInteger(
-      omnibox_everywhere::prefs::kFreImpressionCount,
-      omnibox_everywhere::prefs::kMaxFreImpressions);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhereFre);
 
   testing::NiceMock<MockSearchboxPage> mock_page;
-  EXPECT_CALL(mock_page, SetShowFre(false));
+  EXPECT_CALL(mock_page, SetShowFre(true));
 
   mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
   auto handler = std::make_unique<OmniboxEverywhereHandler>(
@@ -304,6 +303,12 @@ TEST_F(OmniboxEverywhereHandlerTest, FrePromoStateGatedByImpressionCount) {
           []() -> contextual_search::ContextualSearchSessionHandle* {
             return nullptr;
           }));
+  mock_page.FlushForTesting();
+
+  EXPECT_CALL(mock_page, SetShowFre(false));
+  profile()->GetPrefs()->SetInteger(
+      omnibox_everywhere::prefs::kFreIntroImpressionCount,
+      omnibox_everywhere::prefs::kMaxFreIntroImpressions);
   mock_page.FlushForTesting();
 }
 

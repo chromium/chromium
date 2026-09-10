@@ -21,6 +21,7 @@ import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchb
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {FreStage} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
@@ -308,23 +309,17 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     const freModal = this.shadowRoot.querySelector('fre-modal');
     if (!freModal) {
       this.showFreModal_ = false;
-      SearchboxBrowserProxy.getInstance().handler.dismissFre();
+      SearchboxBrowserProxy.getInstance().handler.dismissFre(
+          FreStage.kIntroModal);
       return;
     }
 
     freModal.classList.add('dismissing');
     freModal.addEventListener('animationend', () => {
       this.showFreModal_ = false;
-      SearchboxBrowserProxy.getInstance().handler.dismissFre();
+      SearchboxBrowserProxy.getInstance().handler.dismissFre(
+          FreStage.kIntroModal);
     }, {once: true});
-  }
-
-  protected onFreAcceptHotkey_() {
-    this.onFreClose_();
-  }
-
-  protected onFreOpenSettings_() {
-    SearchboxBrowserProxy.getInstance().handler.openHotkeySettings();
   }
 
   protected async onOpenComposebox_(e: CustomEvent<ComposeboxState>) {

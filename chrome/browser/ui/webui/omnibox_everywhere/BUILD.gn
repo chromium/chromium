@@ -51,6 +51,7 @@ source_set("omnibox_everywhere") {
   deps = [
     "debug",
     "//base",
+    "//chrome/app:branded_strings",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
     "//chrome/browser/contextual_tasks",

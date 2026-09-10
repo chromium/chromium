@@ -13,6 +13,9 @@ build_webui("build") {
     "debug/debug.html",
     "icons/fre/keyboard.svg",
     "icons/fre/lens.svg",
+    "images/mac_menu_bar.png",
+    "images/windows_taskbar_collapsed.png",
+    "images/windows_taskbar_expanded.png",
   ]
   ts_files = [
     "composebox.html.ts",

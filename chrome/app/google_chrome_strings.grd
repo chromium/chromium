@@ -3304,6 +3304,12 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_SUBLABEL" desc="Description for the toggle to show shortcuts in Omnibox Everywhere.">
         Easy access to websites below the address bar
       </message>
+      <message name="IDS_LOOMNIBOX_FRE_TITLE" desc="Title of the First Run Experience (FRE) modal for Loomnibox.">
+        Search with Chrome from anywhere
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_LENS_SECONDARY" desc="Secondary description detailing Google Lens functionality in Loomnibox.">
+        Ask about content outside of Chrome, like another app or file you have open
+      </message>
       <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux)." formatter_data="android_java">
         Easy access to use Gemini in Chrome across your device, even if Chrome is minimized.
       </message>

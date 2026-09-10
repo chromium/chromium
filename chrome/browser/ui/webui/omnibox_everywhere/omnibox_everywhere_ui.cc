@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_everywhere_resources.h"
 #include "chrome/grit/omnibox_everywhere_resources_map.h"
@@ -255,18 +256,12 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       enterprise_util::CanShowEnterpriseBadgingForAvatar(profile_);
   source->AddBoolean("isEnterpriseProfile", is_enterprise_profile);
   static constexpr webui::LocalizedString kStrings[] = {
-      {"loomniboxFreAcceptHotkey", IDS_LOOMNIBOX_FRE_ACCEPT_HOTKEY},
       {"loomniboxFreCloseButtonAria", IDS_LOOMNIBOX_FRE_CLOSE_BUTTON_ARIA},
-      {"loomniboxFreEditOwn", IDS_LOOMNIBOX_FRE_KEYBOARD_OPTION_EDIT_OWN},
-      {"loomniboxFreKeyboardBadgeOption",
-       IDS_LOOMNIBOX_FRE_KEYBOARD_BADGE_OPTION},
-      {"loomniboxFreKeyboardBadgeSpace",
-       IDS_LOOMNIBOX_FRE_KEYBOARD_BADGE_SPACE},
-      {"loomniboxFreKeyboardPrimary", IDS_LOOMNIBOX_FRE_KEYBOARD_PRIMARY},
       {"loomniboxFreLensPrimary", IDS_LOOMNIBOX_FRE_LENS_PRIMARY},
       {"loomniboxFreLensSecondary", IDS_LOOMNIBOX_FRE_LENS_SECONDARY},
-      {"loomniboxFreOr", IDS_LOOMNIBOX_FRE_OR},
       {"loomniboxFreTitle", IDS_LOOMNIBOX_FRE_TITLE},
+      {"loomniboxFreWhereToFindPrimary",
+       IDS_LOOMNIBOX_FRE_WHERE_TO_FIND_PRIMARY},
       {"managedByYourOrganization", IDS_MANAGED},
       {"profileButtonLabel", IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE},
       {"screenshotEntireScreenLabel", IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN},
@@ -352,6 +347,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   const bool is_fusebox_enabled = IsFuseboxEnabled(profile_);
   source->AddBoolean("searchboxShowComposeEntrypoint", is_fusebox_enabled);
   source->AddBoolean("isFuseboxEnabled", is_fusebox_enabled);
+  source->AddBoolean("isFuseboxEligible", IsFuseboxEligible(profile_));
   source->AddBoolean(
       "ntpRealboxDynamicAiModeButton",
       is_fusebox_enabled && base::FeatureList::IsEnabled(

@@ -56,6 +56,20 @@ bool IsAimEligible(Profile* profile) {
   return aim_eligibility_service && aim_eligibility_service->IsAimEligible();
 }
 
+omnibox_everywhere::prefs::FreStage MojoFreStageToPrefsFreStage(
+    searchbox::mojom::FreStage stage) {
+  switch (stage) {
+    case searchbox::mojom::FreStage::kNone:
+      return omnibox_everywhere::prefs::FreStage::kNone;
+    case searchbox::mojom::FreStage::kIntroModal:
+      return omnibox_everywhere::prefs::FreStage::kIntroModal;
+    case searchbox::mojom::FreStage::kShortcutSetupChin:
+      return omnibox_everywhere::prefs::FreStage::kShortcutSetupChin;
+    case searchbox::mojom::FreStage::kShortcutReminderChin:
+      return omnibox_everywhere::prefs::FreStage::kShortcutReminderChin;
+  }
+}
+
 class OmniboxEverywhereClient : public ContextualOmniboxClient {
  public:
   OmniboxEverywhereClient(Profile* profile,
@@ -134,11 +148,11 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
         base::BindRepeating(&OmniboxEverywhereHandler::OnShowAiModePrefChanged,
                             base::Unretained(this)));
     pref_change_registrar_.Add(
-        omnibox_everywhere::prefs::kFreDismissed,
+        omnibox_everywhere::prefs::kFreIntroDismissed,
         base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
                             base::Unretained(this)));
     pref_change_registrar_.Add(
-        omnibox_everywhere::prefs::kFreImpressionCount,
+        omnibox_everywhere::prefs::kFreIntroImpressionCount,
         base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
                             base::Unretained(this)));
   }
@@ -287,18 +301,15 @@ bool OmniboxEverywhereHandler::SupportsKeywordMode() const {
 void OmniboxEverywhereHandler::UpdatePromoState() {
   bool fre_enabled =
       base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre);
-  bool fre_dismissed = profile_->GetPrefs()->GetBoolean(
-      omnibox_everywhere::prefs::kFreDismissed);
-  int impressions = profile_->GetPrefs()->GetInteger(
-      omnibox_everywhere::prefs::kFreImpressionCount);
-  bool show_fre = fre_enabled && !fre_dismissed &&
-                  (impressions < omnibox_everywhere::prefs::kMaxFreImpressions);
+  bool show_fre =
+      fre_enabled && (omnibox_everywhere::prefs::GetCurrentFreStage(profile_) ==
+                      omnibox_everywhere::prefs::FreStage::kIntroModal);
   page()->SetShowFre(show_fre);
 }
 
-void OmniboxEverywhereHandler::DismissFre() {
-  profile_->GetPrefs()->SetBoolean(omnibox_everywhere::prefs::kFreDismissed,
-                                   true);
+void OmniboxEverywhereHandler::DismissFre(searchbox::mojom::FreStage stage) {
+  omnibox_everywhere::prefs::OnFreStageDismissed(
+      profile_, MojoFreStageToPrefsFreStage(stage));
 }
 
 void OmniboxEverywhereHandler::OpenHotkeySettings() {

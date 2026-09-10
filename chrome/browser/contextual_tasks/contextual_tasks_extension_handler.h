@@ -202,7 +202,7 @@ class ContextualTasksExtensionHandler
                         StartScreenshareCallback callback) override;
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
-  void DismissFre() override {}
+  void DismissFre(searchbox::mojom::FreStage stage) override {}
   void OpenHotkeySettings() override {}
 
  private:

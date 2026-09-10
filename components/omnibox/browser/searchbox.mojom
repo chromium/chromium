@@ -219,6 +219,14 @@ struct SearchContext {
   composebox_query.mojom.ToolMode tool_mode;
 };
 
+// Stages of the Omnibox Everywhere First Run Experience (FRE).
+enum FreStage {
+  kNone = 0,
+  kIntroModal = 1,
+  kShortcutSetupChin = 2,
+  kShortcutReminderChin = 3,
+};
+
 // Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
@@ -607,8 +615,8 @@ interface PageHandler {
   [EnableIfNot=is_android]
   GetSmartTabSharingActive() => (bool active);
 
-  // Dispatched when the First-Run Experience (FRE) notice is dismissed.
-  DismissFre();
+  // Dispatched when an FRE stage is dismissed.
+  DismissFre(FreStage stage);
 
   // Opens platform/browser shortcut configuration settings.
   OpenHotkeySettings();
