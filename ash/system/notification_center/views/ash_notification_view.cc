@@ -55,7 +55,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/decoration/decoration_util.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
@@ -710,7 +710,7 @@ std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
   // Add the drop shadow.
   return gfx::ImageSkiaOperations::CreateImageWithDropShadow(
       drag_image_with_background,
-      drag_drop::GetDragImageShadowDetails(radius).values);
+      ui::Shadow::MakeShadowValues(drag_drop::kDragImageElevation));
 }
 
 void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {

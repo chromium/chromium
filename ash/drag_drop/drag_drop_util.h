@@ -5,23 +5,17 @@
 #ifndef ASH_DRAG_DROP_DRAG_DROP_UTIL_H_
 #define ASH_DRAG_DROP_DRAG_DROP_UTIL_H_
 
-#include <optional>
-
+#include "ash/style/ash_color_id.h"
 #include "ui/color/color_id.h"
-
-namespace ui::decoration {
-struct ShadowDetails;
-}  // namespace ui::decoration
 
 namespace ash::drag_drop {
 
 // Indicates the background color of the drag image.
-extern const ui::ColorId kDragImageBackgroundColor;
+inline constexpr ui::ColorId kDragImageBackgroundColor =
+    kColorAshShieldAndBaseOpaque;
 
-// Returns the shadow details of the drag image with `corner_radius`. If the
-// drag image has no rounded corners, `corner_radius` is `std::nullopt`.
-const ui::decoration::ShadowDetails& GetDragImageShadowDetails(
-    const std::optional<size_t>& corner_radius);
+// Indicates the shadow elevation of the drag image.
+inline constexpr int kDragImageElevation = 2;
 
 }  // namespace ash::drag_drop
 

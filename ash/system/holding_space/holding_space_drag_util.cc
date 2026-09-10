@@ -26,7 +26,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/compositor.h"
-#include "ui/decoration/decoration_util.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -166,7 +166,8 @@ class DragImageItemView : public views::View {
   gfx::Insets GetInsets() const final {
     // Add insets to accommodate the shadow so that the view's content will be
     // laid out within the appropriate shadow margins.
-    return gfx::Insets(-gfx::ShadowValue::GetMargin(GetShadowDetails().values));
+    return gfx::Insets(-gfx::ShadowValue::GetMargin(
+        ui::Shadow::MakeShadowValues(drag_drop::kDragImageElevation)));
   }
 
   void OnPaintBackground(gfx::Canvas* canvas) override {
@@ -180,15 +181,12 @@ class DragImageItemView : public views::View {
     flags.setAntiAlias(true);
     flags.setColor(
         color_provider_->GetColor(drag_drop::kDragImageBackgroundColor));
-    flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
+    flags.setLooper(gfx::CreateShadowDrawLooper(
+        ui::Shadow::MakeShadowValues(drag_drop::kDragImageElevation)));
     canvas->DrawRoundRect(bounds, kDragImageItemViewCornerRadius, flags);
   }
 
  private:
-  const ui::decoration::ShadowDetails& GetShadowDetails() const {
-    return drag_drop::GetDragImageShadowDetails(kDragImageItemViewCornerRadius);
-  }
-
   const raw_ptr<const ui::ColorProvider> color_provider_;
 };
 
