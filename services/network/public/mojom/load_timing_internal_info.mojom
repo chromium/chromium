@@ -76,6 +76,52 @@ struct ResolutionDetails {
 };
 // LINT.ThenChange(//net/dns/public/resolution_details.h:ResolutionDetails)
 
+// Mirror of net::QuicSessionEstablishmentReason.
+// LINT.IfChange(QuicSessionEstablishmentReason)
+enum QuicSessionEstablishmentReason {
+  kUnknown,
+  kNoSessionExisted,
+  kSessionExistedButNotPreconnect,
+  kSessionExistedAndWasPreconnect,
+  kSessionExistedBoth,
+  kInflightSessionButNotPreconnect,
+  kInflightSessionAndWasPreconnect,
+};
+// LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicSessionEstablishmentReason)
+
+// Mirror of net::QuicSessionNonReuseReason.
+// LINT.IfChange(QuicSessionNonReuseReason)
+enum QuicSessionNonReuseReason {
+  kNoSessionExisted_TrueColdStart,
+  kNoSessionExisted_KeyMismatch_SocketTag,
+  kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+  kNoSessionExisted_KeyMismatch_PrivacyMode,
+  kNoSessionExisted_KeyMismatch_SecureDnsPolicy,
+  kNoSessionExisted_KeyMismatch_Other,
+  kSessionExisted_ServerGoaway,
+  kSessionExisted_Disconnected,
+  kSessionExisted_OtherGoingAway,
+  kNoSessionExisted_KeyMismatch_MultipleFields,
+  kSessionExisted_MultipleReasons,
+};
+// LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicSessionNonReuseReason)
+
+// Mirror of net::QuicConnectionReuseDetails.
+// LINT.IfChange(QuicConnectionReuseDetails)
+struct QuicConnectionReuseDetails {
+  QuicSessionEstablishmentReason? establishment_reason;
+  QuicSessionNonReuseReason? non_reuse_reason;
+};
+// LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicConnectionReuseDetails)
+
+// Mirror of net::MultiplexedSessionCreationInitiator.
+// LINT.IfChange(MultiplexedSessionCreationInitiator)
+enum MultiplexedSessionCreationInitiator {
+  kUnknown,
+  kPreconnect,
+};
+// LINT.ThenChange(//net/spdy/multiplexed_session_creation_initiator.h:MultiplexedSessionCreationInitiator)
+
 // Mirror of net::LoadTimingInternalInfo.
 struct LoadTimingInternalInfo {
   mojo_base.mojom.TimeDelta? max_stream_limit_pending_delay;
@@ -87,4 +133,6 @@ struct LoadTimingInternalInfo {
   AdvertisedAltSvcState advertised_alt_svc_state;
   bool http_network_session_quic_enabled;
   ResolutionDetails? resolution_details;
+  QuicConnectionReuseDetails? quic_connection_reuse_details;
+  MultiplexedSessionCreationInitiator? session_creation_initiator;
 };

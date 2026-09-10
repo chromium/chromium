@@ -28,7 +28,7 @@ enum class SessionSource {
   kExisting = 1,
   kMaxValue = kExisting,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/enums.xml:NetworkSessionSource)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:NetworkSessionSource)
 
 // Classifies why a new QUIC session had to be created by checking if an
 // established session or an in-flight session attempt already existed.
@@ -69,6 +69,7 @@ enum class QuicSessionNonReuseReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionNonReuseReason)
 
+// LINT.IfChange(QuicConnectionReuseDetails)
 struct NET_EXPORT QuicConnectionReuseDetails {
   QuicConnectionReuseDetails();
   QuicConnectionReuseDetails(const QuicConnectionReuseDetails& other);
@@ -78,6 +79,7 @@ struct NET_EXPORT QuicConnectionReuseDetails {
   std::optional<QuicSessionEstablishmentReason> establishment_reason;
   std::optional<QuicSessionNonReuseReason> non_reuse_reason;
 };
+// LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:QuicConnectionReuseDetails)
 
 // Structure containing internal load timing information. This is similar to
 // LoadTimingInfo, but contains extra information which shouldn't be exposed to
