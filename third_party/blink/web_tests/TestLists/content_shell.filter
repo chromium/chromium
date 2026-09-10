@@ -50,10 +50,8 @@ external/wpt/css/css-fonts/font-display/font-display-change.html
 external/wpt/css/css-fonts/font-display/font-display-preload.html
 external/wpt/css/css-fonts/matching/font-unicode-PUA.html
 external/wpt/css/css-fonts/system-ui-mixed.html
-external/wpt/css/css-layout-api/baseline/orthogonal-baseline.https.html
 external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html
 external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html
-external/wpt/css/css-layout-api/intrinsic-sizes/child-size-02.https.html
 external/wpt/css/css-multicol/multicol-fill-auto-block-children-002.xht
 external/wpt/css/cssom/getComputedStyle-insets-relpos-inline.html
 external/wpt/css/cssom-view/getBoundingClientRect-shy.html
