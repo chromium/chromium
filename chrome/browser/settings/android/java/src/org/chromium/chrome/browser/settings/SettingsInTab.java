@@ -30,12 +30,6 @@ public class SettingsInTab {
             return ChromeFeatureList.sSettingsInTabDesktop.isEnabled();
         }
 
-        // Temporarily disabled on automotive due to issues with screen density and test failures.
-        // TODO(crbug.com/558874637): Re-enable SettingsInTab on automotive.
-        if (DeviceInfo.isAutomotive()) {
-            return false;
-        }
-
         // Tablets and foldables use the SettingsInTab flag.
         if (!ChromeFeatureList.sSettingsInTab.isEnabled()) return false;
 
