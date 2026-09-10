@@ -12034,6 +12034,7 @@ from previous Chrome versions.
   <int value="-846618756" label="AutofillEnableAmountExtraction:disabled"/>
   <int value="-846321831" label="OmniboxSiteSearch:enabled"/>
   <int value="-845084369" label="TrustedWebActivityContactsDelegation:enabled"/>
+  <int value="-845006243" label="UseUnifiedLockedStateController:enabled"/>
   <int value="-844786349" label="ClipboardHistoryNudgeSessionReset:enabled"/>
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
@@ -18823,6 +18824,7 @@ from previous Chrome versions.
   <int value="1257663962" label="CommercePriceTracking:disabled"/>
   <int value="1257704747"
       label="kEnableDevtoolsDeepLinkViaExtensibilityApi:enabled"/>
+  <int value="1257727424" label="UseUnifiedLockedStateController:disabled"/>
   <int value="1257742852" label="ForceShowWebSigninLoadingDialog:enabled"/>
   <int value="1257980502" label="disable-accelerated-video-decode"/>
   <int value="1258043820" label="AudioFocusEnforcement:enabled"/>

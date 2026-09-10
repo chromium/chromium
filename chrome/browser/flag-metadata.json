@@ -10074,6 +10074,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "use-unified-locked-state-controller",
+    "owners": [ "oshima@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "use-wallpaper-staging-url",
     "owners": [ "cros-customization@google.com", "hsuregan@chromium.org", "khorimoto@chromium.org" ],
     // This flag is required for QA and dogfood testing.

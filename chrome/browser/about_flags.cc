@@ -3120,6 +3120,8 @@ constexpr char kGrowthCampaigns[] = "growth-campaigns";
 constexpr char kGrowthCampaignsTestTag[] = "campaigns-test-tag";
 constexpr char kVcTrayMicIndicatorInternalName[] = "vc-tray-mic-indicator";
 constexpr char kVcTrayTitleHeaderInternalName[] = "vc-tray-title-header";
+constexpr char kUseUnifiedLockedStateControllerInternalName[] =
+    "use-unified-locked-state-controller";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -5492,6 +5494,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"window-preview-on-shelf", flag_descriptions::kWindowPreviewOnShelfName,
      flag_descriptions::kWindowPreviewOnShelfDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWindowPreviewOnShelf)},
+    {kUseUnifiedLockedStateControllerInternalName,
+     flag_descriptions::kUseUnifiedLockedStateControllerName,
+     flag_descriptions::kUseUnifiedLockedStateControllerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kUseUnifiedLockedStateController)},
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {
@@ -14278,6 +14284,15 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (std::string_view(kGrowthCampaignsTestTag) == entry.internal_name) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+
+  // Do not show the UseUnifiedLockedStateController flag on Stable or Beta
+  // channels.
+  if (std::string_view(kUseUnifiedLockedStateControllerInternalName) ==
+      entry.internal_name) {
+    return channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
   }

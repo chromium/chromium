@@ -8291,6 +8291,12 @@ inline constexpr char kUseFakeDeviceForMediaStreamDescription[] =
     "timestamp) instead of the system audio/video devices, for debugging "
     "purposes.";
 
+inline constexpr char kUseUnifiedLockedStateControllerName[] =
+    "Use unified LockedStateController";
+inline constexpr char kUseUnifiedLockedStateControllerDescription[] =
+    "Enables the unified LockedStateController for locked fullscreen and "
+    "OnTask states on ChromeOS.";
+
 inline constexpr char kUiDevToolsName[] = "Enable native UI inspection";
 inline constexpr char kUiDevToolsDescription[] =
     "Enables inspection of native UI elements. For local inspection use "
