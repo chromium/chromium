@@ -59,6 +59,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
@@ -402,6 +403,12 @@ metrics::ProfileMetricsService*
 ChromeAutofillClientIOS::GetProfileMetricsService() {
   CHECK(profile_);
   return IOSProfileMetricsServiceFactory::GetForProfile(profile_);
+}
+
+affiliations::AffiliationService*
+ChromeAutofillClientIOS::GetAffiliationService() {
+  CHECK(profile_);
+  return IOSChromeAffiliationServiceFactory::GetForProfile(profile_);
 }
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {

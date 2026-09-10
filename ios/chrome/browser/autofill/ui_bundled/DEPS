@@ -4,6 +4,7 @@ include_rules = [
   "+components/personal_context/core",
   "+components/personal_context/first_run",
   "+components/subscription_eligibility",
+  "+ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h",
   "+ios/chrome/browser/autofill/bnpl/public",
   "+ios/chrome/browser/autofill/bnpl/ui",
   "+ios/chrome/browser/bubble/ui_bundled",

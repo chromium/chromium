@@ -42,6 +42,10 @@
 @protocol AutofillCommands;
 @class UIViewController;
 
+namespace affiliations {
+class AffiliationService;
+}
+
 namespace personal_context {
 enum class PersonalContextEligibilityState;
 class PersonalContextEligibilityService;
@@ -140,6 +144,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   signin::IdentityManager* GetIdentityManager() override;
   const signin::IdentityManager* GetIdentityManager() const override;
   metrics::ProfileMetricsService* GetProfileMetricsService() override;
+  affiliations::AffiliationService* GetAffiliationService() override;
   const GoogleGroupsManager* GetGoogleGroupsManager() const override;
   FormDataImporter* GetFormDataImporter() override;
   FormPredictionsTracker* GetFormPredictionsTracker() override;

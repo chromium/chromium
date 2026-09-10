@@ -14,6 +14,7 @@
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -32,6 +33,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -87,6 +89,11 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
     profile_ = std::move(builder).Build();
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
@@ -167,6 +174,10 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
 };
+
+TEST_F(ChromeAutofillClientIOSTest, GetAffiliationService) {
+  EXPECT_NE(nullptr, client().GetAffiliationService());
+}
 
 // Tests that GetAutofillManagerForPrimaryMainFrame() returns the main frame's
 // AutofillManager.
