@@ -12,13 +12,20 @@ export function getHtml(this: OrganizerListSectionItemElement) {
 <!-- TODO(b/549796273): Use custom title and description element. -->
 <cr-url-list-item id="crUrlListItem" .title="${this.item.title}"
     .description="${this.getDescription_()}"
-    .url="${this.getUrl_() || nothing}"
+    .url="${this.item.prefixIcon?.url || nothing}"
     ?always-show-suffix="${this.hasSuffix_()}"
     .size="${this.item.size || nothing}">
   ${this.item.prefixIcon?.element ? html`
     <div slot="customIcon">
       ${this.item.prefixIcon.element}
     </div>
+  ` : this.item.prefixIcon?.stackedFavicons ? html`
+    <stacked-favicons id="stackedFavicons" slot="customIcon"
+        .url="${this.item.prefixIcon.stackedFavicons.urls[0]}"
+        .secondaryUrl="${this.item.prefixIcon.stackedFavicons.urls[1]}"
+        ?stack-vertically="${
+            this.item.prefixIcon.stackedFavicons.stackVertically}">
+    </stacked-favicons>
   ` : ''}
   ${this.item.trailingIcon ? html`
     <cr-icon id="trailingIcon" slot="suffix" .icon="${this.item.trailingIcon}"

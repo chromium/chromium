@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import './stacked_favicons.js';
 
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -16,11 +17,23 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './organizer_list_section_item.css.js';
 import {getHtml} from './organizer_list_section_item.html.js';
 
+// Stacked favicons configuration for an organizer list section item.
+export interface OrganizerListSectionItemStackedFavicons {
+  // URLs to display favicons for.
+  urls: [string, string];
+
+  // Whether to stack multiple favicons vertically.
+  stackVertically: boolean;
+}
+
 // Icon for an organizer list section item. Only one of these fields should be
 // defined.
 export interface OrganizerListSectionItemIcon {
-  // URLs to display favicons for.
-  urls?: string[];
+  // Displays a single favicon.
+  url?: string;
+
+  // Displays two overlapping favicons, with customizable orientation.
+  stackedFavicons?: OrganizerListSectionItemStackedFavicons;
 
   // Custom element to render as the icon (e.g., a tab group dot).
   element?: TemplateResult;
@@ -98,11 +111,6 @@ export class OrganizerListSectionItemElement extends
 
   protected getDescription_(): string {
     return this.item.description?.join(' · ') || '';
-  }
-
-  protected getUrl_(): string|undefined {
-    // TODO(b/549786784): Support multiple URLs for stacked favicons.
-    return this.item.prefixIcon?.urls?.[0];
   }
 
   protected hasSuffix_(): boolean {

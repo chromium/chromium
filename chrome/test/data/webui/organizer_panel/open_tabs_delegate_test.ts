@@ -127,7 +127,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(2, items[0]!.description?.length);
     assertEquals('www.youtube.com', items[0]!.description?.[0]);
     assertEquals(youtubeTab.lastActiveElapsedText, items[0]!.description?.[1]);
-    assertEquals(youtubeTab.url, items[0]!.prefixIcon?.urls?.[0]);
+    assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
     assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
     assertEquals('Close tab', items[0]!.hoveredActionButton?.ariaLabel);
     assertEquals(youtubeTab, items[0]!.data);
@@ -137,7 +137,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(2, items[1]!.description?.length);
     assertEquals('www.chromium.org', items[1]!.description?.[0]);
     assertEquals(chromiumTab.lastActiveElapsedText, items[1]!.description?.[1]);
-    assertEquals(chromiumTab.url, items[1]!.prefixIcon?.urls?.[0]);
+    assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
     assertEquals(chromiumTab, items[1]!.data);
 
     // Least recent tab.
@@ -145,7 +145,7 @@ suite('OpenTabsDelegateTest', () => {
     assertEquals(2, items[2]!.description?.length);
     assertEquals('www.google.com', items[2]!.description?.[0]);
     assertEquals(googleTab.lastActiveElapsedText, items[2]!.description?.[1]);
-    assertEquals(googleTab.url, items[2]!.prefixIcon?.urls?.[0]);
+    assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
     assertEquals(googleTab, items[2]!.data);
   });
 

@@ -120,7 +120,7 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate<Tab> {
       title: tab.title,
       description,
       prefixIcon: {
-        urls: [tab.url],
+        url: tab.url,
       },
       hoveredActionButton: {
         icon: 'cr:close',

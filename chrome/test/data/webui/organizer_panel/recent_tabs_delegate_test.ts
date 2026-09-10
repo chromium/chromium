@@ -123,21 +123,21 @@ suite('RecentTabsDelegateTest', () => {
     assertEquals(2, items[0]!.description?.length);
     assertEquals('www.youtube.com', items[0]!.description?.[0]);
     assertEquals(youtubeTab.lastActiveElapsedText, items[0]!.description?.[1]);
-    assertEquals(youtubeTab.url, items[0]!.prefixIcon?.urls?.[0]);
+    assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
 
     // Second most recent tab.
     assertEquals(chromiumTab.title, items[1]!.title);
     assertEquals(2, items[1]!.description?.length);
     assertEquals('www.chromium.org', items[1]!.description?.[0]);
     assertEquals(chromiumTab.lastActiveElapsedText, items[1]!.description?.[1]);
-    assertEquals(chromiumTab.url, items[1]!.prefixIcon?.urls?.[0]);
+    assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
 
     // Least recent tab.
     assertEquals(googleTab.title, items[2]!.title);
     assertEquals(2, items[2]!.description?.length);
     assertEquals('www.google.com', items[2]!.description?.[0]);
     assertEquals(googleTab.lastActiveElapsedText, items[2]!.description?.[1]);
-    assertEquals(googleTab.url, items[2]!.prefixIcon?.urls?.[0]);
+    assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
   });
 
   test('returns tabs and tab groups sorted by MRU', async () => {

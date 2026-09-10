@@ -143,7 +143,7 @@ export class RecentTabsDelegate implements
       title: tab.title,
       description,
       prefixIcon: {
-        urls: [tab.url],
+        url: tab.url,
       },
       data: tab,
     };
