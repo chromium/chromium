@@ -66,15 +66,9 @@ class ActionAppMenu : public views::MenuDelegate {
   views::MenuItemView* AppendMenuItem(actions::BaseAction* base_action_item,
                                       views::MenuItemView* parent_menu_item);
 
-  // Configures the header in a menu to display the correct text. A header is
-  // essentially a non-interactive piece of text within the menu to helps break
-  // up the menu into sections.
-  void ConfigureHeader(views::MenuItemView* header_menu_item);
-
   // Configures the menu item to populate with the correct icon, text, and
-  // padding. ConfigureMenuItem() differs from ConfigureHeader() in that
-  // ConfigureMenuItem() should only be used for clickable menu items within the
-  // action app menu or have a sub-menu.
+  // padding. ConfigureMenuItem() should only be used for clickable menu items
+  // within the action app menu or have a sub-menu.
   void ConfigureMenuItem(views::MenuItemView* menu_item,
                          actions::BaseAction* child_base,
                          bool round_top_corners,
@@ -82,6 +76,8 @@ class ActionAppMenu : public views::MenuDelegate {
 
   void PopulateSearchBar(views::MenuItemView* view_parent,
                          actions::ActionItem* search_action_item);
+  void PopulateHeader(views::MenuItemView* view_parent,
+                      actions::ActionItem* header_action_item);
   void PopulateFooter(views::MenuItemView* view_parent,
                       actions::ActionItem* footer_action_item);
   void PopulateBlockSection(views::MenuItemView* view_parent,

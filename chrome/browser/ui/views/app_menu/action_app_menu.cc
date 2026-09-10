@@ -217,9 +217,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     } else if (display_type == ActionAppMenuManager::DisplayType::kDivider) {
       PopulateDivider(view_parent, child_ptr);
     } else if (display_type == ActionAppMenuManager::DisplayType::kHeader) {
-      auto* const header_menu_item =
-          view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
-      ConfigureHeader(header_menu_item);
+      PopulateHeader(view_parent, child_ptr);
     } else if (display_type == ActionAppMenuManager::DisplayType::kSection) {
       // Recursively call using the same parent to keep the children in
       // the same menu section.
@@ -270,19 +268,6 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       menu_item, action_item->GetAsWeakPtr());
   command_to_action_map_[command_id] = action_item;
   return menu_item;
-}
-
-void ActionAppMenu::ConfigureHeader(views::MenuItemView* header_menu_item) {
-  const int default_margin = views::LayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN);
-  header_menu_item->set_vertical_margin(default_margin);
-  header_menu_item->SetEnabled(false);
-  if (header_menu_item->GetParentMenuItem() == root_) {
-    header_menu_item->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
-    if (header_count_++ > 0) {
-      header_menu_item->set_top_margin(default_margin * 2);
-    }
-  }
 }
 
 void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
@@ -381,6 +366,22 @@ void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,
                            ChromeLayoutProvider::Get()->GetInsetsMetric(
                                INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
   footer_item->AddChildView(std::move(footer_view));
+}
+
+void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
+                                   actions::ActionItem* header_action_item) {
+  auto* const header_menu_item =
+      view_parent->AppendTitle(std::u16string(header_action_item->GetText()));
+  const int default_margin = views::LayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN);
+  header_menu_item->set_vertical_margin(default_margin);
+  header_menu_item->SetEnabled(false);
+  if (header_menu_item->GetParentMenuItem() == root_) {
+    header_menu_item->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+    if (header_count_++ > 0) {
+      header_menu_item->set_top_margin(default_margin * 2);
+    }
+  }
 }
 
 void ActionAppMenu::PopulateBlockSection(
