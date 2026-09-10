@@ -751,6 +751,16 @@ public class TabSearchOverlayCoordinator
             mTabObscuringToken = null;
         }
 
+        // Immediately release Omnibox focus & IME rather than waiting for the hide animation to
+        // finish, ensuring peer windows in multi-window mode immediately clear their focus dimming.
+        // Note: This was originally deferred to onHideFinished to address an animation flicker
+        // where suggestions disappeared too fast, which is now remedied by providing a concurrent
+        // alpha fade while hiding.
+        if (mSearchUiCoordinator != null) {
+            var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
+            locationBar.clearOmniboxFocus();
+        }
+
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mBackPressStateSupplier.set(false);
         updateExclusionRects();
@@ -895,11 +905,6 @@ public class TabSearchOverlayCoordinator
     }
 
     private void onHideFinished() {
-        // Clear focus only after the hide animation finishes to prevent animation flicker.
-        if (mSearchUiCoordinator != null) {
-            var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
-            locationBar.clearOmniboxFocus();
-        }
         if (mPopupWindow != null && mPopupWindow.isShowing()) {
             mPopupWindow.dismiss();
         }

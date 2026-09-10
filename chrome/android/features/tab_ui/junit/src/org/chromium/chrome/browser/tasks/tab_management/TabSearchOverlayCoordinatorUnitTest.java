@@ -363,7 +363,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         "Android.TabSearch.DismissalReason", TabSearchDismissalReason.SCRIM);
         mScrim.performClick();
         watcher.assertExpected();
-        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+        verify(mLocationBarCoordinator).clearOmniboxFocus();
         assertOverlayHidden();
     }
 
@@ -377,7 +377,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertNotNull(closeButton);
         closeButton.performClick();
         watcher.assertExpected();
-        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+        verify(mLocationBarCoordinator).clearOmniboxFocus();
         assertOverlayHidden();
     }
 
@@ -412,7 +412,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         "Android.TabSearch.DismissalReason", TabSearchDismissalReason.CLOSE_BUTTON);
         mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
         watcher.assertExpected();
-        verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+        verify(mLocationBarCoordinator).clearOmniboxFocus();
         assertOverlayHidden();
     }
 
