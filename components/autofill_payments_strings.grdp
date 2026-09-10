@@ -1793,7 +1793,7 @@
   </if>
 
   <!-- Omnibox Autofill strings -->
-  <message name="IDS_AUTOFILL_PAYMENT_TEXT" desc="Text for the 'Autofill payment' chip displayed on the omnibox.">
+  <message name="IDS_AUTOFILL_PAYMENT_TEXT" desc="Text for the 'Autofill payment' chip displayed on the omnibox. The implied action is a verb, as in 'Click here to automatically fill in your payment information'.">
     Autofill payment
   </message>
   <message name="IDS_AUTOFILL_IPH_OMNIBOX_PAYMENT_CHIP_LABEL" desc="Text shown in the IPH bubble for the Autofill payment omnibox page action chip.">
