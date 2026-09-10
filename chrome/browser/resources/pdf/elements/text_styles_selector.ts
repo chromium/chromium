@@ -42,6 +42,7 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
   protected accessor currentStyles_: TextStyles = {
     [TextStyle.BOLD]: false,
     [TextStyle.ITALIC]: false,
+    [TextStyle.UNDERLINE]: false,
     [TextStyle.STRIKETHROUGH]: false,
   };
 
@@ -77,6 +78,8 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
         return 'pdf-ink:format-italic';
       case TextStyle.STRIKETHROUGH:
         return 'pdf-ink:strikethrough-s';
+      case TextStyle.UNDERLINE:
+        return 'pdf-ink:format-underlined';
       default:
         assertNotReachedCase(style);
     }
@@ -90,6 +93,8 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
         return this.i18n('ink2TextStyleItalic');
       case TextStyle.STRIKETHROUGH:
         return this.i18n('ink2TextStyleStrikethrough');
+      case TextStyle.UNDERLINE:
+        return this.i18n('ink2TextStyleUnderline');
       default:
         assertNotReachedCase(style);
     }

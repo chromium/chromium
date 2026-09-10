@@ -838,6 +838,7 @@ export function getTestAnnotation(id: number): TextAnnotation {
         bold: false,
         italic: false,
         strikethrough: false,
+        underline: false,
       },
     },
     textBoxRect: {

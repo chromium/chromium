@@ -799,8 +799,14 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.$.textbox.style.fontWeight =
         newAttributes.styles.bold ? 'bold' : 'normal';
     this.$.textbox.style.color = colorToHex(newAttributes.color);
-    this.$.textbox.style.textDecoration =
-        newAttributes.styles.strikethrough ? 'line-through' : 'none';
+    const decorations: string[] = [];
+    if (newAttributes.styles.underline) {
+      decorations.push('underline');
+    }
+    if (newAttributes.styles.strikethrough) {
+      decorations.push('line-through');
+    }
+    this.$.textbox.style.textDecoration = decorations.join(' ') || 'none';
   }
 
   override onTextAttributesChanged(newAttributes: TextAttributes) {

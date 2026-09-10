@@ -507,6 +507,7 @@ chrome.test.runTests([
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: false,
       [TextStyle.STRIKETHROUGH]: false,
+      [TextStyle.UNDERLINE]: false,
     });
     await microtasksFinished();
 

@@ -281,7 +281,7 @@ chrome.test.runTests([
     assertDeepEquals(
         {r: 0, b: 0, g: 0}, initEvent.detail.annotation.textAttributes.color);
     assertDeepEquals(
-        {bold: false, italic: false, strikethrough: false},
+        {bold: false, italic: false, strikethrough: false, underline: false},
         initEvent.detail.annotation.textAttributes.styles);
     chrome.test.assertEq(12, initEvent.detail.annotation.textAttributes.size);
     verifyEditTextAnnotationMessage(false);
@@ -398,6 +398,7 @@ chrome.test.runTests([
         bold: false,
         italic: false,
         strikethrough: false,
+        underline: false,
       },
     };
     assertTextUpdate(0, expectedAttributes);
@@ -420,36 +421,37 @@ chrome.test.runTests([
 
     // Toggle bold style on.
     manager.toggleTextStyle(TextStyle.BOLD);
-    expectedAttributes
-        .styles = {bold: true, italic: false, strikethrough: false};
+    expectedAttributes.styles =
+        {bold: true, italic: false, strikethrough: false, underline: false};
     assertTextUpdate(4, expectedAttributes);
 
     // Toggle italic style on.
     manager.toggleTextStyle(TextStyle.ITALIC);
-    expectedAttributes
-        .styles = {bold: true, italic: true, strikethrough: false};
+    expectedAttributes.styles =
+        {bold: true, italic: true, strikethrough: false, underline: false};
     assertTextUpdate(5, expectedAttributes);
 
     // Toggle bold style off.
     manager.toggleTextStyle(TextStyle.BOLD);
-    expectedAttributes
-        .styles = {bold: false, italic: true, strikethrough: false};
+    expectedAttributes.styles =
+        {bold: false, italic: true, strikethrough: false, underline: false};
     assertTextUpdate(6, expectedAttributes);
 
     // Toggle strikethrough style on.
     manager.toggleTextStyle(TextStyle.STRIKETHROUGH);
-    expectedAttributes
-        .styles = {bold: false, italic: true, strikethrough: true};
+    expectedAttributes.styles =
+        {bold: false, italic: true, strikethrough: true, underline: false};
     assertTextUpdate(7, expectedAttributes);
 
     // Toggle strikethrough style off.
     manager.toggleTextStyle(TextStyle.STRIKETHROUGH);
-    expectedAttributes
-        .styles = {bold: false, italic: true, strikethrough: false};
+    expectedAttributes.styles =
+        {bold: false, italic: true, strikethrough: false, underline: false};
     assertTextUpdate(8, expectedAttributes);
 
     // Set style to bold + italic explicitly.
-    const boldItalic = {bold: true, italic: true, strikethrough: false};
+    const boldItalic =
+        {bold: true, italic: true, strikethrough: false, underline: false};
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
     assertTextUpdate(9, expectedAttributes);
@@ -489,7 +491,8 @@ chrome.test.runTests([
     manager.setTextAlignment(TextAlignment.CENTER);
     const red = {r: 255, b: 0, g: 0};
     manager.setTextColor(red);
-    const boldItalic = {bold: true, italic: true, strikethrough: false};
+    const boldItalic =
+        {bold: true, italic: true, strikethrough: false, underline: false};
     manager.setTextStyles(boldItalic);
 
     const whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
@@ -1321,6 +1324,7 @@ chrome.test.runTests([
           [TextStyle.BOLD]: true,
           [TextStyle.ITALIC]: false,
           [TextStyle.STRIKETHROUGH]: false,
+          [TextStyle.UNDERLINE]: false,
         },
         typeface: TextTypeface.SERIF,
       },

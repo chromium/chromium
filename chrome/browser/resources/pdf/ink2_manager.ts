@@ -27,7 +27,8 @@ export const MIN_TEXTBOX_SIZE_PX = 24;
 
 export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
   return style1.bold === style2.bold && style1.italic === style2.italic &&
-      style1.strikethrough === style2.strikethrough;
+      style1.strikethrough === style2.strikethrough &&
+      style1.underline === style2.underline;
 }
 
 function getClampedLocation(
@@ -59,6 +60,7 @@ export class Ink2Manager extends EventTarget {
       [TextStyle.BOLD]: false,
       [TextStyle.ITALIC]: false,
       [TextStyle.STRIKETHROUGH]: false,
+      [TextStyle.UNDERLINE]: false,
     },
   };
   private brushResolver_: PromiseResolver<void>|null = null;

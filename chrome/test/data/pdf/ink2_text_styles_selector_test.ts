@@ -31,8 +31,8 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test that extra styles (strikethrough) are shown and can be toggled when
-  // extra styles are enabled.
+  // Test that extra styles (strikethrough, underline) are shown and can be
+  // toggled when extra styles are enabled.
   async function testSelectStyles() {
     loadTimeData.overrideValues({'pdfTextAnnotationsExtraStylesEnabled': true});
     const styleSelector = document.createElement('text-styles-selector');
@@ -65,11 +65,13 @@ chrome.test.runTests([
     // For each button, check that it can be toggled and confirm it is
     // displaying the expected icon.
     const buttons = styleSelector.shadowRoot.querySelectorAll('cr-icon-button');
-    chrome.test.assertEq(3, buttons.length);
+    chrome.test.assertEq(4, buttons.length);
     await testButton(buttons[0]!, TextStyle.BOLD, 'pdf-ink:format-bold');
     await testButton(buttons[1]!, TextStyle.ITALIC, 'pdf-ink:format-italic');
     await testButton(
-        buttons[2]!, TextStyle.STRIKETHROUGH, 'pdf-ink:strikethrough-s');
+        buttons[2]!, TextStyle.UNDERLINE, 'pdf-ink:format-underlined');
+    await testButton(
+        buttons[3]!, TextStyle.STRIKETHROUGH, 'pdf-ink:strikethrough-s');
 
     styleSelector.remove();
     chrome.test.succeed();

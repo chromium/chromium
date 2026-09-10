@@ -100,13 +100,38 @@ chrome.test.runTests([
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: true,
       [TextStyle.STRIKETHROUGH]: true,
+      [TextStyle.UNDERLINE]: false,
     });
     await microtasksFinished();
     chrome.test.assertEq('700', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'italic', textboxStyles.getPropertyValue('font-style'));
+    // Strikethrough is line-through.
     chrome.test.assertEq(
         'line-through', textboxStyles.getPropertyValue('text-decoration-line'));
+
+    manager.setTextStyles({
+      [TextStyle.BOLD]: false,
+      [TextStyle.ITALIC]: false,
+      [TextStyle.STRIKETHROUGH]: false,
+      [TextStyle.UNDERLINE]: true,
+    });
+    await microtasksFinished();
+    // Underline is underline.
+    chrome.test.assertEq(
+        'underline', textboxStyles.getPropertyValue('text-decoration-line'));
+
+    manager.setTextStyles({
+      [TextStyle.BOLD]: false,
+      [TextStyle.ITALIC]: false,
+      [TextStyle.STRIKETHROUGH]: true,
+      [TextStyle.UNDERLINE]: true,
+    });
+    await microtasksFinished();
+    // Underline and strikethrough is underline line-through.
+    chrome.test.assertEq(
+        'underline line-through',
+        textboxStyles.getPropertyValue('text-decoration-line'));
 
     // Color
     const newColor = hexToColor(TEXT_COLORS[1]!.color);

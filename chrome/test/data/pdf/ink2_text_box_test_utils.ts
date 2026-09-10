@@ -74,6 +74,7 @@ export function getTestAnnotation(
         [TextStyle.BOLD]: false,
         [TextStyle.ITALIC]: false,
         [TextStyle.STRIKETHROUGH]: false,
+        [TextStyle.UNDERLINE]: false,
       },
       typeface: TextTypeface.SANS_SERIF,
     },
