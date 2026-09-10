@@ -135,9 +135,10 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testObserverRegistration() {
+    public void testRegistration() {
         // Constructor is called in setUp(), verify registration happened.
         verify(mMockSideUiCoordinator).addObserver(mCoordinator);
+        verify(mMockSideUiCoordinator).registerSideUiContainer(mCoordinator);
     }
 
     @Test
@@ -153,6 +154,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         mCoordinator.destroy();
         verify(mMockSideUiCoordinator).removeObserver(mCoordinator);
+        verify(mMockSideUiCoordinator).unregisterSideUiContainer(mCoordinator);
         verify(mMockTabListCoordinator).destroy();
         assertFalse(mIsVerticalTabsActiveSupplier.get());
     }

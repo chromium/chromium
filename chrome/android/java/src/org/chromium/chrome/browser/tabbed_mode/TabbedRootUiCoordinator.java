@@ -2471,7 +2471,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mUndoGroupSnackbarController,
                                     mBrowserControlsManager),
                             mIsVerticalTabsActiveSupplier);
-            mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
             if (mToolbarManager != null) {
                 mToolbarManager.setVerticalTabsAutoHiddenSupplier(
                         mVerticalTabsSideUiCoordinator.getIsAutoHiddenSupplier());
@@ -2733,6 +2732,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mSidePanelContainerCoordinator = null;
         }
 
+        if (mVerticalTabsSideUiCoordinator != null) {
+            if (mVerticalTabsActiveObserver != null) {
+                mIsVerticalTabsActiveSupplier.removeObserver(mVerticalTabsActiveObserver);
+            }
+            mVerticalTabsSideUiCoordinator.destroy();
+            mVerticalTabsSideUiCoordinator = null;
+        }
+
         if (mSideUiCoordinator != null) {
             if (mSecondaryUiContainerMarginAdjuster != null) {
                 mSideUiCoordinator.removeObserver(mSecondaryUiContainerMarginAdjuster);
@@ -2748,14 +2755,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mLayoutStateProvider.removeObserver(mBottomSheetContainerMarginAdjuster);
         }
         mBottomSheetContainerMarginAdjuster = null;
-
-        if (mVerticalTabsSideUiCoordinator != null) {
-            if (mVerticalTabsActiveObserver != null) {
-                mIsVerticalTabsActiveSupplier.removeObserver(mVerticalTabsActiveObserver);
-            }
-            mVerticalTabsSideUiCoordinator.destroy();
-            mVerticalTabsSideUiCoordinator = null;
-        }
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;

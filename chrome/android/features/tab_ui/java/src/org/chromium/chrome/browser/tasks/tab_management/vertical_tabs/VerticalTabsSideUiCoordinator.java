@@ -78,6 +78,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mCollapseController = mTabListCoordinator.getCollapseController();
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
         mSideUiCoordinator.addObserver(this);
+        mSideUiCoordinator.registerSideUiContainer(this);
 
         mRootView = new FrameLayout(activity);
         mRootView.setLayoutParams(
@@ -111,6 +112,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     public void destroy() {
         updateAutoHiddenState(false);
         mSideUiCoordinator.removeObserver(this);
+        mSideUiCoordinator.unregisterSideUiContainer(this);
         mCollapseController.setRailCollapseListener(null);
         mTabListCoordinator.destroy();
         mIsVerticalTabsActiveSupplier.set(false);
