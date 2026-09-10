@@ -352,14 +352,17 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
     return;
   }
 
-  std::u16string_view chunk_text;
   const std::vector<TextChunk>& timeline = prefetch_manager_.GetTimelineChunks();
-  if (chunk_index < timeline.size()) {
-    chunk_text = timeline[chunk_index].text;
+  if (chunk_index >= timeline.size()) {
+    prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index, nullptr,
+                                          {});
+    decoder_sequencer_.ReplenishBuffer();
+    return;
   }
+  const TextChunk& chunk = timeline[chunk_index];
 
   ParsedSynthesisResult result =
-      ParseAndValidateSynthesisResponse(std::move(response_bytes), chunk_text);
+      ParseAndValidateSynthesisResponse(std::move(response_bytes), chunk);
 
   prefetch_manager_.OnSynthesisResponse(
       sequence_id, chunk_index, std::move(result.audio_buffer),

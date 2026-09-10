@@ -24,7 +24,7 @@ CachedCompressedSegment::CachedCompressedSegment() = default;
 
 CachedCompressedSegment::CachedCompressedSegment(
     scoped_refptr<media::DecoderBuffer> opus_buffer,
-    std::vector<DecodedAudioSegment::WordTiming> timings,
+    std::vector<WordTiming> timings,
     SynthesisResultStatus status)
     : status(status),
       opus_buffer(std::move(opus_buffer)),
@@ -121,7 +121,7 @@ void PrefetchManager::OnSynthesisResponse(
     uint64_t sequence_id,
     uint32_t chunk_index,
     scoped_refptr<media::DecoderBuffer> opus_buffer,
-    std::vector<DecodedAudioSegment::WordTiming> timings) {
+    std::vector<WordTiming> timings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sequence_id != session_sequence_id_) {
     return;
@@ -183,7 +183,7 @@ const CachedCompressedSegment* PrefetchManager::GetCachedSegment(
 void PrefetchManager::InsertCachedSegment(
     uint32_t chunk_index,
     scoped_refptr<media::DecoderBuffer> opus_buffer,
-    std::vector<DecodedAudioSegment::WordTiming> timings,
+    std::vector<WordTiming> timings,
     SynthesisResultStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!timeline_.empty() && chunk_index >= GetTimelineChunkCount()) {

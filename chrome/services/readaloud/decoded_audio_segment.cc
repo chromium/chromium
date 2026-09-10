@@ -18,7 +18,7 @@ DecodedAudioSegment::DecodedAudioSegment(base::TimeDelta duration)
 
 DecodedAudioSegment::DecodedAudioSegment(
     scoped_refptr<media::AudioBuffer> audio_buffer,
-    std::vector<DecodedAudioSegment::WordTiming> word_timings)
+    std::vector<WordTiming> word_timings)
     : audio_buffer_(std::move(audio_buffer)),
       word_timings_(std::move(word_timings)) {
   DCHECK(audio_buffer_);

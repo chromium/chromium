@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
+#include "chrome/services/readaloud/word_timing.h"
 
 namespace media {
 class DecoderBuffer;
@@ -41,18 +42,16 @@ class OpusDecoderHelper {
   // `DecodeAndSlice` was called on.
   virtual void DecodeAndSlice(
       scoped_refptr<media::DecoderBuffer> container_buffer,
-      const std::vector<DecodedAudioSegment::WordTiming>& timings,
+      const std::vector<WordTiming>& timings,
       DecodeCallback callback);
 
  private:
   // Callback executed on the main sequence thread once the background
-  // ThreadPool
-  // decoding task has completed. Packages the decoded buffer into a segment and
-  // executes the client's callback.
-  void OnDecodeFinished(
-      const std::vector<DecodedAudioSegment::WordTiming>& timings,
-      DecodeCallback callback,
-      scoped_refptr<media::AudioBuffer> decoded_buffer);
+  // ThreadPool decoding task has completed. Packages the decoded buffer into
+  // a segment and executes the client's callback.
+  void OnDecodeFinished(const std::vector<WordTiming>& timings,
+                        DecodeCallback callback,
+                        scoped_refptr<media::AudioBuffer> decoded_buffer);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<OpusDecoderHelper> weak_ptr_factory_{this};

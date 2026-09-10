@@ -9,8 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/third_party/icu/icu_utf.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
 
@@ -33,28 +31,9 @@ TimingBounds CalculateMonotonicTimingBounds(
   return {start_time, end_time};
 }
 
-std::string ExtractUTF8WordText(std::u16string_view chunk_text,
-                                int32_t start_offset,
-                                int32_t end_offset) {
-  // Post-Condition Invariant 3: 0 <= start_offset < end_offset <= chunk_text.size().
-  if (chunk_text.empty() || start_offset < 0 || end_offset <= start_offset ||
-      static_cast<size_t>(end_offset) > chunk_text.size()) {
-    return "";
-  }
-
-  size_t offset = static_cast<size_t>(start_offset);
-  size_t end = static_cast<size_t>(end_offset);
-
-  // Use Chromium's canonical code point boundary alignment macros:
-  CBU16_SET_CP_START(chunk_text, 0, offset);
-  CBU16_SET_CP_LIMIT(chunk_text, 0, end, chunk_text.size());
-
-  return base::UTF16ToUTF8(chunk_text.substr(offset, end - offset));
-}
-
 ParsedSynthesisResult ParseAndValidateSynthesisResponse(
     mojo_base::BigBuffer response_bytes,
-    std::u16string_view chunk_text) {
+    const TextChunk& chunk) {
   ParsedSynthesisResult result;
 
   if (response_bytes.size() == 0 ||
@@ -79,7 +58,7 @@ ParsedSynthesisResult ParseAndValidateSynthesisResponse(
   result.timings.reserve(response.timings_size());
   for (int i = 0; i < response.timings_size(); ++i) {
     const optimization_guide::proto::WordTiming& timing = response.timings(i);
-    DecodedAudioSegment::WordTiming t;
+    WordTiming t;
 
     std::optional<int64_t> next_start_ms;
     if (i + 1 < response.timings_size()) {
@@ -91,8 +70,14 @@ ParsedSynthesisResult ParseAndValidateSynthesisResponse(
     t.start_time = bounds.start_time;
     t.end_time = bounds.end_time;
 
-    t.text = ExtractUTF8WordText(chunk_text, timing.start_offset(),
-                                 timing.end_offset());
+    const int32_t max_offset = static_cast<int32_t>(chunk.text.size());
+    const int32_t start = std::clamp(timing.start_offset(), 0, max_offset);
+    const int32_t end = std::clamp(timing.end_offset(), start, max_offset);
+
+    t.start_character_offset =
+        static_cast<uint32_t>(chunk.start_code_unit_offset + start);
+    t.end_character_offset =
+        static_cast<uint32_t>(chunk.start_code_unit_offset + end);
 
     result.timings.push_back(std::move(t));
   }

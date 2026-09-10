@@ -16,6 +16,7 @@ source_set("readaloud") {
     "prefetch/prefetch_mode_scheduler.h",
     "read_aloud_playback_controller.h",
     "synthesis_response_parser.h",
+    "word_timing.h",
   ]
   sources = [
     "audio_renderer/read_aloud_audio_renderer.cc",

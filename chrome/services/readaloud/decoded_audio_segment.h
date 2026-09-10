@@ -6,12 +6,12 @@
 #define CHROME_SERVICES_READALOUD_DECODED_AUDIO_SEGMENT_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/audio_buffer.h"
 
 namespace readaloud {
@@ -22,18 +22,6 @@ namespace readaloud {
 class DecodedAudioSegment
     : public base::RefCountedThreadSafe<DecodedAudioSegment> {
  public:
-  // Struct tracking timing metadata for a single word within this audio
-  // segment. Used to synchronize visual text highlighting in the UI with the
-  // spoken words during playback.
-  struct WordTiming {
-    // Text string corresponding to the spoken word.
-    std::string text;
-    // Start time offset relative to the segment start.
-    base::TimeDelta start_time;
-    // End time offset relative to the segment start.
-    base::TimeDelta end_time;
-  };
-
   // Constructs an empty audio segment with zero duration.
   DecodedAudioSegment();
 

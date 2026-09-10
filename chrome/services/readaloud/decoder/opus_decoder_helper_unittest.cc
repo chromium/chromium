@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
@@ -30,7 +31,9 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
 MATCHER_P(MatchesWordTiming, expected, "") {
-  return arg.text == expected.text && arg.start_time == expected.start_time &&
+  return arg.start_character_offset == expected.start_character_offset &&
+         arg.end_character_offset == expected.end_character_offset &&
+         arg.start_time == expected.start_time &&
          arg.end_time == expected.end_time;
 }
 
@@ -134,23 +137,31 @@ TEST_F(OpusDecoderHelperTest, DecodeValidOggOpusStream) {
   ASSERT_NE(container_buffer, nullptr);
 
   OpusDecoderHelper helper;
-  std::vector<DecodedAudioSegment::WordTiming> timings = {
-      {"Hello", base::Milliseconds(0), base::Milliseconds(120)},
-      {"World", base::Milliseconds(120), base::Milliseconds(270)}};
+  std::vector<WordTiming> timings = {{.start_time = base::Milliseconds(0),
+                                      .end_time = base::Milliseconds(120),
+                                      .start_character_offset = 0u,
+                                      .end_character_offset = 5u},
+                                     {.start_time = base::Milliseconds(120),
+                                      .end_time = base::Milliseconds(270),
+                                      .start_character_offset = 6u,
+                                      .end_character_offset = 11u}};
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(
       container_buffer, timings,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
-             const std::vector<DecodedAudioSegment::WordTiming>&
-                 expected_timings,
+             const std::vector<WordTiming>& expected_timings,
              std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
             ASSERT_EQ(segments.size(), expected_timings.size());
-            DecodedAudioSegment::WordTiming expected_timing0 = {
-                "Hello", base::Milliseconds(0), base::Milliseconds(120)};
-            DecodedAudioSegment::WordTiming expected_timing1 = {
-                "World", base::Milliseconds(0), base::Milliseconds(150)};
+            WordTiming expected_timing0 = {.start_time = base::Milliseconds(0),
+                                           .end_time = base::Milliseconds(120),
+                                           .start_character_offset = 0u,
+                                           .end_character_offset = 5u};
+            WordTiming expected_timing1 = {.start_time = base::Milliseconds(0),
+                                           .end_time = base::Milliseconds(150),
+                                           .start_character_offset = 6u,
+                                           .end_character_offset = 11u};
             EXPECT_THAT(
                 segments,
                 ElementsAre(
@@ -180,11 +191,18 @@ TEST_F(OpusDecoderHelperTest, DecodeHandlesOutOfBoundsWordTimings) {
   ASSERT_NE(container_buffer, nullptr);
 
   OpusDecoderHelper helper;
-  std::vector<DecodedAudioSegment::WordTiming> timings = {
-      {"Valid", base::Milliseconds(0), base::Milliseconds(50)},
-      {"StartsValidEndsPastEnd", base::Milliseconds(50),
-       base::Milliseconds(50000)},
-      {"Out", base::Milliseconds(50000), base::Milliseconds(60000)}};
+  std::vector<WordTiming> timings = {{.start_time = base::Milliseconds(0),
+                                      .end_time = base::Milliseconds(50),
+                                      .start_character_offset = 0u,
+                                      .end_character_offset = 5u},
+                                     {.start_time = base::Milliseconds(50),
+                                      .end_time = base::Milliseconds(50000),
+                                      .start_character_offset = 6u,
+                                      .end_character_offset = 28u},
+                                     {.start_time = base::Milliseconds(50000),
+                                      .end_time = base::Milliseconds(60000),
+                                      .start_character_offset = 29u,
+                                      .end_character_offset = 32u}};
   base::RunLoop run_loop;
 
   helper.DecodeAndSlice(

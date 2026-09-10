@@ -21,8 +21,8 @@
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom-forward.h"
 #include "chrome/services/readaloud/chunking/text_chunker.h"
-#include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "chrome/services/readaloud/prefetch/prefetch_mode_scheduler.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/decoder_buffer.h"
 
 namespace readaloud {
@@ -41,7 +41,7 @@ struct CachedCompressedSegment {
   CachedCompressedSegment();
   CachedCompressedSegment(
       scoped_refptr<media::DecoderBuffer> opus_buffer,
-      std::vector<DecodedAudioSegment::WordTiming> timings,
+      std::vector<WordTiming> timings,
       SynthesisResultStatus status = SynthesisResultStatus::kSuccess);
   CachedCompressedSegment(const CachedCompressedSegment&);
   CachedCompressedSegment& operator=(const CachedCompressedSegment&);
@@ -51,7 +51,7 @@ struct CachedCompressedSegment {
 
   SynthesisResultStatus status = SynthesisResultStatus::kSuccess;
   scoped_refptr<media::DecoderBuffer> opus_buffer;
-  std::vector<DecodedAudioSegment::WordTiming> timings;
+  std::vector<WordTiming> timings;
 };
 
 // Manages document-bound caching of compressed speech synthesis audio,
@@ -116,11 +116,10 @@ class PrefetchManager {
 
   // Receives an asynchronous synthesis response. Discards stale or out-of-order
   // responses if sequence_id does not match the current session sequence ID.
-  void OnSynthesisResponse(
-      uint64_t sequence_id,
-      uint32_t chunk_index,
-      scoped_refptr<media::DecoderBuffer> opus_buffer,
-      std::vector<DecodedAudioSegment::WordTiming> timings);
+  void OnSynthesisResponse(uint64_t sequence_id,
+                           uint32_t chunk_index,
+                           scoped_refptr<media::DecoderBuffer> opus_buffer,
+                           std::vector<WordTiming> timings);
 
   // Cache accessors & modifiers:
   bool HasCachedSegment(uint32_t chunk_index) const;
@@ -128,7 +127,7 @@ class PrefetchManager {
   void InsertCachedSegment(
       uint32_t chunk_index,
       scoped_refptr<media::DecoderBuffer> opus_buffer,
-      std::vector<DecodedAudioSegment::WordTiming> timings,
+      std::vector<WordTiming> timings,
       SynthesisResultStatus status = SynthesisResultStatus::kSuccess);
   void ClearCache();
 

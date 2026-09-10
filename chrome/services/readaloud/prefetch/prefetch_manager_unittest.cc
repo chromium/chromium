@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/decoder_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,9 +39,14 @@ TEST_F(PrefetchManagerTest, DefaultConstructor) {
 
 TEST_F(PrefetchManagerTest, InsertAndRetrieveCachedSegment) {
   PrefetchManager manager;
-  std::vector<DecodedAudioSegment::WordTiming> timings = {
-      {"Hello", base::Milliseconds(0), base::Milliseconds(200)},
-      {"World", base::Milliseconds(200), base::Milliseconds(500)}};
+  std::vector<WordTiming> timings = {{.start_time = base::Milliseconds(0),
+                                      .end_time = base::Milliseconds(200),
+                                      .start_character_offset = 0u,
+                                      .end_character_offset = 5u},
+                                     {.start_time = base::Milliseconds(200),
+                                      .end_time = base::Milliseconds(500),
+                                      .start_character_offset = 6u,
+                                      .end_character_offset = 11u}};
 
   manager.InsertCachedSegment(
       0,
@@ -57,10 +63,12 @@ TEST_F(PrefetchManagerTest, InsertAndRetrieveCachedSegment) {
   EXPECT_EQ(4u, cached->opus_buffer->size());
   EXPECT_EQ(0x4F, *cached->opus_buffer->begin());
   ASSERT_EQ(2u, cached->timings.size());
-  EXPECT_EQ("Hello", cached->timings[0].text);
+  EXPECT_EQ(0u, cached->timings[0].start_character_offset);
+  EXPECT_EQ(5u, cached->timings[0].end_character_offset);
   EXPECT_EQ(base::Milliseconds(0), cached->timings[0].start_time);
   EXPECT_EQ(base::Milliseconds(200), cached->timings[0].end_time);
-  EXPECT_EQ("World", cached->timings[1].text);
+  EXPECT_EQ(6u, cached->timings[1].start_character_offset);
+  EXPECT_EQ(11u, cached->timings[1].end_character_offset);
 }
 
 TEST_F(PrefetchManagerTest, SetTextContentPopulatesTimelineAndClearsCache) {

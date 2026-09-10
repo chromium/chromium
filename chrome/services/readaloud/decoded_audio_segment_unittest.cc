@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/audio_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,9 +40,14 @@ TEST(DecodedAudioSegmentTest, FullConstructor) {
       media::CHANNEL_LAYOUT_STEREO, kChannels, kSampleRate, kFrames,
       base::TimeDelta());
 
-  std::vector<DecodedAudioSegment::WordTiming> timings = {
-      {"Hello", base::Milliseconds(0), base::Milliseconds(200)},
-      {"World", base::Milliseconds(200), base::Milliseconds(500)}};
+  std::vector<WordTiming> timings = {{.start_time = base::Milliseconds(0),
+                                      .end_time = base::Milliseconds(200),
+                                      .start_character_offset = 0u,
+                                      .end_character_offset = 5u},
+                                     {.start_time = base::Milliseconds(200),
+                                      .end_time = base::Milliseconds(500),
+                                      .start_character_offset = 6u,
+                                      .end_character_offset = 11u}};
 
   auto segment =
       base::MakeRefCounted<DecodedAudioSegment>(std::move(buffer), timings);
@@ -56,17 +62,15 @@ TEST(DecodedAudioSegmentTest, FullConstructor) {
       segment->word_timings(),
       testing::ElementsAre(
           testing::AllOf(
-              testing::Field(&DecodedAudioSegment::WordTiming::text, "Hello"),
-              testing::Field(&DecodedAudioSegment::WordTiming::start_time,
-                             base::Milliseconds(0)),
-              testing::Field(&DecodedAudioSegment::WordTiming::end_time,
-                             base::Milliseconds(200))),
+              testing::Field(&WordTiming::start_character_offset, 0u),
+              testing::Field(&WordTiming::end_character_offset, 5u),
+              testing::Field(&WordTiming::start_time, base::Milliseconds(0)),
+              testing::Field(&WordTiming::end_time, base::Milliseconds(200))),
           testing::AllOf(
-              testing::Field(&DecodedAudioSegment::WordTiming::text, "World"),
-              testing::Field(&DecodedAudioSegment::WordTiming::start_time,
-                             base::Milliseconds(200)),
-              testing::Field(&DecodedAudioSegment::WordTiming::end_time,
-                             base::Milliseconds(500)))));
+              testing::Field(&WordTiming::start_character_offset, 6u),
+              testing::Field(&WordTiming::end_character_offset, 11u),
+              testing::Field(&WordTiming::start_time, base::Milliseconds(200)),
+              testing::Field(&WordTiming::end_time, base::Milliseconds(500)))));
 }
 
 }  // namespace readaloud

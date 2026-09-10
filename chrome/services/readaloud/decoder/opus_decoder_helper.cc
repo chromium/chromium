@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/readaloud/decoded_audio_segment.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -83,7 +84,7 @@ OpusDecoderHelper::~OpusDecoderHelper() {
 
 void OpusDecoderHelper::DecodeAndSlice(
     scoped_refptr<media::DecoderBuffer> container_buffer,
-    const std::vector<DecodedAudioSegment::WordTiming>& timings,
+    const std::vector<WordTiming>& timings,
     DecodeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -111,7 +112,7 @@ void OpusDecoderHelper::DecodeAndSlice(
 }
 
 void OpusDecoderHelper::OnDecodeFinished(
-    const std::vector<DecodedAudioSegment::WordTiming>& timings,
+    const std::vector<WordTiming>& timings,
     DecodeCallback callback,
     scoped_refptr<media::AudioBuffer> decoded_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -135,7 +136,7 @@ void OpusDecoderHelper::OnDecodeFinished(
   std::unique_ptr<media::AudioBus> decoded_bus =
       media::AudioBuffer::WrapOrCopyToAudioBus(decoded_buffer);
 
-  for (const DecodedAudioSegment::WordTiming& timing : timings) {
+  for (const WordTiming& timing : timings) {
     int64_t start_frame = media::AudioTimestampHelper::TimeToFrames(
         timing.start_time, sample_rate);
     int64_t end_frame =
@@ -160,15 +161,15 @@ void OpusDecoderHelper::OnDecodeFinished(
     decoded_bus->CopyPartialFramesTo(static_cast<int>(start_frame), num_frames,
                                      0, word_bus.get());
 
-    DecodedAudioSegment::WordTiming localized_timing;
-    localized_timing.text = timing.text;
+    WordTiming localized_timing;
     localized_timing.start_time = base::TimeDelta();
     localized_timing.end_time =
         media::AudioTimestampHelper::FramesToTime(num_frames, sample_rate);
+    localized_timing.start_character_offset = timing.start_character_offset;
+    localized_timing.end_character_offset = timing.end_character_offset;
 
     result.push_back(base::MakeRefCounted<DecodedAudioSegment>(
-        std::move(word_buffer),
-        std::vector<DecodedAudioSegment::WordTiming>{localized_timing}));
+        std::move(word_buffer), std::vector<WordTiming>{localized_timing}));
   }
 
   std::move(callback).Run(std::move(result));

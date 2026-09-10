@@ -18,6 +18,7 @@
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "chrome/services/readaloud/decoder/opus_decoder_helper.h"
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
+#include "chrome/services/readaloud/word_timing.h"
 #include "media/base/decoder_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,10 +32,9 @@ class FakeOpusDecoderHelper : public OpusDecoderHelper {
   FakeOpusDecoderHelper() = default;
   ~FakeOpusDecoderHelper() override = default;
 
-  void DecodeAndSlice(
-      scoped_refptr<media::DecoderBuffer> container_buffer,
-      const std::vector<DecodedAudioSegment::WordTiming>& timings,
-      DecodeCallback callback) override {
+  void DecodeAndSlice(scoped_refptr<media::DecoderBuffer> container_buffer,
+                      const std::vector<WordTiming>& timings,
+                      DecodeCallback callback) override {
     last_callback_ = std::move(callback);
     decode_call_count_++;
   }
