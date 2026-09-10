@@ -4124,7 +4124,6 @@
     {
       name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
       status: "stable",
-      origin_trial_feature_name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
     },
     {
       name: "MediaQueryNavigationControls",
