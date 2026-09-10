@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include "base/atomic_sequence_num.h"
 #include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
