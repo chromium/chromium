@@ -16,12 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.SuperscriptSpan;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
@@ -29,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -57,7 +52,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
@@ -71,7 +65,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
-import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -84,7 +77,6 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -98,8 +90,6 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,8 +132,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_APPEARANCE = "appearance";
     public static final String PREF_DEFAULT_BROWSER = "default_browser";
     public static final String PREF_GLIC = "glic";
-
-    @VisibleForTesting static final int NEW_LABEL_MAX_VIEW_COUNT = 6;
 
     // Tag for Fragment backstack entry loading the search results into the display fragment.
     // Popping the entry means we are transitioning from result -> search state.
@@ -820,11 +808,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     AddressBarPreference.isToolbarConfiguredToShowOnTop()
                             ? R.string.address_bar_settings_top
                             : R.string.address_bar_settings_bottom);
-            updateNewPreferenceAndIncrementViewCount(
-                    addressBarPreference,
-                    AddressBarSettingsFragment.getTitle(getContext()),
-                    ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED,
-                    ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT);
         } else {
             removePreferenceIfPresent(PREF_ADDRESS_BAR);
         }
@@ -842,50 +825,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private void updateAppearancePreference() {
         Preference pref = findPreference(PREF_APPEARANCE);
         pref.setTitle(AppearanceSettingsFragment.getTitle(getContext()));
-    }
-
-    private void updateNewPreferenceAndIncrementViewCount(
-            Preference pref, String title, String clickedPrefKey, String viewCountPrefKey) {
-        final SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
-
-        boolean clicked;
-        try {
-            clicked = sharedPreferences.readBoolean(clickedPrefKey, false);
-        } catch (ClassCastException e) {
-            // Clean up pref value mis-written as int.
-            sharedPreferences.writeBoolean(clickedPrefKey, true);
-            clicked = true;
-        }
-
-        final int viewCount = sharedPreferences.readInt(viewCountPrefKey, 0);
-        final boolean showNewLabelForPref = !clicked && viewCount < NEW_LABEL_MAX_VIEW_COUNT;
-
-        if (!showNewLabelForPref) {
-            pref.setTitle(title);
-            pref.setOnPreferenceClickListener(null);
-            return;
-        }
-
-        sharedPreferences.incrementInt(viewCountPrefKey);
-
-        final Context context = getContext();
-        pref.setTitle(
-                SpanApplier.applySpans(
-                        context.getString(R.string.prefs_new_label, title),
-                        new SpanInfo(
-                                "<new>",
-                                "</new>",
-                                new SuperscriptSpan(),
-                                new RelativeSizeSpan(0.75f),
-                                new ForegroundColorSpan(
-                                        SemanticColorUtils.getDefaultTextColorAccent1(context)))));
-
-        pref.setOnPreferenceClickListener(
-                preference -> {
-                    onPreferenceSelected(preference);
-                    ChromeSharedPreferences.getInstance().writeBoolean(clickedPrefKey, true);
-                    return false;
-                });
     }
 
     private void setOnOffSummary(Preference pref, boolean isOn) {

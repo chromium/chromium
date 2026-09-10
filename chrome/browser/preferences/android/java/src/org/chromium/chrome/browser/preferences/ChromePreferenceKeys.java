@@ -52,10 +52,6 @@ public final class ChromePreferenceKeys {
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS =
             "Chrome.AdaptiveToolbarCustomization.Settings";
 
-    public static final String ADDRESS_BAR_SETTINGS_CLICKED = "Chrome.AddressBar.SettingsClicked";
-    public static final String ADDRESS_BAR_SETTINGS_VIEW_COUNT =
-            "Chrome.AddressBar.SettingsViewCount";
-
     /** Timestamp of last time ai feature availability was checked. */
     public static final String AI_ASSISTANT_ANALYZE_ATTACHMENT_AVAILABILITY =
             "Chrome.AiAssistant.AnalyzeAttachmentAvailability";
@@ -1185,8 +1181,6 @@ public final class ChromePreferenceKeys {
         return Arrays.asList(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
-                ADDRESS_BAR_SETTINGS_CLICKED,
-                ADDRESS_BAR_SETTINGS_VIEW_COUNT,
                 AI_ASSISTANT_ANALYZE_ATTACHMENT_AVAILABILITY,
                 AI_ASSISTANT_AVAILABILITY_CHECK_TIMESTAMP_MS,
                 AI_ASSISTANT_WEB_SUMMARIZATION_AVAILABILITY,

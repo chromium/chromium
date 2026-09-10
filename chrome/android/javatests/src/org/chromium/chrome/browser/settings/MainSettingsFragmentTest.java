@@ -25,7 +25,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -49,7 +48,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
@@ -101,8 +99,6 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
@@ -115,7 +111,6 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
-import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -144,8 +139,6 @@ import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -213,12 +206,6 @@ public class MainSettingsFragmentTest {
                 mSigninAndHistorySyncActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         Intents.init();
-
-        // Keep render tests consistent by suppressing "new" labels.
-        final var prefs = ChromeSharedPreferences.getInstance();
-        prefs.writeInt(
-                ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
-                MainSettings.NEW_LABEL_MAX_VIEW_COUNT);
 
         when(mSigninAndHistorySyncActivityLauncher
                         .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
@@ -900,34 +887,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testAndroidAddressBar_newLabel() {
-        Assume.assumeThat(supportAddressBarSettings(), is(true));
-        testNewPreferenceLabel(
-                AddressBarSettingsFragment.class,
-                MainSettings.PREF_ADDRESS_BAR,
-                ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
-                R.string.address_bar_settings);
-    }
-
-    @Test
-    @SmallTest
-    public void testAndroidAddressBar_cleanUpBadPrefValue() {
-        ChromeSharedPreferences.getInstance()
-                .writeInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, 1);
-        startSettings();
-
-        if (!supportAddressBarSettings()) {
-            return;
-        }
-
-        assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
-        Assert.assertEquals(
-                mMainSettings.getString(R.string.address_bar_settings),
-                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
-    }
-
-    @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
     public void testDefaultBrowserPromoCard() throws InterruptedException {
         when(mTestTracker.shouldTriggerHelpUi(any())).thenReturn(true);
@@ -1152,11 +1111,6 @@ public class MainSettingsFragmentTest {
         Assert.assertNotNull("SettingsActivity failed to launch.", mMainSettings);
     }
 
-    private void restartSettings() {
-        mSettingsTestRule.finishActivity();
-        startSettings();
-    }
-
     private void configureMockSearchEngine() {
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
         Mockito.doReturn(mMockSearchEngine)
@@ -1205,52 +1159,8 @@ public class MainSettingsFragmentTest {
         return pref;
     }
 
-    private boolean supportAddressBarSettings() {
-        return ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                ContextUtils.getApplicationContext(), false);
-    }
-
     private boolean supportNotificationSettings() {
         return PackageManagerUtils.canResolveActivity(
                 new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
-    }
-
-    private void testNewPreferenceLabel(
-            Class prefFragmentClass,
-            String prefKey,
-            String viewCountPrefKey,
-            @StringRes int titleId) {
-        // Set up.
-        final var prefs = ChromeSharedPreferences.getInstance();
-        prefs.writeInt(viewCountPrefKey, MainSettings.NEW_LABEL_MAX_VIEW_COUNT);
-        startSettings();
-
-        final String prefTitleWithoutNewLabel = mMainSettings.getString(titleId);
-
-        // Case: Pref has been viewed `NEW_LABEL_MAX_VIEW_COUNT` times.
-        assertSettingsExists(prefKey, prefFragmentClass);
-        Assert.assertEquals(
-                prefTitleWithoutNewLabel,
-                mMainSettings.findPreference(prefKey).getTitle().toString());
-
-        final String prefTitleWithNewLabel =
-                SpanApplier.applySpans(
-                                mMainSettings.getString(
-                                        R.string.prefs_new_label, prefTitleWithoutNewLabel),
-                                new SpanInfo("<new>", "</new>"))
-                        .toString();
-
-        // Case: Pref has been viewed fewer than `NEW_LABEL_MAX_VIEW_COUNT` times.
-        prefs.writeInt(viewCountPrefKey, MainSettings.NEW_LABEL_MAX_VIEW_COUNT - 1);
-        restartSettings();
-        Assert.assertEquals(
-                prefTitleWithNewLabel, mMainSettings.findPreference(prefKey).getTitle().toString());
-
-        // Case: Pref has been clicked.
-        mMainSettings.findPreference(prefKey).performClick();
-        restartSettings();
-        Assert.assertEquals(
-                prefTitleWithoutNewLabel,
-                mMainSettings.findPreference(prefKey).getTitle().toString());
     }
 }
