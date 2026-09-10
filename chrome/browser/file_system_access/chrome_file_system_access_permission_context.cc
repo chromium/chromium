@@ -634,9 +634,9 @@ bool ShouldBlockAccessToPath(
   // Checks if the path components contain the components of the suffix rule.
   // For example, if the rule is `.git/hooks`, it will block paths like
   // `/foo/bar/.git/hooks`. The `std::search` identifies the matching subrange
-  // and constructs a `current_path` from the root up to the end of the matched
-  // subrange (e.g., `/foo/bar/.git/hooks`). This path is then evaluated against
-  // the regular block rules.
+  // using case-insensitive comparison and constructs a `current_path` from the
+  // root up to the end of the matched subrange (e.g., `/foo/bar/.git/hooks`).
+  // This path is then evaluated against the regular block rules.
   for (const auto& rule : block_path_rules.suffix_block_path_rules_) {
     base::FilePath rule_path(rule.path);
     std::vector<base::FilePath::StringType> rule_components =
@@ -648,7 +648,8 @@ bool ShouldBlockAccessToPath(
     auto it = path_components.begin();
     while (true) {
       it = std::search(it, path_components.end(), rule_components.begin(),
-                       rule_components.end());
+                       rule_components.end(),
+                       base::FilePath::CompareEqualIgnoreCase);
       if (it == path_components.end()) {
         break;
       }

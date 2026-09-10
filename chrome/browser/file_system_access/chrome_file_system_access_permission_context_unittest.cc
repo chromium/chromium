@@ -1333,6 +1333,27 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                              .Append(FILE_PATH_LITERAL("b"))),
                 HandleType::kDirectory, UserAction::kSave),
             SensitiveDirectoryResult::kAbort);
+  // Case variations of .git/hooks are blocked for save.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(root.Append(FILE_PATH_LITERAL(".GIT"))
+                             .Append(FILE_PATH_LITERAL("hooks"))),
+                HandleType::kDirectory, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(root.Append(FILE_PATH_LITERAL(".git"))
+                             .Append(FILE_PATH_LITERAL("HOOKS"))),
+                HandleType::kDirectory, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(root.Append(FILE_PATH_LITERAL("a"))
+                             .Append(FILE_PATH_LITERAL(".Git"))
+                             .Append(FILE_PATH_LITERAL("Hooks"))
+                             .Append(FILE_PATH_LITERAL("b"))),
+                HandleType::kDirectory, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
   // Other suffix is allowed.
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
