@@ -1240,7 +1240,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       base::TimeTicks() /* before_unload_dialog_opened */,
       base::TimeTicks() /* before_unload_dialog_closed */,
       started_with_transient_activation, started_by_ad, is_container_initiated,
-      has_rel_opener, std::nullopt /* script_tool_invocation_id */);
+      has_rel_opener, std::nullopt /* script_tool_invocation_id */,
+      /*script_injector_host=*/"");
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -10787,6 +10788,11 @@ const std::string& NavigationRequest::GetHrefTranslate() {
 const std::optional<blink::LocalFrameToken>&
 NavigationRequest::GetInitiatorFrameToken() {
   return initiator_frame_token_;
+}
+
+const std::string& NavigationRequest::GetScriptInjectorHost() const {
+  return begin_params_ ? begin_params_->script_injector_host
+                       : base::EmptyString();
 }
 
 ChildProcessId NavigationRequest::GetInitiatorProcessId() {

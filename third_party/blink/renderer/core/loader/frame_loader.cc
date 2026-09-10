@@ -58,6 +58,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -68,6 +69,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/ad_tracker/extension_script_tracker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -706,6 +708,14 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     element->CancelPendingLazyLoad();
 
   ResourceRequest& resource_request = request.GetResourceRequest();
+  String script_injector_host;
+  if (GetDocumentLoader() &&
+      GetDocumentLoader()->GetScriptInjectionPolicy() ==
+          mojom::blink::ScriptInjectionPolicy::kNavigationProtection) {
+    if (auto* extension_script_tracker = frame_->GetExtensionScriptTracker()) {
+      script_injector_host = extension_script_tracker->ExtensionScriptInStack();
+    }
+  }
   const KURL& url = resource_request.Url();
   LocalDOMWindow* origin_window = request.GetOriginWindow();
 
@@ -1020,7 +1030,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.IsContainerInitiated(),
       request.GetWindowFeatures().explicit_opener,
       request.TakeResumeDeferredCommitListener(),
-      request.GetScriptToolInvocationId());
+      request.GetScriptToolInvocationId(), script_injector_host);
 }
 
 static void FillStaticResponseIfNeeded(WebNavigationParams* params,

@@ -648,6 +648,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual const std::optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
+  // The host of the entity that injected the script initiating this
+  // navigation, or empty if none. This is only populated when the initiator
+  // document's ScriptInjectionPolicy is kNavigationProtection.
+  virtual const std::string& GetScriptInjectorHost() const = 0;
+
   // Return the ID of the renderer process of the frame host that initiated the
   // navigation. This is defined if and only if GetInitiatorFrameToken above is,
   // and it is only valid in conjunction with it.

@@ -134,6 +134,11 @@ struct BLINK_EXPORT WebNavigationInfo {
   // navigation with the tool that caused it.
   std::optional<base::UnguessableToken> script_tool_invocation_id;
 
+  // The host of the entity that injected the script initiating this
+  // navigation. This is only populated when the initiator document's
+  // ScriptInjectionPolicy is kNavigationProtection.
+  WebString script_injector_host;
+
   // Used to retrieve data related to the initiator of the navigation stored in
   // the browser process.
   InitiatorStateToken initiator_state_token;

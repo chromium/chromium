@@ -171,7 +171,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             false /* started_with_transient_activation */,
             false /* started_by_ad */, false /* is_container_initiated */,
             false /* has_rel_opener */,
-            std::nullopt /* script_tool_invocation_id */);
+            std::nullopt /* script_tool_invocation_id */,
+            /*script_injector_host=*/"");
 
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;

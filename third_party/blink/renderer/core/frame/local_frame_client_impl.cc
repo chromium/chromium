@@ -636,7 +636,8 @@ void LocalFrameClientImpl::BeginNavigation(
     bool has_rel_opener,
     mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>
         resume_defer_commit_listener,
-    std::optional<base::UnguessableToken> script_tool_invocation_id) {
+    std::optional<base::UnguessableToken> script_tool_invocation_id,
+    const String& script_injector_host) {
   if (!web_frame_->Client()) {
     return;
   }
@@ -657,6 +658,7 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->is_unfenced_top_navigation = is_unfenced_top_navigation;
   navigation_info->frame_load_type = frame_load_type;
   navigation_info->is_client_redirect = is_client_redirect;
+  navigation_info->script_injector_host = script_injector_host;
 
   if (script_tool_invocation_id.has_value()) {
     navigation_info->script_tool_invocation_id =

@@ -477,6 +477,7 @@ class CONTENT_EXPORT NavigationRequest
   const std::string& GetHrefTranslate() override;
   const std::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
+  const std::string& GetScriptInjectorHost() const override;
   ChildProcessId GetInitiatorProcessId() override;
   const std::optional<url::Origin>& GetInitiatorOrigin() override;
   const std::optional<GURL>& GetInitiatorBaseUrl() override;

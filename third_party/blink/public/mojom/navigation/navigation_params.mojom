@@ -210,6 +210,11 @@ struct BeginNavigationParams {
   // navigation with the tool that caused it.
   // This is null for navigations that were not triggered by a script tool.
   mojo_base.mojom.UnguessableToken? script_tool_invocation_id;
+
+  // The host of the entity that injected the script initiating this
+  // navigation, or empty if none. This is only populated when the initiator
+  // document's ScriptInjectionPolicy is kNavigationProtection.
+  string script_injector_host;
 };
 
 // Provided by the browser or the renderer -------------------------------------

@@ -234,6 +234,9 @@ class MockNavigationHandle : public NavigationHandle {
   ChildProcessId GetInitiatorProcessId() override {
     return initiator_process_id_;
   }
+  const std::string& GetScriptInjectorHost() const override {
+    return script_injector_host_;
+  }
   const std::optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }
@@ -416,6 +419,11 @@ class MockNavigationHandle : public NavigationHandle {
     post_data_ = std::move(post_data);
   }
 
+  // Sets the script injector host for testing.
+  void set_script_injector_host(std::string script_injector_host) {
+    script_injector_host_ = std::move(script_injector_host);
+  }
+
  private:
   const RenderFrameHost* GetConstParentFrameOrOuterDocument() const {
     return render_frame_host_ ? render_frame_host_->GetParentOrOuterDocument()
@@ -443,6 +451,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool is_in_primary_main_frame_ = true;
   size_t ignored_duplicate_navigation_count_ = 0;
   std::optional<base::UnguessableToken> script_tool_invocation_id_;
+  std::string script_injector_host_;
   std::vector<GURL> redirect_chain_;
   bool has_committed_ = false;
   bool is_error_page_ = false;
