@@ -411,23 +411,75 @@ TEST(GlicExperimentalTriggeringConvertersTest,
   }
 }
 
-TEST(GlicExperimentalTriggeringConvertersTest,
-     ResponseToProto_ScreenshotResult) {
+using ProtoScreenshotResult =
+    components_sharing_message::GlicExperimentalTriggering::
+        ExperimentalTriggeringResponse::ScreenshotResult;
+
+struct ScreenshotStatusTestCase {
+  const char* test_name;
+  ScreenshotResult::Status status;
+  ProtoScreenshotResult::Status expected_proto_status;
+};
+
+class GlicExperimentalTriggeringScreenshotStatusTest
+    : public testing::TestWithParam<ScreenshotStatusTestCase> {};
+
+TEST_P(GlicExperimentalTriggeringScreenshotStatusTest, ConvertsStatus) {
   ExperimentalTriggeringResponse response;
   response.context_id = "test_context";
   response.screenshot_result = ScreenshotResult{
-      .status = ScreenshotResult::Status::kSuccess,
-      .file_token = "token_abc",
-      .error_message = "",
+      .status = GetParam().status,
   };
 
   auto sharing_message = ResponseToProto(response);
   const auto& resp_proto =
       sharing_message.glic_experimental_triggering().response();
   EXPECT_EQ(resp_proto.screenshot_result().status(),
-            components_sharing_message::GlicExperimentalTriggering::
-                ExperimentalTriggeringResponse::ScreenshotResult::SUCCESS);
+            GetParam().expected_proto_status);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ResponseToProto_ScreenshotResult,
+    GlicExperimentalTriggeringScreenshotStatusTest,
+    testing::Values(
+        ScreenshotStatusTestCase{"Unspecified",
+                                 ScreenshotResult::Status::kUnspecified,
+                                 ProtoScreenshotResult::UNSPECIFIED},
+        ScreenshotStatusTestCase{"Success", ScreenshotResult::Status::kSuccess,
+                                 ProtoScreenshotResult::SUCCESS},
+        ScreenshotStatusTestCase{"ErrorCapture",
+                                 ScreenshotResult::Status::kErrorCapture,
+                                 ProtoScreenshotResult::ERROR_CAPTURE},
+        ScreenshotStatusTestCase{"ErrorServer",
+                                 ScreenshotResult::Status::kErrorServer,
+                                 ProtoScreenshotResult::ERROR_SERVER},
+        ScreenshotStatusTestCase{"ErrorDisabled",
+                                 ScreenshotResult::Status::kErrorDisabled,
+                                 ProtoScreenshotResult::ERROR_DISABLED},
+        ScreenshotStatusTestCase{"ErrorInvalidRequest",
+                                 ScreenshotResult::Status::kErrorInvalidRequest,
+                                 ProtoScreenshotResult::ERROR_INVALID_REQUEST}),
+    [](const testing::TestParamInfo<ScreenshotStatusTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST(GlicExperimentalTriggeringConvertersTest,
+     ResponseToProto_ScreenshotResultFields) {
+  ExperimentalTriggeringResponse response;
+  response.context_id = "test_context";
+  response.screenshot_result = ScreenshotResult{
+      .status = ScreenshotResult::Status::kSuccess,
+      .file_token = "token_abc",
+      .request_token = {'t', 'o', 'k', 'e', 'n'},
+  };
+
+  auto sharing_message = ResponseToProto(response);
+  const auto& resp_proto =
+      sharing_message.glic_experimental_triggering().response();
+  EXPECT_EQ(resp_proto.screenshot_result().status(),
+            ProtoScreenshotResult::SUCCESS);
   EXPECT_EQ(resp_proto.screenshot_result().file_token(), "token_abc");
+  EXPECT_EQ(resp_proto.screenshot_result().request_token(), "token");
   EXPECT_FALSE(resp_proto.screenshot_result().has_error_message());
 }
 

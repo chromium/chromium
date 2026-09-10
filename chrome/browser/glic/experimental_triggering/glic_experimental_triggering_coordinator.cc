@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
@@ -173,6 +174,34 @@ ExperimentalTriggeringResponse CreateDeviceOptInResponse(
   ExperimentalTriggeringResponse response = CreateBaseResponseMessage(
       context_id, request_task_metadata, sender_sequence_number);
   response.device_opt_in_result = opt_in_result;
+  return response;
+}
+
+// Builds a screenshot result with the specified status and tokens.
+ScreenshotResult CreateScreenshotResult(
+    ScreenshotResult::Status status,
+    std::string_view file_token = {},
+    std::vector<uint8_t> request_token = {}) {
+  ScreenshotResult result;
+  result.status = status;
+  if (!file_token.empty()) {
+    result.file_token = std::string(file_token);
+  }
+  if (!request_token.empty()) {
+    result.request_token = std::move(request_token);
+  }
+  return result;
+}
+
+// Builds a screenshot result response for synchronous request replies.
+ExperimentalTriggeringResponse CreateScreenshotResultResponse(
+    const std::string& context_id,
+    ScreenshotResult screenshot_result,
+    const TaskMetadata* request_task_metadata,
+    int64_t sender_sequence_number) {
+  ExperimentalTriggeringResponse response = CreateBaseResponseMessage(
+      context_id, request_task_metadata, sender_sequence_number);
+  response.screenshot_result = std::move(screenshot_result);
   return response;
 }
 
@@ -603,6 +632,16 @@ class ExperimentalTriggeringUpdatesHandler
           sequence_generator_.GetNext());
     }
 
+    if (screenshot_req.request_token.empty()) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kUnexpectedRequestPayload);
+      return CreateScreenshotResultResponse(
+          context_id_,
+          CreateScreenshotResult(
+              ScreenshotResult::Status::kErrorInvalidRequest),
+          task_metadata, sequence_generator_.GetNext());
+    }
+
     auto response = CreateResponseMessage(
         context_id_, TaskUpdate::State::kStarting, std::nullopt, "",
         task_metadata, sequence_generator_.GetNext());
@@ -613,21 +652,23 @@ class ExperimentalTriggeringUpdatesHandler
         base::BindOnce(
             [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> handler,
                std::vector<uint8_t> request_token,
-               const std::optional<std::string>& file_token) {
+               base::expected<std::string, ScreenshotResult::Status> result) {
               if (!handler) {
                 return;
               }
-              if (file_token.has_value()) {
-                handler->SendScreenshotResult(
-                    ScreenshotResult::Status::kSuccess, *file_token,
-                    /*error_message=*/{}, std::move(request_token));
-              } else {
-                handler->SendScreenshotResult(
-                    ScreenshotResult::Status::kErrorCapture,
-                    /*file_token=*/std::string_view(),
-                    "Failed to capture or upload screenshot.",
-                    std::move(request_token));
+              if (!result.has_value() || result.value().empty()) {
+                ScreenshotResult::Status status =
+                    !result.has_value()
+                        ? result.error()
+                        : ScreenshotResult::Status::kErrorServer;
+                handler->SendScreenshotResult(status,
+                                              /*file_token=*/std::string_view(),
+                                              std::move(request_token));
+                return;
               }
+              handler->SendScreenshotResult(ScreenshotResult::Status::kSuccess,
+                                            result.value(),
+                                            std::move(request_token));
             },
             weak_ptr_factory_.GetWeakPtr(), screenshot_req.request_token));
 
@@ -809,24 +850,13 @@ class ExperimentalTriggeringUpdatesHandler
 
   void SendScreenshotResult(ScreenshotResult::Status status,
                             std::string_view file_token = {},
-                            std::string_view error_message = {},
                             std::vector<uint8_t> request_token = {}) {
     if (update_callback_) {
       ExperimentalTriggeringResponse response =
           CreateBaseResponse(context_id_, sequence_generator_.GetNext(),
                              last_seen_sequence_number_, instance_.get());
-      ScreenshotResult result;
-      result.status = status;
-      if (!file_token.empty()) {
-        result.file_token = std::string(file_token);
-      }
-      if (!error_message.empty()) {
-        result.error_message = std::string(error_message);
-      }
-      if (!request_token.empty()) {
-        result.request_token = std::move(request_token);
-      }
-      response.screenshot_result = std::move(result);
+      response.screenshot_result =
+          CreateScreenshotResult(status, file_token, std::move(request_token));
       update_callback_.Run(std::move(response));
     }
   }

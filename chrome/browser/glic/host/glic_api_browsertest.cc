@@ -4405,7 +4405,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithExperimentalTriggeringScreenshot,
       [&]() { return GetOnlyGlicInstance()->host().IsWebClientConnected(); },
       "waiting for web client connected"));
 
-  base::test::TestFuture<const std::optional<std::string>&> future;
+  base::test::TestFuture<base::expected<std::string, ScreenshotResult::Status>>
+      future;
   ASSERT_NE(GetOnlyGlicInstance()->GetExperimentalTriggeringManager(), nullptr);
   GetOnlyGlicInstance()
       ->GetExperimentalTriggeringManager()
@@ -4414,9 +4415,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithExperimentalTriggeringScreenshot,
 
   ExecuteJsTest();
 
-  std::optional<std::string> file_token = future.Get();
-  ASSERT_TRUE(file_token.has_value());
-  EXPECT_EQ(*file_token, "mock-file-token-12345");
+  base::expected<std::string, ScreenshotResult::Status> result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), "mock-file-token-12345");
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4434,15 +4435,17 @@ IN_PROC_BROWSER_TEST_P(
   RegisterConversation(GetOnlyGlicInstance(), "test-conv-id");
   ASSERT_OK(CreateActorTaskObservingActiveTab(GetOnlyGlicInstance()));
 
-  base::test::TestFuture<const std::optional<std::string>&> future;
+  base::test::TestFuture<base::expected<std::string, ScreenshotResult::Status>>
+      future;
   ASSERT_NE(GetOnlyGlicInstance()->GetExperimentalTriggeringManager(), nullptr);
   GetOnlyGlicInstance()
       ->GetExperimentalTriggeringManager()
       ->CaptureAndUploadEncryptedScreenshot(recipient_public_key, auth_secret,
                                             future.GetCallback());
 
-  std::optional<std::string> file_token = future.Get();
-  EXPECT_FALSE(file_token.has_value());
+  base::expected<std::string, ScreenshotResult::Status> result = future.Get();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ScreenshotResult::Status::kErrorCapture);
 }
 
 class GlicApiUnresponsiveTest : public GlicApiTest {

@@ -12,6 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,15 +34,16 @@ class GlicExperimentalTriggeringManager {
       delete;
   GlicExperimentalTriggeringManager& operator=(
       const GlicExperimentalTriggeringManager&) = delete;
-  ~GlicExperimentalTriggeringManager();
+  virtual ~GlicExperimentalTriggeringManager();
 
   void Bind(
       mojo::PendingRemote<glic::mojom::ExperimentalTriggeringClient> client);
 
-  void CaptureAndUploadEncryptedScreenshot(
+  virtual void CaptureAndUploadEncryptedScreenshot(
       const std::vector<uint8_t>& public_key,
       const std::vector<uint8_t>& auth_secret,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback);
+      base::OnceCallback<void(
+          base::expected<std::string, ScreenshotResult::Status>)> callback);
 
   void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
@@ -51,14 +54,16 @@ class GlicExperimentalTriggeringManager {
   void OnPageContextFetchedForEncryption(
       std::vector<uint8_t> public_key,
       std::vector<uint8_t> auth_secret,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback,
+      base::OnceCallback<
+          void(base::expected<std::string, ScreenshotResult::Status>)> callback,
       glic::GlicGetContextResult result);
   void OnScreenshotEncrypted(
       uint32_t width_pixels,
       uint32_t height_pixels,
       std::string mime_type,
       glic::mojom::ImageOriginAnnotationsPtr origin_annotations,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback,
+      base::OnceCallback<
+          void(base::expected<std::string, ScreenshotResult::Status>)> callback,
       std::optional<std::vector<uint8_t>> encrypted_payload_bytes);
 
   raw_ptr<glic::GlicInstance> instance_;

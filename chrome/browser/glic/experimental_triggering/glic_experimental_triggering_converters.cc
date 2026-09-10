@@ -271,13 +271,17 @@ ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response) {
         proto_screenshot->set_status(
             ProtoResponse::ScreenshotResult::ERROR_SERVER);
         break;
+      case ScreenshotResult::Status::kErrorDisabled:
+        proto_screenshot->set_status(
+            ProtoResponse::ScreenshotResult::ERROR_DISABLED);
+        break;
+      case ScreenshotResult::Status::kErrorInvalidRequest:
+        proto_screenshot->set_status(
+            ProtoResponse::ScreenshotResult::ERROR_INVALID_REQUEST);
+        break;
     }
     if (!response.screenshot_result->file_token.empty()) {
       proto_screenshot->set_file_token(response.screenshot_result->file_token);
-    }
-    if (!response.screenshot_result->error_message.empty()) {
-      proto_screenshot->set_error_message(
-          response.screenshot_result->error_message);
     }
     if (!response.screenshot_result->request_token.empty()) {
       proto_screenshot->set_request_token(

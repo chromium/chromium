@@ -128,10 +128,11 @@ struct ScreenshotResult {
     kSuccess,
     kErrorCapture,
     kErrorServer,
+    kErrorDisabled,
+    kErrorInvalidRequest,
   };
   Status status = Status::kUnspecified;
   std::string file_token;
-  std::string error_message;
   std::vector<uint8_t> request_token;
 };
 

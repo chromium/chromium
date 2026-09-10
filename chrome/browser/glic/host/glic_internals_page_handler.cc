@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -965,13 +966,19 @@ void GlicInternalsPageHandler::OnInvokeSuccess(
 
       triggering_manager->CaptureAndUploadEncryptedScreenshot(
           public_key, auth_secret,
-          base::BindOnce([](const std::optional<std::string>& file_token) {
-            if (file_token) {
+          base::BindOnce([](base::expected<std::string,
+                                           ScreenshotResult::Status> result) {
+            if (result.has_value() && !result.value().empty()) {
               VLOG(5) << "CaptureAndUploadEncryptedScreenshot "
                          "success, token: "
-                      << *file_token;
+                      << result.value();
             } else {
-              VLOG(5) << "CaptureAndUploadEncryptedScreenshot failed";
+              VLOG(5)
+                  << "CaptureAndUploadEncryptedScreenshot failed with status: "
+                  << static_cast<int>(
+                         !result.has_value()
+                             ? result.error()
+                             : ScreenshotResult::Status::kErrorServer);
             }
           }));
     }
