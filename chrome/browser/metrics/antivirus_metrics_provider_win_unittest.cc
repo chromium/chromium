@@ -142,14 +142,11 @@ TEST_P(AntiVirusMetricsProviderTest, GetMetricsFullName) {
       base::BindOnce(&AntiVirusMetricsProviderTest::GetMetricsCallback,
                      base::Unretained(this)));
   task_environment_.RunUntilIdle();
-  if (!has_products_) {
-    GTEST_SKIP()
-        << "No antivirus products found (Windows Security Center or "
-           "Windows Defender is not available in this test environment).";
-  }
-
   EXPECT_TRUE(got_results_);
-  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+
+  // Latency is only recorded if antivirus products were found.
+  const int expected_count = has_products_ ? 1 : 0;
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", expected_count);
 }
 
 TEST_P(AntiVirusMetricsProviderTest, CallProvideMetricsBeforeAsyncInit) {
@@ -174,14 +171,11 @@ TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitAfterCacheIsPopulated) {
       base::BindOnce(&AntiVirusMetricsProviderTest::GetMetricsCallback,
                      base::Unretained(this)));
   task_environment_.RunUntilIdle();
-  if (!has_products_) {
-    GTEST_SKIP()
-        << "No antivirus products found (Windows Security Center or "
-           "Windows Defender is not available in this test environment).";
-  }
-
   EXPECT_TRUE(got_results_);
-  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+
+  // Latency is only recorded if antivirus products were found.
+  const int expected_count = has_products_ ? 1 : 0;
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", expected_count);
 
   // Call second query to return cached results.
   bool callback_2 = false;
@@ -193,14 +187,18 @@ TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitAfterCacheIsPopulated) {
   // Verifies that data is available to the second instance.
   metrics::SystemProfileProto system_profile;
   provider_2.ProvideSystemProfileMetrics(&system_profile);
-  EXPECT_GT(system_profile.antivirus_product_size(), 0);
+
+  if (has_products_) {
+    EXPECT_GT(system_profile.antivirus_product_size(), 0);
+  } else {
+    EXPECT_EQ(system_profile.antivirus_product_size(), 0);
+  }
 
   // Verify that histogram count did not change.
-  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", expected_count);
 }
 
-// TODO(crbug.com/553292299): Re-enable when no longer flaky on Windows.
-TEST_P(AntiVirusMetricsProviderTest, DISABLED_CallAsyncInitConcurrently) {
+TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitConcurrently) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
   base::win::ScopedCOMInitializer com_initializer;
 
@@ -232,8 +230,12 @@ TEST_P(AntiVirusMetricsProviderTest, DISABLED_CallAsyncInitConcurrently) {
   EXPECT_TRUE(callback_1);
   EXPECT_TRUE(callback_2);
 
-  // Verify that one histogram is recorded.
-  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+  metrics::SystemProfileProto system_profile;
+  provider_1.ProvideSystemProfileMetrics(&system_profile);
+
+  // Latency is only recorded if antivirus products were found.
+  const int expected_count = system_profile.antivirus_product().empty() ? 0 : 1;
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", expected_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(, AntiVirusMetricsProviderTest, ::testing::Bool());
