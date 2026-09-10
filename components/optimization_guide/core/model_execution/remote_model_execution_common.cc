@@ -567,6 +567,36 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
+    case ModelBasedCapabilityKey::kTtc:
+      return net::DefineNetworkTrafficAnnotation("ttc_model_execution", R"(
+        semantics {
+          sender: "TTC"
+          description:
+            "Sends session requests and context to Google's Model Execution "
+            "Service and streams responses back."
+          trigger:
+            "User interacts with the TTC interface."
+          destination: GOOGLE_OWNED_SERVICE
+          data:
+            "User query and session interaction context."
+          internal {
+            contacts {
+              email: "gklassen@chromium.org"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: USER_CONTENT
+          }
+          last_reviewed: "2026-08-28"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "There is no dedicated setting for this feature. Users can "
+            "choose whether to interact with the feature when presented."
+          chrome_policy {}
+        })");
   }
 }
 
@@ -599,6 +629,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kUpdaterChat:
     case ModelBasedCapabilityKey::kContextHub:
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
+    case ModelBasedCapabilityKey::kTtc:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(

@@ -158,6 +158,8 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_READ_ALOUD_SYNTHESIZE:
       return "ReadAloudSynthesize";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TTC:
+      return "Ttc";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

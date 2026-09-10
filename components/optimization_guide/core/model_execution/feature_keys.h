@@ -63,6 +63,7 @@ enum class ModelBasedCapabilityKey {
       MODEL_EXECUTION_FEATURE_READ_ALOUD_GENERATE_TEXT,
   kReadAloudSynthesize = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_READ_ALOUD_SYNTHESIZE,
+  kTtc = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TTC,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -118,6 +119,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "ReadAloudGenerateText";
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return out << "ReadAloudSynthesize";
+    case ModelBasedCapabilityKey::kTtc:
+      return out << "Ttc";
   }
   return out;
 }
@@ -236,6 +239,8 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_READ_ALOUD_SYNTHESIZE;
+    case ModelBasedCapabilityKey::kTtc:
+      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TTC;
   }
 }
 

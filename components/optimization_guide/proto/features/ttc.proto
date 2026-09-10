@@ -1,0 +1,218 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+option objc_class_prefix = "TTC";
+
+// Audio codec format specification.
+enum AudioCodec {
+  AUDIO_CODEC_UNSPECIFIED = 0;
+  AUDIO_CODEC_PCM16K16BIT = 1;
+  AUDIO_CODEC_OPUS24K = 2;
+  AUDIO_CODEC_OPUS48K = 3;
+}
+
+// Top-level container for outgoing stream messages from Chrome to Server.
+message TtcClientFrame {
+  oneof frame {
+    SessionSetupRequest setup_request = 1;
+    AudioChunk audio_input = 2;
+    TextInput text_input = 3;
+    ContextUpdate context_update = 4;
+    ToolSetUpdate tool_set_update = 5;
+    ToolResponse tool_response = 6;
+    PlaybackStatus playback_status = 7;
+    CloseSessionRequest close_request = 8;
+  }
+  // Client timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
+  // Represents the client-side clock time (Unix epoch, Jan 1, 1970 UTC) when
+  // this frame was prepared and dispatched to the network stack.
+  int64 client_timestamp_ms = 9;
+}
+
+// Top-level container for incoming stream messages from Server to Chrome.
+message TtcServerFrame {
+  oneof frame {
+    SessionStatusResponse session_status = 1;
+    ServerContent server_content = 2;
+    ToolCall tool_call = 3;
+    GoAway go_away = 4;
+    ServerErrorNotification server_error = 5;
+    InterruptionNotice interrupted = 6;
+    TurnComplete turn_complete = 7;
+  }
+  // Server timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
+  // Represents the server-side clock time (Unix epoch, Jan 1, 1970 UTC) when
+  // this frame was generated and dispatched to the network stream.
+  int64 server_timestamp_ms = 8;
+}
+
+// Establishes authenticated session capabilities and initial setup.
+message SessionSetupRequest {
+  string persona = 1;
+  AudioCodec audio_codec = 2;
+
+  // Whether to enable turn metrics.
+  bool enable_turn_metrics = 3;
+}
+
+// Acknowledges session readiness and connection status.
+message SessionStatusResponse {
+  enum SessionState {
+    STATE_UNSPECIFIED = 0;
+    STATE_CONNECTED = 1;
+    STATE_REJECTED_QUOTA_EXCEEDED = 2;
+    STATE_REJECTED_POLICY_DISABLED = 3;
+    STATE_TERMINATED_ERROR = 4;
+  }
+  SessionState state = 1;
+  string server_session_id = 2;
+  string diagnostic_error_detail = 3;
+}
+
+// Audio chunk for bidirectional streaming (used in both client and server
+// frames).
+message AudioChunk {
+  // Binary audio payload. The encoding format and sample rate are determined
+  // during session establishment via SessionSetupRequest.audio_codec.
+  bytes audio_data = 1;
+  int64 sequence_number = 2;
+  // Capture timestamp on client, or synthesis timestamp on server in
+  // milliseconds since the Unix epoch (Jan 1, 1970 UTC).
+  int64 timestamp_ms = 3;
+}
+
+// Direct text query submission (e.g. prompt chips or keyboard input).
+message TextInput {
+  string text_query = 1;
+}
+
+// Sent by the client immediately upon user interruption to report the last
+// audio sequence number played to the user for history truncation.
+message PlaybackStatus {
+  // Sequence number of the last audio frame actually played out on client
+  // speaker when playback was stopped/interrupted.
+  int64 last_played_sequence_number = 1;
+}
+
+// Model response content and speech transcriptions.
+message ServerContent {
+  // Generated audio output.
+  AudioChunk audio_output = 1;
+
+  // Real-time user ASR transcription.
+  string input_transcription = 2;
+
+  // Model output transcription (speech captions).
+  string output_transcription = 3;
+}
+
+// Signals that model generation was interrupted (e.g. user barge-in)
+// and that client audio playback should immediately cease.
+message InterruptionNotice {}
+
+// Signals that the model has completed its turn.
+message TurnComplete {
+  // Resource usage metrics for the completed turn.
+  message TurnMetrics {
+    int32 input_tokens_used = 1;
+    int32 output_tokens_used = 2;
+  }
+  TurnMetrics turn_metrics = 1;
+}
+
+// Mid-stream tab switch / page navigation context update.
+message ContextUpdate {
+  TabContext active_tab = 1;
+
+  // Optional on-demand or proactive page DOM tree representation.
+  AnnotatedPageContent annotated_page_content = 2;
+}
+
+// Context for active browser tab navigation.
+message TabContext {
+  string url = 1;
+  string title = 2;
+}
+
+// Dynamic browser tool manifest update.
+message ToolSetUpdate {
+  repeated ToolDefinition active_tools = 1;
+}
+
+// Single tool definition.
+message ToolDefinition {
+  string name = 1;
+  string description = 2;
+  string parameters_json_schema = 3;
+
+  enum ExecutionBehavior {
+    EXECUTION_BEHAVIOR_UNSPECIFIED = 0;
+    BEHAVIOR_BLOCKING = 1;
+    BEHAVIOR_NON_BLOCKING = 2;
+  }
+  ExecutionBehavior behavior = 4;
+
+  enum VerbalizationBehavior {
+    VERBALIZATION_BEHAVIOR_UNSPECIFIED = 0;
+    VERBALIZATION_STANDARD = 1;
+    VERBALIZATION_SILENT_ACTION = 2;
+  }
+  VerbalizationBehavior verbalization = 5;
+}
+
+// Tool call request dispatched from server to client.
+message ToolCall {
+  string name = 1;
+  string call_id = 2;
+  string arguments_json = 3;
+}
+
+// Visual content returned by tools.
+message VisualContent {
+  bytes image_data = 1;
+  string mime_type = 2;
+}
+
+// Tool execution response sent from client to server.
+message ToolResponse {
+  // Name of the function/tool that was executed (e.g. "getpointer",
+  // "open_tab").
+  string name = 1;
+  string call_id = 2;
+  string response_json = 3;
+  VisualContent visual_content = 4;
+}
+
+// Notice that the server will soon disconnect the session.
+message GoAway {
+  // Estimated time remaining in milliseconds before connection termination.
+  int64 time_left_ms = 1;
+}
+
+// Signals that the client requests clean closure of the streaming session.
+message CloseSessionRequest {
+  string reason = 1;
+}
+
+// Notifies client of an error condition encountered during streaming.
+message ServerErrorNotification {
+  enum ErrorCode {
+    ERROR_CODE_UNSPECIFIED = 0;
+    ERROR_CODE_RATE_LIMITED = 1;
+    ERROR_CODE_SAFETY_BLOCKED = 2;
+    ERROR_CODE_INTERNAL_BACKEND_ERROR = 3;
+    ERROR_CODE_SESSION_EXPIRED = 4;
+  }
+  ErrorCode error_code = 1;
+  string error_message = 2;
+}

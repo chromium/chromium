@@ -537,4 +537,5 @@ Refer to README.md for content description and update process.
  <item id="device_authorization_key_fetch" added_in_milestone="153" content_hash_code="076ce283" os_list="linux,windows,android,chromeos" file_path="components/webauthn/core/browser/device_authorization/device_authorization_keys_fetcher.cc" />
  <item id="browser_actuator_transport" added_in_milestone="153" content_hash_code="0370ca26" os_list="linux,windows,chromeos,android" file_path="components/browser_actuator/internal/browser_actuator_service_impl.cc" />
  <item id="iwa_dev_ui_web_bundle" added_in_milestone="154" type="partial" second_id="iwa_bundle_downloader" content_hash_code="03f5bf31" os_list="chromeos,linux,windows" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.cc" />
+ <item id="ttc_model_execution" added_in_milestone="155" content_hash_code="047772aa" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/remote_model_execution_common.cc" />
 </annotations>
