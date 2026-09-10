@@ -22,7 +22,7 @@ import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
-// Next ID: 11
+// Next ID: 12
 message SuggestTemplateInfo {
   // LINT.IfChange(StandardSuggestStyle)
   enum StandardSuggestStyle {
@@ -223,4 +223,15 @@ message SuggestTemplateInfo {
   // The entity's official website uri, used to omit the thumbnail from the
   // suggestion in case there is an entity similar to a website.
   optional string website_uri = 10;
+
+  enum SecondaryTextPlacement {
+    SECONDARY_TEXT_PLACEMENT_UNSPECIFIED = 0;
+    // Show secondary text in front of primary text (e.g. on the same line).
+    IN_FRONT_OF_PRIMARY_TEXT = 1;
+    // Show secondary text below primary text (e.g. on a new line).
+    BELOW_PRIMARY_TEXT = 2;
+  }
+
+  // Where to display the secondary text relative to the primary text.
+  optional SecondaryTextPlacement secondary_text_placement = 11;
 }
