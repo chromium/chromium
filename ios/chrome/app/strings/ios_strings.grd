@@ -2525,6 +2525,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP9" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation (Direct Action experiment) [iOS only].">
         Open links here next time
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_FEWER_STEPS_TITLE" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation [iOS only].">
+        Fewer steps, faster links
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_SKIP_COPY_PASTE_TITLE" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation [iOS only].">
+        Skip the copy &amp; paste
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to iOS settings, where they can change the default browser. Used in the default browser promos [iOS only]">
         Go to Settings…
       </message>

@@ -404,6 +404,20 @@ const FeatureEntry::FeatureVariation
          kDefaultBrowserPictureInPictureArm3, nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kDefaultBrowserNonModalPromoStringsSkipCopyPaste[] = {
+        {kDefaultBrowserNonModalPromoStringsParam, "1"}};
+const FeatureEntry::FeatureParam
+    kDefaultBrowserNonModalPromoStringsFewerSteps[] = {
+        {kDefaultBrowserNonModalPromoStringsParam, "2"}};
+const FeatureEntry::FeatureVariation
+    kDefaultBrowserNonModalPromoStringsVariations[] = {
+        {"Skip copy & paste", kDefaultBrowserNonModalPromoStringsSkipCopyPaste,
+         nullptr},
+        {"Fewer steps, faster links",
+         kDefaultBrowserNonModalPromoStringsFewerSteps, nullptr},
+};
+
 const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm1[] = {
     {"arm", "1"}};
 const FeatureEntry::FeatureParam kOmniboxPastePromoExperimentArm2[] = {
@@ -1506,6 +1520,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kDefaultBrowserPromoIpadInstructionsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserPromoIpadInstructions)},
+    {"default-browser-non-modal-promo-strings",
+     flag_descriptions::kDefaultBrowserNonModalPromoStringsName,
+     flag_descriptions::kDefaultBrowserNonModalPromoStringsDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kDefaultBrowserNonModalPromoStrings,
+         kDefaultBrowserNonModalPromoStringsVariations,
+         "DefaultBrowserNonModalPromoStrings")},
     {"default-browser-picture-in-picture",
      flag_descriptions::kDefaultBrowserPictureInPictureName,
      flag_descriptions::kDefaultBrowserPictureInPictureDescription,

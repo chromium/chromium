@@ -19,6 +19,21 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromoIpadInstructions);
 // Feature flag to enable the default browser promo Picture in Picture.
 BASE_DECLARE_FEATURE(kDefaultBrowserPictureInPicture);
 
+// Feature flag to enable the Default Browser Non-Modal Promo Strings
+// experiment.
+BASE_DECLARE_FEATURE(kDefaultBrowserNonModalPromoStrings);
+
+// Parameter name for the Default Browser Non-Modal Promo Strings experiment
+// variant.
+extern const char kDefaultBrowserNonModalPromoStringsParam[];
+
+// Enum defining the available Default Browser Non-Modal Promo Strings
+// experiment arms.
+enum class DefaultBrowserNonModalPromoStringsArm {
+  kSkipCopyPaste = 1,
+  kFewerSteps = 2,
+};
+
 // Returns true if the default browser iPad specific instructions are enabled.
 bool IsDefaultBrowserPromoIpadInstructions();
 
@@ -31,5 +46,13 @@ std::string DefaultBrowserPictureInPictureParam();
 // Returns true if the default browser promo destination for Picture in
 // Picture flow is default apps.
 bool IsDefaultAppsPictureInPictureVariant();
+
+// Returns true if the Default Browser Non-Modal Promo Strings experiment is
+// enabled.
+bool IsDefaultBrowserNonModalPromoStringsEnabled();
+
+// Returns the active arm for `kDefaultBrowserNonModalPromoStrings`.
+DefaultBrowserNonModalPromoStringsArm
+GetDefaultBrowserNonModalPromoStringsArm();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_PUBLIC_FEATURES_H_

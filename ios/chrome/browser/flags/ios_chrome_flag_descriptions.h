@@ -570,6 +570,12 @@ inline constexpr char kDefaultBottomOmniboxOnIOSName[] =
 inline constexpr char kDefaultBottomOmniboxOnIOSDescription[] =
     "When enabled, the omnibox position defaults to bottom on iOS.";
 
+inline constexpr char kDefaultBrowserNonModalPromoStringsName[] =
+    "Default Browser Non-Modal Promo Strings";
+inline constexpr char kDefaultBrowserNonModalPromoStringsDescription[] =
+    "When enabled, enables new string variations for the default browser "
+    "non-modal promo on omnibox paste.";
+
 inline constexpr char kDefaultBrowserOffCyclePromoName[] =
     "Default Browser off-cycle promo";
 inline constexpr char kDefaultBrowserOffCyclePromoDescription[] =

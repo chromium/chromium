@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/public/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_coordinator+subclassing.h"
@@ -160,6 +161,16 @@
 - (NSString*)defaultBrowserNonModalSubtitleForPromoReason {
   switch (_promoReason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
+      if (IsDefaultBrowserNonModalPromoStringsEnabled()) {
+        switch (GetDefaultBrowserNonModalPromoStringsArm()) {
+          case DefaultBrowserNonModalPromoStringsArm::kSkipCopyPaste:
+            return l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_SKIP_COPY_PASTE_SUBTITLE);
+          case DefaultBrowserNonModalPromoStringsArm::kFewerSteps:
+            return l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_FEWER_STEPS_SUBTITLE);
+        }
+      }
       return l10n_util::GetNSString([self
           stringIdForOmniboxPasteExperimentWithDefaultId:
               IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION
@@ -180,6 +191,16 @@
 - (NSString*)defaultBrowserNonModalTitleForPromoReason {
   switch (_promoReason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
+      if (IsDefaultBrowserNonModalPromoStringsEnabled()) {
+        switch (GetDefaultBrowserNonModalPromoStringsArm()) {
+          case DefaultBrowserNonModalPromoStringsArm::kSkipCopyPaste:
+            return l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_SKIP_COPY_PASTE_TITLE);
+          case DefaultBrowserNonModalPromoStringsArm::kFewerSteps:
+            return l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_FEWER_STEPS_TITLE);
+        }
+      }
       return l10n_util::GetNSString([self
           stringIdForOmniboxPasteExperimentWithDefaultId:
               IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE

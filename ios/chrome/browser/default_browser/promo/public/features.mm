@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 
+#import "base/check.h"
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -19,6 +20,18 @@ BASE_FEATURE(kDefaultBrowserPromoIpadInstructions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserPictureInPicture, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultBrowserNonModalPromoStrings,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDefaultBrowserNonModalPromoStringsParam[] = "variant";
+
+BASE_FEATURE_PARAM(
+    int,
+    kDefaultBrowserNonModalPromoStringsFeatureParam,
+    &kDefaultBrowserNonModalPromoStrings,
+    kDefaultBrowserNonModalPromoStringsParam,
+    static_cast<int>(DefaultBrowserNonModalPromoStringsArm::kSkipCopyPaste));
 
 bool IsDefaultBrowserPromoIpadInstructions() {
   return base::FeatureList::IsEnabled(kDefaultBrowserPromoIpadInstructions);
@@ -43,4 +56,22 @@ bool IsDefaultAppsPictureInPictureVariant() {
   const std::string pipParam = DefaultBrowserPictureInPictureParam();
   return pipParam == kDefaultBrowserPictureInPictureParamEnabledDefaultApps ||
          pipParam == kDefaultBrowserPictureInPictureParamDisabledDefaultApps;
+}
+
+bool IsDefaultBrowserNonModalPromoStringsEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserNonModalPromoStrings);
+}
+
+DefaultBrowserNonModalPromoStringsArm
+GetDefaultBrowserNonModalPromoStringsArm() {
+  CHECK(IsDefaultBrowserNonModalPromoStringsEnabled());
+  const int value = kDefaultBrowserNonModalPromoStringsFeatureParam.Get();
+  switch (value) {
+    case static_cast<int>(
+        DefaultBrowserNonModalPromoStringsArm::kSkipCopyPaste):
+      return DefaultBrowserNonModalPromoStringsArm::kSkipCopyPaste;
+    case static_cast<int>(DefaultBrowserNonModalPromoStringsArm::kFewerSteps):
+      return DefaultBrowserNonModalPromoStringsArm::kFewerSteps;
+  }
+  return DefaultBrowserNonModalPromoStringsArm::kSkipCopyPaste;
 }

@@ -349,6 +349,12 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation.">
         Set Chromium as default?
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_FEWER_STEPS_SUBTITLE" desc="Description for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation [iOS only].">
+        Make Chromium your default browser to open links in one tap
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_PROMO_STRINGS_SKIP_COPY_PASTE_SUBTITLE" desc="Description for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation [iOS only].">
+        Set Chromium as your default browser to open links in one tap
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_DESCRIPTION" desc="Description for the non-modal default browser promotion banner when sharing a URL via the 'Share Chromium' action or the share icon in the Omnibox.">
         Set Chromium as your default browser to easily share and open links
       </message>
