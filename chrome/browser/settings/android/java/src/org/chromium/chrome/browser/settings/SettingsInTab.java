@@ -33,13 +33,6 @@ public class SettingsInTab {
         // Tablets and foldables use the SettingsInTab flag.
         if (!ChromeFeatureList.sSettingsInTab.isEnabled()) return false;
 
-        // Foldables must be explicitly checked because they act as tablets while unfolded, but if
-        // the user has settings open and folds the device, we must continue to display settings.
-        // This is consistent with other native pages like Downloads, History, and Bookmarks.
-        if (DeviceInfo.isFoldable()) {
-            return true;
-        }
-
         // Use an Activity context when available because theme changes reset application-level
         // resource configurations, causing getApplicationContext() to lose its tablet screen width
         // qualifiers (-sw600dp).
