@@ -3482,6 +3482,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/autofill/payments:select_bnpl_issuer_dialog",
         "//chrome/browser/ui/views/autofill/popup",
         "//chrome/browser/ui/views/autofill/popup:password_favicon_loader",
+        "//chrome/browser/ui/views/autofill/popup:popup_cell_utils",
         "//chrome/browser/ui/views/autofill/popup:popup_loading_view",
         "//chrome/browser/ui/views/autofill/popup:popup_row_factory_utils",
         "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",

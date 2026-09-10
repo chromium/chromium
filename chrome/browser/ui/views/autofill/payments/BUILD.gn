@@ -678,6 +678,7 @@ source_set("omnibox_autofill_bubble_view") {
     ":payments_view_util",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/autofill/popup:popup_cell_utils",
     "//chrome/browser/ui/views/autofill/popup:popup_row_content_view",
     "//chrome/browser/ui/views/autofill/popup:popup_row_factory_utils",
     "//components/autofill/core/browser",

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/omnibox_autofill_suggestion_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -124,7 +125,8 @@ void OmniboxAutofillBubbleView::Init() {
     }
 
     auto suggestion_button = std::make_unique<OmniboxAutofillSuggestion>(
-        std::move(content_view), suggestion.main_text.value,
+        std::move(content_view),
+        popup_cell_utils::GetVoiceOverStringFromSuggestion(suggestion),
         base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionAccepted,
                             base::Unretained(this), suggestion, row_index),
         base::BindRepeating(&OmniboxAutofillBubbleView::OnSuggestionSelected,
