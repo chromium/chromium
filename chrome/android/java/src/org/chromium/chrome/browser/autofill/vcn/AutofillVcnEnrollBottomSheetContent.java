@@ -14,10 +14,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 /** The contents for the virtual card number (VCN) enrollment bottom sheet. */
 @NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.AUTOFILL_VCN_ENROLL)
+                    .build();
+
     private final View mContentView;
     private final ScrollView mScrollView;
     private final Runnable mOnDismiss;
@@ -55,6 +62,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public void destroy() {
         mOnDismiss.run();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
