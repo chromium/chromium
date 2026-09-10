@@ -24,7 +24,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     static get properties() {
       return {
         hasEdits: {type: Boolean},
-        hasEnteredAnnotationMode: {type: Boolean},
         // <if expr="enable_pdf_ink2">
         hasInk2Edits: {type: Boolean},
         // </if>
@@ -33,7 +32,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
     }
 
     accessor hasEdits: boolean = false;
-    accessor hasEnteredAnnotationMode: boolean = false;
     // <if expr="enable_pdf_ink2">
     accessor hasInk2Edits: boolean = false;
     // </if>
@@ -113,9 +111,7 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
       }
       // </if>
 
-      this.dispatchSaveEvent_(
-          this.hasEnteredAnnotationMode ? SaveRequestType.ANNOTATION :
-                                          SaveRequestType.EDITED);
+      this.dispatchSaveEvent_(SaveRequestType.EDITED);
     }
 
     onSaveOriginalClick() {
@@ -137,11 +133,10 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
 
     private hasEditsToSave_(): boolean {
       // <if expr="enable_pdf_ink2">
-      return this.hasEnteredAnnotationMode || this.hasEdits ||
-          this.hasInk2Edits;
+      return this.hasEdits || this.hasInk2Edits;
       // </if>
       // <if expr="not enable_pdf_ink2">
-      return this.hasEnteredAnnotationMode || this.hasEdits;
+      return this.hasEdits;
       // </if>
     }
 
@@ -166,7 +161,6 @@ export const ViewerSaveControlsMixin = <T extends Constructor<CrLitElement>>(
 
 export interface ViewerSaveControlsMixinInterface {
   hasEdits: boolean;
-  hasEnteredAnnotationMode: boolean;
   // <if expr="enable_pdf_ink2">
   hasInk2Edits: boolean;
   // </if>

@@ -1981,11 +1981,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case SaveRequestType.ANNOTATION:
         record(UserAction.SAVE_WITH_ANNOTATION);
         // <if expr="enable_pdf_ink2">
-        if (this.pdfInk2Enabled_) {
-          record(UserAction.SAVE_WITH_INK2_ANNOTATION);
-        }
-        // </if>
+        record(UserAction.SAVE_WITH_INK2_ANNOTATION);
         break;
+        // </if>
+        // <if expr="not enable_pdf_ink2">
+        assertNotReached();
+        // </if>
       case SaveRequestType.ORIGINAL:
         record(
             this.hasCommittedEdits_() ? UserAction.SAVE_ORIGINAL :

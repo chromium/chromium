@@ -100,7 +100,6 @@ import {AnnotationMode} from '../constants.js';
     ${this.pdfSaveToDriveEnabled ? html`
     <viewer-save-to-drive-controls id="save-to-drive"
         .hasEdits="${this.hasEdits}"
-        .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode}"
 <if expr="enable_pdf_ink2">
         .hasInk2Edits="${this.hasInk2Edits}"
 </if>
@@ -111,7 +110,6 @@ import {AnnotationMode} from '../constants.js';
 </if>
     <viewer-download-controls id="downloads"
         .hasEdits="${this.hasEdits}"
-        .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode}"
 <if expr="enable_pdf_ink2">
         .hasInk2Edits="${this.hasInk2Edits}"
 </if>

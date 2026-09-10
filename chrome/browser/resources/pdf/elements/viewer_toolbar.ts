@@ -86,7 +86,6 @@ export class ViewerToolbarElement extends CrLitElement {
       docLength: {type: Number},
       embeddedViewer: {type: Boolean},
       hasEdits: {type: Boolean},
-      hasEnteredAnnotationMode: {type: Boolean},
       formFieldFocus: {type: String},
       loadProgress: {type: Number},
 
@@ -142,7 +141,6 @@ export class ViewerToolbarElement extends CrLitElement {
   accessor docLength: number = 0;
   accessor embeddedViewer: boolean = false;
   accessor hasEdits: boolean = false;
-  accessor hasEnteredAnnotationMode: boolean = false;
   accessor formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
   accessor loadProgress: number = 0;
   accessor pageNo: number = 0;
