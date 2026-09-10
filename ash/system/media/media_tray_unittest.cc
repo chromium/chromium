@@ -282,4 +282,25 @@ TEST_F(MediaTrayTest, AccessibleNames) {
   }
 }
 
+TEST_F(MediaTrayTest, ShowBubbleWithItemWhenBubbleAlreadyExists) {
+  provider()->SetHasActiveNotifications(true);
+  SimulateNotificationListChanged();
+  media_tray()->ShowBubble();
+
+  provider()->SetHasActiveNotifications(false);
+  SimulateNotificationListChanged();
+  EXPECT_NE(empty_state_view(), nullptr);
+
+  views::View* bubble_view = media_tray()->GetBubbleView();
+  EXPECT_NE(bubble_view, nullptr);
+
+  // Calling ShowBubbleWithItem while bubble already exists should be a no-op
+  // and keep the existing bubble and empty state view intact.
+  media_tray()->ShowBubbleWithItem("item_id");
+  EXPECT_EQ(bubble_view, media_tray()->GetBubbleView());
+
+  SimulateNotificationListChanged();
+  EXPECT_NE(empty_state_view(), nullptr);
+}
+
 }  // namespace ash

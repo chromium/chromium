@@ -353,6 +353,10 @@ void MediaTray::UpdateDisplayState() {
 }
 
 void MediaTray::ShowBubbleWithItem(const std::string& item_id) {
+  if (bubble_) {
+    return;
+  }
+
   CHECK(MediaNotificationProvider::Get());
 
   std::unique_ptr<TrayBubbleView> bubble_view =
