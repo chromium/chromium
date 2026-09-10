@@ -4,11 +4,57 @@
 
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 
+#include <d3d11.h>
+
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_types.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
+#include "media/gpu/windows/format_utils.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_space_win.h"
 
 namespace media {
+namespace {
+
+DXGI_FORMAT GetDxgiFormat(ID3D11Texture2D* texture) {
+  if (!texture) {
+    return DXGI_FORMAT_UNKNOWN;
+  }
+  D3D11_TEXTURE2D_DESC desc = {};
+  texture->GetDesc(&desc);
+  return desc.Format;
+}
+
+// NVIDIA's video processor zeros YUV->YUV copies for some BT.2020 DXGI
+// color spaces (PQ / G2084, and G22 with left chroma siting) but still
+// reports success. HDR 422/444 copies only change the pixel format
+// (Y416 -> P010, etc.) -- color space stays the same on both sides.
+// Feed the processor BT.2020 G22 top-left for those copies so we get
+// pixels.
+bool ShouldUseG22TopLeftForYuvCopy(
+    DXGI_COLOR_SPACE_TYPE input_color_space,
+    DXGI_COLOR_SPACE_TYPE output_color_space,
+    DXGI_FORMAT input_format,
+    DXGI_FORMAT output_format,
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
+  if (!workarounds.use_g22_topleft_color_space_for_yuv_vp ||
+      !IsYuvDxgiFormat(input_format) || !IsYuvDxgiFormat(output_format) ||
+      input_color_space != output_color_space) {
+    return false;
+  }
+
+  switch (input_color_space) {
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020:
+    case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P2020:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
 
 // TODO(tmathmeyer) What D3D11 Resources do we need to do the copying?
 CopyingTexture2DWrapper::CopyingTexture2DWrapper(
@@ -17,10 +63,12 @@ CopyingTexture2DWrapper::CopyingTexture2DWrapper(
     const gfx::ColorSpace& output_color_space,
     std::unique_ptr<Texture2DWrapper> output_wrapper,
     scoped_refptr<VideoProcessorProxy> processor,
-    ComD3D11Texture2D output_texture)
+    ComD3D11Texture2D output_texture,
+    gpu::GpuDriverBugWorkarounds workarounds)
     : size_(size),
       input_color_space_(input_color_space),
       output_color_space_(output_color_space),
+      workarounds_(std::move(workarounds)),
       video_processor_(std::move(processor)),
       output_texture_wrapper_(std::move(output_wrapper)),
       output_texture_(std::move(output_texture)) {}
@@ -97,8 +145,18 @@ D3D11Status CopyingTexture2DWrapper::Init(
   texture_ = texture;
   array_slice_ = array_slice;
 
-  video_processor_->SetStreamColorSpace(input_color_space_);
-  video_processor_->SetOutputColorSpace(output_color_space_);
+  DXGI_COLOR_SPACE_TYPE input_color_space =
+      gfx::ColorSpaceWin::GetDXGIColorSpace(input_color_space_);
+  DXGI_COLOR_SPACE_TYPE output_color_space =
+      gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space_);
+  if (ShouldUseG22TopLeftForYuvCopy(
+          input_color_space, output_color_space, GetDxgiFormat(texture_.Get()),
+          GetDxgiFormat(output_texture_.Get()), workarounds_)) {
+    input_color_space = output_color_space =
+        DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_TOPLEFT_P2020;
+  }
+  video_processor_->SetStreamColorSpace(input_color_space);
+  video_processor_->SetOutputColorSpace(output_color_space);
 
   return output_texture_wrapper_->Init(
       std::move(gpu_task_runner), std::move(get_helper_cb), output_texture_,

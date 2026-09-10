@@ -98,8 +98,8 @@ TEST_F(D3D11VideoProcessorProxyUnittest, EnsureMethodPassthrough) {
                                 proc_.Get(), dxgi_color_space));
   proxy->CreateVideoProcessorOutputView(texture, out_desc, nullptr);
   proxy->CreateVideoProcessorInputView(texture, in_desc, nullptr);
-  proxy->SetStreamColorSpace(color_space);
-  proxy->SetOutputColorSpace(color_space);
+  proxy->SetStreamColorSpace(dxgi_color_space);
+  proxy->SetOutputColorSpace(dxgi_color_space);
   proxy->VideoProcessorBlt(out_view, 6, 7, streams);
 }
 

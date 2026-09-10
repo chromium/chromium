@@ -19,6 +19,8 @@ MEDIA_GPU_EXPORT size_t GetFormatPlaneCount(DXGI_FORMAT format);
 
 MEDIA_GPU_EXPORT const char* DxgiFormatToString(DXGI_FORMAT format);
 
+MEDIA_GPU_EXPORT bool IsYuvDxgiFormat(DXGI_FORMAT format);
+
 MEDIA_GPU_EXPORT DXGI_FORMAT
 VideoPixelFormatToDxgiFormat(VideoPixelFormat format);
 

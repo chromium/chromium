@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "media/base/media_serializers.h"
-#include "ui/gfx/color_space_win.h"
 
 namespace media {
 namespace {
@@ -130,17 +129,15 @@ HRESULT VideoProcessorProxy::CreateVideoProcessorInputView(
 }
 
 void VideoProcessorProxy::SetStreamColorSpace(
-    const gfx::ColorSpace& color_space) {
-  video_context_->VideoProcessorSetStreamColorSpace1(
-      video_processor_.Get(), 0,
-      gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
+    DXGI_COLOR_SPACE_TYPE color_space) {
+  video_context_->VideoProcessorSetStreamColorSpace1(video_processor_.Get(), 0,
+                                                     color_space);
 }
 
 void VideoProcessorProxy::SetOutputColorSpace(
-    const gfx::ColorSpace& color_space) {
-  video_context_->VideoProcessorSetOutputColorSpace1(
-      video_processor_.Get(),
-      gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
+    DXGI_COLOR_SPACE_TYPE color_space) {
+  video_context_->VideoProcessorSetOutputColorSpace1(video_processor_.Get(),
+                                                     color_space);
 }
 
 HRESULT VideoProcessorProxy::VideoProcessorBlt(

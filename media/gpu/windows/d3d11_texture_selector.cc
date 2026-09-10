@@ -204,7 +204,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder is copying textures";
     return std::make_unique<CopyTextureSelector>(
         output_pixel_format, output_si_format, std::move(video_device),
-        std::move(device_context), shared_image_use_shared_handle);
+        std::move(device_context), shared_image_use_shared_handle, workarounds);
   } else {
     MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder is binding textures";
     return std::make_unique<TextureSelector>(
@@ -235,12 +235,14 @@ CopyTextureSelector::CopyTextureSelector(
     viz::SharedImageFormat output_si_format,
     ComD3D11VideoDevice1 video_device,
     ComD3D11DeviceContext device_context,
-    bool shared_image_use_shared_handle)
+    bool shared_image_use_shared_handle,
+    gpu::GpuDriverBugWorkarounds workarounds)
     : TextureSelector(pixfmt,
                       output_si_format,
                       std::move(video_device),
                       std::move(device_context),
                       shared_image_use_shared_handle),
+      workarounds_(std::move(workarounds)),
       video_processor_proxy_(
           base::MakeRefCounted<VideoProcessorProxy>(this->video_device(),
                                                     this->device_context())) {}
@@ -282,7 +284,7 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
       size, input_color_space, output_color_space,
       std::make_unique<DefaultTexture2DWrapper>(
           size, output_color_space, OutputSharedImageFormat(), device),
-      video_processor_proxy_, out_texture);
+      video_processor_proxy_, out_texture, workarounds_);
 }
 
 bool CopyTextureSelector::DoesDecoderOutputUseSharedHandle() const {

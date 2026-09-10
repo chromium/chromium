@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
@@ -87,7 +88,8 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
                       viz::SharedImageFormat output_si_format,
                       ComD3D11VideoDevice1 video_device,
                       ComD3D11DeviceContext d3d11_device_context,
-                      bool use_shared_handle);
+                      bool use_shared_handle,
+                      gpu::GpuDriverBugWorkarounds workarounds);
   ~CopyTextureSelector() override;
 
   std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
@@ -100,6 +102,7 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   bool WillCopyForTesting() const override;
 
  private:
+  const gpu::GpuDriverBugWorkarounds workarounds_;
   scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 

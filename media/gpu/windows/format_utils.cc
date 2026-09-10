@@ -35,6 +35,23 @@ size_t GetFormatPlaneCount(DXGI_FORMAT format) {
   }
 }
 
+bool IsYuvDxgiFormat(DXGI_FORMAT format) {
+  switch (format) {
+    case DXGI_FORMAT_AYUV:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_Y416:
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016:
+    case DXGI_FORMAT_YUY2:
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y216:
+      return true;
+    default:
+      return false;
+  }
+}
+
 const char* DxgiFormatToString(DXGI_FORMAT format) {
   switch (format) {
     case DXGI_FORMAT_Y416:

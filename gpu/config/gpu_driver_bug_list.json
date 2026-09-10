@@ -3928,6 +3928,23 @@
       "features": [
         "disable_program_cache"
       ]
+    },
+    {
+      "id": 497,
+      "cr_bugs": [556956704],
+      "description": "NVIDIA video processor can succeed while zeroing YUV copies tagged BT.2020 PQ (G2084) or G22 left chroma siting. Identity copies retag both processor color spaces to BT.2020 G22 top-left.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+        "schema": "nvidia_driver",
+        "op": ">",
+        "value": "591.86"
+      },
+      "features": [
+        "use_g22_topleft_color_space_for_yuv_vp"
+      ]
     }
   ]
 }
