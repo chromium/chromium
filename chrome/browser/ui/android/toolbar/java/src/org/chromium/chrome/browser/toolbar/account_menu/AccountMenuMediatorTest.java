@@ -57,6 +57,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.WindowAndroid;
@@ -125,6 +126,7 @@ public class AccountMenuMediatorTest {
 
     @After
     public void tearDown() {
+        mMediator.destroy();
         SettingsNavigationFactory.setInstanceForTesting(null);
         IdentityServicesProvider.setInstanceForTests(null);
     }
@@ -290,5 +292,38 @@ public class AccountMenuMediatorTest {
         assertNotNull(profileData);
         assertEquals(TestAccounts.ACCOUNT1.getFullName(), profileData.getFullName());
         assertEquals(TestAccounts.ACCOUNT1.getEmail(), profileData.getAccountEmail());
+    }
+
+    @Test
+    @SmallTest
+    public void testProfileDataUpdated_updatesIdentityCard() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        mMediator.updateMenuItems();
+
+        ListItem item = mModelList.get(0);
+        assertEquals(ItemType.IDENTITY_CARD, item.type);
+        DisplayableProfileData initialProfileData =
+                item.model.get(IdentityCardProperties.PROFILE_DATA);
+        assertNotNull(initialProfileData);
+        assertEquals(TestAccounts.ACCOUNT1.getFullName(), initialProfileData.getFullName());
+        assertEquals(TestAccounts.ACCOUNT1.getEmail(), initialProfileData.getAccountEmail());
+
+        // When profile data updates for another account, identity card is not updated.
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mAccountManagerTestRule.updateAccount(TestAccounts.ACCOUNT2);
+        assertEquals(initialProfileData, item.model.get(IdentityCardProperties.PROFILE_DATA));
+
+        // When profile data updates for the primary account, identity card is updated.
+        AccountInfo updatedAccount =
+                new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName("Updated Name").build();
+        mAccountManagerTestRule.updateAccount(updatedAccount);
+
+        DisplayableProfileData updatedProfileData =
+                item.model.get(IdentityCardProperties.PROFILE_DATA);
+        assertNotNull(updatedProfileData);
+        assertEquals("Updated Name", updatedProfileData.getFullName());
+        assertEquals(TestAccounts.ACCOUNT1.getEmail(), updatedProfileData.getAccountEmail());
     }
 }

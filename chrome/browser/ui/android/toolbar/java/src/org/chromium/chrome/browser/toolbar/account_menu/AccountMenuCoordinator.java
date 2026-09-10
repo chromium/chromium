@@ -121,6 +121,7 @@ public class AccountMenuCoordinator {
     /** Destroys and cleans up the account menu coordinator. */
     public void destroy() {
         dismiss();
+        mMediator.destroy();
         mAdapter.destroy();
     }
 

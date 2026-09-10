@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 
 /** Mediator managing business logic and menu items for the Account Menu popup. */
 @NullMarked
-public class AccountMenuMediator {
+public class AccountMenuMediator implements ProfileDataCache.Observer {
     private final Context mContext;
     private final ModelList mModelList;
     private final WindowAndroid mWindowAndroid;
@@ -119,6 +119,36 @@ public class AccountMenuMediator {
         }
     }
 
+    /** Cleans up observers and resources. */
+    public void destroy() {
+        if (mProfileDataCache != null) {
+            mProfileDataCache.removeObserver(this);
+            mProfileDataCache = null;
+        }
+    }
+
+    @Override
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return;
+        }
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        AccountInfo primaryAccount =
+                identityManager != null ? identityManager.getPrimaryAccountInfo() : null;
+        if (primaryAccount == null || !primaryAccount.getId().equals(profileData.getAccountId())) {
+            return;
+        }
+
+        for (ListItem item : mModelList) {
+            if (item.type == ItemType.IDENTITY_CARD) {
+                item.model.set(IdentityCardProperties.PROFILE_DATA, profileData);
+                break;
+            }
+        }
+    }
+
     private void maybeAddHeader() {
         Profile profile = mProfileSupplier.get();
         if (profile == null || profile.isOffTheRecord()) {
@@ -146,6 +176,7 @@ public class AccountMenuMediator {
             mProfileDataCache =
                     ProfileDataCache.createWithoutBadge(
                             mContext, identityManager, R.dimen.account_menu_avatar_size);
+            mProfileDataCache.addObserver(this);
         }
         DisplayableProfileData profileData = mProfileDataCache.getById(accountInfo.getId());
         mModelList.add(
