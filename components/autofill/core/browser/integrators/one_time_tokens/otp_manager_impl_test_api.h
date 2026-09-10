@@ -24,6 +24,12 @@ class OtpManagerImplTestApi {
     return manager_->gmail_otp_tickle_subscription_;
   }
 
+  bool IsOtpFieldDetected() const { return manager_->IsOtpFieldDetected(); }
+
+  bool AnyOtpFieldContainsTypedInput() const {
+    return manager_->AnyOtpFieldContainsTypedInput();
+  }
+
  private:
   raw_ref<OtpManagerImpl> manager_;
 };

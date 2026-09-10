@@ -215,8 +215,20 @@ void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
       << "Tickle received for source: " << static_cast<int>(source);
-  // TODO(b/556170395): Handle incoming tickle and fetch OTP via
-  // GmailOtpRetriever.
+  if (!IsOtpFieldDetected()) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP tickle received but no OTP field detected on page. Skipping "
+           "payload fetch.";
+    return;
+  }
+  if (AnyOtpFieldContainsTypedInput()) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP tickle received but OTP field already contains user typed "
+           "input. Skipping payload fetch.";
+    return;
+  }
 }
 
 void OtpManagerImpl::OnOneTimeTokenReceived(
@@ -322,6 +334,25 @@ void OtpManagerImpl::MaybeShowOtpSuggestions(
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
   return owner_->client().DocumentUsedWebOTP();
+}
+
+bool OtpManagerImpl::IsOtpFieldDetected() const {
+  OtpFieldDetector* detector = owner_->client().GetOtpFieldDetector();
+  return detector && detector->IsOtpFieldPresent();
+}
+
+bool OtpManagerImpl::AnyOtpFieldContainsTypedInput() const {
+  bool has_typed_input = false;
+  owner_->ForEachCachedForm([&has_typed_input](const FormStructure& form) {
+    if (has_typed_input) {
+      return;
+    }
+    has_typed_input = std::ranges::any_of(form.fields(), [](const auto& field) {
+      return field->Type().GetTypes().contains(ONE_TIME_CODE) &&
+             field->all_modifiers().contains(FieldModifier::kUser);
+    });
+  });
+  return has_typed_input;
 }
 
 std::optional<one_time_tokens::OneTimeToken>

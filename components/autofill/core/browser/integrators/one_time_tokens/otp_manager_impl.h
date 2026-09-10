@@ -119,6 +119,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // context, e.g., because the page called the WebOTP API.
   bool IsOtpDeliveryBlocked();
 
+  // Checks whether an OTP field was detected in the document.
+  bool IsOtpFieldDetected() const;
+
+  // Checks whether a field which was detected as an OTP, already contains
+  // some user input. We will not fill the value in such case.
+  bool AnyOtpFieldContainsTypedInput() const;
+
   // The owning BrowserAutofillManager.
   raw_ref<BrowserAutofillManager> owner_;
 

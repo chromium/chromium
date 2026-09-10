@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
@@ -900,6 +901,15 @@ class TestAutofillClientTemplate : public T {
     otp_metrics_tracker_ = std::move(otp_metrics_tracker);
   }
 
+  OtpFieldDetector* GetOtpFieldDetector() override {
+    return otp_field_detector_.get();
+  }
+
+  void set_otp_field_detector(
+      std::unique_ptr<OtpFieldDetector> otp_field_detector) {
+    otp_field_detector_ = std::move(otp_field_detector);
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -916,6 +926,7 @@ class TestAutofillClientTemplate : public T {
 #endif
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
+  std::unique_ptr<OtpFieldDetector> otp_field_detector_;
   std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
   std::unique_ptr<AtMemoryManager> at_memory_manager_;
   personal_context::PersonalContextEligibilityState

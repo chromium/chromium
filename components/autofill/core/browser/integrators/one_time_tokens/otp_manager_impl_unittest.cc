@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 
+#include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -12,11 +13,14 @@
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl_test_api.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
@@ -1126,6 +1130,138 @@ TEST_F(OtpManagerImplTest, TickleReceivedTriggersOnTickleReceived) {
 
   // Notify tickle to trigger OnTickleReceived.
   sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
+}
+
+// Tests that IsOtpFieldDetected returns false when no OtpFieldDetector is
+// set on AutofillClient.
+TEST_F(OtpManagerImplTest, IsOtpFieldDetected_NoDetector) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  EXPECT_FALSE(test_api(otp_manager).IsOtpFieldDetected());
+}
+
+// Tests that IsOtpFieldDetected returns false when an OtpFieldDetector is
+// set but no OTP fields have been detected on the page.
+TEST_F(OtpManagerImplTest, IsOtpFieldDetected_DetectorWithoutOtpField) {
+  auto detector = std::make_unique<OtpFieldDetector>(nullptr);
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation{detector.get()};
+  observation.Observe(&autofill_manager());
+  autofill_client().set_otp_field_detector(std::move(detector));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  EXPECT_FALSE(test_api(otp_manager).IsOtpFieldDetected());
+
+  AddFormWithFirstNameField();
+  EXPECT_FALSE(test_api(otp_manager).IsOtpFieldDetected());
+}
+
+// Tests that IsOtpFieldDetected returns true when an OtpFieldDetector is
+// set and an OTP field is detected on the page.
+TEST_F(OtpManagerImplTest, IsOtpFieldDetected_DetectorWithOtpField) {
+  auto detector = std::make_unique<OtpFieldDetector>(nullptr);
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation{detector.get()};
+  observation.Observe(&autofill_manager());
+  autofill_client().set_otp_field_detector(std::move(detector));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  AddFormWithOtpField();
+  EXPECT_TRUE(test_api(otp_manager).IsOtpFieldDetected());
+}
+
+// Tests that AnyOtpFieldContainsTypedInput returns false when no forms are
+// cached in AutofillManager.
+TEST_F(OtpManagerImplTest, AnyOtpFieldContainsTypedInput_NoForms) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  EXPECT_FALSE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
+}
+
+// Tests that AnyOtpFieldContainsTypedInput returns false when a non-OTP field
+// has user typed input.
+TEST_F(OtpManagerImplTest,
+       AnyOtpFieldContainsTypedInput_NonOtpFieldWithTypedInput) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithFirstNameField();
+  ASSERT_TRUE(form);
+  test_api(autofill_manager())
+      .FindCachedFormById(form->global_id())
+      ->field(0)
+      ->AddFieldModifier(FieldModifier::kUser);
+
+  EXPECT_FALSE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
+}
+
+// Tests that AnyOtpFieldContainsTypedInput returns false when an OTP field has
+// no user typed input.
+TEST_F(OtpManagerImplTest,
+       AnyOtpFieldContainsTypedInput_OtpFieldWithoutTypedInput) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  EXPECT_FALSE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
+}
+
+// Tests that AnyOtpFieldContainsTypedInput returns true when an OTP field has
+// user typed input.
+TEST_F(OtpManagerImplTest,
+       AnyOtpFieldContainsTypedInput_OtpFieldWithTypedInput) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  test_api(autofill_manager())
+      .FindCachedFormById(form->global_id())
+      ->field(0)
+      ->AddFieldModifier(FieldModifier::kUser);
+
+  EXPECT_TRUE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
+}
+
+// Tests that AnyOtpFieldContainsTypedInput returns false if only non-OTP
+// fields have user typed input, but returns true once an OTP field has user
+// typed input across multiple fields and forms.
+TEST_F(OtpManagerImplTest,
+       AnyOtpFieldContainsTypedInput_MultipleFieldsAndForms) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  FormDescription form_description = {
+      .fields =
+          {
+              {.server_type = NAME_FIRST,
+               .label = u"First name",
+               .name = u"fn"},
+              {.server_type = ONE_TIME_CODE, .label = u"OTP", .name = u"otp"},
+          },
+  };
+  const FormStructure* multi_field_form = AddForm(form_description);
+  ASSERT_TRUE(multi_field_form);
+
+  const FormStructure* non_otp_form = AddFormWithFirstNameField();
+  ASSERT_TRUE(non_otp_form);
+
+  // Add user modifier to the non-OTP field in the multi-field form.
+  test_api(autofill_manager())
+      .FindCachedFormById(multi_field_form->global_id())
+      ->field(0)
+      ->AddFieldModifier(FieldModifier::kUser);
+
+  // Add user modifier to the non-OTP form.
+  test_api(autofill_manager())
+      .FindCachedFormById(non_otp_form->global_id())
+      ->field(0)
+      ->AddFieldModifier(FieldModifier::kUser);
+
+  // Since only non-OTP fields have user input, it should still return false.
+  EXPECT_FALSE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
+
+  // Now add user modifier to the OTP field in the multi-field form.
+  test_api(autofill_manager())
+      .FindCachedFormById(multi_field_form->global_id())
+      ->field(1)
+      ->AddFieldModifier(FieldModifier::kUser);
+
+  // Now an OTP field contains typed input, so it should return true.
+  EXPECT_TRUE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
 }
 
 }  // namespace autofill
