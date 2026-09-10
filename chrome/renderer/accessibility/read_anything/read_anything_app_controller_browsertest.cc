@@ -280,6 +280,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void Distill() { controller_->Distill(); }
+  void LogSpeechStop(int source) { controller_->LogSpeechStop(source); }
   void ProcessModelUpdates() { controller_->ProcessModelUpdates(); }
   bool IsControllerHidden() const { return controller_->IsHidden(); }
   bool IsPdfDrawDebouncerRunning() const {
@@ -6550,6 +6551,56 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"playOnOpenCalledCount",
                                                  &play_on_open_called_count));
   EXPECT_EQ(0, play_on_open_called_count);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_ResetsWillHideAndAllowsLogSpeechStop) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
+  controller().OnReadingModeHidden(true);
+  EXPECT_TRUE(model().will_hide());
+
+  // While hidden/will_hide, LogSpeechStop should be suppressed.
+  LogSpeechStop(
+      static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  // When Reading Mode is shown again, will_hide should be reset.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_FALSE(model().will_hide());
+
+  // LogSpeechStop should now log properly.
+  LogSpeechStop(
+      static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kButton, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_ResetsWillHideAfterTabWillDetach) {
+  base::HistogramTester histogram_tester;
+
+  controller().OnTabWillDetach();
+  EXPECT_TRUE(model().will_hide());
+
+  LogSpeechStop(
+      static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_FALSE(model().will_hide());
+
+  LogSpeechStop(
+      static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kButton, 1);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
