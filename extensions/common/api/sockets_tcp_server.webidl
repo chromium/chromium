@@ -11,7 +11,7 @@ dictionary SocketProperties {
   // Flag indicating if the socket remains open when the event page of the
   // application is unloaded (see
   // <a href="http://developer.chrome.com/apps/app_lifecycle.html">Manage App
-  // Lifecycle</a>). The default value is "false." When the application is
+  // Lifecycle</a>). The default value is "false". When the application is
   // loaded, any sockets previously opened with persistent=true can be fetched
   // with <code>getSockets</code>.
   boolean persistent;
@@ -62,7 +62,7 @@ dictionary AcceptInfo {
   // The client socket identifier, i.e. the socket identifier of the newly
   // established connection. This socket identifier should be used only with
   // functions from the <code>chrome.sockets.tcp</code> namespace. Note the
-  // client socket is initially paused and must be explictly un-paused by the
+  // client socket is initially paused and must be explicitly un-paused by the
   // application to start receiving data.
   required long clientSocketId;
 };
@@ -172,7 +172,7 @@ interface TcpServer {
   // Event raised when a connection has been made to the server socket.
   static attribute OnAcceptEvent onAccept;
 
-  // Event raised when a network error occured while the runtime was waiting
+  // Event raised when a network error occurred while the runtime was waiting
   // for new connections on the socket address and port. Once this event is
   // raised, the socket is set to <code>paused</code> and no more
   // <code>onAccept</code> events are raised for this socket until the socket
