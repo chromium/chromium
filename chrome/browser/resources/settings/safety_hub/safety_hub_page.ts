@@ -19,7 +19,7 @@ import './extensions_module.js';
 import './notification_permissions_module.js';
 import './unused_site_permissions_module.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -47,8 +47,9 @@ export interface SettingsSafetyHubPageElement {
   };
 }
 
-const SettingsSafetyHubPageElementBase = RouteObserverMixin(SettingsViewMixin(
-    RelaunchMixin(PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
+const SettingsSafetyHubPageElementBase =
+    RouteObserverMixin(SettingsViewMixin(RelaunchMixin(PrefServiceObserverMixin(
+        WebUiListenerMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -120,13 +121,14 @@ export class SettingsSafetyHubPageElement extends
         computed: 'computeVersionCardAriaDescription_(versionCardData_)',
       },
 
+      safeBrowsingPref_: Object,
     };
   }
 
   static get observers() {
     return [
       'onAllModulesLoaded_(passwordCardData_, versionCardData_, safeBrowsingCardData_, hasDataForUnusedPermissions_, hasDataForNotificationPermissions_, hasDataForExtensions_)',
-      'onSafeBrowsingPrefChanged_(prefs.generated.safe_browsing)',
+      'onSafeBrowsingPrefChanged_(safeBrowsingPref_)',
     ];
   }
 
@@ -144,6 +146,8 @@ export class SettingsSafetyHubPageElement extends
   declare private userEducationItemList_: SiteInfo[];
   declare private versionCardRole_: string;
   declare private versionCardAriaDescription_: string;
+  declare private safeBrowsingPref_: chrome.settingsPrivate.PrefObject|
+      undefined;
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -155,6 +159,10 @@ export class SettingsSafetyHubPageElement extends
     this.initializeUserEducation_();
 
     super.connectedCallback();
+
+    this.mirrorPrefs({
+      'generated.safe_browsing': 'safeBrowsingPref_',
+    });
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -312,6 +320,9 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private onSafeBrowsingPrefChanged_() {
+    if (this.safeBrowsingPref_ === undefined) {
+      return;
+    }
     this.browserProxy_.getSafeBrowsingCardData().then((data: CardInfo) => {
       this.safeBrowsingCardData_ = data;
     });

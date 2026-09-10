@@ -8,8 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CardInfo, SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
 import { CardState, ContentSetting, ContentSettingsTypes, SafeBrowsingSetting, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType } from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, PrefService, Router, routes, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -30,11 +29,11 @@ suite('SafetyHubPage', function() {
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+  suiteSetup(async function() {
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
   });
 
   const notificationPermissionMockData = [{
@@ -86,7 +85,6 @@ suite('SafetyHubPage', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
-    testElement.prefs = settingsPrefs.prefs!;
     document.body.appendChild(testElement);
     return flushTasks();
   });
@@ -99,11 +97,8 @@ suite('SafetyHubPage', function() {
   }
 
   async function changeSafeBrowsingGeneratedPref(setting: SafeBrowsingSetting) {
-    testElement.set('prefs.generated.safe_browsing', {
-      value: setting,
-      type: chrome.settingsPrivate.PrefType.DICTIONARY,
-    });
-    assertEquals(setting, testElement.getPref('generated.safe_browsing').value);
+    await prefService.setPrefValue('generated.safe_browsing', setting);
+    assertEquals(setting, prefService.getPref('generated.safe_browsing').value);
     await flushTasks();
   }
 
