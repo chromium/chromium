@@ -195,11 +195,8 @@ def ValidateSingleFile(
   if not allow_test_paths and 'test_data' in filepath:
     return False
 
-  # If the changed file is histograms.xml or histogram_suffixes_list.xml,
-  # pretty-print it.
-  elif (
-    'histograms.xml' in filepath or 'histogram_suffixes_list.xml' in filepath
-  ):
+  # If the changed file is histograms.xml, pretty-print it.
+  elif 'histograms.xml' in filepath:
     GetPrettyPrintErrors(input_api, output_api, cwd, filepath, results)
     GetTokenErrors(input_api, output_api, cwd, filepath, results)
     return True

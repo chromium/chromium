@@ -75,44 +75,6 @@ def DropNodesByTagName(tree, tag, dropped_nodes=[]):
     tree.remove(child)
 
 
-def FixMisplacedHistogramsAndHistogramSuffixes(tree):
-  """Fixes misplaced histogram and histogram_suffixes nodes."""
-  histograms = []
-  histogram_suffixes = []
-
-  def ExtractMisplacedHistograms(tree):
-    """Gets and drops misplaced histograms and histogram_suffixes.
-
-    Args:
-      tree: The node of the xml tree.
-      histograms: A list of histogram nodes inside histogram_suffixes_list
-          node. This is a return element.
-      histogram_suffixes: A list of histogram_suffixes nodes inside histograms
-          node. This is a return element.
-    """
-    for child in tree:
-      if child.tag == 'histograms':
-        DropNodesByTagName(child, 'histogram_suffixes', histogram_suffixes)
-      elif child.tag == 'histogram_suffixes_list':
-        DropNodesByTagName(child, 'histogram', histograms)
-      else:
-        ExtractMisplacedHistograms(child)
-
-  ExtractMisplacedHistograms(tree)
-
-  def AddBackMisplacedHistograms(tree):
-    """Adds back those misplaced histogram and histogram_suffixes nodes."""
-    for child in tree:
-      if child.tag == 'histograms':
-        child.extend(histograms)
-      elif child.tag == 'histogram_suffixes_list':
-        child.extend(histogram_suffixes)
-      else:
-        AddBackMisplacedHistograms(child)
-
-  AddBackMisplacedHistograms(tree)
-
-
 def PrettyPrintHistograms(raw_xml):
   """Pretty-print the given histograms XML.
 
@@ -138,7 +100,6 @@ def PrettyPrintHistogramsTree(tree):
   """
   # Prevent accidentally adding enums to histograms.xml
   DropNodesByTagName(tree, 'enums')
-  FixMisplacedHistogramsAndHistogramSuffixes(tree)
   canonicalizeUnits(tree)
   return histogram_configuration_model.PrettifyTree(tree)
 
@@ -150,7 +111,6 @@ def PrettyPrintEnums(raw_xml):
 
   # Prevent accidentally adding histograms to enums.xml
   DropNodesByTagName(root, 'histograms')
-  DropNodesByTagName(root, 'histogram_suffixes_list')
   top_level_content = etree_util.GetTopLevelContent(raw_xml)
   formatted_xml = histogram_configuration_model.PrettifyTree(root)
   return top_level_content + formatted_xml

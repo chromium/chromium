@@ -27,7 +27,6 @@ class MergeXmlTest(unittest.TestCase):
         histogram_paths.TEST_ENUMS_XML,  # Defines Enum_A and Enum_X.
         histogram_paths.TEST_ENUMS2_XML,  # Defines Enum_B.
         histogram_paths.TEST_HISTOGRAMS_XML,
-        histogram_paths.TEST_SUFFIXES_XML,
       ]
     )
     # If ukm.xml is not provided, there is no need to populate the
@@ -94,21 +93,6 @@ class MergeXmlTest(unittest.TestCase):
 </histogram>
 
 </histograms>
-
-<histogram_suffixes_list>
-
-<histogram_suffixes name="Test.EnumHistogramSuffixes" separator="."
-    ordering="prefix,2">
-  <suffix name="TestEnumSuffix" label="The enum histogram_suffixes"/>
-  <affected-histogram name="Test.EnumHistogram"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Test.HistogramSuffixes" separator=".">
-  <suffix name="TestSuffix" label="A histogram_suffixes"/>
-  <affected-histogram name="Test.Histogram"/>
-</histogram_suffixes>
-
-</histogram_suffixes_list>
 
 </histogram-configuration>
 """
@@ -190,21 +174,6 @@ class MergeXmlTest(unittest.TestCase):
 
 </histograms>
 
-<histogram_suffixes_list>
-
-<histogram_suffixes name="Test.EnumHistogramSuffixes" separator="."
-    ordering="prefix,2">
-  <suffix name="TestEnumSuffix" label="The enum histogram_suffixes"/>
-  <affected-histogram name="Test.EnumHistogram"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Test.HistogramSuffixes" separator=".">
-  <suffix name="TestSuffix" label="A histogram_suffixes"/>
-  <affected-histogram name="Test.Histogram"/>
-</histogram_suffixes>
-
-</histogram_suffixes_list>
-
 </histogram-configuration>
 """
     self.assertMultiLineEqual(expected_merged_xml.strip(), merged.strip())
@@ -262,8 +231,6 @@ class MergeXmlTest(unittest.TestCase):
 </histogram>
 
 </histograms>
-
-<histogram_suffixes_list/>
 
 </histogram-configuration>
 """

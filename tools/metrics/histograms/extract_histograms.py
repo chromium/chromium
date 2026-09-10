@@ -24,8 +24,6 @@ import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
-MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH = 5
-
 EXPIRY_DATE_PATTERN = '%Y-%m-%d'
 EXPIRY_MILESTONE_RE = re.compile(r'M[0-9]{2,3}\Z')
 
@@ -111,64 +109,6 @@ def _XmlToET(tree: xml.dom.minidom.Node | ET.Element) -> ET.Element:
   if isinstance(tree, ET.Element):
     return tree
   return ET.fromstring(tree.toxml())
-
-
-def ExpandHistogramNameWithSuffixes(
-  suffix_name: str,
-  histogram_name: str,
-  histogram_suffixes_node: ET.Element,
-) -> tuple[Optional[str], ExtractionErrors]:
-  """Creates a new histogram name based on a histogram suffix.
-
-  Args:
-    suffix_name: The suffix string to apply to the histogram name. May be empty.
-    histogram_name: The name of the histogram. May be of the form Group.BaseName
-      or BaseName.
-    histogram_suffixes_node: The histogram_suffixes XML node.
-
-  Returns:
-    A tuple with:
-      * A string with the expanded histogram name.
-      * Any errors accumulated during this process.
-  """
-  errors = ExtractionErrors()
-
-  separator = histogram_suffixes_node.get('separator', '_')
-  ordering = histogram_suffixes_node.get('ordering', 'suffix')
-
-  parts = ordering.split(',')
-  ordering = parts[0]
-  if len(parts) > 1:
-    placement = int(parts[1])
-  else:
-    placement = 1
-  if ordering not in ['prefix', 'suffix']:
-    errors.AppendAndLog(
-      f'ordering needs to be prefix or suffix, value is {ordering}'
-    )
-    return None, errors
-
-  if not suffix_name:
-    return histogram_name, errors
-
-  if ordering == 'suffix':
-    return histogram_name + separator + suffix_name, errors
-
-  # For prefixes, the suffix_name is inserted between the "cluster" and the
-  # "remainder", e.g. Foo.BarHist expanded with gamma becomes Foo.gamma_BarHist.
-  sections = histogram_name.split('.')
-  if len(sections) <= placement:
-    suffixes_name = histogram_suffixes_node.get('name')
-    errors.AppendAndLog(
-      'Prefix histogram_suffixes expansions require histogram names which '
-      f'include a dot separator. Histogram name is {histogram_name}, '
-      f'histogram_suffixes is {suffixes_name}, and placment is {placement}'
-    )
-    return None, errors
-
-  cluster = '.'.join(sections[0:placement]) + '.'
-  remainder = '.'.join(sections[placement:])
-  return cluster + suffix_name + separator + remainder, errors
 
 
 def ExtractEnumsFromXmlTree(
@@ -733,155 +673,6 @@ def _GetObsoleteReason(node: ET.Element) -> Optional[str]:
   return None
 
 
-def UpdateHistogramsWithSuffixes(
-  tree: ET.Element, histograms: dict[str, HistogramDict]
-) -> ExtractionErrors:
-  """Processes <histogram_suffixes> tags and combines with affected histograms.
-
-  The histograms dictionary will be updated in-place by adding new histograms
-  created by combining histograms themselves with histogram_suffixes targeting
-  these histograms.
-
-  Args:
-    tree: XML Element tree.
-    histograms: a dictionary of histograms previously extracted from the tree;
-
-  Returns:
-    A list of error messages if any errors were found.
-  """
-  errors = ExtractionErrors()
-  tree = _XmlToET(tree)
-
-  histogram_suffix_tag = 'histogram_suffixes'
-  suffix_tag = 'suffix'
-  with_tag = 'with-suffix'
-
-  # histogram_suffixes can depend on other histogram_suffixes, so we need to be
-  # careful. Make a temporary copy of the list of histogram_suffixes to use as a
-  # queue. histogram_suffixes whose dependencies have not yet been processed
-  # will get relegated to the back of the queue to be processed later.
-  reprocess_queue: list[tuple[int, ET.Element]] = []
-
-  def GenerateHistogramSuffixes():
-    for f in xml_utils.IterElementsWithTag(tree, histogram_suffix_tag):
-      yield 0, f
-    for r, f in reprocess_queue:
-      yield r, f
-
-  for reprocess_count, histogram_suffixes in GenerateHistogramSuffixes():
-    # Check dependencies first.
-    dependencies_valid = True
-    missing_dependency = None
-    affected_histograms = list(
-      xml_utils.IterElementsWithTag(histogram_suffixes, 'affected-histogram', 1)
-    )
-    for affected_histogram in affected_histograms:
-      histogram_name = affected_histogram.get('name')
-      # Check if the affected histogram name is a pattern or exists directly.
-      is_pattern = '{' in histogram_name
-      found = histogram_name in histograms
-      if not found and is_pattern:
-        # Check if any current histogram matches the pattern
-        prefix = histogram_name.split('{', 1)[0]
-        found = any(name.startswith(prefix) for name in histograms)
-        if found:
-          break
-
-      if not found:
-        # Base histogram is missing.
-        dependencies_valid = False
-        missing_dependency = histogram_name
-        break
-    if not dependencies_valid:
-      if reprocess_count < MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH:
-        reprocess_queue.append((reprocess_count + 1, histogram_suffixes))
-        continue
-      else:
-        suffixes_name = histogram_suffixes.get('name')
-        errors.AppendAndLog(
-          f'histogram_suffixes {suffixes_name} is missing its '
-          f'dependency {missing_dependency}'
-        )
-        continue
-
-    # If the suffix group has an obsolete tag, all suffixes it generates inherit
-    # its reason.
-    group_obsolete_reason = _GetObsoleteReason(histogram_suffixes)
-
-    name = histogram_suffixes.get('name')
-    suffix_nodes = list(
-      xml_utils.IterElementsWithTag(histogram_suffixes, suffix_tag, 1)
-    )
-    suffix_labels = {}
-    for suffix in suffix_nodes:
-      suffix_name = suffix.get('name')
-      if 'label' not in suffix.attrib:
-        errors.AppendAndLog(
-          f'suffix {suffix_name} in histogram_suffixes '
-          f'{name} should have a label'
-        )
-      suffix_labels[suffix_name] = suffix.get('label')
-    # Find owners list under current histogram_suffixes tag.
-    owners, _ = _ExtractOwners(histogram_suffixes)
-
-    for affected_histogram in affected_histograms:
-      with_suffixes = list(
-        xml_utils.IterElementsWithTag(affected_histogram, with_tag, 1)
-      )
-      if with_suffixes:
-        suffixes_to_add = with_suffixes
-      else:
-        suffixes_to_add = suffix_nodes
-
-      affected_name = affected_histogram.get('name')
-      histograms_to_process = []
-      if '{' in affected_name:
-        # Pattern, find all matching expanded histograms
-        pattern_prefix = affected_name.split('{', 1)[0]
-        for name in list(histograms.keys()):
-          if name.startswith(pattern_prefix):
-            histograms_to_process.append(name)
-      elif affected_name in histograms:
-        histograms_to_process.append(affected_name)
-
-      for histogram_name in histograms_to_process:
-        for suffix in suffixes_to_add:
-          suffix_name = suffix.get('name')
-          new_histogram_name, expand_errors = ExpandHistogramNameWithSuffixes(
-            suffix_name, histogram_name, histogram_suffixes
-          )
-          errors.extend(expand_errors)
-          if new_histogram_name is None:
-            continue
-          if new_histogram_name != histogram_name:
-            if histogram_name not in histograms:
-              # This can happen if a previous suffix operation renamed it.
-              continue
-            new_histogram = histograms[histogram_name].copy()
-            histograms[new_histogram_name] = new_histogram
-
-          histogram_entry = histograms[new_histogram_name]
-
-          # If no owners are added for this histogram-suffixes, it inherits the
-          # owners of its parents.
-          if owners:
-            histogram_entry['owners'] = owners
-
-          # If a suffix has an obsolete node, it's marked as obsolete for the
-          # specified reason, overwriting its group's obsoletion reason if the
-          # group itself was obsolete as well.
-          obsolete_reason = _GetObsoleteReason(suffix)
-          if not obsolete_reason:
-            obsolete_reason = group_obsolete_reason
-
-          # If the suffix has an obsolete tag, all histograms it generates
-          # inherit it.
-          if obsolete_reason:
-            histogram_entry['obsoletionMessage'] = obsolete_reason
-
-  return errors
-
-
 class TokenAssignment:
   """Assignment of a Variant for each Token of histogram pattern.
 
@@ -1072,9 +863,6 @@ def ExtractHistogramsFromXmlET(
 
   enums_tree = xml_utils.GetTagSubTree(tree, 'enums', 2)
   histograms_tree = xml_utils.GetTagSubTree(tree, 'histograms', 2)
-  histogram_suffixes_tree = xml_utils.GetTagSubTree(
-    tree, 'histogram_suffixes_list', 2
-  )
   enums, enum_errors = ExtractEnumsFromXmlTree(enums_tree)
   histograms, tokens_dict, histogram_errors = ExtractHistogramsFromXmlTree(
     histograms_tree, enums
@@ -1082,19 +870,11 @@ def ExtractHistogramsFromXmlET(
   histograms, update_token_errors = _UpdateHistogramsWithTokens(
     histograms, tokens_dict
   )
-  # Only expand expand suffixes if there were no token errors.
-  if not update_token_errors:
-    update_suffix_errors = UpdateHistogramsWithSuffixes(
-      histogram_suffixes_tree, histograms
-    )
-  else:
-    update_suffix_errors = ExtractionErrors()
   errors = ExtractionErrors(
     [
       *enum_errors,
       *histogram_errors,
       *update_token_errors,
-      *update_suffix_errors,
     ]
   )
 

@@ -148,14 +148,14 @@ chrome_module_descs += [ foo_module_desc ]
 
 The next step is to add Foo to the list of feature modules for UMA recording.
 For this, add `foo` to the `AndroidFeatureModuleName` in
-`//tools/metrics/histograms/metadata/histogram_suffixes_list.xml`:
+`//tools/metrics/histograms/metadata/android/histograms.xml`:
 
 ```xml
-<histogram_suffixes name="AndroidFeatureModuleName" ...>
+<variants name="AndroidFeatureModuleName">
   ...
-  <suffix name="foo" label="Super Duper Foo Module" />
+  <variant name="foo" summary="Super Duper Foo Module" />
   ...
-</histogram_suffixes>
+</variants>
 ```
 
 Lastly, give your module a title that Chrome and Play can use for the install

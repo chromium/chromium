@@ -61,20 +61,18 @@ def CombineEnumsSections(trees):
   return enums_node
 
 
-def CombineHistogramsSorted(trees):
-  """Sorts histograms related nodes by name and returns the combined nodes.
+def CombineHistogramsSorted(trees: list[ET.Element]) -> ET.Element:
+  """Sorts histograms related nodes by name and returns the combined node.
 
-  This function sorts nodes including <histogram>, <variant> and
-  <histogram_suffix>. Then it returns one <histograms> that contains the
-  sorted <histogram> and <variant> nodes and the other <histogram_suffixes_list>
-  node containing all <histogram_suffixes> nodes.
+  This function sorts nodes including <histogram> and <variant>. Then it
+  returns the combined <histograms> Element that contains the sorted
+  <histogram> and <variant> nodes.
 
   Args:
     trees: A list of ET trees.
 
   Returns:
-    A list containing the combined <histograms> Element and the combined
-    <histogram_suffixes_list> Element.
+    The combined <histograms> Element.
   """
   combined_histograms = ET.Element('histograms')
 
@@ -93,20 +91,7 @@ def CombineHistogramsSorted(trees):
   for histogram in sorted_histograms:
     combined_histograms.append(copy.deepcopy(histogram))
 
-  # Create the combined <histogram_suffixes_list> tag.
-  combined_histogram_suffixes_list = ET.Element('histogram_suffixes_list')
-
-  histogram_suffixes_nodes = GetElementsByTagName(
-    trees, 'histogram_suffixes', depth=3
-  )
-  sorted_histogram_suffixes = sorted(
-    histogram_suffixes_nodes, key=SortByLowerCaseName
-  )
-
-  for histogram_suffixes in sorted_histogram_suffixes:
-    combined_histogram_suffixes_list.append(copy.deepcopy(histogram_suffixes))
-
-  return [combined_histograms, combined_histogram_suffixes_list]
+  return combined_histograms
 
 
 def MergeTrees(
@@ -119,13 +104,11 @@ def MergeTrees(
     should_expand_owners: Whether we want to expand owners for histograms.
 
   Returns:
-  Returns:
     A merged ET Element.
   """
   root = ET.Element('histogram-configuration')
   root.append(CombineEnumsSections(trees))
-  for node in CombineHistogramsSorted(trees):
-    root.append(node)
+  root.append(CombineHistogramsSorted(trees))
   if should_expand_owners:
     expand_owners.ExpandHistogramsOWNERS(root)
   return root

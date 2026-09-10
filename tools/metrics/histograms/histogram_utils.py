@@ -151,27 +151,6 @@ def _histogram_references_global_variant_from_list(
   return False
 
 
-def _remove_affected_histogram_references_from_tree(
-  root: ET.Element, histogram_names: Set[str]
-) -> None:
-  """Removes matching `<affected-histogram>` elements from |root|.
-
-  This modifies |root| in place after
-  `get_names_using_variants_from_contents()` filters its `<histogram>`
-  elements. Removing references to filtered histograms prevents suffix
-  expansion from logging an error about a missing histogram.
-  """
-  if not histogram_names:
-    return
-
-  for suffixes in xml_utils.IterElementsWithTag(root, 'histogram_suffixes', 2):
-    for affected in list(
-      xml_utils.IterElementsWithTag(suffixes, 'affected-histogram', 1)
-    ):
-      if affected.get('name') in histogram_names:
-        suffixes.remove(affected)
-
-
 def get_names_using_variants_from_contents(
   contents: Iterable[str],
   variants_doc: ET.Element,
@@ -195,7 +174,6 @@ def get_names_using_variants_from_contents(
     return set()
 
   content_doc = ET.fromstring(joined_contents)
-  histogram_names = set()
   for histograms in xml_utils.IterElementsWithTag(content_doc, 'histograms', 2):
     for histogram in list(
       xml_utils.IterElementsWithTag(histograms, 'histogram', 1)
@@ -203,12 +181,7 @@ def get_names_using_variants_from_contents(
       if not _histogram_references_global_variant_from_list(
         histogram, variant_names
       ):
-        name = histogram.get('name')
-        if name:
-          histogram_names.add(name)
         histograms.remove(histogram)
-
-  _remove_affected_histogram_references_from_tree(content_doc, histogram_names)
 
   merged_et = _merge_histograms_with_variants(content_doc, variants_doc)
   histograms_dict, _ = extract_histograms.ExtractHistogramsFromXmlET(merged_et)

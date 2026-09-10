@@ -346,21 +346,11 @@ class ExtractHistogramsTest(unittest.TestCase):
     <component>Caffeine</component>
   </histogram>
 </histograms>
-
-<histogram_suffixes_list>
-  <histogram_suffixes name="Brand" separator=".">
-    <suffix name="Dunkies" label="The coffee is from Dunkin."/>
-    <affected-histogram name="Coffee"/>
-  </histogram_suffixes>
-</histogram_suffixes_list>
 </histogram-configuration>
 """)
     histograms, _ = extract_histograms.ExtractHistogramsFromDom(histogram)
     self.assertEqual(
       histograms['Coffee']['components'], ['Liquid>Hot', 'Caffeine']
-    )
-    self.assertEqual(
-      histograms['Coffee.Dunkies']['components'], ['Liquid>Hot', 'Caffeine']
     )
 
   def testNewHistogramWithoutSummary(self):
@@ -592,36 +582,6 @@ class ExtractHistogramsTest(unittest.TestCase):
       hists['Test.Histogram']['description'],
     )
 
-  def testNewSuffixWithoutLabel(self):
-    suffix_without_label = xml.dom.minidom.parseString("""
-<histogram-configuration>
-<histogram_suffixes_list>
-  <histogram_suffixes name="Suffixes" separator=".">
-    <suffix base="true" name="BaseSuffix"/>
-  </histogram_suffixes>
-</histogram_suffixes_list>
-</histogram-configuration>
-""")
-    _, errors = extract_histograms.ExtractHistogramsFromDom(
-      suffix_without_label
-    )
-    self.assertTrue(errors)
-
-  def testNewSuffixWithLabel(self):
-    suffix_with_label = xml.dom.minidom.parseString("""
-<histogram-configuration>
-<histogram_suffixes_list>
-  <histogram_suffixes name="Suffixes" separator=".">
-    <suffix base="true" name="BaseSuffix" label="Base"/>
-  </histogram_suffixes>
-</histogram_suffixes_list>
-</histogram-configuration>
-""")
-    errors = extract_histograms.UpdateHistogramsWithSuffixes(
-      suffix_with_label, {}
-    )
-    self.assertFalse(errors)
-
   @parameterized.expand(
     [
       ('InlineTokens', TEST_HISTOGRAM_WITH_TOKENS),
@@ -750,39 +710,6 @@ class ExtractHistogramsTest(unittest.TestCase):
       histogram_without_corresponding_variants, {}
     )
     self.assertTrue(errors)
-
-  def testSuffixCanExtendPatternedHistograms(self):
-    patterned_suffix = """
-        <histogram-configuration>
-        <histograms>
-          <histogram name="Test{Version}" units="things"
-            expires_after="2017-10-16">
-            <owner>chrome-metrics-team@google.com</owner>
-            <summary>
-              Sample description.
-            </summary>
-            <token key="Version">
-              <variant name=".First"/>
-              <variant name=".Last"/>
-            </token>
-          </histogram>
-        </histograms>
-        <histogram_suffixes_list>
-          <histogram_suffixes name="ExtendPatternedHist" separator=".">
-            <suffix name="Found" label="Extending patterned histograms."/>
-            <affected-histogram name="Test.First"/>
-            <affected-histogram name="Test.Last"/>
-          </histogram_suffixes>
-        </histogram_suffixes_list>
-        </histogram-configuration>"""
-    # Only when the histogram is first extended by the token, can the
-    # histogram_suffixes find those affected histograms.
-    histograms_dict, errors = extract_histograms.ExtractHistogramsFromDom(
-      xml.dom.minidom.parseString(patterned_suffix)
-    )
-    self.assertFalse(errors)
-    self.assertIn('Test.First.Found', histograms_dict)
-    self.assertIn('Test.Last.Found', histograms_dict)
 
   def testExtractImprovementDirection(self):
     histogram_name = 'Histogram.With.InterpretationTag'

@@ -192,86 +192,17 @@ _HISTOGRAMS_TYPE = models.ObjectNodeType(
   ],
 )
 
-_SUFFIX_TYPE = models.ObjectNodeType(
-  'suffix',
-  attributes=[
-    ('base', str, r'^$|^true$|^false$'),
-    ('name', str, None),
-    ('label', str, None),
-  ],
-  required_attributes=['name'],
-)
-
-_WITH_SUFFIX_TYPE = models.ObjectNodeType(
-  'with-suffix',
-  attributes=[
-    ('name', str, None),
-  ],
-  required_attributes=['name'],
-)
-
-_AFFECTED_HISTOGRAM_TYPE = models.ObjectNodeType(
-  'affected-histogram',
-  attributes=[
-    ('name', str, None),
-  ],
-  required_attributes=['name'],
-  children=[
-    models.ChildType(_WITH_SUFFIX_TYPE.tag, _WITH_SUFFIX_TYPE, multiple=True),
-  ],
-)
-
-_HISTOGRAM_SUFFIXES_TYPE = models.ObjectNodeType(
-  'histogram_suffixes',
-  attributes=[
-    ('name', str, r'^$|^[A-Za-z0-9_.]+$'),
-    ('separator', str, r'^$|^[\._]+$'),
-    ('ordering', str, r'^$|suffix|^prefix(,[0-9]+)?$'),
-  ],
-  required_attributes=['name', 'separator'],
-  alphabetization=[
-    (_SUFFIX_TYPE.tag, _NaturalSortByName),
-    (_AFFECTED_HISTOGRAM_TYPE.tag, _LOWERCASE_FN('name')),
-  ],
-  extra_newlines=(1, 1, 1),
-  children=[
-    models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-    models.ChildType(_SUFFIX_TYPE.tag, _SUFFIX_TYPE, multiple=True),
-    models.ChildType(
-      _AFFECTED_HISTOGRAM_TYPE.tag, _AFFECTED_HISTOGRAM_TYPE, multiple=True
-    ),
-  ],
-)
-
-_HISTOGRAM_SUFFIXES_LIST_TYPE = models.ObjectNodeType(
-  'histogram_suffixes_list',
-  alphabetization=[(_HISTOGRAM_SUFFIXES_TYPE.tag, _LOWERCASE_FN('name'))],
-  extra_newlines=(2, 1, 1),
-  indent=False,
-  children=[
-    models.ChildType(
-      _HISTOGRAM_SUFFIXES_TYPE.tag, _HISTOGRAM_SUFFIXES_TYPE, multiple=True
-    ),
-  ],
-)
-
 _HISTOGRAM_CONFIGURATION_TYPE = models.ObjectNodeType(
   'histogram-configuration',
   alphabetization=[
     (_ENUMS_TYPE.tag, _KEEP_ORDER),
     (_HISTOGRAMS_TYPE.tag, _KEEP_ORDER),
-    (_HISTOGRAM_SUFFIXES_LIST_TYPE.tag, _KEEP_ORDER),
   ],
   extra_newlines=(2, 1, 1),
   indent=False,
   children=[
     models.ChildType(_ENUMS_TYPE.tag, _ENUMS_TYPE, multiple=False),
     models.ChildType(_HISTOGRAMS_TYPE.tag, _HISTOGRAMS_TYPE, multiple=False),
-    models.ChildType(
-      _HISTOGRAM_SUFFIXES_LIST_TYPE.tag,
-      _HISTOGRAM_SUFFIXES_LIST_TYPE,
-      multiple=False,
-    ),
   ],
 )
 

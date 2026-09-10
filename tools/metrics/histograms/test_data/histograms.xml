@@ -35,13 +35,4 @@
 
 </histograms>
 
-<histogram_suffixes_list>
-
-<histogram_suffixes name="Test.HistogramSuffixes" separator=".">
-  <suffix name="TestSuffix" label="A histogram_suffixes"/>
-  <affected-histogram name="Test.Histogram"/>
-</histogram_suffixes>
-
-</histogram_suffixes_list>
-
 </histogram-configuration>

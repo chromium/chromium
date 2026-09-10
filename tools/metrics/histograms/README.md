@@ -1054,7 +1054,6 @@ Delete the entry in the histograms.xml file.
 * In some cases there may be artifacts that remain, with some examples being:
   * Empty `<token>` blocks, or individual `<variant>`s.
   * `<enum>` blocks from enums.xml that are no longer used.
-  * Suffix entries in `histogram_suffixes_list.xml`.
 * Please remove these artifacts if you find them.
   * **Exception**: please update the label of `<int value=... label=... />` with
     the `(Obsolete) ` prefix, e.g.
@@ -1187,11 +1186,6 @@ run (from the repo root) as:
 ```
 ./tools/metrics/histograms/print_histogram_names.py --diff origin/main
 ```
-***
-
-For documentation about the `<histogram_suffixes>` syntax, which is deprecated,
-see
-https://chromium.googlesource.com/chromium/src/+/refs/tags/87.0.4270.1/tools/metrics/histograms/one-pager.md#histogram-suffixes-deprecated-in-favor-of-pattern-histograms
 
 ## When To Use Sparse Histograms
 

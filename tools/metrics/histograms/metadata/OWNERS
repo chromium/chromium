@@ -13,7 +13,5 @@ file://base/metrics/METRICS_OWNERS
 # requires completing a training (currently Google-only): go/reviewing-metrics
 per-file METRICS_REVIEWER_OWNERS=chromium-metrics-reviews@google.com
 
-per-file histogram_suffixes_list.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
-
 # For bot updates to expiry. Should not be suggested for reviews.
 chrome-metrics-team+submitter@google.com #{LAST_RESORT_SUGGESTION}

@@ -83,26 +83,22 @@ def _ParseMergedXML():
   merged_histograms = merge_xml.MergeFiles(histogram_paths.HISTOGRAMS_XMLS)
   histogram_nodes = list(merged_histograms.findall('.//histogram'))
   variants_nodes = list(merged_histograms.findall('.//variants'))
-  histogram_suffixes_nodes = list(
-    merged_histograms.findall('.//histogram_suffixes')
-  )
-  return histogram_nodes, variants_nodes, histogram_suffixes_nodes
+  return histogram_nodes, variants_nodes
 
 
 def _CreateXMLFile(comment, parent_node_string, nodes, output_dir, filename):
   """Creates XML file for given type of XML nodes.
 
   This function also creates a |parent_node_string| tag as the parent node, e.g.
-  <histograms> or <histogram_suffixes_list>, that wraps all the |nodes| in the
-  output XML.
+  <histograms>, that wraps all the |nodes| in the output XML.
 
   Args:
     comment: The string to be formatted in the |TOP_LEVEL_COMMENT_TEMPLATE|
         which will then be added on top of each split xml.
     parent_node_string: The name of the the second-level parent node, e.g.
-        <histograms> or <histogram_suffixes_list>.
-    nodes: A list of ET.Element objects containing <histogram> or
-        <histogram_suffixes> that will be inserted under the parent node.
+        <histograms>.
+    nodes: A list of ET.Element objects containing <histogram> that will be
+        inserted under the parent node.
     output_dir: The output directory.
     filename: The output filename.
   """
@@ -288,16 +284,7 @@ def SplitIntoMultipleHistogramXMLs(output_base_dir):
   if not os.path.exists(output_base_dir):
     os.mkdir(output_base_dir)
 
-  histogram_nodes, variants_nodes, histogram_suffixes_nodes = _ParseMergedXML()
-
-  # Create separate XML file for histogram suffixes.
-  _CreateXMLFile(
-    'histogram suffixes',
-    'histogram_suffixes_list',
-    histogram_suffixes_nodes,
-    output_base_dir,
-    'histogram_suffixes_list.xml',
-  )
+  histogram_nodes, variants_nodes = _ParseMergedXML()
   document_dict = _BuildDocumentDict(histogram_nodes + variants_nodes, 0)
 
   _WriteDocumentDict(document_dict, output_base_dir)
