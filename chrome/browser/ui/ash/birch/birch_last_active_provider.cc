@@ -7,21 +7,17 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
-BirchLastActiveProvider::BirchLastActiveProvider(Profile* profile)
-    : profile_(profile),
-      history_service_(HistoryServiceFactory::GetForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS)) {}
+BirchLastActiveProvider::BirchLastActiveProvider(
+    history::HistoryService* history_service)
+    : history_service_(history_service) {}
 
 BirchLastActiveProvider::~BirchLastActiveProvider() = default;
 

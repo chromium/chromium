@@ -52,10 +52,8 @@ history::QueryResults CreateHistoryQueryResults() {
 using BirchLastActiveProviderTest = BrowserWithTestWindowTest;
 
 TEST_F(BirchLastActiveProviderTest, RequestBirchDataFetch) {
-  BirchLastActiveProvider provider(profile());
-
   TestHistoryService history_service;
-  provider.set_history_service_for_test(&history_service);
+  BirchLastActiveProvider provider(&history_service);
 
   // Requesting a data fetch should query Mock history service.
   provider.RequestBirchDataFetch();

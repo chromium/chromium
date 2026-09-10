@@ -11,8 +11,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
 
-class Profile;
-
 namespace history {
 class HistoryService;
 }
@@ -23,7 +21,9 @@ namespace ash {
 // 'BirchModel' to be stored.
 class BirchLastActiveProvider : public BirchDataProvider {
  public:
-  explicit BirchLastActiveProvider(Profile* profile);
+  // `history_service` must outlive `this`; it may be null in tests, in which
+  // case data fetches return no results.
+  explicit BirchLastActiveProvider(history::HistoryService* history_service);
   BirchLastActiveProvider(const BirchLastActiveProvider&) = delete;
   BirchLastActiveProvider& operator=(const BirchLastActiveProvider&) = delete;
   ~BirchLastActiveProvider() override;
@@ -34,12 +34,7 @@ class BirchLastActiveProvider : public BirchDataProvider {
   // Callback from history service with the last active URL.
   void OnGotHistory(history::QueryResults results);
 
-  void set_history_service_for_test(history::HistoryService* service) {
-    history_service_ = service;
-  }
-
  private:
-  const raw_ptr<Profile> profile_;
   raw_ptr<history::HistoryService> history_service_;
 
   // Task tracker for history requests.

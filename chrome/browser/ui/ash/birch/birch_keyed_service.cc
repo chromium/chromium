@@ -71,16 +71,18 @@ void OnGotFaviconImageRaw(
 }  // namespace
 
 BirchKeyedService::BirchKeyedService(Profile* profile,
-                                     signin::IdentityManager* identity_manager)
+                                     signin::IdentityManager* identity_manager,
+                                     history::HistoryService* history_service)
     : profile_(profile),
       calendar_provider_(
           std::make_unique<BirchCalendarProvider>(profile, identity_manager)),
       file_suggest_provider_(
           std::make_unique<BirchFileSuggestProvider>(profile)),
       recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
-      last_active_provider_(std::make_unique<BirchLastActiveProvider>(profile)),
+      last_active_provider_(
+          std::make_unique<BirchLastActiveProvider>(history_service)),
       most_visited_provider_(
-          std::make_unique<BirchMostVisitedProvider>(profile)),
+          std::make_unique<BirchMostVisitedProvider>(history_service)),
       release_notes_provider_(
           std::make_unique<BirchReleaseNotesProvider>(profile)),
       self_share_provider_(std::make_unique<BirchSelfShareProvider>(profile)),

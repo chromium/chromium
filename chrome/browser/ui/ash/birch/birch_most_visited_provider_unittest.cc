@@ -42,10 +42,8 @@ class TestHistoryService : public history::HistoryService {
 using BirchMostVisitedProviderTest = BrowserWithTestWindowTest;
 
 TEST_F(BirchMostVisitedProviderTest, RequestBirchDataFetch) {
-  BirchMostVisitedProvider provider(profile());
-
   TestHistoryService history_service;
-  provider.set_history_service_for_test(&history_service);
+  BirchMostVisitedProvider provider(&history_service);
 
   // Requesting a data fetch should query most visited URLs.
   provider.RequestBirchDataFetch();

@@ -17,6 +17,10 @@
 
 class Profile;
 
+namespace history {
+class HistoryService;
+}  // namespace history
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -41,7 +45,8 @@ class BirchKeyedService : public KeyedService,
                           public BirchClient {
  public:
   BirchKeyedService(Profile* profile,
-                    signin::IdentityManager* identity_manager);
+                    signin::IdentityManager* identity_manager,
+                    history::HistoryService* history_service);
   BirchKeyedService(const BirchKeyedService&) = delete;
   BirchKeyedService& operator=(const BirchKeyedService&) = delete;
   ~BirchKeyedService() override;
