@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -265,6 +267,34 @@ public class BottomSheetControllerImplUnitTest {
         callback.onResult(false);
         verify(mBottomSheet, times(4)).setBottomMargin(0);
         verify(mRoot, times(4)).setZ(1.0f);
+    }
+
+    // Verify that when requestShowContent is called with content specifying coversBottomControls()
+    // as true, the bottom margin is set to 0 and the Z-axis is elevated immediately when shown.
+    @Test
+    public void testRequestShowContent_coversBottomControls_adjustsMarginBeforeOpening() {
+        mController.runSheetInitializerForTesting();
+        mController.setBottomControlsOffset(100);
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        doReturn(true).when(content).coversBottomControls();
+        doReturn(ObservableSuppliers.alwaysFalse())
+                .when(content)
+                .getBackPressStateChangedSupplier();
+        doAnswer(
+                        invocation -> {
+                            doReturn(content).when(mBottomSheet).getCurrentSheetContent();
+                            return null;
+                        })
+                .when(mBottomSheet)
+                .showContent(content);
+
+        mController.requestShowContent(content, /* animate= */ false);
+
+        // Verify that the bottom margin was adjusted to 0 and Z-axis was elevated for this content.
+        verify(mBottomSheet).showContent(content);
+        verify(mBottomSheet, atLeastOnce()).setBottomMargin(0);
+        verify(mRoot, atLeastOnce()).setZ(1.0f);
     }
 
     @Test

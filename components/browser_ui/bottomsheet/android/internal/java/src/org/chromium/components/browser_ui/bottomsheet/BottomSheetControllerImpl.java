@@ -711,6 +711,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
         if (assumeNonNull(mContentQueue).isEmpty()) {
             mBottomSheet.showContent(null);
+            adjustBottomSheetZAxis(mScrimVisible);
             return;
         }
 
@@ -731,6 +732,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         if (nextContent != null) {
             recordBottomSheetShownMetric();
         }
+        adjustBottomSheetZAxis(mScrimVisible);
         mBottomSheet.setSheetState(mBottomSheet.getOpeningState(), animate);
     }
 
@@ -817,9 +819,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         if (mBottomSheet == null) return;
         assumeNonNull(mBottomSheetContainer);
         BottomSheetContent content = mBottomSheet.getCurrentSheetContent();
+        // Apply coverage on presentation without waiting for `isSheetOpen()`. When opening from
+        // closed, `isSheetOpen()` is false during measurement and animation; covering immediately
+        // prevents layout jumps on open. Dismissal clears `content`, restoring margins.
         boolean shouldCover =
-                (scrimVisible || (content != null && content.coversBottomControls()))
-                        && mBottomSheet.isSheetOpen();
+                (scrimVisible && mBottomSheet.isSheetOpen())
+                        || (content != null && content.coversBottomControls());
         if (shouldCover) {
             // Scrimmed bottom sheet or sheet requesting to cover bottom controls. Draw the bottom
             // sheet container on top of all sibling views, originating from the bottom of the
