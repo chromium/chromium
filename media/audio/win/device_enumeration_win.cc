@@ -385,18 +385,15 @@ bool GetOutputDeviceNamesWin(
 }
 
 std::string GetDeviceSuffixWin(std::string_view controller_id) {
-  if (controller_id.size() >= 21 &&
-      base::StartsWith(controller_id, "USB\\VID_") &&
+  if (controller_id.size() >= 21 && controller_id.starts_with("USB\\VID_") &&
       controller_id.substr(12, 5) == "&PID_") {
     return base::StrCat({" (", base::ToLowerASCII(controller_id.substr(8, 4)),
                          ":", base::ToLowerASCII(controller_id.substr(17, 4)),
                          ")"});
   }
 
-  if ((controller_id.size() >= 22 &&
-       base::StartsWith(controller_id, "BTHHFENUM\\BthHFPAudio\\")) ||
-      (controller_id.size() >= 8 &&
-       base::StartsWith(controller_id, "BTHENUM\\"))) {
+  if (controller_id.starts_with("BTHHFENUM\\BthHFPAudio\\") ||
+      controller_id.starts_with("BTHENUM\\")) {
     return " (Bluetooth)";
   }
   return std::string();

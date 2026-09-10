@@ -445,8 +445,7 @@ bool IsSameOrSubBundle(std::string_view process_bundle_id,
   // separator. This prevents "com.example.app-other" from matching
   // "com.example.app".
   std::string main_with_dot = std::string(main_bundle_id) + ".";
-  return base::StartsWith(process_bundle_id, main_with_dot,
-                          base::CompareCase::SENSITIVE);
+  return process_bundle_id.starts_with(main_with_dot);
 }
 
 
