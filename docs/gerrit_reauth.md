@@ -259,7 +259,7 @@ Then, refer to sections below for your specific workflow.
 
 ### I’m using a Linux or Mac client, I want to SSH into Linux
 
-Then, use `luci-auth-ssh-helper` to SSH into the remote machine. You can
+Use `luci-auth-ssh-helper` to SSH into the remote machine. You can
 specify SSH options (such as port forwarding) after a double dash.
 
 ```
@@ -332,14 +332,14 @@ local machine.
 Note, you might need to update your SSH server config to allow port-forwarding
 (if not enabled by default).
 
-If you’re using the an OpenSSH client (e.g. built-in to Windows, or included in
+If you’re using an OpenSSH client (e.g. built-in to Windows, or included in
 Git-on-Windows):
 
 ```
 ssh -R 10899:localhost:10899 [user@]remote_host
 ```
 
-If you’re using PuTTY, set up port-forwarding on the "Connection \> SSH \>
+If you’re using PuTTY, set up port forwarding on the "Connection \> SSH \>
 Tunnels" page in the connection dialog (see screenshot). Remember to "Save" your
 configuration in the "Session" page if you want to persist the configuration.
 
@@ -385,8 +385,7 @@ Windows will prompt you to touch the security key.
 
 ### None of the above
 
-Remote workflows not listed above aren’t tested. We’re working on
-adding support for more workflows.
+Remote workflows not listed above have not yet been tested.
 
 ## Troubleshooting
 
@@ -428,7 +427,19 @@ There is a dialog in the Gerrit Web UI that will explain what is missing:
 
 ![](./images/gerrit_reauth_explanation.png)
 
-Likely one of the committers who reviewed the CL did not do ReAuth.
+Likely one of the committers who reviewed the CL did not do ReAuth,
+you can send them a link to the next question.
+
+**My Code-Review on Gerrit is missing ReAuth**
+
+This is caused by your Code-Review vote missing valid ReAuth credentials.
+
+You can fix this by removing and re-applying your Code-Review vote.
+
+Some users have reported cases of not getting the ReAuth popup when
+using the Gerrit website (and thus resulting in missing ReAuth
+credentials).  Please report an issue if you encounter this,
+particularly if it happens often or you can reliably reproduce it.
 
 **ReAuth doesn't work in `screen`, `tmux`, `shpool`, etc.**
 
