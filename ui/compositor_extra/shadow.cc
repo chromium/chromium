@@ -46,12 +46,14 @@ void Shadow::SetContentBounds(const gfx::Rect& content_bounds) {
   // content bounds were last set. When the window moves but doesn't change
   // size, this is a no-op. (The origin stays the same in this case.)
   if (content_bounds == content_bounds_ &&
-      layer()->bounds() == last_layer_bounds_) {
+      (!layer() || layer()->bounds() == last_layer_bounds_)) {
     return;
   }
 
   content_bounds_ = content_bounds;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::SetElevation(int elevation) {
@@ -60,6 +62,10 @@ void Shadow::SetElevation(int elevation) {
     return;
 
   desired_elevation_ = elevation;
+
+  if (!layer()) {
+    return;
+  }
 
   // Stop waiting for any as yet unfinished implicit animations.
   StopObservingImplicitAnimations();
@@ -99,7 +105,9 @@ void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   }
 
   rounded_corners_ = radii;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
@@ -107,12 +115,16 @@ void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
     return;
 
   style_ = style;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::SetElevationToColorsMap(const ElevationToColorsMap& color_map) {
   color_map_ = color_map;
-  UpdateShadowAppearance();
+  if (layer()) {
+    UpdateShadowAppearance();
+  }
 }
 
 void Shadow::OnImplicitAnimationsCompleted() {
@@ -155,8 +167,14 @@ void Shadow::RecreateShadowLayer() {
 }
 
 void Shadow::UpdateShadowAppearance() {
-  if (content_bounds_.IsEmpty())
+  // It is necessary to reset the layer bounds when content bounds are empty
+  // before returning; otherwise, if the content was previously non-empty, the
+  // shadow layers will retain their previous dimensions and remain visible as
+  // a stale, orphaned shadow.
+  if (content_bounds_.IsEmpty()) {
+    ClearLayerBounds();
     return;
+  }
 
   const int smaller_dimension =
       std::min(content_bounds_.width(), content_bounds_.height());
@@ -265,6 +283,15 @@ void Shadow::UpdateShadowAppearance() {
   shadow_layer()->UpdateNinePatchLayerBorder(
       gfx::Rect(aperture_insets.left(), aperture_insets.top(),
                 aperture_insets.width(), aperture_insets.height()));
+}
+
+void Shadow::ClearLayerBounds() {
+  layer()->SetBounds(gfx::Rect());
+  shadow_layer()->SetBounds(gfx::Rect());
+  if (fading_layer()) {
+    fading_layer()->SetBounds(gfx::Rect());
+  }
+  last_layer_bounds_ = gfx::Rect();
 }
 
 }  // namespace ui

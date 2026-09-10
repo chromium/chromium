@@ -103,6 +103,34 @@ TEST_F(ShadowTest, SetContentBounds) {
   }
 }
 
+// Test that layer bounds are empty when content bounds are empty, and update
+// properly when transitioning between empty and non-empty bounds.
+TEST_F(ShadowTest, EmptyContentBounds) {
+  Shadow shadow;
+  shadow.Init(kElevationLarge);
+  // Initially, content bounds are empty and layer bounds should be empty.
+  EXPECT_TRUE(shadow.layer()->bounds().IsEmpty());
+  EXPECT_TRUE(shadow.shadow_layer()->bounds().IsEmpty());
+
+  // Set non-empty content bounds.
+  gfx::Rect content_bounds(100, 100, 300, 300);
+  shadow.SetContentBounds(content_bounds);
+  gfx::Rect shadow_bounds(content_bounds);
+  shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
+  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  EXPECT_EQ(shadow_bounds.size(), shadow.shadow_layer()->bounds().size());
+
+  // Reset to empty content bounds. Layer bounds should collapse to empty.
+  shadow.SetContentBounds(gfx::Rect());
+  EXPECT_TRUE(shadow.layer()->bounds().IsEmpty());
+  EXPECT_TRUE(shadow.shadow_layer()->bounds().IsEmpty());
+
+  // Restore non-empty content bounds.
+  shadow.SetContentBounds(content_bounds);
+  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  EXPECT_EQ(shadow_bounds.size(), shadow.shadow_layer()->bounds().size());
+}
+
 // Test if the shadow's layer bounds are modified, setting the same content
 // bounds can reset the layer bounds.
 TEST_F(ShadowTest, ResetLayerBoundsBySettingSameContentBounds) {
