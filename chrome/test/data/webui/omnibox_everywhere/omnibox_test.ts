@@ -368,33 +368,39 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       });
 
   test(
-      'updateAimPopupEligibility respects isFuseboxEnabled false capability ' +
-          'in loadTimeData',
+      'updateAimPopupEligibility updates dynamically when initially disabled',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({
           isFuseboxEnabled: false,
-          searchboxShowComposeEntrypoint: true,
+          searchboxShowComposeEntrypoint: false,
+          searchboxVoiceSearch: true,
+          searchboxLensSearch: true,
         });
         const testOmnibox =
             document.createElement('omnibox-everywhere-omnibox');
         document.body.appendChild(testOmnibox);
         await microtasksFinished();
 
-        assertTrue(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
+        assertFalse(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
         assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
+        assertFalse(
+            !!testOmnibox.shadowRoot.querySelector('#lensSearchButton'));
+
+        testProxy.page.updateAimPopupEligibility(true);
+        await microtasksFinished();
+
+        assertTrue(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
+        assertTrue(!!testOmnibox.shadowRoot.querySelector('#context'));
+        assertTrue(!!testOmnibox.shadowRoot.querySelector('#lensSearchButton'));
 
         testProxy.page.updateAimPopupEligibility(false);
         await microtasksFinished();
 
         assertFalse(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
         assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
-
-        testProxy.page.updateAimPopupEligibility(true);
-        await microtasksFinished();
-
-        assertTrue(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
-        assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
+        assertFalse(
+            !!testOmnibox.shadowRoot.querySelector('#lensSearchButton'));
       });
   test('dropdownIsVisible preserves bottomControls', async () => {
     const bottomControls =
@@ -1078,6 +1084,32 @@ suite('OmniboxEverywhereAppTest', () => {
     assertTrue(!!restoredSearchbox);
     assertEquals('', restoredSearchbox.$.input.inputElement.value);
   });
+
+  test(
+      'disabling aim popup eligibility closes active composebox mode',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: 'draft text', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        testProxy.page.updateAimPopupEligibility(false);
+        await microtasksFinished();
+
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+        const restoredSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!restoredSearchbox);
+      });
 
   test(
       'voice search final result in composebox submits query and closes dialog',

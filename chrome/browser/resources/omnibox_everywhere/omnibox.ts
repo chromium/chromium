@@ -213,10 +213,8 @@ export class OmniboxEverywhereOmniboxElement extends
     this.aimPopupEligibilityListenerId_ =
         this.callbackRouter_.updateAimPopupEligibility.addListener(
             (aiModePrefEnabled: boolean) => {
-              this.composeButtonEnabled = aiModePrefEnabled &&
-                  loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
-              this.isFuseboxEnabled = aiModePrefEnabled &&
-                  loadTimeData.getBoolean('isFuseboxEnabled');
+              this.composeButtonEnabled = aiModePrefEnabled;
+              this.isFuseboxEnabled = aiModePrefEnabled;
             });
     this.screenshotMenuClosedListenerId_ =
         this.callbackRouter_.onScreenshotMenuClosed.addListener(() => {

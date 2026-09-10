@@ -15,6 +15,7 @@ source_set("prefs") {
     "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/profiles:profile",
     "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//ui/base",

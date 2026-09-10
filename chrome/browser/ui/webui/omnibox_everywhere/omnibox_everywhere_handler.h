@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HANDLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -98,11 +99,12 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
           error_type) override;
 
  private:
-  void OnShowAiModePrefChanged();
+  void OnAiModeEligibilityOrPrefChanged();
   void UpdatePromoState();
   void PushProfileInfo();
 
   raw_ptr<OmniboxEverywhereService> service_;
+  base::CallbackListSubscription aim_eligibility_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>

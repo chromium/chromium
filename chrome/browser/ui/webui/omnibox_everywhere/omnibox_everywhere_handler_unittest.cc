@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -41,6 +43,40 @@ namespace {
 
 constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
 constexpr char kVoiceSearchQueryParameterValue[] = "1";
+
+class TestingAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  explicit TestingAimEligibilityService(Profile* profile,
+                                        bool is_fusebox_eligible)
+      : ChromeAimEligibilityService(*profile->GetPrefs(),
+                                    /*template_url_service=*/nullptr,
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr,
+                                    /*configuration=*/{}),
+        is_fusebox_eligible_(is_fusebox_eligible) {}
+
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+
+  bool IsAimEligible() const override { return is_fusebox_eligible_; }
+  bool IsFuseboxEligible() const override { return is_fusebox_eligible_; }
+  bool IsAimAllowedByDse() const override { return is_fusebox_eligible_; }
+
+  base::CallbackListSubscription RegisterEligibilityChangedCallback(
+      base::RepeatingClosure callback) override {
+    return callback_list_.Add(std::move(callback));
+  }
+
+  void SetFuseboxEligible(bool eligible) {
+    is_fusebox_eligible_ = eligible;
+    callback_list_.Notify();
+  }
+
+ private:
+  bool is_fusebox_eligible_;
+  base::RepeatingClosureList callback_list_;
+};
 
 class MockOmniboxEverywhereService : public OmniboxEverywhereService {
  public:
@@ -74,6 +110,20 @@ class OmniboxEverywhereHandlerTest
     feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
   }
   ~OmniboxEverywhereHandlerTest() override = default;
+
+  TestingAimEligibilityService* SetUpAimEligibilityService(
+      bool is_fusebox_eligible) {
+    return static_cast<TestingAimEligibilityService*>(
+        AimEligibilityServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating(
+                [](bool fusebox_eligible, content::BrowserContext* context)
+                    -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<TestingAimEligibilityService>(
+                      static_cast<TestingProfile*>(context), fusebox_eligible);
+                },
+                is_fusebox_eligible)));
+  }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     auto factories =
@@ -373,6 +423,63 @@ TEST_F(OmniboxEverywhereHandlerTest, ScreenshotMenuDisabledAtMaxFiles) {
 
   // Screenshot commands are disabled once max files limit is reached.
   EXPECT_FALSE(OmniboxEverywhereUI::IsScreenshotCommandEnabled(handler_.get()));
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       ShowAiModePrefChangeUpdatesAimPopupEligibility) {
+  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
+
+  testing::NiceMock<MockSearchboxPage> mock_page;
+  mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
+
+  auto handler = std::make_unique<OmniboxEverywhereHandler>(
+      test_handler_remote.BindNewPipeAndPassReceiver(),
+      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
+      mock_service_.get(),
+      base::BindRepeating(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }));
+
+  // Disabling pref should push UpdateAimPopupEligibility(false).
+  EXPECT_CALL(mock_page, UpdateAimPopupEligibility(false)).Times(1);
+  profile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, false);
+  mock_page.FlushForTesting();
+
+  // Re-enabling pref should push UpdateAimPopupEligibility(true).
+  EXPECT_CALL(mock_page, UpdateAimPopupEligibility(true)).Times(1);
+  profile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode, true);
+  mock_page.FlushForTesting();
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       AimEligibilityChangeUpdatesAimPopupEligibility) {
+  auto* aim_service = SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
+
+  testing::NiceMock<MockSearchboxPage> mock_page;
+  mojo::Remote<searchbox::mojom::PageHandler> test_handler_remote;
+
+  auto handler = std::make_unique<OmniboxEverywhereHandler>(
+      test_handler_remote.BindNewPipeAndPassReceiver(),
+      mock_page.BindAndGetRemote(), /*metrics_reporter=*/nullptr, &web_ui_,
+      mock_service_.get(),
+      base::BindRepeating(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }));
+
+  // Becoming ineligible via AimEligibilityService callback should push
+  // UpdateAimPopupEligibility(false).
+  EXPECT_CALL(mock_page, UpdateAimPopupEligibility(false)).Times(1);
+  aim_service->SetFuseboxEligible(false);
+  mock_page.FlushForTesting();
+
+  // Re-enabling eligibility should push UpdateAimPopupEligibility(true).
+  EXPECT_CALL(mock_page, UpdateAimPopupEligibility(true)).Times(1);
+  aim_service->SetFuseboxEligible(true);
+  mock_page.FlushForTesting();
 }
 
 }  // namespace

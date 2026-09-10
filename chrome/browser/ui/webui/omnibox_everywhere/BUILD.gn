@@ -11,6 +11,7 @@ if (is_win || is_mac) {
     deps = [
       ":omnibox_everywhere",
       "//base/test:test_support",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/bookmarks",
       "//chrome/browser/contextual_search",
       "//chrome/browser/ui/omnibox/omnibox_everywhere",

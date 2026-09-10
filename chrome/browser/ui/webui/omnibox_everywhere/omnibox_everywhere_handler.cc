@@ -50,10 +50,23 @@ namespace {
 constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
 constexpr char kVoiceSearchQueryParameterValue[] = "1";
 
-bool IsAimEligible(Profile* profile) {
+bool IsFuseboxEligible(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_eligibility_service && aim_eligibility_service->IsAimEligible();
+  return aim_eligibility_service &&
+         aim_eligibility_service->IsFuseboxEligible();
+}
+
+bool IsFuseboxEnabled(Profile* profile) {
+  if (!IsFuseboxEligible(profile)) {
+    return false;
+  }
+  return !profile || !profile->GetPrefs() ||
+         profile->GetPrefs()->GetBoolean(
+             omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
 }
 
 omnibox_everywhere::prefs::FreStage MojoFreStageToPrefsFreStage(
@@ -69,7 +82,6 @@ omnibox_everywhere::prefs::FreStage MojoFreStageToPrefsFreStage(
       return omnibox_everywhere::prefs::FreStage::kShortcutReminderChin;
   }
 }
-
 class OmniboxEverywhereClient : public ContextualOmniboxClient {
  public:
   OmniboxEverywhereClient(Profile* profile,
@@ -141,12 +153,21 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
       base::BindRepeating(&OmniboxEverywhereHandler::GetSuggestInputs,
                           base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
+  if (auto* aim_eligibility_service =
+          AimEligibilityServiceFactory::GetForProfile(profile_)) {
+    aim_eligibility_subscription_ =
+        aim_eligibility_service->RegisterEligibilityChangedCallback(
+            base::BindRepeating(
+                &OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged,
+                base::Unretained(this)));
+  }
   if (profile_ && profile_->GetPrefs()) {
     pref_change_registrar_.Init(profile_->GetPrefs());
     pref_change_registrar_.Add(
         omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode,
-        base::BindRepeating(&OmniboxEverywhereHandler::OnShowAiModePrefChanged,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged,
+            base::Unretained(this)));
     pref_change_registrar_.Add(
         omnibox_everywhere::prefs::kFreIntroDismissed,
         base::BindRepeating(&OmniboxEverywhereHandler::UpdatePromoState,
@@ -273,13 +294,10 @@ void OmniboxEverywhereHandler::ActivateKeyword(
   // handled directly by the frontend SearchboxMixin via `onKeywordClick`.
 }
 
-void OmniboxEverywhereHandler::OnShowAiModePrefChanged() {
+void OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged() {
+  InitializeInputStateModel();
   if (page()) {
-    const bool show_ai_mode =
-        !profile_ || !profile_->GetPrefs() ||
-        profile_->GetPrefs()->GetBoolean(
-            omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
-    page()->UpdateAimPopupEligibility(IsAimEligible(profile_) && show_ai_mode);
+    page()->UpdateAimPopupEligibility(IsFuseboxEnabled(profile_));
   }
 }
 

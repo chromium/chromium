@@ -225,6 +225,12 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
         this.callbackRouter_.setShowFre.addListener((show: boolean) => {
           this.showFreModal_ = show;
         }),
+        this.callbackRouter_.updateAimPopupEligibility.addListener(
+            (aiModePrefEnabled: boolean) => {
+              if (!aiModePrefEnabled && this.isComposeboxMode_) {
+                this.onCloseComposebox_();
+              }
+            }),
     );
 
     if (this.mostVisitedEnabled_) {
