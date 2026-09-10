@@ -1302,12 +1302,7 @@ void PrintRenderFrameHelper::InitiatePrintAndroid() {
     return;
   }
 
-  if (print_in_progress_ || render_frame_gone_ || !render_frame()) {
-    return;
-  }
-
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (!frame) {
+  if (print_in_progress_ || render_frame_gone_) {
     return;
   }
 
@@ -1315,7 +1310,8 @@ void PrintRenderFrameHelper::InitiatePrintAndroid() {
   // print session until `FinishPrintAndroid()` is invoked, preventing duplicate
   // `beforeprint` dispatches while allowing asynchronous rendering.
   print_in_progress_ = true;
-  frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+  render_frame()->GetWebFrame()->DispatchBeforePrintEvent(
+      /*print_client=*/nullptr);
 }
 
 void PrintRenderFrameHelper::FinishPrintAndroid() {
