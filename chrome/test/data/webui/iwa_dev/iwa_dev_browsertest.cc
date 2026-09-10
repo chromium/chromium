@@ -22,6 +22,10 @@ IN_PROC_BROWSER_TEST_F(IwaDevBrowserTest, App) {
   RunTest("iwa_dev/app_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(IwaDevBrowserTest, Combobox) {
+  RunTest("iwa_dev/combobox_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(IwaDevBrowserTest, InstallDialog) {
   RunTest("iwa_dev/install_dialog_test.js", "mocha.run();");
 }

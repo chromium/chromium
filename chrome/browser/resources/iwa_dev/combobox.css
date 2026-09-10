@@ -1,0 +1,129 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --iwa-dev-combobox-margin-bottom: 0;
+  anchor-scope: --combobox-input;
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-container {
+  margin-bottom: var(--iwa-dev-combobox-margin-bottom);
+}
+
+.dropdown-container:has(#error) {
+  margin-bottom: 0;
+}
+
+.input-container {
+  align-items: center;
+  anchor-name: --combobox-input;
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+#clearButton,
+#dropdownButton {
+  --cr-icon-button-size: 20px;
+  inset-inline-end: 8px;
+  margin: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+#clearButton {
+  --cr-icon-button-icon-size: 14px;
+}
+
+.input-container:has(#dropdownButton) #clearButton {
+  inset-inline-end: 32px;
+}
+
+#dropdownButton {
+  --cr-icon-button-icon-size: 18px;
+}
+
+.input-container:has(#clearButton) #input,
+.input-container:has(#dropdownButton) #input {
+  padding-inline-end: 32px;
+}
+
+.input-container:has(#clearButton):has(#dropdownButton) #input {
+  padding-inline-end: 56px;
+}
+
+#input[readonly] {
+  user-select: none;
+}
+
+#input[readonly]:not(:disabled) {
+  cursor: pointer;
+}
+
+#input:disabled {
+  cursor: default;
+  opacity: var(--cr-disabled-opacity);
+}
+
+.suggestions-dropdown {
+  background-color: var(--cr-menu-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 8px;
+  box-shadow: var(--cr-elevation-2);
+  box-sizing: border-box;
+  inset: auto;
+  inset-inline-start: anchor(start);
+  margin: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0;
+  position: fixed;
+  position-anchor: --combobox-input;
+  position-try-fallbacks: flip-block;
+  top: calc(anchor(bottom) + 4px);
+  width: anchor-size(width);
+}
+
+.suggestion-item {
+  background: none;
+  border: none;
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: block;
+  font-family: inherit;
+  font-size: 0.85rem;
+  overflow: hidden;
+  padding: 8px 12px;
+  text-align: start;
+  text-overflow: ellipsis;
+  user-select: none;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.suggestion-item:focus {
+  outline: none;
+}
+
+.suggestion-item[aria-selected='true'] {
+  font-weight: 500;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+  background-color: var(--cr-hover-background-color);
+}
+
+.suggestion-item:active {
+  background-color: var(--cr-active-background-color);
+}

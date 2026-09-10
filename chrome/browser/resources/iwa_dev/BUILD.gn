@@ -13,6 +13,7 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "combobox.css",
     "install_dialog.css",
     "shared_style.css",
     "install_update_manifest_tab.css",
@@ -23,6 +24,8 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "combobox.html.ts",
+    "combobox.ts",
     "install_dev_proxy_tab.html.ts",
     "install_dev_proxy_tab.ts",
     "install_dialog.html.ts",
