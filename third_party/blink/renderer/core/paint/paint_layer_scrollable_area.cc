@@ -2784,9 +2784,7 @@ bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
       }
     }
   }
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          GetLayoutBox()->GetDocument().GetExecutionContext()) &&
-      GetLayoutBox()->IsInCanvasSubtree()) {
+  if (GetLayoutBox()->IsInCanvasSubtree()) {
     return true;
   }
   return false;
@@ -3164,9 +3162,7 @@ bool PaintLayerScrollableArea::MayCompositeScrollbar(
   }
   // Disable composited scrollbars under canvas.
   const auto* box = GetLayoutBox();
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          box->GetDocument().GetExecutionContext()) &&
-      box->IsInCanvasSubtree()) {
+  if (box->IsInCanvasSubtree()) {
     return false;
   }
   // Compositing of scrollbar is decided in PaintArtifactCompositor. We assume

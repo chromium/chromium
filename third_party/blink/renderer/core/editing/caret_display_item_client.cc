@@ -225,26 +225,23 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     color_ = new_color;
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          layout_block_->GetDocument().GetExecutionContext())) {
-    bool was_in_canvas_subtree = is_in_canvas_subtree_;
+  bool was_in_canvas_subtree = is_in_canvas_subtree_;
 
-    is_in_canvas_subtree_ = false;
-    if (Node* anchor_node = caret_position.AnchorNode()) {
-      Element* element = DynamicTo<Element>(anchor_node);
-      if (!element) {
-        element = anchor_node->parentElement();
-      }
-      if (element) {
-        is_in_canvas_subtree_ = element->IsInCanvasSubtree();
-      }
+  is_in_canvas_subtree_ = false;
+  if (Node* anchor_node = caret_position.AnchorNode()) {
+    Element* element = DynamicTo<Element>(anchor_node);
+    if (!element) {
+      element = anchor_node->parentElement();
     }
-    if (was_in_canvas_subtree != is_in_canvas_subtree_) {
-      needs_paint_invalidation_ = true;
-      if (layout_block_) {
-        // The caret property tree space may have changed.
-        layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
-      }
+    if (element) {
+      is_in_canvas_subtree_ = element->IsInCanvasSubtree();
+    }
+  }
+  if (was_in_canvas_subtree != is_in_canvas_subtree_) {
+    needs_paint_invalidation_ = true;
+    if (layout_block_) {
+      // The caret property tree space may have changed.
+      layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
     }
   }
 

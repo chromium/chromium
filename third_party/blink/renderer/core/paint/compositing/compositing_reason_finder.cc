@@ -388,10 +388,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   auto* element = DynamicTo<Element>(object.GetNode());
 
-  if (element &&
-      RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext()) &&
-      element->IsInCanvasSubtree() &&
+  if (element && element->IsInCanvasSubtree() &&
       !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
     if (IsA<LayoutBoxModelObject>(object)) {
       if (auto* canvas = element->CanvasForDrawing()) {
@@ -506,9 +503,7 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
     CompositingReasons reasons) {
   DCHECK_EQ(reasons, DirectReasonsForPaintProperties(object));
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext()) &&
-      object.IsInCanvasSubtree()) {
+  if (object.IsInCanvasSubtree()) {
     return false;
   }
 
