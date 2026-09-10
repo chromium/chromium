@@ -65,17 +65,14 @@ void RecordAvailableDataTypes(
 // Records whether at least one element was selected per data type. Will not
 // record for a specific data type if it is not in the map or has no items
 // selected. Also records the percentage of selected items vs available items.
-// Returns whether any data was selected.
-bool RecordSelectedDataTypes(
+void RecordSelectedDataTypes(
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>&
         selected_types,
     const std::map<syncer::DataType, int>& data_item_count_map) {
-  bool has_selected_data = false;
   for (const auto& [type, selected_items] : selected_types) {
     int selected_count = selected_items.size();
     if (selected_count != 0) {
-      has_selected_data = true;
       base::UmaHistogramEnumeration(
           base::StrCat({kDataTypeInformationHistogramBase, "Selected"}),
           DataTypeHistogramValue(type));
@@ -88,7 +85,6 @@ bool RecordSelectedDataTypes(
           selected_count * 100 / available_count);
     }
   }
-  return has_selected_data;
 }
 
 }  // namespace
@@ -101,6 +97,10 @@ BatchUploadDialogView::~BatchUploadDialogView() {
   // dialog.
   base::UmaHistogramEnumeration("Sync.BatchUpload.DialogCloseReason",
                                 close_reason_);
+
+  if (dialog_shown_) {
+    RecordUploadOutcome();
+  }
 }
 
 // static
@@ -167,7 +167,9 @@ BatchUploadDialogView::BatchUploadDialogView(
     CHECK_NE(item_count, 0);
     data_item_count_map_.insert_or_assign(local_data_description.type,
                                           item_count);
+    total_available_item_count_ += item_count;
   }
+  CHECK_GT(total_available_item_count_, 0);
 
   BatchUploadUI* web_ui = GetBatchUploadUI(web_view_);
   CHECK(web_ui);
@@ -209,11 +211,24 @@ void BatchUploadDialogView::OnDialogSelectionMade(
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>&
         selected_map) {
-  bool has_selected_data =
-      RecordSelectedDataTypes(selected_map, data_item_count_map_);
+  int selected_item_count = 0;
+  for (const auto& [type, items] : selected_map) {
+    selected_item_count += items.size();
+  }
+
+  RecordSelectedDataTypes(selected_map, data_item_count_map_);
+
+  if (selected_item_count == 0) {
+    upload_outcome_ = UploadOutcome::kNone;
+  } else if (selected_item_count == total_available_item_count_) {
+    upload_outcome_ = UploadOutcome::kFull;
+  } else {
+    CHECK_LT(selected_item_count, total_available_item_count_);
+    upload_outcome_ = UploadOutcome::kPartial;
+  }
 
   std::move(complete_callback_).Run(selected_map);
-  CloseWithReason(has_selected_data
+  CloseWithReason(selected_item_count > 0
                       ? BatchUploadDialogCloseReason::kSaveClicked
                       : BatchUploadDialogCloseReason::kCancelClicked);
 }
@@ -247,6 +262,7 @@ void BatchUploadDialogView::SetHeightAndShowWidget(int height) {
 
     RecordAvailableDataTypes(data_item_count_map_);
     base::UmaHistogramEnumeration("Sync.BatchUpload.Opened", entry_point_);
+    dialog_shown_ = true;
   }
 }
 
@@ -310,6 +326,22 @@ void BatchUploadDialogView::BrowserDidClose(BrowserWindowInterface* browser) {
     // Close the dialog synchronously in the event the host Browser window
     // closes to mitigate the risk of dangling refs.
     GetWidget()->CloseNow();
+  }
+}
+
+void BatchUploadDialogView::RecordUploadOutcome() {
+  switch (upload_outcome_) {
+    case UploadOutcome::kFull:
+      base::UmaHistogramEnumeration("Sync.BatchUpload.FullUpload",
+                                    entry_point_);
+      break;
+    case UploadOutcome::kPartial:
+      base::UmaHistogramEnumeration("Sync.BatchUpload.PartialUpload",
+                                    entry_point_);
+      break;
+    case UploadOutcome::kNone:
+      base::UmaHistogramEnumeration("Sync.BatchUpload.NoUpload", entry_point_);
+      break;
   }
 }
 

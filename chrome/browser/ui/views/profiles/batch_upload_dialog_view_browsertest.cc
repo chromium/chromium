@@ -161,7 +161,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   base::HistogramTester::CountsMap expected_histograms_count = {
       {"Sync.BatchUpload.Opened", 1},
       {"Sync.BatchUpload.DataTypeAvailable", 1},
-      {"Sync.BatchUpload.DialogCloseReason", 1}};
+      {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.NoUpload", 1},
+  };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
   histogram_tester().ExpectUniqueSample("Sync.BatchUpload.Opened", entry_point,
@@ -171,6 +173,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Sync.BatchUpload.DialogCloseReason",
       BatchUploadDialogCloseReason::kCancelClicked, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.NoUpload",
+                                        entry_point, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
@@ -201,6 +205,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       {"Sync.BatchUpload.Opened", 1},
       {"Sync.BatchUpload.DataTypeAvailable", 1},
       {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.NoUpload", 1},
   };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
@@ -211,6 +216,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Sync.BatchUpload.DialogCloseReason",
       BatchUploadDialogCloseReason::kWindowClosed, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.NoUpload",
+                                        entry_point, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
@@ -237,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       {"Sync.BatchUpload.Opened", 1},
       {"Sync.BatchUpload.DataTypeAvailable", 1},
       {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.NoUpload", 1},
   };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
@@ -247,6 +255,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Sync.BatchUpload.DialogCloseReason",
       BatchUploadDialogCloseReason::kDismissed, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.NoUpload",
+                                        entry_point, 1);
 }
 
 // Fails on Mac only.  http://crbug.com/372194892
@@ -284,6 +294,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       {"Sync.BatchUpload.Opened", 1},
       {"Sync.BatchUpload.DataTypeAvailable", 1},
       {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.NoUpload", 1},
   };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
@@ -294,6 +305,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample("Sync.BatchUpload.DialogCloseReason",
                                         BatchUploadDialogCloseReason::kSignout,
                                         1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.NoUpload",
+                                        entry_point, 1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -334,6 +347,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       {"Sync.BatchUpload.Opened", 1},
       {"Sync.BatchUpload.DataTypeAvailable", 1},
       {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.NoUpload", 1},
   };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
@@ -344,6 +358,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Sync.BatchUpload.DialogCloseReason",
       BatchUploadDialogCloseReason::kSiginPending, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.NoUpload",
+                                        entry_point, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
@@ -379,6 +395,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       {"Sync.BatchUpload.DataTypeSelected", 2},
       {"Sync.BatchUpload.DataTypeSelectedItemPercentage", 2},
       {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.FullUpload", 1},
   };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
@@ -397,6 +414,8 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Sync.BatchUpload.DialogCloseReason",
       BatchUploadDialogCloseReason::kSaveClicked, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.FullUpload",
+                                        entry_point, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
@@ -437,6 +456,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
       {"Sync.BatchUpload.DataTypeSelected", 1},
       {"Sync.BatchUpload.DataTypeSelectedItemPercentage", 1},
       {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.PartialUpload", 1},
   };
   EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
               testing::ContainerEq(expected_histograms_count));
@@ -455,4 +475,54 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Sync.BatchUpload.DialogCloseReason",
       BatchUploadDialogCloseReason::kSaveClicked, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.PartialUpload",
+                                        entry_point, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
+                       OpenBatchUploadDialogViewWithSaveActionNoItems) {
+  SigninWithFullInfo();
+
+  base::MockCallback<BatchUploadSelectedDataTypeItemsCallback> mock_callback;
+
+  std::vector<syncer::LocalDataDescription> descriptions;
+  syncer::DataType type1 = syncer::DataType::PASSWORDS;
+  descriptions.push_back(GetFakeLocalData(type1, 1));
+  syncer::DataType type2 = syncer::DataType::CONTACT_INFO;
+  descriptions.push_back(GetFakeLocalData(type2, 2));
+  BatchUploadService::EntryPoint entry_point =
+      BatchUploadService::EntryPoint::kPasswordPromoCard;
+  BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
+      browser()->GetProfile(), std::move(descriptions), entry_point,
+      mock_callback.Get());
+
+  std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
+      result;
+  result.insert_or_assign(type1,
+                          std::vector<syncer::LocalDataItemModel::DataId>{});
+  result.insert_or_assign(type2,
+                          std::vector<syncer::LocalDataItemModel::DataId>{});
+  EXPECT_CALL(mock_callback, Run(result)).Times(1);
+  dialog_view->OnDialogSelectionMade(result);
+  views::test::WidgetDestroyedWaiter(dialog_view->GetWidget()).Wait();
+
+  base::HistogramTester::CountsMap expected_histograms_count = {
+      {"Sync.BatchUpload.Opened", 1},
+      {"Sync.BatchUpload.DataTypeAvailable", 2},
+      {"Sync.BatchUpload.DialogCloseReason", 1},
+      {"Sync.BatchUpload.NoUpload", 1},
+  };
+  EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix("Sync.BatchUpload."),
+              testing::ContainerEq(expected_histograms_count));
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.Opened", entry_point,
+                                        1);
+  histogram_tester().ExpectBucketCount("Sync.BatchUpload.DataTypeAvailable",
+                                       DataTypeHistogramValue(type1), 1);
+  histogram_tester().ExpectBucketCount("Sync.BatchUpload.DataTypeAvailable",
+                                       DataTypeHistogramValue(type2), 1);
+  histogram_tester().ExpectUniqueSample(
+      "Sync.BatchUpload.DialogCloseReason",
+      BatchUploadDialogCloseReason::kCancelClicked, 1);
+  histogram_tester().ExpectUniqueSample("Sync.BatchUpload.NoUpload",
+                                        entry_point, 1);
 }

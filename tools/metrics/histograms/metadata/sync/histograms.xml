@@ -351,6 +351,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BatchUpload.{UploadOutcome}" enum="BatchUploadEntryPoint"
+    expires_after="2027-02-28">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the entry point from which the Batch Upload Dialog was opened when
+    {UploadOutcome}. Recorded when the dialog is closed.
+  </summary>
+  <token key="UploadOutcome">
+    <variant name="FullUpload"
+        summary="all available local items are uploaded"/>
+    <variant name="NoUpload"
+        summary="no local items are uploaded (e.g. cancelled, dismissed, or
+                 closed without saving)"/>
+    <variant name="PartialUpload"
+        summary="a subset of available local items are uploaded (at least
+                 one, but not all)"/>
+  </token>
+</histogram>
+
 <histogram name="Sync.BookmarkAccountStorageMoveDialog.Download.{Action}"
     enum="BooleanHit" expires_after="2026-12-01">
   <owner>amelies@google.com</owner>

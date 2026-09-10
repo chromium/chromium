@@ -74,6 +74,8 @@ class BatchUploadDialogView : public views::DialogDelegateView,
                            OpenBatchUploadDialogViewWithSaveActionAllItems);
   FRIEND_TEST_ALL_PREFIXES(BatchUploadDialogViewBrowserTest,
                            OpenBatchUploadDialogViewWithSaveActionSomeItems);
+  FRIEND_TEST_ALL_PREFIXES(BatchUploadDialogViewBrowserTest,
+                           OpenBatchUploadDialogViewWithSaveActionNoItems);
 
   explicit BatchUploadDialogView(
       BrowserWindowInterface& browser,
@@ -107,6 +109,16 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // Invoked when the host Browser is closed.
   void BrowserDidClose(BrowserWindowInterface* browser);
 
+  // Enum representing the upload outcome based on selected items vs available.
+  enum class UploadOutcome {
+    kNone,
+    kPartial,
+    kFull,
+  };
+
+  // Records the histogram corresponding to the outcome of the batch upload.
+  void RecordUploadOutcome();
+
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
@@ -132,6 +144,16 @@ class BatchUploadDialogView : public views::DialogDelegateView,
 
   // Count of items per data type. To be used for metrics purposes.
   std::map<syncer::DataType, int> data_item_count_map_;
+
+  // Total count of available items across all data types.
+  int total_available_item_count_ = 0;
+
+  // Outcome of the batch upload dialog, recorded upon view destruction.
+  UploadOutcome upload_outcome_ = UploadOutcome::kNone;
+
+  // Tracks whether the dialog was shown. Outcome metrics are only recorded
+  // if the dialog was actually shown (matching `Sync.BatchUpload.Opened`).
+  bool dialog_shown_ = false;
 
   // When this value is set, ignore any input into `web_view_`s web contents.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
