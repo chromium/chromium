@@ -87,6 +87,16 @@ bool NtpSyncedThemeBridge::IsProcessingSyncUpdate(JNIEnv* env) {
   return ntp_custom_background_service_->IsProcessingSyncUpdate();
 }
 
+void NtpSyncedThemeBridge::OnChromeColorSynced(int color_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NtpSyncedThemeBridge_onChromeColorSynced(env, j_java_obj_, color_id);
+}
+
+void NtpSyncedThemeBridge::OnDefaultThemeSynced() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NtpSyncedThemeBridge_onDefaultThemeSynced(env, j_java_obj_);
+}
+
 void NtpSyncedThemeBridge::OnCustomBackgroundImageUpdated() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NtpSyncedThemeBridge_onCustomBackgroundImageUpdated(env, j_java_obj_);

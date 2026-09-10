@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
@@ -23,23 +22,32 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class NtpSyncedThemeBridge {
-    private final Callback<@Nullable CustomBackgroundInfo> mOnThemeCollectionSyncedCallback;
+    /** Observer interface for synced theme updates. */
+    public interface Observer {
+        /** Dispatched when a theme collection background arrives from sync or daily refresh. */
+        void onThemeCollectionSynced(@Nullable CustomBackgroundInfo info);
+
+        /** Dispatched when a Chrome color arrives from sync. */
+        void onChromeColorSynced(int colorId);
+
+        /** Dispatched when the theme is reset to default from sync. */
+        void onDefaultThemeSynced();
+    }
+
+    private final Observer mObserver;
     private long mNativeNtpSyncedThemeBridge;
 
     /**
-     * Constructs a new NtpSyncedThemeBridge.
+     * Constructs a new NtpSyncedThemeBridge with an Observer.
      *
      * @param profile The profile for which this bridge is created.
-     * @param onThemeCollectionSyncedCallback The callback to be invoked when the theme collection
-     *     is synced or daily updated.
+     * @param observer The observer to receive synced theme changes.
      */
-    public NtpSyncedThemeBridge(
-            Profile profile,
-            Callback<@Nullable CustomBackgroundInfo> onThemeCollectionSyncedCallback) {
-        // Set the callback before calling native init(), since init attaches this bridge to
+    public NtpSyncedThemeBridge(Profile profile, Observer observer) {
+        // Set the observer before calling native init(), since init attaches this bridge to
         // NtpAndroidCustomBackgroundService, which may immediately notify this bridge of an
         // already-existing synced background.
-        mOnThemeCollectionSyncedCallback = onThemeCollectionSyncedCallback;
+        mObserver = observer;
         mNativeNtpSyncedThemeBridge = NtpSyncedThemeBridgeJni.get().init(profile, this);
     }
 
@@ -77,7 +85,29 @@ public class NtpSyncedThemeBridge {
 
         CustomBackgroundInfo info =
                 NtpSyncedThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpSyncedThemeBridge);
-        mOnThemeCollectionSyncedCallback.onResult(info);
+        mObserver.onThemeCollectionSynced(info);
+    }
+
+    /**
+     * Called by native code when a Chrome color theme has been received from Chrome Sync.
+     * Dispatches the event to the registered observer.
+     *
+     * @param colorId The synced Chrome color ID.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onChromeColorSynced(int colorId) {
+        mObserver.onChromeColorSynced(colorId);
+    }
+
+    /**
+     * Called by native code when the NTP theme has been reset to default from Chrome Sync.
+     * Dispatches the event to the registered observer.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onDefaultThemeSynced() {
+        mObserver.onDefaultThemeSynced();
     }
 
     /**

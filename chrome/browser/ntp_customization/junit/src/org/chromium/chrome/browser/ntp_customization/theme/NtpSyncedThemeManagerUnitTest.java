@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
@@ -227,5 +228,62 @@ public class NtpSyncedThemeManagerUnitTest {
         assertEquals(
                 THEME_COLLECTION, NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
         assertNotNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    private NtpSyncedThemeBridge initSyncedThemeManagerAndGetBridge() {
+        mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
+        verify(mNatives).init(eq(mProfile), mBridgeCaptor.capture());
+        return mBridgeCaptor.getValue();
+    }
+
+    @Test
+    public void testOnChromeColorSynced_validColor() {
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        bridge.onChromeColorSynced(NtpThemeColorId.NTP_COLORS_BLUE);
+
+        assertEquals(
+                NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR,
+                NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
+    }
+
+    @Test
+    public void testOnChromeColorSynced_defaultOrLess() {
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        bridge.onChromeColorSynced(NtpThemeColorId.DEFAULT);
+
+        assertEquals(
+                NtpCustomizationUtils.NtpBackgroundType.DEFAULT,
+                NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+    }
+
+    @Test
+    public void testOnChromeColorSynced_outOfBounds() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        bridge.onChromeColorSynced(NtpThemeColorId.NUM_ENTRIES);
+
+        // Out of bounds color should reset to default.
+        assertEquals(
+                NtpCustomizationUtils.NtpBackgroundType.DEFAULT,
+                NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+    }
+
+    @Test
+    public void testOnDefaultThemeSynced() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR);
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+
+        bridge.onDefaultThemeSynced();
+
+        assertEquals(
+                NtpCustomizationUtils.NtpBackgroundType.DEFAULT,
+                NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
     }
 }

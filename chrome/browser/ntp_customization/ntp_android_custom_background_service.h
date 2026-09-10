@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/themes/ntp_custom_background_service_base.h"
 
@@ -98,6 +99,21 @@ class NtpAndroidCustomBackgroundService
 
   // Pushes the current local custom background state out to Chrome Sync.
   void NotifySyncBridge();
+
+  // Clears custom background image preference, resets the active background
+  // state, sets the Chrome color ID, and notifies observers that a Chrome
+  // color theme has been applied from sync.
+  void ApplyChromeColorFromSync(int color_id);
+
+  // Clears Chrome color preference, resets the active background state,
+  // sets the background dictionary preference, and notifies observers that a
+  // theme collection background has been applied from sync.
+  void ApplyThemeCollectionFromSync(base::DictValue dict);
+
+  // Clears custom background image and Chrome color preferences, resets
+  // the active background state, and notifies observers that the theme
+  // has been reset to default from sync.
+  void ApplyDefaultThemeFromSync();
 
   raw_ptr<NtpThemeCollectionBridge> theme_collection_bridge_ = nullptr;
   raw_ptr<NtpSyncedThemeBridge> synced_theme_bridge_ = nullptr;

@@ -45,6 +45,12 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // Exposes whether the underlying service is processing a sync update.
   bool IsProcessingSyncUpdate(JNIEnv* env);
 
+  // Called when a Chrome color is synced from Chrome Sync.
+  virtual void OnChromeColorSynced(int color_id);
+
+  // Called when the default theme is restored from Chrome Sync.
+  virtual void OnDefaultThemeSynced();
+
   // Disconnects from the custom background service when the service is
   // destroyed.
   void DisconnectCustomBackgroundService();
