@@ -1637,6 +1637,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.VisualExtractionFrameState"
+    enum="SBClientPhishingVisualExtractionFrameState"
+    expires_after="2027-02-01">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the state of the WebLocalFrame (e.g., whether it is missing a
+    View/Widget or is provisional) immediately before Safe Browsing attempts to
+    capture a paint preview for client-side phishing detection. Logged once per
+    visual extraction attempt.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.VisualFeaturesClearReason2"
     enum="CanExtractVisualFeaturesResult" expires_after="2027-01-13">
   <owner>nwokedi@chromium.org</owner>

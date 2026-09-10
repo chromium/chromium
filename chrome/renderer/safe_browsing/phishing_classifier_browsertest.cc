@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_future.h"
@@ -312,6 +313,7 @@ class PhishingClassifierTest
 
 TEST_F(PhishingClassifierTest,
        TestClassificationOfSafeDotComHttpsWithOnlyVisualExtractions) {
+  base::HistogramTester histogram_tester;
   // Host target page in HTTPS and change the link domain to something
   // non-phishy.
   LoadHtml(GURL("https://host.net"),
@@ -320,6 +322,9 @@ TEST_F(PhishingClassifierTest,
 
   EXPECT_FLOAT_EQ(0.0, verdict_.client_score());
   EXPECT_FALSE(verdict_.is_phishing());
+  // FrameCaptureState::kReady is 0.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.VisualExtractionFrameState", 0, 1);
 }
 
 TEST_F(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {

@@ -35,6 +35,7 @@ if (safe_browsing_mode != 0) {
     public_deps = [ "//base" ]
     deps = [
       "//cc/paint",
+      "//components/crash/core/common:crash_key",
       "//components/paint_preview/common",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/renderer",

@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -54,6 +56,41 @@ std::unique_ptr<SkBitmap> PlaybackOnBackgroundThread(
   return bitmap;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FrameCaptureState)
+enum class FrameCaptureState {
+  kReady = 0,
+  kMissingView = 1,
+  kMissingWidget = 2,
+  kProvisionalWidget = 3,
+  kMaxValue = kProvisionalWidget,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingVisualExtractionFrameState)
+
+const char* FrameCaptureStateToString(FrameCaptureState state) {
+  switch (state) {
+    case FrameCaptureState::kReady:
+      return "Ready";
+    case FrameCaptureState::kMissingView:
+      return "MissingView";
+    case FrameCaptureState::kMissingWidget:
+      return "MissingWidget";
+    case FrameCaptureState::kProvisionalWidget:
+      return "ProvisionalWidget";
+  }
+  NOTREACHED();
+}
+
+void RecordFrameCaptureState(FrameCaptureState state) {
+  base::UmaHistogramEnumeration("SBClientPhishing.VisualExtractionFrameState",
+                                state);
+  static crash_reporter::CrashKeyString<32> capture_state_key(
+      "visual-extraction-frame-state");
+  capture_state_key.Set(FrameCaptureStateToString(state));
+}
+
 }  // namespace
 
 namespace safe_browsing {
@@ -67,6 +104,21 @@ void PhishingVisualFeatureExtractor::ExtractFeatures(
     DoneCallback done_callback) {
   done_callback_ = std::move(done_callback);
   timer_.emplace();
+
+  // Evaluate and log the frame state before attempting to use it.
+  FrameCaptureState capture_state = FrameCaptureState::kReady;
+  if (!frame->View()) {
+    capture_state = FrameCaptureState::kMissingView;
+  } else if (!frame->FrameWidget()) {
+    capture_state = FrameCaptureState::kMissingWidget;
+  } else if (frame->IsProvisional()) {
+    capture_state = FrameCaptureState::kProvisionalWidget;
+  }
+  RecordFrameCaptureState(capture_state);
+
+  // TODO(crbug.com/551990098): We are currently gathering telemetry to prove
+  // this state correlates with the AXObjectCacheImpl::MayHaveHTMLLabel crash.
+
   gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
   gfx::Rect bounds = ToEnclosingRect(gfx::RectF(viewport_size));
 

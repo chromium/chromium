@@ -469,6 +469,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h:VisualClassificationEarlyReturnReason) -->
 
+<!-- LINT.IfChange(SBClientPhishingVisualExtractionFrameState) -->
+
+<enum name="SBClientPhishingVisualExtractionFrameState">
+  <int value="0" label="Ready (Safe to capture)"/>
+  <int value="1" label="Missing View (Tearing down)"/>
+  <int value="2" label="Missing Widget (Tearing down)"/>
+  <int value="3" label="Provisional Widget (Incoming/Not Attached)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.cc:FrameCaptureState) -->
+
 <enum name="SBDeepScanEvent">
   <int value="0" label="Prompt shown"/>
   <int value="1" label="Prompt bypassed"/>
