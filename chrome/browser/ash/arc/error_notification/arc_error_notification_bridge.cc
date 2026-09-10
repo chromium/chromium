@@ -127,7 +127,7 @@ void ArcErrorNotificationBridge::SendErrorDetails(
       message_center::NOTIFICATION_TYPE_SIMPLE /* type */, notification_id,
       base::UTF8ToUTF16(details->title.c_str()), u"" /* message */,
       base::UTF8ToUTF16(name.c_str()) /* display_source */,
-      GURL() /* origin_url */, message_center::NotifierId(),
+      message_center::NotifierId(),
       message_center::RichNotificationData() /* optional_fields */,
       base::MakeRefCounted<ErrorNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr(), std::move(action_handler),

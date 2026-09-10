@@ -224,9 +224,6 @@ void LocaleSwitchNotification::Show(
   // ie "Chromium OS" or similar.
   static const base::NoDestructor<std::u16string> kEmptyDisplaySource;
 
-  // No origin URL is needed since the notification comes from the system.
-  static const base::NoDestructor<GURL> kEmptyOriginUrl;
-
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_LOCALE_SWITCH_NOTIFICATION_TITLE);
 
@@ -253,8 +250,7 @@ void LocaleSwitchNotification::Show(
 
   auto notification = CreateSystemNotificationPtr(
       kNotificationType, notification_id, title, body, *kEmptyDisplaySource,
-      *kEmptyOriginUrl, notifier_id, rich_notification_data, delegate, kIcon,
-      kWarningLevel);
+      notifier_id, rich_notification_data, delegate, kIcon, kWarningLevel);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

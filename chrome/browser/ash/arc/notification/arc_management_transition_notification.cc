@@ -24,7 +24,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "url/gurl.h"
 
 namespace arc {
 
@@ -114,7 +113,7 @@ void ShowManagementTransitionNotification(Profile* profile) {
       kManagementTransitionNotificationId,
       l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_TITLE),
       l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
-      l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
+      l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
       notifier_id, message_center::RichNotificationData(),
       base::MakeRefCounted<NotificationDelegate>(profile),
       GetNotificationIcon(transition),

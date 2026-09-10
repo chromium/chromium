@@ -168,7 +168,6 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
 
   message_center::MessageCenter::Get()->AddNotification(
       notification_builder.SetId(kEolNotificationId)
-          .SetOriginUrl(GURL(kEolNotificationId))
           .SetNotifierId(notifier_id)
           .SetOptionalFields(data)
           .SetDelegate(

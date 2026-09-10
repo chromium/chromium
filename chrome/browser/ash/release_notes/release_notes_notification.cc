@@ -67,7 +67,7 @@ void ReleaseNotesNotification::ShowReleaseNotesNotification() {
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kShowNotificationID,
       std::move(title), std::move(message),
-      l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE), GURL(),
+      l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kShowNotificationID,
                                  NotificationCatalogName::kReleaseNotes),

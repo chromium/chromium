@@ -63,8 +63,7 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
       ash::CreateUserScopedNotificationId(kSkyVaultMigrationNotificationId,
                                           user.username_hash()),
       title, message,
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
-      optional_fields,
+      /*display_source=*/std::u16string(), notifier_id, optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           callback),
       features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon

@@ -134,7 +134,7 @@ void RebootNotificationController::ShowNotification(
   notifier_id.profile_id = user.GetAccountId().GetUserEmail();
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      std::u16string(), GURL(), notifier_id, data, delegate,
+      std::u16string(), notifier_id, data, delegate,
       ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                           : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

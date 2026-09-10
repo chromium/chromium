@@ -19,7 +19,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -95,8 +94,7 @@ void UsbPrinterNotification::ShowNotification() {
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title,
           message,
           l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
-          /*origin_url=*/GURL(), notifier_id,
-          message_center::RichNotificationData(),
+          notifier_id, message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
               weak_factory_.GetWeakPtr()),
           kNotificationPrintingIcon,

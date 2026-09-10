@@ -65,7 +65,7 @@ std::unique_ptr<message_center::Notification> CreateNotification() {
   return CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       DoNotDisturbNotificationController::kDoNotDisturbNotificationId, title,
-      message, /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      message, /*display_source=*/std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDoNotDisturbNotifierId,
                                  NotificationCatalogName::kDoNotDisturb),

@@ -299,7 +299,6 @@ void ShowNotification(
       CreateSystemNotificationPtr(
           type, notification_id, l10n_util::GetStringUTF16(title_id), message,
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
-          GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kScreenCaptureNotifierId,
@@ -333,7 +332,7 @@ void ShowGifProgressNotification() {
       message_center::NOTIFICATION_TYPE_PROGRESS, kScreenCaptureNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_GIF_PROGRESS_TITLE),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_GIF_PROGRESS_MESSAGE),
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE), GURL(),
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kScreenCaptureNotifierId,
                                  NotificationCatalogName::kScreenCapture),

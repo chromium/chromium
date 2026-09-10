@@ -16,8 +16,6 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-class GURL;
-
 namespace gfx {
 struct VectorIcon;
 }
@@ -52,7 +50,6 @@ ASH_PUBLIC_EXPORT message_center::Notification CreateSystemNotification(
     const std::u16string& title,
     const std::u16string& message,
     const std::u16string& display_source,
-    const GURL& origin_url,
     const message_center::NotifierId& notifier_id,
     const message_center::RichNotificationData& optional_fields,
     scoped_refptr<message_center::NotificationDelegate> delegate,
@@ -68,7 +65,6 @@ CreateSystemNotificationPtr(
     const std::u16string& title,
     const std::u16string& message,
     const std::u16string& display_source,
-    const GURL& origin_url,
     const message_center::NotifierId& notifier_id,
     const message_center::RichNotificationData& optional_fields,
     scoped_refptr<message_center::NotificationDelegate> delegate,

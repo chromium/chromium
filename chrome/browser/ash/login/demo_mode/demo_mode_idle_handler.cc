@@ -166,7 +166,6 @@ void ShowNotification() {
           kDemoSessionToSNotificationId, notification_title,
           notification_message,
           /*display_source=*/std::u16string(),
-          /*origin_url=*/GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kDemoSessionToSNotificationId,

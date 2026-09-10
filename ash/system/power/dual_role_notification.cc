@@ -136,7 +136,7 @@ std::unique_ptr<Notification> DualRoleNotification::CreateNotification() {
   std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDualRoleNotificationId, title,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DUAL_ROLE_MESSAGE),
-      std::u16string(), GURL(),
+      std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierDualRole,
                                  NotificationCatalogName::kDualRole),

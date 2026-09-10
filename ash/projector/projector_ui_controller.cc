@@ -29,7 +29,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -59,7 +58,7 @@ void ShowNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           l10n_util::GetStringUTF16(title_id),
           l10n_util::GetStringUTF16(message_id),
-          l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_DISPLAY_SOURCE), GURL(),
+          l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_DISPLAY_SOURCE),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kProjectorNotifierId, NotificationCatalogName::kProjector),

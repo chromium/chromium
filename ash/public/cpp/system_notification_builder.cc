@@ -79,12 +79,6 @@ SystemNotificationBuilder& SystemNotificationBuilder::SetDisplaySource(
   return *this;
 }
 
-SystemNotificationBuilder& SystemNotificationBuilder::SetOriginUrl(
-    const GURL& origin_url) {
-  origin_url_ = origin_url;
-  return *this;
-}
-
 SystemNotificationBuilder& SystemNotificationBuilder::SetNotifierId(
     const message_center::NotifierId& notifier_id) {
   notifier_id_ = notifier_id;
@@ -135,8 +129,8 @@ message_center::Notification SystemNotificationBuilder::Build(
     optional_fields_.timestamp = base::Time::Now();
   }
   return CreateSystemNotification(type_, id_, title_, message_, display_source_,
-                                  origin_url_, notifier_id, optional_fields_,
-                                  delegate_, *small_image_, warning_level_);
+                                  notifier_id, optional_fields_, delegate_,
+                                  *small_image_, warning_level_);
 }
 
 std::unique_ptr<message_center::Notification>

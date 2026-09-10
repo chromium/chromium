@@ -56,8 +56,6 @@ namespace ash {
 
 namespace {
 
-const char kNotificationOriginUrl[] = "chrome://hats";
-
 const char kNotifierHats[] = "ash.hats";
 
 // The state specific UMA enumerations
@@ -427,8 +425,8 @@ void HatsNotificationController::PortalStateChanged(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title_,
           body_,
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
-          GURL(kNotificationOriginUrl), notifier_id,
-          message_center::RichNotificationData(), this, kNotificationGoogleIcon,
+          notifier_id, message_center::RichNotificationData(), this,
+          kNotificationGoogleIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
       message_center::MessageCenter::Get()->AddNotification(
           std::move(notification));

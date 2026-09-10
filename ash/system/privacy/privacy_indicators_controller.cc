@@ -91,7 +91,6 @@ CreatePrivacyIndicatorsNotification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       GetPrivacyIndicatorsNotificationId(app_id), title, std::u16string(),
       /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kPrivacyIndicatorsNotifierId,
                                  NotificationCatalogName::kPrivacyIndicators),

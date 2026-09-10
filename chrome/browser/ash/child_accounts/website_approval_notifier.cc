@@ -108,7 +108,7 @@ void WebsiteApprovalNotifier::MaybeShowApprovalNotification(
                                  base::UTF8ToUTF16(allowed_host)),
       l10n_util::GetStringUTF16(
           IDS_WEBSITE_APPROVED_NOTIFICATION_DISPLAY_SOURCE),
-      GURL(), notifier_id, option_fields,
+      notifier_id, option_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnNotificationClick, url)),
       chromeos::kNotificationSupervisedUserIcon,

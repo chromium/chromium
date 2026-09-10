@@ -316,7 +316,7 @@ bool PowerNotificationController::MaybeShowIncompatibleChargerNotification() {
     std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         kIncompatibleChargerNotificationId, incompatible_charger_title,
-        incompatible_charger_message, std::u16string(), GURL(),
+        incompatible_charger_message, std::u16string(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower,
             NotificationCatalogName::kIncompatibleCharger),
@@ -365,7 +365,7 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
                   ui::GetChromeOSDeviceName(),
                   base::FormatDouble(
                       PowerStatus::Get()->GetPreferredMinimumPower(), 0)),
-        std::u16string(), GURL(),
+        std::u16string(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower,
             on_battery ? NotificationCatalogName::kLowPowerCharger

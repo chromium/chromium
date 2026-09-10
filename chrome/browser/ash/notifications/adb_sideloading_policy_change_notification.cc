@@ -89,7 +89,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
 
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, text,
-      std::u16string() /*display_source*/, GURL(),
+      std::u16string() /*display_source*/,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  notification_id, catalog_name),
       message_center::RichNotificationData(),

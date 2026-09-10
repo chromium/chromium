@@ -340,7 +340,7 @@ void BluetoothNotificationController::NotifyPairing(
   std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       std::u16string() /* title */, message,
-      std::u16string() /* display source */, GURL(),
+      std::u16string() /* display source */,
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierBluetooth,
           NotificationCatalogName::kBluetoothPairingRequest),

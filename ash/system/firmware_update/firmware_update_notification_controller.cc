@@ -22,7 +22,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -112,7 +111,7 @@ void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
               IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_AVAILABLE_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_AVAILABLE_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierFirmwareUpdate,

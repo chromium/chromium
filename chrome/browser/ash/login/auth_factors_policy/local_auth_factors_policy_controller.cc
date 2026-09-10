@@ -101,8 +101,7 @@ void ShowNotification(Profile* profile,
 
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(), notifier_id, optional_fields,
+      /*display_source=*/std::u16string(), notifier_id, optional_fields,
       base::MakeRefCounted<LocalAuthFactorsNotificationDelegate>(profile),
       ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                           : vector_icons::kBusinessOldIcon,

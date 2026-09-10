@@ -379,7 +379,7 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kConfirmationNotificationId,
-          GetTitle(), FormatMessage(remote_user_email, style_), u"", GURL(),
+          GetTitle(), FormatMessage(remote_user_email, style_), u"",
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kConfirmationNotifierId,

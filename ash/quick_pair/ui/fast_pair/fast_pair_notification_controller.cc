@@ -73,7 +73,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
           /*id=*/id,
           /*title=*/std::u16string(),
           /*message=*/std::u16string(),
-          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+          /*display_source=*/std::u16string(),
           /*notifier_id=*/kNotifierFastPair,
           /*optional_fields=*/{},
           /*delegate=*/nullptr,

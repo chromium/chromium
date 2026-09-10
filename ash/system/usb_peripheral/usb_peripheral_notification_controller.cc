@@ -124,7 +124,7 @@ void UsbPeripheralNotificationController::OnInvalidDpCableWarning() {
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_DISPLAY_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral,
@@ -157,7 +157,7 @@ void UsbPeripheralNotificationController::OnInvalidUSB4ValidTBTCableWarning() {
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral,
@@ -192,7 +192,7 @@ void UsbPeripheralNotificationController::OnInvalidUSB4CableWarning() {
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_USB4_SUPPORT_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral,
@@ -226,7 +226,7 @@ void UsbPeripheralNotificationController::OnInvalidTBTCableWarning() {
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_NO_TBT_SUPPORT_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral,
@@ -259,7 +259,7 @@ void UsbPeripheralNotificationController::OnSpeedLimitingCableWarning() {
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_PERFORMANCE_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_SPEED_LIMITED_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral,
@@ -292,7 +292,7 @@ void UsbPeripheralNotificationController::OnUsbDeviceOrEndpointLimit() {
               IDS_ASH_USB_NOTIFICATION_LIMIT_REACHED_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_USB_NOTIFICATION_LIMIT_REACHED_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierUsbPeripheral,

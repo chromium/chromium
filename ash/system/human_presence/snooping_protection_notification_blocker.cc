@@ -315,7 +315,7 @@ SnoopingProtectionNotificationBlocker::CreateInfoNotification() const {
       l10n_util::GetStringUTF16(
           IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_TITLE),
       hps_internal::GetTitlesBlockedMessage(titles),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      /*display_source=*/std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kHPSNotify),

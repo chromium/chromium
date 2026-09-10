@@ -22,7 +22,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#include "url/gurl.h"
 
 namespace policy {
 
@@ -64,8 +63,8 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUpcomingLogoutNotificationId, title, body,
-          std::u16string() /* display_source */, GURL() /* origin_url */,
-          notifier_id, data, nullptr /* delegate */,
+          std::u16string() /* display_source */, notifier_id, data,
+          nullptr /* delegate */,
           features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                             : vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING));
@@ -95,8 +94,8 @@ void DeviceRestrictionScheduleControllerDelegateImpl::
   message_center::MessageCenter::Get()->AddNotification(
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kPostLogoutNotificationId,
-          title, body, std::u16string() /* display_source */,
-          GURL() /* origin_url */, notifier_id, data, nullptr /* delegate */,
+          title, body, std::u16string() /* display_source */, notifier_id, data,
+          nullptr /* delegate */,
           features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                             : vector_icons::kBusinessOldIcon,
           message_center::SystemNotificationWarningLevel::WARNING));

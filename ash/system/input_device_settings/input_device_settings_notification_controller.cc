@@ -608,7 +608,7 @@ void InputDeviceSettingsNotificationController::
       GetRightClickRewriteNotificationTitle(active_modifier),
       GetRightClickRewriteNotificationMessage(blocked_modifier,
                                               active_modifier),
-      std::u16string(), GURL(),
+      std::u16string(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           NotificationCatalogName::kEventRewriterDeprecation),
@@ -850,7 +850,7 @@ void InputDeviceSettingsNotificationController::
       l10n_util::GetStringUTF16(IDS_ASH_SETTINGS_SHORTCUT_NOTIFICATION_TITLE),
       GetSixPackNotificationMessage(key_code, blocked_modifier,
                                     active_modifier),
-      std::u16string(), GURL(),
+      std::u16string(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           NotificationCatalogName::kEventRewriterDeprecation),
@@ -937,7 +937,7 @@ void InputDeviceSettingsNotificationController::
       l10n_util::GetStringFUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_POINTING_STICK,
           peripheral_name),
-      std::u16string(), GURL(),
+      std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -999,7 +999,7 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE),
-      message, std::u16string(), GURL(),
+      message, std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -1037,7 +1037,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_KEYBOARD_TITLE),
-      message, std::u16string(), GURL(),
+      message, std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -1075,7 +1075,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_WELCOME_EXPERIENCE_TOUCHPAD_TITLE),
-      message, std::u16string(), GURL(),
+      message, std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),
@@ -1115,7 +1115,7 @@ void InputDeviceSettingsNotificationController::
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_GRAPHICS_TABLET_TITLE),
-      message, std::u16string(), GURL(),
+      message, std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kInputDeviceSettings),

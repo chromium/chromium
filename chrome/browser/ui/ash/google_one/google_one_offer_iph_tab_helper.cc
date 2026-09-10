@@ -128,7 +128,7 @@ std::unique_ptr<message_center::Notification> CreateGoogleOneOfferNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kIPHGoogleOneOfferNotificationId, base::UTF8ToUTF16(notification_title),
       base::UTF8ToUTF16(notification_message),
-      base::UTF8ToUTF16(notification_display_source), GURL(), notifier_id,
+      base::UTF8ToUTF16(notification_display_source), notifier_id,
       rich_notification_data,
       base::MakeRefCounted<DriveIphTabHelperNotificationDelegate>(tracker),
       chromeos::kRedeemIcon,

@@ -20,7 +20,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
-#include "url/gurl.h"
 
 using message_center::ButtonInfo;
 using message_center::HandleNotificationClickDelegate;
@@ -73,9 +72,6 @@ void Show(const user_manager::User& user,
   const std::string notification_id =
       CreateUserScopedNotificationId(kNotificationId, user.username_hash());
 
-  // No origin URL is needed since the notification comes from the system.
-  const GURL kEmptyOriginUrl;
-
   // Empty display source to show OS name as source.
   const std::u16string kEmptyDisplaySource;
 
@@ -94,7 +90,7 @@ void Show(const user_manager::User& user,
 
   auto notification = ash::CreateSystemNotificationPtr(
       kNotificationType, notification_id, kTitle, kBody, kEmptyDisplaySource,
-      kEmptyOriginUrl, notifier_id, notification_data,
+      notifier_id, notification_data,
       base::MakeRefCounted<HandleNotificationClickDelegate>(callback_wrapper),
       kIcon, kWarningLevel);
 

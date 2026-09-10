@@ -204,8 +204,8 @@ NotificationPtr CreateSystemNotification(
     message_center::RichNotificationData optional_fields) {
   return ash::CreateSystemNotificationPtr(
       NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(), NotifierId(),
-      optional_fields, std::move(delegate), ash::kFolderIcon,
+      GetStringUTF16(IDS_FILEMANAGER_APP_NAME), NotifierId(), optional_fields,
+      std::move(delegate), ash::kFolderIcon,
       SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -282,7 +282,7 @@ NotificationPtr SystemNotificationManager::CreateProgressNotification(
 
   return ash::CreateSystemNotificationPtr(
       NOTIFICATION_TYPE_PROGRESS, notification_id, title, message, app_name_,
-      GURL(), NotifierId(), rich_data,
+      NotifierId(), rich_data,
       MakeRefCounted<HandleNotificationClickDelegate>(
           BindRepeating(&SystemNotificationManager::HandleProgressClick,
                         weak_ptr_factory_.GetWeakPtr(), notification_id)),
@@ -330,7 +330,7 @@ NotificationPtr SystemNotificationManager::CreateIOTaskProgressNotification(
 
   auto notification = ash::CreateSystemNotificationPtr(
       NOTIFICATION_TYPE_PROGRESS, notification_id, title, message, app_name_,
-      GURL(), NotifierId(), rich_data,
+      NotifierId(), rich_data,
       MakeRefCounted<IOTaskProgressNotificationClickDelegate>(
           std::move(notification_click_handler), paused),
       ash::kFolderIcon, SystemNotificationWarningLevel::NORMAL);

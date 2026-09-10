@@ -105,7 +105,7 @@ void DeprecationNotificationController::ShowNotification(
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, id,
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE), message_body,
-      std::u16string(), GURL(),
+      std::u16string(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           NotificationCatalogName::kEventRewriterDeprecation),

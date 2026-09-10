@@ -308,7 +308,6 @@ void ScreenLayoutObserver::CreateOrUpdateNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, message,
       additional_message,
       std::u16string(),  // display_source
-      GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierDisplay,
                                  NotificationCatalogName::kDisplayChange),

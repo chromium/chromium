@@ -47,7 +47,7 @@ LockScreenNotificationController::CreateNotification() {
       kLockScreenNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_LOCKSCREEN_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(IDS_ASH_LOCKSCREEN_NOTIFICATION_DESCRIPTION),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      /*display_source=*/std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kLockScreenNotifierId,
                                  NotificationCatalogName::kLockScreen),

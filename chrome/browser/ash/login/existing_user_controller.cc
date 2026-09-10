@@ -1004,7 +1004,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
           }));
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
-      title, message, std::u16string(), GURL(),
+      title, message, std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kAutoLaunchNotifierId,
                                  NotificationCatalogName::kAutoLaunch),

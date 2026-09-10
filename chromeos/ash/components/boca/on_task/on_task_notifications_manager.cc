@@ -24,7 +24,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#include "url/gurl.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -246,8 +245,7 @@ void OnTaskNotificationsManager::CreateNotificationInternal(
   std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       NotificationType::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
       message,
-      /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(), params.notifier_id,
+      /*display_source=*/std::u16string(), params.notifier_id,
       message_center::RichNotificationData(),
       /*delegate=*/nullptr, icon, SystemNotificationWarningLevel::NORMAL);
 

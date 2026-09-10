@@ -54,7 +54,7 @@ CreateAutomatedMountErrorNotification(Profile& profile) {
       l10n_util::GetStringUTF16(IDS_ONEDRIVE_AUTOMATED_MOUNT_ERROR_MESSAGE),
       /*display_source=*/
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),
-      /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(

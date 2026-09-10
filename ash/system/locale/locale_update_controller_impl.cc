@@ -120,7 +120,7 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_CHANGE_TITLE),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_LOCALE_CHANGE_MESSAGE,
                                  from_locale_name, to_locale_name),
-      std::u16string() /* display_source */, GURL(),
+      std::u16string() /* display_source */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierLocale,
                                  NotificationCatalogName::kLocaleUpdate),

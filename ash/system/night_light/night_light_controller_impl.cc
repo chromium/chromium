@@ -603,7 +603,7 @@ void NightLightControllerImpl::ShowAutoNightLightNotification() {
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           l10n_util::GetStringUTF16(IDS_ASH_AUTO_NIGHT_LIGHT_NOTIFY_TITLE),
           l10n_util::GetStringUTF16(IDS_ASH_AUTO_NIGHT_LIGHT_NOTIFY_BODY),
-          std::u16string(), GURL(),
+          std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
               NotificationCatalogName::kNightLight),

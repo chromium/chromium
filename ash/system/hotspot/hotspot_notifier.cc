@@ -296,7 +296,7 @@ HotspotNotifier::CreateNotification(
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title_id,
           message_id,
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHotspot,
               NotificationCatalogName::kHotspot),

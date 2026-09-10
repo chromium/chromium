@@ -57,7 +57,7 @@ void GnubbyNotification::ShowNotification() {
 
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kOOBEGnubbyNotificationId,
-      title, message, std::u16string(), GURL(), message_center::NotifierId(),
+      title, message, std::u16string(), message_center::NotifierId(),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&GnubbyNotification::DismissNotification,

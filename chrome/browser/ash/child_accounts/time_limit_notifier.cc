@@ -21,7 +21,6 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -63,7 +62,7 @@ void ShowNotification(std::u16string title,
       CreateUserScopedNotificationId(notification_id, user.username_hash()),
       title, message,
       l10n_util::GetStringUTF16(IDS_TIME_LIMIT_NOTIFICATION_DISPLAY_SOURCE),
-      GURL(), notifier_id, option_fields,
+      notifier_id, option_fields,
       base::MakeRefCounted<message_center::NotificationDelegate>(),
       chromeos::kNotificationSupervisedUserIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

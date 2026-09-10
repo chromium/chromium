@@ -121,8 +121,6 @@ void FrozenUpdateNotification::ShowNotification() {
       std::make_unique<message_center::Notification>(
           notification_builder
               .SetId(FrozenUpdateNotification::kFrozenUpdateNotificationId)
-              .SetOriginUrl(
-                  GURL(FrozenUpdateNotification::kFrozenUpdateNotificationId))
               .SetOptionalFields(data)
               .SetDelegate(base::MakeRefCounted<
                            message_center::ThunkNotificationDelegate>(

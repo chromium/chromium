@@ -119,7 +119,7 @@ CreateDeviceAccountErrorNotification(
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
           error_message,
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
-          /*origin_url=*/GURL(), notifier_id, data,
+          notifier_id, data,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&HandleDeviceAccountReauthNotificationClick)),
           ::features::IsRoundedIconsEnabled()
@@ -382,8 +382,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
           secondary_account_notification_id_, message_title, message_body,
           l10n_util::GetStringUTF16(
               IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE),
-          /*origin_url=*/GURL(), notifier_id,
-          message_center::RichNotificationData(),
+          notifier_id, message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(
                   &SigninErrorNotifier::

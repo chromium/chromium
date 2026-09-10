@@ -124,7 +124,7 @@ void DisplayNotification(const std::u16string& title,
                          const std::u16string& text) {
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title, text,
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      /*display_source=*/std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierSecurityTokenSession,
                                  NotificationCatalogName::kSecurityToken),

@@ -56,7 +56,7 @@ void SystemProxyNotification::Show() {
 
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title, body,
-      std::u16string() /*display_source=*/, GURL() /*origin_url=*/,
+      std::u16string() /*display_source=*/,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kSystemProxy),

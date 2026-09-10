@@ -329,7 +329,6 @@ void MultiDeviceNotificationPresenter::ShowNotification(
       CreateSystemNotificationPtr(
           message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
           message, std::u16string() /* display_source */,
-          GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierMultiDevice, NotificationCatalogName::kMultiDevice),

@@ -146,7 +146,7 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
       message_center::NOTIFICATION_TYPE_SIMPLE, kMobileDataNotificationId,
       l10n_util::GetStringUTF16(IDS_MOBILE_DATA_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(IDS_3G_NOTIFICATION_MESSAGE),
-      std::u16string() /* display_source */, GURL(),
+      std::u16string() /* display_source */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierMobileData,
                                  ash::NotificationCatalogName::kMobileData),

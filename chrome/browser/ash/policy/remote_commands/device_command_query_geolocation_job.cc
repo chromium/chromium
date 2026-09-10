@@ -109,8 +109,7 @@ void DeviceCommandQueryGeolocationJob::ShowLocationReportedNotificationIfNeeded(
       message_center::NOTIFICATION_TYPE_SIMPLE, kLocationSavedNotificationId,
       l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_LOCATED_TITLE),
       l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_LOCATED_MESSAGE),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
-      notification_data,
+      /*display_source=*/std::u16string(), notifier_id, notification_data,
       base::MakeRefCounted<LocationSavedNotificationDelegate>(local_state),
       features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                         : vector_icons::kBusinessOldIcon,

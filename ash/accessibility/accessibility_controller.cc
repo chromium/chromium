@@ -539,7 +539,7 @@ void ShowAccessibilityNotification(
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          text, display_source, GURL(),
+          text, display_source,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierAccessibility, catalog_name),

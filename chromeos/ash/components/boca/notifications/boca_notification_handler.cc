@@ -32,7 +32,6 @@ std::unique_ptr<message_center::Notification> CreateBaseNotificationForMessage(
       notification_id,
       /*title=*/l10n_util::GetStringUTF16(IDS_BOCA_NOTIFICATION_TITLE), message,
       /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT,
           BocaNotificationHandler::kSessionNotificationId,

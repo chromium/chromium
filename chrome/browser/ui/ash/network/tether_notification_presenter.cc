@@ -241,7 +241,7 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE),
-      std::u16string() /* display_source */, GURL() /* origin_url */,
+      std::u16string() /* display_source */,
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierTether,
           NotificationCatalogName::kTetherConnectionError),

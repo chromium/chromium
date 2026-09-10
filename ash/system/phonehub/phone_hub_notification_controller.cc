@@ -426,7 +426,7 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
               IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_MESSAGE),
-          std::u16string() /*display_source */, GURL() /* origin_url */,
+          std::u16string() /*display_source */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kPhoneHubInstantTetherNotificationId,
@@ -491,7 +491,7 @@ PhoneHubNotificationController::CreateCameraRollGenericNotification(
           IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_GENERIC_BODY,
           base::UTF8ToUTF16(metadata.file_name())),
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME),
-      /*origin_url=*/GURL(), notifier_id, optional_fields, std::move(delegate),
+      notifier_id, optional_fields, std::move(delegate),
       kPhoneHubCameraRollMenuDownloadIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 }
@@ -535,7 +535,7 @@ PhoneHubNotificationController::CreateCameraRollStorageNotification(
           IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_STORAGE_BODY,
           base::UTF8ToUTF16(metadata.file_name())),
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME),
-      /*origin_url=*/GURL(), notifier_id, optional_fields, std::move(delegate),
+      notifier_id, optional_fields, std::move(delegate),
       kPhoneHubCameraRollMenuDownloadIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 }
@@ -577,7 +577,7 @@ PhoneHubNotificationController::CreateCameraRollNetworkNotification(
           IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_NETWORK_BODY,
           base::UTF8ToUTF16(metadata.file_name())),
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME),
-      /*origin_url=*/GURL(), notifier_id, optional_fields, std::move(delegate),
+      notifier_id, optional_fields, std::move(delegate),
       kPhoneHubCameraRollMenuDownloadIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 }

@@ -29,7 +29,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "url/gurl.h"
 
 namespace {
 constexpr char kShowNotificationId[] = "show_app_controls_notification";
@@ -124,8 +123,7 @@ void AppControlsNotifier::ShowNotification() {
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title,
       message,
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
-      rich_notification_data,
+      /*display_source=*/std::u16string(), notifier_id, rich_notification_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&AppControlsNotifier::HandleClick,
                               weak_ptr_factory_.GetWeakPtr())),

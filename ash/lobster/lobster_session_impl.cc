@@ -129,7 +129,7 @@ void DisplaySuccessfulImageDownloadNotification(
           /*id=*/kLobsterSuccessfulImageDownloadNotificationId,
           /*title=*/GetSuccessfulImageDownloadNotificationTitle(),
           /*message=*/base::UTF8ToUTF16(image_path.BaseName().value()),
-          /*display_source=*/GetDownloadNotificationSourceLabel(), GURL(),
+          /*display_source=*/GetDownloadNotificationSourceLabel(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kLobsterSuccessfulImageDownloadNotifierId,
@@ -173,7 +173,7 @@ void DisplayFailedImageDownloadNotification(const base::FilePath& image_path) {
           GetFailedImageDownloadNotificationTitle(
               image_path.BaseName().value()),
           /*message=*/GetFailedImageDownloadNotificationMessage(),
-          /*display_source=*/GetDownloadNotificationSourceLabel(), GURL(),
+          /*display_source=*/GetDownloadNotificationSourceLabel(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kLobsterFailedImageDownloadNotifierId,

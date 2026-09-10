@@ -599,7 +599,7 @@ void AppTimeController::ShowNotificationForApp(
 
   auto message_center_notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      notification_source, GURL(), notifier_id, option_fields,
+      notification_source, notifier_id, option_fields,
       notification == AppNotification::kTimeLimitChanged
           ? base::MakeRefCounted<
                 message_center::HandleNotificationClickDelegate>(

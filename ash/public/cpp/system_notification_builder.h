@@ -18,8 +18,6 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-class GURL;
-
 namespace gfx {
 struct VectorIcon;
 }
@@ -52,7 +50,6 @@ namespace ash {
 //          l10n_util::GetStringUTF16(
 //              IDS_NOTIFICATION1_MESSAGE),
 //          /*display_source=*/std::u16string(),
-//          /*origin_url=*/GURL(),
 //          message_center::NotifierId(
 //              message_center::NotifierType::SYSTEM_COMPONENT,
 //              kFoo,
@@ -79,7 +76,6 @@ namespace ash {
 //          l10n_util::GetStringUTF16(
 //              IDS_NOTIFICATION2_MESSAGE),
 //          /*display_source=*/std::u16string(),
-//          /*origin_url=*/GURL(),
 //          message_center::NotifierId(
 //              message_center::NotifierType::SYSTEM_COMPONENT,
 //              kFoo,
@@ -211,10 +207,6 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   SystemNotificationBuilder& SetDisplaySource(
       const std::u16string& display_source);
 
-  // Set the origin URL that requested the notification.
-  // Default: Empty, invalid URL
-  SystemNotificationBuilder& SetOriginUrl(const GURL& origin_url);
-
   // Set the notifier ID.
   // Default: Invalid NotifierId
   SystemNotificationBuilder& SetNotifierId(
@@ -276,7 +268,6 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   std::u16string title_;
   std::u16string message_;
   std::u16string display_source_;
-  GURL origin_url_;
   std::optional<message_center::NotifierId> notifier_id_;
   NotificationCatalogName catalog_name_ = NotificationCatalogName::kNone;
   scoped_refptr<message_center::NotificationDelegate> delegate_ = nullptr;

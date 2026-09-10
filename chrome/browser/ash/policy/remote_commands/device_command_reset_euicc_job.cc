@@ -113,7 +113,7 @@ void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {
       l10n_util::GetStringUTF16(IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_MESSAGE),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      /*display_source=*/std::u16string(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierESimPolicy,
           ash::NotificationCatalogName::kDeviceCommandReset),

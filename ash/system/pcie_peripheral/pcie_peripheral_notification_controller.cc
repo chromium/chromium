@@ -179,7 +179,7 @@ void PciePeripheralNotificationController::NotifyLimitedPerformance() {
               IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierPciePeripheral,
@@ -211,7 +211,7 @@ void PciePeripheralNotificationController::NotifyGuestModeNotification(
                     IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED)
               : l10n_util::GetStringUTF16(
                     IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierPciePeripheral, NotificationCatalogName::kPcieGuestMode),
@@ -237,7 +237,7 @@ void PciePeripheralNotificationController::
               IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_DEVICE_BLOCKED_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_DEVICE_BLOCKED_BODY),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierPciePeripheral,

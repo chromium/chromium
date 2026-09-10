@@ -20,7 +20,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "url/gurl.h"
 
 namespace arc::arc_dlc_install_notification_manager {
 
@@ -63,7 +62,7 @@ void Show(NotificationType notification_type) {
           message_center::NOTIFICATION_TYPE_SIMPLE,
           std::string(GetNotificationId(notification_type)),
           l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE),
-          GetMessage(notification_type), std::u16string(), GURL(), notifier_id,
+          GetMessage(notification_type), std::u16string(), notifier_id,
           message_center::RichNotificationData(), std::move(click_delegate),
           features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
                                             : vector_icons::kSettingsOldIcon,

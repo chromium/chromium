@@ -186,7 +186,7 @@ void ShowActionProgressNotification(
           /*title=*/GetTitleForActionProgressNotification(action_case),
           /*message=*/u"",
           /*display_source=*/
-          GetDisplaySourceForActionProgressNotification(action_case), GURL(),
+          GetDisplaySourceForActionProgressNotification(action_case),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kScannerNotifierId, NotificationCatalogName::kScannerAction),

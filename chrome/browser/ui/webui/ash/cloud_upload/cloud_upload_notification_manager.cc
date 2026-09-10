@@ -97,7 +97,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
       /*id=*/notification_id_, title,
       // TODO(b/272601262) Display or delete this message.
       /*message=*/{}, /*display_source=*/display_source_,
-      /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -140,7 +140,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, title, message,
       /*display_source=*/display_source_,
-      /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -178,7 +178,7 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, title, base::UTF8ToUTF16(message),
       /*display_source=*/display_source_,
-      /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(

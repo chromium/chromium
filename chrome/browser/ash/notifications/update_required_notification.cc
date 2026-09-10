@@ -158,7 +158,7 @@ void UpdateRequiredNotification::DisplayNotification(
 
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kUpdateRequiredNotificationId,
-      title, message, std::u16string() /*display_source*/, GURL(),
+      title, message, std::u16string() /*display_source*/,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kUpdateRequiredNotificationId,
                                  NotificationCatalogName::kUpdateRequired),

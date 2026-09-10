@@ -66,7 +66,7 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kInfoNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_TITLE),
       notification_message,
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      /*display_source=*/std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId,
                                  NotificationCatalogName::kAdaptiveCharging),

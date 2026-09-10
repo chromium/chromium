@@ -21,7 +21,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
-#include "url/gurl.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -95,7 +94,6 @@ void SpotlightNotificationHandler::
           IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE,
           base::NumberToString16(notification_duration_.InSeconds())),
       /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(),
       NotifierId(NotifierType::SYSTEM_COMPONENT, kSpotlightNotifierId,
                  ash::NotificationCatalogName::kBocaSpotlightStarted),
       message_center::RichNotificationData(), /*delegate=*/nullptr,

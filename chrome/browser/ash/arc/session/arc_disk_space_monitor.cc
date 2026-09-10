@@ -175,7 +175,7 @@ void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
       l10n_util::GetStringUTF16(title_id),
       l10n_util::GetStringUTF16(message_id),
       l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
-      /*origin_url=*/GURL(), notifier_id,
+      notifier_id,
       /*optional_fields=*/message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([](std::optional<int> button_index) {})),

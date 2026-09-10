@@ -24,7 +24,6 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
   EXPECT_EQ(notification.title(), u"");
   EXPECT_EQ(notification.message(), u"");
   EXPECT_EQ(notification.display_source(), u"");
-  EXPECT_FALSE(notification.origin_url().is_valid());
   EXPECT_EQ(notification.delegate(), nullptr);
   EXPECT_EQ(&notification.vector_small_image(), &gfx::VectorIcon::EmptyIcon());
   EXPECT_EQ(notification.rich_notification_data().progress, 0);
@@ -39,7 +38,6 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
           .SetTitle(u"title")
           .SetMessage(u"message")
           .SetDisplaySource(u"test")
-          .SetOriginUrl(GURL("https://chromium.org"))
           .SetNotifierId(message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, "notifier id",
               NotificationCatalogName::kTestCatalogName))
@@ -59,7 +57,6 @@ TEST(SystemNotificationBuilderTest, TrivialSetters) {
   EXPECT_EQ(notification.title(), u"title");
   EXPECT_EQ(notification.message(), u"message");
   EXPECT_EQ(notification.display_source(), u"test");
-  EXPECT_TRUE(notification.origin_url().is_valid());
   EXPECT_NE(notification.delegate(), nullptr);
   EXPECT_EQ(
       &notification.vector_small_image(),

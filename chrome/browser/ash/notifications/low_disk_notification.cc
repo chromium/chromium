@@ -139,7 +139,7 @@ LowDiskNotification::CreateNotification(Severity severity) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kLowDiskId, title, message,
-          std::u16string(), GURL(), notifier_id, optional_fields,
+          std::u16string(), notifier_id, optional_fields,
           new message_center::HandleNotificationClickDelegate(on_click),
           ash::kNotificationStorageFullIcon, warning_level);
 

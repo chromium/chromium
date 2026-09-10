@@ -213,7 +213,7 @@ void CellularSetupNotifier::ShowCellularSetupNotification() {
               IDS_ASH_NETWORK_CELLULAR_SETUP_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_NETWORK_CELLULAR_SETUP_NOTIFICATION_MESSAGE),
-          /*display_source=*/std::u16string(), GURL(),
+          /*display_source=*/std::u16string(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierCellularSetup, NotificationCatalogName::kCellularSetup),

@@ -105,7 +105,7 @@ void ScreenSecurityController::CreateNotification(
       is_screen_access_notification ? kScreenAccessNotificationId
                                     : kRemotingScreenShareNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE),
-      message, std::u16string() /* display_source */, GURL(),
+      message, std::u16string() /* display_source */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kPrivacyIndicatorsNotifierId,
                                  NotificationCatalogName::kPrivacyIndicators),

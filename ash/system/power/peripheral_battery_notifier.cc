@@ -47,7 +47,6 @@ constexpr base::TimeDelta kNotificationInterval = base::Seconds(60);
 
 constexpr char kNotifierStylusBattery[] = "ash.stylus-battery";
 
-constexpr char kNotificationOriginUrl[] = "chrome://peripheral-battery";
 constexpr char kNotifierNonStylusBattery[] = "power.peripheral-battery";
 
 // Prefix added to the key of a device to generate a unique ID when posting
@@ -61,7 +60,6 @@ struct NotificationParams {
   std::u16string title;
   std::u16string message;
   std::string notifier_name;
-  GURL url;
   raw_ptr<const gfx::VectorIcon> icon;
 };
 
@@ -70,12 +68,10 @@ NotificationParams GetNonStylusNotificationParams(const std::string& map_key,
                                                   uint8_t battery_level,
                                                   bool is_bluetooth) {
   return NotificationParams{
-      kPeripheralDeviceIdPrefix + map_key,
-      name,
+      kPeripheralDeviceIdPrefix + map_key, name,
       l10n_util::GetStringFUTF16Int(
           IDS_ASH_LOW_PERIPHERAL_BATTERY_NOTIFICATION_TEXT, battery_level),
       kNotifierNonStylusBattery,
-      GURL(kNotificationOriginUrl),
       is_bluetooth ? &kNotificationBluetoothBatteryWarningIcon
                    : &kNotificationBatteryCriticalIcon};
 }
@@ -85,9 +81,7 @@ NotificationParams GetStylusNotificationParams() {
       PeripheralBatteryNotifier::kStylusNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_LOW_STYLUS_BATTERY_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(IDS_ASH_LOW_STYLUS_BATTERY_NOTIFICATION_BODY),
-      kNotifierStylusBattery,
-      GURL(),
-      &kNotificationStylusBatteryWarningIcon};
+      kNotifierStylusBattery, &kNotificationStylusBatteryWarningIcon};
 }
 
 }  // namespace
@@ -259,7 +253,7 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
 
   auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
-      params.message, std::u16string(), params.url,
+      params.message, std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  params.notifier_name,
                                  NotificationCatalogName::kPeripheralBattery),

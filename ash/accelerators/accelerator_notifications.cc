@@ -92,7 +92,7 @@ std::unique_ptr<Notification> CreateNotification(
     const RichNotificationData& rich_data = RichNotificationData()) {
   return CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      std::u16string() /* display source */, GURL(),
+      std::u16string() /* display source */,
       NotifierId(NotifierType::SYSTEM_COMPONENT, kNotifierAccelerator,
                  catalog_name),
       rich_data, click_handler, icon, SystemNotificationWarningLevel::NORMAL);

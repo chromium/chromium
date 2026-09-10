@@ -66,7 +66,7 @@ void ShowArcMigrationGuideNotification(const user_manager::User& user) {
   auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_TITLE),
-      message, std::u16string(), GURL(), notifier_id,
+      message, std::u16string(), notifier_id,
       message_center::RichNotificationData(), std::move(delegate),
       features::IsRoundedIconsEnabled() ? vector_icons::kSettingsFilledIcon
                                         : vector_icons::kSettingsOldIcon,

@@ -240,8 +240,7 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
           l10n_util::GetStringUTF16(parameters.title_id),
           l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
-          /*origin_url=*/GURL(), notifier_id,
-          message_center::RichNotificationData(),
+          notifier_id, message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               parameters.click_action),
           ::features::IsRoundedIconsEnabled()

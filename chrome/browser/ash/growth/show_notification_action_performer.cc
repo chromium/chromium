@@ -29,7 +29,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "url/gurl.h"
 
 namespace {
 
@@ -221,7 +220,6 @@ void ShowNotificationActionPerformer::Run(
           base::UTF8ToUTF16(show_notification_params->title),
           base::UTF8ToUTF16(show_notification_params->message),
           /*display_source=*/std::u16string(),
-          /*origin_url=*/GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, id,
               ash::NotificationCatalogName::kGrowthFramework),

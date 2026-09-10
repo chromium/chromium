@@ -272,8 +272,7 @@ void ShowSignInNotification(
               IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_TITLE),
           l10n_util::GetStringUTF16(
               IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_MESSAGE),
-          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          notifier_id, optional_fields,
+          /*display_source=*/std::u16string(), notifier_id, optional_fields,
           /*delegate=*/nullptr,
           features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                             : vector_icons::kBusinessOldIcon,

@@ -9,6 +9,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -23,7 +24,6 @@ message_center::Notification CreateSystemNotification(
     const std::u16string& title,
     const std::u16string& message,
     const std::u16string& display_source,
-    const GURL& origin_url,
     const message_center::NotifierId& notifier_id,
     const message_center::RichNotificationData& optional_fields,
     scoped_refptr<message_center::NotificationDelegate> delegate,
@@ -37,7 +37,7 @@ message_center::Notification CreateSystemNotification(
                                             message,
                                             ui::ImageModel(),
                                             display_source,
-                                            origin_url,
+                                            /*origin_url=*/GURL(),
                                             notifier_id,
                                             optional_fields,
                                             delegate};
@@ -67,7 +67,6 @@ std::unique_ptr<message_center::Notification> CreateSystemNotificationPtr(
     const std::u16string& title,
     const std::u16string& message,
     const std::u16string& display_source,
-    const GURL& origin_url,
     const message_center::NotifierId& notifier_id,
     const message_center::RichNotificationData& optional_fields,
     scoped_refptr<message_center::NotificationDelegate> delegate,
@@ -75,8 +74,8 @@ std::unique_ptr<message_center::Notification> CreateSystemNotificationPtr(
     message_center::SystemNotificationWarningLevel warning_level) {
   return std::make_unique<message_center::Notification>(
       CreateSystemNotification(type, id, title, message, display_source,
-                               origin_url, notifier_id, optional_fields,
-                               delegate, small_image, warning_level));
+                               notifier_id, optional_fields, delegate,
+                               small_image, warning_level));
 }
 
 }  // namespace ash

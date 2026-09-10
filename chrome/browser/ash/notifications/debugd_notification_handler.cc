@@ -65,7 +65,7 @@ std::unique_ptr<Notification> DebugdNotificationHandler::CreateNotification() {
       message_center::NOTIFICATION_TYPE_SIMPLE, kPacketCaptureNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED),
       /*message=*/std::u16string(),
-      /*display_source=*/std::u16string(), GURL(),
+      /*display_source=*/std::u16string(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierPacketCapture,
                                  NotificationCatalogName::kPacketCapture),

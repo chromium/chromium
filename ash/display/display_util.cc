@@ -167,7 +167,6 @@ void ShowDisplayErrorNotification(const std::u16string& message,
           std::u16string(),  // title
           message,
           std::u16string(),  // display_source
-          GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierDisplayError, NotificationCatalogName::kDisplayError),
