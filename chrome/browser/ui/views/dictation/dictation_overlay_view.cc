@@ -11,9 +11,13 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -54,6 +58,20 @@ namespace {
 
 constexpr int kCornerRadius = 16;
 constexpr int kTeardropCornerRadius = 4;
+
+FullscreenController* GetFullscreenController(
+    content::WebContents* web_contents) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return nullptr;
+  }
+  ExclusiveAccessManager* exclusive_access_manager =
+      ExclusiveAccessManager::From(tab->GetBrowserWindowInterface());
+  return exclusive_access_manager
+             ? exclusive_access_manager->fullscreen_controller()
+             : nullptr;
+}
 
 class DictationOverlayContentsView : public views::View {
   METADATA_HEADER(DictationOverlayContentsView, views::View)
@@ -202,6 +220,7 @@ void DictationOverlayView::UpdatePosition(
 
 void DictationOverlayView::OnStartedStream(content::GlobalDOMNodeId target_id) {
   focus_selection_bounds_changed_subscription_ = {};
+  fullscreen_subscription_ = {};
 
   content::RenderFrameHost* target_rfh =
       target_id.document.AsRenderFrameHostIfValid();
@@ -221,6 +240,14 @@ void DictationOverlayView::OnStartedStream(content::GlobalDOMNodeId target_id) {
           &DictationOverlayView::OnFocusSelectionBoundsChanged,
           base::Unretained(this)));
 
+  if (FullscreenController* fullscreen_controller =
+          GetFullscreenController(web_contents)) {
+    fullscreen_subscription_ =
+        fullscreen_controller->RegisterOnFullscreenStateChanged(
+            base::BindRepeating(&DictationOverlayView::OnFullscreenStateChanged,
+                                base::Unretained(this)));
+  }
+
   UpdatePosition(target_rfh);
 }
 
@@ -229,6 +256,16 @@ void DictationOverlayView::OnFocusSelectionBoundsChanged(
   content::RenderFrameHost* target_rfh =
       last_target_node_id_.document.AsRenderFrameHostIfValid();
   if (!target_rfh || target_rfh->GetView() != render_widget_host_view) {
+    return;
+  }
+
+  UpdatePosition(target_rfh);
+}
+
+void DictationOverlayView::OnFullscreenStateChanged() {
+  content::RenderFrameHost* target_rfh =
+      last_target_node_id_.document.AsRenderFrameHostIfValid();
+  if (!target_rfh) {
     return;
   }
 

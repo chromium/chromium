@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/result_codes.h"
@@ -141,6 +142,32 @@ class DictationSessionUiImplBrowserTest
       dictation_service().session_controller()->StartDictationStream(
           DefaultInPageTarget(web_contents()), trigger);
     });
+  }
+
+  auto LookupTargetElementBounds(ui::ElementIdentifier web_contents_id,
+                                 std::string_view selector,
+                                 gfx::Rect& target_bounds) {
+    return WithElement(
+        web_contents_id, [&target_bounds, selector = std::string(selector)](
+                             ui::TrackedElement* el) {
+          target_bounds =
+              AsInstrumentedWebContents(el)->GetElementBoundsInScreen(selector);
+        });
+  }
+
+  auto CheckElementWithinBounds(ui::ElementIdentifier element_id,
+                                const gfx::Rect& target_bounds) {
+    return InAnyContext(
+        CheckElement(element_id, [&target_bounds](ui::TrackedElement* el) {
+          const views::View* const view = AsView(el);
+          const gfx::Rect view_bounds = view->GetBoundsInScreen();
+          return target_bounds.Contains(view_bounds.origin());
+        }));
+  }
+
+  auto ToggleFullscreen() {
+    return Do(
+        [this]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); });
   }
 
  private:
@@ -656,19 +683,37 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     NavigateWebContents(kWebContentsElementId, url),
     StartSessionWithTarget(kWebContentsElementId, "#text_id"),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
-    WithElement(
-        kWebContentsElementId,
-        [&target_bounds](ui::TrackedElement* el) {
-          target_bounds = AsInstrumentedWebContents(el)
-                              ->GetElementBoundsInScreen("#text_id");
-        }),
-    InAnyContext(CheckElement(
-        DictationOverlayView::kViewElementIdForTesting,
-        [&target_bounds](ui::TrackedElement* el) {
-          const views::View* const overlay_view = AsView(el);
-          const gfx::Rect overlay_bounds = overlay_view->GetBoundsInScreen();
-          return target_bounds.Contains(overlay_bounds.origin());
-        }))
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id", target_bounds),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
+                       OverlayPositionUpdatedOnFullscreen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  gfx::Rect target_bounds;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id", target_bounds),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds),
+    ToggleFullscreen(),
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id", target_bounds),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds),
+    ToggleFullscreen(),
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id", target_bounds),
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds)
   );
   // clang-format on
 }
@@ -692,12 +737,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     NavigateWebContents(kWebContentsElementId, url),
     StartSessionWithTarget(kWebContentsElementId, "#text_id"),
     InAnyContext(WaitForShow(DictationOverlayView::kViewElementIdForTesting)),
-    WithElement(
-        kWebContentsElementId,
-        [&target_bounds](ui::TrackedElement* el) {
-          target_bounds = AsInstrumentedWebContents(el)
-                              ->GetElementBoundsInScreen("#text_id");
-        }),
+    LookupTargetElementBounds(kWebContentsElementId, "#text_id", target_bounds),
     // Focus a second textarea, causing the first textarea to lose focus.
     ExecuteJs(kWebContentsElementId,
               "() => {"
@@ -707,13 +747,8 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
               "  textarea2.focus();"
               "}"),
     // The overlay should remain in its last position.
-    InAnyContext(CheckElement(
-        DictationOverlayView::kViewElementIdForTesting,
-        [&target_bounds](ui::TrackedElement* el) {
-          const views::View* const overlay_view = AsView(el);
-          const gfx::Rect overlay_bounds = overlay_view->GetBoundsInScreen();
-          return target_bounds.Contains(overlay_bounds.origin());
-        }))
+    CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
+                             target_bounds)
   );
   // clang-format on
 }
