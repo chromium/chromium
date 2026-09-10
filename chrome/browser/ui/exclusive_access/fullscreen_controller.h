@@ -117,6 +117,10 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   content::FullscreenState GetFullscreenState(
       const content::WebContents* web_contents) const;
 
+  // Returns the origin of the frame currently in tab-initiated fullscreen.
+  // Returns an opaque origin if not in tab-initiated fullscreen.
+  const url::Origin& requesting_origin() const { return requesting_origin_; }
+
   // Returns true if |web_contents| is in fullscreen mode as a screen-captured
   // tab. See 'FullscreenWithinTab Note'.
   bool IsFullscreenWithinTab(const content::WebContents* web_contents) const;

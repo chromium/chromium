@@ -1321,6 +1321,67 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, BlockingContentsDoesNotExit) {
   EXPECT_TRUE(web_contents_->IsFullscreen());
 }
 
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
+                       BlockingContentsExitsForCrossOriginFrame) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
+  // Append a cross-origin iframe with the fullscreen permission policy.
+  const GURL src = embedded_https_test_server().GetURL("b.com", "/simple.html");
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  web_app::CreateIframe(rfh, "", src, /*permissions_policy=*/"fullscreen *");
+  content::RenderFrameHost* child = ChildFrameAt(rfh, 0);
+
+  EXPECT_TRUE(RequestFullscreen(/*gesture=*/false, child));
+  EXPECT_TRUE(web_contents_->IsFullscreen());
+
+  // Blocking the tab for a modal dialog exits fullscreen when a cross-origin
+  // iframe requested fullscreen, even if the top-level origin has the
+  // automatic fullscreen content setting granted.
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
+  BrowserWindowModalDialogDelegate::From(browser)->SetWebContentsBlocked(
+      web_contents_, true);
+  waiter.Wait();
+  EXPECT_FALSE(web_contents_->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
+                       BlockingContentsDoesNotExitForSameOriginFrame) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
+  if (GetParam()) {
+    // Isolated Web Apps in this test fixture do not serve subframe HTML files.
+    return;
+  }
+
+  // Append a same-origin iframe with the fullscreen permission policy.
+  const GURL src = embedded_https_test_server().GetURL("a.com", "/simple.html");
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  web_app::CreateIframe(rfh, "", src, /*permissions_policy=*/"fullscreen *");
+  content::RenderFrameHost* child = ChildFrameAt(rfh, 0);
+
+  EXPECT_TRUE(RequestFullscreen(/*gesture=*/false, child));
+  EXPECT_TRUE(web_contents_->IsFullscreen());
+
+  // Blocking the tab for a modal dialog preserves fullscreen for a same-origin
+  // iframe when the origin has the automatic fullscreen content setting
+  // granted.
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  BrowserWindowModalDialogDelegate::From(browser)->SetWebContentsBlocked(
+      web_contents_, true);
+  EXPECT_TRUE(web_contents_->IsFullscreen());
+}
+
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, QueryPermissionWithGesture) {
   // Expect an API TypeError when allowWithoutGesture is false or unspecified.
   EXPECT_EQ(
@@ -1367,7 +1428,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, CrossOriginIFrameGranted) {
   web_app::CreateIframe(rfh, "", src, /*permissions_policy=*/"fullscreen *");
   content::RenderFrameHost* child = ChildFrameAt(rfh, 0);
   EXPECT_EQ("granted", QueryPermission(child));
-  EXPECT_TRUE(RequestFullscreen(child));
+  EXPECT_TRUE(RequestFullscreen(/*gesture=*/false, child));
   EXPECT_TRUE(ExitFullscreen());
 }
 
