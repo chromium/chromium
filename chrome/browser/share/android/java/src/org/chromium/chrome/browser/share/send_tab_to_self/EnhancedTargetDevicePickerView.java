@@ -76,11 +76,7 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
                             (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                                 if (bottom - top != oldBottom - oldTop) {
                                     int state = getBottomSheetController().getSheetState();
-                                    if (state == SheetState.HALF) {
-                                        handleHalfStateOverflow(getSheetItemListView());
-                                    } else if (state == SheetState.FULL) {
-                                        handleFullStateOverflow(getSheetItemListView());
-                                    }
+                                    updateOverflowForState(state);
                                 }
                             });
         }
@@ -131,17 +127,34 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
         return getNonListHeightForState(/* forHalfState= */ false) + calculateListHeight();
     }
 
+    /**
+     * Calculates the total height occupied by non-list elements (header, handlebar, padding, action
+     * buttons, and optional manage devices footer) for the given sheet state.
+     */
     private @Px int getNonListHeightForState(boolean forHalfState) {
         int height = getHeaderAndHandlebarHeightPx();
         int paddingTop = mBottomActionsBlock.getPaddingTop();
         int paddingBottom = mBottomActionsBlock.getPaddingBottom();
-        int sendButtonHeight = getHeightWithMarginsPx(mSendButton);
+        int sendButtonHeight = getElementHeightWithMarginsPx(mSendButton);
         height += paddingTop + sendButtonHeight + paddingBottom;
         boolean isDesktop = getBottomSheetController().isLargeFormFactorUiEnabled(this);
         if (!forHalfState || isDesktop) {
-            height += getHeightWithMarginsPx(mManageDevicesBlock);
+            height += getElementHeightWithMarginsPx(mManageDevicesBlock);
         }
         return height;
+    }
+
+    private @Px int getElementHeightWithMarginsPx(@Nullable View view) {
+        if (view == null) return 0;
+        if (view.getMeasuredHeight() == 0) {
+            int widthSpec =
+                    View.MeasureSpec.makeMeasureSpec(
+                            getContentView().getResources().getDisplayMetrics().widthPixels,
+                            View.MeasureSpec.AT_MOST);
+            int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            view.measure(widthSpec, heightSpec);
+        }
+        return getHeightWithMarginsPx(view);
     }
 
     private @Px int getHeaderAndHandlebarHeightPx() {
@@ -150,6 +163,7 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
 
     private @Px int getInitialListHeight() {
         int initialHeight = super.getDesiredSheetHeightPx() - getHeaderAndHandlebarHeightPx();
+        // Fall back to visible item count estimation on desktop where half-state is disabled.
         if (initialHeight <= 0 && getBottomSheetController().isLargeFormFactorUiEnabled(this)) {
             RecyclerView listView = getSheetItemListView();
             if (listView.getAdapter() == null || listView.getAdapter().getItemCount() == 0) {
@@ -216,57 +230,70 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
     @Override
     protected void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
         super.onSheetStateChanged(newState, reason);
-        onSheetStateChange(newState);
-    }
-
-    private void onSheetStateChange(@SheetState int newState) {
         boolean inHalfState = newState == SheetState.HALF;
         boolean isDesktop = getBottomSheetController().isLargeFormFactorUiEnabled(this);
         updateManageDevicesVisibility(!inHalfState || isDesktop);
-        if (!isDesktop) {
-            remeasure();
+        updateOverflowForState(newState);
+    }
+
+    /**
+     * Updates manage devices visibility and re-evaluates list height overflow when the sheet
+     * container size changes (e.g. on orientation change or window resize).
+     */
+    @Override
+    protected void onContainerSizeChanged(@Px int width, @Px int height) {
+        super.onContainerSizeChanged(width, height);
+        @SheetState int currentState = getBottomSheetController().getSheetState();
+        boolean inHalfState = currentState == SheetState.HALF;
+        boolean isDesktop = getBottomSheetController().isLargeFormFactorUiEnabled(this);
+        updateManageDevicesVisibility(!inHalfState || isDesktop);
+        updateOverflowForState(currentState);
+    }
+
+    /**
+     * Clamps the target device list height and toggles vertical fading edges if the content height
+     * exceeds the maximum allowable height for the current sheet state.
+     */
+    private void updateOverflowForState(@SheetState int state) {
+        if (state != SheetState.HALF && state != SheetState.FULL) return;
+
+        RecyclerView listView = getSheetItemListView();
+        // Unsuppress layout so LayoutParams height changes take effect on the RecyclerView.
+        boolean wasSuppressed = listView.isLayoutSuppressed();
+        if (wasSuppressed) {
+            listView.suppressLayout(false);
         }
-        RecyclerView sheetItemListView = getSheetItemListView();
-        if (inHalfState) {
-            handleHalfStateOverflow(sheetItemListView);
+
+        boolean inHalfState = state == SheetState.HALF;
+        @Px int targetMaxHeight = getTargetMaxListHeight(inHalfState);
+        if (calculateListHeight() > targetMaxHeight) {
+            enableFadingEdge(listView);
+            setSheetItemListHeightPx(targetMaxHeight);
         } else {
-            handleFullStateOverflow(sheetItemListView);
+            disableFadingEdge(listView);
+            resetListHeightToWrapContent(listView);
+        }
+
+        // Restore prior layout suppression state to preserve drag-to-expand in half-state.
+        if (wasSuppressed) {
+            listView.suppressLayout(true);
         }
     }
 
-    private void handleHalfStateOverflow(RecyclerView sheetItemListView) {
-        updateOverflowState(
-                sheetItemListView,
-                getInitialListHeight() < calculateListHeight(),
-                () -> limitListHeightForHalfState());
+    /**
+     * Computes the maximum list height allowed for the current state, bounded by available vertical
+     * screen clearance.
+     */
+    private @Px int getTargetMaxListHeight(boolean inHalfState) {
+        @Px
+        int availableHeight =
+                Math.max(0, getMaxAvailableHeightPx() - getNonListHeightForState(inHalfState));
+        return inHalfState ? Math.min(getInitialListHeight(), availableHeight) : availableHeight;
     }
 
-    private void handleFullStateOverflow(RecyclerView sheetItemListView) {
-        int maxContainerHeight = getMaxAvailableHeightPx();
-        int nonListHeight = getNonListHeightForState(/* forHalfState= */ false);
-        int totalMaxHeight = nonListHeight + calculateListHeight();
-        boolean overflows = maxContainerHeight > 0 && totalMaxHeight > maxContainerHeight;
-        updateOverflowState(
-                sheetItemListView,
-                overflows,
-                () -> limitListHeightForFullState(maxContainerHeight, nonListHeight));
-    }
-
-    private void updateOverflowState(
-            RecyclerView sheetItemListView, boolean overflows, Runnable limitHeightAction) {
-        if (overflows) {
-            enableFadingEdge(sheetItemListView);
-            limitHeightAction.run();
-        } else {
-            disableFadingEdge(sheetItemListView);
-            resetListHeightToWrapContent(sheetItemListView);
-        }
-    }
-
-    private void limitListHeightForFullState(int maxContainerHeight, int nonListHeight) {
-        setSheetItemListHeightPx(Math.max(0, maxContainerHeight - nonListHeight));
-    }
-
+    /**
+     * Updates the visibility of the manage devices footer block if it differs from current state.
+     */
     private void updateManageDevicesVisibility(boolean visible) {
         int visibility = visible ? View.VISIBLE : View.GONE;
         if (mManageDevicesBlock.getVisibility() == visibility) return;
@@ -298,18 +325,6 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
 
     private void disableFadingEdge(RecyclerView listView) {
         listView.setVerticalFadingEdgeEnabled(false);
-    }
-
-    private void limitListHeightForHalfState() {
-        int maxListHeight = getInitialListHeight();
-        int availableListHeight =
-                getMaxAvailableHeightPx() - getNonListHeightForState(/* forHalfState= */ true);
-        if (availableListHeight > 0 && maxListHeight > availableListHeight) {
-            maxListHeight = availableListHeight;
-        }
-        if (maxListHeight > 0) {
-            setSheetItemListHeightPx(maxListHeight);
-        }
     }
 
     private void resetListHeightToWrapContent(RecyclerView listView) {
