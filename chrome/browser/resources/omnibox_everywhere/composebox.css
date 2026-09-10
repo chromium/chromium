@@ -120,6 +120,13 @@ search-animated-glow:not([animation-state='expanding'])::part(
   inset: 0;
 }
 
+#errorScrim {
+  border-radius: inherit;
+  inset: 0;
+  position: absolute;
+  z-index: 100;
+}
+
 #shadow-container {
   position: absolute;
   inset: 0;
@@ -181,7 +188,9 @@ cr-composebox-tool-chip,
 .searchbox-icon-button,
 #voiceSearchButton,
 #lensSearchButton,
-#screenshotMenu {
+#screenshotMenu,
+#errorScrim,
+ntp-error-scrim {
   -webkit-app-region: no-drag;
 }
 

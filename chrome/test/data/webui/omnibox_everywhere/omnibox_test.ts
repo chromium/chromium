@@ -9,7 +9,7 @@ import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, Om
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -1631,5 +1631,90 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertTrue(!!attachment);
         assertEquals('test_image.png', attachment.name);
         assertEquals('image/png', attachment.type);
+      });
+
+  test(
+      'file upload validation error displays error scrim in composebox',
+      async () => {
+        const testToken = '00000000000000010000000000000002';
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: testToken,
+          fileInfo: {
+            fileName: 'large_image.png',
+            mimeType: 'image/png',
+            imageDataUrl: 'data:image/png;base64,AAAA',
+            thumbnailUrl: null,
+            isDeletable: true,
+            selectionTime: new Date(),
+          },
+        });
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+
+        testProxy.page.onContextualInputStatusChanged(
+            testToken, ContextUploadStatus.kValidationFailed,
+            ContextUploadErrorType.kBrowserProcessingFileTooLargeError);
+        await microtasksFinished();
+
+        const errorScrim =
+            composebox.shadowRoot.querySelector('ntp-error-scrim');
+        assertTrue(!!errorScrim);
+
+        errorScrim.dispatchEvent(new CustomEvent('dismiss-error-scrim', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(!!composebox.shadowRoot.querySelector('ntp-error-scrim'));
+      });
+
+  test(
+      'max images exceeded error displays error scrim and button dismisses',
+      async () => {
+        const testToken = '00000000000000010000000000000003';
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: testToken,
+          fileInfo: {
+            fileName: 'eleventh_image.png',
+            mimeType: 'image/png',
+            imageDataUrl: null,
+            thumbnailUrl: null,
+            isDeletable: true,
+            selectionTime: new Date(),
+          },
+        });
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+
+        testProxy.page.onContextualInputStatusChanged(
+            testToken, ContextUploadStatus.kValidationFailed,
+            ContextUploadErrorType.kBrowserProcessingMaxImagesExceededError);
+        await microtasksFinished();
+
+        const errorScrim =
+            composebox.shadowRoot.querySelector('ntp-error-scrim');
+        assertTrue(!!errorScrim);
+
+        const dismissBtn = errorScrim.shadowRoot.querySelector<HTMLElement>(
+            '#dismissErrorButton');
+        assertTrue(!!dismissBtn);
+        dismissBtn.click();
+        await microtasksFinished();
+
+        assertFalse(!!composebox.shadowRoot.querySelector('ntp-error-scrim'));
+        assertEquals(0, composebox.files.size);
       });
 });

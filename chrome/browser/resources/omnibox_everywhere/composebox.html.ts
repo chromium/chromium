@@ -26,6 +26,14 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
           exportparts="composebox-background">
       </search-animated-glow>
     ` : ''}
+    ${this.errorMessage ? html`
+      <ntp-error-scrim id="errorScrim" part="error-scrim"
+          ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
+                          this.files.size === 0}"
+          .errorMessage="${this.errorMessage}"
+          @dismiss-error-scrim="${this.onDismissErrorScrim}">
+      </ntp-error-scrim>`
+    : ''}
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
       @keydown="${this.onKeydown}"
       @dragenter="${this.dragAndDropHandler.handleDragEnter}"

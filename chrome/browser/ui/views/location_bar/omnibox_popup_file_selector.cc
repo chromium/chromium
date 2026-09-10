@@ -79,7 +79,7 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
   if (file_chooser_opened_callback_) {
     file_chooser_opened_callback_.Run();
   }
-  if (web_contents) {
+  if (!OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents)) {
     if (auto* browser_window = webui::GetBrowserWindowInterface(web_contents)) {
       if (auto* location_bar = browser_window->GetFeatures().location_bar()) {
         if (was_ai_mode_open) {
@@ -129,17 +129,52 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
 
 namespace {
 
-constexpr size_t kDefaultMaxNumFiles = omnibox::kDefaultMaxTotalInputs;
+using FileData = OmniboxPopupFileSelector::FileData;
 
-std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
+constexpr size_t kDefaultMaxNumFiles = omnibox::kDefaultMaxTotalInputs;
+constexpr size_t kDefaultMaxFileSizeBytes = 15 * 1024 * 1024;
+
+size_t GetMaxAttachmentSizeBytes() {
+  size_t max_size = ntp_composebox::FeatureConfig::Get()
+                        .config.composebox()
+                        .attachment_upload()
+                        .max_size_bytes();
+  return max_size > 0 ? max_size : kDefaultMaxFileSizeBytes;
+}
+
+std::unique_ptr<FileData> ReadFileData(const base::FilePath& path,
+                                       bool is_image,
+                                       size_t max_file_size) {
   auto file_data = std::make_unique<FileData>();
-  if (!base::ReadFileToString(local_path, &file_data->bytes)) {
-    LOG(ERROR) << "Failed to read file from path: "
-               << local_path.AsUTF8Unsafe();
+  file_data->path = path;
+
+  std::optional<int64_t> file_size = base::GetFileSize(path);
+  if (file_size.has_value()) {
+    if (file_size.value() == 0) {
+      file_data->error = contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileEmptyError;
+      return file_data;
+    }
+    if (static_cast<uint64_t>(file_size.value()) > max_file_size) {
+      file_data->error = contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileTooLargeError;
+      return file_data;
+    }
   }
-  net::GetMimeTypeFromExtension(local_path.Extension().substr(1),
-                                &file_data->mime_type);
-  file_data->name = local_path.BaseName().AsUTF8Unsafe();
+
+  if (!base::ReadFileToString(path, &file_data->bytes)) {
+    file_data->error =
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError;
+    return file_data;
+  }
+
+  base::FilePath::StringType ext = path.FinalExtension();
+  if (ext.starts_with(FILE_PATH_LITERAL('.'))) {
+    net::GetMimeTypeFromExtension(ext.substr(1), &file_data->mime_type);
+  }
+  if (file_data->mime_type.empty()) {
+    file_data->mime_type = is_image ? "image/png" : "application/pdf";
+  }
   return file_data;
 }
 
@@ -215,7 +250,8 @@ void OmniboxPopupFileSelector::MultiFilesSelected(
     has_posted_tasks = true;
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&ReadFileAndProcess, file.path()),
+        base::BindOnce(&ReadFileData, file.path(), is_image_,
+                       GetMaxAttachmentSizeBytes()),
         base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
                        weak_factory_.GetWeakPtr()));
   }
@@ -240,25 +276,39 @@ void OmniboxPopupFileSelector::FileSelectionCanceled() {
 void OmniboxPopupFileSelector::OnFileDataReady(
     std::unique_ptr<FileData> file_data) {
   if (!file_data || !web_contents_) {
+    if (was_ai_mode_open_) {
+      OpenAiMode();
+    }
+    return;
+  }
+  const std::string file_name = file_data->path.BaseName().AsUTF8Unsafe();
+  if (file_data->error.has_value()) {
+    UpdateSearchboxContextData(lens::MimeType::kUnknown,
+                               /*image_data_url=*/"", file_name,
+                               /*mime_string=*/"application/octet-stream",
+                               base::unexpected(file_data->error.value()));
+    OpenAiMode();
     return;
   }
   base::UmaHistogramExactLinear(
       "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
       /*ContextMenu*/ 0, 4);
 
+  const std::string raw_mime_type = file_data->mime_type;
+
   lens::MimeType mime_type;
-  if (file_data->mime_type.find("pdf") != std::string::npos &&
+  if (raw_mime_type.find("pdf") != std::string::npos &&
       !lens::features::IsLensSendRawFileMediaTypesEnabled()) {
     mime_type = lens::MimeType::kPdf;
-  } else if (file_data->mime_type.find("image") != std::string::npos) {
+  } else if (raw_mime_type.find("image") != std::string::npos) {
     mime_type = lens::MimeType::kImage;
   } else if (lens::features::IsLensSendRawFileMediaTypesEnabled()) {
     // When raw file media types are enabled, all non-image files (including
     // pdfs) should be treated as generic files.
     mime_type = lens::MimeType::kUnknown;
   } else {
-    UpdateSearchboxContextData(lens::MimeType::kUnknown, "", file_data->name,
-                               file_data->mime_type,
+    UpdateSearchboxContextData(lens::MimeType::kUnknown, "", file_name,
+                               raw_mime_type,
                                base::ok(base::UnguessableToken::Create()));
     OpenAiMode();
     return;
@@ -273,7 +323,7 @@ void OmniboxPopupFileSelector::OnFileDataReady(
 
   std::string image_data_url;
   if (mime_type == lens::MimeType::kImage) {
-    image_data_url = base::StrCat({"data:", file_data->mime_type, ";base64,",
+    image_data_url = base::StrCat({"data:", raw_mime_type, ";base64,",
                                    base::Base64Encode(file_data->bytes)});
   }
 
@@ -281,21 +331,14 @@ void OmniboxPopupFileSelector::OnFileDataReady(
       OmniboxContextMenuController::GetContextualSearchboxHandler(
           web_contents_.get());
   if (contextual_searchbox_handler) {
-    // The order of execution of parameter evaluation is undefined in C++. On
-    // Windows this results in `file_data->mime_type` being moved before the
-    // other mime_type use is evaluated resulting. The move results in an
-    // empty mime_type value being passed into `AddFileContextFromBrowser`.
-    // See: https://en.cppreference.com/w/cpp/language/eval_order and
-    // http://crbug.com/472510275.
-    std::string mime_type_copy = file_data->mime_type;
-    std::string file_name_copy = file_data->name;
+    // Avoid accessing `file_data` directly in parameter expressions where
+    // evaluation order is unspecified.
     contextual_searchbox_handler->AddFileContextFromBrowser(
-        std::move(file_name_copy), std::move(mime_type_copy),
-        std::move(file_data_buffer), image_encoding_options_,
+        file_name, raw_mime_type, std::move(file_data_buffer),
+        image_encoding_options_,
         base::BindOnce(&OmniboxPopupFileSelector::UpdateSearchboxContextData,
                        weak_factory_.GetWeakPtr(), mime_type,
-                       std::move(image_data_url), file_data->name,
-                       file_data->mime_type));
+                       std::move(image_data_url), file_name, raw_mime_type));
   }
 
   OpenAiMode();
@@ -328,7 +371,9 @@ void OmniboxPopupFileSelector::NotifyFileSelectionClosed() {
   if (file_chooser_closed_callback_) {
     file_chooser_closed_callback_.Run();
   }
-  if (was_ai_mode_open_ && web_contents_) {
+  if (was_ai_mode_open_ && web_contents_ &&
+      !OmniboxContextMenuController::GetOmniboxEverywhereUI(
+          web_contents_.get())) {
     auto* browser_window =
         webui::GetBrowserWindowInterface(web_contents_.get());
     if (!browser_window) {
@@ -352,9 +397,9 @@ void OmniboxPopupFileSelector::NotifyFileSelectionClosed() {
 }
 
 void OmniboxPopupFileSelector::OpenAiMode() {
-  if (edit_model_) {
-    edit_model_->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
-  } else if (open_ai_mode_callback_) {
+  if (open_ai_mode_callback_) {
     open_ai_mode_callback_.Run();
+  } else if (edit_model_) {
+    edit_model_->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
   }
 }

@@ -8,6 +8,7 @@ import '//resources/cr_components/composebox/composebox_input.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
+import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
 

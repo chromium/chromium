@@ -316,4 +316,19 @@ TEST_F(OmniboxEverywhereHandlerTest,
   handler_->AddFileContextToPage(token, std::move(file_info));
 }
 
+TEST_F(OmniboxEverywhereHandlerTest, FileContextValidationErrorHandoff) {
+  const auto token = base::UnguessableToken::Create();
+  auto file_info = searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "oversized.png";
+  file_info->mime_type = "image/png";
+  file_info->is_deletable = true;
+
+  handler_->AddFileContextFromBrowser(token, std::move(file_info));
+  handler_->OnContextUploadStatusChanged(
+      token, lens::MimeType::kImage,
+      contextual_search::ContextUploadStatus::kValidationFailed,
+      contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileTooLargeError);
+}
+
 }  // namespace

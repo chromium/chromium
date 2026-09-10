@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_POPUP_FILE_SELECTOR_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_POPUP_FILE_SELECTOR_H_
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -25,18 +28,18 @@ class UnguessableToken;
 }
 
 class OmniboxEditModel;
-
-// Struct to store file data and mime type.
-struct FileData {
-  std::string bytes;
-  std::string mime_type;
-  std::string name;
-};
-
 class OmniboxPopupDeactivationBlocker;
 
 class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
  public:
+  // Struct to store file data and mime type.
+  struct FileData {
+    std::string bytes;
+    std::string mime_type;
+    base::FilePath path;
+    std::optional<contextual_search::ContextUploadErrorType> error;
+  };
+
   // `owning_window` is the window that will be used to show the file selector
   // dialog.
   explicit OmniboxPopupFileSelector(gfx::NativeWindow owning_window);

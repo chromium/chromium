@@ -2613,83 +2613,92 @@ export const ComposeboxEmbedderMixin =
           this.handleProcessFilesError(errorToDisplay);
         }
 
+        getErrorMessageForUploadStatus(
+            status: ContextUploadStatus,
+            errorType: ContextUploadErrorType|null): string|null {
+          if (!isContextUploadStatusTerminal(status) ||
+              status === ContextUploadStatus.kUploadSuccessful ||
+              status === ContextUploadStatus.kUploadReplaced) {
+            return null;
+          }
+          switch (status) {
+            case ContextUploadStatus.kValidationFailed: {
+              const errorKey = (errorType !== null ?
+                                    FILE_VALIDATION_ERRORS_MAP.get(errorType) :
+                                    undefined) ??
+                  'composeboxFileUploadValidationFailed';
+              return this.i18n(errorKey);
+            }
+            case ContextUploadStatus.kUploadFailed:
+              return this.i18n('composeboxFileUploadFailed');
+            case ContextUploadStatus.kUploadExpired:
+              return this.i18n('composeboxFileUploadExpired');
+            default:
+              return null;
+          }
+        }
+
         updateFileStatus(
             token: UnguessableToken, status: ContextUploadStatus,
             errorType: ContextUploadErrorType|
             null): {file: ComposeboxFile|null, errorMessage: string|null} {
-          let errorMessage = null;
+          const errorMessage =
+              this.getErrorMessageForUploadStatus(status, errorType);
           let file = this.attachedContext.get(token) ?? null;
           if (file) {
             if (isContextUploadStatusTerminal(status) &&
                 status !== ContextUploadStatus.kUploadSuccessful) {
+              if (file.objectUrl && file.objectUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(file.objectUrl);
+              }
               this.attachedContext.delete(token);
 
               if (file.tabId) {
+                const tabId = file.tabId;
                 this.addedTabsIds =
                     new Map([...this.addedTabsIds.entries()].filter(
-                        ([id, _]) => id !== file!.tabId));
+                        ([id, _]) => id !== tabId));
               }
-              switch (status) {
-                case ContextUploadStatus.kValidationFailed:
-                  if (errorType) {
-                    errorMessage = this.i18n(
-                        FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
-                        'composeboxFileUploadValidationFailed');
-                  } else {
-                    errorMessage =
-                        this.i18n('composeboxFileUploadValidationFailed');
-                  }
-                  break;
-                case ContextUploadStatus.kUploadFailed:
-                  errorMessage = this.i18n('composeboxFileUploadFailed');
-                  break;
-                case ContextUploadStatus.kUploadExpired:
-                  errorMessage = this.i18n('composeboxFileUploadExpired');
-                  break;
-                case ContextUploadStatus.kUploadReplaced:
-                  // Update `composebox.ts` with the status since
-                  // this should not return an error message for this
-                  // 'non-uploaded' terminal file state, meaning
-                  // its file status is still needed for understanding state
-                  // when returned and back in the context of the function
-                  // caller.
-                  file = {...file, status: status};
-                  break;
-                default:
-                  break;
+              if (status === ContextUploadStatus.kUploadReplaced) {
+                // Update `composebox.ts` with the status since
+                // this should not return an error message for this
+                // 'non-uploaded' terminal file state, meaning
+                // its file status is still needed for understanding state
+                // when returned and back in the context of the function
+                // caller.
+                file = {...file, status: status};
               }
               this.closeMenu();
-            } else {
+              this.attachedContext = new Map([...this.attachedContext]);
+            } else if (file.status !== status) {
               file = {...file, status: status};
               this.attachedContext.set(token, file);
+              this.attachedContext = new Map([...this.attachedContext]);
             }
-            this.attachedContext = new Map([...this.attachedContext]);
-          } else {
+          } else if (this.shouldShowGhostFiles) {
             // File is unknown but its status is known. Show this if
             // ghost/unknown files in frontend are allowed to be in
             // carousel.
-            if (this.shouldShowGhostFiles) {
-              file = {
-                uuid: token,
-                name: '',
-                objectUrl: null,
-                dataUrl: null,
-                type: '',
-                inputType: InputType.kLensFile,
-                // Override this since first upload status is this or
-                // processing. Need this or processing in order to show tab
-                // spinner.
-                status: ContextUploadStatus.kUploadStarted,
-                url: null,
-                tabId: null,
-                isDeletable: true,
-                iconName: null,
-                supportsUnimodal: true,
-              };
-              // Update pending uploads in 'composebox.ts' to disable
-              // submit button.
-              this.onFileContextAdded(file);
-            }
+            file = {
+              uuid: token,
+              name: '',
+              objectUrl: null,
+              dataUrl: null,
+              type: '',
+              inputType: InputType.kLensFile,
+              // Override this since first upload status is this or
+              // processing. Need this or processing in order to show tab
+              // spinner.
+              status: ContextUploadStatus.kUploadStarted,
+              url: null,
+              tabId: null,
+              isDeletable: true,
+              iconName: null,
+              supportsUnimodal: true,
+            };
+            // Update pending uploads in 'composebox.ts' to disable
+            // submit button.
+            this.onFileContextAdded(file);
           }
           return {file, errorMessage};
         }
