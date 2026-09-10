@@ -419,6 +419,9 @@ void PasswordSuggestionGenerator::AppendOptionalFooterSection(
 
   if (inline_qr_suggestion) {
     suggestions->push_back(std::move(*inline_qr_suggestion));
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions->push_back(std::move(separator));
   }
 
   // Add "Use a passkey" or "Use a different passkey" button.

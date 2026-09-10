@@ -1704,6 +1704,7 @@ TEST_F(BrowserAutofillManagerTest,
                   SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kSeparator),
        Suggestion(SuggestionType::kWebauthnPasskeyQrCode),
+       Suggestion(SuggestionType::kSeparator),
        Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice),
        CreateManageAddressesSuggestion()});
 }
@@ -1775,6 +1776,7 @@ TEST_F(
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
       {Suggestion(SuggestionType::kWebauthnPasskeyQrCode),
+       Suggestion(SuggestionType::kSeparator),
        Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)});
 }
 

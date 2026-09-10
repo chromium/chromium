@@ -659,6 +659,21 @@ void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
                              &Suggestion::type)) {
     suggestions.emplace(manage_pos, SuggestionType::kSeparator);
   }
+
+  // Ensure a line separator between the inline QR code item and the item that
+  // is after it.
+  std::vector<Suggestion>::iterator qr_pos = std::ranges::find(
+      suggestions, SuggestionType::kWebauthnPasskeyQrCode, &Suggestion::type);
+  if (qr_pos == suggestions.end()) {
+    return;
+  }
+  std::vector<Suggestion>::iterator next_pos = std::next(qr_pos);
+  if (next_pos != suggestions.end() &&
+      next_pos->type != SuggestionType::kSeparator) {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions.insert(next_pos, std::move(separator));
+  }
 }
 
 // Clears some of the suggestions based on priorities, and then converts the

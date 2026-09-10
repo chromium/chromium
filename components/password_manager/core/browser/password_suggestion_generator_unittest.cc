@@ -2068,6 +2068,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kWebauthnPasskeyQrCode,
                            l10n_util::GetStringUTF16(
                                IDS_PASSWORD_MANAGER_PASSKEY_QR_CODE_TITLE)),
+          EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kWebauthnSignInWithAnotherDevice,
               l10n_util::GetStringUTF16(
@@ -2075,6 +2076,38 @@ TEST_F(PasswordSuggestionGeneratorTest,
                       ? IDS_PASSWORD_MANAGER_USE_PASSKEY
                       : IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE),
               Suggestion::Icon::kDevice),
+          EqualsManagePasswordsSuggestion()));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest, GetSuggestionsForDomain_InlineQrOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
+
+  const std::string kTestQrString = "test_qr_string";
+  ON_CALL(credentials_delegate(), GetCableQrString)
+      .WillByDefault(Return(kTestQrString));
+  ON_CALL(client(), IsChromeSigninPage).WillByDefault(Return(true));
+  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
+      .WillByDefault(Return(false));
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      undo_controller(), password_form_fill_data(), favicon(),
+      /*username_filter=*/u"", OffersGeneration(false),
+      ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
+      ShowIdentityCredentials(false));
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry,
+                                         u"username", password_label(8u),
+                                         /*realm_label=*/u"", favicon()),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kWebauthnPasskeyQrCode,
+                           l10n_util::GetStringUTF16(
+                               IDS_PASSWORD_MANAGER_PASSKEY_QR_CODE_TITLE)),
+          EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
