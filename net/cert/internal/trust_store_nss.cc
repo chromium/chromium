@@ -21,8 +21,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
-#include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/obsolete/sha1.h"
@@ -35,23 +33,6 @@
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
-
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
-// TODO(crbug.com/40281745): We can remove these weak attributes in M123 or
-// later. Until then, these need to be declared with the weak attribute
-// since older platforms may not provide these symbols.
-extern "C" CERTCertList* CERT_CreateSubjectCertListForChromium(
-    CERTCertList* certList,
-    CERTCertDBHandle* handle,
-    const SECItem* name,
-    PRTime sorttime,
-    PRBool validOnly,
-    PRBool ignoreChaps) __attribute__((weak));
-extern "C" CERTCertificate* CERT_FindCertByDERCertForChromium(
-    CERTCertDBHandle* handle,
-    SECItem* derCert,
-    PRBool ignoreChaps) __attribute__((weak));
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 namespace net {
 
@@ -79,18 +60,11 @@ using ScopedPK11GenericObjects =
 // would be useful here, however it does not actually return all relevant
 // slots.)
 std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert,
-                             bool ignore_chaps_module) {
+GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert) {
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>> r;
   crypto::AutoSECMODListReadLock lock_id;
   for (const SECMODModuleList* item = SECMOD_GetDefaultModuleList();
        item != nullptr; item = item->next) {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (ignore_chaps_module && crypto::IsChapsModule(item->module)) {
-      // This check avoids unnecessary IPCs between NSS and Chaps.
-      continue;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // SAFETY: item->module->slots is an array with item->module->slotCount
     // elements. slotCount is a signed int so use checked_cast when creating
@@ -118,10 +92,9 @@ bool IsMozillaCaPolicyProvided(PK11SlotInfo* slot,
                               /*haslock=*/PR_FALSE) == CK_TRUE;
 }
 
-bool IsCertOnlyInNSSRoots(CERTCertificate* cert, bool ignore_chaps_module) {
+bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-      slots_and_handles_for_cert =
-          GetAllSlotsAndHandlesForCert(cert, ignore_chaps_module);
+      slots_and_handles_for_cert = GetAllSlotsAndHandlesForCert(cert);
   for (const auto& [slot, handle] : slots_and_handles_for_cert) {
     if (IsMozillaCaPolicyProvided(slot.get(), handle)) {
       // Cert is an NSS root. Continue looking to see if it also is present in
@@ -148,17 +121,7 @@ TrustStoreNSS::ListCertsResult::ListCertsResult(ListCertsResult&& other) =
 TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
     ListCertsResult&& other) = default;
 
-TrustStoreNSS::TrustStoreNSS() {
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
-  if (!CERT_CreateSubjectCertListForChromium) {
-    LOG(WARNING) << "CERT_CreateSubjectCertListForChromium is not available";
-  }
-  if (!CERT_FindCertByDERCertForChromium) {
-    LOG(WARNING) << "CERT_FindCertByDERCertForChromium is not available";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
-}
-
+TrustStoreNSS::TrustStoreNSS() = default;
 TrustStoreNSS::~TrustStoreNSS() = default;
 
 void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
@@ -175,24 +138,9 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
   // |validOnly| in CERT_CreateSubjectCertList controls whether to return only
   // certs that are valid at |sorttime|. Expiration isn't meaningful for trust
   // anchors, so request all the matches.
-#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
   crypto::ScopedCERTCertList found_certs(CERT_CreateSubjectCertList(
       nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
       PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
-#else
-  crypto::ScopedCERTCertList found_certs;
-  if (CERT_CreateSubjectCertListForChromium) {
-    found_certs =
-        crypto::ScopedCERTCertList(CERT_CreateSubjectCertListForChromium(
-            nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
-            PR_Now() /* sorttime */, PR_FALSE /* validOnly */,
-            PR_TRUE /* ignoreChaps */));
-  } else {
-    found_certs = crypto::ScopedCERTCertList(CERT_CreateSubjectCertList(
-        nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
-        PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
 
   if (!found_certs) {
     return;
@@ -219,7 +167,7 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 }
 
 std::vector<TrustStoreNSS::ListCertsResult>
-TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
+TrustStoreNSS::ListCertsIgnoringNSSRootsImpl() {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
@@ -235,7 +183,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   CERTCertListNode* node;
   for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
        node = CERT_LIST_NEXT(node)) {
-    if (IsCertOnlyInNSSRoots(node->cert, ignore_chaps_module)) {
+    if (IsCertOnlyInNSSRoots(node->cert)) {
       continue;
     }
     results.emplace_back(x509_util::DupCERTCertificate(node->cert),
@@ -269,19 +217,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
   // CERT_FindCertByDERCert to avoid having to have NSS parse the certificate
   // and create a structure for it if the cert doesn't already exist in any of
   // the loaded NSS databases.
-#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
   ScopedCERTCertificate nss_cert(
       CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
-#else
-  ScopedCERTCertificate nss_cert;
-  if (CERT_FindCertByDERCertForChromium) {
-    nss_cert = ScopedCERTCertificate(CERT_FindCertByDERCertForChromium(
-        CERT_GetDefaultCertDB(), &der_cert, /*ignoreChaps=*/PR_TRUE));
-  } else {
-    nss_cert = ScopedCERTCertificate(
-        CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
 
   if (!nss_cert) {
     DVLOG(1) << "skipped cert that has no CERTCertificate already";
@@ -318,14 +255,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // trust settings directly, since we don't know which slot those settings
   // came from. Do a more careful check to only honor trust settings from slots
   // we care about.
-
-  // We expect that CERT_GetCertTrust() != SECSuccess for client certs stored in
-  // Chaps. So, `nss_cert` should be a CA certificate and should not be stored
-  // in Chaps. Thus, we don't scan the chaps module in the following call for
-  // performance reasons.
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-      slots_and_handles_for_cert =
-          GetAllSlotsAndHandlesForCert(nss_cert, /*ignore_chaps_module=*/true);
+      slots_and_handles_for_cert = GetAllSlotsAndHandlesForCert(nss_cert);
 
   // Generally this shouldn't happen, though it is possible (ex, a builtin
   // distrust record with no matching cert in the builtin trust store could
@@ -512,10 +443,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
 std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreNSS::GetAllUserAddedCerts() {
   std::vector<PlatformTrustStore::CertWithTrust> user_added_certs;
-  // Do not consider certs from Chaps here, as there should be no way for a
-  // user to have client cert in Chaps with a server auth trust setting.
-  std::vector<ListCertsResult> certs =
-      ListCertsIgnoringNSSRootsImpl(/*ignore_chaps_module=*/true);
+  std::vector<ListCertsResult> certs = ListCertsIgnoringNSSRootsImpl();
   for (const auto& cert_result : certs) {
     // Skip user certs, unless the user added the user cert with specific
     // server auth trust settings.

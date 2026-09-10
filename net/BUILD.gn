@@ -1673,7 +1673,6 @@ component("net") {
         "cert/internal/trust_store_nss.cc",
         "cert/internal/trust_store_nss.h",
       ]
-      deps += [ "//build:chromeos_buildflags" ]
     }
 
     if (use_nss_client_certs) {
