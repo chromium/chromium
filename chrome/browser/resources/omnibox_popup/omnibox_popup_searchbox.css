@@ -94,7 +94,8 @@
 /* TODO(b/511199705): Widget is too wide when dropdown is visible. This is a
    workaround until we fix that. */
 :host([dropdown-is-visible]) {
-  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-container-size: 28px;
+  --cr-searchbox-icon-left-position: 16px;
   --cr-searchbox-icon-right-position: 10px;
   --cr-searchbox-border-radius: 16px;
   --cr-searchbox-width: 100%;
