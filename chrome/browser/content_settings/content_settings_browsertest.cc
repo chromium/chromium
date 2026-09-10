@@ -1695,18 +1695,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
   EXPECT_EQ(GetModelCookieCount(main_pscs->blocked_browsing_data_model()), 1u);
 }
 
-class ContentSettingsWorkerModulesWithFencedFrameBrowserTest
-    : public ContentSettingsWorkerModulesBrowserTest {
- public:
-  ContentSettingsWorkerModulesWithFencedFrameBrowserTest() = default;
-  ~ContentSettingsWorkerModulesWithFencedFrameBrowserTest() override = default;
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
 
- private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
 
 #if BUILDFLAG(ENABLE_PDF)
 class ContentSettingsPdfTest : public PDFExtensionTestBase {

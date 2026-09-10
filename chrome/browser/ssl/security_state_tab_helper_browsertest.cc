@@ -1693,36 +1693,6 @@ IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
-                       LoadFencedFrameViaInsecureURL) {
-  // Setup a mock certificate verifier.
-  SetUpMockCertVerifierForHttpsServer(0, net::OK);
 
-  // Load a valid HTTPS page.
-  auto primary_url = https_server_.GetURL("/empty.html");
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), primary_url));
-  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
-                             false, false,
-                             false /* expect cert status error */);
-
-  // Create a fenced frame with an insecure url.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
-
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
-  // Check that nothing has been loaded in the fenced frame.
-  EXPECT_EQ(
-      0, content::EvalJs(fenced_frame_host, "document.body.childElementCount"));
-
-  // Since we are blocking http content in a fenced frame, the security
-  // indicator should not change, and there should be no mixed content loaded.
-  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
-                             false, false /* expect no mixed content loaded */,
-                             false /* expect cert status error */);
-}
 
 }  // namespace

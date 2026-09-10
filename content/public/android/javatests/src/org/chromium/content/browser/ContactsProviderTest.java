@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -21,7 +20,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.Features;
 import org.chromium.content_public.browser.ContactsDialogHost;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPermissionProvider;
@@ -32,10 +30,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.RenderFrameHostTestExt;
-import org.chromium.content_public.browser.test.util.FencedFrameUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
-import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.ServerCertificate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,30 +202,4 @@ public class ContactsProviderTest {
     }
 
     /** Tests that Contacts API fails to get contacts with the user gesture in the fenced frame. */
-    @Test
-    @SmallTest
-    @Features.EnableFeatures({
-        "FencedFrames:implementation_type/mparch",
-        "PrivacySandboxAdsAPIsOverride",
-        "FencedFramesAPIChanges",
-        "FencedFramesDefaultMode"
-    })
-    public void testDontGetContactsInFencedFrame() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartHTTPSServer(
-                        InstrumentationRegistry.getInstrumentation().getContext(),
-                        ServerCertificate.CERT_OK);
-        String url = testServer.getURL(FENCED_FRAME_URL);
-        RenderFrameHost frame =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mActivityTestRule.getWebContents().getMainFrame());
-        RenderFrameHost fencedFrame =
-                FencedFrameUtils.createFencedFrame(mActivityTestRule.getWebContents(), frame, url);
-        executeJavaScript(fencedFrame, CONTACTS_SCRIPT, true);
-        waitUntilHasValue(fencedFrame);
-        Assert.assertEquals(
-                "\"Failed to execute 'select' on 'ContactsManager': The contacts API can only be"
-                        + " used in the top frame\"",
-                getValue(fencedFrame));
-    }
 }

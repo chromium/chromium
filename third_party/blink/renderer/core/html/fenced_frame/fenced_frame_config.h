@@ -52,9 +52,6 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
     kLast = kNull,
   };
 
-  // Create an inner config with a given url, the url will be transparent.
-  static FencedFrameConfig* Create(const String& url);
-
   static FencedFrameConfig* Create(const KURL url,
                                    std::optional<KURL> urn_uuid,
                                    std::optional<gfx::Size> container_size,
@@ -64,9 +61,6 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
 
   static FencedFrameConfig* From(
       const FencedFrame::RedactedFencedFrameConfig& config);
-
-  // Construct an inner config with a given url, the url will be transparent.
-  explicit FencedFrameConfig(const String& url);
 
   explicit FencedFrameConfig(const KURL url,
                              std::optional<KURL> urn_uuid,
@@ -223,7 +217,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // compatibility.
   bool deprecated_should_freeze_initial_size_ = false;
 
-  static_assert(__LINE__ == 226, R"(
+  static_assert(__LINE__ == 220, R"(
 If adding or modifying a field in FencedFrameConfig, be sure to also make
 the field serializable. To do that:
 

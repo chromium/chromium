@@ -88,27 +88,6 @@ void FencedFrame::Navigate(const GURL& url,
     return;
   }
 
-  // Confirm that the navigation does not cause a mismatch with the embedder's
-  // mode, if the embedder is itself a fenced frame. The renderer should prevent
-  // this from happening.
-  DCHECK(outer_delegate_frame_tree_node_);
-  if (outer_delegate_frame_tree_node_->IsInFencedFrameTree()) {
-    bool is_nested_inside_opaque_ads_fenced_frame =
-        outer_delegate_frame_tree_node_->GetDeprecatedFencedFrameMode() ==
-        blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
-    bool is_nested_inside_default_fenced_frame =
-        !is_nested_inside_opaque_ads_fenced_frame;
-    if ((is_nested_inside_opaque_ads_fenced_frame &&
-         !blink::IsValidUrnUuidURL(url)) ||
-        (is_nested_inside_default_fenced_frame &&
-         !blink::IsValidFencedFrameURL(url))) {
-      bad_message::ReceivedBadMessage(
-          owner_render_frame_host_->GetProcess(),
-          bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
-      return;
-    }
-  }
-
   GURL validated_url = url;
   owner_render_frame_host_->GetSiteInstance()->GetProcess()->FilterURL(
       /*empty_allowed=*/false, &validated_url);

@@ -8,11 +8,6 @@
 namespace blink {
 
 // static
-FencedFrameConfig* FencedFrameConfig::Create(const String& url) {
-  return MakeGarbageCollected<FencedFrameConfig>(url);
-}
-
-// static
 FencedFrameConfig* FencedFrameConfig::Create(
     const KURL url,
     std::optional<KURL> urn_uuid,
@@ -30,9 +25,6 @@ FencedFrameConfig* FencedFrameConfig::From(
     const FencedFrame::RedactedFencedFrameConfig& config) {
   return MakeGarbageCollected<FencedFrameConfig>(config);
 }
-
-FencedFrameConfig::FencedFrameConfig(const String& url)
-    : url_(url), url_attribute_visibility_(AttributeVisibility::kTransparent) {}
 
 FencedFrameConfig::FencedFrameConfig(const KURL url,
                                      std::optional<KURL> urn_uuid,

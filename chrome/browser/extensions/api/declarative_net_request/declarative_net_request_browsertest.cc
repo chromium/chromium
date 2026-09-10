@@ -269,7 +269,6 @@ class DeclarativeNetRequestBrowserTest
         /*enabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFencedFramesAPIChanges,
-         blink::features::kFencedFramesDefaultMode,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
         {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid
@@ -1538,17 +1537,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     content::RenderFrameHost* child = GetFrameByName("third-party.com");
     EXPECT_TRUE(child);
     EXPECT_EQ(test_case.expect_scripts_loaded, WasFrameWithScriptLoaded(child));
-
-    // Check the requests made via fencedframes are also loaded/blocked as
-    // expected.
-    GURL fencedframe_url =
-        embedded_test_server()->GetURL("third-party.test", "/child_frame.html");
-    content::RenderFrameHost* fencedframe =
-        fenced_frame_test_helper().CreateFencedFrame(GetPrimaryMainFrame(),
-                                                     fencedframe_url);
-    EXPECT_TRUE(fencedframe);
-    EXPECT_EQ(test_case.expect_scripts_loaded,
-              WasFrameWithScriptLoaded(fencedframe));
   }
 
   // Test requests made outside of tabs (from a shared worker).

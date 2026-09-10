@@ -226,7 +226,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     if (cl->HasSwitch(switches::kWebViewFencedFrames)) {
       features.EnableIfNotSet(blink::features::kFencedFrames);
       features.EnableIfNotSet(blink::features::kFencedFramesAPIChanges);
-      features.EnableIfNotSet(blink::features::kFencedFramesDefaultMode);
       features.EnableIfNotSet(::features::kFencedFramesEnforceFocus);
       features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
     }

@@ -240,24 +240,4 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
             result.ExtractString());
 }
 
-IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
-                       CanRunDiagnosticsDialogOnFencedFrame) {
-  GURL fenced_frame_url =
-      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
-  RenderFrameHost* inner_fenced_frame_rfh =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url,
-          net::ERR_NAME_NOT_RESOLVED);
-  EvalJsResult result =
-      EvalJs(inner_fenced_frame_rfh, kSearchingForDiagnosisScript);
-  ASSERT_TRUE(result.is_ok());
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS has its own diagnostics extension, which doesn't rely on a
-  // browser-initiated dialog.
-  EXPECT_EQ("FOUND", result.ExtractString());
-#else
-  EXPECT_EQ("NOT FOUND", result.ExtractString());
-#endif
-}
-
 }  // namespace content

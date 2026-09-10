@@ -2880,40 +2880,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-empty-positioned.html"));
 }
 
-class DumpAccessibilityTreeFencedFrameTest : public DumpAccessibilityTreeTest {
- protected:
-  DumpAccessibilityTreeFencedFrameTest() {
-    feature_list_.InitWithFeatures(
-        {{blink::features::kFencedFrames},
-         {features::kPrivacySandboxAdsAPIsOverride},
-         {blink::features::kFencedFramesAPIChanges},
-         {blink::features::kFencedFramesDefaultMode}},
-        {/* disabled_features */});
 
-    UseHttpsTestServer();
-  }
-
-  ~DumpAccessibilityTreeFencedFrameTest() override {
-    // Ensure that the feature lists are destroyed in the same order they
-    // were created in.
-    scoped_feature_list_.Reset();
-    feature_list_.Reset();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityTreeFencedFrameTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeFencedFrameTest,
-                       AccessibilityFencedFrameScrollable) {
-  RunHtmlTest(FILE_PATH_LITERAL("fencedframe-scrollable-mparch.html"));
-}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityIframeScrollable) {

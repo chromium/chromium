@@ -971,72 +971,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   EXPECT_FALSE(HasPopupNativeView());
 }
 
-class BrowserActionInteractiveFencedFrameTest
-    : public BrowserActionInteractiveTest {
- public:
-  ~BrowserActionInteractiveFencedFrameTest() override = default;
 
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
 
- private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
 
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
-                       BrowserActionPopupWithFencedFrame) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server.Start());
-
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("browser_action/popup_with_fencedframe")));
-  const Extension* extension = GetSingleLoadedExtension();
-  ASSERT_TRUE(extension) << message_;
-
-  // Simulate a click on the browser action to open the popup.
-  ASSERT_TRUE(OpenPopupViaToolbar(extension->id()));
-
-  // Find a primary main frame associated in the popup.
-  extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->GetProfile());
-  std::set<content::RenderFrameHost*> hosts =
-      manager->GetRenderFrameHostsForExtension(extension->id());
-  const auto& it = std::ranges::find_if(
-      hosts, &content::RenderFrameHost::IsInPrimaryMainFrame);
-  content::RenderFrameHost* primary_render_frame_host =
-      (it != hosts.end()) ? *it : nullptr;
-  ASSERT_TRUE(primary_render_frame_host);
-
-  // Navigate the popup's fenced frame to a (cross-site) web page via its
-  // parent, and wait for that page to send a message, which will ensure that
-  // the page has loaded.
-  GURL foo_url(https_server.GetURL("a.test", "/popup_fencedframe.html"));
-
-  content::TestNavigationObserver observer(
-      content::WebContents::FromRenderFrameHost(primary_render_frame_host));
-  std::string script =
-      "document.querySelector('fencedframe').config = new FencedFrameConfig('" +
-      foo_url.spec() + "')";
-  EXPECT_TRUE(ExecJs(primary_render_frame_host, script));
-  observer.WaitForNavigationFinished();
-
-  content::RenderFrameHost* fenced_frame_render_frame_host =
-      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
-          primary_render_frame_host);
-  ASSERT_TRUE(fenced_frame_render_frame_host);
-
-  // Confirm that the new page (popup_fencedframe.html) is actually loaded.
-  content::DOMMessageQueue dom_message_queue(fenced_frame_render_frame_host);
-  std::string json;
-  EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
-  EXPECT_EQ("\"DONE\"", json);
-
-  extensions_container()->HideActivePopup();
-  EXPECT_FALSE(HasPopupNativeView());
-}
 
 class NavigatingExtensionPopupInteractiveTest
     : public BrowserActionInteractiveTest {

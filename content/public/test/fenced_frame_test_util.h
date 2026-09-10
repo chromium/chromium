@@ -50,14 +50,8 @@ class FencedFrameTestHelper {
       const GURL& url,
       net::Error expected_error_code = net::OK,
       blink::FencedFrame::DeprecatedFencedFrameMode mode =
-          blink::FencedFrame::DeprecatedFencedFrameMode::kDefault,
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds,
       bool wait_for_load = true);
-
-  // This method is similar to `FencedFrameTestHelper::CreateFencedFrame` but
-  // doesn't wait until the fenced frame completes loading.
-  void CreateFencedFrameAsync(RenderFrameHost* fenced_frame_parent_rfh,
-                              const GURL& url);
-
 
   // This method provides a way to navigate frames within a fenced frame's tree,
   // and synchronously wait for the load to finish. This method returns the

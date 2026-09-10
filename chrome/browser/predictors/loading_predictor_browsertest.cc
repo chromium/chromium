@@ -2967,76 +2967,10 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
 }
 
 // Test interaction with fenced frames.
-class FencedFrameLoadingPredictorBrowserTest
-    : public LoadingPredictorBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    LoadingPredictorBrowserTest::SetUpOnMainThread();
 
-    // Set up the embedded https test server for fenced frame which requires a
-    // secure context to load.
-    embedded_https_test_server().SetSSLConfig(
-        net::EmbeddedTestServer::CERT_TEST_NAMES);
-
-    // Add content/test/data for cross_site_iframe_factory.html.
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "content/test/data");
-    embedded_https_test_server().ServeFilesFromDirectory(
-        GetChromeTestDataDir());
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
-  content::WebContents* GetWebContents() {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
 
 // Verify DNS prefetch is working in fenced frame.
-IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest, DnsPrefetch) {
-  ASSERT_TRUE(embedded_https_test_server().Start());
 
-  // Navigate to a page that contains a fenced frame.
-  const GURL main_url = embedded_https_test_server().GetURL(
-      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  // Get fenced frame render frame host.
-  std::vector<content::RenderFrameHost*> child_frames =
-      fenced_frame_test_helper().GetChildFencedFrameHosts(
-          GetWebContents()->GetPrimaryMainFrame());
-  ASSERT_EQ(child_frames.size(), 1u);
-  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
-
-  // Get fenced frame NetworkAnonymizationKey.
-  const net::NetworkAnonymizationKey& network_anonymization_key =
-      fenced_frame_rfh->GetIsolationInfoForSubresources()
-          .network_anonymization_key();
-
-  GURL dns_prefetch_url("https://chromium.org");
-
-  // Add a link element in fenced frame that does a DNS prefetch.
-  EXPECT_TRUE(ExecJs(fenced_frame_rfh, content::JsReplace(R"(
-                    var link_element = document.createElement('link');
-                    link_element.href = $1;
-                    link_element.rel = 'dns-prefetch';
-                    document.body.appendChild(link_element);
-          )",
-                                                          dns_prefetch_url)));
-
-  // The observer should observe a DNS prefetch which succeeds.
-  preconnect_manager_observer()->WaitUntilHostLookedUp(
-      dns_prefetch_url.GetHost(), network_anonymization_key);
-  EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
-      dns_prefetch_url.GetHost(), network_anonymization_key));
-  EXPECT_TRUE(preconnect_manager_observer()->HostFound(
-      dns_prefetch_url.GetHost(), network_anonymization_key));
-}
 
 // TODO(crbug.com/489349560): Allow `LoadingPredictorBrowserTest` to specify the
 // type of EmbeddedTestServer, instead of the subclass to construct its own.

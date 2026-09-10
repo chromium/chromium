@@ -877,57 +877,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderSiteDetailsBrowserTest,
   EXPECT_EQ(baseline_count, GetGlobalPageTitleCount());
 }
 
-class FencedFrameSiteDetailsBrowserTest : public InProcessBrowserTest {
- public:
-  FencedFrameSiteDetailsBrowserTest() = default;
-  ~FencedFrameSiteDetailsBrowserTest() override = default;
 
-  FencedFrameSiteDetailsBrowserTest(const FencedFrameSiteDetailsBrowserTest&) =
-      delete;
-  FencedFrameSiteDetailsBrowserTest& operator=(
-      const FencedFrameSiteDetailsBrowserTest&) = delete;
 
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
 
- protected:
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-  content::WebContents* web_contents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
-                       MemoryDetailsForFencedFrame) {
-  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
-  auto initial_url = embedded_test_server()->GetURL("a.com", "/empty.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  size_t baseline_count = GetGlobalPageTitleCount();
-
-  // Load a fenced frame.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("b.com", "/fenced_frames/iframe.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  ASSERT_TRUE(fenced_frame_host);
-
-  scoped_refptr<TestMemoryDetails> details =
-      base::MakeRefCounted<TestMemoryDetails>();
-  details->StartFetchAndWait();
-  // Currently we don't collect the title of the fenced frame.
-  EXPECT_EQ(baseline_count, details->CountPageTitles());
-
-  // Expect we encountered one fenced frame.
-  EXPECT_EQ(1, details->GetOutOfProcessInnerFrameTreesCount());
-}
 
 class BackForwardCacheSiteDetailsBrowserTest : public InProcessBrowserTest {
  public:

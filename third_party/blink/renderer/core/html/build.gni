@@ -731,7 +731,6 @@ blink_core_tests_html = [
   "custom_password_heuristics_test.cc",
   "display_ad_element_monitor_test.cc",
   "fenced_frame/fence_test.cc",
-  "fenced_frame/fenced_frame_config_test.cc",
   "fenced_frame/html_fenced_frame_element_test.cc",
   "forms/control_key_test.cc",
   "forms/color_chooser_popup_ui_controller_test.cc",

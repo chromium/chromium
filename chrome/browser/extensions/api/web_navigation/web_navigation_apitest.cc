@@ -920,27 +920,4 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, MAYBE_Xslt) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/xslt")) << message_;
 }
 
-class WebNavigationApiFencedFrameTest : public WebNavigationApiTest {
- protected:
-  WebNavigationApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
-                              {blink::features::kFencedFramesAPIChanges, {}},
-                              {blink::features::kFencedFramesDefaultMode, {}},
-                              {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
-    // Fenced frames are only allowed in a secure context.
-    UseHttpsTestServer();
-  }
-  ~WebNavigationApiFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, Load) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames")) << message_;
-}
-
 }  // namespace extensions

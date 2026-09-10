@@ -7536,12 +7536,12 @@ Called by update_permissions_policy_enum.py.-->
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:VerifyingDialogResult) -->
 
 <enum name="FencedFrameCreationOutcome">
-  <int value="0" label="Success (default mode)"/>
+  <int value="0" label="(Obsolete) Success (default mode)"/>
   <int value="1" label="Success (opaque ads mode)"/>
   <int value="2" label="Required sandbox flags not set"/>
-  <int value="3" label="Mode incompatible with parent's mode"/>
+  <int value="3" label="(Obsolete) Mode incompatible with parent's mode"/>
   <int value="4" label="Load in an insecure context"/>
-  <int value="5" label="URL is incompatible with mode=default"/>
+  <int value="5" label="(Obsolete) URL is incompatible with mode=default"/>
   <int value="6" label="URL is incompatible with mode=opaque ads"/>
   <int value="7"
       label="Supports-Loading-Mode response header 'fenced-frame' not

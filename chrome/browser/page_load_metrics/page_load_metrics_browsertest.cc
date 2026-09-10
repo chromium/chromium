@@ -3665,63 +3665,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       "PageLoad.Clients.CrossOrigin.LargestContentfulPaint", 2);
 }
 
-class PageLoadMetricsBrowserTestWithFencedFrames
-    : public PageLoadMetricsBrowserTest {
- public:
-  PageLoadMetricsBrowserTestWithFencedFrames()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-  }
-  ~PageLoadMetricsBrowserTestWithFencedFrames() override = default;
-
- protected:
-  net::EmbeddedTestServer& https_server() { return https_server_; }
-
- private:
-  net::EmbeddedTestServer https_server_;
-  content::test::FencedFrameTestHelper helper_;
-};
-
-// TODO(crbug.com/334416161): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PageLoadPrivacySandboxAdsFencedFramesMetrics \
-  DISABLED_PageLoadPrivacySandboxAdsFencedFramesMetrics
-#else
-#define MAYBE_PageLoadPrivacySandboxAdsFencedFramesMetrics \
-  PageLoadPrivacySandboxAdsFencedFramesMetrics
-#endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithFencedFrames,
-                       MAYBE_PageLoadPrivacySandboxAdsFencedFramesMetrics) {
-  ASSERT_TRUE(https_server().Start());
-
-  static constexpr char
-      kHistogramPrivacySandboxAdsNavigationToFirstContentfulPaint[] =
-          "PageLoad.Clients.PrivacySandboxAds.PaintTiming."
-          "NavigationToFirstContentfulPaint.FencedFrames";
-
-  // Not recorded as fenced frame is not created.
-  auto waiter1 = CreatePageLoadMetricsTestWaiter("waiter1");
-  waiter1->AddPageExpectation(TimingField::kFirstContentfulPaint);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server().GetURL("a.test", "/title1.html")));
-  waiter1->Wait();
-
-  histogram_tester_->ExpectTotalCount(
-      kHistogramPrivacySandboxAdsNavigationToFirstContentfulPaint, 0);
-
-  // Recorded as fenced frame is created.
-  auto waiter2 = CreatePageLoadMetricsTestWaiter("waiter2");
-  waiter2->AddPageExpectation(TimingField::kFirstContentfulPaint);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_server().GetURL("c.test", "/fenced_frames/basic_title.html")));
-  waiter2->Wait();
-
-  histogram_tester_->ExpectTotalCount(
-      kHistogramPrivacySandboxAdsNavigationToFirstContentfulPaint, 1);
-}
-
 class PageLoadMetricsBrowserTestWithBackForwardCache
     : public PageLoadMetricsBrowserTest {
  public:

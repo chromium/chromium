@@ -1556,83 +1556,11 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
             app_id_);
 }
 
-class HostedAppProcessModelFencedFrameTest : public HostedAppProcessModelTest {
- public:
-  HostedAppProcessModelFencedFrameTest() = default;
-  ~HostedAppProcessModelFencedFrameTest() override = default;
 
-  void SetUp() override {
-    ASSERT_TRUE(test_server().InitializeAndListen());
-    HostedAppProcessModelTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    HostedAppProcessModelTest::SetUpOnMainThread();
-    test_server().AddDefaultHandlers(GetChromeTestDataDir());
-    test_server().RegisterRequestHandler(base::BindRepeating(
-        [](const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.GetURL().ExtractFileName() != "page.html") {
-            return {};
-          }
-          auto response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          response->set_content_type("text/html");
-          response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-          return response;
-        }));
-    test_server().StartAcceptingConnections();
-  }
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
-  net::EmbeddedTestServer& test_server() { return test_server_; }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-  net::EmbeddedTestServer test_server_;
-};
 
 // Tests that a fenced frame in a hosted app uses a different SiteInstance from
 // the app.
-IN_PROC_BROWSER_TEST_P(HostedAppProcessModelFencedFrameTest,
-                       FencedFrameHasDifferentSiteInstance) {
-  // Set up and launch the hosted app.
-  GURL app_url =
-      test_server().GetURL("app.site.test", "/frame_tree/simple.htm");
 
-  extensions::TestExtensionDir test_app_dir;
-  test_app_dir.WriteManifest(base::StringPrintf(kHostedAppProcessModelManifest,
-                                                app_url.spec().c_str()));
-  test_app_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
-                         R"(<html>PAGE</html>)");
-  SetupApp(test_app_dir.UnpackedPath());
-
-  content::WebContents* web_contents =
-      app_browser_->GetTabStripModel()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // Check that the app loaded properly.
-  RenderFrameHost* app = web_contents->GetPrimaryMainFrame();
-  EXPECT_EQ(extensions::kExtensionScheme, app->GetSiteInstance()
-                                              ->GetSecurityPrincipal()
-                                              .GetDeprecatedSiteURL()
-                                              .GetScheme());
-  GURL app_site =
-      GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
-  EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
-  EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetDeprecatedID()));
-
-  // Load a page as a fenced frame in the app.
-  GURL fenced_frame_url =
-      test_server().GetURL("app.site.test", "/frame_tree/page.html");
-  RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(app, fenced_frame_url);
-  // Ensure that a fenced frame has its own SiteInstance.
-  EXPECT_NE(app->GetSiteInstance(), fenced_frame_host->GetSiteInstance());
-}
 
 // Helper class that sets up two isolated origins, where one is a subdomain of
 // the other: https://isolated.com and https://very.isolated.com.
@@ -2564,10 +2492,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppProcessModelTest,
-                         ::testing::Values(AppType::HOSTED_APP));
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HostedAppProcessModelFencedFrameTest,
                          ::testing::Values(AppType::HOSTED_APP));
 
 INSTANTIATE_TEST_SUITE_P(All,

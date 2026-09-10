@@ -6508,39 +6508,6 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTestWithContextTypeMv3,
 }
 
 // Depends on declarativeWebRequest. crbug.com/332512510.
-class ExtensionWebRequestApiFencedFrameTest
-    : public ExtensionWebRequestApiTest {
- protected:
-  ExtensionWebRequestApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames, {}},
-         {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesDefaultMode, {}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        {/* disabled_features */});
-    // Fenced frames are only allowed in secure contexts.
-    UseHttpsTestServer();
-  }
-  ~ExtensionWebRequestApiFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiFencedFrameTest, Load) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.extension_url = "test_fenced_frames.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiFencedFrameTest,
-                       DeclarativeSendMessage) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.extension_url = "test_fenced_frames_send_message.html"}))
-      << message_;
-}
 
 // Depends on declarativeWebRequest. crbug.com/332512510.
 class ExtensionWebRequestApiPrerenderingTest

@@ -2249,13 +2249,6 @@ inline constexpr char kApplyManagedProxyBypassListVerbatimDescription[] =
     "Applies policy and extension proxy bypass lists without adding implicit "
     "bypass rules for simple hostnames.";
 
-inline constexpr char kEnableFencedFramesDeveloperModeName[] =
-    "Enable the `FencedFrameConfig` constructor.";
-inline constexpr char kEnableFencedFramesDeveloperModeDescription[] =
-    "The `FencedFrameConfig` constructor allows you to test the <fencedframe> "
-    "element without running an ad auction, as you can manually supply a URL "
-    "to navigate the fenced frame to.";
-
 inline constexpr char kEnableGamepadMultitouchName[] = "Gamepad Multitouch";
 inline constexpr char kEnableGamepadMultitouchDescription[] =
     "Enables the ability to receive input from multitouch surface "

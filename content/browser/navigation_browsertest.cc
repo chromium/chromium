@@ -9894,15 +9894,6 @@ IN_PROC_BROWSER_TEST_F(HstsUpgradeBrowserTest, UpgradeTopLevelOnly) {
   // The http://b.com iframe should not have been upgraded.
   EXPECT_EQ(url_of_hsts_frame_http,
             sub_frame->current_frame_host()->GetLastCommittedURL());
-
-  // Fenced Frames are treated as top-level frames in many cases, but not for
-  // HSTS upgrades. Requests for fenced frames should not be upgraded.
-  content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          main_frame()->current_frame_host(), url_of_hsts_frame_http);
-
-  ASSERT_TRUE(fenced_frame);
-  EXPECT_EQ(url_of_hsts_frame_http, fenced_frame->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,

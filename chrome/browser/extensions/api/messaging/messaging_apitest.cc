@@ -2349,27 +2349,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
   EXPECT_EQ(0u, GetWorkerRefCount(extension_key));
 }
 
-class MessagingApiFencedFrameTest : public MessagingApiTest {
- protected:
-  MessagingApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames, {}},
-         {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesDefaultMode, {}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        {/* disabled_features */});
-  }
-  ~MessagingApiFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MessagingApiFencedFrameTest, Load) {
-  ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames", {}))
-      << message_;
-}
-
 }  // namespace
 
 }  // namespace extensions

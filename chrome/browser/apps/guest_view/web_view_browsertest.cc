@@ -8040,54 +8040,6 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest, ZoomFencedFrame) {
                    content::GetPendingZoomLevel(embedder_rwh));
 }
 
-// TODO(crbug.com/432394750): Flaky on linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_FencedFrameInGuestHasGuestSiteInstance \
-  DISABLED_FencedFrameInGuestHasGuestSiteInstance
-#else
-#define MAYBE_FencedFrameInGuestHasGuestSiteInstance \
-  FencedFrameInGuestHasGuestSiteInstance
-#endif
-IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
-                       MAYBE_FencedFrameInGuestHasGuestSiteInstance) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
-  TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
-
-  auto* guest_rfh =
-      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
-  std::vector<content::RenderFrameHost*> rfhs =
-      content::CollectAllRenderFrameHosts(guest_rfh);
-  ASSERT_EQ(rfhs.size(), 2u);
-  ASSERT_EQ(rfhs[0], guest_rfh);
-  content::RenderFrameHostWrapper ff_rfh(rfhs[1]);
-
-  EXPECT_NE(ff_rfh->GetSiteInstance(), guest_rfh->GetSiteInstance());
-  EXPECT_TRUE(guest_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
-  EXPECT_TRUE(ff_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(ff_rfh->GetSiteInstance()
-                ->GetSecurityPrincipal()
-                .GetStoragePartitionConfig(),
-            guest_rfh->GetSiteInstance()
-                ->GetSecurityPrincipal()
-                .GetStoragePartitionConfig());
-
-  // The fenced frame will be in a different process from the embedding guest
-  // only if Process Isolation for Fenced Frames is enabled.
-  if (content::SiteIsolationPolicy::
-          IsProcessIsolationForFencedFramesEnabled()) {
-    EXPECT_NE(ff_rfh->GetProcess(), guest_rfh->GetProcess());
-  } else {
-    EXPECT_EQ(ff_rfh->GetProcess(), guest_rfh->GetProcess());
-  }
-
-  // Add a second fenced frame (same-site with the first fenced frame).
-  auto* ff_rfh_2 = fenced_frame_test_helper().CreateFencedFrame(
-      guest_rfh, ff_rfh->GetLastCommittedURL());
-  EXPECT_NE(ff_rfh_2->GetSiteInstance(), ff_rfh->GetSiteInstance());
-  EXPECT_EQ(ff_rfh->GetProcess(), ff_rfh_2->GetProcess());
-}
-
 class WebViewUsbTest : public WebViewTest {
  public:
   WebViewUsbTest() = default;

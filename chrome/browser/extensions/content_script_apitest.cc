@@ -2427,22 +2427,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingMV3Test, SpeculationRules) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
- protected:
-  ContentScriptApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}},
-         {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesDefaultMode, {}}},
-        {/* disabled_features */});
-    UseHttpsTestServer();
-  }
-  ~ContentScriptApiFencedFrameTest() override = default;
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 // Inject two extensions with matching rules. Only the extension
 // that matches the outermost extension's content_scripts should
@@ -2450,83 +2435,7 @@ class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
 // The documentIdle extension should execute (sending 'done').
 // The documentStart extension should not-execute (sending 'fail') since it
 // isn't the parent extension of the fenced frame.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
-                       InjectionMatchesCorrectExtension) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
 
-  const char kDocumentIdleExtensionManifest[] =
-      R"MANIFEST({
-        "name": "Document Idle Extesnsion",
-        "version": "0.1",
-        "manifest_version": 3,
-        "content_scripts": [{
-          "matches": ["https://*/fenced_frames/title1.html"],
-          "js": ["script.js"],
-          "run_at": "document_idle",
-          "all_frames": true
-        }]
-      })MANIFEST";
-
-  const char kDocumentStartExtensionManifest[] =
-      R"MANIFEST({
-        "name": "Document Start extension",
-        "version": "0.1",
-        "manifest_version": 3,
-        "content_scripts": [{
-          "matches": ["https://*/fenced_frames/title1.html"],
-          "js": ["script.js"],
-          "run_at": "document_start",
-          "all_frames": true
-        }]
-      })MANIFEST";
-
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
-
-  TestExtensionDir document_idle_extension_dir;
-  document_idle_extension_dir.WriteManifest(kDocumentIdleExtensionManifest);
-
-  document_idle_extension_dir.WriteFile(FILE_PATH_LITERAL("test.html"), R"HTML(
-    <html>
-      Fenced Frame Test!
-      <fencedframe></fencedframe>
-      <script src="navigation.js"></script>
-    </html>
-  )HTML");
-
-  document_idle_extension_dir.WriteFile(
-      FILE_PATH_LITERAL("navigation.js"),
-      content::JsReplace(
-          "const fencedframe = document.querySelector('fencedframe');"
-          "fencedframe.config = new FencedFrameConfig($1);",
-          fenced_frame_url));
-
-  document_idle_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
-                                        kNonBlockingScript);
-  const Extension* extension =
-      LoadExtension(document_idle_extension_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  TestExtensionDir document_start_extension_dir;
-  const char kFailureScript[] = "chrome.test.sendMessage('fail');";
-
-  document_start_extension_dir.WriteManifest(kDocumentStartExtensionManifest);
-  document_start_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
-                                         kFailureScript);
-
-  ASSERT_TRUE(LoadExtension(document_start_extension_dir.UnpackedPath()));
-
-  ExtensionTestMessageListener listener;
-  content::WebContents* tab_contents = GetActiveWebContents();
-
-  GURL extension_test_url = extension->GetResourceURL("test.html");
-  ASSERT_TRUE(NavigateToURL(tab_contents, extension_test_url));
-
-  EXPECT_EQ(extension_test_url,
-            tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
-  EXPECT_TRUE(listener.WaitUntilSatisfied());
-  EXPECT_EQ("done", listener.message());
-}
 
 class ContentScriptApiTestWithActivityLog : public ContentScriptApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {

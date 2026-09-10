@@ -4887,8 +4887,6 @@ data/accessibility/html/embed-expected-win.txt
 data/accessibility/html/embed-image-error-expected-blink.txt
 data/accessibility/html/embed-image-error.html
 data/accessibility/html/embed.html
-data/accessibility/html/fencedframe-scrollable-mparch-expected-blink.txt
-data/accessibility/html/fencedframe-scrollable-mparch.html
 data/accessibility/html/fencedframe-scrollable-shadowdom-expected-blink.txt
 data/accessibility/html/fieldset-expected-android-assist-data.txt
 data/accessibility/html/fieldset-expected-android-external.txt
@@ -8249,6 +8247,8 @@ data/gpu/lots-of-lines.svg
 data/gpu/media_foundation_clear_dcomp.js
 data/gpu/media_foundation_d3d11_video_capture.html
 data/gpu/media_recorder_from_video_element.js
+data/gpu/meet_effects_videos/effects-normal-light.y4m
+data/gpu/meet_effects_videos/test_cases.json
 data/gpu/mem_webgl.html
 data/gpu/offscreencanvas_imagebitmap_from_worker_uses_overlay.html
 data/gpu/offscreencanvas_imagebitmap_uses_overlay.html

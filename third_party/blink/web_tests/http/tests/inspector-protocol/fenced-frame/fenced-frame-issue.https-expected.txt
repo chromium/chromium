@@ -1,3 +1,0 @@
-Tests that issues for fenced frames are reported to the fenced frame target
-Issue logged: CookieIssue
-

@@ -337,26 +337,4 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool()),
     BackForwardCacheDisabledDestructiveScriptTestPassToString());
 
-class ExecuteScriptApiFencedFrameTest : public ExecuteScriptApiTestBase {
- protected:
-  ExecuteScriptApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
-                              {blink::features::kFencedFramesAPIChanges, {}},
-                              {blink::features::kFencedFramesDefaultMode, {}},
-                              {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
-    // Fenced frames are only allowed in secure contexts.
-    UseHttpsTestServer();
-  }
-  ~ExecuteScriptApiFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ExecuteScriptApiFencedFrameTest, Load) {
-  ASSERT_TRUE(RunExtensionTest("executescript/fenced_frames")) << message_;
-}
-
 }  // namespace extensions

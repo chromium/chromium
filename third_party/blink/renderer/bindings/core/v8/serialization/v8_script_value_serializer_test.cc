@@ -2231,56 +2231,6 @@ TEST(V8ScriptValueSerializerTest, CanDeserializeIn_OldValues) {
   EXPECT_TRUE(input->CanDeserializeIn(scope.GetExecutionContext()));
 }
 
-TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
-  test::TaskEnvironment task_environment;
-  ScopedFencedFramesForTest fenced_frames(true);
-  V8TestingScope scope;
-  FencedFrameConfig* config = FencedFrameConfig::Create(
-      KURL("https://example.com"),
-      KURL("urn:uuid:37665e6f-f3fd-4393-8429-719d02843a54"), gfx::Size(64, 48),
-      gfx::Size(32, 16), FencedFrameConfig::AttributeVisibility::kOpaque, true);
-  v8::Local<v8::Value> wrapper =
-      ToV8Traits<FencedFrameConfig>::ToV8(scope.GetScriptState(), config);
-  v8::Local<v8::Value> result =
-      RoundTrip(wrapper, scope, scope.GetExceptionState());
-  FencedFrameConfig* new_config =
-      V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_config, nullptr);
-  EXPECT_NE(config, new_config);
-  EXPECT_EQ(config->url_, new_config->url_);
-  EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
-  EXPECT_EQ(config->container_size_, new_config->container_size_);
-  EXPECT_EQ(config->content_size_, new_config->content_size_);
-  EXPECT_EQ(config->url_attribute_visibility_,
-            new_config->url_attribute_visibility_);
-  EXPECT_EQ(config->deprecated_should_freeze_initial_size_,
-            new_config->deprecated_should_freeze_initial_size_);
-}
-
-TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
-  test::TaskEnvironment task_environment;
-  ScopedFencedFramesForTest fenced_frames(true);
-  V8TestingScope scope;
-  FencedFrameConfig* config = FencedFrameConfig::Create(g_empty_string);
-  ASSERT_FALSE(config->urn_uuid_.has_value());
-  ASSERT_FALSE(config->container_size_.has_value());
-  ASSERT_FALSE(config->content_size_.has_value());
-  v8::Local<v8::Value> wrapper =
-      ToV8Traits<FencedFrameConfig>::ToV8(scope.GetScriptState(), config);
-  v8::Local<v8::Value> result =
-      RoundTrip(wrapper, scope, scope.GetExceptionState());
-  FencedFrameConfig* new_config =
-      V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_config, nullptr);
-  EXPECT_NE(config, new_config);
-  EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
-  EXPECT_FALSE(new_config->urn_uuid_.has_value());
-  EXPECT_EQ(config->container_size_, new_config->container_size_);
-  EXPECT_FALSE(new_config->container_size_.has_value());
-  EXPECT_EQ(config->content_size_, new_config->content_size_);
-  EXPECT_FALSE(new_config->content_size_.has_value());
-}
-
 namespace {
 
 class GinWrappable : public gin::Wrappable<GinWrappable> {

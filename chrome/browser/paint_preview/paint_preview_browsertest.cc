@@ -277,126 +277,11 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   }
 }
 
-class PaintPreviewFencedFrameBrowserTest : public PaintPreviewBrowserTest {
- public:
-  PaintPreviewFencedFrameBrowserTest() = default;
-  ~PaintPreviewFencedFrameBrowserTest() override = default;
 
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
 
- private:
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-};
 
-IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
-                       CaptureMainFrameWithCrossProcessFencedFrames) {
-  LoadPage(http_server_.GetURL("a.com", "/title1.html"));
-  content::RenderFrameHost* primary_main_rfh =
-      GetWebContents()->GetPrimaryMainFrame();
 
-  // Create two fenced frames.
-  fenced_frame_test_helper().CreateFencedFrame(
-      primary_main_rfh,
-      http_server_.GetURL("b.com", "/fenced_frames/title1.html"));
-  fenced_frame_test_helper().CreateFencedFrame(
-      primary_main_rfh,
-      http_server_.GetURL("c.com", "/fenced_frames/title1.html"));
 
-  CreateClient();
-  auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
-  auto params = MakeParams();
-
-  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
-                         std::unique_ptr<CaptureResult>>
-      future;
-  client->CapturePaintPreview(params.Clone(), primary_main_rfh,
-                              future.GetCallback());
-  auto [guid, status, result] = future.Take();
-  // This callback should have a success result without any DCHECK
-  // error.
-  EXPECT_EQ(guid, params.inner.get_document_guid());
-  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-  EXPECT_TRUE(result->proto.has_root_frame());
-  EXPECT_EQ(result->proto.subframes_size(), 2);
-  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
-            2);
-  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
-  EXPECT_FALSE(result->proto.subframes(1).is_main_frame());
-  {
-    base::ScopedAllowBlockingForTesting scoped_blocking;
-    auto pair = RecordingMapFromCaptureResult(std::move(*result));
-    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 2);
-    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
-    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(1), 0);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
-                       DoNotAffectAnotherFrameWhenRemovingFencedFrame) {
-  base::ScopedAllowBlockingForTesting scope;
-
-  LoadPage(http_server_.GetURL("a.com", "/title1.html"));
-  content::RenderFrameHost* primary_main_rfh =
-      GetWebContents()->GetPrimaryMainFrame();
-
-  // Create two fenced frames.
-  content::RenderFrameHostWrapper fenced_rfh_wrapper(
-      fenced_frame_test_helper().CreateFencedFrame(
-          primary_main_rfh,
-          http_server_.GetURL("b.com", "/fenced_frames/title1.html")));
-  fenced_frame_test_helper().CreateFencedFrame(
-      primary_main_rfh,
-      http_server_.GetURL("c.com", "/fenced_frames/title1.html"));
-
-  // Override remote interfaces of the fenced frame with a no-op.
-  base::test::TestFuture<void> started_future;
-  NoOpPaintPreviewRecorder noop_recorder;
-  noop_recorder.SetReceivedRequestClosure(started_future.GetCallback());
-
-  OverrideInterface(&noop_recorder, fenced_rfh_wrapper.get());
-
-  CreateClient();
-  auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
-  auto params = MakeParams();
-
-  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
-                         std::unique_ptr<CaptureResult>>
-      future;
-  client->CapturePaintPreview(params.Clone(), primary_main_rfh,
-                              future.GetCallback());
-
-  // Wait for the request to execute before removing the fenced frame.
-  ASSERT_TRUE(started_future.Wait());
-
-  // Remove the fenced frame.
-  EXPECT_TRUE(
-      ExecJs(primary_main_rfh,
-             "const ff = document.querySelector('fencedframe'); ff.remove();"));
-  ASSERT_TRUE(fenced_rfh_wrapper.WaitUntilRenderFrameDeleted());
-
-  auto [guid, status, result] = future.Take();
-  // This callback should have a partial success result since the
-  // fenced frame has been removed during running the capture.
-  EXPECT_EQ(guid, params.inner.get_document_guid());
-  EXPECT_EQ(status, mojom::PaintPreviewStatus::kPartialSuccess);
-  EXPECT_TRUE(result->proto.has_root_frame());
-  EXPECT_EQ(result->proto.subframes_size(), 1);
-  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
-            2);
-  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-  EXPECT_EQ(result->proto.subframes(0).content_id_to_embedding_tokens_size(),
-            0);
-  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
-  {
-    base::ScopedAllowBlockingForTesting scoped_blocking;
-    auto pair = RecordingMapFromCaptureResult(std::move(*result));
-    EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 2);
-    EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
-  }
-}
 
 IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
                        CaptureMainFrameWithScrollableSameProcessSubframe) {
@@ -560,14 +445,6 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PaintPreviewBrowserTest,
-    testing::Values(RecordingPersistence::kFileSystem,
-                    RecordingPersistence::kMemoryBuffer),
-    [](const testing::TestParamInfo<RecordingPersistence>& info) {
-      return std::string(PersistenceToString(info.param));
-    });
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PaintPreviewFencedFrameBrowserTest,
     testing::Values(RecordingPersistence::kFileSystem,
                     RecordingPersistence::kMemoryBuffer),
     [](const testing::TestParamInfo<RecordingPersistence>& info) {

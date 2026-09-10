@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -38,18 +39,8 @@ constexpr char kAddFencedFrameScript[] = R"({
     document.body.appendChild(fenced_frame);
   })";
 
-constexpr char kAddAndNavigateFencedFrameScript[] = R"({
-    const fenced_frame = document.createElement('fencedframe');
-    fenced_frame.config = new FencedFrameConfig($1);
-    document.body.appendChild(fenced_frame);
-  })";
-
 constexpr char kNavigateFrameScript[] = R"({location.href = $1;})";
 
-constexpr char kEmbedderNavigateFencedFrameScript[] = R"({
-  document.getElementById('fencedframe'+$1).config =
-      new FencedFrameConfig($2);}
-)";
 }  // namespace
 
 FencedFrameTestHelper::FencedFrameTestHelper() {
@@ -57,7 +48,6 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
       {{blink::features::kFencedFrames, {}},
        {features::kPrivacySandboxAdsAPIsOverride, {}},
        {blink::features::kFencedFramesAPIChanges, {}},
-       {blink::features::kFencedFramesDefaultMode, {}},
        {features::kFencedFramesEnforceFocus, {}},
        {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
        {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
@@ -104,31 +94,19 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   if (url.is_empty())
     return fenced_frame_rfh;
 
-  // For default mode, perform a content-initiated navigation (for backwards
-  // compatibility with existing tests).
-  if (mode == blink::FencedFrame::DeprecatedFencedFrameMode::kDefault) {
-    return NavigateFrameInFencedFrameTree(fenced_frame_rfh, url,
-                                          expected_error_code, wait_for_load);
-  }
-
-  // For opaque-ads mode, perform an embedder-initiated navigation, because only
-  // embedder-initiation urn navigations make sense.
-  EXPECT_EQ(mode, blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
   GURL potentially_urn_url = url;
-  std::optional<GURL> urn_uuid = fenced_frame_parent_rfh->GetPage()
-                                     .fenced_frame_urls_map()
-                                     .AddFencedFrameURLForTesting(url);
-  EXPECT_TRUE(urn_uuid.has_value());
-  EXPECT_TRUE(urn_uuid->is_valid());
-  potentially_urn_url = *urn_uuid;
+  if (!blink::IsValidUrnUuidURL(potentially_urn_url)) {
+    std::optional<GURL> urn_uuid = fenced_frame_parent_rfh->GetPage()
+                                       .fenced_frame_urls_map()
+                                       .AddFencedFrameURLForTesting(url);
+    EXPECT_TRUE(urn_uuid.has_value());
+    EXPECT_TRUE(urn_uuid->is_valid());
+    potentially_urn_url = *urn_uuid;
+  }
 
   FrameTreeNode* target_node = fenced_frame_rfh->frame_tree_node();
   TestFrameNavigationObserver fenced_frame_observer(fenced_frame_rfh);
-  EXPECT_TRUE(
-      ExecJs(fenced_frame_parent_rfh,
-             JsReplace(kEmbedderNavigateFencedFrameScript,
-                       base::NumberToString(previous_fenced_frame_count),
-                       potentially_urn_url)));
+  fenced_frame->Navigate(potentially_urn_url, base::TimeTicks::Now());
 
   if (!wait_for_load) {
     return nullptr;
@@ -140,15 +118,6 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
             expected_error_code != net::OK);
 
   return target_node->current_frame_host();
-}
-
-
-void FencedFrameTestHelper::CreateFencedFrameAsync(
-    RenderFrameHost* fenced_frame_parent_rfh,
-    const GURL& url) {
-  EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh,
-                     JsReplace(kAddAndNavigateFencedFrameScript, url),
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(

@@ -1398,142 +1398,6 @@ class WaitForFindTestWebContentsDelegate : public FindTestWebContentsDelegate {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-class FindRequestManagerFencedFrameTest : public FindRequestManagerTest {
- public:
-  FindRequestManagerFencedFrameTest() = default;
-  ~FindRequestManagerFencedFrameTest() override = default;
-  FindRequestManagerFencedFrameTest(const FindRequestManagerFencedFrameTest&) =
-      delete;
-
-  FindRequestManagerFencedFrameTest& operator=(
-      const FindRequestManagerFencedFrameTest&) = delete;
-
-  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_helper_;
-  }
-
-  content::WebContents* GetWebContents() { return shell()->web_contents(); }
-
-  int find_request_queue_size() {
-    return contents()
-        ->GetFindRequestManagerForTesting()
-        ->find_request_queue_.size();
-  }
-
-  bool CheckFrame(RenderFrameHost* render_frame_host) const {
-    return contents()->GetFindRequestManagerForTesting()->CheckFrame(
-        render_frame_host);
-  }
-
- private:
-  content::test::FencedFrameTestHelper fenced_frame_helper_;
-};
-
-// This find-in-page client will make the find-request-queue not empty so that
-// we can test a fenced frame doesn't clear the find-request-queue when it's
-// deleted. To keep the find-request-queue not empty, this class
-// intercepts the Mojo methods calls, and changes the FindMatchUpdateType to
-// kMoreUpdatesComing (including those that were marked as kFinalUpdate), so
-// that the find-request-queue won't get popped and will stay non-empty.
-class NeverFinishFencedFrameFindInPageClient : public FindInPageClient {
- public:
-  NeverFinishFencedFrameFindInPageClient(
-      FindRequestManager* find_request_manager,
-      RenderFrameHostImpl* rfh)
-      : FindInPageClient(find_request_manager, rfh) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(rfh);
-    delegate_ = static_cast<WaitForFindTestWebContentsDelegate*>(
-        web_contents->GetDelegate());
-  }
-  ~NeverFinishFencedFrameFindInPageClient() override = default;
-
-  // blink::mojom::FindInPageClient overrides
-  void SetNumberOfMatches(
-      int request_id,
-      unsigned int current_number_of_matches,
-      blink::mojom::FindMatchUpdateType update_type) override {
-    update_type = blink::mojom::FindMatchUpdateType::kMoreUpdatesComing;
-    FindInPageClient::SetNumberOfMatches(request_id, current_number_of_matches,
-                                         update_type);
-  }
-
-  // Do nothing on SetActiveMatch() calls, since this can potentially trigger
-  // FindRequestManager::AdvanceQueue() and pop an item from the
-  // find-request-queue.
-  void SetActiveMatch(int request_id,
-                      const gfx::Rect& active_match_rect,
-                      int active_match_ordinal,
-                      blink::mojom::FindMatchUpdateType update_type) override {}
-
- private:
-  raw_ptr<WaitForFindTestWebContentsDelegate> delegate_;
-};
-
-static std::unique_ptr<FindInPageClient> CreateFencedFrameFindInPageClient(
-    FindRequestManager* find_request_manager,
-    RenderFrameHostImpl* rfh) {
-  return std::make_unique<NeverFinishFencedFrameFindInPageClient>(
-      find_request_manager, rfh);
-}
-
-// Tests that a main frame, a sub frame, and a fenced frame clear the
-// find-request-queue when the fenced frame is deleted.
-IN_PROC_BROWSER_TEST_F(FindRequestManagerFencedFrameTest,
-                       OnlyPrimaryMainFrameClearsFindRequestQueue) {
-  WaitForFindTestWebContentsDelegate delegate;
-  contents()->SetDelegate(&delegate);
-
-  // Override the FindInPageClient class so that we can intercept the Mojo
-  // methods calls to keep its find request queue non-empty.
-  contents()
-      ->GetFindRequestManagerForTesting()
-      ->SetCreateFindInPageClientFunctionForTesting(
-          &CreateFencedFrameFindInPageClient);
-
-  LoadAndWait("/find_in_page.html");
-  auto options = blink::mojom::FindOptions::New();
-  options->run_synchronously_for_testing = true;
-  Find("result", options.Clone());
-  // Initial find request is pop from the queue immediately so we make a second
-  // find request.
-  options->new_session = false;
-  Find("result", options.Clone());
-
-  // Create a fenced frame.
-  GURL find_test_url =
-      embedded_test_server()->GetURL("/fenced_frames/find_in_page.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), find_test_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
-  EXPECT_TRUE(CheckFrame(fenced_frame_host));
-  EXPECT_EQ(find_request_queue_size(), 1);
-  EXPECT_EQ(last_request_id(), delegate.GetFindResults().request_id);
-
-  // Navigate the fenced frame, this won't cause the find request queue to be
-  // cleared, since it's not a primary main frame.
-  fenced_frame_host = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-      fenced_frame_host, find_test_url);
-  EXPECT_TRUE(CheckFrame(fenced_frame_host));
-  EXPECT_EQ(find_request_queue_size(), 1);
-  EXPECT_EQ(last_request_id(), delegate.GetFindResults().request_id);
-
-  // Navigate the non-fenced frame subframe, this also won't cause the find
-  // request queue to be cleared, since it's not a primary main frame.
-  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
-  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), find_test_url));
-  EXPECT_TRUE(CheckFrame(root->child_at(0)->current_frame_host()));
-  EXPECT_EQ(find_request_queue_size(), 1);
-  EXPECT_EQ(last_request_id(), delegate.GetFindResults().request_id);
-
-  // Navigate the main frame, this causes the find request queue to be cleared,
-  // since it's the primary main frame.
-  EXPECT_TRUE(NavigateToURL(shell(), find_test_url));
-  EXPECT_TRUE(CheckFrame(GetWebContents()->GetPrimaryMainFrame()));
-  EXPECT_EQ(find_request_queue_size(), 0);
-}
-
 // This find-in-page client will make it so that we never stop listening for
 // find-in-page updates only for subframes, through modifying final updates to
 // be marked as non-final updates. It helps us to simulate various things that
@@ -1613,35 +1477,18 @@ enum class FrameSiteType {
   kCrossOrigin,
 };
 
-enum class FrameTestType {
-  kIFrame,
-  kFencedFrame,
-};
-
 class FindRequestManagerTestWithTestConfig
     : public FindRequestManagerTestBase,
-      public testing::WithParamInterface<
-          ::testing::tuple<FrameSiteType, FrameTestType>> {
+      public testing::WithParamInterface<FrameSiteType> {
  public:
-  FrameSiteType GetFrameSiteType() const { return std::get<0>(GetParam()); }
-
-  FrameTestType GetFrameTestType() const { return std::get<1>(GetParam()); }
-
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
-  }
-
- private:
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
+  FrameSiteType GetFrameSiteType() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     FindRequestManagers,
     FindRequestManagerTestWithTestConfig,
-    ::testing::Combine(::testing::Values(FrameSiteType::kSameOrigin,
-                                         FrameSiteType::kCrossOrigin),
-                       ::testing::Values(FrameTestType::kIFrame,
-                                         FrameTestType::kFencedFrame)));
+    ::testing::Values(FrameSiteType::kSameOrigin,
+                      FrameSiteType::kCrossOrigin));
 
 // Tests that the previous results from old document are removed and we get the
 // new results from the new document when we navigate the subframe that
@@ -1663,23 +1510,15 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTestWithTestConfig,
 
   GURL frame_url =
       embedded_test_server()->GetURL("a.com", "/find_in_page_frame.html");
-  content::RenderFrameHost* fenced_frame_host = nullptr;
 
   // 2) Load a subframe with 17 matches.
-  if (GetFrameTestType() == FrameTestType::kIFrame) {
-    EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
-        var frame = document.createElement('iframe');
-        frame.src = $1;
-        document.body.appendChild(frame);
-      )",
-                                          frame_url)));
-    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  } else {
-    fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
-        shell()->web_contents()->GetPrimaryMainFrame(), frame_url);
-    EXPECT_NE(nullptr, fenced_frame_host);
-  }
-
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
+      var frame = document.createElement('iframe');
+      frame.src = $1;
+      document.body.appendChild(frame);
+    )",
+                                        frame_url)));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   auto options = blink::mojom::FindOptions::New();
   options->run_synchronously_for_testing = true;
 
@@ -1717,15 +1556,10 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTestWithTestConfig,
   GURL url(embedded_test_server()->GetURL(
       GetFrameSiteType() == FrameSiteType::kSameOrigin ? "a.com" : "b.com",
       "/find_in_simple_page.html"));
-  if (GetFrameTestType() == FrameTestType::kIFrame) {
-    FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
-    TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
-    EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
-  } else {
-    fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                              url);
-  }
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  TestNavigationObserver navigation_observer(contents());
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 
   delegate.WaitForNextReply();
 

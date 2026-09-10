@@ -852,68 +852,6 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
            "a.test/page_with_blank_iframe.html (Read) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
-                       DiscardFencedFrameCookieClientAccess) {
-  std::vector<std::string> redirects;
-  StartAppendingRedirectsTo(&redirects);
-
-  const GURL primary_main_frame_url =
-      embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
-
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  RenderFrameHostWrapper fenced_frame(
-      fenced_frame_test_helper()->CreateFencedFrame(
-          GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
-  EXPECT_FALSE(fenced_frame.IsDestroyed());
-
-  AccessCookieViaJSIn(GetActiveWebContents(), fenced_frame.get());
-
-  const GURL primary_main_frame_final_url =
-      embedded_test_server()->GetURL("d.test", "/title1.html");
-  // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
-      GetActiveWebContents(), primary_main_frame_final_url));
-
-  CloseTab(GetActiveWebContents());
-  EXPECT_THAT(
-      redirects,
-      ElementsAre(
-          ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
-}
-
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
-                       DiscardFencedFrameCookieServerAccess) {
-  std::vector<std::string> redirects;
-  StartAppendingRedirectsTo(&redirects);
-
-  const GURL primary_main_frame_url =
-      embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
-
-  const GURL fenced_frame_url = embedded_test_server()->GetURL(
-      "a.test", "/fenced_frames/set_cookie_header.html");
-  URLCookieAccessObserver observer(GetActiveWebContents(), fenced_frame_url,
-                                   CookieOperation::kChange);
-  RenderFrameHostWrapper fenced_frame(
-      fenced_frame_test_helper()->CreateFencedFrame(
-          GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
-  EXPECT_FALSE(fenced_frame.IsDestroyed());
-  observer.Wait();
-
-  const GURL primary_main_frame_final_url =
-      embedded_test_server()->GetURL("d.test", "/title1.html");
-  // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
-      GetActiveWebContents(), primary_main_frame_final_url));
-
-  CloseTab(GetActiveWebContents());
-  EXPECT_THAT(
-      redirects,
-      ElementsAre(
-          "[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html"));
-}
 
 // TODO(crbug.com/40917101): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
@@ -1709,37 +1647,6 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
-                       DiscardFencedFrameCookieClientAccess) {
-  std::vector<std::string> redirects;
-  StartAppendingRedirectsTo(&redirects);
-
-  const GURL primary_main_frame_url =
-      embedded_https_test_server().GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
-
-  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
-      "a.test", "/fenced_frames/title0.html");
-  std::unique_ptr<RenderFrameHostWrapper> fenced_frame =
-      std::make_unique<RenderFrameHostWrapper>(
-          fenced_frame_test_helper()->CreateFencedFrame(
-              GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
-  EXPECT_NE(fenced_frame, nullptr);
-
-  EXPECT_TRUE(AccessStorage(fenced_frame->get(), GetParam()));
-
-  const GURL primary_main_frame_final_url =
-      embedded_https_test_server().GetURL("d.test", "/title1.html");
-  // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
-      GetActiveWebContents(), primary_main_frame_final_url));
-
-  CloseTab(GetActiveWebContents());
-  EXPECT_THAT(
-      redirects,
-      ElementsAre(
-          ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
-}
 
 IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
                        DiscardPrerenderedPageCookieClientAccess) {

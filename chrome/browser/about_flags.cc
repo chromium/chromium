@@ -8400,11 +8400,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"enable-fenced-frames-developer-mode",
-     flag_descriptions::kEnableFencedFramesDeveloperModeName,
-     flag_descriptions::kEnableFencedFramesDeveloperModeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kFencedFramesDefaultMode)},
-
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},

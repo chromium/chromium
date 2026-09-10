@@ -3888,11 +3888,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-fenced-frames-developer-mode",
-    "owners": [ "dom@chromium.org", "shivanisha@chromium.org", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-file-download-connector-ios",
     "owners": [ "mxlg@google.com", "bling-enterprise@google.com" ],
     "expiry_milestone": 155

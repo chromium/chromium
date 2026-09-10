@@ -589,29 +589,9 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopNotSupported) {
 #endif  // !defined(USE_AURA)
 
 #if BUILDFLAG(IS_CHROMEOS)
-class AutomationApiFencedFrameTest : public AutomationApiTest {
- protected:
-  AutomationApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
-                              {features::kPrivacySandboxAdsAPIsOverride, {}},
-                              {blink::features::kFencedFramesAPIChanges, {}},
-                              {blink::features::kFencedFramesDefaultMode, {}}},
-        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
-  }
 
-  ~AutomationApiFencedFrameTest() override = default;
 
- public:
-  base::test::ScopedFeatureList feature_list_;
-};
 
-IN_PROC_BROWSER_TEST_F(AutomationApiFencedFrameTest, DesktopFindInFencedframe) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop/fencedframe",
-                               {.extension_url = "focus_fencedframe.html"}))
-      << message_;
-}
 
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Desktop) {
   ASSERT_TRUE(
