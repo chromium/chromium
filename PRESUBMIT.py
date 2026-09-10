@@ -2225,10 +2225,20 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         pattern='#pragma allow_unsafe_buffers',
-        explanation=
-        ('Do not use allow_unsafe_buffers to write new unsafe code. Use only '
-         'when enabling unsafe buffers checks under a new uncovered path.', ),
+        explanation=(
+            'Do not use allow_unsafe_buffers to write new unsafe code. Write '
+            'safe code or use UNSAFE_BUFFERS/UNSAFE_TODO as a last resort.', ),
         treat_as_error=False,
+        surface_as_gerrit_lint=True,
+    ),
+    BanRule(
+        pattern='#pragma allow_unsafe_libc_calls',
+        explanation=(
+            'Do not use allow_unsafe_libc_calls to write new unsafe code. '
+            'Write safe code or use UNSAFE_BUFFERS/UNSAFE_TODO as a last '
+            'resort.', ),
+        treat_as_error=True,
+        surface_as_gerrit_lint=True,
     ),
     BanRule(
         pattern=r'UNSAFE_BUFFERS(',
