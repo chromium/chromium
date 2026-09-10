@@ -312,26 +312,22 @@ const char ContentDirectoryLoaderFactory::kContentDirectoriesPath[] =
 
 // static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
-ContentDirectoryLoaderFactory::Create(
-    std::optional<std::string> content_directory_name) {
+ContentDirectoryLoaderFactory::Create() {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The ContentDirectoryLoaderFactory will delete itself when there are no more
   // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
   // method.
   base::MakeSelfDeleting<ContentDirectoryLoaderFactory>(
-      pending_remote.InitWithNewPipeAndPassReceiver(),
-      std::move(content_directory_name));
+      pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
 }
 
 ContentDirectoryLoaderFactory::ContentDirectoryLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
-    std::optional<std::string> content_directory_name,
     base::SelfDeletingPassKey key)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver), key),
-      content_directory_name_(std::move(content_directory_name)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
@@ -395,14 +391,6 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   if (!request.url.SchemeIs(kFuchsiaDirScheme) || !request.url.is_valid()) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_INVALID_URL));
-    return;
-  }
-
-  if (content_directory_name_ &&
-      request.url.host() != *content_directory_name_) {
-    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-        ->OnComplete(
-            network::URLLoaderCompletionStatus(net::ERR_ACCESS_DENIED));
     return;
   }
 

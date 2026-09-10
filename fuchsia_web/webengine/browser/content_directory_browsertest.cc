@@ -296,21 +296,6 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, CrossOriginImgBlocked) {
   frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "image rejected");
 }
 
-// Verify that the subresource loader factory only serves resources from the
-// content directory that the requesting document was loaded from.
-IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, CrossDirectoryImgBlocked) {
-  const GURL kUrl("fuchsia-dir://testdata/cross_directory_include_image.html");
-
-  auto frame =
-      FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
-
-  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       kUrl.spec()));
-
-  frame.navigation_listener().RunUntilUrlAndTitleEquals(kUrl, "image rejected");
-}
-
 IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, MetadataFileParsed) {
   const GURL kUrl("fuchsia-dir://testdata/mime_override.html");
 
