@@ -90,12 +90,25 @@ public class SettingsMenuHelper {
      * @param menu The Menu to prepare.
      */
     public static void onPrepareOptionsMenu(Menu menu) {
+        if (SettingsInTab.isEnabled()) {
+            removeHelpMenuItems(menu);
+        }
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             if (item.getIcon() != null) {
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }
         }
+    }
+
+    /**
+     * Removes any help menu items (general or targeted) from the menu when SettingsInTab is
+     * enabled.
+     */
+    private static void removeHelpMenuItems(Menu menu) {
+        menu.removeItem(R.id.menu_id_general_help);
+        menu.removeItem(R.id.menu_id_targeted_help);
+        menu.removeItem(R.id.help_menu_id);
     }
 
     /**
@@ -109,11 +122,10 @@ public class SettingsMenuHelper {
         Menu menu = toolbar.getMenu();
         menu.clear();
 
-        // SettingsInTab does not have a help icon / options menu.
-        if (SettingsInTab.isEnabled()) return;
-
         onCreateOptionsMenu(menu, activity);
 
+        // SettingsInTab removes help menu items in onPrepareOptionsMenu(), but we still need
+        // to allow detail pages to add their own menu items (e.g. delete icon for payment cards).
         Fragment mainFragment = delegate.getMainFragment();
         if (mainFragment != null && mainFragment.isAdded() && mainFragment.hasOptionsMenu()) {
             mainFragment.onCreateOptionsMenu(menu, activity.getMenuInflater());

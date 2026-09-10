@@ -26,6 +26,8 @@ import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -1077,23 +1079,18 @@ public class SettingsSearchCoordinator
 
     /** Update the visibility of the help menu on the toolbar. */
     public void updateHelpMenuVisibility() {
-        // SettingsInTab does not show a help icon / options menu.
-        if (SettingsInTab.isEnabled()) {
-            ViewGroup menuView = (ViewGroup) getHelpMenuView();
-            if (menuView != null) {
-                menuView.setVisibility(View.GONE);
-            }
-            updateSearchUiWidth();
-            return;
-        }
-
         ViewGroup menuView = (ViewGroup) getHelpMenuView();
         if (menuView == null) {
+            if (SettingsInTab.isEnabled()
+                    && (mActionBar == null || !hasVisibleMenuItems(mActionBar.getMenu()))) {
+                updateSearchUiWidth();
+                return;
+            }
             mHandler.post(this::updateHelpMenuVisibility);
             return;
         }
 
-        menuView.post(
+        mHandler.post(
                 () -> {
                     // The task may run after the Activity has been destroyed, for example, during
                     // theme switch. https://crbug.com/545872336
@@ -1112,6 +1109,9 @@ public class SettingsSearchCoordinator
                     }
                     menuView.setVisibility(show ? View.VISIBLE : View.GONE);
                     updateSearchUiWidth();
+                    if (show && menuView.getWidth() == 0) {
+                        mHandler.post(this::updateSearchUiWidth);
+                    }
                 });
     }
 
@@ -1268,11 +1268,11 @@ public class SettingsSearchCoordinator
             int excessPx = detailPaneWidth - maxDetailWidthPx - minGapPx * 2;
             int gapPx = (excessPx > 0 ? excessPx / 2 : 0) + minGapPx;
             Toolbar actionBar = requireViewById(R.id.action_bar);
-            // SettingsInTab does not have a menu icon, but Toolbar has an internal
+            // SettingsInTab does not have a menu icon by default, but Toolbar has an internal
             // contentInsetEnd and padding that must be accounted for so the search box aligns
             // with the preference items in the detail pane.
             int actionBarEndMargin =
-                    SettingsInTab.isEnabled()
+                    SettingsInTab.isEnabled() && !hasMenuIcon()
                             ? gapPx - actionBar.getContentInsetEnd() - actionBar.getPaddingEnd()
                             : gapPx - getPixelSize(R.dimen.settings_menu_icon_margin);
             updateView(actionBar, 0, actionBarEndMargin, LayoutParams.MATCH_PARENT);
@@ -1306,6 +1306,11 @@ public class SettingsSearchCoordinator
         return menuView != null && menuView.getVisibility() == View.VISIBLE
                 ? menuView.getWidth()
                 : 0;
+    }
+
+    private boolean hasMenuIcon() {
+        View menuView = getHelpMenuView();
+        return menuView != null && menuView.getVisibility() == View.VISIBLE;
     }
 
     private static void updateView(View view, int startMargin, int endMargin, int width) {
@@ -1607,12 +1612,27 @@ public class SettingsSearchCoordinator
 
     /**
      * Single source of truth for whether the help menu should be visible. Currently, it is visible
-     * only when we are in the main Settings state, not during Search or Results.
+     * only when we are in the main Settings state, not during Search or Results. For SettingsInTab,
+     * it is visible only when the options menu has visible items.
      */
     private boolean shouldShowHelpMenu() {
-        if (SettingsInTab.isEnabled()) return false;
+        if (mFragmentState != FS_SETTINGS) return false;
 
-        return mFragmentState == FS_SETTINGS;
+        if (SettingsInTab.isEnabled()) {
+            return mActionBar != null && hasVisibleMenuItems(mActionBar.getMenu());
+        }
+
+        return true;
+    }
+
+    private static boolean hasVisibleMenuItems(@Nullable Menu menu) {
+        if (menu == null || menu.size() == 0) return false;
+
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.isVisible()) return true;
+        }
+        return false;
     }
 
     private void setSearchBoxVerticalMargin(View searchBox, boolean multiColumn) {

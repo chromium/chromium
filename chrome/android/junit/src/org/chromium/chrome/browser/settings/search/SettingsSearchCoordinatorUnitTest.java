@@ -14,6 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -475,6 +476,61 @@ public class SettingsSearchCoordinatorUnitTest {
         var queryLp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
         assertEquals(expectedStartMargin, queryLp.getMarginStart());
         assertEquals(expectedEndMargin, queryLp.getMarginEnd());
+    }
+
+    private ActionMenuView getActionMenuView() {
+        for (int i = 0; i < mToolbar.getChildCount(); i++) {
+            View child = mToolbar.getChildAt(i);
+            if (child instanceof ActionMenuView) {
+                return (ActionMenuView) child;
+            }
+        }
+        throw new AssertionError("ActionMenuView not found in toolbar");
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testUpdateHelpMenuVisibility_withSettingsInTab_withMenuItems_showsMenu() {
+        mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+        mCoordinator.updateHelpMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.VISIBLE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testUpdateHelpMenuVisibility_withSettingsInTab_withoutMenuItems_hidesMenu() {
+        mToolbar.getMenu().clear();
+        mCoordinator.updateHelpMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testUpdateHelpMenuVisibility_withSettingsInTab_inSearchState_hidesMenu() {
+        mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        mCoordinator.updateHelpMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testUpdateHelpMenuVisibility_withoutSettingsInTab_showsMenu() {
+        mToolbar.getMenu().clear();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SETTINGS);
+        mCoordinator.updateHelpMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.VISIBLE, getActionMenuView().getVisibility());
     }
 
     /** Regression test for https://crbug.com/545872336. */
