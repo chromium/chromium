@@ -243,7 +243,7 @@ void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
 
 void Canvas2DBitmapProvider::ClearAtCreation() {
   DCHECK(IsValid());
-  MemoryManagedPaintRecorder recorder(Size(), this);
+  MemoryManagedPaintRecorder recorder(Size(), nullptr);
   if (GetAlphaType() == kOpaque_SkAlphaType) {
     recorder.getRecordingCanvas().clear(SkColors::kBlack);
   } else {

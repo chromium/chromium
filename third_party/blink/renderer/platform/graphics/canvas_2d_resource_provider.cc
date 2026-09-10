@@ -1203,7 +1203,7 @@ void Canvas2DResourceProvider::ApplyAnimatedImageFrameIndexesForId(
 
 void Canvas2DResourceProvider::ClearAtCreation() {
   DCHECK(IsValid());
-  MemoryManagedPaintRecorder recorder(Size(), this);
+  MemoryManagedPaintRecorder recorder(Size(), nullptr);
   if (GetAlphaType() == kOpaque_SkAlphaType) {
     recorder.getRecordingCanvas().clear(SkColors::kBlack);
   } else {
