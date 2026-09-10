@@ -543,7 +543,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         return WebContentsFactory.createWebContentsWithWarmRenderer(
                 profile,
                 /* initiallyHidden= */ false,
-                AutofillClientProviderUtils.isAutofillEnabledForCct(profile),
+                AutofillClientProviderUtils.isPlatformAutofillEnabledForProfile(profile),
                 mIntentDataProvider.getTargetNetwork());
     }
 

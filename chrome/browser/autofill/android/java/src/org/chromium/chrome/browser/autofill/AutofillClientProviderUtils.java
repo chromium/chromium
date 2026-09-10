@@ -61,15 +61,14 @@ public class AutofillClientProviderUtils {
     }
 
     /**
-     * Checks whether all conditions are met for using the Android Autofill framework in CCTs. It
-     * simplifies the call to {@link getAndroidAutofillFrameworkAvailability}.
+     * Checks whether Android platform Autofill (third-party Autofill mode) is available and enabled
+     * for the given profile.
      *
      * @param profile A {@link Profile} which keeps the pref enabling this feature.
-     * @return true iff CCTs should be constructed with support for Android Autofill.
+     * @return true if platform Autofill is enabled for the profile.
      */
-    public static boolean isAutofillEnabledForCct(Profile profile) {
-        return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
-                        UserPrefs.get(profile))
+    public static boolean isPlatformAutofillEnabledForProfile(Profile profile) {
+        return getAndroidAutofillFrameworkAvailability(UserPrefs.get(profile))
                 == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 

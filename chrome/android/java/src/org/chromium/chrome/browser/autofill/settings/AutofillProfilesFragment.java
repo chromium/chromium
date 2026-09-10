@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.settings.AutofillAiDelegate.disabledSettingsInThirdPartyMode;
+import static org.chromium.chrome.browser.autofill.AutofillClientProviderUtils.isPlatformAutofillEnabledForProfile;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -209,7 +209,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
         addAutofillSwitch(screen);
         addProfilePreferences(screen);
-        if (!disabledSettingsInThirdPartyMode(getProfile())) {
+        if (!isPlatformAutofillEnabledForProfile(getProfile())) {
             addAddAddressButton(screen);
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL)) {
@@ -247,7 +247,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         autofillSwitch.setSummary(R.string.autofill_enable_profiles_toggle_sublabel);
         // LINT.ThenChange(:DynamicAutofillSwitch)
 
-        boolean disabledSettings = disabledSettingsInThirdPartyMode(getProfile());
+        boolean disabledSettings = isPlatformAutofillEnabledForProfile(getProfile());
         autofillSwitch.setEnabled(!disabledSettings);
         autofillSwitch.setChecked(
                 personalDataManager.isAutofillProfileEnabled() && !disabledSettings);
@@ -525,7 +525,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     // LINT.IfChange(DynamicPreferences)
                     AutofillAiDelegate.maybeAddDisabledSettingsInfoCard(
                             indexData, profile, getPrefFragmentName());
-                    if (!disabledSettingsInThirdPartyMode(profile)) {
+                    if (!isPlatformAutofillEnabledForProfile(profile)) {
                         addAddAddressButton(indexData, profile, getPrefFragmentName());
                     }
 
@@ -567,7 +567,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
         AutofillAiDelegate.maybeAddDisabledSettingsInfoCard(indexData, profile, prefFragmentName);
 
-        if (disabledSettingsInThirdPartyMode(profile)) {
+        if (isPlatformAutofillEnabledForProfile(profile)) {
             indexData.removeEntryForKey(prefFragmentName, PREF_NEW_PROFILE);
         } else {
             if (indexData.getEntryForKey(prefFragmentName, PREF_NEW_PROFILE) == null) {
