@@ -820,11 +820,13 @@ public class TabSearchOverlayCoordinator
     }
 
     /**
-     * Calculates the top margin for the panel when in a conventional app state (not in desktop
-     * windowing).
+     * Calculates the top margin for the panel when in a conventional app state (outside desktop
+     * windowing, such as fullscreen or multi-window).
      *
-     * <p>The top margin is calculated from the control container and toolbar positions ({@code
-     * toolbarTop - tabStripHeight}) so the panel aligns below the system status bar.
+     * <p>With horizontal tabs, the tab strip sits above the toolbar, so we subtract {@code
+     * tabStripHeight} from {@code toolbarTop} to align the panel below the status bar. When
+     * vertical tabs is active, there is no horizontal tab strip above the toolbar; the toolbar is
+     * already at the top of the browser UI, so {@code tabStripHeight} is 0.
      */
     private int getTopMarginForConventionalState() {
         View controlContainer = mActivity.findViewById(R.id.control_container);
@@ -832,14 +834,25 @@ public class TabSearchOverlayCoordinator
                 controlContainer != null
                         ? controlContainer.findViewById(R.id.toolbar_container)
                         : null;
-        int tabStripHeight =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
-        int toolbarTop = 0;
-        if (toolbarContainer != null) {
-            int[] location = new int[2];
-            toolbarContainer.getLocationInWindow(location);
-            toolbarTop = location[1] > 0 ? location[1] : toolbarContainer.getTop();
+        if (toolbarContainer == null) {
+            return 0;
         }
+
+        int[] location = new int[2];
+        toolbarContainer.getLocationInWindow(location);
+        int toolbarTop = location[1] > 0 ? location[1] : toolbarContainer.getTop();
+
+        // When vertical tabs is active, there is no horizontal tab strip above the toolbar.
+        // The toolbar itself is already positioned directly below the system status bar, so the
+        // effective horizontal strip height is 0. Subtracting the static tab_strip_height dimension
+        // here would underflow toolbarTop and clamp to 0, pushing the panel into the OS status bar.
+        View verticalRail = mActivity.findViewById(R.id.vertical_tab_rail_container);
+        boolean hasVerticalTabs = verticalRail != null && verticalRail.isShown();
+        int tabStripHeight =
+                hasVerticalTabs
+                        ? 0
+                        : mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+
         return Math.max(0, toolbarTop - tabStripHeight);
     }
 

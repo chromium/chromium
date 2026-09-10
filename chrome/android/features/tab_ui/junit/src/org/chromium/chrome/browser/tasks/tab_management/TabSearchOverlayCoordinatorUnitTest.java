@@ -1063,6 +1063,31 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     @Test
+    public void testPanelTopMargin_VerticalTabs_ConventionalState() {
+        FrameLayout rootLayout = new FrameLayout(mActivity);
+        FrameLayout controlContainer = new FrameLayout(mActivity);
+        controlContainer.setId(R.id.control_container);
+        View toolbarContainer = new View(mActivity);
+        toolbarContainer.setId(R.id.toolbar_container);
+        toolbarContainer.setTop(48);
+        controlContainer.addView(toolbarContainer);
+        rootLayout.addView(controlContainer);
+
+        View verticalRailContainer = new View(mActivity);
+        verticalRailContainer.setId(R.id.vertical_tab_rail_container);
+        rootLayout.addView(verticalRailContainer);
+        mActivity.setContentView(rootLayout);
+
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
+
+        showOverlay();
+
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        var params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
+        assertEquals(48, params.topMargin);
+    }
+
+    @Test
     public void testScrimNonScrollGenericMotionEvent_ConsumedAndNotForwarded() {
         showOverlay();
         MotionEvent clickEvent =
