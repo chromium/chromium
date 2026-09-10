@@ -64,6 +64,25 @@ public class WebsiteGroup implements WebsiteEntry {
         return entries;
     }
 
+    /**
+     * Creates a {@code WebsiteGroup} for the specified domain from a collection of {@code Website}
+     * objects.
+     *
+     * @param domainAndRegistry The eTLD+1 domain to group by.
+     * @param websites A collection of {@code Website} objects to filter.
+     * @return A {@code WebsiteGroup} containing all sites matching the domain.
+     */
+    public static WebsiteGroup createForDomain(
+            String domainAndRegistry, Collection<Website> websites) {
+        List<Website> groupWebsites = new ArrayList<>();
+        for (Website site : websites) {
+            if (domainAndRegistry.equalsIgnoreCase(site.getMainAddress().getDomainAndRegistry())) {
+                groupWebsites.add(site);
+            }
+        }
+        return new WebsiteGroup(domainAndRegistry, groupWebsites);
+    }
+
     public WebsiteGroup(String domainAndRegistry, List<Website> websites) {
         mDomainAndRegistry = domainAndRegistry;
         mWebsites = websites;

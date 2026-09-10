@@ -65,6 +65,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.sync.SyncService;
@@ -811,10 +812,10 @@ public class MultiColumnSettingsUnitTest {
                             detailFragment instanceof SingleWebsiteSettings);
                     assertNotNull(detailFragment.getArguments());
                     assertEquals(
-                            "https://google.com",
+                            WebsiteAddress.create("https://google.com"),
                             detailFragment
                                     .getArguments()
-                                    .getString(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+                                    .getSerializable(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
                     assertNull(
                             "Initial URL should be cleared after being consumed",
                             settings.getInitialUrl());

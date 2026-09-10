@@ -50,6 +50,10 @@ public class SiteDataCleaner {
         final AtomicInteger callbacksReceived = new AtomicInteger(0);
         List<Website> sites = group.getWebsites();
         final int websitesCount = sites.size();
+        if (websitesCount == 0) {
+            finishCallback.run();
+            return;
+        }
         final Runnable singleWebsiteCallback =
                 () -> {
                     if (callbacksReceived.incrementAndGet() >= websitesCount) {

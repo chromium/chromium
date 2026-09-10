@@ -109,6 +109,12 @@ public class SettingsFragmentRegistryTest {
 
         assertEquals(SingleWebsiteSettings.EXTRA_SITE_ADDRESS, queryMap.get("site"));
         assertEquals("site", argMap.get(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+
+        assertEquals(SingleWebsiteSettings.EXTRA_FROM_GROUPED, queryMap.get("fromGrouped"));
+        assertEquals("fromGrouped", argMap.get(SingleWebsiteSettings.EXTRA_FROM_GROUPED));
+
+        assertEquals(GroupedWebsitesSettings.EXTRA_GROUP, queryMap.get("group"));
+        assertEquals("group", argMap.get(GroupedWebsitesSettings.EXTRA_GROUP));
     }
 
     @Test
@@ -183,8 +189,16 @@ public class SettingsFragmentRegistryTest {
 
         Bundle bundle =
                 SettingsFragmentRegistry.parseUrlArguments(
-                        "chrome://settings/siteDetails?site=example.com");
-        assertEquals("example.com", bundle.getString(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+                        "chrome://settings/siteDetails?site=example.com&fromGrouped=true");
+        assertEquals(
+                WebsiteAddress.create("example.com"),
+                bundle.getSerializable(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+        assertTrue(bundle.getBoolean(SingleWebsiteSettings.EXTRA_FROM_GROUPED));
+
+        Bundle groupBundle =
+                SettingsFragmentRegistry.parseUrlArguments(
+                        "chrome://settings/allSites/group?group=example.com");
+        assertEquals("example.com", groupBundle.getString(GroupedWebsitesSettings.EXTRA_GROUP));
 
         Bundle autofillBundle =
                 SettingsFragmentRegistry.parseUrlArguments(
@@ -263,6 +277,13 @@ public class SettingsFragmentRegistryTest {
                 "chrome://settings/allSites/group?group=google.com",
                 SettingsFragmentRegistry.createUrlForFragment(
                         GroupedWebsitesSettings.class, groupArgs));
+
+        Bundle stringGroupArgs = new Bundle();
+        stringGroupArgs.putString(GroupedWebsitesSettings.EXTRA_GROUP, "example.com");
+        String groupUrl =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        GroupedWebsitesSettings.class, stringGroupArgs);
+        assertEquals("chrome://settings/allSites/group?group=example.com", groupUrl);
     }
 
     @Test

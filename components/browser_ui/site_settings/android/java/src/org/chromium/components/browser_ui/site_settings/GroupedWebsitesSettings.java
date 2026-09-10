@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
@@ -51,7 +50,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private static @Nullable GroupedWebsitesSettings sPausedInstance;
 
-    private WebsiteGroup mSiteGroup;
+    private @Nullable WebsiteGroup mSiteGroup;
 
     private @Nullable Dialog mConfirmationDialog;
 
@@ -79,26 +78,58 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             return;
         }
 
-        WebsiteGroup extraGroup = (WebsiteGroup) getArguments().getSerializable(EXTRA_GROUP);
+        assert getArguments() != null : "Arguments must be provided.";
+        Object extraGroup = getArguments().get(EXTRA_GROUP);
         assert extraGroup != null : "EXTRA_GROUP must be provided.";
-        mSiteGroup = extraGroup;
-        var domainAndRegistry = extraGroup.getDomainAndRegistry();
 
-        // Set title
-        Activity activity = getActivity();
-        mPageTitle.set(activity.getString(R.string.domain_settings_title, domainAndRegistry));
+        // EXTRA_GROUP can be a WebsiteGroup (legacy in-app routing) or a String (URL intent
+        // routing).
+        // URL intents only provide the domain string, so we must asynchronously fetch the site
+        // permissions to reconstruct the WebsiteGroup.
+        if (extraGroup instanceof WebsiteGroup websiteGroup) {
+            mSiteGroup = websiteGroup;
+            mPageTitle.set(
+                    getActivity()
+                            .getString(
+                                    R.string.domain_settings_title,
+                                    mSiteGroup.getDomainAndRegistry()));
+            displayGroupPreferences(mSiteGroup);
+        } else if (extraGroup instanceof String domainAndRegistry) {
+            mPageTitle.set(
+                    getActivity().getString(R.string.domain_settings_title, domainAndRegistry));
+            WebsitePermissionsFetcher fetcher =
+                    new WebsitePermissionsFetcher(getSiteSettingsDelegate());
+            fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(
+                    SiteSettingsCategory.createFromType(
+                            getSiteSettingsDelegate().getBrowserContextHandle(),
+                            SiteSettingsCategory.Type.ALL_SITES),
+                    sites -> {
+                        if (getActivity() == null) return;
+                        mSiteGroup = WebsiteGroup.createForDomain(domainAndRegistry, sites);
+                        displayGroupPreferences(mSiteGroup);
+                    });
+        }
+    }
 
-        // Preferences screen
+    private void displayGroupPreferences(WebsiteGroup siteGroup) {
+        if (getPreferenceScreen() != null) {
+            getPreferenceScreen().removeAll();
+        }
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
         Preference siteTitlePref = findPreference(PREF_SITE_TITLE);
-        siteTitlePref.setTitle(domainAndRegistry);
+        siteTitlePref.setTitle(siteGroup.getDomainAndRegistry());
+
         Preference siteInGroupPref = findPreference(PREF_SITES_IN_GROUP);
         siteInGroupPref.setTitle(
-                activity.getString(R.string.domain_settings_sites_in_group, domainAndRegistry));
-        setUpClearDataPreference();
-        setUpResetGroupPreference();
-        setUpRelatedSitesPreferences();
-        updateSitesInGroup();
+                getActivity()
+                        .getString(
+                                R.string.domain_settings_sites_in_group,
+                                siteGroup.getDomainAndRegistry()));
+
+        setUpClearDataPreference(siteGroup);
+        setUpResetGroupPreference(siteGroup);
+        setUpRelatedSitesPreferences(siteGroup);
+        updateSitesInGroup(siteGroup);
     }
 
     @Override
@@ -140,6 +171,10 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+        // If GroupedWebsiteSettings fragment was loaded via Url Routing, it's possible the
+        // async preference fetch has not finished yet. If that happens, drop the call.
+        if (mSiteGroup == null) return true;
+
         // Handle a click on the Clear & Reset button.
         View dialogView =
                 getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
@@ -174,6 +209,12 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             if (assumeNonNull(getFragmentManager()).isStateSaved()) {
                 return;
             }
+            // If GroupedWebsiteSettings fragment was loaded via Url Routing, it's possible the
+            // async preference fetch has not finished yet. Do nothing until we have data to act
+            // upon.
+            if (mSiteGroup == null) {
+                return;
+            }
             Callback<Boolean> onDialogClosed =
                     (Boolean confirmed) -> {
                         if (confirmed) {
@@ -183,7 +224,9 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                     DeleteBrowsingDataAction.MAX_VALUE + 1);
 
                             SiteDataCleaner.clearData(
-                                    getSiteSettingsDelegate(), mSiteGroup, mDataClearedCallback);
+                                    getSiteSettingsDelegate(),
+                                    assumeNonNull(mSiteGroup),
+                                    mDataClearedCallback);
                         }
                     };
             ClearWebsiteStorageDialog dialogFragment =
@@ -210,6 +253,9 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     @VisibleForTesting
     public void resetGroup() {
         if (getActivity() == null) return;
+        // If GroupedWebsiteSettings fragment was loaded via Url Routing, it's possible the
+        // async preference fetch has not finished yet. Do nothing until we have data to act upon.
+        if (mSiteGroup == null) return;
         SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSiteGroup);
 
@@ -221,20 +267,20 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         SiteDataCleaner.clearData(getSiteSettingsDelegate(), mSiteGroup, mDataClearedCallback);
     }
 
-    private void setUpClearDataPreference() {
+    private void setUpClearDataPreference(WebsiteGroup siteGroup) {
         ClearWebsiteStorage preference = findPreference(PREF_CLEAR_DATA);
-        long storage = mSiteGroup.getTotalUsage();
-        int cookies = mSiteGroup.getNumberOfCookies();
+        long storage = siteGroup.getTotalUsage();
+        int cookies = siteGroup.getNumberOfCookies();
         if (storage > 0 || cookies > 0) {
             preference.setTitle(
                     SiteSettingsUtil.generateStorageUsageText(
                             preference.getContext(), storage, cookies));
             preference.setDataForDisplay(
-                    mSiteGroup.getDomainAndRegistry(),
-                    mSiteGroup.hasInstalledApp(
+                    siteGroup.getDomainAndRegistry(),
+                    siteGroup.hasInstalledApp(
                             getSiteSettingsDelegate().getOriginsWithInstalledApp()),
                     /* isGroup= */ true);
-            if (mSiteGroup.isCookieDeletionDisabled(
+            if (siteGroup.isCookieDeletionDisabled(
                     getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);
             }
@@ -243,19 +289,19 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         }
     }
 
-    private void setUpResetGroupPreference() {
+    private void setUpResetGroupPreference(WebsiteGroup siteGroup) {
         Preference preference = findPreference(PREF_RESET_GROUP);
-        if (mSiteGroup.isCookieDeletionDisabled(
+        if (siteGroup.isCookieDeletionDisabled(
                 getSiteSettingsDelegate().getBrowserContextHandle())) {
             preference.setEnabled(false);
         }
         preference.setOnPreferenceClickListener(this);
     }
 
-    private void setUpRelatedSitesPreferences() {
+    private void setUpRelatedSitesPreferences(WebsiteGroup siteGroup) {
         PreferenceCategory relatedSitesSection = findPreference(PREF_RELATED_SITES);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
-        var rwsInfo = mSiteGroup.getRwsInfo();
+        var rwsInfo = siteGroup.getRwsInfo();
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && rwsInfo != null;
@@ -269,7 +315,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                         @Override
                         public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            for (var site : mSiteGroup.getWebsites()) {
+                            for (var site : siteGroup.getWebsites()) {
                                 if (getSiteSettingsDelegate()
                                         .isPartOfManagedRelatedWebsiteSet(
                                                 site.getAddress().getOrigin())) {
@@ -292,10 +338,10 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         }
     }
 
-    private void updateSitesInGroup() {
+    private void updateSitesInGroup(WebsiteGroup siteGroup) {
         PreferenceCategory category = findPreference(PREF_SITES_IN_GROUP);
         category.removeAll();
-        for (Website site : mSiteGroup.getWebsites()) {
+        for (Website site : siteGroup.getWebsites()) {
             WebsiteRowPreference preference =
                     new WebsiteRowPreference(
                             category.getContext(),

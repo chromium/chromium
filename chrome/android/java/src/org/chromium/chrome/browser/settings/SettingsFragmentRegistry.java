@@ -218,7 +218,8 @@ public class SettingsFragmentRegistry {
 
         // Parameter translations mapping URL query string keys to Fragment
         // argument extra keys with appropriate type deserialization.
-        registerParameterMapping("site", SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
+        registerWebsiteAddressParameterMapping("site", SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
+        registerBooleanParameterMapping("fromGrouped", SingleWebsiteSettings.EXTRA_FROM_GROUPED);
         registerParameterMapping("category", SingleCategorySettings.EXTRA_CATEGORY);
         registerParameterMapping("title", SingleCategorySettings.EXTRA_TITLE);
         registerParameterMapping("group", GroupedWebsitesSettings.EXTRA_GROUP);
@@ -303,6 +304,18 @@ public class SettingsFragmentRegistry {
                         bundle.putShort(key, Short.parseShort(val));
                     } catch (NumberFormatException e) {
                         bundle.putShort(key, defaultValue);
+                    }
+                });
+    }
+
+    private static void registerWebsiteAddressParameterMapping(String queryParam, String argKey) {
+        registerParameterMapping(
+                queryParam,
+                argKey,
+                (bundle, key, val) -> {
+                    WebsiteAddress address = WebsiteAddress.create(val);
+                    if (address != null) {
+                        bundle.putSerializable(key, address);
                     }
                 });
     }

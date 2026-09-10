@@ -350,22 +350,38 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             return;
         }
 
-        Object extraSite = getArguments().getSerializable(EXTRA_SITE);
-        Object extraSiteAddress = getArguments().getSerializable(EXTRA_SITE_ADDRESS);
+        Bundle arguments = getArguments();
+        assert arguments != null : "arguments must be provided.";
+        Object extraSite = arguments.get(EXTRA_SITE);
+        Object extraSiteAddress = arguments.get(EXTRA_SITE_ADDRESS);
 
-        if (extraSite != null && extraSiteAddress == null) {
-            mSite = (Website) extraSite;
+        // EXTRA_SITE_ADDRESS can be a WebsiteAddress (legacy in-app routing) or a String (URL
+        // intent routing).
+        WebsiteAddress siteAddress = null;
+        if (extraSiteAddress instanceof WebsiteAddress address) {
+            siteAddress = address;
+        } else if (extraSiteAddress instanceof String addressString) {
+            siteAddress = WebsiteAddress.create(addressString);
+        }
+
+        if (extraSite instanceof Website website && siteAddress == null) {
+            mSite = website;
             displaySitePermissions();
-        } else if (extraSiteAddress != null && extraSite == null) {
+        } else if (siteAddress != null && extraSite == null) {
+            // URL intents only provide the address string, so we must asynchronously fetch the site
+            // permissions to reconstruct the full Website entry.
             WebsitePermissionsFetcher fetcher =
                     new WebsitePermissionsFetcher(getSiteSettingsDelegate());
-            fetcher.fetchAllPreferences(
-                    new SingleWebsitePermissionsPopulator((WebsiteAddress) extraSiteAddress));
+            fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(
+                    SiteSettingsCategory.createFromType(
+                            getSiteSettingsDelegate().getBrowserContextHandle(),
+                            SiteSettingsCategory.Type.ALL_SITES),
+                    new SingleWebsitePermissionsPopulator(siteAddress));
         } else {
             assert false : "Exactly one of EXTRA_SITE or EXTRA_SITE_ADDRESS must be provided.";
         }
 
-        mFromGrouped = getArguments().getBoolean(EXTRA_FROM_GROUPED, false);
+        mFromGrouped = arguments.getBoolean(EXTRA_FROM_GROUPED, false);
     }
 
     @Override
