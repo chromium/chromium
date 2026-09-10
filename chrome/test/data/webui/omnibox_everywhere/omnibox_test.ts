@@ -53,6 +53,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
+      profileTooltipHeader: 'Chrome profile',
       omniboxEverywhereProfilePickerEnabled: false,
       isEnterpriseProfile: false,
       searchboxLayoutMode: 'TallBottomContext',
@@ -1475,6 +1476,7 @@ suite('OmniboxEverywhereProfileIconTest', () => {
       profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
+      profileTooltipHeader: 'Chrome profile',
       omniboxEverywhereProfilePickerEnabled: profilePickerEnabled,
       isEnterpriseProfile: false,
     });
@@ -1494,7 +1496,8 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         assertTrue(!!container);
         assertFalse(container.classList.contains('clickable'));
         assertEquals(
-            'Test Profile\ntest@example.com', container.getAttribute('title'));
+            'Chrome profile\nTest Profile\ntest@example.com',
+            container.getAttribute('title'));
       });
 
   test('profile icon is clickable when profile picker is enabled', async () => {
@@ -1505,7 +1508,8 @@ suite('OmniboxEverywhereProfileIconTest', () => {
     assertTrue(container.classList.contains('clickable'));
     assertEquals('pointer', window.getComputedStyle(container).cursor);
     assertEquals(
-        'Test Profile\ntest@example.com', container.getAttribute('title'));
+        'Chrome profile\nTest Profile\ntest@example.com',
+        container.getAttribute('title'));
   });
 
   test('profile icon image has correct size', async () => {

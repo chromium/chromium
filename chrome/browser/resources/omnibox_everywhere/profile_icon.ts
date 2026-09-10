@@ -91,11 +91,12 @@ export class OmniboxEverywhereProfileIconElement extends
   }
 
   protected getProfileTooltip_(): string {
-    if (this.profileName_ && this.profileEmail_) {
-      return `${this.profileName_}\n${this.profileEmail_}`;
-    }
-    return this.profileName_ || this.profileEmail_ ||
-        this.i18n('profileButtonLabel');
+    return [
+      this.i18n('profileTooltipHeader'),
+      this.profileName_,
+      this.profileEmail_,
+    ].filter(Boolean)
+        .join('\n');
   }
 
   protected onProfileIconClick_() {

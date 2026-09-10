@@ -3279,6 +3279,9 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP" desc="Tooltip text for the Search in Chrome status tray icon.">
         Search in Chrome
       </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_PROFILE_TOOLTIP" desc="Tooltip header for the profile icon in Omnibox Everywhere.">
+        Chrome profile
+      </message>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE" desc="Title of the Omnibox Everywhere section on the search settings page.">
         Search from desktop
       </message>

@@ -264,6 +264,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
        IDS_LOOMNIBOX_FRE_WHERE_TO_FIND_PRIMARY},
       {"managedByYourOrganization", IDS_MANAGED},
       {"profileButtonLabel", IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE},
+      {"profileTooltipHeader", IDS_OMNIBOX_EVERYWHERE_PROFILE_TOOLTIP},
       {"screenshotEntireScreenLabel", IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN},
       {"screenshotRegionLabel", IDS_OMNIBOX_EVERYWHERE_REGION},
       {"screenshotWindowLabel", IDS_OMNIBOX_EVERYWHERE_WINDOW},
