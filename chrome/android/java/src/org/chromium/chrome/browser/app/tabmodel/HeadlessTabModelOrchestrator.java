@@ -137,6 +137,11 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         mTabPersistentStore.loadState(
                 /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
         mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
+        if (mShadowTabPersistentStore != null) {
+            mShadowTabPersistentStore.loadState(
+                    /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
+            mShadowTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
+        }
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         assumeNonNull(tabGroupSyncService);
@@ -149,13 +154,13 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
 
     @Override
     public void destroy() {
-        mTabPersistentStore.destroy();
-        mTabModelSelector.destroy();
-        mTabGroupSyncController.destroy();
-
         if (mShadowTabPersistentStore != null) {
             mShadowTabPersistentStore.destroy();
         }
+
+        mTabPersistentStore.destroy();
+        mTabGroupSyncController.destroy();
+        mTabModelSelector.destroy();
     }
 
     /** Returns the owned selector that this orchestrator is managing. */
