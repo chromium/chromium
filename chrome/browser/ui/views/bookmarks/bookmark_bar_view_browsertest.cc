@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -49,12 +51,14 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace {
@@ -62,10 +66,21 @@ namespace {
 class BookmarkBarTestBase : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    ui::TestClipboard::CreateForCurrentThread();
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
+    WaitForBookmarkMergedSurfaceServiceToLoad(
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(
+            browser()->GetProfile()));
+    RunScheduledLayouts();
 
     test_helper_ = std::make_unique<BookmarkBarViewTestHelper>(bookmark_bar());
+  }
+
+  void TearDownOnMainThread() override {
+    test_helper_.reset();
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -1107,40 +1122,36 @@ class BookmarkBarTest : public BookmarkBarTestBase {
     gfx::Point point;
     views::View::ConvertPointToScreen(view, &point);
 
+    base::test::TestFuture<void> menu_will_run;
+    BookmarkContextMenu::InstallPreRunCallback(menu_will_run.GetCallback());
+
     bookmark_bar()->ShowContextMenuForViewImpl(
         view, point, ui::mojom::MenuSourceType::kMouse);
-    if (views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState() !=
-        views::InkDropState::ACTIVATED) {
-      EXPECT_TRUE(base::test::RunUntil([&]() {
-        return views::InkDrop::Get(view)
-                   ->GetInkDrop()
-                   ->GetTargetInkDropState() == views::InkDropState::ACTIVATED;
-      }));
-    }
+    ASSERT_TRUE(menu_will_run.Wait());
+    EXPECT_EQ(views::InkDropState::ACTIVATED,
+              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
 
     bookmark_bar()->OnContextMenuClosed();
-#if BUILDFLAG(IS_MAC)
-    // On Mac, the ink drop ripple is destroyed after we call
-    // AnimateToState(InkDropState::DEACTIVATED), so GetTargetInkDropState()
-    // will return InkDropState::HIDDEN instead.
-    EXPECT_EQ(views::InkDropState::HIDDEN,
-              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
-#else
-    EXPECT_EQ(views::InkDropState::DEACTIVATED,
-              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
-#endif
+    if (auto* menu_controller = views::MenuController::GetActiveInstance()) {
+      menu_controller->Cancel(views::MenuController::ExitType::kAll);
+    }
+
+    // When the context menu closes, the button highlight transitions to
+    // DEACTIVATED. Because ShouldAnimateToHidden(DEACTIVATED) is true, the ink
+    // drop automatically transitions from DEACTIVATED to HIDDEN as soon as the
+    // fade-out animation completes (which is immediate on Mac, on Windows VMs /
+    // reduced-motion sessions where ShouldRenderRichAnimation() is false, or
+    // when the fade-out completes before this check).
+    EXPECT_THAT(
+        views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState(),
+        testing::AnyOf(views::InkDropState::DEACTIVATED,
+                       views::InkDropState::HIDDEN));
   }
 };
 
 }  // namespace
 
-#if BUILDFLAG(IS_WIN)
-//  TODO(crbug.com/491651711): This test is flaky.
-#define MAYBE_AllBookmarksButtonHighlight DISABLED_AllBookmarksButtonHighlight
-#else
-#define MAYBE_AllBookmarksButtonHighlight AllBookmarksButtonHighlight
-#endif
-IN_PROC_BROWSER_TEST_F(BookmarkBarTest, MAYBE_AllBookmarksButtonHighlight) {
+IN_PROC_BROWSER_TEST_F(BookmarkBarTest, AllBookmarksButtonHighlight) {
   TestContextMenuHighlight(bookmark_bar()->all_bookmarks_button());
 }
 
@@ -1156,13 +1167,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarTest, BookmarkFolderButtonHighlight) {
   TestContextMenuHighlight(GetBookmarkButton(0));
 }
 
-#if BUILDFLAG(IS_WIN)
-//  TODO(crbug.com/491651711): This test is flaky.
-#define MAYBE_AppsPageShortcutHighlight DISABLED_AppsPageShortcutHighlight
-#else
-#define MAYBE_AppsPageShortcutHighlight AppsPageShortcutHighlight
-#endif
-IN_PROC_BROWSER_TEST_F(BookmarkBarTest, MAYBE_AppsPageShortcutHighlight) {
+IN_PROC_BROWSER_TEST_F(BookmarkBarTest, AppsPageShortcutHighlight) {
   TestContextMenuHighlight(GetAppsPageShortCut());
 }
 
