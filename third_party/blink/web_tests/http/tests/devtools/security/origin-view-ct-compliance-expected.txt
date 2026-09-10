@@ -71,36 +71,70 @@ View requests in Network panel
             </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section connection-section >
+        <#comment >
+        </#comment>
         <DIV class=origin-view-section-title role=heading aria-level=2 >
+            <#comment >
+            </#comment>
 Connection
         </DIV>
+        <#comment >
+        </#comment>
         <TABLE class=details-table >
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Protocol
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 TLS 1.2
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Key exchange
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 Key_Exchange
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Cipher
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 Cypher with Mac
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
         </TABLE>
+        <#comment >
+        </#comment>
     </DIV>
     <DIV class=origin-view-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >

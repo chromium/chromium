@@ -235,36 +235,70 @@ View requests in Network panel
             </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section connection-section >
+        <#comment >
+        </#comment>
         <DIV class=origin-view-section-title role=heading aria-level=2 >
+            <#comment >
+            </#comment>
 Connection
         </DIV>
+        <#comment >
+        </#comment>
         <TABLE class=details-table >
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Protocol
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 TLS 1.2
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Key exchange
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 Key_Exchange
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Cipher
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 Cypher with Mac
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
         </TABLE>
+        <#comment >
+        </#comment>
     </DIV>
     <DIV class=origin-view-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
@@ -441,44 +475,86 @@ View requests in Network panel
             </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section connection-section >
+        <#comment >
+        </#comment>
         <DIV class=origin-view-section-title role=heading aria-level=2 >
+            <#comment >
+            </#comment>
 Connection
         </DIV>
+        <#comment >
+        </#comment>
         <TABLE class=details-table >
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Protocol
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 TLS 1.2
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Key exchange
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 ECDSA_RSA with X25519
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Server signature
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 RSA-PSS with SHA-256
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Cipher
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 AES-128-GCM
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
         </TABLE>
+        <#comment >
+        </#comment>
     </DIV>
     <DIV class=origin-view-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
@@ -646,44 +722,86 @@ View requests in Network panel
             </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section connection-section >
+        <#comment >
+        </#comment>
         <DIV class=origin-view-section-title role=heading aria-level=2 >
+            <#comment >
+            </#comment>
 Connection
         </DIV>
+        <#comment >
+        </#comment>
         <TABLE class=details-table >
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Protocol
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 TLS 1.3
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Key exchange
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 X25519
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Server signature
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 RSA-PSS with SHA-256
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Cipher
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 AES-128-GCM
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
         </TABLE>
+        <#comment >
+        </#comment>
     </DIV>
     <DIV class=origin-view-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
@@ -851,52 +969,102 @@ View requests in Network panel
             </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
-    <DIV class=origin-view-section >
+    <DIV class=origin-view-section connection-section >
+        <#comment >
+        </#comment>
         <DIV class=origin-view-section-title role=heading aria-level=2 >
+            <#comment >
+            </#comment>
 Connection
         </DIV>
+        <#comment >
+        </#comment>
         <TABLE class=details-table >
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Protocol
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 TLS 1.3
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Key exchange
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 X25519
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Server signature
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 RSA-PSS with SHA-256
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Cipher
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 AES-128-GCM
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
+            <#comment >
+            </#comment>
             <TR class=details-table-row >
                 <TD >
+                    <#comment >
+                    </#comment>
 Encrypted ClientHello
                 </TD>
                 <TD >
+                    <#comment >
+                    </#comment>
 enabled
                 </TD>
             </TR>
+            <#comment >
+            </#comment>
         </TABLE>
+        <#comment >
+        </#comment>
     </DIV>
     <DIV class=origin-view-section >
         <DIV class=origin-view-section-title role=heading aria-level=2 >
