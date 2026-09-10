@@ -601,7 +601,6 @@ ExternalCanvasResource::ExternalCanvasResource(
       release_callback_(std::move(out_callback)),
       alpha_type_(kPremul_SkAlphaType) {
   CHECK(GetSharedImage());
-  DCHECK(!release_callback_ || sync_token.HasData());
   SetReleaseSyncToken(sync_token);
 }
 
