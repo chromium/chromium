@@ -68,6 +68,7 @@
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/page_transition_types.h"
@@ -568,6 +569,64 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(AppMenuAiRingBrowserTest,
+                       InvokeUi_main_signedin_profile_signin_pending_state) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+  gfx::Image fake_image = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "http://example.com/avatar.jpg", fake_image);
+
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account_info.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuAiRingBrowserTest,
+                       InvokeUi_main_signedin_profile_with_ai_subscription) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+  gfx::Image fake_image = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "http://example.com/avatar.jpg", fake_image);
+
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AppMenuAiRingBrowserTest,
+    InvokeUi_main_signed_in_profile_with_ai_subscription_signin_pending) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+  gfx::Image fake_image = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "http://example.com/avatar.jpg", fake_image);
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account_info.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  ShowAndVerifyUi();
+}
 #endif
 
 // Test case for Safety Hub notification.
@@ -684,6 +743,48 @@ IN_PROC_BROWSER_TEST_F(AppMenuProfileGradientRingBrowserTest,
   ASSERT_TRUE(menu_button()->IsMenuShowing());
   int final_size = GetProfileIconWidth();
   EXPECT_EQ(final_size, initial_size);
+  CloseMenuAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuProfileGradientRingBrowserTest,
+                       ProfileMenuIconDottedRingPrecedenceOverGradientRing) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+
+  gfx::Image fake_image = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "http://example.com/avatar.jpg", fake_image);
+
+  // Initial avatar size without subscription.
+  menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
+  ASSERT_TRUE(menu_button()->IsMenuShowing());
+  int initial_size = GetProfileIconWidth();
+  ASSERT_GT(initial_size, 0);
+  CloseMenuAndWait();
+
+  // Setting AI subscription increases avatar width because of gradient ring.
+  SetAiSubscriptionTierForProfile(1);
+  menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
+  ASSERT_TRUE(menu_button()->IsMenuShowing());
+  int size_with_gradient_ring = GetProfileIconWidth();
+  EXPECT_GT(size_with_gradient_ring, initial_size);
+  CloseMenuAndWait();
+
+  // Persistent auth error causes dotted ring to take precedence, which renders
+  // at the standard avatar icon size rather than the expanded gradient ring
+  // size.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account_info.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
+  ASSERT_TRUE(menu_button()->IsMenuShowing());
+  int size_with_dotted_ring = GetProfileIconWidth();
+  EXPECT_EQ(size_with_dotted_ring, initial_size);
   CloseMenuAndWait();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
