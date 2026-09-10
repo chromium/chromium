@@ -30,13 +30,10 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
-#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
-#include "chrome/browser/ui/views/tabs/common/tab_view_horizontal_layout.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
-#include "chrome/browser/ui/views/tabs/tab/tab_title.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/grit/generated_resources.h"
@@ -923,7 +920,8 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, MultiSelectUserActions) {
   tab_view_3->OnMouseReleased(release_shift_ctrl);
 }
 
-class HorizontalTabViewTest : public TabViewTest {
+class HorizontalTabViewSeparatorTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
@@ -953,63 +951,13 @@ class HorizontalTabViewTest : public TabViewTest {
   }
 };
 
-// TODO(crbug.com/558877122): Fix test failure on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TitleAnimation DISABLED_TitleAnimation
-#else
-#define MAYBE_TitleAnimation TitleAnimation
-#endif
-IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, MAYBE_TitleAnimation) {
-  TabView* tab_view = GetTabView(0);
-  tabs::TabData tab_data = tab_view->data();
-  ASSERT_TRUE(tab_data.should_display_favicon);
-  TabTitle* title = tab_view->title_for_testing();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !static_cast<TabCollectionAnimatingLayoutManager*>(
-                unpinned_collection_node()->view()->GetLayoutManager())
-                ->is_animating();
-  }));
-  const int title_x_with_favicon = title->x();
-  const int title_x_no_favicon =
-      tab_view->tab_styling()->GetContentsInsets().left();
-
-  // When the favicon stops showing, the title should animate towards the left
-  // to the beginning of the tab.
-  tab_data.should_display_favicon = false;
-  tab_view->SetDataForTesting(tab_data);
-  int prev_title_bounds_x = title_x_with_favicon;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    if (title->bounds().x() == title_x_no_favicon) {
-      return true;
-    }
-    EXPECT_GE(prev_title_bounds_x, title->x());
-    EXPECT_GT(title->x(), title_x_no_favicon);
-    prev_title_bounds_x = title->x();
-    return false;
-  }));
-
-  // When the favicon is shown, the title should animate towards the right so
-  // that it is after the favicon.
-  tab_data.should_display_favicon = true;
-  tab_view->SetDataForTesting(tab_data);
-  prev_title_bounds_x = title_x_no_favicon;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    if (title->bounds().x() == title_x_with_favicon) {
-      return true;
-    }
-    EXPECT_LE(prev_title_bounds_x, title->bounds().x());
-    EXPECT_LT(title->bounds().x(), title_x_with_favicon);
-    prev_title_bounds_x = title->bounds().x();
-    return false;
-  }));
-}
-
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_HorizontalSeparators DISABLED_HorizontalSeparators
 #else
 #define MAYBE_HorizontalSeparators HorizontalSeparators
 #endif
-IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, MAYBE_HorizontalSeparators) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewSeparatorTest,
+                       MAYBE_HorizontalSeparators) {
   AppendTab();
   AppendTab();
   AppendTab();
@@ -1077,7 +1025,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, MAYBE_HorizontalSeparators) {
   EXPECT_EQ(opacities2.right, 0.0f);
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators_RTL) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewSeparatorTest,
+                       HorizontalSeparators_RTL) {
   std::string original_locale = base::i18n::GetConfiguredLocale();
   base::i18n::SetICUDefaultLocale("ar");
 
@@ -1120,7 +1069,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators_RTL) {
   base::i18n::SetICUDefaultLocale(original_locale);
 }
 
-class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {
+class HorizontalTabViewPinnedStylingEnabledTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
@@ -1129,6 +1079,25 @@ class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {
     enabled.push_back({tabs::kTabStripUnification, {}});
     enabled.push_back({tabs::kNewHorizontalPinnedTabStyling, {}});
     return enabled;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+
+  TabView* GetTabView(int index) {
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+    if (!region_view) {
+      return nullptr;
+    }
+    tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(index);
+    if (!tab) {
+      return nullptr;
+    }
+    return views::AsViewClass<TabView>(
+        region_view->GetTabAnchorView(tab->GetHandle()));
   }
 };
 
@@ -1197,10 +1166,37 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingEnabledTest,
 }
 
 class HorizontalTabViewPinnedStylingDisabledTest
-    : public HorizontalTabViewTest {
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
   const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     return {tabs::kNewHorizontalPinnedTabStyling};
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    ExitVerticalTabsMode();
+  }
+
+  TabView* GetTabView(int index) {
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+    if (!region_view) {
+      return nullptr;
+    }
+    tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(index);
+    if (!tab) {
+      return nullptr;
+    }
+    return views::AsViewClass<TabView>(
+        region_view->GetTabAnchorView(tab->GetHandle()));
   }
 };
 

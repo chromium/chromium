@@ -72,16 +72,14 @@ class TabView : public views::View,
   class LayoutManager : public views::LayoutManagerBase {
    public:
     virtual void OnTabClosing() {}
-    virtual void OnShouldDisplayFaviconChanged() {}
 
    protected:
     // views::LayoutManagerBase:
     void OnInstalled(views::View* host) override;
 
-    // Casts host_view() to a TabView ref, using static_cast. Avoids
+    // Casts host_view() to a TabView const ref, using static_cast. Avoids
     // views::AsViewClass as it incurs overhead when checking metadata.
-    class TabView& TabView();
-    const class TabView& TabView() const;
+    const TabView& TabView() const;
   };
 
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
@@ -113,10 +111,9 @@ class TabView : public views::View,
     return hover_controller_.get();
   }
 
-  TabTitle* title_for_testing() { return title_; }
   TabCloseButton* close_button_for_testing() { return close_button_; }
   TabIcon* GetTabIconForTesting() { return icon_; }
-  void SetDataForTesting(const tabs::TabData& data);
+  void SetDataForTesting(tabs::TabData data);
 
   // HoverCardAnchorTarget:
   bool NeedsToShowThumbnail() const override;
@@ -179,7 +176,7 @@ class TabView : public views::View,
   void OnTabStateChanged();
   void OnTabDataChanged(TabChangeType change_type, const tabs::TabData& data);
   void SetSelection(bool selected);
-  void UpdateTabData(const tabs::TabData& tab);
+  void UpdateTabData(const tabs::TabInterface* tab);
 
   void UpdateTitle(std::u16string title, bool should_render_loading_title);
   void UpdateBorder();
@@ -212,15 +209,13 @@ class TabView : public views::View,
 
   void UpdateZOrder();
 
-  TabView::LayoutManager* layout_manager();
-
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;
 
   std::unique_ptr<TabStyleViews> tab_styling_;
 
-  const raw_ptr<TabTitle> title_;
   const raw_ptr<TabIcon> icon_;
+  const raw_ptr<TabTitle> title_;
   const raw_ptr<AlertIndicatorButton> alert_indicator_;
   const raw_ptr<TabCloseButton> close_button_;
   raw_ptr<glic::TabUnderlineView> glic_tab_underline_view_ = nullptr;
