@@ -231,6 +231,10 @@ void WebEngineAudioRenderer::OnBuffersAcquired(
     has_delayed_end_of_stream_ = false;
     OnSysmemBufferStreamEndOfStream();
   }
+
+  if (GetPlaybackState() == PlaybackState::kStartPending) {
+    StartAudioConsumer();
+  }
 }
 
 void WebEngineAudioRenderer::InitializeStreamSink() {
@@ -276,9 +280,6 @@ void WebEngineAudioRenderer::InitializeStreamSink() {
   audio_consumer_->CreateStreamSink(
       std::move(vmos_for_stream_sink), std::move(stream_type),
       std::move(compression).value(), stream_sink_.NewRequest());
-
-  if (GetPlaybackState() == PlaybackState::kStartPending)
-    StartAudioConsumer();
 
   ScheduleBufferTimers();
 }

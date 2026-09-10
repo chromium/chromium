@@ -71,8 +71,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
     kStopped,
 
     // StartTicking() was called, but sysmem buffers haven't been allocated yet.
-    // AudioConsumer::Start() will be called after CreateStreamSink() once the
-    // sysmem buffers are allocated.
+    // AudioConsumer::Start() will be called after CreateStreamSink() and any
+    // delayed packets are sent once the sysmem buffers are allocated.
     kStartPending,
 
     // We've called Start(), but haven't received updated state. |start_time_|

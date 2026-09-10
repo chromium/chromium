@@ -17,8 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/fixed_array.h"
 #include "media/base/buffering_state.h"
@@ -139,11 +139,32 @@ class TestStreamSink : public fuchsia::media::testing::StreamSink_TestBase {
 
   bool received_end_of_stream() const { return received_end_of_stream_; }
 
+  bool HasPendingOrReceivedPackets() const {
+    if (!received_packets_.empty()) {
+      return true;
+    }
+    zx_signals_t observed = 0;
+    return binding_.channel().wait_one(ZX_CHANNEL_READABLE,
+                                       zx::time::infinite_past(),
+                                       &observed) == ZX_OK;
+  }
+
+  void WaitPacket() {
+    if (!received_packets_.empty()) {
+      return;
+    }
+    EXPECT_TRUE(packet_received_future_.Wait());
+    packet_received_future_.Clear();
+  }
+
   // fuchsia::media::StreamSink overrides.
   void SendPacket(fuchsia::media::StreamPacket packet,
                   SendPacketCallback callback) override {
     EXPECT_FALSE(received_end_of_stream_);
     received_packets_.push_back(std::move(packet));
+    if (!packet_received_future_.IsReady()) {
+      packet_received_future_.SetValue();
+    }
     callback();
   }
   void EndOfStream() override {
@@ -175,6 +196,7 @@ class TestStreamSink : public fuchsia::media::testing::StreamSink_TestBase {
 
   std::vector<fuchsia::media::StreamPacket> received_packets_;
   std::vector<fuchsia::media::StreamPacket> discarded_packets_;
+  base::test::TestFuture<void> packet_received_future_;
 
   bool received_end_of_stream_ = false;
 };
@@ -193,10 +215,8 @@ class TestAudioConsumer
 
   std::unique_ptr<TestStreamSink> WaitStreamSinkConnected() {
     if (!stream_sink_) {
-      base::RunLoop run_loop;
-      wait_stream_sink_created_loop_ = &run_loop;
-      run_loop.Run();
-      wait_stream_sink_created_loop_ = nullptr;
+      EXPECT_TRUE(stream_sink_created_future_.Wait());
+      stream_sink_created_future_.Clear();
     }
     EXPECT_TRUE(stream_sink_);
     return TakeStreamSink();
@@ -206,10 +226,7 @@ class TestAudioConsumer
     if (started_)
       return;
 
-    base::RunLoop run_loop;
-    wait_started_loop_ = &run_loop;
-    run_loop.Run();
-    wait_started_loop_ = nullptr;
+    EXPECT_TRUE(started_future_.Wait());
     EXPECT_TRUE(started_);
   }
 
@@ -238,6 +255,9 @@ class TestAudioConsumer
   void SignalEndOfStream() { binding_.events().OnEndOfStream(); }
 
   bool started() const { return started_; }
+  bool stream_sink_had_packets_at_start() const {
+    return stream_sink_had_packets_at_start_;
+  }
   base::TimeDelta start_media_time() const { return start_media_time_; }
   float playback_rate() const { return playback_rate_; }
   float volume() const { return volume_; }
@@ -253,8 +273,9 @@ class TestAudioConsumer
     stream_sink_ = std::make_unique<TestStreamSink>(
         std::move(buffers), std::move(stream_type), std::move(compression),
         std::move(stream_sink_request));
-    if (wait_stream_sink_created_loop_)
-      wait_stream_sink_created_loop_->Quit();
+    if (!stream_sink_created_future_.IsReady()) {
+      stream_sink_created_future_.SetValue();
+    }
   }
 
   void Start(fuchsia::media::AudioConsumerStartFlags flags,
@@ -265,13 +286,17 @@ class TestAudioConsumer
     EXPECT_EQ(reference_time, fuchsia::media::NO_TIMESTAMP);
     started_ = true;
     start_media_time_ = base::TimeDelta::FromZxDuration(media_time);
-    if (wait_started_loop_)
-      wait_started_loop_->Quit();
+    stream_sink_had_packets_at_start_ =
+        stream_sink_ && stream_sink_->HasPendingOrReceivedPackets();
+    if (!started_future_.IsReady()) {
+      started_future_.SetValue();
+    }
   }
 
   void Stop() override {
     EXPECT_TRUE(started_);
     started_ = false;
+    started_future_.Clear();
   }
 
   void SetRate(float rate) override { playback_rate_ = rate; }
@@ -314,10 +339,11 @@ class TestAudioConsumer
   fidl::Binding<fuchsia::media::audio::VolumeControl> volume_control_binding_;
   std::unique_ptr<TestStreamSink> stream_sink_;
 
-  raw_ptr<base::RunLoop> wait_stream_sink_created_loop_ = nullptr;
-  raw_ptr<base::RunLoop> wait_started_loop_ = nullptr;
+  base::test::TestFuture<void> stream_sink_created_future_;
+  base::test::TestFuture<void> started_future_;
 
   bool create_stream_sink_called_ = false;
+  bool stream_sink_had_packets_at_start_ = false;
 
   WatchStatusCallback status_callback_;
   std::optional<fuchsia::media::AudioConsumerStatus> status_update_;
@@ -550,18 +576,10 @@ void WebEngineAudioRendererTestBase::InitializeRenderer() {
     demuxer_stream_ = std::make_unique<TestDemuxerStream>(GetStreamConfig());
   }
 
-  base::RunLoop run_loop;
-  media::PipelineStatus pipeline_status;
-  audio_renderer_->Initialize(
-      demuxer_stream_.get(), &cdm_context_, &client_,
-      base::BindLambdaForTesting(
-          [&run_loop, &pipeline_status](media::PipelineStatus s) {
-            pipeline_status = s;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-
-  ASSERT_EQ(pipeline_status, media::PIPELINE_OK);
+  base::test::TestFuture<media::PipelineStatus> status_future;
+  audio_renderer_->Initialize(demuxer_stream_.get(), &cdm_context_, &client_,
+                              status_future.GetCallback());
+  ASSERT_EQ(status_future.Get(), media::PIPELINE_OK);
 
   audio_consumer_->UpdateStatus(std::nullopt, std::nullopt);
 
@@ -863,9 +881,9 @@ TEST_P(WebEngineAudioRendererTest, Seek) {
   EXPECT_EQ(time_source_->CurrentMediaTime(), kStartPos + kTimeStep);
 
   // Flush the renderer.
-  base::RunLoop run_loop;
-  audio_renderer_->Flush(run_loop.QuitClosure());
-  run_loop.Run();
+  base::test::TestFuture<void> flush_future;
+  audio_renderer_->Flush(flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
 
   // Restart playback from a new position.
   const base::TimeDelta kSeekPos = base::Milliseconds(123);
@@ -1168,7 +1186,9 @@ TEST_P(WebEngineAudioRendererTest, PlaybackBeforeSinkCreation) {
   // Wait until the stream is started. Start() should be called only after
   // StreamSink() is connected and the packets are buffered.
   audio_consumer_->WaitStarted();
+  EXPECT_TRUE(audio_consumer_->stream_sink_had_packets_at_start());
   stream_sink_ = audio_consumer_->TakeStreamSink();
+  stream_sink_->WaitPacket();
   EXPECT_GT(stream_sink_->received_packets()->size(), 0U);
   EXPECT_FALSE(stream_sink_->received_end_of_stream());
 }
