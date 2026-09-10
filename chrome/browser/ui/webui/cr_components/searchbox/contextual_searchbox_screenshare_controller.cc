@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -104,6 +105,14 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
       .max_width = image_upload_config.downscale_max_image_width(),
       .compression_quality = image_upload_config.image_compression_quality()};
 }
+
+#if BUILDFLAG(IS_WIN)
+// Delay screen capture on Windows after the media picker dialog is destroyed
+// to allow the Desktop Window Manager (DWM) to complete a composition pass and
+// unmap the dialog's window from the desktop capture surface.
+// Matches GlicScreenshotCapturerImpl and DesktopMediaPickerDialogView delays.
+constexpr base::TimeDelta kDefaultScreenCaptureDelay = base::Milliseconds(500);
+#endif
 
 }  // namespace
 
@@ -435,6 +444,33 @@ void ContextualSearchboxScreenshareController::CaptureAndUploadScreenshot(
     StartScreenshareCallback callback,
     std::optional<RegionCaptureSource> region_capture_source) {
   is_capturing_ = true;
+
+#if BUILDFLAG(IS_WIN)
+  base::TimeDelta delay = screen_capture_delay_for_testing_.value_or(
+      source.type == content::DesktopMediaID::TYPE_WINDOW
+          ? base::TimeDelta()
+          : kDefaultScreenCaptureDelay);
+  if (!delay.is_zero()) {
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualSearchboxScreenshareController::
+                           CaptureAndUploadScreenshotInternal,
+                       weak_ptr_factory_.GetWeakPtr(), source,
+                       std::move(callback), std::move(region_capture_source)),
+        delay);
+    return;
+  }
+#endif
+
+  CaptureAndUploadScreenshotInternal(source, std::move(callback),
+                                     std::move(region_capture_source));
+}
+
+void ContextualSearchboxScreenshareController::
+    CaptureAndUploadScreenshotInternal(
+        content::DesktopMediaID source,
+        StartScreenshareCallback callback,
+        std::optional<RegionCaptureSource> region_capture_source) {
   auto safe_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::nullopt);
   active_screenshot_request_ = content::desktop_capture::CaptureScreenshot(

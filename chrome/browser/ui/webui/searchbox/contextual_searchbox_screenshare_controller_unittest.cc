@@ -177,6 +177,10 @@ class ControlledDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
 class ContextualSearchboxScreenshareControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  ContextualSearchboxScreenshareControllerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 #if BUILDFLAG(IS_MAC)
@@ -205,6 +209,9 @@ class ContextualSearchboxScreenshareControllerTest
   void CreateController(DesktopMediaPickerFactory* picker_factory = nullptr) {
     controller_ = std::make_unique<ContextualSearchboxScreenshareController>(
         web_contents(), &mock_host_, &mock_delegate_, picker_factory);
+#if !BUILDFLAG(IS_ANDROID)
+    controller_->set_screen_capture_delay_for_testing(base::TimeDelta());
+#endif
   }
 
   MockScreenshareHost& host() { return mock_host_; }
