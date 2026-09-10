@@ -3117,18 +3117,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                          /*expected_split_tabs=*/2);
 }
 
-class SoftNavigationTabRestoreTest : public TabRestoreTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    TabRestoreTest::SetUpCommandLine(command_line);
-    features_list_.InitWithFeatures({blink::features::kSoftNavigationHeuristics,
-                                     blink::features::kNavigationId},
-                                    {});
-  }
-
- private:
-  base::test::ScopedFeatureList features_list_;
-};
+class SoftNavigationTabRestoreTest : public TabRestoreTest {};
 
 // TODO(crbug.com/40285531): Test is found flaky on linux, win and mac,most
 // probably due to mouseclicks not working consistently.

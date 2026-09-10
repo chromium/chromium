@@ -2437,14 +2437,6 @@ inline constexpr char kPopulateDOMNodeIdInFocusedNodeDetailsDescription[] =
     "Enables additional focus change handling code needed for the dictation "
     "feature.";
 
-inline constexpr char kSoftNavigationHeuristicsName[] =
-    "Soft Navigation Heuristics";
-inline constexpr char kSoftNavigationHeuristicsDescription[] =
-    "Enables the soft navigation heuristics, including support for "
-    "PerformanceObserver. See the documentation at "
-    "https://developer.chrome.com/docs/web-platform/"
-    "soft-navigations-experiment.";
-
 inline constexpr char kEnableLensStandaloneName[] =
     "Enable Lens features in Chrome.";
 inline constexpr char kEnableLensStandaloneDescription[] =

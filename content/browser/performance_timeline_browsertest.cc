@@ -325,8 +325,7 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkTestFeatures,
-                                    "NavigationId");
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 

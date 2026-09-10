@@ -9312,11 +9312,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "soft-navigation-heuristics",
-    "owners": [ "speed-metrics-dev@chromium.org", "johannes@chromium.org", "shaseley@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "source-specific-multicast-in-direct-sockets",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 165

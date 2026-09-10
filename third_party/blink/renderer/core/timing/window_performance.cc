@@ -1612,8 +1612,6 @@ PerformanceSoftNavigation* WindowPerformance::AddSoftNavigation(
     base::TimeTicks timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
     SoftNavigationContext* context) {
-  CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
-      GetExecutionContext()));
   PerformanceSoftNavigation* entry =
       MakeGarbageCollected<PerformanceSoftNavigation>(
           MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
@@ -1774,8 +1772,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
 void WindowPerformance::OnInteractionContentfulPaintUpdated(
     InteractionContentfulPaint* entry) {
-  CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
-      GetExecutionContext()));
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kInteractionContentfulPaintEntryEmitted);
   if (HasObserverFor(PerformanceEntry::kInteractionContentfulPaint)) {

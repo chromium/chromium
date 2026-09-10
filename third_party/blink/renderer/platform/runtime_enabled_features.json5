@@ -4263,12 +4263,6 @@
       name: "NavigationEventTiming",
     },
     {
-      name: "NavigationId",
-      status: "experimental",
-      origin_trial_feature_name: "SoftNavigationHeuristics",
-      implied_by: ["SoftNavigationHeuristics"],
-    },
-    {
       // NavigationState class and the :navigation-source CSS pseudo-class.
       name: "NavigationSourcePseudoClass",
       status: "experimental",
@@ -5886,23 +5880,6 @@
       // RunSnapshotPostLayoutStateSteps flag.
       name: "SnapshotScrollTimelinesPostLayout",
       depends_on: ["RunSnapshotPostLayoutStateSteps"],
-    },
-    {
-      // Used to enable the code for detecting soft navigations through task
-      // attribution. Set to stable as this generates an enabled-by-default
-      // base::Feature for a field-trial remote shutoff. Needs to be a runtime
-      // feature so that the Soft Navigation Heuristics Origin Trial can depend
-      // on it.
-      name: "SoftNavigationDetection",
-      status: "stable",
-    },
-    {
-      name: "SoftNavigationDetectionIncludeReplaceState",
-      status: "stable",
-    },
-    {
-      name: "SoftNavigationHeuristics",
-      status: "stable",
     },
     {
       name: "SortedLayoutShiftSourcesByImpactArea",

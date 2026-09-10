@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://github.com/WICG/soft-navigations
-[Exposed=Window, RuntimeEnabled=SoftNavigationHeuristics]
+[Exposed=Window]
 interface InteractionContentfulPaint : PerformanceEntry {
     readonly attribute LargestContentfulPaint largestContentfulPaint;
     readonly attribute unsigned long long interactionId;

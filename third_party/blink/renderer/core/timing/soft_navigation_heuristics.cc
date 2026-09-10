@@ -14,7 +14,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -204,9 +203,6 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
     LocalDOMWindow* window) {
-  if (!base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-    return nullptr;
-  }
   // We expect the window to be valid and the frame to be attached.
   CHECK(window && window->GetFrame() && window->GetFrame()->GetPage());
 
@@ -316,12 +312,6 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     WebFrameLoadType load_type,
     base::UnguessableToken same_document_metrics_token,
     PerformanceTimelineEntryIdInfo interaction_id) {
-  if (load_type == WebFrameLoadType::kReplaceCurrentItem &&
-      !RuntimeEnabledFeatures::
-          SoftNavigationDetectionIncludeReplaceStateEnabled()) {
-    return;
-  }
-
   if (new_url == old_url) {
     return;
   }

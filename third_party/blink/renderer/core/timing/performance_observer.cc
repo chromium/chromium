@@ -57,16 +57,17 @@ PerformanceObserver* PerformanceObserver::Create(
 // static
 PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
     ScriptState* script_state) {
-  constexpr PerformanceEntryType types_always_supported =
+  constexpr PerformanceEntryType kTypesAlwaysSupported =
       PerformanceEntry::kMark | PerformanceEntry::kMeasure |
       PerformanceEntry::kResource;
-  constexpr PerformanceEntryType types_supported_on_window =
-      types_always_supported | PerformanceEntry::kNavigation |
-      PerformanceEntry::kLongTask | PerformanceEntry::kPaint |
+  constexpr PerformanceEntryType kTypesSupportedOnWindow =
+      kTypesAlwaysSupported | PerformanceEntry::kElement |
       PerformanceEntry::kEvent | PerformanceEntry::kFirstInput |
-      PerformanceEntry::kElement | PerformanceEntry::kLayoutShift |
+      PerformanceEntry::kInteractionContentfulPaint |
       PerformanceEntry::kLargestContentfulPaint |
-      PerformanceEntry::kVisibilityState;
+      PerformanceEntry::kLayoutShift | PerformanceEntry::kLongTask |
+      PerformanceEntry::kNavigation | PerformanceEntry::kPaint |
+      PerformanceEntry::kSoftNavigation | PerformanceEntry::kVisibilityState;
 
   auto* execution_context = ExecutionContext::From(script_state);
 
@@ -78,21 +79,16 @@ PerformanceEntryType PerformanceObserver::supportedEntryTypeMask(
     if (execution_context->IsDedicatedWorkerGlobalScope() &&
         RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled(
             execution_context)) {
-      return types_always_supported | PerformanceEntry::kLongAnimationFrame;
+      return kTypesAlwaysSupported | PerformanceEntry::kLongAnimationFrame;
     }
-    return types_always_supported;
+    return kTypesAlwaysSupported;
   }
 
-  PerformanceEntryType mask = types_supported_on_window;
+  PerformanceEntryType mask = kTypesSupportedOnWindow;
   if (RuntimeEnabledFeatures::
           BackForwardCacheRestorationPerformanceEntryEnabled(
               execution_context)) {
     mask |= PerformanceEntry::kBackForwardCacheRestoration;
-  }
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
-          execution_context)) {
-    mask |= PerformanceEntry::kSoftNavigation |
-            PerformanceEntry::kInteractionContentfulPaint;
   }
   mask |= PerformanceEntry::kLongAnimationFrame;
   if (RuntimeEnabledFeatures::ContainerTimingEnabled(execution_context)) {

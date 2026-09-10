@@ -67,5 +67,4 @@
 -PermissionElementBrowserTest.TabSwitchingClosesPrompt
 
 # TODO(crbug.com/40799125): Flaky.
--SoftNavigationBrowserTest.SoftNavigation
--SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag.SoftNavigation
+-PageLoadMetricsBrowserTest.SoftNavigation

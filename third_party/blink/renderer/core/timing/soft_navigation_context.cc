@@ -267,10 +267,6 @@ void SoftNavigationContext::EmitSoftNavigation() {
                         soft_navigation_slicing_time_, "context", *this);
   }
 
-  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    return;
-  }
-
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
   performance->AddSoftNavigation(TimeOrigin(), FirstContentfulPaintTimingInfo(),
@@ -298,9 +294,6 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
     const AtomicString& id,
     const String& url,
     Element* element) {
-  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    return;
-  }
   // This should not be called after we've been shut down.
   CHECK(!HasBeenShutdown());
 
