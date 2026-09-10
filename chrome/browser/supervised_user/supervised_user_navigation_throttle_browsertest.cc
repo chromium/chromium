@@ -43,11 +43,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/page_type.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -1362,5 +1364,180 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleFencedFramesTest,
           net::Error::ERR_FAILED);
   EXPECT_TRUE(rfh_host2);
 }
+
+struct SupervisedUserBFCacheIframeTestParam {
+  using RequestUrlAccessMethod =
+      void (supervised_user::mojom::SupervisedUserCommands::*)(
+          base::OnceCallback<void(bool)>);
+
+  std::string test_name;
+  // References either local or remote url access method, which have different
+  // function behavior but identical signatures and semantic meaning.
+  RequestUrlAccessMethod request_url_access_method;
+};
+
+// Security regression test: verifies that a blocked subframe that has been
+// placed into the Back/Forward Cache cannot drive RequestUrlAccessRemote /
+// RequestUrlAccessLocal on behalf of an unrelated, currently-active page, but
+// once restored from the Back/Forward Cache, the active frame can successfully
+// drive the request.
+class SupervisedUserBFCacheIframeTest
+    : public SupervisedUserIframeFilterTest,
+      public testing::WithParamInterface<SupervisedUserBFCacheIframeTestParam> {
+ protected:
+  SupervisedUserBFCacheIframeTest() {
+    bfcache_feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  }
+
+ private:
+  base::test::ScopedFeatureList bfcache_feature_list_;
+};
+
+// Tests if BFCached subframes are blocked from issuing approval requests unless
+// they are successfully restored.
+IN_PROC_BROWSER_TEST_P(SupervisedUserBFCacheIframeTest,
+                       BFCachedSubframeCantIssueApprovalRequest) {
+  // Step 1: block one iframe host, load an allowed top-level page that embeds
+  // it. The browser stores a SupervisedUserInterstitial for the subframe.
+  BlockHost(kIframeHost2);
+  GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/with_iframes.html");
+
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
+  ASSERT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  std::vector<content::FrameTreeNodeId> blocked = GetBlockedFrames();
+  ASSERT_EQ(blocked.size(), 1u);
+  content::FrameTreeNodeId blocked_frame_id = blocked[0];
+  content::RenderFrameHost* blocked_rfh = tracker()->GetHost(blocked_frame_id);
+  ASSERT_TRUE(blocked_rfh);
+  ASSERT_TRUE(blocked_rfh->IsActive());
+  content::RenderFrameHostWrapper blocked_rfh_wrapper(blocked_rfh);
+
+  // Step 2: navigate the main frame cross-origin so the original page (and
+  // its blocked subframe) becomes eligible for BFCache.
+  GURL second_page = embedded_test_server()->GetURL(
+      kExampleHost2, "/supervised_user/simple.html");
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_page));
+  ASSERT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  // Step 3: confirm the page actually entered BFCache and the subframe RFH
+  // was *not* deleted. This validates that FrameDeleted() never fired for it.
+  ASSERT_FALSE(blocked_rfh_wrapper.IsDestroyed())
+      << "Subframe RFH was destroyed; page did not enter BFCache.";
+  ASSERT_EQ(blocked_rfh_wrapper->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ASSERT_FALSE(blocked_rfh_wrapper->IsActive());
+
+  // Step 4: the interstitial entry for the BFCached subframe is still
+  // present. DidFinishNavigation() only clears the entry whose
+  // FrameTreeNodeId matches the navigating frame (the *main* frame here), so
+  // the subframe entry leaks.
+  ASSERT_TRUE(
+      supervised_user_navigation_observer()->interstitials_for_test().contains(
+          blocked_frame_id))
+      << "Interstitial map was cleared on BFCache entry; bug not reachable.";
+
+  // Step 5: simulate a compromised renderer sending RequestUrlAccessRemote()
+  // from the inactive (BFCached) frame. RenderFrameHostReceiverSet does not
+  // drop messages from BFCached RFHs, so a real renderer-controlled pipe
+  // could do exactly this. We use SetCurrentTargetFrameForTesting() to model
+  // that dispatch context without needing to actually run JS in a frozen
+  // renderer.
+  permission_creator()->SetPermissionResult(true);
+  supervised_user_navigation_observer()
+      ->receivers_for_test()
+      .SetCurrentTargetFrameForTesting(blocked_rfh_wrapper.get());
+
+  base::RunLoop run_loop;
+  bool request_issued = false;
+
+  supervised_user::mojom::SupervisedUserCommands* commands =
+      static_cast<supervised_user::mojom::SupervisedUserCommands*>(
+          supervised_user_navigation_observer());
+
+  (commands->*(GetParam().request_url_access_method))(base::BindOnce(
+      [](base::OnceClosure quit, bool* out, bool issued) {
+        *out = issued;
+        std::move(quit).Run();
+      },
+      run_loop.QuitClosure(), &request_issued));
+  run_loop.Run();
+
+  supervised_user_navigation_observer()
+      ->receivers_for_test()
+      .SetCurrentTargetFrameForTesting(nullptr);
+
+  // Request should have been rejected.
+  EXPECT_FALSE(request_issued)
+      << "Handler should have rejected the inactive-frame call.";
+  EXPECT_EQ(permission_creator()->url_requests().size(), 0u);
+  if (!permission_creator()->url_requests().empty()) {
+    EXPECT_EQ(permission_creator()->url_requests()[0].GetHost(), kIframeHost2);
+  }
+
+  // Step 6: Navigate back to the original page from BFCache.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+
+  // The page and subframe are restored to active state.
+  ASSERT_FALSE(blocked_rfh_wrapper.IsDestroyed());
+  ASSERT_EQ(blocked_rfh_wrapper->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+  ASSERT_TRUE(blocked_rfh_wrapper->IsActive());
+
+  // Step 7: Now that the frame is restored and active, the user can
+  // successfully re-trigger the URL approval request.
+  supervised_user_navigation_observer()
+      ->receivers_for_test()
+      .SetCurrentTargetFrameForTesting(blocked_rfh_wrapper.get());
+
+  base::RunLoop run_loop_after_restore;
+  bool request_issued_after_restore = false;
+
+  (commands->*(GetParam().request_url_access_method))(base::BindOnce(
+      [](base::OnceClosure quit, bool* out, bool issued) {
+        *out = issued;
+        std::move(quit).Run();
+      },
+      run_loop_after_restore.QuitClosure(), &request_issued_after_restore));
+  run_loop_after_restore.Run();
+
+  supervised_user_navigation_observer()
+      ->receivers_for_test()
+      .SetCurrentTargetFrameForTesting(nullptr);
+
+  EXPECT_TRUE(request_issued_after_restore)
+      << "Handler should have processed the request from the restored active "
+         "frame.";
+  if (GetParam().test_name == "RequestUrlAccessRemote") {
+    EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
+    if (!permission_creator()->url_requests().empty()) {
+      EXPECT_EQ(permission_creator()->url_requests()[0].GetHost(),
+                kIframeHost2);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SupervisedUserBFCacheIframeTest,
+    testing::Values(
+        SupervisedUserBFCacheIframeTestParam{
+            .test_name = "RequestUrlAccessRemote",
+            .request_url_access_method =
+                &supervised_user::mojom::SupervisedUserCommands::
+                    RequestUrlAccessRemote},
+        SupervisedUserBFCacheIframeTestParam{
+            .test_name = "RequestUrlAccessLocal",
+            .request_url_access_method =
+                &supervised_user::mojom::SupervisedUserCommands::
+                    RequestUrlAccessLocal}),
+    [](const testing::TestParamInfo<SupervisedUserBFCacheIframeTestParam>&
+           info) { return info.param.test_name; });
 
 }  // namespace

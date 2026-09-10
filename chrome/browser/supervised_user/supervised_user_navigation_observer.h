@@ -94,6 +94,12 @@ class SupervisedUserNavigationObserver
     return requested_hosts_;
   }
 
+  content::RenderFrameHostReceiverSet<
+      supervised_user::mojom::SupervisedUserCommands>&
+  receivers_for_test() {
+    return receivers_;
+  }
+
  private:
   friend class content::WebContentsUserData<SupervisedUserNavigationObserver>;
 

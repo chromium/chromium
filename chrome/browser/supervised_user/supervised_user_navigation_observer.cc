@@ -468,6 +468,11 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
 supervised_user::SupervisedUserInterstitial*
 SupervisedUserNavigationObserver::GetInterstitialForFrame() {
   content::RenderFrameHost& target_frame = receivers_.CurrentTargetFrame();
+
+  if (!target_frame.IsActive()) {
+    return nullptr;
+  }
+
   content::FrameTreeNodeId frame_id = target_frame.GetFrameTreeNodeId();
 
   if (auto it = supervised_user_interstitials_.find(frame_id);
