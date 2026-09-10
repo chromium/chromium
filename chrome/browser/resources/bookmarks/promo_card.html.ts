@@ -17,8 +17,8 @@ export function getHtml(this: PromoCardElement) {
     <div id="description" class="cr-secondary-text label">
       ${this.batchUploadPromoData_.promoSubtitle}
     </div>
-    <cr-button id="actionButton"
-        class="action-button" @click="${this.onSaveToAccountClick_}">
+    <cr-button id="actionButton" class="action-button"
+        @click="${this.onSaveToAccountClick_}">
       $i18n{saveToAccount}
     </cr-button>
   </div>

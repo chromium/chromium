@@ -18,8 +18,8 @@ export function getHtml(this: BookmarksEditDialogElement) {
     </cr-input>
     <cr-input id="url" type="url" label="$i18n{editDialogUrlInput}"
         error-message="$i18n{editDialogInvalidUrl}" value="${this.urlValue_}"
-        @value-changed="${this.onUrlValueChanged_}"
-        ?hidden="${this.isFolder_}" required>
+        @value-changed="${this.onUrlValueChanged_}" ?hidden="${this.isFolder_}"
+        required>
     </cr-input>
   </div>
   <div slot="button-container">

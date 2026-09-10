@@ -11,14 +11,10 @@ export function getHtml(this: BookmarksFolderNodeElement) {
   return html`<!--_html_template_start_-->
 <div id="container"
     class="cr-vertical-tab cr-nav-menu-item ${this.getContainerClass_()}"
-    ?hidden="${this.isRootFolder_()}"
-    role="treeitem"
-    aria-level="${this.getAriaLevel_()}"
-    aria-owns="descendants"
-    tabindex="${this.getTabIndex_()}"
-    @click="${this.onFolderClick_}"
-    @dblclick="${this.onFolderDblclick_}"
-    @contextmenu="${this.onContextmenu_}"
+    ?hidden="${this.isRootFolder_()}" role="treeitem"
+    aria-level="${this.getAriaLevel_()}" aria-owns="descendants"
+    tabindex="${this.getTabIndex_()}" @click="${this.onFolderClick_}"
+    @dblclick="${this.onFolderDblclick_}" @contextmenu="${this.onContextmenu_}"
     ?selected="${this.isSelectedFolder_}"
     aria-selected="${this.isSelectedFolder_}">
   <div id="inner-container">
@@ -26,9 +22,9 @@ export function getHtml(this: BookmarksFolderNodeElement) {
       <cr-icon-button id="arrow" iron-icon="cr:arrow-drop-down"
           @click="${this.onArrowClick_}" @mousedown="${this.onArrowMousedown_}"
           tabindex="-1" ?is-open="${this.isOpen}" noink aria-hidden="true">
-      </cr-icon-button>` : ''}
-    <div class="folder-icon icon-folder-open"
-        ?open="${this.isSelectedFolder_}"
+      </cr-icon-button>
+    ` : ''}
+    <div class="folder-icon icon-folder-open" ?open="${this.isSelectedFolder_}"
         ?no-children="${!this.hasChildFolder_}">
     </div>
     <div class="menu-label" title="${this.getItemTitle_()}">
@@ -40,10 +36,11 @@ export function getHtml(this: BookmarksFolderNodeElement) {
 <div id="descendants" role="group">
   ${this.isOpen ? html`
     ${this.getFolderChildren_().map(child => html`
-      <bookmarks-folder-node item-id="${child}"
-          draggable="true" depth="${this.getChildDepth_()}">
-      </bookmarks-folder-node>`)}`
-   : ''}
+      <bookmarks-folder-node item-id="${child}" draggable="true"
+          depth="${this.getChildDepth_()}">
+      </bookmarks-folder-node>
+    `)}
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

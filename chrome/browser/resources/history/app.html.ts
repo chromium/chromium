@@ -9,40 +9,37 @@ import type {HistoryAppElement} from './app.js';
 export function getHtml(this: HistoryAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<history-query-manager
-    .queryResult="${this.queryResult_}"
+<history-query-manager .queryResult="${this.queryResult_}"
     @query-finished="${this.onQueryFinished_}"
     @query-state-changed="${this.onQueryStateChanged_}">
 </history-query-manager>
-<history-router id="router"
-    .selectedPage="${this.selectedPage_}"
+<history-router id="router" .selectedPage="${this.selectedPage_}"
     .queryState="${this.queryState_}"
     .lastSelectedTab="${this.lastSelectedTab_}"
     @selected-page-changed="${this.onSelectedPageChanged_}">
 </history-router>
-<history-toolbar id="toolbar"
-    ?has-drawer="${this.hasDrawer_}"
+<history-toolbar id="toolbar" ?has-drawer="${this.hasDrawer_}"
     ?has-more-results="${!this.queryResult_.info?.finished}"
     ?pending-delete="${this.pendingDelete_}"
     .queryInfo="${this.queryResult_.info}"
     ?querying="${this.queryState_.querying}"
     .searchTerm="${this.queryState_.searchTerm}"
     ?spinner-active="${this.shouldShowSpinner_()}"
-    .selectedPage="${this.selectedPage_}"
-    @search-term-native-before-input="${this.onToolbarSearchTermNativeBeforeInput_}"
+    .selectedPage="${this.selectedPage_}" @search-term-native-before-input="${
+        this.onToolbarSearchTermNativeBeforeInput_}"
     @search-term-native-input="${this.onToolbarSearchTermNativeInput_}"
     @search-term-cleared="${this.onToolbarSearchTermCleared_}">
 </history-toolbar>
 <div id="main-container">
-  <history-side-bar id="contentSideBar"
-      .selectedPage="${this.selectedPage_}"
+  <history-side-bar id="contentSideBar" .selectedPage="${this.selectedPage_}"
       @selected-page-changed="${this.onSelectedPageChanged_}"
       .selectedTab="${this.selectedTab_}"
       @selected-tab-changed="${this.onSelectedTabChanged_}"
       .footerInfo="${this.footerInfo}"
       ?history-clusters-enabled="${this.historyClustersEnabled_}"
       ?history-clusters-visible="${this.historyClustersVisible_}"
-      @history-clusters-visible-changed="${this.onHistoryClustersVisibleChanged_}"
+      @history-clusters-visible-changed="${
+          this.onHistoryClustersVisibleChanged_}"
       ?hidden="${this.hasDrawer_}">
   </history-side-bar>
   <cr-page-selector id="content" attr-for-selected="path"
@@ -65,15 +62,14 @@ export function getHtml(this: HistoryAppElement) {
       </div>
       ${this.showTabs_ ? html`
         <div id="tabs">
-          <cr-tabs .tabNames="${this.tabsNames_}"
-              .tabIcons="${this.tabsIcons_}"
+          <cr-tabs .tabNames="${this.tabsNames_}" .tabIcons="${this.tabsIcons_}"
               selected="${this.selectedTab_}"
               @selected-changed="${this.onTabsSelectedChanged_}">
           </cr-tabs>
-        </div>` : ''}
+        </div>
+      ` : ''}
       ${this.showFilterChips_() ? html`
-        <history-filter-chips
-            id="historyFilterChips"
+        <history-filter-chips id="historyFilterChips"
             .userVisits="${this.includeUserVisits_}"
             .actorVisits="${this.includeActorVisits_}"
             @filter-changed="${this.onFilterChanged_}">
@@ -81,41 +77,55 @@ export function getHtml(this: HistoryAppElement) {
       ` : ''}
       <div id="tabsScrollContainer" class="cr-scrollable">
         <div class="cr-scrollable-top-shadow" ?hidden="${this.showTabs_}"></div>
-        <if expr="not is_chromeos">
-          ${this.shouldShowHistoryPageHistorySyncPromo_() ? html`
-            <div class="history-cards">
-              <history-sync-promo></history-sync-promo>
-            </div>` : ''}
-          <div class="history-cards" ?hidden="${!this.shouldShowHistoryCrossDeviceSigninPromo_}">
-            <history-cross-device-signin-promo id="historyCrossDeviceSigninPromo"
-                @should-show-history-cross-device-signin-promo="${this.onShouldShowHistoryCrossDeviceSigninPromo_}">
-            </history-cross-device-signin-promo>
+<if expr="not is_chromeos">
+        ${this.shouldShowHistoryPageHistorySyncPromo_() ? html`
+          <div class="history-cards">
+            <history-sync-promo></history-sync-promo>
           </div>
-        </if>
+        ` : ''}
+        <div class="history-cards"
+            ?hidden="${!this.shouldShowHistoryCrossDeviceSigninPromo_}">
+          <history-cross-device-signin-promo id="historyCrossDeviceSigninPromo"
+              @should-show-history-cross-device-signin-promo="${
+                  this.onShouldShowHistoryCrossDeviceSigninPromo_}">
+          </history-cross-device-signin-promo>
+        </div>
+</if>
         ${this.enableHistoryEmbeddings_ ? html`
           <div id="historyEmbeddingsContainer" class="history-cards">
             <history-embeddings-promo></history-embeddings-promo>
             <cr-history-embeddings-filter-chips
                 .timeRangeStart="${this.queryStateAfterDate_}"
-                ?enable-show-results-by-group-option="${this.showHistoryClusters_}"
+                ?enable-show-results-by-group-option="${
+                    this.showHistoryClusters_}"
                 ?show-results-by-group="${this.getShowResultsByGroup_()}"
-                @show-results-by-group-changed="${this.onShowResultsByGroupChanged_}"
-                @selected-suggestion-changed="${this.onSelectedSuggestionChanged_}">
+                @show-results-by-group-changed="${
+                    this.onShowResultsByGroupChanged_}"
+                @selected-suggestion-changed="${
+                    this.onSelectedSuggestionChanged_}">
             </cr-history-embeddings-filter-chips>
             ${this.shouldShowHistoryEmbeddings_() ? html`
               <cr-history-embeddings
                   .searchQuery="${this.queryState_.searchTerm}"
                   .timeRangeStart="${this.queryStateAfterDate_}"
                   .numCharsForQuery="${this.numCharsTypedInSearch_}"
-                  @more-from-site-click="${this.onHistoryEmbeddingsItemMoreFromSiteClick_}"
-                  @remove-item-click="${this.onHistoryEmbeddingsItemRemoveItemClick_}"
-                  @is-empty-changed="${this.onHistoryEmbeddingsIsEmptyChanged_}"
-                  ?force-suppress-logging="${this.historyEmbeddingsDisclaimerLinkClicked_}"
-                  ?show-more-from-site-menu-option="${!this.getShowResultsByGroup_()}"
+                  @more-from-site-click="${
+                      this.onHistoryEmbeddingsItemMoreFromSiteClick_}"
+                  @remove-item-click="${
+                      this.onHistoryEmbeddingsItemRemoveItemClick_}"
+                  @is-empty-changed="${
+                      this.onHistoryEmbeddingsIsEmptyChanged_}"
+                  ?force-suppress-logging="${
+                      this.historyEmbeddingsDisclaimerLinkClicked_}"
+                  ?show-more-from-site-menu-option="${
+                      !this.getShowResultsByGroup_()}"
                   ?show-relative-times="${this.getShowResultsByGroup_()}"
-                  ?other-history-result-clicked="${this.nonEmbeddingsResultClicked_}">
-              </cr-history-embeddings>` : ''}
-          </div>` : ''}
+                  ?other-history-result-clicked="${
+                      this.nonEmbeddingsResultClicked_}">
+              </cr-history-embeddings>
+            ` : ''}
+          </div>
+        ` : ''}
         <cr-page-selector id="tabsContent" attr-for-selected="path"
             selected="${this.tabsContentPage_}"
             @iron-select="${this.onTabsContentIronSelect_}">
@@ -124,19 +134,18 @@ export function getHtml(this: HistoryAppElement) {
               searched-term="${this.queryResult_.info?.term}"
               ?pending-delete="${this.pendingDelete_}"
               @pending-delete-changed="${this.onListPendingDeleteChanged_}"
-              path="history"
-              .scrollTarget="${this.scrollTarget_}"
+              path="history" .scrollTarget="${this.scrollTarget_}"
               .scrollOffset="${this.tabContentScrollOffset_}">
           </history-list>
           ${this.historyClustersSelected_() ? html`
             <history-clusters id="history-clusters"
                 ?is-active="${this.getShowResultsByGroup_()}"
                 .query="${this.queryState_.searchTerm}"
-                .timeRangeStart="${this.queryStateAfterDate_}"
-                path="grouped"
+                .timeRangeStart="${this.queryStateAfterDate_}" path="grouped"
                 .scrollTarget="${this.scrollTarget_}"
                 .scrollOffset="${this.tabContentScrollOffset_}">
-            </history-clusters>`: ''}
+            </history-clusters>
+          ` : ''}
         </cr-page-selector>
       </div>
     </div>
@@ -147,23 +156,27 @@ export function getHtml(this: HistoryAppElement) {
             .sessionList="${this.sessionList_}"
             .searchTerm="${this.queryState_.searchTerm}">
         </history-synced-device-manager>
-      </div>` : ''}
+      </div>
+    ` : ''}
   </cr-page-selector>
 </div>
 
-<cr-lazy-render-lit id="drawer" .template='${() => html`
-  <cr-drawer heading="$i18n{title}" align="$i18n{textdirection}">
-    <history-side-bar id="drawer-side-bar" slot="body"
-        .selectedPage="${this.selectedPage_}"
-        @selected-page-changed="${this.onSelectedPageChanged_}"
-        .selectedTab="${this.selectedTab_}"
-        @selected-tab-changed="${this.onSelectedTabChanged_}"
-        ?history-clusters-enabled="${this.historyClustersEnabled_}"
-        ?history-clusters-visible="${this.historyClustersVisible_}"
-        @history-clusters-visible-changed="${this.onHistoryClustersVisibleChanged_}"
-        .footerInfo="${this.footerInfo}">
-    </history-side-bar>
-  </cr-drawer>`}'>
+<cr-lazy-render-lit id="drawer"
+    .template="${() => html`
+      <cr-drawer heading="$i18n{title}" align="$i18n{textdirection}">
+        <history-side-bar id="drawer-side-bar" slot="body"
+            .selectedPage="${this.selectedPage_}"
+            @selected-page-changed="${this.onSelectedPageChanged_}"
+            .selectedTab="${this.selectedTab_}"
+            @selected-tab-changed="${this.onSelectedTabChanged_}"
+            ?history-clusters-enabled="${this.historyClustersEnabled_}"
+            ?history-clusters-visible="${this.historyClustersVisible_}"
+            @history-clusters-visible-changed="${
+                this.onHistoryClustersVisibleChanged_}"
+            .footerInfo="${this.footerInfo}">
+        </history-side-bar>
+      </cr-drawer>
+    `}">
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
   // clang-format on

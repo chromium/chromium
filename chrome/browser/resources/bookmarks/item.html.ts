@@ -22,24 +22,22 @@ export function getHtml(this: BookmarksItemElement) {
 </div>
 <div role="gridcell">
   ${this.canUploadAsAccountBookmark_ ? html`
-    <cr-icon-button id="account-upload-button"
-        class="no-overlap"
-        iron-icon="${this.webuiRoundedIconsEnabled_
-            ? 'bookmarks:cloud-upload'
-            : 'bookmarks:bookmark-cloud-upload-old'}"
+    <cr-icon-button id="account-upload-button" class="no-overlap"
+        iron-icon="${
+            this.webuiRoundedIconsEnabled_ ?
+                'bookmarks:cloud-upload' :
+                'bookmarks:bookmark-cloud-upload-old'}"
         title="$i18n{uploadBookmarkButtonTitle}"
         aria-label="$i18n{uploadBookmarkButtonTitle}"
         @click="${this.onUploadButtonClick_}">
-    </cr-icon-button>` : ''}
+    </cr-icon-button>
+  ` : ''}
 </div>
 <div role="gridcell">
-  <cr-icon-button class="icon-more-vert"
-      id="menuButton"
-      tabindex="${this.ironListTabIndex}"
-      title="$i18n{moreActionsButtonTitle}"
+  <cr-icon-button class="icon-more-vert" id="menuButton"
+      tabindex="${this.ironListTabIndex}" title="$i18n{moreActionsButtonTitle}"
       aria-label="${this.getButtonAriaLabel_()}"
-      @click="${this.onMenuButtonClick_}"
-      aria-haspopup="menu">
+      @click="${this.onMenuButtonClick_}" aria-haspopup="menu">
   </cr-icon-button>
 </div>
 <!--_html_template_end_-->`;

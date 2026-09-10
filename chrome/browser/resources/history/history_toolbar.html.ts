@@ -9,20 +9,16 @@ import type {HistoryToolbarElement} from './history_toolbar.js';
 export function getHtml(this: HistoryToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-toolbar id="mainToolbar"
-    disable-right-content-grow
-    ?has-overlay="${this.itemsSelected_}"
-    page-name="$i18n{title}"
+<cr-toolbar id="mainToolbar" disable-right-content-grow
+    ?has-overlay="${this.itemsSelected_}" page-name="$i18n{title}"
     clear-label="$i18n{clearSearch}"
     search-icon-override="${this.computeSearchIconOverride_()}"
-    search-input-aria-description="${this.computeSearchInputAriaDescriptionOverride_()}"
+    search-input-aria-description="${
+        this.computeSearchInputAriaDescriptionOverride_()}"
     search-prompt="${this.computeSearchPrompt_()}"
-    ?spinner-active="${this.spinnerActive}"
-    autofocus
-    ?show-menu="${this.hasDrawer}"
-    menu-label="$i18n{historyMenuButton}"
-    narrow-threshold="1023"
-    @search-changed="${this.onSearchChanged_}">
+    ?spinner-active="${this.spinnerActive}" autofocus
+    ?show-menu="${this.hasDrawer}" menu-label="$i18n{historyMenuButton}"
+    narrow-threshold="1023" @search-changed="${this.onSearchChanged_}">
 </cr-toolbar>
 <cr-toolbar-selection-overlay ?show="${this.itemsSelected_}"
     cancel-label="$i18n{cancel}"

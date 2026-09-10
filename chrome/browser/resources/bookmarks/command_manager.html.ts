@@ -9,25 +9,25 @@ import type {BookmarksCommandManagerElement} from './command_manager.js';
 export function getHtml(this: BookmarksCommandManagerElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-lazy-render-lit id="dropdown" .template="${() => html`
-  <cr-action-menu @mousedown="${this.onMenuMousedown_}"
-      role-description="$i18n{menu}">
-    ${this.computeMenuCommands_().map(command => html`
-      <button class="dropdown-item"
-          data-command="${command}"
-          ?hidden="${!this.isCommandVisible_(command, this.menuIds_)}"
-          ?disabled="${!this.isCommandEnabled_(command, this.menuIds_)}"
-          @click="${this.onCommandClick_}">
-        ${this.getCommandLabel_(command)}
-      </button>
-      <hr ?hidden="${!this.showDividerAfter_(command)}"
-          aria-hidden="true">
-    `)}
-  </cr-action-menu>
-`}">
+<cr-lazy-render-lit id="dropdown"
+    .template="${() => html`
+      <cr-action-menu @mousedown="${this.onMenuMousedown_}"
+          role-description="$i18n{menu}">
+        ${this.computeMenuCommands_().map(command => html`
+          <button class="dropdown-item" data-command="${command}"
+              ?hidden="${!this.isCommandVisible_(command, this.menuIds_)}"
+              ?disabled="${!this.isCommandEnabled_(command, this.menuIds_)}"
+              @click="${this.onCommandClick_}">
+            ${this.getCommandLabel_(command)}
+          </button>
+          <hr ?hidden="${!this.showDividerAfter_(command)}" aria-hidden="true">
+        `)}
+      </cr-action-menu>
+    `}">
 </cr-lazy-render-lit>
 ${this.showEditDialog_ ? html`
-  <bookmarks-edit-dialog></bookmarks-edit-dialog>` : ''}
+  <bookmarks-edit-dialog></bookmarks-edit-dialog>
+` : ''}
 ${this.showOpenDialog_ ? html`
   <cr-dialog>
     <div slot="title">$i18n{openDialogTitle}</div>
@@ -40,7 +40,8 @@ ${this.showOpenDialog_ ? html`
         $i18n{openDialogConfirm}
       </cr-button>
     </div>
-  </cr-dialog>` : ''}
+  </cr-dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -12,16 +12,12 @@ export function getHtml(this: HistoryFilterChipsElement) {
 <div id="wrapper" style="position: relative;">
   <div class="filter-chip-container" role="group"
       aria-label="$i18n{sourceFilterChipsAriaLabel}">
-    <cr-chip
-        id="userVisitsChip"
-        ?selected="${this.isUserSelected()}"
+    <cr-chip id="userVisitsChip" ?selected="${this.isUserSelected()}"
         @click="${this.onUserVisitsClick_}">
       <cr-icon icon="${this.getUserVisitsIcon_()}"></cr-icon>
       $i18n{sourceFilterChipUser}
     </cr-chip>
-    <cr-chip
-        id="actorVisitsChip"
-        ?selected="${this.isActorSelected()}"
+    <cr-chip id="actorVisitsChip" ?selected="${this.isActorSelected()}"
         @click="${this.onActorVisitsClick_}">
       <cr-icon icon="${this.getActorVisitsIcon_()}"></cr-icon>
       $i18n{sourceFilterChipActor}

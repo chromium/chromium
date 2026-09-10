@@ -24,9 +24,8 @@ export function getHtml(this: HistoryItemElement) {
       @click="${this.onRowClick_}">
     <div id="item-container" focus-row-container>
       <div role="gridcell" id="checkbox-cell">
-        <cr-checkbox id="checkbox" .checked="${this.selected}"
-            focus-row-control focus-type="cr-checkbox"
-            @mousedown="${this.onCheckboxMousedown_}"
+        <cr-checkbox id="checkbox" .checked="${this.selected}" focus-row-control
+            focus-type="cr-checkbox" @mousedown="${this.onCheckboxMousedown_}"
             @keydown="${this.onCheckboxSelectKeydown_}"
             @change="${this.onCheckboxChange_}" class="no-label"
             ?hidden="${this.selectionNotAllowed_}"
@@ -43,9 +42,10 @@ export function getHtml(this: HistoryItemElement) {
         <div id="item-info-row">
           <div id="title-and-domain">
             <a href="${this.item?.url}" id="link" class="website-link"
-                focus-row-control focus-type="link"
-                title="${this.item?.title}" @click="${this.onLinkClick_}"
-                @auxclick="${this.onLinkAuxclick_}" @contextmenu="${this.onLinkContextmenu_}"
+                focus-row-control focus-type="link" title="${this.item?.title}"
+                @click="${this.onLinkClick_}"
+                @auxclick="${this.onLinkAuxclick_}"
+                @contextmenu="${this.onLinkContextmenu_}"
                 aria-describedby="${this.getAriaDescribedByForHeading_()}">
               <div class="website-icon" id="icon"></div>
               ${this.shouldShowActorIconNextToFavicon_() ? html`
@@ -53,8 +53,8 @@ export function getHtml(this: HistoryItemElement) {
                 </cr-icon>
               ` : ''}
               <history-searched-label class="website-title"
-                  title="${this.item?.title}"
-                  search-term="${this.searchTerm}"></history-searched-label>
+                  title="${this.item?.title}" search-term="${this.searchTerm}">
+              </history-searched-label>
             </a>
             <span id="domain">${this.item?.domain}</span>
           </div>
@@ -65,25 +65,23 @@ export function getHtml(this: HistoryItemElement) {
                   tooltip-text="$i18n{actorTaskTooltip}"
                   icon-aria-label="$i18n{actorTaskTooltip}">
               </cr-tooltip-icon>
-            `: ''}
+            ` : ''}
             ${this.item?.starred ? html`
               <cr-icon-button id="bookmark-star" iron-icon="cr:star-filled"
                   @click="${this.onRemoveBookmarkClick_}"
-                  title="$i18n{removeBookmark}"
-                  aria-hidden="true">
+                  title="$i18n{removeBookmark}" aria-hidden="true">
               </cr-icon-button>
-              `: ''}
+            ` : ''}
             ${this.isExpandable_() ? html`
               <cr-icon-button id="expand-button"
                   iron-icon="${this.getExpandIcon_()}"
                   title="$i18n{geminiKeyBrowsingActionsTitle}"
-                  aria-controls="collapse"
-                  focus-row-control focus-type="expand-button"
-                  @click="${this.onExpandClick_}"
+                  aria-controls="collapse" focus-row-control
+                  focus-type="expand-button" @click="${this.onExpandClick_}"
                   aria-expanded="${this.isExpanded_}"
                   aria-describedby="${this.getAriaDescribedByForActions_()}">
               </cr-icon-button>
-            `: ''}
+            ` : ''}
           </div>
         </div>
         ${this.isExpandable_() ? html`
@@ -97,34 +95,31 @@ export function getHtml(this: HistoryItemElement) {
                   aria-label="$i18n{geminiKeyBrowsingActionsTitle}">
                 ${this.getCriticalActions_().map((action, index) => html`
                   <div class="critical-action-row" role="listitem"
-                      data-index="${index}"
-                      focus-row-control focus-type="critical-action"
-                      tabindex="0"
+                      data-index="${index}" focus-row-control
+                      focus-type="critical-action" tabindex="0"
                       aria-label="${action.label}"
                       aria-describedby="critical-action-icon-${index}"
                       @click="${this.onCriticalActionClick_}"
                       @keydown="${this.onCriticalActionKeydown_}">
                     <span class="critical-action-label">${action.label}</span>
                     <cr-icon id="critical-action-icon-${index}"
-                        class="critical-action-button"
-                        icon="cr:open-in-new"
-                        role="img"
-                        title="${action.tooltip}"
-                        aria-label="${this.getCriticalActionAriaLabel_(action)}">
+                        class="critical-action-button" icon="cr:open-in-new"
+                        role="img" title="${action.tooltip}" aria-label="${
+                            this.getCriticalActionAriaLabel_(action)}">
                     </cr-icon>
                   </div>
                 `)}
               </div>
             </div>
           </cr-collapse>
-        `: ''}
+        ` : ''}
       </div>
       <div role="gridcell" id="options">
         <cr-icon-button id="menuButton" iron-icon="cr:more-vert"
             focus-row-control focus-type="cr-menu-button"
-            title="$i18n{actionMenuDescription}" @click="${this.onMenuButtonClick_}"
-            @keydown="${this.onMenuButtonKeydown_}"
-            aria-haspopup="menu"
+            title="$i18n{actionMenuDescription}"
+            @click="${this.onMenuButtonClick_}"
+            @keydown="${this.onMenuButtonKeydown_}" aria-haspopup="menu"
             aria-describedby="${this.getAriaDescribedByForActions_()}">
         </cr-icon-button>
       </div>
@@ -147,7 +142,8 @@ export function getHtml(this: HistoryItemElement) {
             hidden="${!this.item?.debug.isUrlInLocalDatabase}">
           visit count: ${this.item?.debug.visitCount}
         </div>
-      </div>`: ''}
+      </div>
+    ` : ''}
     <div id="time-gap-separator" ?hidden="${!this.hasTimeGap}"></div>
   </div>
 </div>

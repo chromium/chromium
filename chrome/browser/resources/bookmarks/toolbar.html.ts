@@ -9,17 +9,12 @@ import type {BookmarksToolbarElement} from './toolbar.js';
 export function getHtml(this: BookmarksToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-toolbar page-name="$i18n{title}"
-    ?has-overlay="${this.showSelectionOverlay}"
-    clear-label="$i18n{clearSearch}"
-    search-prompt="$i18n{searchPrompt}"
+<cr-toolbar page-name="$i18n{title}" ?has-overlay="${this.showSelectionOverlay}"
+    clear-label="$i18n{clearSearch}" search-prompt="$i18n{searchPrompt}"
     ?narrow="${this.narrow_}" @narrow-changed="${this.onNarrowChanged_}"
-    autofocus always-show-logo
-    @search-changed="${this.onSearchChanged_}">
-  <cr-icon-button iron-icon="cr:more-vert"
-      id="menuButton"
-      title="$i18n{organizeButtonTitle}"
-      @click="${this.onMenuButtonOpenClick_}"
+    autofocus always-show-logo @search-changed="${this.onSearchChanged_}">
+  <cr-icon-button iron-icon="cr:more-vert" id="menuButton"
+      title="$i18n{organizeButtonTitle}" @click="${this.onMenuButtonOpenClick_}"
       aria-haspopup="menu">
   </cr-icon-button>
 </cr-toolbar>

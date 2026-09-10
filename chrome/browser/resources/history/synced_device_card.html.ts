@@ -21,8 +21,7 @@ export function getHtml(this: HistorySyncedDeviceCardElement) {
           @click="${this.onMenuButtonClick_}"
           title="$i18n{actionMenuDescription}">
       </cr-icon-button>
-      <cr-icon-button id="collapseButton"
-          iron-icon="${this.getCollapseIcon_()}"
+      <cr-icon-button id="collapseButton" iron-icon="${this.getCollapseIcon_()}"
           title="${this.getCollapseTitle_()}">
       </cr-icon-button>
     </div>
@@ -34,13 +33,11 @@ export function getHtml(this: HistorySyncedDeviceCardElement) {
       ${this.tabs.map((tab, index) => html`
         <div class="item-container">
           <a href="${tab.url}" class="website-link" title="${tab.title}"
-              data-session-id="${tab.sessionId}"
-              @click="${this.onLinkClick_}"
+              data-session-id="${tab.sessionId}" @click="${this.onLinkClick_}"
               @auxclick="${this.onLinkAuxclick_}"
               @contextmenu="${this.onLinkContextmenu_}">
             <div class="website-icon"></div>
-            <history-searched-label class="website-title"
-                title="${tab.title}"
+            <history-searched-label class="website-title" title="${tab.title}"
                 search-term="${this.searchTerm}">
             </history-searched-label>
           </a>
