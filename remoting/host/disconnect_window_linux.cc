@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <numbers>
+#include <optional>
 #include <vector>
 
 #include "base/check_op.h"
@@ -37,6 +38,10 @@ constexpr base::TimeDelta kToggleCooldown = base::Seconds(3);
 constexpr int kTopMargin = 40;
 constexpr int kBottomMargin = 60;
 
+// Maximum consecutive reposition attempts to prevent an infinite loop if the
+// window manager persistently denies or alters window positioning.
+constexpr int kMaxRepositionAttempts = 3;
+
 // Padding and spacing for the window contents.
 constexpr int kButtonRowSpacing = 12;
 constexpr int kHorizontalPadding = 12;
@@ -53,6 +58,13 @@ constexpr double kBorderBlue = 0.11;
 // Arrow labels for alignment toggle button.
 constexpr char kUpArrow[] = "▲";
 constexpr char kDownArrow[] = "▼";
+
+// GObject data keys for testing and position tracking.
+constexpr char kCurrentWidthKey[] = "current_width";
+constexpr char kCurrentHeightKey[] = "current_height";
+constexpr char kExpectedXKey[] = "expected_x";
+constexpr char kExpectedYKey[] = "expected_y";
+constexpr char kRepositionAttemptsKey[] = "reposition_attempts";
 
 // Disconnect reason strings.
 constexpr char kDisconnectClickedReason[] = "Disconnect button was clicked.";
@@ -87,6 +99,7 @@ class DisconnectWindowGtk : public HostWindow {
   gboolean OnDraw(GtkWidget* widget, cairo_t* cr);
 #if !GTK_CHECK_VERSION(3, 90, 0)
   void OnMonitorsChanged(GdkScreen* screen);
+  gboolean OnWindowState(GtkWidget* window, GdkEventWindowState* event);
 #endif
 
   // Positions the dialog window based on the current anchor.
@@ -115,6 +128,14 @@ class DisconnectWindowGtk : public HostWindow {
   // notifications.
   int current_width_ = 0;
   int current_height_ = 0;
+
+  // Expected position of the window.
+  std::optional<int> expected_x_;
+  std::optional<int> expected_y_;
+
+  // Number of consecutive reposition attempts to prevent infinite reposition
+  // loops.
+  int consecutive_reposition_attempts_ = 0;
 
   std::vector<ScopedGSignal> signals_;
 
@@ -230,8 +251,15 @@ void DisconnectWindowGtk::Start(
   // window would be remembered, preventing the generation of bitmaps for the
   // new window).
   current_height_ = current_width_ = 0;
+  expected_x_.reset();
+  expected_y_.reset();
+  consecutive_reposition_attempts_ = 0;
   connect(disconnect_window_.get(), "configure-event",
           &DisconnectWindowGtk::OnConfigure);
+#if !GTK_CHECK_VERSION(3, 90, 0)
+  connect(disconnect_window_.get(), "window-state-event",
+          &DisconnectWindowGtk::OnWindowState);
+#endif
 
   // Layout contains: toggle button, message label, and disconnect button.
   GtkWidget* button_row =
@@ -347,6 +375,7 @@ void DisconnectWindowGtk::ToggleAlignment() {
         base::BindOnce(&DisconnectWindowGtk::OnCooldownExpired,
                        weak_factory_.GetWeakPtr()));
   }
+  consecutive_reposition_attempts_ = 0;
   SetDialogPosition();
 }
 
@@ -420,6 +449,8 @@ void DisconnectWindowGtk::SetDialogPosition() {
                                   &requisition);
     width = requisition.width;
     height = requisition.height;
+    current_width_ = width;
+    current_height_ = height;
   }
 
   int left = geometry.x + std::max(0, (geometry.width - width) / 2);
@@ -427,7 +458,20 @@ void DisconnectWindowGtk::SetDialogPosition() {
                 ? (geometry.y + kTopMargin)
                 : (geometry.y + geometry.height - height - kBottomMargin);
 
+  expected_x_ = left;
+  expected_y_ = top;
   gtk_window_move(GTK_WINDOW(disconnect_window_.get()), left, top);
+
+  g_object_set_data(G_OBJECT(disconnect_window_.get()), kCurrentWidthKey,
+                    GINT_TO_POINTER(current_width_));
+  g_object_set_data(G_OBJECT(disconnect_window_.get()), kCurrentHeightKey,
+                    GINT_TO_POINTER(current_height_));
+  g_object_set_data(G_OBJECT(disconnect_window_.get()), kExpectedXKey,
+                    GINT_TO_POINTER(*expected_x_));
+  g_object_set_data(G_OBJECT(disconnect_window_.get()), kExpectedYKey,
+                    GINT_TO_POINTER(*expected_y_));
+  g_object_set_data(G_OBJECT(disconnect_window_.get()), kRepositionAttemptsKey,
+                    GINT_TO_POINTER(consecutive_reposition_attempts_));
 #else
   NOTIMPLEMENTED_LOG_ONCE()
       << "Window positioning is not implemented for GTK4/Wayland.";
@@ -437,7 +481,31 @@ void DisconnectWindowGtk::SetDialogPosition() {
 #if !GTK_CHECK_VERSION(3, 90, 0)
 void DisconnectWindowGtk::OnMonitorsChanged(GdkScreen* screen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  consecutive_reposition_attempts_ = 0;
   SetDialogPosition();
+}
+
+gboolean DisconnectWindowGtk::OnWindowState(GtkWidget* window,
+                                            GdkEventWindowState* event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  GtkWindow* gtk_window = GTK_WINDOW(window);
+  if ((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) &&
+      (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED)) {
+    gtk_window_deiconify(gtk_window);
+    gtk_window_present(gtk_window);
+    consecutive_reposition_attempts_ = 0;
+    SetDialogPosition();
+  }
+  if ((event->changed_mask & GDK_WINDOW_STATE_ABOVE) &&
+      !(event->new_window_state & GDK_WINDOW_STATE_ABOVE)) {
+    gtk_window_set_keep_above(gtk_window, TRUE);
+  }
+  if ((event->changed_mask & GDK_WINDOW_STATE_STICKY) &&
+      !(event->new_window_state & GDK_WINDOW_STATE_STICKY)) {
+    gtk_window_stick(gtk_window);
+  }
+  return FALSE;
 }
 #endif
 
@@ -455,18 +523,35 @@ gboolean DisconnectWindowGtk::OnConfigure(GtkWidget* widget,
                                           GdkEventConfigure* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Only generate bitmaps if the size has actually changed.
-  if (event->width == current_width_ && event->height == current_height_) {
+  bool size_changed =
+      (event->width != current_width_ || event->height != current_height_);
+  bool position_changed =
+      (expected_x_.has_value() && expected_y_.has_value() &&
+       (event->x != *expected_x_ || event->y != *expected_y_));
+
+  if (!size_changed && !position_changed) {
+    consecutive_reposition_attempts_ = 0;
+    g_object_set_data(G_OBJECT(disconnect_window_.get()),
+                      kRepositionAttemptsKey,
+                      GINT_TO_POINTER(consecutive_reposition_attempts_));
     return FALSE;
   }
 
-  current_width_ = event->width;
-  current_height_ = event->height;
+  if (size_changed) {
+    current_width_ = event->width;
+    current_height_ = event->height;
+    consecutive_reposition_attempts_ = 0;
+    SetDialogPosition();
+    return FALSE;
+  }
 
-  SetDialogPosition();
+  // If only the position changed (e.g. via window manager move shortcut or
+  // drag), snap the window back to its anchored position.
+  if (consecutive_reposition_attempts_ < kMaxRepositionAttempts) {
+    ++consecutive_reposition_attempts_;
+    SetDialogPosition();
+  }
 
-  // gdk_window_set_back_pixmap() is not supported in GDK3, and
-  // background drawing is handled in OnDraw().
   return FALSE;
 }
 
