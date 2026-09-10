@@ -1150,115 +1150,22 @@ class LocationBarMediator
                 return;
             }
 
-            String url = omniboxLoadUrlParams.url;
-            if (url != null && url.startsWith(UrlConstants.CHROME_EXTENSION_SCHEME + "://")) {
-                if (currentTab != null && currentTab.getWebContents() != null) {
-                    ExtensionUi.onOmniboxExtensionInputEntered(
-                            currentTab.getWebContents(),
-                            url,
-                            omniboxLoadUrlParams.openInNewTab,
-                            omniboxLoadUrlParams.openInNewWindow);
-                }
+            if (handleExtensionUrl(currentTab, omniboxLoadUrlParams)) {
                 return;
             }
 
+            String url = omniboxLoadUrlParams.url;
             if (currentTab != null) {
-                boolean isCurrentTabNtpUrl = OmniboxUrlUtils.isNtpUrl(currentTab.getUrl());
-                if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
-                    mOmniboxUma.recordNavigationOnNtp(
-                            omniboxLoadUrlParams.url,
-                            omniboxLoadUrlParams.transitionType,
-                            !currentTab.isIncognito() && isCurrentTabNtpUrl);
-                    // Passing in an empty string should not do anything unless the user is at the
-                    // NTP. Since the NTP has no url, pressing enter while clicking on the URL bar
-                    // should refresh the page as it does when you click and press enter on any
-                    // other site.
-                    if (url.isEmpty()) url = currentTab.getUrl().getSpec();
-                }
-
-                if (omniboxLoadUrlParams.callback != null) {
-                    currentTab.addObserver(
-                            new TabObserver() {
-                                @Override
-                                public void onLoadUrl(
-                                        Tab tab,
-                                        LoadUrlParams params,
-                                        LoadUrlResult loadUrlResult) {
-                                    omniboxLoadUrlParams.callback.onLoadUrl(params, loadUrlResult);
-                                    tab.removeObserver(this);
-                                }
-                            });
-                }
+                url = handleNtpNavigationAndGetUrl(currentTab, omniboxLoadUrlParams);
+                attachTabLoadObserver(currentTab, omniboxLoadUrlParams);
             }
 
-            // Loads the |url| in a new tab or the current ContentView and gives focus to the
-            // ContentView.
             if (currentTab != null && !url.isEmpty()) {
-                LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-                try (TimingMetric record =
-                        TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
-                    loadUrlParams.setVerbatimHeaders(
-                            GeolocationHeader.getGeoHeader(
-                                    url,
-                                    assertNonNull(mProfileSupplier.get()),
-                                    mTemplateUrlServiceSupplier.get()));
-                }
-                loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
-                loadUrlParams.setTransitionType(
-                        omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
-                if (omniboxLoadUrlParams.inputStartTimestamp != 0) {
-                    loadUrlParams.setInputStartTimestamp(omniboxLoadUrlParams.inputStartTimestamp);
-                }
-
-                if (!omniboxLoadUrlParams.extraHeaders.isEmpty()) {
-                    StringBuilder headers = new StringBuilder();
-                    for (var entry : omniboxLoadUrlParams.extraHeaders.entrySet()) {
-                        headers.append(entry.getKey());
-                        headers.append(": ");
-                        headers.append(entry.getValue());
-                        headers.append("\r\n");
-                    }
-                    String previousHeaders = loadUrlParams.getVerbatimHeaders();
-                    if (!TextUtils.isEmpty(previousHeaders)) {
-                        headers.append(previousHeaders);
-                    }
-
-                    loadUrlParams.setVerbatimHeaders(headers.toString());
-                }
-
-                if (omniboxLoadUrlParams.postData != null
-                        && omniboxLoadUrlParams.postData.length != 0) {
-                    loadUrlParams.setPostData(
-                            ResourceRequestBody.createFromBytes(omniboxLoadUrlParams.postData));
-                }
-
-                TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-                boolean processed = false;
-                if (omniboxLoadUrlParams.openInNewWindow) {
-                    Context tabContext = currentTab.getContext();
-                    if (tabContext instanceof Activity sourceActivity) {
-                        processed =
-                                MultiInstanceOrchestratorFactory.getInstance()
-                                        .openUrlInOtherWindow(
-                                                sourceActivity,
-                                                loadUrlParams,
-                                                currentTab.getParentId(),
-                                                /* preferNew= */ true,
-                                                currentTab.isIncognitoBranded());
-                    }
-                } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
-                    tabModelSelector.openNewTab(
-                            loadUrlParams,
-                            TabLaunchType.FROM_OMNIBOX,
-                            currentTab,
-                            currentTab.isIncognito());
-                    processed = true;
-                }
-                if (!processed) {
-                    currentTab.loadUrl(loadUrlParams);
-                }
+                LoadUrlParams loadUrlParams = buildLoadUrlParams(omniboxLoadUrlParams, url);
+                dispatchUrlLoad(currentTab, loadUrlParams, omniboxLoadUrlParams);
                 RecordUserAction.record("MobileOmniboxUse");
             }
+
             mLocaleManager.recordLocaleBasedSearchMetrics(
                     false, url, omniboxLoadUrlParams.transitionType);
 
@@ -1269,6 +1176,128 @@ class LocationBarMediator
                     TaskTraits.UI_USER_VISIBLE,
                     this::endInputAndFocusCurrentTab,
                     OmniboxFeatures.sPostDelayedTaskFocusTabTimeMillis.getValue());
+        }
+    }
+
+    private boolean handleExtensionUrl(
+            @Nullable Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
+        String url = omniboxLoadUrlParams.url;
+        if (url != null && url.startsWith(UrlConstants.CHROME_EXTENSION_SCHEME + "://")) {
+            if (currentTab != null && currentTab.getWebContents() != null) {
+                ExtensionUi.onOmniboxExtensionInputEntered(
+                        currentTab.getWebContents(),
+                        url,
+                        omniboxLoadUrlParams.openInNewTab,
+                        omniboxLoadUrlParams.openInNewWindow);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private String handleNtpNavigationAndGetUrl(
+            Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
+        boolean isCurrentTabNtpUrl = OmniboxUrlUtils.isNtpUrl(currentTab.getUrl());
+        if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
+            mOmniboxUma.recordNavigationOnNtp(
+                    omniboxLoadUrlParams.url,
+                    omniboxLoadUrlParams.transitionType,
+                    !currentTab.isIncognito() && isCurrentTabNtpUrl);
+            // Passing in an empty string should not do anything unless the user is at the
+            // NTP. Since the NTP has no url, pressing enter while clicking on the URL bar
+            // should refresh the page as it does when you click and press enter on any
+            // other site.
+            if (omniboxLoadUrlParams.url.isEmpty()) {
+                return currentTab.getUrl().getSpec();
+            }
+        }
+        return omniboxLoadUrlParams.url;
+    }
+
+    private void attachTabLoadObserver(Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
+        if (omniboxLoadUrlParams.callback == null) return;
+
+        currentTab.addObserver(
+                new TabObserver() {
+                    @Override
+                    public void onLoadUrl(
+                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
+                        omniboxLoadUrlParams.callback.onLoadUrl(params, loadUrlResult);
+                        tab.removeObserver(this);
+                    }
+                });
+    }
+
+    private LoadUrlParams buildLoadUrlParams(
+            OmniboxLoadUrlParams omniboxLoadUrlParams, String url) {
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        try (TimingMetric record =
+                TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
+            loadUrlParams.setVerbatimHeaders(
+                    GeolocationHeader.getGeoHeader(
+                            url,
+                            assertNonNull(mProfileSupplier.get()),
+                            mTemplateUrlServiceSupplier.get()));
+        }
+        loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
+        loadUrlParams.setTransitionType(
+                omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
+        if (omniboxLoadUrlParams.inputStartTimestamp != 0) {
+            loadUrlParams.setInputStartTimestamp(omniboxLoadUrlParams.inputStartTimestamp);
+        }
+
+        if (!omniboxLoadUrlParams.extraHeaders.isEmpty()) {
+            StringBuilder headers = new StringBuilder();
+            for (var entry : omniboxLoadUrlParams.extraHeaders.entrySet()) {
+                headers.append(entry.getKey());
+                headers.append(": ");
+                headers.append(entry.getValue());
+                headers.append("\r\n");
+            }
+            String previousHeaders = loadUrlParams.getVerbatimHeaders();
+            if (!TextUtils.isEmpty(previousHeaders)) {
+                headers.append(previousHeaders);
+            }
+
+            loadUrlParams.setVerbatimHeaders(headers.toString());
+        }
+
+        if (omniboxLoadUrlParams.postData != null && omniboxLoadUrlParams.postData.length != 0) {
+            loadUrlParams.setPostData(
+                    ResourceRequestBody.createFromBytes(omniboxLoadUrlParams.postData));
+        }
+
+        return loadUrlParams;
+    }
+
+    private void dispatchUrlLoad(
+            Tab currentTab,
+            LoadUrlParams loadUrlParams,
+            OmniboxLoadUrlParams omniboxLoadUrlParams) {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        boolean processed = false;
+        if (omniboxLoadUrlParams.openInNewWindow) {
+            Context tabContext = currentTab.getContext();
+            if (tabContext instanceof Activity sourceActivity) {
+                processed =
+                        MultiInstanceOrchestratorFactory.getInstance()
+                                .openUrlInOtherWindow(
+                                        sourceActivity,
+                                        loadUrlParams,
+                                        currentTab.getParentId(),
+                                        /* preferNew= */ true,
+                                        currentTab.isIncognitoBranded());
+            }
+        } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
+            tabModelSelector.openNewTab(
+                    loadUrlParams,
+                    TabLaunchType.FROM_OMNIBOX,
+                    currentTab,
+                    currentTab.isIncognito());
+            processed = true;
+        }
+        if (!processed) {
+            currentTab.loadUrl(loadUrlParams);
         }
     }
 
