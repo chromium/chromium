@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"

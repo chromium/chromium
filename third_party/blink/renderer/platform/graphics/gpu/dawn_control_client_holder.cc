@@ -15,7 +15,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
