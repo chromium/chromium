@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
+#include "cc/base/region.h"
 
 namespace viz {
 struct HitTestRegionList;
@@ -15,7 +16,9 @@ struct HitTestRegionList;
 
 namespace cc {
 
+class LayerImpl;
 class LayerTreeImpl;
+class SurfaceLayerImpl;
 
 class HitTestDataBuilder {
  public:
@@ -24,7 +27,17 @@ class HitTestDataBuilder {
   std::optional<viz::HitTestRegionList> Build() &&;
 
  private:
+  void TrackHitTestableNonSurfaceLayer(const LayerImpl* layer);
+  void TrackNonEmittedSurface(const SurfaceLayerImpl* surface_layer);
+  bool IsSurfaceOverlapped(const SurfaceLayerImpl* surface_layer) const;
+  bool ShouldAssumeOverlap() const;
+
   const raw_ref<const LayerTreeImpl> active_tree_;
+
+  // TODO(sunxd): Submit all overlapping layer bounds as hit test regions. Also,
+  // investigate if we can use visible layer rect as overlapping regions.
+  Region overlapping_region_;
+  size_t num_hit_testable_non_surface_layers_ = 0;
 };
 
 }  // namespace cc

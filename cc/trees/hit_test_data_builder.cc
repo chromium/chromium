@@ -29,12 +29,17 @@
 namespace cc {
 namespace {
 
-// In HitTestDataBuilder::Build we iterate all layers to find all layers that
+// In `HitTestDataBuilder::Build` we iterate all layers to find all layers that
 // overlap OOPIFs, but when the number of layers is greater than
 // |kAssumeOverlapThreshold|, it can be inefficient to accumulate layer bounds
 // for overlap checking. As a result, we are conservative and make OOPIFs
 // kHitTestAsk after the threshold is reached.
 constexpr size_t kAssumeOverlapThreshold = 100;
+
+gfx::Rect MapLayerBoundsToScreen(const LayerImpl* layer) {
+  return MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
+                                           gfx::Rect(layer->bounds()));
+}
 
 uint32_t GetFlagsForSurfaceLayer(const SurfaceLayerImpl* layer) {
   uint32_t flags = viz::HitTestRegionFlags::kHitTestMouse |
@@ -91,13 +96,6 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
 
   float device_scale_factor = active_tree_->device_scale_factor();
 
-  Region overlapping_region;
-  size_t num_iterated_layers = 0;
-  // If the layer tree contains more than 100 layers, we stop accumulating
-  // layers in |overlapping_region| to save compositor frame submitting time,
-  // as a result we do async hit test on any surface layers that may be
-  // overlapped by other layers.
-  bool assume_overlap = false;
   for (const auto* layer : base::Reversed(*active_tree_)) {
     if (layer->is_surface_layer()) {
       const auto* surface_layer = static_cast<const SurfaceLayerImpl*>(layer);
@@ -116,10 +114,8 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
           !surface_layer->range().IsValid()) {
         // We collect any overlapped regions that does not have
         // pointer-events: none.
-        if (!surface_layer->has_pointer_events_none() && !assume_overlap) {
-          overlapping_region.Union(MathUtil::MapEnclosingClippedRect(
-              layer->ScreenSpaceTransform(),
-              gfx::Rect(surface_layer->bounds())));
+        if (!surface_layer->has_pointer_events_none()) {
+          TrackNonEmittedSurface(surface_layer);
         }
         continue;
       }
@@ -129,17 +125,13 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
       gfx::Rect content_rect(gfx::ScaleToEnclosingRect(
           gfx::Rect(surface_layer->bounds()), device_scale_factor));
 
-      gfx::Rect layer_screen_space_rect = MathUtil::MapEnclosingClippedRect(
-          surface_layer->ScreenSpaceTransform(),
-          gfx::Rect(surface_layer->bounds()));
       auto flag = GetFlagsForSurfaceLayer(surface_layer);
       uint32_t async_hit_test_reasons =
           viz::AsyncHitTestReasons::kNotAsyncHitTest;
       if (surface_layer->has_pointer_events_none()) {
         flag |= viz::HitTestRegionFlags::kHitTestIgnore;
       }
-      if (assume_overlap ||
-          overlapping_region.Intersects(layer_screen_space_rect)) {
+      if (IsSurfaceOverlapped(surface_layer)) {
         flag |= viz::HitTestRegionFlags::kHitTestAsk;
         async_hit_test_reasons |= viz::AsyncHitTestReasons::kOverlappedRegion;
       }
@@ -175,20 +167,35 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
       continue;
     }
 
-    // TODO(sunxd): Submit all overlapping layer bounds as hit test regions.
-    // Also investigate if we can use visible layer rect as overlapping
-    // regions.
-    num_iterated_layers++;
-    if (num_iterated_layers > kAssumeOverlapThreshold) {
-      assume_overlap = true;
-    }
-    if (!assume_overlap) {
-      overlapping_region.Union(MathUtil::MapEnclosingClippedRect(
-          layer->ScreenSpaceTransform(), gfx::Rect(layer->bounds())));
-    }
+    TrackHitTestableNonSurfaceLayer(layer);
   }
 
   return hit_test_region_list;
+}
+
+void HitTestDataBuilder::TrackHitTestableNonSurfaceLayer(
+    const LayerImpl* layer) {
+  ++num_hit_testable_non_surface_layers_;
+  if (!ShouldAssumeOverlap()) {
+    overlapping_region_.Union(MapLayerBoundsToScreen(layer));
+  }
+}
+
+void HitTestDataBuilder::TrackNonEmittedSurface(
+    const SurfaceLayerImpl* surface_layer) {
+  if (!ShouldAssumeOverlap()) {
+    overlapping_region_.Union(MapLayerBoundsToScreen(surface_layer));
+  }
+}
+
+bool HitTestDataBuilder::IsSurfaceOverlapped(
+    const SurfaceLayerImpl* surface_layer) const {
+  return ShouldAssumeOverlap() ||
+         overlapping_region_.Intersects(MapLayerBoundsToScreen(surface_layer));
+}
+
+bool HitTestDataBuilder::ShouldAssumeOverlap() const {
+  return num_hit_testable_non_surface_layers_ > kAssumeOverlapThreshold;
 }
 
 }  // namespace cc
