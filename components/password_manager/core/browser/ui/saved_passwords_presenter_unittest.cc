@@ -1902,6 +1902,24 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, GetSavedCredentials) {
               ElementsAre(CredentialUIEntry(expected_form)));
 }
 
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
+       GetSavedCredentialsSeparatesDifferentPasswords) {
+  PasswordForm profile_store_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+
+  PasswordForm account_store_form = profile_store_form;
+  account_store_form.password_value = PasswordString(u"different password");
+  account_store_form.in_store = PasswordForm::Store::kAccountStore;
+
+  profile_store().AddLogin(FromPasswordForm(profile_store_form));
+  account_store().AddLogin(FromPasswordForm(account_store_form));
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(profile_store_form),
+                                   CredentialUIEntry(account_store_form)));
+}
+
 TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   if (!IsGroupingEnabled()) {
     return;

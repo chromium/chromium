@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORDS_GROUPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORDS_GROUPER_H_
 
+#include <compare>
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -68,21 +74,31 @@ class PasswordsGrouper {
 
   void ClearCache();
 
-
  private:
   using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
   using GroupId = base::StrongAlias<class GroupIdTag, int>;
-  using UsernamePasswordKey =
-      base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
+
+  struct UsernameFederationKey {
+    std::u16string username;
+    std::string federation_host;
+
+    friend bool operator==(const UsernameFederationKey&,
+                           const UsernameFederationKey&) = default;
+    friend auto operator<=>(const UsernameFederationKey&,
+                            const UsernameFederationKey&) = default;
+  };
+
+  using StoredCredentialGroup = std::vector<StoredCredential>;
+  using PasswordGroups = std::vector<StoredCredentialGroup>;
 
   // Holds the set of credentials for a given credential group.
   struct Credentials {
     Credentials();
     ~Credentials();
 
-    // Stored credentials grouped by username-password keys.
-    std::map<UsernamePasswordKey, std::vector<StoredCredential>>
-        stored_credentials;
+    // Stored credentials are first bucketed without passwords, then split into
+    // small groups using direct password equality.
+    std::map<UsernameFederationKey, PasswordGroups> stored_credentials;
 
     // List of passkeys associated to the group.
     std::vector<PasskeyCredential> passkeys;

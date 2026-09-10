@@ -1061,7 +1061,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
 }
 
 // Verifies that GetInsecureCredentialEntries() returns sorted weak credentials
-// by using CreateSortKey.
+// by using CredentialSortKey.
 TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
   const std::vector<PasswordForm> password_forms = {
       MakeSavedPassword("http://example-a.com", u"user_a1", u"pwd"),
@@ -1085,7 +1085,7 @@ TEST_F(InsecureCredentialsManagerTest, GetWeakCredentialsReturnsSortedData) {
 }
 
 // Verifies that GetInsecureCredentialEntries() returns sorted weak credentials
-// by using CreateSortKey.
+// by using CredentialSortKey.
 TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialEntries) {
   const std::vector<PasswordForm> password_forms = {
       MakeSavedPassword("http://example-a.com", u"user_a1", u"pwd"),

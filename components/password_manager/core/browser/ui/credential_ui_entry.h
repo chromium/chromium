@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_CREDENTIAL_UI_ENTRY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_CREDENTIAL_UI_ENTRY_H_
 
+#include <compare>
 #include <optional>
 #include <string>
 #include <vector>
@@ -24,6 +25,29 @@ using DisplayName = base::StrongAlias<class DisplayNameTag, std::string>;
 using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
 using AffiliatedWebRealm =
     base::StrongAlias<class AffiliatedWebRealmTag, std::string>;
+
+// Non-secret fields used to sort credentials and to find small buckets of
+// credentials that may be equal. Passwords must be compared separately within
+// a bucket.
+struct CredentialSortKey {
+  // The formatted web origin or reversed Android package name.
+  std::string sort_origin;
+
+  // The canonical Android facet. Empty for web credentials.
+  std::string android_facet;
+
+  std::string scheme;
+  bool blocked_by_user = false;
+  std::u16string username;
+  std::string federation_host;
+  std::u16string passkey_display_name;
+  std::vector<uint8_t> passkey_credential_id;
+
+  friend bool operator==(const CredentialSortKey&,
+                         const CredentialSortKey&) = default;
+  friend auto operator<=>(const CredentialSortKey&,
+                          const CredentialSortKey&) = default;
+};
 
 // CredentialUIEntry is converted to represent a group of credentials with the
 // same username and password and are under the same affiliation (for example:
@@ -211,14 +235,12 @@ struct CredentialUIEntry {
   std::vector<DomainInfo> GetAffiliatedDomains() const;
 };
 
-// Creates key for sorting password or password exception entries. The key is
-// eTLD+1 followed by the reversed list of domains (e.g.
-// secure.accounts.example.com => example.com.com.example.accounts.secure) and
-// the scheme. If |form| is not blocklisted, username, password and federation
-// are appended to the key. If not, no further information is added. For Android
-// credentials the canocial spec is included.
-// TODO(vsemeniuk): find a better name for this function.
-std::string CreateSortKey(const CredentialUIEntry& credential);
+// Creates a non-secret key for sorting and bucketing credentials. Passwords
+// are intentionally excluded and must be compared directly within an equal-key
+// bucket. The StoredCredential overload avoids building a throwaway
+// CredentialUIEntry; both overloads must produce identical keys.
+CredentialSortKey CreateCredentialSortKey(const CredentialUIEntry& credential);
+CredentialSortKey CreateCredentialSortKey(const StoredCredential& credential);
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);

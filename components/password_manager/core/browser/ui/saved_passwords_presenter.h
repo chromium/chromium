@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_SAVED_PASSWORDS_PRESENTER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_SAVED_PASSWORDS_PRESENTER_H_
 
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -111,7 +112,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   };
 
   using AddCredentialsCallback = base::OnceClosure;
-  using DuplicatePasswordsMap = std::multimap<std::string, StoredCredential>;
+  using DuplicatePasswordsMap =
+      std::multimap<CredentialSortKey, StoredCredential>;
 
   SavedPasswordsPresenter(affiliations::AffiliationService* affiliation_service,
                           scoped_refptr<PasswordStoreInterface> profile_store,

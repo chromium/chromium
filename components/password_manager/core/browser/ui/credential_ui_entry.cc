@@ -6,7 +6,6 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,11 +26,41 @@ using affiliations::FacetURI;
 constexpr char kPlayStoreAppPrefix[] =
     "https://play.google.com/store/apps/details?id=";
 
-constexpr char kSortKeyPartsSeparator = ' ';
-
 std::string GetOrigin(const url::Origin& origin) {
   return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+}
+
+CredentialSortKey CreateCredentialSortKey(
+    const std::string& signon_realm,
+    const GURL& credential_url,
+    bool blocked_by_user,
+    const std::u16string& username,
+    const url::SchemeHostPort& federation_origin) {
+  const FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(signon_realm);
+
+  CredentialSortKey key;
+  if (facet_uri.IsValidAndroidFacetURI()) {
+    // Android credentials are sorted by reversed package name. Retain the
+    // canonical facet as a separate field to distinguish app certificates.
+    key.sort_origin = facet_uri.GetAndroidPackageDisplayName();
+    key.android_facet = facet_uri.canonical_spec();
+  } else {
+    key.sort_origin =
+        base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+            url::Origin::Create(credential_url),
+            url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+  }
+
+  key.scheme = credential_url.GetScheme();
+  key.blocked_by_user = blocked_by_user;
+  if (!blocked_by_user) {
+    key.username = username;
+    if (federation_origin.IsValid()) {
+      key.federation_host = federation_origin.host();
+    }
+  }
+  return key;
 }
 
 }  // namespace
@@ -64,7 +93,7 @@ CredentialFacet& CredentialFacet::operator=(CredentialFacet&& other) = default;
 
 bool CredentialUIEntry::Less::operator()(const CredentialUIEntry& lhs,
                                          const CredentialUIEntry& rhs) const {
-  return CreateSortKey(lhs) < CreateSortKey(rhs);
+  return CreateCredentialSortKey(lhs) < CreateCredentialSortKey(rhs);
 }
 
 CredentialUIEntry::CredentialUIEntry() = default;
@@ -299,54 +328,35 @@ CredentialUIEntry::GetAffiliatedDomains() const {
   return domains;
 }
 
-std::string CreateSortKey(const CredentialUIEntry& credential) {
-  const FacetURI facet_uri =
-      FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
-
-  std::string key;
-  if (facet_uri.IsValidAndroidFacetURI()) {
-    // In case of Android credentials |GetShownOriginAndLinkURl| might return
-    // the app display name, e.g. the Play Store name of the given application.
-    // This might or might not correspond to the eTLD+1, which is why
-    // |key| is set to the reversed android package name in this case,
-    // e.g. com.example.android => android.example.com.
-    key = facet_uri.GetAndroidPackageDisplayName() + kSortKeyPartsSeparator +
-          facet_uri.canonical_spec();
-  } else {
-    key = base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
-        url::Origin::Create(credential.GetURL()),
-        url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-  }
-
-  // Add a scheme to distinguish between http and https websites.
-  key += credential.GetURL().GetScheme();
-
-  if (!credential.blocked_by_user) {
-    key += kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.username) +
-           kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.password);
-
-    key += kSortKeyPartsSeparator;
-    if (credential.federation_origin.IsValid()) {
-      key += credential.federation_origin.host();
-    }
-  }
-
-  // Separate passwords from passkeys.
+CredentialSortKey CreateCredentialSortKey(const CredentialUIEntry& credential) {
+  CredentialSortKey key = CreateCredentialSortKey(
+      credential.GetFirstSignonRealm(), credential.GetURL(),
+      credential.blocked_by_user, credential.username,
+      credential.federation_origin);
   if (!credential.passkey_credential_id.empty()) {
-    key += kSortKeyPartsSeparator +
-           base::UTF16ToUTF8(credential.user_display_name) +
-           kSortKeyPartsSeparator +
-           base::HexEncode(credential.passkey_credential_id);
+    key.passkey_display_name = credential.user_display_name;
+    key.passkey_credential_id = credential.passkey_credential_id;
   }
   return key;
 }
 
+CredentialSortKey CreateCredentialSortKey(const StoredCredential& credential) {
+  return CreateCredentialSortKey(
+      credential.signon_realm, credential.url, credential.blocked_by_user,
+      credential.username_value, credential.federation_origin);
+}
+
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  return CreateSortKey(lhs) == CreateSortKey(rhs);
+  return CreateCredentialSortKey(lhs) == CreateCredentialSortKey(rhs) &&
+         (lhs.blocked_by_user || lhs.password == rhs.password);
 }
 
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  return CreateSortKey(lhs) < CreateSortKey(rhs);
+  // Intentionally does not include password. While it would be trivial to do
+  // now, a follow up CL will change |password| to a |PasswordString| object,
+  // which uses base::ProcessBoundString to encrypt the password in memory and
+  // thus doesn't expose a |operator<|.
+  return CreateCredentialSortKey(lhs) < CreateCredentialSortKey(rhs);
 }
 
 bool IsCompromised(const CredentialUIEntry& credential) {

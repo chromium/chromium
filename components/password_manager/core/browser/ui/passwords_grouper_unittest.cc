@@ -331,6 +331,50 @@ TEST_F(PasswordsGrouperTest, GroupPasswords) {
   EXPECT_THAT(grouper().GetBlockedSites(), ElementsAre(blocked_entry));
 }
 
+TEST_F(PasswordsGrouperTest, PasswordGroupsUseDirectPasswordEquality) {
+  StoredCredential profile_form =
+      CreateStoredCredential("https://test.com/", u"username", u"password1");
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
+  StoredCredential account_form = CreateStoredCredential(
+      "https://affiliated-test.com/", u"username", u"password1");
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+  StoredCredential different_password =
+      CreateStoredCredential("https://test.com/", u"username", u"password2");
+  different_password.in_store = PasswordForm::Store::kAccountStore;
+
+  GroupedFacets group;
+  group.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(profile_form.signon_realm)),
+      Facet(FacetURI::FromPotentiallyInvalidSpec(account_form.signon_realm))};
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(
+          std::vector<GroupedFacets>{group}));
+
+  StoredCredential profile_form_copy = CloneStoredCredential(profile_form);
+  StoredCredential account_form_copy = CloneStoredCredential(account_form);
+  StoredCredential different_password_copy =
+      CloneStoredCredential(different_password);
+  CredentialUIEntry merged_credential(
+      MakeStoredCredentials(CloneStoredCredential(profile_form),
+                            CloneStoredCredential(account_form)));
+  CredentialUIEntry separate_credential(different_password);
+
+  grouper().GroupCredentials(
+      MakeStoredCredentials(std::move(profile_form), std::move(account_form),
+                            std::move(different_password)),
+      /*passkeys=*/{}, base::DoNothing());
+
+  EXPECT_THAT(
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
+      ElementsAre(AffiliatedGroup({merged_credential, separate_credential},
+                                  GetDefaultBrandingInfo(merged_credential))));
+  EXPECT_THAT(grouper().GetStoredCredentialsFor(merged_credential),
+              UnorderedElementsAre(Eq(std::cref(profile_form_copy)),
+                                   Eq(std::cref(account_form_copy))));
+  EXPECT_THAT(grouper().GetStoredCredentialsFor(separate_credential),
+              ElementsAre(Eq(std::cref(different_password_copy))));
+}
+
 TEST_F(PasswordsGrouperTest, GroupCredentialsWithoutAffiliation) {
   // Credentials saved for the same website should appear in the same group.
   StoredCredential form1 = CreateStoredCredential("https://test.com/");

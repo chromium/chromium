@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -65,8 +66,10 @@ class IdGenerator {
   const password_manager::CredentialUIEntry* TryGetKey(int id) const;
 
  private:
-  // Maps credential key to id.
-  base::flat_map<std::string, int> key_to_id_;
+  // Maps a non-secret credential key to candidate ids. Password equality is
+  // checked directly within each small candidate bucket.
+  base::flat_map<password_manager::CredentialSortKey, std::vector<int>>
+      key_to_ids_;
   // Maps id to the credential.
   base::flat_map<int, password_manager::CredentialUIEntry> id_to_credential_;
   int next_id_ = 0;

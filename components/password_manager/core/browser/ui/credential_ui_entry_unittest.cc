@@ -321,8 +321,47 @@ TEST(CredentialUIEntryTest, EntriesDifferingByStoreShouldMapToSameKey) {
   PasswordForm profile_form(account_form);
   profile_form.in_store = PasswordForm::Store::kProfileStore;
 
-  EXPECT_EQ(CreateSortKey(CredentialUIEntry(account_form)),
-            CreateSortKey(CredentialUIEntry(profile_form)));
+  EXPECT_EQ(CreateCredentialSortKey(CredentialUIEntry(account_form)),
+            CreateCredentialSortKey(CredentialUIEntry(profile_form)));
+}
+
+TEST(CredentialUIEntryTest, PasswordIsComparedOutsideSortKey) {
+  PasswordForm form;
+  form.signon_realm = "https://g.com/";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"user";
+  form.password_value = PasswordString(std::u16string(u"password1"));
+
+  CredentialUIEntry credential1(form);
+  form.password_value = PasswordString(std::u16string(u"password2"));
+  CredentialUIEntry credential2(form);
+
+  EXPECT_EQ(CreateCredentialSortKey(credential1),
+            CreateCredentialSortKey(credential2));
+  EXPECT_NE(credential1, credential2);
+  EXPECT_FALSE(credential1 < credential2);
+  EXPECT_FALSE(credential2 < credential1);
+
+  credential1.blocked_by_user = true;
+  credential2.blocked_by_user = true;
+  EXPECT_EQ(credential1, credential2);
+}
+
+TEST(CredentialUIEntryTest, StructuredKeyAvoidsFieldBoundaryCollisions) {
+  PasswordForm form;
+  form.signon_realm = "https://g.com/";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"user name";
+  form.password_value = PasswordString(std::u16string(u"password"));
+  CredentialUIEntry credential1(form);
+
+  form.username_value = u"user";
+  form.password_value = PasswordString(std::u16string(u"name password"));
+  CredentialUIEntry credential2(form);
+
+  EXPECT_NE(CreateCredentialSortKey(credential1),
+            CreateCredentialSortKey(credential2));
+  EXPECT_NE(credential1, credential2);
 }
 
 TEST(CredentialUIEntryTest, PasskeyVsPasswordSortKey) {
@@ -339,7 +378,8 @@ TEST(CredentialUIEntryTest, PasskeyVsPasswordSortKey) {
       PasskeyCredential::UserId(), PasskeyCredential::Username("victor"));
   CredentialUIEntry passkey(std::move(passkey_credential));
 
-  EXPECT_NE(CreateSortKey(password), CreateSortKey(passkey));
+  EXPECT_NE(CreateCredentialSortKey(password),
+            CreateCredentialSortKey(passkey));
 }
 
 // Tests that two passkeys that are equal in everything but the display name
@@ -355,7 +395,8 @@ TEST(CredentialUIEntryTest, PasskeyDifferentSortKeyForDifferentDisplayName) {
   CredentialUIEntry passkey2 = passkey1;
   passkey2.user_display_name = u"Display Name 2";
 
-  EXPECT_NE(CreateSortKey(passkey1), CreateSortKey(passkey2));
+  EXPECT_NE(CreateCredentialSortKey(passkey1),
+            CreateCredentialSortKey(passkey2));
 }
 
 TEST(CredentialUIEntryTest, CredentialUIEntryFromStoredCredential) {
@@ -374,6 +415,7 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromStoredCredential) {
 
   CredentialUIEntry entry(cred);
 
+  EXPECT_EQ(CreateCredentialSortKey(cred), CreateCredentialSortKey(entry));
   EXPECT_EQ(entry.username, kUsername);
   EXPECT_EQ(entry.password, kPassword);
   EXPECT_EQ(entry.note, kNote);

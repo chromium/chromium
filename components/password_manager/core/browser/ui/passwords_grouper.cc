@@ -70,29 +70,6 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
   return branding_info;
 }
 
-std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
-  std::string key;
-  // The origin isn't taken into account for normal credentials since we want to
-  // group them together.
-  const char kSortKeyPartsSeparator = ' ';
-  if (!credential.blocked_by_user) {
-    key += base::UTF16ToUTF8(credential.username) + kSortKeyPartsSeparator +
-           base::UTF16ToUTF8(credential.password);
-
-    key += kSortKeyPartsSeparator;
-    if (credential.federation_origin.IsValid()) {
-      key += credential.federation_origin.host();
-    } else {
-      key += kSortKeyPartsSeparator;
-    }
-  } else {
-    // Key for blocked by user credential since it does not store username and
-    // password. These credentials are not grouped together.
-    key = credential.GetAffiliatedDomains()[0].name;
-  }
-  return key;
-}
-
 // Presents a sorted view of a span of `PasskeyCredential`s, ordered by
 // increasing user name.
 class SortedPasskeysView {
@@ -195,9 +172,11 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
        map_group_id_to_credentials_) {
     // Convert each credential into CredentialUIEntry.
     std::vector<CredentialUIEntry> credentials;
-    for (auto const& [username_password_key, credentials_in_group] :
+    for (auto const& [username_federation_key, password_groups] :
          affiliated_group.stored_credentials) {
-      credentials.emplace_back(credentials_in_group);
+      for (const auto& credentials_in_group : password_groups) {
+        credentials.emplace_back(credentials_in_group);
+      }
     }
     for (auto const& passkey : SortedPasskeysView(affiliated_group.passkeys)) {
       credentials.emplace_back(passkey);
@@ -245,9 +224,11 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
   std::vector<CredentialUIEntry> credentials;
   for (const auto& [group_id, affiliated_credentials] :
        map_group_id_to_credentials_) {
-    for (const auto& [username_password_key, credentials_in_group] :
+    for (const auto& [username_federation_key, password_groups] :
          affiliated_credentials.stored_credentials) {
-      credentials.emplace_back(credentials_in_group);
+      for (const auto& credentials_in_group : password_groups) {
+        credentials.emplace_back(credentials_in_group);
+      }
     }
     for (const auto& passkey :
          SortedPasskeysView(affiliated_credentials.passkeys)) {
@@ -301,18 +282,31 @@ std::vector<StoredCredential> PasswordsGrouper::GetStoredCredentialsFor(
     return {};
   }
 
-  // Get all stored credentials with matching username/password.
-  const std::map<UsernamePasswordKey, std::vector<StoredCredential>>&
-      username_to_credentials = group_iterator->second.stored_credentials;
-  auto credentials_iterator = username_to_credentials.find(
-      UsernamePasswordKey(CreateUsernamePasswordSortKey(credential)));
-  if (credentials_iterator == username_to_credentials.end()) {
+  // Get all stored credentials with matching username and federation.
+  UsernameFederationKey key{.username = credential.username};
+  if (credential.federation_origin.IsValid()) {
+    key.federation_host = credential.federation_origin.host();
+  }
+  const auto& username_to_password_groups =
+      group_iterator->second.stored_credentials;
+  auto password_groups_iterator = username_to_password_groups.find(key);
+  if (password_groups_iterator == username_to_password_groups.end()) {
+    return {};
+  }
+
+  const auto& password_groups = password_groups_iterator->second;
+  auto credentials_iterator = std::ranges::find_if(
+      password_groups, [&credential](const auto& credentials_in_group) {
+        return credentials_in_group.front().password_value ==
+               credential.password;
+      });
+  if (credentials_iterator == password_groups.end()) {
     return {};
   }
 
   std::vector<StoredCredential> result;
-  result.reserve(credentials_iterator->second.size());
-  for (const auto& stored_credential : credentials_iterator->second) {
+  result.reserve(credentials_iterator->size());
+  for (const auto& stored_credential : *credentials_iterator) {
     result.push_back(CloneStoredCredential(stored_credential));
   }
   return result;
@@ -374,11 +368,23 @@ void PasswordsGrouper::GroupCredentialsImpl(
     map_signon_realm_to_group_id_[SignonRealm(stored_credential.signon_realm)] =
         group_id;
 
-    // Store credential for username/password key.
-    UsernamePasswordKey key(
-        CreateUsernamePasswordSortKey(CredentialUIEntry(stored_credential)));
-    map_group_id_to_credentials_[group_id].stored_credentials[key].push_back(
-        std::move(stored_credential));
+    // Bucket without decrypting the password, then compare it directly within
+    // the small bucket.
+    UsernameFederationKey key{.username = stored_credential.username_value};
+    if (stored_credential.federation_origin.IsValid()) {
+      key.federation_host = stored_credential.federation_origin.host();
+    }
+    PasswordGroups& password_groups =
+        map_group_id_to_credentials_[group_id].stored_credentials[key];
+    auto password_group = std::ranges::find_if(
+        password_groups, [&stored_credential](const auto& group) {
+          return group.front().password_value ==
+                 stored_credential.password_value;
+        });
+    if (password_group == password_groups.end()) {
+      password_group = password_groups.emplace(password_groups.end());
+    }
+    password_group->push_back(std::move(stored_credential));
   }
 
   for (auto& passkey : passkeys) {
