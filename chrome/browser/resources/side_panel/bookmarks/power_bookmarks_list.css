@@ -39,7 +39,7 @@ sp-empty-state {
   overflow-y: auto;
 }
 
-#list-container {
+#listContainer {
   display: grid;
   grid-template-areas: 'only-area';
   position: relative;
@@ -61,19 +61,19 @@ sp-empty-state {
   display: none;
 }
 
-#list-container .list-wrapper.active {
+#listContainer .list-wrapper.active {
   z-index: 1;
 }
 
-#list-container .list-wrapper.transitioning {
+#listContainer .list-wrapper.transitioning {
   z-index: 2;
 }
 
 /* List Card Page Transitions:
- * Double-buffered list pages (#list-a and #list-b) are positioned in
- * the same grid area. The incoming page (.transitioning) is rendered
- * on top (z-index: 2) of the outgoing page (.active, z-index: 1)
- * during animations.
+ * Double-buffered list pages (#listWrapperA and #listWrapperB) are
+ * positioned in the same grid area. The incoming page (.transitioning)
+ * is rendered on top (z-index: 2) of the outgoing page (.active,
+ * z-index: 1) during animations.
  *
  * Animation directions:
  * - Forward (entering a subfolder): Outgoing list fades out, incoming

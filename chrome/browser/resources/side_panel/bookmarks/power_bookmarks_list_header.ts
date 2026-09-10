@@ -10,6 +10,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_heading.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -32,7 +33,9 @@ interface SortOption {
 
 export interface PowerBookmarksListHeaderElement {
   $: {
+    editButton: CrIconButtonElement,
     sortMenu: CrActionMenuElement,
+    viewButton: CrIconButtonElement,
   };
 }
 

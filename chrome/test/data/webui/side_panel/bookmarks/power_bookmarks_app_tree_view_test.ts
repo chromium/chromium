@@ -18,7 +18,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestBookmarks, getBookmarks, getPowerBookmarksRowElement, getPowerBookmarksRowItemElement, initializeAppUi} from './power_bookmarks_app_test_util.js';
+import {createTestBookmarks, getActiveList, getBookmarks, getPowerBookmarksRowElement, getPowerBookmarksRowItemElement, initializeAppUi} from './power_bookmarks_app_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 export interface TestPowerBookmarksListElement {
@@ -431,7 +431,7 @@ suite('TreeView', () => {
     await microtasksFinished();
 
     // Verify nested bookmarks are no longer in display list
-    const items = powerBookmarksApp.$.bookmarksList.list.items;
+    const items = getActiveList(powerBookmarksApp.$.bookmarksList).items;
     assertFalse(items.some(item => item.bookmark.id === '6'));
 
     // And verify visual hidden state in DOM
@@ -481,7 +481,7 @@ suite('TreeView', () => {
     await microtasksFinished();
     assertFalse(
         folderRow.toggleExpand, 'Folder should be collapsed after ArrowLeft');
-    const items = powerBookmarksApp.$.bookmarksList.list.items;
+    const items = getActiveList(powerBookmarksApp.$.bookmarksList).items;
     assertFalse(
         items.some(item => item.bookmark.id === '6'),
         'Child bookmark should not be in display list');
@@ -644,7 +644,7 @@ suite('TreeView', () => {
         'Bookmark 22 should initially be in folder 5');
 
     // Validate index order before move in flat display list
-    const list = powerBookmarksApp.$.bookmarksList.list;
+    const list = getActiveList(powerBookmarksApp.$.bookmarksList);
     let items = list.items;
     const indexOf5 = items.findIndex(item => item.bookmark.id === '5');
     let indexOf6 = items.findIndex(item => item.bookmark.id === '6');

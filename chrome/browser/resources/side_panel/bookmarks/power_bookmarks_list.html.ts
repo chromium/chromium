@@ -37,8 +37,8 @@ export function getHtml(this: PowerBookmarksListElement) {
           ?compact="${this.compact_}"
           @click="${this.onAddNewFolderClick_}">
       </power-bookmarks-add-folder-button>
-      <div id="list-container">
-        <div id="list-a" class="${this.getListClass_('a')}">
+      <div id="listContainer">
+        <div id="listWrapperA" class="${this.getListClass_('a')}">
           <sp-empty-state id="folderEmptyStateA"
               ?hidden="${!this.isFolderEmptyStateVisible_('a')}"
               image-path="./images/bookmarks_empty.svg"
@@ -91,7 +91,7 @@ export function getHtml(this: PowerBookmarksListElement) {
                 </power-bookmark-row>`}">
           </cr-lazy-list>
         </div>
-        <div id="list-b" class="${this.getListClass_('b')}">
+        <div id="listWrapperB" class="${this.getListClass_('b')}">
           <sp-empty-state id="folderEmptyStateB"
               ?hidden="${!this.isFolderEmptyStateVisible_('b')}"
               image-path="./images/bookmarks_empty.svg"

@@ -66,10 +66,15 @@ import {SearchAction, recordFolderAdded, recordSearchCTR, recordViewType, record
 export interface PowerBookmarksListElement {
   $: {
     bookmarks: HTMLElement,
-    heading: HTMLElement,
-    scroller: HTMLElement,
+    folderEmptyStateA: HTMLElement,
+    folderEmptyStateB: HTMLElement,
+    heading: PowerBookmarksListHeaderElement,
     listA: CrLazyListElement<DisplayItem>,
     listB: CrLazyListElement<DisplayItem>,
+    listContainer: HTMLElement,
+    listWrapperA: HTMLElement,
+    listWrapperB: HTMLElement,
+    scroller: HTMLElement,
   };
 }
 
@@ -95,14 +100,8 @@ export class PowerBookmarksListElement extends CrLitElement implements
     return getHtml.bind(this)();
   }
 
-  get list(): CrLazyListElement<DisplayItem> {
+  private getActiveList_(): CrLazyListElement<DisplayItem> {
     return this.activeList_ === 'a' ? this.$.listA : this.$.listB;
-  }
-
-  get folderEmptyState(): HTMLElement {
-    const id =
-        this.activeList_ === 'a' ? 'folderEmptyStateA' : 'folderEmptyStateB';
-    return this.shadowRoot.getElementById(id)!;
   }
 
   private get activeDisplayList_(): DisplayItem[] {
@@ -418,7 +417,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
       return;
     }
 
-    const listEl = this.list;
+    const listEl = this.getActiveList_();
     const element = await listEl.ensureItemRendered(index);
     if (element) {
       element.scrollIntoView({block: 'nearest'});
@@ -438,10 +437,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
             'bookmarkFolderCreated', getBookmarkName(bookmark)));
       }
       this.updateComplete.then(async () => {
-        const listId = this.activeList_ === 'a' ? 'A' : 'B';
-        const listEl =
-            this.shadowRoot.querySelector<CrLazyListElement<DisplayItem>>(
-                `#list${listId}`)!;
+        const listEl = this.getActiveList_();
         await listEl.updateComplete;
         this.scrollToBookmark_(bookmark);
       });
@@ -712,12 +708,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
       this.lastActiveFolderPathLength_ = currentPathLength;
 
       // Trigger the slide transition on the header.
-      const headingEl =
-          this.shadowRoot.querySelector<PowerBookmarksListHeaderElement>(
-              '#heading');
-      if (headingEl) {
-        headingEl.transitionFolderLabel(activeFolder, forward);
-      }
+      this.$.heading.transitionFolderLabel(activeFolder, forward);
 
       // Alternate double-buffered lists: write new contents to the off-screen
       // buffer.
@@ -726,11 +717,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
       // Lock the container height to the current height to prevent visual
       // content jumps.
-      const containerEl =
-          this.shadowRoot.querySelector<HTMLElement>('#list-container')!;
-      if (containerEl && !wasTransitioning) {
+      if (!wasTransitioning) {
         const activeHeight = this.getFolderHeight_(currentListId);
-        containerEl.style.height = `${activeHeight}px`;
+        this.$.listContainer.style.height = `${activeHeight}px`;
       }
 
       // Write data to the target buffer.
@@ -756,12 +745,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
 
       // Wait for Lit to render the contents into the target list buffer.
       this.updateComplete.then(() => {
-        const containerEl =
-            this.shadowRoot.querySelector<HTMLElement>('#list-container')!;
-        const currentListEl = this.shadowRoot.querySelector<HTMLElement>(
-            `#list-${currentListId}`)!;
-        const targetListEl = this.shadowRoot.querySelector<HTMLElement>(
-            `#list-${targetListId}`)!;
+        const containerEl = this.$.listContainer;
+        const currentListEl = this.getListWrapper_(currentListId);
+        const targetListEl = this.getListWrapper_(targetListId);
 
         requestAnimationFrame(() => {
           const currentHeight = containerEl.offsetHeight;
@@ -857,10 +843,8 @@ export class PowerBookmarksListElement extends CrLitElement implements
     // other scrolling UI elements take.
     this.updateComplete.then(() => {
       const bookmarksOffsetTop = this.$.bookmarks.offsetTop;
-      const listEl = this.list;
-      if (listEl) {
-        listEl.scrollOffset = listEl.offsetTop - bookmarksOffsetTop;
-      }
+      const listEl = this.getActiveList_();
+      listEl.scrollOffset = listEl.offsetTop - bookmarksOffsetTop;
     });
   }
 
@@ -920,20 +904,20 @@ export class PowerBookmarksListElement extends CrLitElement implements
     }
   }
 
+  private getListWrapper_(listId: string): HTMLElement {
+    return listId === 'a' ? this.$.listWrapperA : this.$.listWrapperB;
+  }
+
   private finalizeTransition_(
       targetListId: string, noMetrics: boolean = false,
       isInterrupted: boolean = false) {
-    const containerEl =
-        this.shadowRoot.querySelector<HTMLElement>('#list-container')!;
-    if (containerEl && !isInterrupted) {
-      containerEl.style.height = '';
+    if (!isInterrupted) {
+      this.$.listContainer.style.height = '';
     }
 
     const currentListId = this.getOtherListId_(targetListId);
-    const currentListEl =
-        this.shadowRoot.querySelector<HTMLElement>(`#list-${currentListId}`);
-    const targetListEl =
-        this.shadowRoot.querySelector<HTMLElement>(`#list-${targetListId}`);
+    const currentListEl = this.getListWrapper_(currentListId);
+    const targetListEl = this.getListWrapper_(targetListId);
 
     if (currentListEl) {
       currentListEl.classList.remove(
@@ -971,11 +955,9 @@ export class PowerBookmarksListElement extends CrLitElement implements
       return;
     }
 
-    const targetListEl =
-        this.shadowRoot.querySelector<HTMLElement>(`#list-${targetListId}`)!;
+    const targetListEl = this.getListWrapper_(targetListId);
     const currentListId = this.getOtherListId_(targetListId);
-    const currentListEl =
-        this.shadowRoot.querySelector<HTMLElement>(`#list-${currentListId}`)!;
+    const currentListEl = this.getListWrapper_(currentListId);
 
     if (e.target === targetListEl || e.target === currentListEl) {
       this.finalizeTransition_(targetListId);
@@ -1102,7 +1084,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
         this.updateComplete.then(async () => {
           const displayList = this.activeDisplayList_;
           if (displayList.length > 0) {
-            const listEl = this.list;
+            const listEl = this.getActiveList_();
             const element = await listEl.ensureItemRendered(0);
             element.focus();
           }
@@ -1175,13 +1157,7 @@ export class PowerBookmarksListElement extends CrLitElement implements
   }
 
   protected notifyBookmarksListResize_() {
-    const listId = this.activeList_ === 'a' ? 'A' : 'B';
-    const listEl =
-        this.shadowRoot.querySelector<CrLazyListElement<DisplayItem>>(
-            `#list${listId}`);
-    if (listEl) {
-      listEl.fillCurrentViewport();
-    }
+    this.getActiveList_().fillCurrentViewport();
   }
 
 
