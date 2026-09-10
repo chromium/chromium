@@ -819,8 +819,6 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .enable_host_mapped_pointer = kEnableHostMappedPointer.Get(),
       .use_low_power = kUseLowPower.Get(),
       .allow_fp16 = kAllowFp16.Get(),
-      .enable_speculative_decoding = base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelSpeculativeDecoding),
       .performance_hint = params->performance_hint,
       .vram_mb = params->vram_mb,
   };

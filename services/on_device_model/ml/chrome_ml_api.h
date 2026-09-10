@@ -112,6 +112,8 @@ struct ChromeMLModelDescriptor {
   bool enable_host_mapped_pointer;
   bool use_low_power;
   bool allow_fp16;
+  // TODO(crbug.com/517228178): Remove this once internal LiteRT-LM migrates
+  // to per-session speculative decoding.
   bool enable_speculative_decoding;
 
   ml::ModelPerformanceHint performance_hint;
@@ -139,6 +141,9 @@ struct ChromeMLAdaptationDescriptor {
 
   // Whether this model will handle InputPieces containing audio.
   bool enable_audio_input;
+
+  // Whether or not the session will use speculative decoding.
+  bool enable_speculative_decoding = false;
 };
 
 // A status value included with each output chunk.
