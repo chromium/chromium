@@ -953,6 +953,18 @@ void AutofillMetrics::LogPopupInteraction(FillingProduct filling_product,
 }
 
 // static
+void AutofillMetrics::LogKeyboardAccessoryInteractionWithMouse(
+    FillingProduct filling_product,
+    AutofillKeyboardAccessoryInteraction interaction) {
+  base::UmaHistogramEnumeration(
+      "Autofill.KeyboardAccessoryInteraction.WithMouse", interaction);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.KeyboardAccessoryInteraction.WithMouse.",
+                    FillingProductToString(filling_product)}),
+      interaction);
+}
+
+// static
 void AutofillMetrics::LogServerResponseHasDataForForm(bool has_data) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.ServerResponseHasDataForForm", has_data);
 }

@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -22,10 +23,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/pointer/pointer_device.h"
 
 namespace autofill {
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -787,6 +791,186 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, HidingClearsPreview) {
   client().suggestion_controller(manager()).SelectSuggestion(0);
   client().suggestion_controller(manager()).Hide(
       SuggestionHidingReason::kUserAborted);
+}
+
+// Tests that shown, selected, and accepted milestones are logged when a mouse
+// is attached.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MouseMetricsLogsShownSelectedAndAccepted) {
+  ui::ScopedSetPointerAndHoverTypesForTesting scoped_pointer_types(
+      ui::POINTER_TYPE_FINE, ui::HOVER_TYPE_HOVER);
+  base::HistogramTester histogram_tester;
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+  task_environment()->FastForwardBy(
+      AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionSelected,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionAccepted,
+                        1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse.Address"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionSelected,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionAccepted,
+                        1)));
+}
+
+// Tests that multiple SelectSuggestion calls within the same session emit
+// kSuggestionSelected only once.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MouseMetricsDeduplicatesSelection) {
+  ui::ScopedSetPointerAndHoverTypesForTesting scoped_pointer_types(
+      ui::POINTER_TYPE_FINE, ui::HOVER_TYPE_HOVER);
+  base::HistogramTester histogram_tester;
+
+  ShowSuggestions(manager(),
+                  {test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                                  u"Address 1"),
+                   test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
+                                                  u"Address 2")});
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+  client().suggestion_controller(manager()).SelectSuggestion(1);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionSelected,
+                        1)));
+}
+
+// Tests that multiple ShowSuggestions calls within the same session emit
+// kAccessoryShown only once.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MouseMetricsDeduplicatesShown) {
+  ui::ScopedSetPointerAndHoverTypesForTesting scoped_pointer_types(
+      ui::POINTER_TYPE_FINE, ui::HOVER_TYPE_HOVER);
+  base::HistogramTester histogram_tester;
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address 2")});
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        1)));
+}
+
+// Tests that accepting directly via touch (without prior selection) logs Shown
+// and Accepted, but not Selected.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MouseMetricsDirectTouchAcceptLogsShownAndAcceptedWithoutSelected) {
+  ui::ScopedSetPointerAndHoverTypesForTesting scoped_pointer_types(
+      ui::POINTER_TYPE_FINE, ui::HOVER_TYPE_HOVER);
+  base::HistogramTester histogram_tester;
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+  task_environment()->FastForwardBy(
+      AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionAccepted,
+                        1)));
+}
+
+// Tests that Recycle() resets the session state so that subsequent Show and
+// Select calls emit new metrics.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MouseMetricsRecycleResetsSession) {
+  ui::ScopedSetPointerAndHoverTypesForTesting scoped_pointer_types(
+      ui::POINTER_TYPE_FINE, ui::HOVER_TYPE_HOVER);
+  base::HistogramTester histogram_tester;
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        1),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionSelected,
+                        1)));
+
+  client().suggestion_controller(manager()).Recycle(
+      PopupControllerCommon(manager().driver().GetFrameToken(), {},
+                            base::i18n::UNKNOWN_DIRECTION),
+      /*form_control_ax_id=*/0);
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address 2")});
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.KeyboardAccessoryInteraction.WithMouse"),
+      BucketsAre(Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kAccessoryShown,
+                        2),
+                 Bucket(AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                            kSuggestionSelected,
+                        2)));
+}
+
+// Tests that no mouse metrics are logged when no mouse is connected.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MouseMetricsNotLoggedWithoutMouse) {
+  ui::ScopedSetPointerAndHoverTypesForTesting scoped_pointer_types(
+      ui::POINTER_TYPE_COARSE, ui::HOVER_TYPE_NONE);
+  base::HistogramTester histogram_tester;
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+  task_environment()->FastForwardBy(
+      AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyboardAccessoryInteraction.WithMouse", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyboardAccessoryInteraction.WithMouse.Address", 0);
 }
 
 // TODO(crbug.com/542535472): Add renderer test for preview on Android.

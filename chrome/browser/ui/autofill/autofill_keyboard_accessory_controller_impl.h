@@ -33,6 +33,20 @@ class AutofillSuggestionDelegate;
 class AutofillKeyboardAccessoryView;
 struct Suggestion;
 
+// Helper to record interaction milestones (shown, selected, accepted)
+// at most once per session when a mouse or precision pointer is present.
+class AutofillKeyboardAccessoryWithMouseMetricsRecorder {
+ public:
+  void RecordShown(FillingProduct filling_product);
+  void RecordSelected(FillingProduct filling_product);
+  void RecordAccepted(FillingProduct filling_product);
+
+ private:
+  bool has_logged_shown_ = false;
+  bool has_logged_selected_ = false;
+  bool has_logged_accepted_ = false;
+};
+
 class AutofillKeyboardAccessoryControllerImpl
     : public AutofillKeyboardAccessoryController {
  public:
@@ -162,6 +176,9 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // The `FillingProduct` that matches the suggestions shown in the popup.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
+
+  std::optional<AutofillKeyboardAccessoryWithMouseMetricsRecorder>
+      mouse_metrics_recorder_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>
       self_deletion_weak_ptr_factory_{this};

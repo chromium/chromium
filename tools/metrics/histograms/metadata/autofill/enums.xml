@@ -3066,6 +3066,16 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Suggestion Selected"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillKeyboardAccessoryInteraction) -->
+
+<enum name="AutofillKeyboardAccessoryInteraction">
+  <int value="0" label="The keyboard accessory was shown"/>
+  <int value="1" label="A suggestion was selected"/>
+  <int value="2" label="A suggestion was accepted"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/autofill_metrics.h:AutofillKeyboardAccessoryInteraction) -->
+
 <enum name="AutofillLoyaltyCardAffiliationCategoryFillingReadiness">
   <int value="0" label="No loyalty cards available"/>
   <int value="1" label="Only affiliated loyalty cards available"/>

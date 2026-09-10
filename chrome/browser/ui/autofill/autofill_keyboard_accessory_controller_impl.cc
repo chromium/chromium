@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
@@ -50,6 +51,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/pointer/pointer_device.h"
 
 namespace autofill {
 
@@ -58,6 +60,13 @@ namespace {
 using FillingSource = ManualFillingController::FillingSource;
 using RemovalConfirmationText =
     AutofillKeyboardAccessoryController::RemovalConfirmationText;
+
+bool HasPointerAndHoverSupport() {
+  const auto [pointer_types, hover_types] =
+      ui::GetAvailablePointerAndHoverTypes();
+  return (pointer_types & ui::POINTER_TYPE_FINE) &&
+         (hover_types & ui::HOVER_TYPE_HOVER);
+}
 
 constexpr std::u16string_view kLabelSeparator = u" ";
 constexpr size_t kMaxBulletCount = 8;
@@ -269,6 +278,7 @@ void AutofillKeyboardAccessoryControllerImpl::Recycle(
   }
   controller_common_ = std::move(controller_common);
   suggestions_.clear();
+  mouse_metrics_recorder_.reset();
 }
 
 AutofillKeyboardAccessoryControllerImpl::
@@ -307,6 +317,8 @@ void AutofillKeyboardAccessoryControllerImpl::Hide(
 }
 
 void AutofillKeyboardAccessoryControllerImpl::HideViewAndDie() {
+  mouse_metrics_recorder_.reset();
+
   // Invalidates in particular ChromeAutofillClient's WeakPtr to `this`, which
   // prevents recursive calls triggered by `view_->Hide()`
   // (crbug.com/40204318).
@@ -344,6 +356,39 @@ void AutofillKeyboardAccessoryControllerImpl::HideViewAndDie() {
             delete weak_this.get();
           },
           self_deletion_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AutofillKeyboardAccessoryWithMouseMetricsRecorder::RecordShown(
+    FillingProduct filling_product) {
+  if (has_logged_shown_) {
+    return;
+  }
+  has_logged_shown_ = true;
+  AutofillMetrics::LogKeyboardAccessoryInteractionWithMouse(
+      filling_product,
+      AutofillMetrics::AutofillKeyboardAccessoryInteraction::kAccessoryShown);
+}
+
+void AutofillKeyboardAccessoryWithMouseMetricsRecorder::RecordSelected(
+    FillingProduct filling_product) {
+  if (has_logged_selected_) {
+    return;
+  }
+  has_logged_selected_ = true;
+  AutofillMetrics::LogKeyboardAccessoryInteractionWithMouse(
+      filling_product, AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                           kSuggestionSelected);
+}
+
+void AutofillKeyboardAccessoryWithMouseMetricsRecorder::RecordAccepted(
+    FillingProduct filling_product) {
+  if (has_logged_accepted_) {
+    return;
+  }
+  has_logged_accepted_ = true;
+  AutofillMetrics::LogKeyboardAccessoryInteractionWithMouse(
+      filling_product, AutofillMetrics::AutofillKeyboardAccessoryInteraction::
+                           kSuggestionAccepted);
 }
 
 void AutofillKeyboardAccessoryControllerImpl::ViewDestroyed() {
@@ -453,6 +498,9 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
 
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);
+  if (mouse_metrics_recorder_) {
+    mouse_metrics_recorder_->RecordAccepted(suggestions_filling_product_);
+  }
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
                       .multi_index = {static_cast<size_t>(index)}});
@@ -582,6 +630,9 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion,
     AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
     std::u16string search_bar_initial_value) {
+  if (!mouse_metrics_recorder_ && HasPointerAndHoverSupport()) {
+    mouse_metrics_recorder_.emplace();
+  }
   // TODO(crbug.com/535486238): Plumb search_bar_initial_value through to the
   // UI.
   ui_session_id_ = ui_session_id;
@@ -675,6 +726,11 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   }
   // TODO(crbug.com/364165357): Use actually shown suggestions.
   delegate_->OnSuggestionsShown(suggestions_, /*metadata=*/{});
+
+  if (mouse_metrics_recorder_ && view_ && HasSuggestions() &&
+      autofill_metrics::ShouldLogAutofillSuggestionShown(trigger_source_)) {
+    mouse_metrics_recorder_->RecordShown(suggestions_filling_product_);
+  }
 }
 
 std::optional<AutofillSuggestionController::UiSessionId>
@@ -795,6 +851,9 @@ void AutofillKeyboardAccessoryControllerImpl::SelectSuggestion(int index) {
   const Suggestion& suggestion = GetSuggestionAt(index);
 
   if (suggestion.IsSelectable()) {
+    if (mouse_metrics_recorder_) {
+      mouse_metrics_recorder_->RecordSelected(suggestions_filling_product_);
+    }
     delegate_->DidSelectSuggestion(suggestion);
   } else {
     delegate_->ClearPreviewedForm();

@@ -114,6 +114,19 @@ class AutofillMetrics {
     kMaxValue = kTap,
   };
 
+  // Milestones of interaction with the Android Keyboard Accessory when a
+  // mouse or precision pointer (such as a touchpad) is present.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(AutofillKeyboardAccessoryInteraction)
+  enum class AutofillKeyboardAccessoryInteraction {
+    kAccessoryShown = 0,
+    kSuggestionSelected = 1,
+    kSuggestionAccepted = 2,
+    kMaxValue = kSuggestionAccepted,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillKeyboardAccessoryInteraction)
+
   // Represents card submitted state.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -751,6 +764,12 @@ class AutofillMetrics {
   static void LogPopupInteraction(FillingProduct filling_product,
                                   int popup_level,
                                   PopupInteraction action);
+
+  // Logs interaction milestones for the keyboard accessory when a mouse is
+  // connected.
+  static void LogKeyboardAccessoryInteractionWithMouse(
+      FillingProduct filling_product,
+      AutofillKeyboardAccessoryInteraction interaction);
 
   // Logs the number of days since an accepted Autocomplete suggestion was last
   // used.

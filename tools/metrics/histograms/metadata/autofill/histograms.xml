@@ -5826,6 +5826,45 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.KeyboardAccessoryInteraction.WithMouse"
+    enum="AutofillKeyboardAccessoryInteraction" expires_after="2027-04-30">
+  <owner>lkuba@google.com</owner>
+  <owner>piotrkotynia@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records interaction milestones (Shown, Selected, Accepted) in the Android
+    Keyboard Accessory when a mouse or precision pointer (such as a touchpad) is
+    present. Emitted when the keyboard accessory is shown, when a suggestion is
+    selected (e.g. via hover), and when a suggestion is accepted.
+
+    Each milestone is recorded at most once per keyboard accessory session to
+    support funnel analysis: feature adoption (#selected / #shown) and
+    conversion comparison (#accepted / #shown) in A/B experiments. Note that
+    hybrid Android users may accept directly via touch without hovering first.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.KeyboardAccessoryInteraction.WithMouse.{FillingProduct}"
+    enum="AutofillKeyboardAccessoryInteraction" expires_after="2027-04-30">
+  <owner>lkuba@google.com</owner>
+  <owner>piotrkotynia@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records interaction milestones (Shown, Selected, Accepted) in the Android
+    Keyboard Accessory for {FillingProduct} when a mouse or precision pointer
+    (such as a touchpad) is present. Emitted when the keyboard accessory is
+    shown, when a suggestion is selected (e.g. via hover), and when a suggestion
+    is accepted.
+
+    Each milestone is recorded at most once per keyboard accessory session to
+    support funnel analysis: feature adoption (#selected / #shown) and
+    conversion comparison (#accepted / #shown) in A/B experiments. Note that
+    hybrid Android users may accept directly via touch without hovering first.
+  </summary>
+  <token key="FillingProduct" variants="Autofill.FillingProduct"/>
+</histogram>
+
 <histogram
     name="Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
     enum="FillingAcceptanceByFieldType" expires_after="2027-02-14">
