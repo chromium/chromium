@@ -29,11 +29,15 @@ source_set("ai_overlay_dialog") {
   ]
   public_deps = [
     ":mojo_bindings",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/ttc",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/ai_overlay_dialog",
     "//chrome/browser/ui/browser_window",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
     "//content/public/browser",
+    "//services/network/public/mojom",
     "//ui/base",
     "//ui/display",
     "//ui/webui",

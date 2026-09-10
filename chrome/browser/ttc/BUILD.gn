@@ -10,11 +10,16 @@ source_set("ttc") {
     "tool_controller.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
+    "ttc_mes_client.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/actor",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//url",
   ]
 }
 
@@ -28,6 +33,7 @@ source_set("impl") {
     "tool_controller.cc",
     "ttc_keyed_service.cc",
     "ttc_keyed_service_factory.cc",
+    "ttc_mes_client.cc",
   ]
   deps = [
     ":ttc",

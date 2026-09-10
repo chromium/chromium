@@ -70,6 +70,34 @@ export class AudioPlayer {
     this.playBuffer(buffer);
   }
 
+  playPcmBytes(bytes: Uint8Array) {
+    if (!this.audioContext) {
+      return;
+    }
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+
+    const numSamples = Math.floor(bytes.byteLength / 2);
+    // Use DataView or slice to avoid offset alignment errors with shared memory
+    const int16Data = new Int16Array(numSamples);
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    for (let i = 0; i < numSamples; i++) {
+      int16Data[i] = view.getInt16(i * 2, true);  // little-endian
+    }
+
+    const float32Data = new Float32Array(numSamples);
+    for (let i = 0; i < numSamples; i++) {
+      float32Data[i] = int16Data[i]! / 32768;
+    }
+
+    const buffer =
+        this.audioContext.createBuffer(1, float32Data.length, this.sampleRate);
+    buffer.getChannelData(0).set(float32Data);
+
+    this.playBuffer(buffer);
+  }
+
   playBuffer(buffer: AudioBuffer) {
     if (!this.audioContext || !this.analyser) {
       return;

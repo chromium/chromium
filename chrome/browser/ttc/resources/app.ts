@@ -8,6 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {PageContentNode} from './ai_overlay_dialog.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {getCss} from './app.css.js';
@@ -313,11 +314,80 @@ export class AppElement extends CrLitElement {
         this.pageHandler.$.bindNewPipeAndPassReceiver(),
         this.pageCallbackRouter.$.bindNewPipeAndPassRemote(),
         this.toolsRemote.$.bindNewPipeAndPassReceiver());
+
+    this.pageCallbackRouter.onStreamingSessionStateChanged.addListener(
+        (connected: boolean, sessionId: string, errorMessage: string) => {
+          log(FILE, `onStreamingSessionStateChanged: connected=${connected}, session=${sessionId}, err=${errorMessage}`);
+          if (connected) {
+            this.initializationState = InitializationState.INITIALIZED;
+            this.state = State.LISTENING;
+          } else if (errorMessage) {
+            this.initializationState = InitializationState.ERROR;
+          }
+          this.requestUpdate();
+        });
+
+    this.pageCallbackRouter.onTranscriptions.addListener(
+        (input: string, output: string) => {
+          if (input) {
+            this.inputTranscription = input;
+            this.activeType = 'input';
+          }
+          if (output) {
+            this.outputTranscription = output;
+            this.activeType = 'output';
+            if (this.state !== State.TALKING) {
+              this.state = State.TALKING;
+            }
+            this.captionBlockManager.updateBlocks(
+                output, this.usePersona, Boolean(this.audioPlayer?.isPlaying()),
+                this.audioPlaybackStartTime);
+          }
+          this.requestUpdate();
+        });
+
+    this.pageCallbackRouter.onAudioOutput.addListener(
+        (audioData: BigBuffer, sequenceNumber: bigint) => {
+          if (!this.audioPlayer) {
+            this.audioPlayer = this.createAudioPlayer();
+          }
+          let uint8: Uint8Array | null = null;
+          if (audioData.bytes !== undefined) {
+            uint8 = new Uint8Array(audioData.bytes);
+          } else if (audioData.sharedMemory?.bufferHandle) {
+            const buffer = audioData.sharedMemory.bufferHandle
+                .mapBuffer(0, audioData.sharedMemory.size)
+                .buffer;
+            uint8 = new Uint8Array(buffer, 0, audioData.sharedMemory.size);
+          }
+          if (uint8 && uint8.length > 0) {
+            this.audioPlayer.playPcmBytes(uint8);
+          }
+          this.pageHandler.reportPlaybackStatus(sequenceNumber);
+        });
+
+    this.pageCallbackRouter.onGenerationStateChanged.addListener(
+        (started: boolean, completed: boolean, interrupted: boolean) => {
+          if (interrupted) {
+            this.audioPlayer?.stop();
+            this.state = State.LISTENING;
+          } else if (started) {
+            this.state = State.TALKING;
+          } else if (completed) {
+            this.state = State.LISTENING;
+          }
+          this.requestUpdate();
+        });
   }
 
   private isAndroidBackend(): boolean {
     return loadTimeData.valueExists('isAndroidBackend') &&
         loadTimeData.getBoolean('isAndroidBackend');
+  }
+
+  private isMesEnabled(): boolean {
+    return loadTimeData.valueExists('useMes') &&
+        loadTimeData.getBoolean('useMes');
   }
 
   override connectedCallback() {
@@ -482,7 +552,18 @@ export class AppElement extends CrLitElement {
   }
 
   private onAudioInput(sampleRate: number, data: string) {
-    this.conversation?.sendAudio(sampleRate, data);
+    if (this.isMesEnabled()) {
+      try {
+        const binaryString = atob(data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        this.pageHandler.sendAudioChunk({bytes: Array.from(bytes)});
+      } catch (_e) {}
+    } else {
+      this.conversation?.sendAudio(sampleRate, data);
+    }
   }
 
   private onAudioOutput(audioData: string) {
@@ -569,7 +650,11 @@ export class AppElement extends CrLitElement {
       if (text) {
         this.localSpeechRecognition.stop();
         log(FILE, `Injecting text: ${text}`);
-        this.conversation?.sendText(text);
+        if (this.isMesEnabled()) {
+          this.pageHandler.sendTextInput(text);
+        } else {
+          this.conversation?.sendText(text);
+        }
         input.value = '';
       }
     }
@@ -703,11 +788,14 @@ export class AppElement extends CrLitElement {
         },
       };
 
-      if (!this.conversation) {
-        this.conversation = this.createConversation(config);
+      if (this.isMesEnabled()) {
+        this.pageHandler.startStreamingSession();
+      } else {
+        if (!this.conversation) {
+          this.conversation = this.createConversation(config);
+        }
+        await this.conversation.start();
       }
-
-      await this.conversation.start();
 
       this.audioPlayer = this.createAudioPlayer();
       this.audioCapturer = await this.createAudioCapturer();
@@ -717,6 +805,7 @@ export class AppElement extends CrLitElement {
       }
       this.startEnergyAnimation();
 
+      this.state = State.LISTENING;
       this.initializationState = InitializationState.INITIALIZED;
     } catch (e) {
       this.initializationState = InitializationState.ERROR;
@@ -726,6 +815,9 @@ export class AppElement extends CrLitElement {
   }
 
   private stopConversation() {
+    if (this.isMesEnabled()) {
+      this.pageHandler.stopStreamingSession();
+    }
     if (this.conversation?.connected) {
       log(FILE, 'Conversation connected, stopping it.');
       this.conversation.stop();

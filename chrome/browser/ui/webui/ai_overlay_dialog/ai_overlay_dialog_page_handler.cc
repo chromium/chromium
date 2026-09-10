@@ -243,6 +243,16 @@ void AiOverlayDialogPageHandler::DidChangePage(
       title.has_value() ? std::make_optional(base::UTF16ToUTF8(title.value()))
                         : std::nullopt,
       content);
+
+  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+    PageContextMonitor* pcm =
+        untrusted_ui_ ? untrusted_ui_->page_context_monitor() : nullptr;
+    if (pcm && pcm->last_page_content().has_value()) {
+      ttc_mes_client_->SendContextUpdate(
+          url, title.has_value() ? base::UTF16ToUTF8(title.value()) : "",
+          *pcm->last_page_content());
+    }
+  }
 }
 
 void AiOverlayDialogPageHandler::UpdateCurrentPageContext(
@@ -466,6 +476,79 @@ void AiOverlayDialogPageHandler::GetImageBytes(
             std::move(cb).Run(std::move(out_result));
           },
           std::move(callback)));
+}
+
+void AiOverlayDialogPageHandler::StartStreamingSession() {
+  if (!features::kAiOverlayDialogUseMes.Get()) {
+    VLOG(1) << "StartStreamingSession called but use_mes is disabled";
+    return;
+  }
+  if (!ttc_mes_client_) {
+    ttc_mes_client_ =
+        std::make_unique<TtcMesClient>(browser_->GetProfile(), this);
+  }
+  ttc_mes_client_->Connect();
+}
+
+void AiOverlayDialogPageHandler::SendAudioChunk(mojo_base::BigBuffer pcm_data) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+    auto span = base::span(pcm_data);
+    std::vector<uint8_t> data(span.begin(), span.end());
+    ttc_mes_client_->SendAudioChunk(data);
+  }
+}
+
+void AiOverlayDialogPageHandler::SendTextInput(const std::string& text) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+    ttc_mes_client_->SendTextInput(text);
+  }
+}
+
+void AiOverlayDialogPageHandler::ReportPlaybackStatus(
+    int64_t last_played_sequence_number) {
+  if (ttc_mes_client_ && ttc_mes_client_->is_connected()) {
+    ttc_mes_client_->ReportPlaybackStatus(last_played_sequence_number);
+  }
+}
+
+void AiOverlayDialogPageHandler::StopStreamingSession() {
+  if (ttc_mes_client_) {
+    ttc_mes_client_->Close();
+  }
+}
+
+void AiOverlayDialogPageHandler::OnStreamingStateChanged(
+    bool connected,
+    const std::string& session_id,
+    const std::string& error_message) {
+  if (page_.is_bound()) {
+    page_->OnStreamingSessionStateChanged(connected, session_id, error_message);
+  }
+}
+
+void AiOverlayDialogPageHandler::OnTranscriptions(
+    const std::string& input_transcription,
+    const std::string& output_transcription) {
+  if (page_.is_bound()) {
+    page_->OnTranscriptions(input_transcription, output_transcription);
+  }
+}
+
+void AiOverlayDialogPageHandler::OnAudioOutput(
+    const std::vector<uint8_t>& audio_data,
+    int64_t sequence_number) {
+  if (page_.is_bound()) {
+    mojo_base::BigBuffer buffer(audio_data);
+    page_->OnAudioOutput(std::move(buffer), sequence_number);
+  }
+}
+
+void AiOverlayDialogPageHandler::OnGenerationStateChanged(bool started,
+                                                          bool completed,
+                                                          bool interrupted) {
+  if (page_.is_bound()) {
+    page_->OnGenerationStateChanged(started, completed, interrupted);
+  }
 }
 
 }  // namespace ttc

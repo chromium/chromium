@@ -19,3 +19,14 @@ export function encodeFloat32ToPcmBase64(float32Data: Float32Array): string {
   }
   return btoa(binary);
 }
+
+/**
+ * Converts Float32 audio data to Int16 PCM raw byte array.
+ */
+export function encodeFloat32ToPcmBytes(float32Data: Float32Array): Uint8Array {
+  const int16Data = new Int16Array(float32Data.length);
+  for (let i = 0; i < float32Data.length; i++) {
+    int16Data[i] = Math.max(-1, Math.min(1, float32Data[i]!)) * 32767;
+  }
+  return new Uint8Array(int16Data.buffer);
+}

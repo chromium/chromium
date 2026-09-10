@@ -528,6 +528,11 @@ BASE_FEATURE_PARAM(bool,
                    &kAiOverlayDialog,
                    "ai_overlay_dialog_uses_actor",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kAiOverlayDialogUseMes,
+                   &kAiOverlayDialog,
+                   "use_mes",
+                   false);
 BASE_FEATURE(kAiOverlayDisableNavigationContext,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

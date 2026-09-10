@@ -9,12 +9,14 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,6 +44,17 @@ class MockPage : public ai_overlay_dialog::mojom::Page {
   void SetInputCaptionsVisible(bool visible) override {}
   void SetOutputCaptionsVisible(bool visible) override {}
   void SetUsePersona(bool use_persona) override {}
+  void OnStreamingSessionStateChanged(
+      bool connected,
+      const std::string& session_id,
+      const std::string& error_message) override {}
+  void OnTranscriptions(const std::string& input_transcription,
+                        const std::string& output_transcription) override {}
+  void OnAudioOutput(mojo_base::BigBuffer audio_data,
+                     int64_t sequence_number) override {}
+  void OnGenerationStateChanged(bool started,
+                                bool completed,
+                                bool interrupted) override {}
 };
 
 class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -238,6 +251,26 @@ TEST_F(AiOverlayDialogPageHandlerTest, SaveDebugFile_WithDebugLogsEnabled) {
            base::ReadFileToString(img_path, &img_contents) &&
            img_contents == "test";
   }));
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_DisabledByDefault) {
+  // When kAiOverlayDialogUseMes is not enabled, calling StartStreamingSession
+  // should safely no-op.
+  handler_remote()->StartStreamingSession();
+  handler_remote()->SendTextInput("hello");
+  handler_remote()->StopStreamingSession();
+  handler_remote().FlushForTesting();
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_EnabledWithMes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAiOverlayDialog, {{"use_mes", "true"}}}}, {});
+
+  handler_remote()->StartStreamingSession();
+  handler_remote()->SendTextInput("hello");
+  handler_remote()->StopStreamingSession();
+  handler_remote().FlushForTesting();
 }
 
 }  // namespace

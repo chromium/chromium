@@ -76,6 +76,17 @@ class FakePage : public ai_overlay_dialog::mojom::Page {
   void SetInputCaptionsVisible(bool visible) override {}
   void SetOutputCaptionsVisible(bool visible) override {}
   void SetUsePersona(bool use_persona) override {}
+  void OnStreamingSessionStateChanged(
+      bool connected,
+      const std::string& session_id,
+      const std::string& error_message) override {}
+  void OnTranscriptions(const std::string& input_transcription,
+                        const std::string& output_transcription) override {}
+  void OnAudioOutput(mojo_base::BigBuffer audio_data,
+                     int64_t sequence_number) override {}
+  void OnGenerationStateChanged(bool started,
+                                bool completed,
+                                bool interrupted) override {}
 
  private:
   mojo::Receiver<ai_overlay_dialog::mojom::Page> receiver_{this};

@@ -3875,6 +3875,11 @@ const FeatureEntry::FeatureVariation kGlicOSIconVariantVariations[] = {
     {"Variant 2 (Square)", kGlicOSIconVariant_2, nullptr},
 };
 
+const FeatureEntry::FeatureParam kAiOverlayDialog_Mes[] = {{"use_mes", "true"}};
+
+const FeatureEntry::FeatureVariation kAiOverlayDialogVariations[] = {
+    {"with MES", kAiOverlayDialog_Mes, nullptr}};
+
 const FeatureEntry::FeatureParam kGlicTabGroups_FullTabEmbedder[] = {
     {"use_full_tab_embedder", "true"}};
 
@@ -10995,7 +11000,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ai-overlay-dialog", flag_descriptions::kAiOverlayDialogName,
      flag_descriptions::kAiOverlayDialogDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAiOverlayDialog)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAiOverlayDialog,
+                                    kAiOverlayDialogVariations,
+                                    "AiOverlayDialog")},
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(features::kGlic)},
