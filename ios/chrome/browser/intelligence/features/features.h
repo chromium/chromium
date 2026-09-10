@@ -318,9 +318,11 @@ BASE_DECLARE_FEATURE(kPageContextIPCOptimization);
 // Returns true if the PageContextIPCOptimization feature is enabled.
 bool IsPageContextIPCOptimizationEnabled();
 
-// Returns true if the actionable optimization is enabled within the IPC
-// optimization.
-bool IsPageContextIPCOptimizationActionableEnabled();
+// Enables the PageContextActionableOptimization feature.
+BASE_DECLARE_FEATURE(kPageContextActionableOptimization);
+
+// Returns true if the PageContextActionableOptimization feature is enabled.
+bool IsPageContextActionableOptimizationEnabled();
 
 // Enables the PageContextPdf feature. This allows PDFs to be used as context
 // for prompts for Gemini only. Other providers would have separate flags.

@@ -672,21 +672,15 @@ bool IsGeminiBinaryMigrationEnabled() {
 
 BASE_FEATURE(kPageContextIPCOptimization, base::FEATURE_ENABLED_BY_DEFAULT);
 
-const char kPageContextIPCOptimizationActionableParam[] = "enable_actionable";
-
-BASE_FEATURE_PARAM(bool,
-                   kPageContextIPCOptimizationActionable,
-                   &kPageContextIPCOptimization,
-                   kPageContextIPCOptimizationActionableParam,
-                   false);
-
 bool IsPageContextIPCOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kPageContextIPCOptimization);
 }
 
-bool IsPageContextIPCOptimizationActionableEnabled() {
-  return IsPageContextIPCOptimizationEnabled() &&
-         kPageContextIPCOptimizationActionable.Get();
+BASE_FEATURE(kPageContextActionableOptimization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextActionableOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextActionableOptimization);
 }
 
 BASE_FEATURE(kPageContextPdf, base::FEATURE_DISABLED_BY_DEFAULT);

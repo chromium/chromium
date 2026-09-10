@@ -98,8 +98,7 @@ PageContextExtractorJavaScriptFeature::GetReplacements() {
     base::SysUTF8ToNSString(kOptimizeIPCPlaceholder) :
             IsPageContextIPCOptimizationEnabled() ? @"true" : @"false",
     base::SysUTF8ToNSString(kActionableOptimizationPlaceholder) :
-            IsPageContextIPCOptimizationActionableEnabled() ? @"true"
-                                                            : @"false",
+            IsPageContextActionableOptimizationEnabled() ? @"true" : @"false",
   };
 }
 
