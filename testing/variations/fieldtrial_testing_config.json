@@ -5612,11 +5612,15 @@
                     "name": "Enabled",
                     "params": {
                         "ContextualCueingV2EnablePrivateInsightsLogging": "true",
-                        "ContextualCueingV2UsePrivateAi": "true"
+                        "ContextualCueingV2UsePrivateAi": "true",
+                        "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
+                        "fcp_use_attestation_transparency_verifier": "true",
+                        "upload_interval": "10m"
                     },
                     "enable_features": [
                         "ContextualCueingV2",
-                        "GlicContextualCueingV2AutoSubmit"
+                        "GlicContextualCueingV2AutoSubmit",
+                        "PrivateInsightsFeature"
                     ]
                 }
             ]
