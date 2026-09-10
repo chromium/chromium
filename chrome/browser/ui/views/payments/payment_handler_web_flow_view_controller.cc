@@ -380,8 +380,6 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
 
     PermissionDashboardView* dashboard =
         icon_view->AddChildView(std::make_unique<PermissionDashboardView>());
-    view_observation_.Reset();
-    view_observation_.Observe(dashboard->GetIndicatorChip());
     chip_observation_.Reset();
     chip_observation_.Observe(dashboard->GetIndicatorChip());
     dashboard->GetIndicatorChip()->SetChipIcon(vector_icons::kVideocamIcon);
@@ -425,6 +423,12 @@ bool PaymentHandlerWebFlowViewController::CanContentViewBeScrollable() {
   // The web contents is set to a constant size and will render its own
   // scrollbar if necessary.
   return false;
+}
+
+void PaymentHandlerWebFlowViewController::Stop() {
+  indicator_chip_collapse_timer_.Stop();
+  chip_observation_.Reset();
+  PaymentRequestSheetController::Stop();
 }
 
 base::WeakPtr<PaymentRequestSheetController>
@@ -802,15 +806,6 @@ void PaymentHandlerWebFlowViewController::OnRequestDecided(
 void PaymentHandlerWebFlowViewController::
     OnPermissionRequestManagerDestructed() {
   permission_request_manager_observation_.Reset();
-}
-
-void PaymentHandlerWebFlowViewController::OnViewIsDeleting(
-    views::View* observed_view) {
-  if (view_observation_.IsObservingSource(observed_view)) {
-    view_observation_.Reset();
-    chip_observation_.Reset();
-    indicator_chip_collapse_timer_.Stop();
-  }
 }
 
 void PaymentHandlerWebFlowViewController::CollapseIndicatorChip() {

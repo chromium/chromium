@@ -28,7 +28,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -66,8 +65,7 @@ class PaymentHandlerWebFlowViewController
       public LocationIconView::Delegate,
       public MediaStreamCaptureIndicator::Observer,
       public PermissionChipInterface::Observer,
-      public permissions::PermissionRequestManager::Observer,
-      public views::ViewObserver {
+      public permissions::PermissionRequestManager::Observer {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAppIconElementId);
   // This ctor forwards its first 3 args to PaymentRequestSheetController's
@@ -113,6 +111,7 @@ class PaymentHandlerWebFlowViewController
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool DisplayDynamicBorderForHiddenContents() override;
   bool CanContentViewBeScrollable() override;
+  void Stop() override;
   base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   // content::WebContentsDelegate:
@@ -180,9 +179,6 @@ class PaymentHandlerWebFlowViewController
   void OnRequestDecided(permissions::PermissionAction action) override;
   void OnPermissionRequestManagerDestructed() override;
 
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override;
-
   void CollapseIndicatorChip();
   void ResetRequestChip();
   void OnRequestChipPressed();
@@ -198,8 +194,6 @@ class PaymentHandlerWebFlowViewController
   std::unique_ptr<LocationBarModel> location_bar_model_;
   views::ViewTracker location_icon_view_tracker_;
   views::ViewTracker permission_dashboard_view_tracker_;
-  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
-      this};
   base::ScopedObservation<MediaStreamCaptureIndicator,
                           MediaStreamCaptureIndicator::Observer>
       indicator_observation_{this};
