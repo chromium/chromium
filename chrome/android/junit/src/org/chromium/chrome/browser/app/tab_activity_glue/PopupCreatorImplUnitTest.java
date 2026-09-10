@@ -26,18 +26,25 @@ import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.AndroidRuntimeException;
 import android.view.Display;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -53,15 +60,19 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
@@ -79,6 +90,9 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit test for {@link PopupCreatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -279,6 +293,153 @@ public class PopupCreatorImplUnitTest {
                 "The intent sent to reparenting task doesn't specify Incognito CCT Caller ID",
                 IncognitoCctCallerId.CONTEXTUAL_POPUP,
                 sentIntent.getIntExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID, -1));
+    }
+
+    @Test
+    public void testIntentParams_twaOpener() {
+        BaseCustomTabActivity twaActivity = mock(BaseCustomTabActivity.class);
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        doReturn(twaActivity).when(mTab).getContext();
+        doReturn(provider).when(twaActivity).getIntentDataProvider();
+
+        when(provider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(provider.getClientPackageName()).thenReturn("org.chromium.test.twa");
+        when(provider.getUrlToLoad()).thenReturn("https://example.com/twa");
+        List<String> origins = Arrays.asList("https://trusted.example.com");
+        when(provider.getTrustedWebActivityAdditionalOrigins()).thenReturn(origins);
+
+        Intent sourceIntent = new Intent();
+        IBinder session = new Binder();
+        IntentUtils.safePutBinderExtra(sourceIntent, CustomTabsIntent.EXTRA_SESSION, session);
+        PendingIntent sessionId = mock(PendingIntent.class);
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION_ID, sessionId);
+        sourceIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        sourceIntent.putExtra("untrusted_extra", "malicious_payload");
+        when(provider.getIntent()).thenReturn(sourceIntent);
+
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        final Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                "The intent sent to reparenting task is not targeted at CustomTabActivity.class",
+                new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
+                sentIntent.getComponent());
+        assertEquals(
+                "The intent sent to reparenting task doesn't specify POPUP CCT UI type",
+                CustomTabsUiType.POPUP,
+                sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
+        assertTrue(
+                "The intent sent to reparenting task doesn't specify"
+                        + " EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY",
+                sentIntent.getBooleanExtra(
+                        TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false));
+        assertEquals(
+                "Session binder not forwarded",
+                session,
+                IntentUtils.safeGetBinderExtra(sentIntent, CustomTabsIntent.EXTRA_SESSION));
+        assertEquals(
+                "Session ID not forwarded",
+                sessionId,
+                IntentUtils.safeGetParcelableExtra(sentIntent, CustomTabsIntent.EXTRA_SESSION_ID));
+        assertEquals(
+                "Calling activity package not forwarded",
+                "org.chromium.test.twa",
+                sentIntent.getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        assertEquals(
+                "Data URI not set to urlToLoad",
+                Uri.parse("https://example.com/twa"),
+                sentIntent.getData());
+        List<String> expectedOrigins = Arrays.asList("https://trusted.example.com");
+        assertEquals(
+                "Additional trusted origins mismatch",
+                expectedOrigins,
+                sentIntent.getStringArrayListExtra(
+                        TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS));
+
+        assertFalse(
+                "EXTRA_OPEN_NEW_INCOGNITO_TAB must not be forwarded",
+                sentIntent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
+        assertFalse(
+                "untrusted_extra must not be forwarded", sentIntent.hasExtra("untrusted_extra"));
+        assertTrue(
+                "Intent must be trusted from Chrome",
+                IntentUtils.isTrustedIntentFromSelf(sentIntent));
+    }
+
+    @Test
+    public void testIntentParams_twaOpener_invalidSessionId() {
+        BaseCustomTabActivity twaActivity = mock(BaseCustomTabActivity.class);
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        doReturn(twaActivity).when(mTab).getContext();
+        doReturn(provider).when(twaActivity).getIntentDataProvider();
+
+        when(provider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(provider.getClientPackageName()).thenReturn("org.chromium.test.twa");
+        when(provider.getUrlToLoad()).thenReturn("https://example.com/twa");
+
+        Intent sourceIntent = new Intent();
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION_ID, new Intent("malicious_action"));
+        when(provider.getIntent()).thenReturn(sourceIntent);
+
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        final Intent sentIntent = captor.getValue();
+
+        assertFalse(
+                "Invalid EXTRA_SESSION_ID must not be forwarded",
+                sentIntent.hasExtra(CustomTabsIntent.EXTRA_SESSION_ID));
+    }
+
+    @Test
+    public void testIntentParams_standardCctOpener() {
+        BaseCustomTabActivity cctActivity = mock(BaseCustomTabActivity.class);
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        doReturn(cctActivity).when(mTab).getContext();
+        doReturn(provider).when(cctActivity).getIntentDataProvider();
+
+        when(provider.getActivityType()).thenReturn(ActivityType.CUSTOM_TAB);
+        when(provider.getClientPackageName()).thenReturn("org.chromium.test.cct");
+        when(provider.getUrlToLoad()).thenReturn("https://example.com/cct");
+        List<String> origins = Arrays.asList("https://trusted.example.com");
+        when(provider.getTrustedWebActivityAdditionalOrigins()).thenReturn(origins);
+
+        Intent sourceIntent = new Intent();
+        IBinder session = new Binder();
+        IntentUtils.safePutBinderExtra(sourceIntent, CustomTabsIntent.EXTRA_SESSION, session);
+        PendingIntent sessionId = mock(PendingIntent.class);
+        sourceIntent.putExtra(CustomTabsIntent.EXTRA_SESSION_ID, sessionId);
+        when(provider.getIntent()).thenReturn(sourceIntent);
+
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mReparentingTask).begin(any(), captor.capture(), any(), any());
+        final Intent sentIntent = captor.getValue();
+
+        assertEquals(
+                new ComponentName(ContextUtils.getApplicationContext(), CustomTabActivity.class),
+                sentIntent.getComponent());
+        assertEquals(
+                CustomTabsUiType.POPUP,
+                sentIntent.getIntExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, -1));
+        assertFalse(
+                "EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY must not be set for standard CCT",
+                sentIntent.hasExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY));
+        assertNull("Data URI must not be set for standard CCT popup", sentIntent.getData());
+        assertFalse(sentIntent.hasExtra(CustomTabsIntent.EXTRA_SESSION));
+        assertFalse(sentIntent.hasExtra(CustomTabsIntent.EXTRA_SESSION_ID));
+        assertFalse(sentIntent.hasExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        assertFalse(
+                sentIntent.hasExtra(
+                        TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS));
     }
 
     private ActivityOptions getActivityOptionsPassedToReparentingTask() {

@@ -9,14 +9,20 @@ import static android.view.Display.INVALID_DISPLAY;
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.AndroidRuntimeException;
 import android.util.Pair;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -62,6 +68,9 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.WindowInsetsUtils;
 import org.chromium.url.Origin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
 @NullMarked
@@ -491,24 +500,11 @@ public class PopupCreatorImpl implements PopupCreator {
     }
 
     private static Intent createTrustedPopupIntent(
-            @Nullable Context context,
+            Context context,
             @Nullable WindowFeatures windowFeatures,
             boolean isIncognito,
             @Nullable Bundle additionalIntentExtras) {
-        Activity activity = ContextUtils.activityFromContext(context);
-        BrowserServicesIntentDataProvider provider = null;
-        if (activity instanceof BaseCustomTabActivity customTabActivity) {
-            provider = customTabActivity.getIntentDataProvider();
-        }
-
-        Intent intent;
-        if (provider != null && provider.isTrustedWebActivity() && provider.getIntent() != null) {
-            intent = new Intent(provider.getIntent());
-            intent.removeExtra(TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
-        } else {
-            intent = new Intent();
-        }
-
+        Intent intent = new Intent();
         intent.setClass(ContextUtils.getApplicationContext(), CustomTabActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.POPUP);
@@ -518,6 +514,11 @@ public class PopupCreatorImpl implements PopupCreator {
         if (isIncognito) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IncognitoCctCallerId.CONTEXTUAL_POPUP);
+        } else {
+            Activity activity = ContextUtils.activityFromContext(context);
+            if (activity instanceof BaseCustomTabActivity customTabActivity) {
+                forwardTwaExtras(intent, customTabActivity.getIntentDataProvider());
+            }
         }
 
         IntentUtils.addTrustedIntentExtras(intent);
@@ -526,6 +527,44 @@ public class PopupCreatorImpl implements PopupCreator {
             intent.putExtras(additionalIntentExtras);
         }
         return intent;
+    }
+
+    private static void forwardTwaExtras(
+            Intent intent, BrowserServicesIntentDataProvider provider) {
+        if (!provider.isTrustedWebActivity()) return;
+
+        String urlToLoad = provider.getUrlToLoad();
+        if (urlToLoad == null) return;
+
+        intent.setData(Uri.parse(urlToLoad));
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+
+        Intent sourceIntent = provider.getIntent();
+        if (sourceIntent != null) {
+            IBinder session =
+                    IntentUtils.safeGetBinderExtra(sourceIntent, CustomTabsIntent.EXTRA_SESSION);
+            if (session != null) {
+                IntentUtils.safePutBinderExtra(intent, CustomTabsIntent.EXTRA_SESSION, session);
+            }
+            Parcelable parcelable =
+                    IntentUtils.safeGetParcelableExtra(
+                            sourceIntent, CustomTabsIntent.EXTRA_SESSION_ID);
+            if (parcelable instanceof PendingIntent sessionId) {
+                intent.putExtra(CustomTabsIntent.EXTRA_SESSION_ID, sessionId);
+            }
+        }
+
+        String clientPackageName = provider.getClientPackageName();
+        if (clientPackageName != null) {
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, clientPackageName);
+        }
+
+        List<String> origins = provider.getTrustedWebActivityAdditionalOrigins();
+        if (origins != null) {
+            intent.putStringArrayListExtra(
+                    TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS,
+                    new ArrayList<>(origins));
+        }
     }
 
     private static Intent initializeDocumentPipIntent(
