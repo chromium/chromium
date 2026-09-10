@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Arrays;
@@ -75,7 +76,8 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE,
-    ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING
+    ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING,
+    ChromeFeatureList.GLIC_BACKGROUND_ACTUATION
 })
 public class LaunchIntentDispatcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -731,6 +733,7 @@ public class LaunchIntentDispatcherTest {
 
     @Test
     public void testDispatchGlicExternalTrigger_ConsentNotRequired_StartsService() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
         Activity spyActivity = spy(mActivity);
         doReturn("com.google.android.apps.googlequicksearchbox")
@@ -754,6 +757,26 @@ public class LaunchIntentDispatcherTest {
         assertEquals(
                 org.chromium.chrome.browser.actor.ActorForegroundService.class.getName(),
                 serviceIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void testDispatchGlicExternalTrigger_NotificationsDisabled_ContinuesToActivity() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+        Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
+        Activity spyActivity = spy(mActivity);
+        doReturn("com.google.android.apps.googlequicksearchbox")
+                .when(spyActivity)
+                .getCallingPackage();
+        doReturn(true)
+                .when(mExternalAuthUtils)
+                .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
+        doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
+        doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        verifyNoInteractions(mForegroundServiceUtils);
     }
 
     @Test
@@ -960,5 +983,26 @@ public class LaunchIntentDispatcherTest {
         verify(spyActivity).startActivity(captor.capture(), any());
         assertEquals(
                 CustomTabActivity.class.getName(), captor.getValue().getComponent().getClassName());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testDispatchGlicExternalTrigger_BackgroundActuationDisabled_ContinuesToActivity() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
+        Activity spyActivity = spy(mActivity);
+        doReturn("com.google.android.apps.googlequicksearchbox")
+                .when(spyActivity)
+                .getCallingPackage();
+        doReturn(true)
+                .when(mExternalAuthUtils)
+                .isGoogleSigned("com.google.android.apps.googlequicksearchbox");
+        doReturn(true).when(mGlicEnablingJniMock).isEnabledForProfile(mProfile);
+        doReturn(false).when(mGlicEnablingJniMock).experimentalOptInIsNeeded(mProfile);
+
+        int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        verifyNoInteractions(mForegroundServiceUtils);
     }
 }

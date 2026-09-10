@@ -31,6 +31,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -166,11 +167,10 @@ public class LaunchIntentDispatcher {
                 return Action.FINISH_ACTIVITY;
             }
 
-            // TODO(b/549302429): Check notification setting, if it's enabled, launch the fgs
-            // intent.
             // TODO(b/557413667): It should be possible to warm up Glic instance here as
             // well, in the future.
-            if (!GlicEnabling.experimentalOptInIsNeeded(profile)) {
+            if (!GlicEnabling.experimentalOptInIsNeeded(profile)
+                    && ActorUtils.isBackgroundActuationEnabled()) {
                 Intent serviceIntent =
                         new Intent(
                                 currentActivity,
