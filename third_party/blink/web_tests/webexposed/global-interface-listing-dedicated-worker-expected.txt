@@ -2236,7 +2236,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter appendWindowEnd
 [Worker]     getter appendWindowStart
-[Worker]     getter audioTracks
 [Worker]     getter buffered
 [Worker]     getter mode
 [Worker]     getter onabort
@@ -2247,7 +2246,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter timestampOffset
 [Worker]     getter trackDefaults
 [Worker]     getter updating
-[Worker]     getter videoTracks
 [Worker]     method abort
 [Worker]     method appendBuffer
 [Worker]     method appendEncodedChunks
