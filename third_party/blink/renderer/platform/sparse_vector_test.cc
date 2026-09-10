@@ -250,5 +250,27 @@ TEST(SparseVectorInlineCapacityTest, Basic) {
 }
 #endif
 
+TEST(SparseVectorEqualityTest, Basic) {
+  SparseVector<FieldId, int> v1;
+  SparseVector<FieldId, int> v2;
+  EXPECT_EQ(v1, v2);
+
+  v1.SetField(FieldId::kFirst, 10);
+  EXPECT_NE(v1, v2);
+
+  // Same value in a different field.
+  v2.SetField(FieldId::kLast, 10);
+  EXPECT_NE(v1, v2);
+
+  // Same fields set in a different order.
+  v1.SetField(FieldId::kLast, 10);
+  v2.SetField(FieldId::kFirst, 10);
+  EXPECT_EQ(v1, v2);
+
+  // Same fields, different value.
+  v2.SetField(FieldId::kLast, 20);
+  EXPECT_NE(v1, v2);
+}
+
 }  // namespace
 }  // namespace blink

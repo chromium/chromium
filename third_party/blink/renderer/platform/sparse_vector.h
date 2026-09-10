@@ -161,6 +161,11 @@ class SparseVector :
     return false;
   }
 
+  bool operator==(const SparseVector& other) const {
+    return fields_bitfield_ == other.fields_bitfield_ &&
+           this->fields_ == other.fields_;
+  }
+
  private:
   static BitfieldType FieldIdMask(FieldId field_id) {
     CHECK_LT(static_cast<wtf_size_t>(field_id), kMaxSize);
