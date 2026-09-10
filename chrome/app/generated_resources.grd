@@ -7530,6 +7530,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS" desc="Label for settings item in the Search in Chrome status tray context menu.">
           Settings
         </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT" desc="Label for quit item in the Search in Chrome status tray context menu.">
+          Quit
+        </message>
       </if>
       <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_BODY" desc="Body text for the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere." translateable="false">
         Ask about what's on your screen

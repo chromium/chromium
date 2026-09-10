@@ -24,6 +24,7 @@ source_set("omnibox_everywhere") {
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/lifetime",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/omnibox",

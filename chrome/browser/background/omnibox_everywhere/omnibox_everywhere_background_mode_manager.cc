@@ -9,14 +9,18 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -178,6 +182,8 @@ void OmniboxEverywhereBackgroundModeManager::HideStatusIcon() {
   }
 
   status_icon_->RemoveObserver(this);
+  browser_collection_observation_.Reset();
+  context_menu_ = nullptr;
 
   StatusTray* status_tray =
       g_browser_process ? g_browser_process->status_tray() : nullptr;
@@ -212,9 +218,50 @@ void OmniboxEverywhereBackgroundModeManager::ExecuteCommand(int command_id,
         chrome::ShowSettingsSubPageForProfile(profile_, chrome::kSearchSubPage);
       }
       break;
+    case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT:
+      chrome::CloseAllBrowsers();
+      base::RecordAction(base::UserMetricsAction("Exit"));
+      break;
     default:
       NOTREACHED();
   }
+}
+
+void OmniboxEverywhereBackgroundModeManager::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  UpdateVisibilityOfExitInContextMenu();
+}
+
+void OmniboxEverywhereBackgroundModeManager::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  UpdateVisibilityOfExitInContextMenu();
+}
+
+void OmniboxEverywhereBackgroundModeManager::
+    UpdateVisibilityOfExitInContextMenu() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (context_menu_) {
+    const bool is_visible = GlobalBrowserCollection::GetInstance()->IsEmpty();
+    const std::optional<size_t> index = context_menu_->GetIndexOfCommandId(
+        IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT);
+    CHECK(index.has_value() && index.value() > 0);
+
+    if (is_visible) {
+      if (context_menu_->GetTypeAt(index.value() - 1) !=
+          ui::MenuModel::TYPE_SEPARATOR) {
+        context_menu_->InsertSeparatorAt(index.value(), ui::NORMAL_SEPARATOR);
+      }
+    } else {
+      if (context_menu_->GetTypeAt(index.value() - 1) ==
+          ui::MenuModel::TYPE_SEPARATOR) {
+        context_menu_->RemoveItemAt(index.value() - 1);
+      }
+    }
+
+    context_menu_->SetCommandIdVisible(
+        IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT, is_visible);
+  }
+#endif
 }
 
 void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu() {
@@ -243,7 +290,21 @@ void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu() {
                 l10n_util::GetStringUTF16(
                     IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS));
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  menu->AddSeparator(ui::NORMAL_SEPARATOR);
+  menu->AddItem(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT,
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT));
+#endif
+
+  context_menu_ = menu.get();
   status_icon_->SetContextMenu(std::move(menu));
+
+  if (!browser_collection_observation_.IsObserving()) {
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
+  UpdateVisibilityOfExitInContextMenu();
 }
 
 }  // namespace omnibox_everywhere

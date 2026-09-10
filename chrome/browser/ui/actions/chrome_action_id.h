@@ -448,6 +448,8 @@
     IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT) \
   E(kActionOmniboxEverywhereStatusIconMenuSettings, \
     IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS) \
+  E(kActionOmniboxEverywhereStatusIconMenuExit, \
+    IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT) \
   E(kActionShowPaymentsChurnedUsersBubble) \
 
 #if BUILDFLAG(IS_CHROMEOS)

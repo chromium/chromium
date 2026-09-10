@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -226,7 +227,18 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ContextMenuStructure) {
 
   StatusIconMenuModel* menu = status_icon->GetContextMenuForTesting();
   ASSERT_NE(menu, nullptr);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // Initially no browsers are open in this test, so the exit item and separator
+  // are visible.
+  ASSERT_EQ(menu->GetItemCount(), 5u);
+  EXPECT_EQ(menu->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetCommandIdAt(4),
+            IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT);
+  EXPECT_TRUE(
+      menu->IsCommandIdVisible(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT));
+#else
   ASSERT_EQ(menu->GetItemCount(), 3u);
+#endif
 
   EXPECT_EQ(menu->GetCommandIdAt(0),
             IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE);
@@ -283,6 +295,20 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteToggleCommand) {
   delegate->ExecuteCommand(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, 0);
   EXPECT_TRUE(callback_called);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteExitCommand) {
+  base::UserActionTester user_action_tester;
+  bool callback_called = false;
+  OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
+      [](bool* called) { *called = true; }, &callback_called));
+
+  StatusIconMenuModel::Delegate* delegate =
+      static_cast<StatusIconMenuModel::Delegate*>(&manager);
+  delegate->ExecuteCommand(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT, 0);
+  EXPECT_EQ(1, user_action_tester.GetActionCount("Exit"));
+}
+#endif
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
        LaunchOnStartupPrefToggleWithoutStartupLaunchManagerDoesNotCrash) {

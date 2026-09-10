@@ -553,6 +553,7 @@
 #define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE                      54030
 #define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 54031
 #define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS                    54032
+#define IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT                        54033
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
