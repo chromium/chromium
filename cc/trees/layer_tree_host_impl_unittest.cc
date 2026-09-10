@@ -16221,4 +16221,30 @@ TEST_P(LayerTreeHostImplTest,
   EXPECT_EQ(gfx::Rect(10, 10, 50, 50), rects.at(kFeature0)[0].visible_bounds);
 }
 
+TEST_P(LayerTreeHostImplTest, NormalizedInvalidatedAreaWithHugeOutputRect) {
+  // A UI compositor draws into whatever output rect it is given, and a large
+  // enough one has an area that does not fit in an int. Drawing must not
+  // CHECK-fail computing it.
+  constexpr float kDeviceScaleFactor = 2.f;
+
+  auto draw_with_viewport = [&](const gfx::Size& viewport_in_dip,
+                                bool expect_area_fits_in_int) {
+    LayerTreeSettings settings = DefaultSettings();
+    settings.is_layer_tree_for_ui = true;
+    CreateHostImpl(settings, CreateLayerTreeFrameSink());
+    host_impl_->active_tree()->SetDeviceScaleFactor(kDeviceScaleFactor);
+
+    ASSERT_EQ(expect_area_fits_in_int,
+              DipSizeToPixelSize(viewport_in_dip).GetCheckedArea().IsValid());
+
+    SetupDefaultRootLayer(viewport_in_dip);
+    DrawFrame();
+  };
+
+  // Either side of the height at which the scaled area stops fitting in an
+  // int.
+  draw_with_viewport(gfx::Size(26000, 20000), true);
+  draw_with_viewport(gfx::Size(26000, 21000), false);
+}
+
 }  // namespace cc

@@ -2837,10 +2837,17 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
     const gfx::Rect& output_rect =
         active_tree()->RootRenderSurface()->content_rect();
-    normalized_invalidated_area =
-        static_cast<float>(
-            total_invalidated_area_.value().ValueOrDefault(UINT_MAX)) /
-        output_rect.size().GetArea();
+    // Avoid gfx::Size::GetArea(), which CHECK-fails on overflow: the output
+    // rect is not bounded by the display, since a form control popup is
+    // sized from its anchor's CSS zoom.
+    const int64_t output_area =
+        static_cast<int64_t>(output_rect.width()) * output_rect.height();
+    if (output_area > 0) {
+      normalized_invalidated_area =
+          static_cast<float>(
+              total_invalidated_area_.value().ValueOrDefault(UINT_MAX)) /
+          static_cast<float>(output_area);
+    }
 
     total_invalidated_area_ = 0;
   }
