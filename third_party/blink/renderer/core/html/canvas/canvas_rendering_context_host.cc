@@ -153,11 +153,6 @@ bool CanvasRenderingContextHost::IsPaintable() const {
          IsValidImageSize();
 }
 
-void CanvasRenderingContextHost::InitializeForRecording(
-    cc::PaintCanvas* canvas) const {
-  if (RenderingContext())
-    RenderingContext()->RestoreCanvasMatrixClipStack(canvas);
-}
 
 scoped_refptr<const cc::AnimatedImageFrameIndexMap>
 CanvasRenderingContextHost::GetAnimatedImageFrameIndexes(uint32_t id) const {

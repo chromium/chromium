@@ -17,7 +17,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
@@ -28,7 +27,6 @@
 
 namespace cc {
 class AnimatedImageFrameIndexMap;
-class PaintCanvas;
 class SkiaPaintCanvas;
 }  // namespace cc
 
@@ -55,7 +53,6 @@ class OffscreenCanvasRenderingContext2D;
 // Canvas2DResourceProvider.
 class PLATFORM_EXPORT Canvas2DBitmapProvider final
     : public CanvasMemoryDumpClient,
-      public MemoryManagedPaintRecorder::Client,
       public ScopedRasterTimer::Host,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
@@ -107,11 +104,8 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
-  const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
-  MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
-  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
   void RestoreBackBuffer(const cc::PaintImage&);
+  void RecordingCleared();
 
  private:
   friend class CanvasRenderingContext2D;
@@ -133,10 +127,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
 
-  // MemoryManagedPaintRecorder::Client implementation.
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
-  void RecordingCleared() override;
-
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
@@ -154,7 +144,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
   raw_ptr<CanvasResourceProviderDelegate> delegate_ = nullptr;

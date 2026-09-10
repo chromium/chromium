@@ -163,6 +163,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetOriginTainted() final;
   void DisableAcceleration() override;
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
+  void RecordingCleared() override;
 
   // CanvasHibernationHandler::Delegate implementation
   Canvas2DResourceProvider* GetSharedImageProvider() const override;
@@ -175,6 +176,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return canvas() && canvas()->IsPageVisible();
   }
   void ResetResourceProvider() override;
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override;
   void SetNeedsCompositingUpdate() override {
     if (canvas()) {
       canvas()->SetNeedsCompositingUpdate();
@@ -324,6 +326,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void WakeUpFromHibernation();
 
+  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
+
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;
@@ -332,6 +336,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.

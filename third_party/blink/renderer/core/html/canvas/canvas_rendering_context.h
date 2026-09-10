@@ -56,7 +56,6 @@ struct PendingTask;
 
 namespace cc {
 class Layer;
-class PaintCanvas;
 }  // namespace cc
 
 namespace gfx {
@@ -260,7 +259,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) {
     NOTREACHED();
   }
-  virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const {}
   virtual void Reset() {}
   virtual void RestoreFromInvalidSizeIfNeeded() {}
   virtual void StyleDidChange(const ComputedStyle* old_style,

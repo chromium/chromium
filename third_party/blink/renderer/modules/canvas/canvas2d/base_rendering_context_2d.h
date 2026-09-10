@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
@@ -74,9 +75,15 @@ class V8CanvasFontVariantCaps;
 class V8UnionElementOrElementImage;
 enum class PredefinedColorSpace;
 
-class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
-                                              public Canvas2DRecorderContext {
+class MODULES_EXPORT BaseRenderingContext2D
+    : public CanvasRenderingContext,
+      public Canvas2DRecorderContext,
+      public MemoryManagedPaintRecorder::Client {
  public:
+  // MemoryManagedPaintRecorder::Client implementation.
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
+  void RecordingCleared() override = 0;
+
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
   // Try to restore context 4 times in the event that the context is lost. If
@@ -258,7 +265,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   }
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
   void PageVisibilityChanged() override {}
-  void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const final;
   void Reset() override;
   void DidFlush() override;
 

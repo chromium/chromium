@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -52,7 +53,6 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
-  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
@@ -102,13 +102,6 @@ size_t Canvas2DBitmapProvider::GetSize() const {
   return info.computeByteSize(info.minRowBytes());
 }
 
-void Canvas2DBitmapProvider::InitializeForRecording(
-    cc::PaintCanvas* canvas) const {
-  if (delegate_) {
-    delegate_->InitializeForRecording(canvas);
-  }
-}
-
 void Canvas2DBitmapProvider::RecordingCleared() {
   clear_frame_ = true;
 }
@@ -150,20 +143,6 @@ void Canvas2DBitmapProvider::SetAnimatedImageFrameIndexes(
     scoped_refptr<const cc::AnimatedImageFrameIndexMap> map) {
   CHECK(canvas_image_provider_);
   canvas_image_provider_->SetAnimatedImageFrameIndexes(map);
-}
-
-std::unique_ptr<MemoryManagedPaintRecorder>
-Canvas2DBitmapProvider::ReleaseRecorder() {
-  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
-  recorder_->SetClient(nullptr);
-  recorder_.swap(recorder);
-  return recorder;
-}
-
-void Canvas2DBitmapProvider::SetRecorder(
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
-  recorder->SetClient(this);
-  recorder_ = std::move(recorder);
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
@@ -276,7 +255,6 @@ bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,
                                          int y) {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::WritePixels");
   DCHECK(IsValid());
-  DCHECK(!Recorder().HasRecordedDrawOps());
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(

@@ -278,11 +278,16 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
         host->Size(), format, alpha_type, color_space, hdr_metadata, host);
   }
 
+  if (shared_image_provider_ || bitmap_provider_) {
+    recorder_ =
+        std::make_unique<MemoryManagedPaintRecorder>(host->Size(), this);
+  }
+
   Host()->UpdateMemoryUsage();
 
   if (shared_image_provider_) {
     if (shared_image_provider_->IsGraphite()) {
-      Recorder()->DisableLineDrawingAsPaths();
+      recorder_->DisableLineDrawingAsPaths();
     }
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               shared_image_provider_->IsAccelerated());
@@ -437,13 +442,15 @@ OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
 
 const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
     const {
+  return recorder_.get();
+}
+
+void OffscreenCanvasRenderingContext2D::RecordingCleared() {
   if (shared_image_provider_) {
-    return &shared_image_provider_->Recorder();
+    shared_image_provider_->RecordingCleared();
+  } else if (bitmap_provider_) {
+    bitmap_provider_->RecordingCleared();
   }
-  if (bitmap_provider_) {
-    return &bitmap_provider_->Recorder();
-  }
-  return nullptr;
 }
 
 void OffscreenCanvasRenderingContext2D::WillDraw(
@@ -499,6 +506,7 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
 void OffscreenCanvasRenderingContext2D::ResetResourceProvider() {
   shared_image_provider_.reset();
   bitmap_provider_.reset();
+  recorder_.reset();
 }
 
 void OffscreenCanvasRenderingContext2D::Dispose() {
@@ -585,8 +593,7 @@ std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
 void OffscreenCanvasRenderingContext2D::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
-    if (shared_image_provider_->Recorder().getRecordingCanvas().IsCachingImage(
-            content_id)) {
+    if (recorder_->getRecordingCanvas().IsCachingImage(content_id)) {
       FlushCanvas(FlushReason::kOther);
     }
     shared_image_provider_->OnFlushForImage(content_id);

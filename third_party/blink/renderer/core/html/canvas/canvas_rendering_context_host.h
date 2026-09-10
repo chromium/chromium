@@ -118,7 +118,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   int height() const { return Size().height(); }
 
   // Partial CanvasResourceProvider::Delegate implementation
-  void InitializeForRecording(cc::PaintCanvas*) const final;
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
   GetAnimatedImageFrameIndexes(uint32_t id) const override;
   void DidFlush() override;

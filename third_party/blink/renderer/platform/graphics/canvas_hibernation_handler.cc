@@ -461,7 +461,7 @@ void CanvasHibernationHandler::Hibernate(
         HibernationEvent::kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  SaveForHibernation(std::move(sw_image), provider->ReleaseRecorder(), context,
+  SaveForHibernation(std::move(sw_image), delegate_->ReleaseRecorder(), context,
                      delay);
 
   delegate_->ResetResourceProvider();

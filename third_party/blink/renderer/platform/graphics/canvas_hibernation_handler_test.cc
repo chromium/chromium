@@ -60,6 +60,10 @@ class TestHibernationHandlerDelegate
   }
   void ResetResourceProvider() override { resource_provider_.reset(); }
 
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override {
+    return std::make_unique<MemoryManagedPaintRecorder>(size_, nullptr);
+  }
+
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {
     return std::nullopt;
   }

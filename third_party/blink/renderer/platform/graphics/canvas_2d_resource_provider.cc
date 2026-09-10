@@ -167,20 +167,6 @@ void Canvas2DResourceProvider::OnResourceRefReturned(
   }
 }
 
-std::unique_ptr<MemoryManagedPaintRecorder>
-Canvas2DResourceProvider::ReleaseRecorder() {
-  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
-  recorder_->SetClient(nullptr);
-  recorder_.swap(recorder);
-  return recorder;
-}
-
-void Canvas2DResourceProvider::SetRecorder(
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
-  recorder->SetClient(this);
-  recorder_ = std::move(recorder);
-}
-
 void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
   resource_recycling_enabled_ = value;
   if (!resource_recycling_enabled_) {
@@ -319,7 +305,6 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
     DCHECK(IsValid());
-    DCHECK(!Recorder().HasRecordedDrawOps());
 
     if (!skia_canvas_) {
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
@@ -930,7 +915,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
-  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
@@ -1008,13 +992,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
-void Canvas2DResourceProvider::InitializeForRecording(
-    cc::PaintCanvas* canvas) const {
-  if (delegate_) {
-    delegate_->InitializeForRecording(canvas);
-  }
-}
-
 void Canvas2DResourceProvider::RecordingCleared() {
   must_preserve_content_on_copy_on_write_ = false;
   clear_frame_ = true;
@@ -1077,7 +1054,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
-  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
@@ -1177,10 +1153,6 @@ sk_sp<SkSurface> Canvas2DResourceProvider::CreateSkSurface() const {
 SkSurfaceProps Canvas2DResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
-MemoryManagedPaintCanvas& Canvas2DResourceProvider::GetCanvasForTesting() {
-  return Recorder().getRecordingCanvas();
 }
 
 void Canvas2DResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

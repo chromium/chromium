@@ -44,6 +44,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     virtual void ResetResourceProvider() = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
     virtual void ClearCanvas2DLayerTexture() {}
+    virtual std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() = 0;
     virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) = 0;
   };
 
