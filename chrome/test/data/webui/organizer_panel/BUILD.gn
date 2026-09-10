@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "organizer_list_section_test.ts",
     "organizer_list_test.ts",
     "recent_tabs_delegate_test.ts",
+    "stacked_favicons_test.ts",
     "tab_groups_delegate_test.ts",
     "test_section_delegate.ts",
     "test_search_api_proxy.ts",

@@ -42,3 +42,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, TabGroupsDelegate) {
   set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
   RunTest("organizer_panel/tab_groups_delegate_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, StackedFavicons) {
+  set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
+  RunTest("organizer_panel/stacked_favicons_test.js", "mocha.run()");
+}

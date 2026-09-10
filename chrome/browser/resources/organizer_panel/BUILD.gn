@@ -28,12 +28,15 @@ build_webui("build") {
     "organizer_list_section_item.html.ts",
     "organizer_list_section_item.ts",
     "organizer_panel.ts",
+    "stacked_favicons.html.ts",
+    "stacked_favicons.ts",
   ]
   css_files = [
     "app.css",
     "organizer_list.css",
     "organizer_list_section.css",
     "organizer_list_section_item.css",
+    "stacked_favicons.css",
   ]
 
   mojo_files_deps = [
