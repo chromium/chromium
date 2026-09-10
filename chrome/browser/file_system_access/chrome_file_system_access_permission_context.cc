@@ -400,6 +400,10 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // And limit access to ~/.gnupg as well.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"),
                                 BlockType::kBlockAllChildren),
+      // Block write access to */.git/hooks, see crbug.com/465668234 and
+      // crbug.com/553115714.
+      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
+                              BlockType::kBlockWrite),
 #if BUILDFLAG(IS_WIN)
       // Some Windows specific directories to block, basically all apps, the
       // operating system itself, as well as configuration data for apps.
@@ -423,9 +427,6 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // directory, but not whole directories.
       BlockPath::CreateRelative(base::DIR_IE_INTERNET_CACHE,
                                 BlockType::kBlockNestedDirectories),
-      // Block */.git/hooks on Windows, see crbug.com/465668234.
-      BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
-                              BlockType::kBlockWrite),
 #endif
 #if BUILDFLAG(IS_MAC)
       // Similar Mac specific blocks.
