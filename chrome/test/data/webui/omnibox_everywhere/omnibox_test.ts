@@ -1586,6 +1586,10 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         const composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
+        assertEquals(1, testProxy.handler.getCallCount('setActiveToolMode'));
+        assertEquals(
+            ToolMode.kDeepSearch,
+            testProxy.handler.getArgs('setActiveToolMode')[0][0]);
       });
 
   test(

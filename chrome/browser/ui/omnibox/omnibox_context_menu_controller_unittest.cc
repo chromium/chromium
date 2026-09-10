@@ -60,9 +60,17 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
   bool IsSmartTabSharingActive() const override { return active_; }
   void SetSmartTabSharingActive(bool active) override { active_ = active; }
 
+  void SetActiveToolMode(omnibox::ToolMode tool_mode,
+                         bool is_set_by_aim) override {
+    active_tool_mode_ = tool_mode;
+  }
+  omnibox::ToolMode active_tool_mode() const { return active_tool_mode_; }
+
   void OnThumbnailRemoved() override {}
 
   bool active_ = false;
+  omnibox::ToolMode active_tool_mode_ =
+      omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 };
 
 class TestOmniboxContextMenuController : public OmniboxContextMenuController {
@@ -619,6 +627,24 @@ TEST_F(OmniboxContextMenuControllerTest, SmartTabSharingTogglesState) {
 
   // Verification: state is toggled back to false
   EXPECT_FALSE(fake_handler.IsSmartTabSharingActive());
+}
+
+TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_ToolModes) {
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES, 0);
+  EXPECT_EQ(fake_handler.active_tool_mode(),
+            omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH, 0);
+  EXPECT_EQ(fake_handler.active_tool_mode(),
+            omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_CANVAS, 0);
+  EXPECT_EQ(fake_handler.active_tool_mode(),
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
 }
 
 TEST_F(OmniboxContextMenuControllerTest,

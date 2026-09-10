@@ -273,14 +273,25 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     // state so user queries are preserved when switching to Composebox mode
     // (e.g. when clicking a tool or attaching a tab from the '+' context menu).
     const text = this.searchbox ? this.searchbox.getInputText?.() || '' : '';
+    // Calls setActiveToolMode(initialMode) directly without passing mode down
+    // through composeboxState_. This prevents
+    // ComposeboxEmbedderMixin.updateState() from mistakenly calling
+    // handleToolClick() and toggling off the active tool mode.
+    const {mode: initialMode = ToolMode.kUnspecified, ...stateForComposebox} =
+        state ?? {};
+
     this.composeboxState_ = {
       text,
       files: [],
       mode: ToolMode.kUnspecified,
       model: ModelMode.kUnspecified,
       smartTabSharingActive: false,
-      ...state,
+      ...stateForComposebox,
     };
+    if (initialMode !== ToolMode.kUnspecified) {
+      SearchboxBrowserProxy.getInstance().handler.setActiveToolMode(
+          initialMode, false);
+    }
     this.isComposeboxMode_ = true;
     await this.updateComplete;
     if (this.composebox) {
