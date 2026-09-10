@@ -50,8 +50,8 @@ declare_args() {
 }
 
 declare_args() {
-  # Allow migration from trichrome related config
   if (is_android) {
+    # Allow migration from trichrome related config
     use_stable_package_name = use_stable_package_name_for_trichrome
   }
 }
