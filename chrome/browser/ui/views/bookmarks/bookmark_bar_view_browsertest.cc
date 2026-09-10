@@ -253,15 +253,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, SecFetchFromEmptyTab) {
   }
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-//  TODO(crbug.com/40648550): Test flaky on Mac and Windows.
-#define MAYBE_SecFetchSiteNoneFromNonEmptyTab \
-  DISABLED_SecFetchSiteNoneFromNonEmptyTab
-#else
-#define MAYBE_SecFetchSiteNoneFromNonEmptyTab SecFetchSiteNoneFromNonEmptyTab
-#endif
 IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest,
-                       MAYBE_SecFetchSiteNoneFromNonEmptyTab) {
+                       SecFetchSiteNoneFromNonEmptyTab) {
   // Navigate to an non-empty tab
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("http://example.com/")));
