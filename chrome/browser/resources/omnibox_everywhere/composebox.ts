@@ -245,6 +245,7 @@ export class OmniboxEverywhereComposeboxElement extends
     // embedded WebUI menu on the entrypoint button.
   }
 
+
   override shouldShowDivider(): boolean {
     if (this.searchboxLayoutMode === 'TallBottomContext' &&
         !this.showFileCarousel) {
@@ -252,16 +253,6 @@ export class OmniboxEverywhereComposeboxElement extends
     }
 
     return super.shouldShowDivider();
-  }
-
-  /**
-   * Enables handling of Fusebox suggestion actions (e.g. contextual tool
-   * suggestions like "Turn it into a graphic novel illustration" in image mode)
-   * so clicking a suggestion chip fills the prompt into the Composebox rather
-   * than falling through to standard URL navigation.
-   */
-  override shouldHandleSuggestionFuseboxActions(): boolean {
-    return true;
   }
 
   override selectFirstMatch() {

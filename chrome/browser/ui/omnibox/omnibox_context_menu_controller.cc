@@ -876,8 +876,7 @@ void OmniboxContextMenuController::AddTitleWithStringId(int localization_id) {
 void OmniboxContextMenuController::AddTabContext(const TabInfo& tab_info) {
   UpdateSearchboxContext(web_contents_.get(), /*tab_info=*/tab_info,
                          /*tool_mode=*/std::nullopt);
-  OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-             /*initial_state=*/nullptr);
+  OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
 }
 
 // static
@@ -1539,8 +1538,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
       bool is_aim_popup_open = IsAimPopupOpen();
 
       if (!active || is_aim_popup_open) {
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   /*initial_state=*/nullptr);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
       }
     }
     return;
@@ -1588,8 +1586,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         active_handler->DeleteContextFromBrowser(file_token_to_delete,
                                                  /*from_automatic_chip=*/false);
         // Refresh omnibox popup UI.
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   /*initial_state=*/nullptr);
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
       } else {  // If not staged for upload, then stage for upload.
         base::UmaHistogramExactLinear(
             "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
@@ -1689,11 +1686,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           contextual_searchbox_handler->RecordToolSelectionAction(tool_mode);
         }
 
-        auto initial_state =
-            omnibox_everywhere::mojom::ComposeboxInitialState::New();
-        initial_state->tool = it->second;
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   std::move(initial_state));
+        if (auto* omnibox_everywhere_ui =
+                GetOmniboxEverywhereUI(web_contents_.get())) {
+          auto initial_state =
+              omnibox_everywhere::mojom::ComposeboxInitialState::New();
+          initial_state->tool = it->second;
+          omnibox_everywhere_ui->OpenComposebox(std::move(initial_state));
+        } else {
+          OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+        }
         return;
       }
 
@@ -1715,11 +1716,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           }
         }
 
-        auto initial_state =
-            omnibox_everywhere::mojom::ComposeboxInitialState::New();
-        initial_state->model = it->second;
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   std::move(initial_state));
+        if (auto* omnibox_everywhere_ui =
+                GetOmniboxEverywhereUI(web_contents_.get())) {
+          auto initial_state =
+              omnibox_everywhere::mojom::ComposeboxInitialState::New();
+          initial_state->model = it->second;
+          omnibox_everywhere_ui->OpenComposebox(std::move(initial_state));
+        } else {
+          OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+        }
         return;
       }
     }
@@ -1742,7 +1747,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
             OmniboxPopupFileSelector::CreateImageEncodingOptions(),
             /*was_ai_mode_open=*/is_aim_popup_open);
         break;
-      case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES: {
+      case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         if (contextual_searchbox_handler) {
           contextual_searchbox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
@@ -1751,14 +1756,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
         }
         RecordContextMenuItemSelection(sliced_prefix, id);
-        auto initial_state =
-            omnibox_everywhere::mojom::ComposeboxInitialState::New();
-        initial_state->tool = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   std::move(initial_state));
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         break;
-      }
-      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH: {
+      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         if (contextual_searchbox_handler) {
           contextual_searchbox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
@@ -1767,14 +1767,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
         }
         RecordContextMenuItemSelection(sliced_prefix, id);
-        auto initial_state =
-            omnibox_everywhere::mojom::ComposeboxInitialState::New();
-        initial_state->tool = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   std::move(initial_state));
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         break;
-      }
-      case IDC_OMNIBOX_CONTEXT_CANVAS: {
+      case IDC_OMNIBOX_CONTEXT_CANVAS:
         if (contextual_searchbox_handler) {
           contextual_searchbox_handler->SetActiveToolMode(
               omnibox::ToolMode::TOOL_MODE_CANVAS, /*is_set_by_aim=*/false);
@@ -1782,13 +1777,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
               omnibox::ToolMode::TOOL_MODE_CANVAS);
         }
         RecordContextMenuItemSelection(sliced_prefix, id);
-        auto initial_state =
-            omnibox_everywhere::mojom::ComposeboxInitialState::New();
-        initial_state->tool = omnibox::ToolMode::TOOL_MODE_CANVAS;
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
-                   std::move(initial_state));
+        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         break;
-      }
       default:
         NOTREACHED();
     }
@@ -2161,19 +2151,15 @@ Profile* OmniboxContextMenuController::GetProfile() const {
 }
 
 void OmniboxContextMenuController::OpenAiMode(
-    OmniboxEditModel::AimActivation activation,
-    omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state) {
+    OmniboxEditModel::AimActivation activation) {
   if (OmniboxEditModel* edit_model = GetEditModel()) {
-    // Standard Omnibox retrieves tool/model state directly from the
-    // contextual_searchbox_handler. initial_state is only required for
-    // Omnibox Everywhere's standalone WebUI widget.
     edit_model->OpenAiMode(activation);
   } else if (web_contents_) {
     // Omnibox Everywhere does not utilize OmniboxEditModel; expand the WebUI
     // composebox view directly upon context item / tool selection.
     if (auto* omnibox_everywhere_ui =
             GetOmniboxEverywhereUI(web_contents_.get())) {
-      omnibox_everywhere_ui->OpenComposebox(std::move(initial_state));
+      omnibox_everywhere_ui->OpenComposebox(/*initial_state=*/nullptr);
     }
   } else {
     DLOG(WARNING) << "OpenAiMode called but no edit model present.";
