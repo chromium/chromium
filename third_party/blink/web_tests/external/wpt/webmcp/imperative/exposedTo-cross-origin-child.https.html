@@ -109,7 +109,7 @@ promise_test(async t => {
   }), 'Tool details should match');
 
   // Parent executes iframe's tool.
-  const result = await document.modelContext.executeTool(tool, '{}');
+  const result = await document.modelContext.executeTool(tool);
   assert_equals(result, 'hello from iframe', 'Parent should get correct result from iframe tool');
 
   // Tell the iframe to unregister its tool, and confirm that `toolchange` fires here.

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
+#include "v8/include/v8-primitive.h"
 
 namespace blink {
 class AbortController;
@@ -140,10 +141,16 @@ class CORE_EXPORT ModelContext : public EventTarget,
   ScriptPromise<IDLSequence<RegisteredTool>> getTools(
       ScriptState* script_state,
       const ModelContextGetToolOptions* options = nullptr);
+  ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* script_state,
+                                                    RegisteredTool* tool) {
+    v8::Isolate* isolate = script_state->GetIsolate();
+    return executeTool(script_state, tool,
+                       ScriptValue(isolate, v8::Object::New(isolate)));
+  }
   ScriptPromise<IDLNullable<IDLString>> executeTool(
       ScriptState* script_state,
       RegisteredTool* tool,
-      String input_arguments,
+      ScriptValue input_object,
       const ExecuteToolOptions* options = nullptr);
   void UnregisterTool(const String& name);
 

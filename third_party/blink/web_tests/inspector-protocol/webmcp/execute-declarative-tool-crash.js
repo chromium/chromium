@@ -28,8 +28,7 @@
         }
         window.executeDeclarative = async function() {
           const tool = await getTool("declarative_tool");
-          await document.modelContext.executeTool(
-            tool, JSON.stringify({text: "hello"}));
+          await document.modelContext.executeTool(tool, {text: "hello"});
         };
       </script>
       `,

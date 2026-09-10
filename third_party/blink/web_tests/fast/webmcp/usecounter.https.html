@@ -62,7 +62,7 @@ promise_test(async () => {
     const tools = await document.modelContext.getTools();
     const tool = tools.find(t => t.name === "imperative");
     try {
-        await document.modelContext.executeTool(tool, "invalid json");
+        await document.modelContext.executeTool(tool, {toJSON: () => "invalid json"});
     } catch (e) {}
     assert_true(internals.isUseCounted(document, kModelContextExecuteImperativeTool),'imperative execution');
     assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
@@ -76,7 +76,7 @@ promise_test(async () => {
     const tool = tools.find(t => t.name === "imperative");
     assert_true(!!tool, "imperative tool should be found");
 
-    const executePromise = document.modelContext.executeTool(tool, "{}");
+    const executePromise = document.modelContext.executeTool(tool);
     assert_true(internals.isUseCounted(document, kModelContextExecuteTool), 'counted synchronously upon executeTool() IDL method invocation');
     assert_false(internals.isUseCounted(document, kModelContextExecuteImperativeTool), 'not counted synchronously upon executeTool() method invocation');
 
@@ -94,7 +94,7 @@ promise_test(async () => {
     const tools = await document.modelContext.getTools();
     const tool = tools.find(t => t.name === "declarative1");
     try {
-        await document.modelContext.executeTool(tool, "invalid json");
+        await document.modelContext.executeTool(tool, {toJSON: () => "invalid json"});
     } catch (e) {}
     assert_false(internals.isUseCounted(document, kModelContextExecuteImperativeTool),'imperative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
@@ -115,7 +115,7 @@ promise_test(async () => {
     const tools = await document.modelContext.getTools();
     const tool = tools.find(t => t.name === "declarative2");
     try {
-        await document.modelContext.executeTool(tool, "invalid json");
+        await document.modelContext.executeTool(tool, {toJSON: () => "invalid json"});
     } catch (e) {}
     assert_false(internals.isUseCounted(document, kModelContextExecuteImperativeTool),'imperative execution');
     assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');

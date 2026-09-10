@@ -46,12 +46,12 @@
 promise_test(async t => {
   const tool = await waitForTool('fill_text');
 
-  let inputArgs = JSON.stringify({
+  let inputObject = {
     text: "regular text",
     mytext: "very custom text"
-  });
+  };
 
-  await document.modelContext.executeTool(tool, inputArgs);
+  await document.modelContext.executeTool(tool, inputObject);
 
   let inner_div = document.querySelector('my-input').shadowRoot.querySelector('div');
   assert_equals(inner_div.textContent, 'Custom text: very custom text');

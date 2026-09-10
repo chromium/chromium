@@ -85,43 +85,43 @@
 
         window.executeImperative = async function() {
           const tool = await getTool("imperative_tool");
-          await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
+          await document.modelContext.executeTool(tool, {text: "hello"});
         };
 
         window.executeDeclarative = async function() {
           const tool = await getTool("declarative_tool");
-          await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
+          await document.modelContext.executeTool(tool, {text: "hello"});
         };
 
         window.executeDeclarativeArray = async function() {
           const tool = await getTool("declarative_array_tool");
-          const result = await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
+          const result = await document.modelContext.executeTool(tool, {text: "hello"});
           return JSON.stringify(result);
         };
 
         window.executeDeclarativeString = async function() {
           const tool = await getTool("declarative_string_tool");
-          const result = await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
+          const result = await document.modelContext.executeTool(tool, {text: "hello"});
           return JSON.stringify(result);
         };
 
         window.executeDeclarativeNumber = async function() {
           const tool = await getTool("declarative_number_tool");
-          const result = await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
+          const result = await document.modelContext.executeTool(tool, {text: "hello"});
           return JSON.stringify(result);
         };
 
         window.executeFailingJS = async function() {
           try {
             const tool = await getTool("failing_js_tool");
-            await document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}));
+            await document.modelContext.executeTool(tool, {text: "hello"});
           } catch(e) {}
         };
 
         window.executeFailingModelContext = async function() {
           try {
             const tool = await getTool("imperative_tool");
-            await document.modelContext.executeTool(tool, "invalid json");
+            await document.modelContext.executeTool(tool, {toJSON: () => "invalid json"});
           } catch(e) {}
         };
 
@@ -129,7 +129,7 @@
           try {
             const controller = new AbortController();
             const tool = await getTool("abortable_tool");
-            const promise = document.modelContext.executeTool(tool, JSON.stringify({text: "hello"}), {signal: controller.signal});
+            const promise = document.modelContext.executeTool(tool, {text: "hello"}, {signal: controller.signal});
             controller.abort();
             await promise;
           } catch(e) {}
