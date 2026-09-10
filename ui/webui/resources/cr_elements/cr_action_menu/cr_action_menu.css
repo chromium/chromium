@@ -35,6 +35,17 @@
   position: absolute;
 }
 
+/* In unbounded mode, the dialog renders in an external OS window that can
+ * extend beyond the host WebContents.
+ * 1. 'max-height: none' overrides Blink UA dialog styles that constrain height
+ *    to the host document viewport.
+ * 2. 'position: fixed' positions the dialog relative to screen/viewport
+ *    coordinates rather than the scrolling document layout. */
+:host([use-unbounded]) dialog {
+  max-height: none;
+  position: fixed;
+}
+
 @media (forced-colors: active) {
   :host dialog {
     /* Use border instead of box-shadow (which does not work) in Windows

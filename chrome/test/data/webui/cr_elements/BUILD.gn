@@ -33,6 +33,9 @@ build_webui_tests("build") {
     "deduping_mixin_test.ts",
   ]
 
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
+
   if (!is_android) {
     files += [
       "cr_a11y_announcer_test.ts",
@@ -84,10 +87,8 @@ build_webui_tests("build") {
       "web_ui_listener_mixin_test.ts",
     ]
 
-    ts_composite = true
-    ts_definitions = [
+    ts_definitions += [
       "//tools/typescript/definitions/chrome_event.d.ts",
-      "//tools/typescript/definitions/pending.d.ts",
       "//tools/typescript/definitions/settings_private.d.ts",
     ]
   }

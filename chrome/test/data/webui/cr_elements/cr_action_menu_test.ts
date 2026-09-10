@@ -762,4 +762,328 @@ suite('CrActionMenu', function() {
       assertFalse(menu.getDialog().open);
     });
   });
+
+  suite('Unbounded', function() {
+    let menu: CrActionMenuElement;
+    let dots: HTMLElement;
+
+    setup(function() {
+      document.body.innerHTML = getTrustedStaticHtml`
+        <button id="dots">...</button>
+        <cr-action-menu use-unbounded>
+          <button class="dropdown-item">Item 1</button>
+          <button class="dropdown-item">Item 2</button>
+        </cr-action-menu>
+      `;
+      menu = document.querySelector('cr-action-menu')!;
+      dots = document.querySelector('#dots')!;
+    });
+
+    test(
+        'allows negative coordinates without clamping to document', function() {
+          menu.showAtPosition({
+            top: -50,
+            left: -30,
+            minX: -500,
+            minY: -500,
+            maxX: 2000,
+            maxY: 2000,
+          });
+
+          assertTrue(menu.getDialog().open);
+          assertEquals('-50px', menu.getDialog().style.top);
+          assertEquals('-30px', menu.getDialog().style.left);
+        });
+
+    test('opens without throwing when useUnbounded is true', function() {
+      menu.showAt(dots, {
+        anchorAlignmentX: AnchorAlignment.AFTER_START,
+        anchorAlignmentY: AnchorAlignment.AFTER_END,
+      });
+
+      assertTrue(menu.getDialog().open);
+      assertTrue(menu.useUnbounded);
+      menu.close();
+    });
+
+    test(
+        'activates and deactivates unbounded dialog when useUnbounded is true',
+        () => {
+          let showEventFired = false;
+          let hideEventFired = false;
+          const dialog = menu.getDialog();
+          dialog.addEventListener('beforetoggle', (e: Event) => {
+            const toggleEvent = e as ToggleEvent;
+            if (toggleEvent.newState === 'open') {
+              showEventFired = true;
+            } else if (toggleEvent.newState === 'closed') {
+              hideEventFired = true;
+            }
+          });
+
+          menu.showAt(dots);
+          assertTrue(menu.open);
+          assertTrue(dialog.matches(':unbounded'));
+          assertTrue(showEventFired);
+
+          menu.close();
+          assertFalse(menu.open);
+          assertFalse(dialog.matches(':unbounded'));
+          assertTrue(hideEventFired);
+        });
+
+    test(
+        'logs warning and resets useUnbounded to false if API is unsupported',
+        async () => {
+          const original =
+              (HTMLElement.prototype as unknown as
+               Record<string, unknown>)['showUnboundedElement'];
+          delete (
+              HTMLElement.prototype as unknown as
+              Record<string, unknown>)['showUnboundedElement'];
+
+          const warnCalls: string[] = [];
+          const originalWarn = console.warn;
+          console.warn = (...args: unknown[]) => {
+            warnCalls.push(args.join(' '));
+          };
+
+          try {
+            const newMenu = document.createElement('cr-action-menu');
+            document.body.appendChild(newMenu);
+            newMenu.useUnbounded = true;
+            await microtasksFinished();
+
+            assertFalse(newMenu.useUnbounded);
+            assertEquals(1, warnCalls.length);
+            assertTrue(warnCalls[0]!.includes('not supported'));
+            newMenu.remove();
+          } finally {
+            if (original !== undefined) {
+              (HTMLElement.prototype as unknown as
+               Record<string, unknown>)['showUnboundedElement'] = original;
+            }
+            console.warn = originalWarn;
+          }
+        });
+
+    test('clamps center alignment to screen bounds in unbounded mode', () => {
+      // Center alignment overflowing maxX clamps to maxX - menuWidth.
+      menu.showAtPosition({
+        top: 50,
+        left: 950,
+        height: 30,
+        width: 100,
+        minX: 0,
+        maxX: 1000,
+        anchorAlignmentX: AnchorAlignment.CENTER,
+      });
+      const menuWidth = menu.getDialog().offsetWidth;
+      assertEquals(`${1000 - menuWidth}px`, menu.getDialog().style.left);
+      menu.close();
+
+      // Center alignment underflowing minX clamps to minX.
+      menu.showAtPosition({
+        top: 50,
+        left: 0,
+        height: 30,
+        width: 100,
+        minX: 50,
+        maxX: 1000,
+        anchorAlignmentX: AnchorAlignment.CENTER,
+      });
+      assertEquals('50px', menu.getDialog().style.left);
+      menu.close();
+    });
+
+    test('closes menu when receiving beforetoggle closed toggle event', () => {
+      menu.showAt(dots);
+      assertTrue(menu.open);
+
+      const dialog = menu.getDialog() as UnboundedDialogElement;
+      let hideCalled = false;
+      const originalHide = dialog.hideUnboundedElement;
+      dialog.hideUnboundedElement = () => {
+        hideCalled = true;
+        return originalHide ? originalHide.call(dialog) : Promise.resolve();
+      };
+
+      try {
+        const toggleEvent = new CustomEvent('beforetoggle');
+        Object.assign(toggleEvent, {oldState: 'open', newState: 'closed'});
+        dialog.dispatchEvent(toggleEvent);
+
+        assertFalse(menu.open);
+        assertFalse(dialog.open);
+        assertFalse(hideCalled);
+      } finally {
+        dialog.hideUnboundedElement = originalHide;
+      }
+    });
+
+    test('preserves host document scroll position when opening', () => {
+      document.body.style.height = '2000px';
+      document.body.style.width = '2000px';
+      document.documentElement.scrollLeft = 120;
+      document.documentElement.scrollTop = 240;
+
+      menu.showAtPosition({top: 50, left: 50});
+      assertEquals(120, document.documentElement.scrollLeft);
+      assertEquals(240, document.documentElement.scrollTop);
+
+      menu.close();
+      document.documentElement.scrollLeft = 0;
+      document.documentElement.scrollTop = 0;
+      document.body.style.height = '';
+      document.body.style.width = '';
+    });
+
+    test(
+        'preserves requested anchor alignment without clamping when ' +
+            'useUnbounded is true',
+        () => {
+          menu.showAtPosition({
+            top: 200,
+            left: 50,
+            height: 30,
+            width: 100,
+            anchorAlignmentY: AnchorAlignment.AFTER_END,
+          });
+
+          assertEquals('230px', menu.getDialog().style.top);
+          menu.close();
+        });
+
+    test(
+        'flips forward and backward alignments when overflowing display ' +
+            'bounds in unbounded mode',
+        () => {
+          // Forward AFTER_END flips to backward (start - menuLength) when
+          // overflowing maxY.
+          menu.showAtPosition({
+            top: 500,
+            left: 50,
+            height: 30,
+            width: 100,
+            minY: 0,
+            maxY: 550,
+            anchorAlignmentY: AnchorAlignment.AFTER_END,
+          });
+          const menuHeight = menu.getDialog().offsetHeight;
+          assertEquals(`${500 - menuHeight}px`, menu.getDialog().style.top);
+          menu.close();
+
+          // Forward AFTER_START flips to backward (end - menuLength) when
+          // overflowing maxX.
+          menu.showAtPosition({
+            top: 50,
+            left: 950,
+            height: 30,
+            width: 100,
+            minX: 0,
+            maxX: 1000,
+            anchorAlignmentX: AnchorAlignment.AFTER_START,
+          });
+          const menuWidth = menu.getDialog().offsetWidth;
+          assertEquals(`${1050 - menuWidth}px`, menu.getDialog().style.left);
+          menu.close();
+
+          // Backward BEFORE_START flips to forward (end) when underflowing
+          // minY.
+          menu.showAtPosition({
+            top: 50,
+            left: 50,
+            height: 30,
+            width: 100,
+            minY: 100,
+            maxY: 1000,
+            anchorAlignmentY: AnchorAlignment.BEFORE_START,
+          });
+          assertEquals('80px', menu.getDialog().style.top);
+          menu.close();
+
+          // Backward BEFORE_END flips to forward (start) when underflowing
+          // minX.
+          menu.showAtPosition({
+            top: 50,
+            left: 50,
+            height: 30,
+            width: 100,
+            minX: 100,
+            maxX: 1000,
+            anchorAlignmentX: AnchorAlignment.BEFORE_END,
+          });
+          assertEquals('50px', menu.getDialog().style.left);
+          menu.close();
+        });
+
+    test(
+        'focuses items on mouseover with preventScroll when ' +
+            'useUnbounded is true',
+        () => {
+          menu.showAt(dots);
+          const firstItem = menu.querySelector<HTMLElement>('.dropdown-item')!;
+          let preventScrollValue: boolean|undefined;
+          const originalFocus = firstItem.focus.bind(firstItem);
+          firstItem.focus = (options?: FocusOptions) => {
+            preventScrollValue = options?.preventScroll;
+            originalFocus(options);
+          };
+
+          firstItem.dispatchEvent(
+              new MouseEvent('mouseover', {bubbles: true, composed: true}));
+          assertEquals(true, preventScrollValue);
+          menu.close();
+        });
+
+    test(
+        'focuses items on arrow key navigation with preventScroll when ' +
+            'useUnbounded is true',
+        () => {
+          menu.showAt(dots);
+          const firstItem = menu.querySelector<HTMLElement>('.dropdown-item')!;
+          let preventScrollValue: boolean|undefined;
+          const originalFocus = firstItem.focus.bind(firstItem);
+          firstItem.focus = (options?: FocusOptions) => {
+            preventScrollValue = options?.preventScroll;
+            originalFocus(options);
+          };
+
+          keyDownOn(menu, 0, [], 'ArrowDown');
+          assertEquals(true, preventScrollValue);
+          menu.close();
+        });
+
+    test('focuses wrapper with preventScroll when useUnbounded is true', () => {
+      let preventScrollValue: boolean|undefined;
+      const originalFocus = menu.$.wrapper.focus.bind(menu.$.wrapper);
+      menu.$.wrapper.focus = (options?: FocusOptions) => {
+        preventScrollValue = options?.preventScroll;
+        originalFocus(options);
+      };
+
+      menu.showAt(dots);
+      assertEquals(true, preventScrollValue);
+      menu.close();
+    });
+
+    test(
+        'does not set preventScroll on focus when useUnbounded is false',
+        () => {
+          menu.useUnbounded = false;
+          menu.showAt(dots);
+          const firstItem = menu.querySelector<HTMLElement>('.dropdown-item')!;
+          let preventScrollValue: boolean|undefined;
+          const originalFocus = firstItem.focus.bind(firstItem);
+          firstItem.focus = (options?: FocusOptions) => {
+            preventScrollValue = options?.preventScroll;
+            originalFocus(options);
+          };
+
+          firstItem.dispatchEvent(
+              new MouseEvent('mouseover', {bubbles: true, composed: true}));
+          assertEquals(false, preventScrollValue);
+          menu.close();
+        });
+  });
 });

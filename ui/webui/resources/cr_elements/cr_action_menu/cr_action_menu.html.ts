@@ -9,7 +9,8 @@ import type {CrActionMenuElement} from './cr_action_menu.js';
 export function getHtml(this: CrActionMenuElement) {
   return html`
 <dialog id="dialog" part="dialog" @close="${this.onNativeDialogClose_}"
-    role="application"
+    @beforetoggle="${this.onDialogBeforetoggle_}"
+    ?unbounded="${this.useUnbounded}" role="application"
     aria-roledescription="${this.roleDescription || nothing}">
   <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1"
       aria-label="${this.accessibilityLabel || nothing}">

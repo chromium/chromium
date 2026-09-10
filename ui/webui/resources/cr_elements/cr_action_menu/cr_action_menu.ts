@@ -11,6 +11,7 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {isMac, isWindows} from '//resources/js/platform.js';
 import {getDeepActiveElement} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_action_menu.css.js';
 import {getHtml} from './cr_action_menu.html.js';
@@ -24,7 +25,7 @@ function hasFocusoutOutside(e: FocusEvent, element: Element|null): boolean {
   return !element || !element.contains(e.relatedTarget as Node);
 }
 
-interface ShowAtConfig {
+export interface ShowAtConfig {
   top?: number;
   left?: number;
   width?: number;
@@ -74,7 +75,8 @@ const AFTER_END_OFFSET: number = 10;
  */
 function getStartPointWithAnchor(
     start: number, end: number, menuLength: number,
-    anchorAlignment: AnchorAlignment, min: number, max: number): number {
+    anchorAlignment: AnchorAlignment, min: number, max: number,
+    unbounded: boolean = false): number {
   let startPoint = 0;
   switch (anchorAlignment) {
     case AnchorAlignment.BEFORE_START:
@@ -96,6 +98,46 @@ function getStartPointWithAnchor(
       assertNotReachedCase(anchorAlignment);
   }
 
+  // Unbounded case clamping: Clamps to screen size as well as max/min.
+  if (unbounded) {
+    const isForward =
+        (anchorAlignment === AnchorAlignment.AFTER_END ||
+         anchorAlignment === AnchorAlignment.AFTER_START);
+    const isBackward =
+        (anchorAlignment === AnchorAlignment.BEFORE_START ||
+         anchorAlignment === AnchorAlignment.BEFORE_END);
+
+    const spaceForward = max - end;
+    const spaceBackward = start - min;
+
+    // If opening Forward (DOWN / RIGHT) overflows the screen limit:
+    if (isForward && Number.isFinite(max) && (startPoint + menuLength > max)) {
+      if (spaceBackward >= menuLength || spaceBackward > spaceForward) {
+        // Flip to Backward (UP / LEFT)
+        startPoint = (anchorAlignment === AnchorAlignment.AFTER_END) ?
+            start - menuLength :
+            end - menuLength;
+      }
+    } else if (isBackward && Number.isFinite(min) && (startPoint < min)) {
+      // If opening Backward (UP / LEFT) underflows the screen limit:
+      if (spaceForward >= menuLength || spaceForward > spaceBackward) {
+        // Flip to Forward (DOWN / RIGHT)
+        startPoint =
+            (anchorAlignment === AnchorAlignment.BEFORE_START) ? end : start;
+      }
+    } else if (anchorAlignment === AnchorAlignment.CENTER) {
+      if (Number.isFinite(max) && startPoint + menuLength > max) {
+        startPoint = max - menuLength;
+      }
+      if (Number.isFinite(min) && startPoint < min) {
+        startPoint = min;
+      }
+    }
+
+    return startPoint;
+  }
+
+  // Non-unbounded case clamping.
   if (startPoint + menuLength > max) {
     startPoint = end - menuLength;
   }
@@ -173,6 +215,15 @@ export class CrActionMenuElement extends CrLitElement {
 
       // Descriptor of the menu. Should be something along the lines of "menu"
       roleDescription: {type: String},
+
+      // Enables Unbounded Element support on the internal <dialog>, allowing
+      // the action menu to render into an external OS surface outside the host
+      // window/WebContents. Position calculations use screen coordinates, and
+      // the menu does not automatically close on host window resize.
+      useUnbounded: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
   accessor accessibilityLabel: string|undefined;
@@ -181,6 +232,7 @@ export class CrActionMenuElement extends CrLitElement {
   accessor open: boolean = false;
   accessor roleDescription: string|undefined;
   accessor nonModal: boolean = false;
+  accessor useUnbounded: boolean = false;
 
   private boundClose_: (() => void)|null = null;
   private resizeObserver_: ResizeObserver|null = null;
@@ -192,6 +244,19 @@ export class CrActionMenuElement extends CrLitElement {
     super.disconnectedCallback();
 
     this.removeListeners_();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('useUnbounded') && this.useUnbounded) {
+      if (!('showUnboundedElement' in HTMLElement.prototype)) {
+        console.warn(
+            'CrActionMenu: useUnbounded property is not supported in this ' +
+            'environment.');
+        this.useUnbounded = false;
+      }
+    }
   }
 
   override firstUpdated() {
@@ -206,6 +271,29 @@ export class CrActionMenuElement extends CrLitElement {
    */
   getDialog(): HTMLDialogElement {
     return this.$.dialog;
+  }
+
+  private getUnboundedDialog_(): UnboundedDialogElement {
+    return this.$.dialog as UnboundedDialogElement;
+  }
+
+  private showUnboundedDialog_() {
+    this.getUnboundedDialog_().showUnboundedElement().catch(
+        err => this.handleUnboundedError_('showUnboundedElement', err));
+  }
+
+  private hideUnboundedDialog_() {
+    this.getUnboundedDialog_().hideUnboundedElement().catch(
+        err => this.handleUnboundedError_('hideUnboundedElement', err));
+  }
+
+  private handleUnboundedError_(operation: string, err: unknown) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      // AbortError is expected if the unbounded element is dismissed by user
+      // action (e.g. ESC key) before presentation completes.
+      return;
+    }
+    console.error(`${operation} failed:`, err);
   }
 
   private removeListeners_() {
@@ -294,12 +382,19 @@ export class CrActionMenuElement extends CrLitElement {
     }
   }
 
+  private focusElement_(el: HTMLElement) {
+    // preventScroll is only applied when useUnbounded is true to prevent
+    // scrolling the host document while preserving full keyboard
+    // accessibility and focus outline indicators.
+    el.focus({preventScroll: this.useUnbounded});
+  }
+
   private onMouseover_(e: Event) {
     const item =
         (e.composedPath() as HTMLElement[])
             .find(
                 el => el.matches && el.matches(SELECTABLE_DROPDOWN_ITEM_QUERY));
-    (item || this.$.wrapper).focus();
+    this.focusElement_(item || this.$.wrapper);
   }
 
   private updateFocus_(
@@ -313,18 +408,26 @@ export class CrActionMenuElement extends CrLitElement {
       const delta = next ? 1 : -1;
       index = (numOptions + focusedIndex + delta) % numOptions;
     }
-    options[index]!.focus();
+    this.focusElement_(options[index]!);
   }
 
-  close() {
+  close(unboundedAlreadyDismissed: boolean = false) {
     if (!this.open) {
       return;
+    }
+    this.open = false;
+
+    if (this.useUnbounded && !unboundedAlreadyDismissed) {
+      this.hideUnboundedDialog_();
     }
 
     // Removing 'resize' and 'popstate' listeners when dialog is closed.
     this.removeListeners_();
+
+    // Closing the native <dialog> is required for both standard and unbounded
+    // menus: hideUnboundedElement() only tears down the external platform
+    // surface, leaving the HTML <dialog> open in DOM until close() is called.
     this.$.dialog.close();
-    this.open = false;
     if (this.anchorElement_) {
       assert(this.anchorElement_);
       focusWithoutInk(this.anchorElement_);
@@ -366,7 +469,7 @@ export class CrActionMenuElement extends CrLitElement {
           anchorAlignmentX: AnchorAlignment.BEFORE_END,
         },
         config));
-    this.$.wrapper.focus();
+    this.focusElement_(this.$.wrapper);
   }
 
   /**
@@ -407,17 +510,23 @@ export class CrActionMenuElement extends CrLitElement {
     this.nonModal ? this.$.dialog.show() : this.$.dialog.showModal();
     this.open = true;
 
-    config.top += scrollTop;
-    config.left += scrollLeft;
+    if (this.useUnbounded) {
+      this.$.dialog.toggleAttribute('unbounded', true);
+      this.positionDialog_(config);
+      this.showUnboundedDialog_();
+    } else {
+      config.top += scrollTop;
+      config.left += scrollLeft;
 
-    this.positionDialog_(Object.assign(
-        {
-          minX: scrollLeft,
-          minY: scrollTop,
-          maxX: scrollLeft + doc.clientWidth,
-          maxY: scrollTop + doc.clientHeight,
-        },
-        config));
+      this.positionDialog_(Object.assign(
+          {
+            minX: scrollLeft,
+            minY: scrollTop,
+            maxX: scrollLeft + doc.clientWidth,
+            maxY: scrollTop + doc.clientHeight,
+          },
+          config));
+    }
 
     // Restore the scroll position.
     doc.scrollTop = scrollTop;
@@ -432,7 +541,7 @@ export class CrActionMenuElement extends CrLitElement {
       if (firstSelectableItem) {
         requestAnimationFrame(() => {
           // Wait for the next animation frame for the dialog to become visible.
-          firstSelectableItem.focus();
+          this.focusElement_(firstSelectableItem);
         });
       }
     }
@@ -452,6 +561,30 @@ export class CrActionMenuElement extends CrLitElement {
     this.lastConfig_ = config;
     const c = Object.assign(getDefaultShowConfig(), config);
 
+    if (this.useUnbounded) {
+      // In unbounded mode, the menu can render outside the host window.
+      // Compute boundary coordinates relative to the physical screen origin so
+      // the dialog is clamped to the visible monitor rather than the host
+      // document.
+      const screenLeft = window.screenX;
+      const screenTop = window.screenY;
+      const screenWidth = window.screen.availWidth;
+      const screenHeight = window.screen.availHeight;
+
+      if (config.minX === undefined) {
+        c.minX = -screenLeft;
+      }
+      if (config.minY === undefined) {
+        c.minY = -screenTop;
+      }
+      if (config.maxX === undefined) {
+        c.maxX = screenWidth - screenLeft;
+      }
+      if (config.maxY === undefined) {
+        c.maxY = screenHeight - screenTop;
+      }
+    }
+
     const top = c.top;
     const left = c.left;
     const bottom = top + c.height!;
@@ -465,7 +598,8 @@ export class CrActionMenuElement extends CrLitElement {
 
     const offsetWidth = this.$.dialog.offsetWidth;
     const menuLeft = getStartPointWithAnchor(
-        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!);
+        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!,
+        this.useUnbounded);
 
     if (rtl) {
       const menuRight =
@@ -477,7 +611,7 @@ export class CrActionMenuElement extends CrLitElement {
 
     const menuTop = getStartPointWithAnchor(
         top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY!, c.minY!,
-        c.maxY!);
+        c.maxY!, this.useUnbounded);
     this.$.dialog.style.top = menuTop + 'px';
   }
 
@@ -487,6 +621,23 @@ export class CrActionMenuElement extends CrLitElement {
           !node.getAttribute('role')) {
         node.setAttribute('role', 'menuitem');
       }
+    }
+  }
+
+  /**
+   * In unbounded mode, the native OS popup window can be dismissed directly by
+   * light dismiss (e.g. clicking outside the host document), firing a
+   * Blink 'beforetoggle' ToggleEvent when its presentation state transitions to
+   * 'closed'. We listen for this event to close the dialog when the unbounded
+   * window gets light dismissed.
+   */
+  protected onDialogBeforetoggle_(e: Event) {
+    if (!this.useUnbounded) {
+      return;
+    }
+    const toggleEvent = e as Event & {newState?: string};
+    if (toggleEvent.newState === 'closed' && this.open) {
+      this.close(/*unboundedAlreadyDismissed=*/ true);
     }
   }
 
