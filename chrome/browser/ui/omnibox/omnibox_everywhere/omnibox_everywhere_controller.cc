@@ -79,13 +79,6 @@ OmniboxEverywhereController::OmniboxEverywhereController(
   }
   UpdateHotkeyRegistration();
 
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/532193825): Move icon creation to First Run Experience
-  // (FRE).
-  shortcut_helper_.AsyncCall(base::IgnoreResult(
-      &OmniboxEverywhereShortcutHelperWin::EnsureIconPersisted));
-#endif
-
   if (g_browser_process && g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(g_browser_process->profile_manager());
     for (auto* profile :

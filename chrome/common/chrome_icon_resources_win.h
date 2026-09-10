@@ -48,6 +48,9 @@ enum {
   // The Chrome Isolated Mode icon.
   kIsolatedIndex = 12,
 
+  // The Omnibox Everywhere icon.
+  kOmniboxEverywhereIndex = 13,
+
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The Chromium App Launcher icon.
   kAppLauncherIndex = 1,
@@ -63,6 +66,9 @@ enum {
 
   // The Chromium Isolated Mode icon.
   kIsolatedIndex = 5,
+
+  // The Chromium Omnibox Everywhere icon.
+  kOmniboxEverywhereIndex = 6,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 

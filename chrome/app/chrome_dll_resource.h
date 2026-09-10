@@ -39,6 +39,7 @@
 #define IDR_X006_HTML_DOC               129
 #define IDR_X007_PDF_DOC                130
 #define IDR_X008_ISOLATED               131
+#define IDR_X009_OMNIBOX_EVERYWHERE     132
 
 // clang-format on
 

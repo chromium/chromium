@@ -28,6 +28,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/shortcut.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_icon_resources_win.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
@@ -45,42 +47,13 @@ class OmniboxEverywhereShortcutWinTest : public ChromeViewsTestBase {
   ~OmniboxEverywhereShortcutWinTest() override = default;
 };
 
-TEST_F(OmniboxEverywhereShortcutWinTest, GetAppUserModelIdAndIconPath) {
+TEST_F(OmniboxEverywhereShortcutWinTest, GetAppUserModelId) {
   std::wstring app_id = GetAppUserModelId();
   EXPECT_FALSE(app_id.empty());
   EXPECT_NE(app_id.find(L"app_search_in_chrome"), std::wstring::npos);
-
-  base::FilePath icon_path = GetIconFilePath();
-  EXPECT_FALSE(icon_path.empty());
-  EXPECT_EQ(icon_path.BaseName().value(),
-            FILE_PATH_LITERAL("SearchInChrome.ico"));
-}
-
-TEST_F(OmniboxEverywhereShortcutWinTest, EnsureIconPersisted) {
-  base::ScopedTempDir user_data_dir;
-  ASSERT_TRUE(user_data_dir.CreateUniqueTempDir());
-  base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
-                                              user_data_dir.GetPath());
-
-  OmniboxEverywhereShortcutHelperWin helper;
-  EXPECT_TRUE(helper.EnsureIconPersisted());
-  base::FilePath icon_path = GetIconFilePath();
-  EXPECT_TRUE(base::PathExists(icon_path));
-
-  std::optional<int64_t> file_size = base::GetFileSize(icon_path);
-  ASSERT_TRUE(file_size.has_value());
-  EXPECT_GT(*file_size, 0);
-
-  // Calling EnsureIconPersisted again when the file already exists succeeds.
-  EXPECT_TRUE(helper.EnsureIconPersisted());
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcut) {
-  base::ScopedTempDir user_data_dir;
-  ASSERT_TRUE(user_data_dir.CreateUniqueTempDir());
-  base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
-                                              user_data_dir.GetPath());
-
   base::ScopedTempDir start_menu_dir;
   ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
   base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
@@ -110,7 +83,10 @@ TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcut) {
   EXPECT_NE(properties.arguments.find(L"--omnibox-everywhere"),
             std::wstring::npos);
   EXPECT_EQ(properties.app_id, GetAppUserModelId());
-  EXPECT_EQ(properties.icon, GetIconFilePath());
+  EXPECT_NE(properties.icon.value().find(chrome::kBrowserProcessExecutableName),
+            std::wstring::npos);
+  EXPECT_EQ(properties.icon_index,
+            static_cast<int>(icon_resources::kOmniboxEverywhereIndex));
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest, SequenceBoundHelper) {
