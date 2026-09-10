@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.TooltipCompat;
 
@@ -36,6 +37,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -443,6 +445,23 @@ public class StatusView extends LinearLayout {
                 });
     }
 
+    /**
+     * Sets the resource provider. This is primarily called during binding which occurs on the UI
+     * thread post inflation.
+     *
+     * @param resourceProvider Provider for omnibox resources.
+     */
+    void setResourceProvider(OmniboxResourceProvider resourceProvider) {
+        setStatusIconSize(resourceProvider.getStatusIconSize());
+        setCornerRadiusRes(resourceProvider.getStatusIconCornerRadiusRes(/* focused= */ false));
+    }
+
+    /** Specify the layout size of the status icon. */
+    void setStatusIconSize(@Px int size) {
+        mStatusIconSize = size;
+        mStatusIconView.setIconSize(mStatusIconSize);
+    }
+
     /** Specify the corner radius of the icon outline provider. */
     void setCornerRadiusRes(@DimenRes int radiusRes) {
         mIconCornerRadiusProvider.setRadius(getResources().getDimensionPixelSize(radiusRes));
@@ -689,5 +708,9 @@ public class StatusView extends LinearLayout {
 
     void setIconAnimationDurationForTesting(int duration) {
         mIconAnimationDurationForTests = duration;
+    }
+
+    int getStatusIconSizeForTesting() {
+        return mStatusIconSize;
     }
 }

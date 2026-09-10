@@ -16,7 +16,6 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -374,12 +373,9 @@ public class StatusMediator
         updateStatusViewVisibility();
         updateStatusViewMinWidth();
 
-        @DimenRes
-        int cornerRes =
-                OmniboxFeatures.sPreviewMatchFavicons.isEnabled()
-                        ? R.dimen.omnibox_small_icon_rounding_radius
-                        : R.dimen.omnibox_search_engine_logo_composed_half_size;
-        mModel.set(StatusProperties.STATUS_ICON_CORNER_RADIUS, cornerRes);
+        mModel.set(
+                StatusProperties.STATUS_ICON_CORNER_RADIUS,
+                mResourceProvider.getStatusIconCornerRadiusRes(/* focused= */ true));
     }
 
     void endInput() {
@@ -392,8 +388,9 @@ public class StatusMediator
         updateStatusViewVisibility();
         updateStatusViewMinWidth();
 
-        @DimenRes int cornerRes = R.dimen.omnibox_search_engine_logo_composed_half_size;
-        mModel.set(StatusProperties.STATUS_ICON_CORNER_RADIUS, cornerRes);
+        mModel.set(
+                StatusProperties.STATUS_ICON_CORNER_RADIUS,
+                mResourceProvider.getStatusIconCornerRadiusRes(/* focused= */ false));
     }
 
     private void setFuseboxSessionState(@Nullable FuseboxSessionState sessionState) {

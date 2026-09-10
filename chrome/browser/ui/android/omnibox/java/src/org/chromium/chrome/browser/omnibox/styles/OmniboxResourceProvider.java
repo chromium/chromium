@@ -468,6 +468,28 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache.getDimen(R.dimen.omnibox_small_icon_rounding_radius);
     }
 
+    /** Returns the layout size of the status icon in pixels. */
+    public @Px int getStatusIconSize() {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(R.dimen.omnibox_search_engine_logo_composed_size_desktop);
+        }
+        return mCache.getDimen(R.dimen.omnibox_search_engine_logo_composed_size);
+    }
+
+    /**
+     * Returns the dimension resource ID for the status icon corner radius.
+     *
+     * @param focused Whether the omnibox input field currently has focus.
+     */
+    public @DimenRes int getStatusIconCornerRadiusRes(boolean focused) {
+        if (focused && OmniboxFeatures.sPreviewMatchFavicons.isEnabled()) {
+            return R.dimen.omnibox_small_icon_rounding_radius;
+        }
+        return OmniboxCapabilities.isDesktopPlatform()
+                ? R.dimen.omnibox_search_engine_logo_composed_half_size_desktop
+                : R.dimen.omnibox_search_engine_logo_composed_half_size;
+    }
+
     /** Get most visited carousel top padding. */
     public @Px int getMostVisitedCarouselTopPadding() {
         return mCache.getDimen(R.dimen.omnibox_carousel_suggestion_padding_smaller);

@@ -33,6 +33,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -50,6 +52,7 @@ public class StatusViewUnitTest {
     private PropertyModel mStatusModel;
     private PropertyModelChangeProcessor mStatusMCP;
     private ViewGroup mParentView;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
@@ -68,7 +71,11 @@ public class StatusViewUnitTest {
                         .inflate(R.layout.location_status, mParentView, /* attachToRoot= */ true)
                         .findViewById(R.id.location_bar_status);
         mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(mParentView));
-        mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
+        mResourceProvider = new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
+        mStatusModel =
+                new PropertyModel.Builder(StatusProperties.ALL_KEYS)
+                        .with(StatusProperties.RESOURCE_PROVIDER, mResourceProvider)
+                        .build();
         mStatusMCP =
                 PropertyModelChangeProcessor.create(
                         mStatusModel, mStatusView, new StatusViewBinder());
@@ -78,6 +85,7 @@ public class StatusViewUnitTest {
     @After
     public void tearDown() {
         mStatusMCP.destroy();
+        mResourceProvider.destroy();
     }
 
     private void performLayout() {
@@ -273,5 +281,11 @@ public class StatusViewUnitTest {
                 StatusProperties.STATUS_ICON_RESOURCE,
                 new StatusIconResource(R.drawable.ic_search_24dp, /* tint= */ 0));
         assertEquals(View.GONE, mStatusView.getVisibility());
+    }
+
+    @Test
+    public void testResourceProvider_setsStatusIconSize() {
+        assertEquals(
+                mResourceProvider.getStatusIconSize(), mStatusView.getStatusIconSizeForTesting());
     }
 }

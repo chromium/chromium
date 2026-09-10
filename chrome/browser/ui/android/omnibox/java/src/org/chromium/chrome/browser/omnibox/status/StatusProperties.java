@@ -24,10 +24,12 @@ import androidx.core.util.ObjectsCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -235,6 +237,10 @@ public class StatusProperties {
     static final WritableBooleanPropertyKey INCOGNITO_BADGE_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The omnibox resource provider. */
+    static final ReadableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
+            new ReadableObjectPropertyKey<>();
+
     /** The status separator color. */
     static final WritableIntPropertyKey SEPARATOR_COLOR = new WritableIntPropertyKey();
 
@@ -301,6 +307,7 @@ public class StatusProperties {
                 ALPHA,
                 ANIMATIONS_ENABLED,
                 INCOGNITO_BADGE_VISIBLE,
+                RESOURCE_PROVIDER,
                 SEPARATOR_COLOR,
                 SHOW_STATUS_VIEW,
                 STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,

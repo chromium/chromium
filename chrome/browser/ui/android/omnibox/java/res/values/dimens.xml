@@ -138,7 +138,11 @@ found in the LICENSE file.
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_half_size">12dp</dimen>
+    <dimen name="omnibox_search_engine_logo_composed_half_size_desktop">10dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
+    <dimen name="omnibox_search_engine_logo_composed_size_desktop">
+        @dimen/omnibox_desktop_small_decoration_icon_size
+    </dimen>
     <dimen name="omnibox_simple_card_lead_in">16dp</dimen>
     <dimen name="omnibox_small_icon_rounding_radius">4dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>

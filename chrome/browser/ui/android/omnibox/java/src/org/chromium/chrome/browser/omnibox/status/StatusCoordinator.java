@@ -101,7 +101,10 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         mStatusView = statusView;
         mLocationBarDataProvider = locationBarDataProvider;
 
-        mModel = new PropertyModel(StatusProperties.ALL_KEYS);
+        mModel =
+                new PropertyModel.Builder(StatusProperties.ALL_KEYS)
+                        .with(StatusProperties.RESOURCE_PROVIDER, resourceProvider)
+                        .build();
 
         PropertyModelChangeProcessor.create(mModel, mStatusView, new StatusViewBinder());
 
@@ -132,9 +135,10 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                         onPlusButtonClicked);
 
         Resources res = mStatusView.getResources();
+        int statusIconWidth = resourceProvider.getStatusIconSize();
         mMediator.setUrlMinWidth(
                 res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
-                        + res.getDimensionPixelSize(R.dimen.location_bar_status_icon_width)
+                        + statusIconWidth
                         + res.getDimensionPixelSize(R.dimen.location_bar_start_padding)
                         + res.getDimensionPixelSize(R.dimen.location_bar_end_padding));
 

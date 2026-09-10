@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.ViewUtils;
@@ -30,6 +32,21 @@ public class StatusIconView extends LinearLayout {
 
         mIconView = findViewById(R.id.location_bar_status_icon);
         mStatusIconHoldingSpace = findViewById(R.id.location_bar_status_icon_holding_space);
+    }
+
+    /**
+     * Sets the size of the status icon and minimum width of the container.
+     *
+     * @param size The size in pixels.
+     */
+    void setIconSize(@Px int size) {
+        setMinimumWidth(size);
+        var params = mIconView.getLayoutParams();
+        if (params != null) {
+            params.width = size;
+            params.height = size;
+            mIconView.setLayoutParams(params);
+        }
     }
 
     @Override

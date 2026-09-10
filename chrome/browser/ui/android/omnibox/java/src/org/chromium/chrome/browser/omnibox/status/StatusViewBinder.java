@@ -27,6 +27,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setAnimationsEnabled(model.get(StatusProperties.ANIMATIONS_ENABLED));
         } else if (propertyKey == StatusProperties.INCOGNITO_BADGE_VISIBLE) {
             view.setIncognitoBadgeVisibility(model.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
+        } else if (propertyKey == StatusProperties.RESOURCE_PROVIDER) {
+            view.setResourceProvider(model.get(StatusProperties.RESOURCE_PROVIDER));
         } else if (propertyKey == StatusProperties.SEPARATOR_COLOR) {
             view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
         } else if (propertyKey == StatusProperties.SHOW_STATUS_VIEW) {
