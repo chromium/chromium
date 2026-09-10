@@ -1953,7 +1953,7 @@ String InlineNode::TextContentForStickyImagesQuirk(
 static LayoutUnit ComputeContentSize(InlineNode node,
                                      WritingMode container_writing_mode,
                                      const ConstraintSpace& space,
-                                     const MinMaxSizesFloatInput& float_input,
+                                     const MinMaxSizesInput& input,
                                      LineBreakerMode mode,
                                      LineBreaker::MaxSizeCache* max_size_cache,
                                      std::optional<LayoutUnit>* max_size_out,
@@ -1964,7 +1964,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       case LineBreakerMode::kMinContent:
         return LayoutUnit();
       case LineBreakerMode::kContent:
-        return float_input.constrained_inline_size;
+        return input.constrained_inline_size;
       case LineBreakerMode::kMaxContent:
         return LayoutUnit::Max();
     }
@@ -1989,9 +1989,9 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     STACK_ALLOCATED();
 
    public:
-    explicit FloatsMaxSize(const MinMaxSizesFloatInput& float_input)
-        : floats_inline_size_(float_input.float_left_inline_size +
-                              float_input.float_right_inline_size) {
+    explicit FloatsMaxSize(const MinMaxSizesInput& input)
+        : floats_inline_size_(input.float_left_inline_size +
+                              input.float_right_inline_size) {
       DCHECK_GE(floats_inline_size_, 0);
     }
 
@@ -2206,7 +2206,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     return inline_size;
   }
 
-  FloatsMaxSize floats_max_size(float_input);
+  FloatsMaxSize floats_max_size(input);
   bool can_compute_max_size_from_min_size = true;
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache, node,
                                             &floats_max_size);
@@ -2241,7 +2241,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       const MinMaxSizesResult child_result =
           ComputeMinAndMaxContentContribution(
               style, float_node, float_space,
-              MinMaxSizesFloatInput::UnconstrainedUntriaged());
+              MinMaxSizesInput::UnconstrainedUntriaged());
       LayoutUnit child_inline_margins =
           ComputeMarginsFor(float_space, float_node.Style(), space).InlineSum();
 
@@ -2289,7 +2289,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 #if EXPENSIVE_DCHECKS_ARE_ON()
     // Check the max size matches to the value computed from 2 pass.
     LayoutUnit content_size = ComputeContentSize(
-        node, container_writing_mode, space, float_input,
+        node, container_writing_mode, space, input,
         LineBreakerMode::kMaxContent, max_size_cache, nullptr, nullptr);
     bool values_might_be_saturated =
         (*max_size_out)->MightBeSaturated() || content_size.MightBeSaturated();
@@ -2306,7 +2306,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const ConstraintSpace& space,
-    const MinMaxSizesFloatInput& float_input) const {
+    const MinMaxSizesInput& input) const {
   PrepareLayoutIfNeeded();
 
   // Compute the max of inline sizes of all line boxes with 0 available inline
@@ -2316,23 +2316,22 @@ MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   std::optional<LayoutUnit> max_size;
   bool depends_on_block_constraints = false;
-  sizes.min_size =
-      ComputeContentSize(*this, container_writing_mode, space, float_input,
-                         LineBreakerMode::kMinContent, &max_size_cache,
-                         &max_size, &depends_on_block_constraints);
+  sizes.min_size = ComputeContentSize(
+      *this, container_writing_mode, space, input, LineBreakerMode::kMinContent,
+      &max_size_cache, &max_size, &depends_on_block_constraints);
   if (Style().IsInShrinkToFitSubtree()) {
     sizes.max_size =
-        float_input.constrained_inline_size <= sizes.min_size
+        input.constrained_inline_size <= sizes.min_size
             ? sizes.min_size
-            : ComputeContentSize(*this, container_writing_mode, space,
-                                 float_input, LineBreakerMode::kContent,
-                                 nullptr, nullptr, nullptr);
+            : ComputeContentSize(*this, container_writing_mode, space, input,
+                                 LineBreakerMode::kContent, nullptr, nullptr,
+                                 nullptr);
   } else if (max_size) {
     sizes.max_size = *max_size;
   } else {
-    sizes.max_size = ComputeContentSize(
-        *this, container_writing_mode, space, float_input,
-        LineBreakerMode::kMaxContent, &max_size_cache, nullptr, nullptr);
+    sizes.max_size = ComputeContentSize(*this, container_writing_mode, space,
+                                        input, LineBreakerMode::kMaxContent,
+                                        &max_size_cache, nullptr, nullptr);
   }
 
   // Negative text-indent can make min > max. Ensure max encompasses the min.

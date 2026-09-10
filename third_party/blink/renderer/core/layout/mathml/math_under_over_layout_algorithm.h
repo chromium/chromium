@@ -18,7 +18,7 @@ class CORE_EXPORT MathUnderOverLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
  private:
   void GatherChildren(BlockNode* base, BlockNode* second, BlockNode* third);

@@ -89,7 +89,7 @@ GridLineResolver GridLanesLayoutAlgorithm::BuildGridLineResolver(
 }
 
 MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   // If the intrinsic inline size has been overridden, use the provided value.
   const auto& node = Node();
   LayoutUnit override_intrinsic_inline_size =
@@ -617,7 +617,7 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
     }
     return item_node.ComputeMinMaxSizes(
         item_node.Style().GetWritingMode(), type, space_for_measure,
-        MinMaxSizesFloatInput::UnconstrainedUntriaged());
+        MinMaxSizesInput::UnconstrainedUntriaged());
   };
 
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
@@ -1459,7 +1459,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         const MinMaxSizes sizes =
             ComputeMinAndMaxContentContributionForSelf(
                 grid_lanes_item.node, space_for_measure,
-                MinMaxSizesFloatInput::UnconstrainedUntriaged())
+                MinMaxSizesInput::UnconstrainedUntriaged())
                 .sizes;
         opt_fixed_inline_size = sizes.max_size;
       }
@@ -2228,7 +2228,7 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
           }
           return item_node.ComputeMinMaxSizes(
               item_style.GetWritingMode(), type, space,
-              MinMaxSizesFloatInput::UnconstrainedUntriaged());
+              MinMaxSizesInput::UnconstrainedUntriaged());
         };
         const MinMaxSizesResult result =
             ComputeMinAndMaxContentContributionForSelf(item_node, space,
@@ -2495,7 +2495,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
     const MinMaxSizesResult min_max_sizes_result =
         ComputeMinAndMaxContentContributionForSelf(
             grid_lanes_item->node, space_for_measure,
-            MinMaxSizesFloatInput::UnconstrainedUntriaged());
+            MinMaxSizesInput::UnconstrainedUntriaged());
     // The min/max contribution may depend on the block-size of the
     // grid-area: <div id="target" style="height: 200px; width: 600px;">
     //   <div style="display: inline-grid-lanes; width: min-content;

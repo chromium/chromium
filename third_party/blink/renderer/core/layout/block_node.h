@@ -106,11 +106,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // The constraint space is also used to perform layout when this block's
   // writing mode is orthogonal to its parent's, in which case the constraint
   // space is not optional.
-  MinMaxSizesResult ComputeMinMaxSizes(
-      WritingMode container_writing_mode,
-      const SizeType,
-      const ConstraintSpace&,
-      const MinMaxSizesFloatInput& float_input) const;
+  MinMaxSizesResult ComputeMinMaxSizes(WritingMode container_writing_mode,
+                                       const SizeType,
+                                       const ConstraintSpace&,
+                                       const MinMaxSizesInput& input) const;
 
   LayoutInputNode FirstChild() const;
 

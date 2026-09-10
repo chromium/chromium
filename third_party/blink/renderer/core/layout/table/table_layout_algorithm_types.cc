@@ -157,9 +157,9 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
       const auto space = builder.ToConstraintSpace();
 
       cached_min_max_sizes =
-          node.ComputeMinMaxSizes(
-                  table_writing_mode, SizeType::kIntrinsic, space,
-                  MinMaxSizesFloatInput::UnconstrainedUntriaged())
+          node.ComputeMinMaxSizes(table_writing_mode, SizeType::kIntrinsic,
+                                  space,
+                                  MinMaxSizesInput::UnconstrainedUntriaged())
               .sizes;
     }
 

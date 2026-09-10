@@ -27,7 +27,7 @@ CustomLayoutAlgorithm::CustomLayoutAlgorithm(
 }
 
 MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput& input) {
+    const MinMaxSizesInput& input) {
   if (!Node().IsCustomLayoutLoaded())
     return FallbackMinMaxSizes(input);
 
@@ -202,7 +202,7 @@ void CustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
 }
 
 MinMaxSizesResult CustomLayoutAlgorithm::FallbackMinMaxSizes(
-    const MinMaxSizesFloatInput& input) const {
+    const MinMaxSizesInput& input) const {
   return BlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
 }
 

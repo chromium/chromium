@@ -199,17 +199,17 @@ inline const LayoutResult* LayoutWithAlgorithm(
 
 inline MinMaxSizesResult ComputeMinMaxSizesWithAlgorithm(
     const LayoutAlgorithmParams& params,
-    const MinMaxSizesFloatInput& float_input) {
+    const MinMaxSizesInput& input) {
   MinMaxSizesResult result;
-  DetermineAlgorithmAndRun(params, [&result, &float_input]<typename Algorithm>(
-                                       Algorithm* algorithm) {
-    result = algorithm->ComputeMinMaxSizes(float_input);
-  });
+  DetermineAlgorithmAndRun(
+      params, [&result, &input]<typename Algorithm>(Algorithm* algorithm) {
+        result = algorithm->ComputeMinMaxSizes(input);
+      });
   return result;
 }
 
 bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
-                                      const MinMaxSizesFloatInput& float_input,
+                                      const MinMaxSizesInput& input,
                                       const BlockNode& node) {
   // Obviously can't use the cache if our intrinsic logical widths are dirty.
   if (node.GetLayoutBox()->IntrinsicLogicalWidthsDirty())
@@ -217,8 +217,9 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
 
   // We don't store the float inline sizes for comparison, always skip the
   // cache in this case.
-  if (float_input.float_left_inline_size || float_input.float_right_inline_size)
+  if (input.float_left_inline_size || input.float_right_inline_size) {
     return false;
+  }
 
   // Check if we have any percentage padding.
   const auto& style = node.Style();
@@ -940,7 +941,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const SizeType type,
     const ConstraintSpace& constraint_space,
-    const MinMaxSizesFloatInput& float_input) const {
+    const MinMaxSizesInput& input) const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
@@ -1043,7 +1044,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
 
   std::optional<MinMaxSizesResult> result;
 
-  MinMaxSizesFloatInput updated_input = float_input;
+  MinMaxSizesInput updated_input = input;
   if (Style().IsInShrinkToFitSubtree()) {
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
@@ -1056,7 +1057,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
         });
     const LayoutUnit available_inline_size =
         constraint_space.AvailableSize().inline_size == kIndefiniteSize
-            ? float_input.constrained_inline_size
+            ? input.constrained_inline_size
             : constraint_space.AvailableSize().inline_size;
     updated_input.constrained_inline_size =
         (min_max.ClampSizeToMinAndMax(available_inline_size) -

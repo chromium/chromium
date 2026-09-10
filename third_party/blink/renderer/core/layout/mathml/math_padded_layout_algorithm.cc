@@ -106,7 +106,7 @@ const LayoutResult* MathPaddedLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

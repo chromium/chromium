@@ -45,7 +45,7 @@ struct LayoutAlgorithmParams {
 // Subclassed template specializations (actual layout algorithms) are required
 // to define the following two functions:
 //
-//   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+//   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 //   const LayoutResult* Layout();
 //
 // ComputeMinMaxSizes() should compute the min-content and max-content intrinsic

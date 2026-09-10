@@ -254,7 +254,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
 }
 
 MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   const auto& node = Node();
   const LayoutUnit override_intrinsic_inline_size =
       node.OverrideIntrinsicContentInlineSize();
@@ -619,9 +619,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       return To<GridNode>(node).ComputeSubgridMinMaxSizes(
           sizing_subtree.SubgridSizingSubtree(*grid_item), space);
     }
-    return node.ComputeMinMaxSizes(
-        item_style.GetWritingMode(), type, space,
-        MinMaxSizesFloatInput::UnconstrainedUntriaged());
+    return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type, space,
+                                   MinMaxSizesInput::UnconstrainedUntriaged());
   };
 
   auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {

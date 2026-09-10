@@ -117,7 +117,7 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) {
     NOTREACHED();
   }
 

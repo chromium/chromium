@@ -401,7 +401,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   DCHECK(IsValidMathMLScript(Node()));
 
   if (auto result = CalculateMinMaxSizesIgnoringChildren(

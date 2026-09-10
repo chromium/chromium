@@ -651,7 +651,7 @@ bool ComputeOofInlineDimensions(
     builder.SetBlockAutoBehavior(block_auto_size_behavior);
     return node.ComputeMinMaxSizes(style.GetWritingMode(), type,
                                    builder.ToConstraintSpace(),
-                                   MinMaxSizesFloatInput::Unconstrained());
+                                   MinMaxSizesInput::Unconstrained());
   };
 
   LayoutUnit inline_size;

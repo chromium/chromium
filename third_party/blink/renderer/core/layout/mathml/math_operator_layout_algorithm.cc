@@ -200,7 +200,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   MinMaxSizes sizes;
   // https://w3c.github.io/mathml-core/#layout-of-operators
   auto* element = DynamicTo<MathMLOperatorElement>(Node().GetDOMNode());

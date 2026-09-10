@@ -41,7 +41,7 @@ class CORE_EXPORT PageBorderBoxLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) {
     NOTREACHED();
   }
 

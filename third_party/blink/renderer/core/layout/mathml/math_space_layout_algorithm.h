@@ -18,7 +18,7 @@ class CORE_EXPORT MathSpaceLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 };
 
 }  // namespace blink

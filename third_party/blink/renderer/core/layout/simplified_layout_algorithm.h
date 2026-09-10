@@ -49,7 +49,7 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
   // possible.
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) {
     NOTREACHED();
   }
 

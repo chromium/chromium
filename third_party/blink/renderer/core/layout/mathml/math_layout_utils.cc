@@ -57,8 +57,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
   const auto space = builder.ToConstraintSpace();
 
   auto result = ComputeMinAndMaxContentContribution(
-      parent_style, child, space,
-      MinMaxSizesFloatInput::UnconstrainedUntriaged());
+      parent_style, child, space, MinMaxSizesInput::UnconstrainedUntriaged());
 
   // Add margins directly here.
   result.sizes +=

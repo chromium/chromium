@@ -47,7 +47,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   // opportunity, and max-content is when lines do not wrap at all.
   MinMaxSizesResult ComputeMinMaxSizes(WritingMode container_writing_mode,
                                        const ConstraintSpace&,
-                                       const MinMaxSizesFloatInput&) const;
+                                       const MinMaxSizesInput&) const;
 
   // Instruct to re-compute |PrepareLayout| on the next layout.
   void InvalidatePrepareLayoutForTest() {

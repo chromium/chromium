@@ -51,7 +51,7 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
     BlockNode sup = nullptr;
   };
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
   const LayoutResult* Layout();
 
  private:

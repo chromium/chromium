@@ -292,7 +292,7 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
           BlockNode(button_box)
               .ComputeMinMaxSizes(mode, SizeType::kIntrinsic,
                                   builder.ToConstraintSpace(),
-                                  MinMaxSizesFloatInput::Unconstrained())
+                                  MinMaxSizesInput::Unconstrained())
               .sizes.max_size;
       default_label_width +=
           max + (kAfterButtonSpacing * box.StyleRef().EffectiveZoom());

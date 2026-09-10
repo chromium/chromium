@@ -78,7 +78,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
   // Create an empty column fragment, modeled after an existing column. The
   // resulting column may then be used and mutated by the out-of-flow layout

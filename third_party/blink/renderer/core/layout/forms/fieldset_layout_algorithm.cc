@@ -443,7 +443,7 @@ void FieldsetLayoutAlgorithm::ConsumeRemainingFragmentainerSpace() {
 }
 
 MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   MinMaxSizesResult result;
 
   bool has_inline_size_containment = Node().ShouldApplyInlineSizeContainment();
@@ -467,8 +467,7 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
       const auto space = builder.ToConstraintSpace();
 
       result = ComputeMinAndMaxContentContribution(
-          Style(), legend, space,
-          MinMaxSizesFloatInput::UnconstrainedUntriaged());
+          Style(), legend, space, MinMaxSizesInput::UnconstrainedUntriaged());
       result.sizes +=
           ComputeMarginsFor(space, legend.Style(), GetConstraintSpace())
               .InlineSum();
@@ -490,8 +489,7 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
     const auto space = builder.ToConstraintSpace();
 
     MinMaxSizesResult content_result = ComputeMinAndMaxContentContribution(
-        Style(), content, space,
-        MinMaxSizesFloatInput::UnconstrainedUntriaged());
+        Style(), content, space, MinMaxSizesInput::UnconstrainedUntriaged());
     content_result.sizes +=
         ComputeMarginsFor(space, content.Style(), GetConstraintSpace())
             .InlineSum();

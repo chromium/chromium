@@ -69,7 +69,7 @@ const LayoutResult* FrameSetLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult FrameSetLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   MinMaxSizes sizes;
   const auto& space = GetConstraintSpace();
   // This function needs to return a value which is >= border+padding in order

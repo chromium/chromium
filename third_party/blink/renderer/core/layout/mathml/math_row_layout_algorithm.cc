@@ -231,7 +231,7 @@ const LayoutResult* MathRowLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathRowLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

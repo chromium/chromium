@@ -430,7 +430,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   const LayoutUnit override_intrinsic_inline_size =
       Node().OverrideIntrinsicContentInlineSize();
   if (override_intrinsic_inline_size != kIndefiniteSize) {
@@ -444,8 +444,8 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   BlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
-  MinMaxSizesResult result = algorithm.ComputeMinMaxSizes(
-      MinMaxSizesFloatInput::UnconstrainedUntriaged());
+  MinMaxSizesResult result =
+      algorithm.ComputeMinMaxSizes(MinMaxSizesInput::UnconstrainedUntriaged());
 
   // How column-width affects min/max sizes is currently not defined in any
   // spec, but there used to be a definition, which everyone still follows to
@@ -541,7 +541,7 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
       const ConstraintSpace child_space = builder.ToConstraintSpace();
       child_result = ComputeMinAndMaxContentContribution(
           Style(), *child_block, child_space,
-          MinMaxSizesFloatInput::UnconstrainedUntriaged());
+          MinMaxSizesInput::UnconstrainedUntriaged());
     }
     result.sizes.Encompass(child_result.sizes);
   }

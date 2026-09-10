@@ -841,7 +841,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       MinMaxSizesResult child_contributions =
           ComputeMinAndMaxContentContribution(
               Style(), child, space,
-              MinMaxSizesFloatInput::UnconstrainedUntriaged());
+              MinMaxSizesInput::UnconstrainedUntriaged());
       max_content_contribution = child_contributions.sizes.max_size;
       BoxStrut child_margins =
           ComputeMarginsFor(space, child.Style(), GetConstraintSpace());
@@ -891,7 +891,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       // |container_writing_mode|.
       return child.ComputeMinMaxSizes(
           child_writing_mode, type, child_space,
-          MinMaxSizesFloatInput::UnconstrainedUntriaged());
+          MinMaxSizesInput::UnconstrainedUntriaged());
     };
 
     auto InlineSizeFunc = [&]() -> LayoutUnit {
@@ -2876,7 +2876,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer(
-    const MinMaxSizesFloatInput& float_input) {
+    const MinMaxSizesInput& input) {
   DCHECK(!is_column_);
   MinMaxSizes container_sizes;
   bool depends_on_block_constraints = false;
@@ -2896,8 +2896,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer(
   base::span<FlexItem> items = base::span(flex_items_);
   std::optional<LayoutUnit> line_break_size;
   if (is_multi_line_ && Style().IsInShrinkToFitSubtree() &&
-      float_input.constrained_inline_size != LayoutUnit::Max()) {
-    line_break_size = float_input.constrained_inline_size;
+      input.constrained_inline_size != LayoutUnit::Max()) {
+    line_break_size = input.constrained_inline_size;
   } else if (balance_min_line_count_) {
     line_break_size = LayoutUnit::Max();
   }
@@ -2923,7 +2923,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer(
       const MinMaxSizesResult min_max_content_contributions =
           ComputeMinAndMaxContentContribution(
               Style(), child, space,
-              MinMaxSizesFloatInput::UnconstrainedUntriaged());
+              MinMaxSizesInput::UnconstrainedUntriaged());
       depends_on_block_constraints |=
           min_max_content_contributions.depends_on_block_constraints;
 
@@ -3014,13 +3014,13 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer(
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput& float_input) {
+    const MinMaxSizesInput& input) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
 
   if (!is_column_) {
-    return ComputeMinMaxSizeOfRowContainer(float_input);
+    return ComputeMinMaxSizeOfRowContainer(input);
   }
 
   if (is_multi_line_) {
@@ -3043,7 +3043,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
     const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(
         child, ResolvedAlignSelf(child.Style()));
     MinMaxSizesResult child_result = ComputeMinAndMaxContentContribution(
-        Style(), child, space, MinMaxSizesFloatInput::UnconstrainedUntriaged());
+        Style(), child, space, MinMaxSizesInput::UnconstrainedUntriaged());
     BoxStrut child_margins =
         ComputeMarginsFor(space, child.Style(), GetConstraintSpace());
     child_result.sizes += child_margins.InlineSum();

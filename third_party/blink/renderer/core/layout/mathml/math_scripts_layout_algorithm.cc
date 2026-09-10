@@ -414,7 +414,7 @@ const LayoutResult* MathScriptsLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

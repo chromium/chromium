@@ -43,7 +43,7 @@ class CORE_EXPORT MathRowLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
  private:
   void LayoutRowItems(ChildrenVector*,

@@ -197,7 +197,7 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   DCHECK(IsValidMathMLRadical(Node()));
 
   BlockNode base = nullptr;

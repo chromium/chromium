@@ -164,7 +164,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   void SetupRelayoutData(const BlockLayoutAlgorithm& previous, RelayoutType);
   void SetBoxType(PhysicalFragment::BoxType type);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
   const LayoutResult* Layout();
   LayoutUnit ComputeInitialBlockStartAnnotationSpace() const;
 

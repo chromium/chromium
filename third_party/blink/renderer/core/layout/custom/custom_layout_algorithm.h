@@ -18,12 +18,12 @@ class CORE_EXPORT CustomLayoutAlgorithm
  public:
   explicit CustomLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
   const LayoutResult* Layout();
 
  private:
   void AddAnyOutOfFlowPositionedChildren(LayoutInputNode* child);
-  MinMaxSizesResult FallbackMinMaxSizes(const MinMaxSizesFloatInput&) const;
+  MinMaxSizesResult FallbackMinMaxSizes(const MinMaxSizesInput&) const;
   const LayoutResult* FallbackLayout();
 
   const LayoutAlgorithmParams& params_;

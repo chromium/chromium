@@ -30,7 +30,7 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
                                const PhysicalBoxFragment& last_fragmentainer);
 
   const LayoutResult* Layout();
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) {
     NOTREACHED();
   }
 

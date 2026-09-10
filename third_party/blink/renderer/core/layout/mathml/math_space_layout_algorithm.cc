@@ -33,7 +33,7 @@ const LayoutResult* MathSpaceLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult MathSpaceLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   auto result =
       CalculateMinMaxSizesIgnoringChildren(Node(), BorderScrollbarPadding());
   DCHECK(result);

@@ -29,7 +29,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   void SetupRelayoutData(const FlexLayoutAlgorithm& previous, RelayoutType);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
   const LayoutResult* Layout();
 
  private:
@@ -140,8 +140,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // Set reading flow so they can be accessed by LayoutBox.
   void SetReadingFlowNodes(const FlexLineVector& flex_lines);
 
-  MinMaxSizesResult ComputeMinMaxSizeOfRowContainer(
-      const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizeOfRowContainer(const MinMaxSizesInput&);
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
 
   // Return the amount of block space available in the current fragmentainer

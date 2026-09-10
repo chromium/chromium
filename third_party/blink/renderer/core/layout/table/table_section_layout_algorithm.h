@@ -22,7 +22,7 @@ class CORE_EXPORT TableSectionLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) {
     // Table layout doesn't compute min/max sizes on table sections.
     NOTREACHED();
   }

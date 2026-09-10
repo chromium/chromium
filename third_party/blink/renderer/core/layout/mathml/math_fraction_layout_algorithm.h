@@ -17,7 +17,7 @@ class CORE_EXPORT MathFractionLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
  private:
   void GatherChildren(BlockNode* numerator, BlockNode* denominator);

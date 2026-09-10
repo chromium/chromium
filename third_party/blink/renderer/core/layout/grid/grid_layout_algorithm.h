@@ -32,7 +32,7 @@ class CORE_EXPORT GridLayoutAlgorithm
   using LayoutAlgorithm::Style;
 
   const LayoutResult* Layout();
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
   LayoutUnit ComputeSubgridIntrinsicBlockSize(
       const GridSizingSubtree& sizing_subtree) const;

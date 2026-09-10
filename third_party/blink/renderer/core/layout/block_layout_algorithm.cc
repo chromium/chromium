@@ -407,7 +407,7 @@ void BlockLayoutAlgorithm::SetBoxType(PhysicalFragment::BoxType type) {
 }
 
 MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput& float_input) {
+    const MinMaxSizesInput& input) {
   if (auto result =
           CalculateMinMaxSizesIgnoringChildren(node_, BorderScrollbarPadding()))
     return *result;
@@ -416,8 +416,8 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
   bool depends_on_block_constraints = false;
 
   const TextDirection direction = Style().Direction();
-  LayoutUnit float_left_inline_size = float_input.float_left_inline_size;
-  LayoutUnit float_right_inline_size = float_input.float_right_inline_size;
+  LayoutUnit float_left_inline_size = input.float_left_inline_size;
+  LayoutUnit float_right_inline_size = input.float_right_inline_size;
 
   for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
@@ -458,11 +458,11 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
         float_right_inline_size = LayoutUnit();
     }
 
-    MinMaxSizesFloatInput child_float_input =
-        MinMaxSizesFloatInput::Constrained(float_input.constrained_inline_size);
+    MinMaxSizesInput child_input =
+        MinMaxSizesInput::Constrained(input.constrained_inline_size);
     if (child.IsInline() || child.IsAnonymousBlockFlow()) {
-      child_float_input.float_left_inline_size = float_left_inline_size;
-      child_float_input.float_right_inline_size = float_right_inline_size;
+      child_input.float_left_inline_size = float_left_inline_size;
+      child_input.float_right_inline_size = float_right_inline_size;
     }
 
     MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(), child,
@@ -488,10 +488,10 @@ MinMaxSizesResult BlockLayoutAlgorithm::ComputeMinMaxSizes(
       // |NextSibling| returns the next block sibling, or nullptr, skipping all
       // following inline siblings and descendants.
       child_result = To<InlineNode>(child).ComputeMinMaxSizes(
-          Style().GetWritingMode(), space, child_float_input);
+          Style().GetWritingMode(), space, child_input);
     } else {
       child_result = ComputeMinAndMaxContentContribution(
-          Style(), To<BlockNode>(child), space, child_float_input);
+          Style(), To<BlockNode>(child), space, child_input);
     }
     DCHECK_LE(child_result.sizes.min_size, child_result.sizes.max_size)
         << child.ToString();

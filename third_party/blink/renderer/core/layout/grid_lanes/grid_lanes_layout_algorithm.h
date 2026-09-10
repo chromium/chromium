@@ -46,7 +46,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   using LayoutAlgorithm::Node;
   using LayoutAlgorithm::Style;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
   const LayoutResult* Layout();
 
   GridLineResolver BuildGridLineResolver(

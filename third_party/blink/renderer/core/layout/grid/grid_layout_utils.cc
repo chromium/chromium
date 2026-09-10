@@ -701,7 +701,7 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
             }
             return node.ComputeMinMaxSizes(
                 item_style.GetWritingMode(), type, space,
-                MinMaxSizesFloatInput::UnconstrainedUntriaged());
+                MinMaxSizesInput::UnconstrainedUntriaged());
           };
           return ResolveMinInlineLength(space, item_style, border_padding,
                                         MinMaxSizesFunc, min_length);

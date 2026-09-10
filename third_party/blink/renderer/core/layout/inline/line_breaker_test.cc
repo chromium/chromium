@@ -131,7 +131,7 @@ class LineBreakerTest : public RenderingTest {
 
     return node
         .ComputeMinMaxSizes(node.Style().GetWritingMode(), space,
-                            MinMaxSizesFloatInput::Unconstrained())
+                            MinMaxSizesInput::Unconstrained())
         .sizes;
   }
 

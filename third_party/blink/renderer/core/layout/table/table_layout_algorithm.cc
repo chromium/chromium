@@ -49,11 +49,10 @@ TableTypes::Caption ComputeCaptionConstraint(
     builder.SetAvailableBlockSize(kIndefiniteSize);
     const auto space = builder.ToConstraintSpace();
 
-    MinMaxSizes min_max_sizes =
-        ComputeMinAndMaxContentContribution(
-            table_style, caption, space,
-            MinMaxSizesFloatInput::UnconstrainedUntriaged())
-            .sizes;
+    MinMaxSizes min_max_sizes = ComputeMinAndMaxContentContribution(
+                                    table_style, caption, space,
+                                    MinMaxSizesInput::UnconstrainedUntriaged())
+                                    .sizes;
     min_max_sizes +=
         ComputeMarginsFor(space, caption.Style(), table_space).InlineSum();
     caption_min_max.Encompass(min_max_sizes);
@@ -702,7 +701,7 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) {
+    const MinMaxSizesInput&) {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();

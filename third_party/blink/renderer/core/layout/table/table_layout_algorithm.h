@@ -26,7 +26,7 @@ class CORE_EXPORT TableLayoutAlgorithm
 
   const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
   static LayoutUnit ComputeTableInlineSize(const TableNode& node,
                                            const ConstraintSpace& space,

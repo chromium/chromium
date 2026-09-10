@@ -20,7 +20,7 @@ class CORE_EXPORT MathTokenLayoutAlgorithm
   explicit MathTokenLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const LayoutResult* Layout();
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 };
 
 }  // namespace blink
