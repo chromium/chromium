@@ -1995,7 +1995,7 @@
     },
     {
       name: "CSSScrollSnapTypePair",
-      status: "test",
+      status: "experimental",
     },
     {
       // scroll-target-group property
