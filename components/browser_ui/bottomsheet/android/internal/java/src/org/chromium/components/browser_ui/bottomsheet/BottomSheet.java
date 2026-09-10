@@ -1739,6 +1739,14 @@ class BottomSheet extends BottomSheetView
             mBottomSheetContentContainer.setLayoutParams(params);
         }
 
+        if (mToolbarHolder != null
+                && mToolbarHolder.getLayoutParams() instanceof MarginLayoutParams toolbarParams) {
+            if (toolbarParams.topMargin != topMargin) {
+                toolbarParams.topMargin = topMargin;
+                mToolbarHolder.setLayoutParams(toolbarParams);
+            }
+        }
+
         if (isFullHeightResizeContent()) {
             @Px int newHeight = getResizingContentContainerHeight();
             mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, newHeight);

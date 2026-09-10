@@ -1747,4 +1747,78 @@ public class BottomSheetUnitTest {
         assertEquals(
                 ViewGroup.LayoutParams.MATCH_PARENT, contentContainer.getLayoutParams().height);
     }
+
+    @Test
+    public void testToolbarHolderTopMarginWithHandlebar() {
+        BottomSheet sheet =
+                (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+
+        TouchRestrictingFrameLayout toolbarHolder =
+                sheet.findViewById(R.id.bottom_sheet_toolbar_container);
+        sheet.setToolbarHolderForTesting(toolbarHolder);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ false);
+
+        View toolbarView = new View(mActivity);
+        BottomSheetContent contentWithToolbarAndHandlebar = mock(BottomSheetContent.class);
+        doReturn(true).when(contentWithToolbarAndHandlebar).showHandlebar();
+        doReturn(toolbarView).when(contentWithToolbarAndHandlebar).getToolbarView();
+        doReturn(new View(mActivity)).when(contentWithToolbarAndHandlebar).getContentView();
+
+        sheet.showContent(contentWithToolbarAndHandlebar);
+
+        ImageView handlebar = sheet.getHandlebarForTesting();
+        assertEquals(View.VISIBLE, handlebar.getVisibility());
+        int handlebarHeight = handlebar.getMeasuredHeight();
+        assertTrue("Handlebar height should be greater than 0", handlebarHeight > 0);
+
+        MarginLayoutParams toolbarParams = (MarginLayoutParams) toolbarHolder.getLayoutParams();
+        assertEquals(
+                "Toolbar holder top margin should match handlebar height",
+                handlebarHeight,
+                toolbarParams.topMargin);
+
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        MarginLayoutParams contentParams = (MarginLayoutParams) contentContainer.getLayoutParams();
+        assertEquals(
+                "Content container top margin should match handlebar height",
+                handlebarHeight,
+                contentParams.topMargin);
+
+        // Switch to sheet content without handlebar.
+        BottomSheetContent contentWithoutHandlebar = mock(BottomSheetContent.class);
+        doReturn(false).when(contentWithoutHandlebar).showHandlebar();
+        doReturn(toolbarView).when(contentWithoutHandlebar).getToolbarView();
+        doReturn(new View(mActivity)).when(contentWithoutHandlebar).getContentView();
+
+        sheet.showContent(contentWithoutHandlebar);
+
+        assertEquals(View.GONE, handlebar.getVisibility());
+        toolbarParams = (MarginLayoutParams) toolbarHolder.getLayoutParams();
+        assertEquals(
+                "Toolbar holder top margin should reset to 0 when handlebar is hidden",
+                0,
+                toolbarParams.topMargin);
+        contentParams = (MarginLayoutParams) contentContainer.getLayoutParams();
+        assertEquals(
+                "Content container top margin should reset to 0 when handlebar is hidden",
+                0,
+                contentParams.topMargin);
+    }
 }
