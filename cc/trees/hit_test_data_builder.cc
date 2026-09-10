@@ -49,6 +49,9 @@ uint32_t GetFlagsForSurfaceLayer(const SurfaceLayerImpl* layer) {
   } else {
     flags |= viz::HitTestRegionFlags::kHitTestMine;
   }
+  if (layer->has_pointer_events_none()) {
+    flags |= viz::HitTestRegionFlags::kHitTestIgnore;
+  }
   return flags;
 }
 
@@ -94,7 +97,8 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
   hit_test_region_list->bounds = active_tree_->GetDeviceViewport();
   hit_test_region_list->transform = active_tree_->DrawTransform();
 
-  float device_scale_factor = active_tree_->device_scale_factor();
+  const float device_scale_factor = active_tree_->device_scale_factor();
+  const EffectTree& effect_tree = active_tree_->property_trees()->effect_tree();
 
   for (const auto* layer : base::Reversed(*active_tree_)) {
     const SurfaceLayerImpl* surface_layer = EvaluateLayerAndTrackOverlap(layer);
@@ -104,43 +108,37 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
 
     // Using the enclosing rect to ensure antialiased boundary pixels cause
     // pointer input to be routed to this layer.
-    gfx::Rect content_rect(gfx::ScaleToEnclosingRect(
+    gfx::Rect hit_test_rect(gfx::ScaleToEnclosingRect(
         gfx::Rect(surface_layer->bounds()), device_scale_factor));
 
-    auto flag = GetFlagsForSurfaceLayer(surface_layer);
+    uint32_t flags = GetFlagsForSurfaceLayer(surface_layer);
     uint32_t async_hit_test_reasons =
         viz::AsyncHitTestReasons::kNotAsyncHitTest;
-    if (surface_layer->has_pointer_events_none()) {
-      flag |= viz::HitTestRegionFlags::kHitTestIgnore;
-    }
     if (IsSurfaceOverlapped(surface_layer)) {
-      flag |= viz::HitTestRegionFlags::kHitTestAsk;
+      flags |= viz::HitTestRegionFlags::kHitTestAsk;
       async_hit_test_reasons |= viz::AsyncHitTestReasons::kOverlappedRegion;
     }
     bool layer_hit_test_region_is_masked =
-        active_tree_->property_trees()
-            ->effect_tree()
-            .HitTestMayBeAffectedByMask(surface_layer->effect_tree_index());
+        effect_tree.HitTestMayBeAffectedByMask(
+            surface_layer->effect_tree_index());
     if (surface_layer->is_clipped() || layer_hit_test_region_is_masked) {
       bool layer_hit_test_region_is_rectangle =
           !layer_hit_test_region_is_masked &&
           surface_layer->ScreenSpaceTransform().Preserves2dAxisAlignment() &&
-          active_tree_->property_trees()
-              ->effect_tree()
-              .ClippedHitTestRegionIsRectangle(
-                  surface_layer->effect_tree_index());
-      content_rect =
+          effect_tree.ClippedHitTestRegionIsRectangle(
+              surface_layer->effect_tree_index());
+      hit_test_rect =
           gfx::ScaleToEnclosingRect(surface_layer->visible_layer_rect(),
                                     device_scale_factor, device_scale_factor);
       if (!layer_hit_test_region_is_rectangle) {
-        flag |= viz::HitTestRegionFlags::kHitTestAsk;
+        flags |= viz::HitTestRegionFlags::kHitTestAsk;
         async_hit_test_reasons |= viz::AsyncHitTestReasons::kIrregularClip;
       }
     }
     const auto& surface_id = surface_layer->range().end();
     hit_test_region_list->regions.emplace_back();
-    PopulateHitTestRegion(&hit_test_region_list->regions.back(), layer, flag,
-                          async_hit_test_reasons, gfx::RRectF(content_rect),
+    PopulateHitTestRegion(&hit_test_region_list->regions.back(), layer, flags,
+                          async_hit_test_reasons, gfx::RRectF(hit_test_rect),
                           surface_id, device_scale_factor);
   }
 
