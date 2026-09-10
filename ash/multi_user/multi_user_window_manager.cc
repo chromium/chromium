@@ -45,17 +45,21 @@ MultiUserWindowManager* g_instance = nullptr;
 bool g_multi_user_window_manager_enabled = true;
 
 bool HasSystemModalTransientChildWindow(aura::Window* window) {
-  if (window == nullptr)
-    return false;
+  CHECK(window);
+  CHECK(window->GetRootWindow());
 
   aura::Window* system_modal_container = window->GetRootWindow()->GetChildById(
       ash::kShellWindowId_SystemModalContainer);
-  if (window->parent() == system_modal_container)
+  if (window->parent() == system_modal_container &&
+      window->GetProperty(aura::client::kModalKey) ==
+          ui::mojom::ModalType::kSystem) {
     return true;
+  }
 
   for (aura::Window* transient_child : ::wm::GetTransientChildren(window)) {
-    if (HasSystemModalTransientChildWindow(transient_child))
+    if (HasSystemModalTransientChildWindow(transient_child)) {
       return true;
+    }
   }
   return false;
 }
