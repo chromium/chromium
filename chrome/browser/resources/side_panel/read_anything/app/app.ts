@@ -160,6 +160,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
       SelectionController.getInstance();
   private lineFocusController_: LineFocusController =
       LineFocusController.getInstance();
+  // Animation frame handle for scheduling text block extraction after DOM
+  // layout. Tracked so rapid consecutive calls to updateContent can cancel
+  // pending frames to avoid desynchronizing text node mapping with the AXTree.
+  private renderedTextBlocksAnimationFrameHandle_: number|null = null;
   protected accessor settingsPrefs_: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected accessor isSpeechActive_: boolean = false;
@@ -303,6 +307,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // it is called in tests, and the speech extension timeout can cause
     // flakiness.
     this.voiceLanguageController_.stopWaitingForSpeechExtension();
+    this.cancelRenderedTextBlocksAnimationFrame_();
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -365,6 +370,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   showLoading() {
+    this.cancelRenderedTextBlocksAnimationFrame_();
     this.contentController_.setState(ContentType.LOADING);
     this.speechController_.resetForNewContent();
   }
@@ -386,7 +392,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // Wait for the next animation frame to ensure the DOM is visible and then
     // send rendered text blocks to the controller so that it can map the
     // rendered text to the AXTree.
-    requestAnimationFrame(() => {
+    this.cancelRenderedTextBlocksAnimationFrame_();
+    this.renderedTextBlocksAnimationFrameHandle_ = requestAnimationFrame(() => {
+      this.renderedTextBlocksAnimationFrameHandle_ = null;
       this.onRenderedTextBlocksAvailable_();
     });
 
@@ -433,6 +441,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.contentController_.onRenderedTextMappingReady();
     this.selectionController_.updateSelection(
         this.getSelection(), this.$.container);
+  }
+
+  private cancelRenderedTextBlocksAnimationFrame_() {
+    if (this.renderedTextBlocksAnimationFrameHandle_ !== null) {
+      cancelAnimationFrame(this.renderedTextBlocksAnimationFrameHandle_);
+      this.renderedTextBlocksAnimationFrameHandle_ = null;
+    }
   }
 
   private onRenderedTextBlocksAvailable_() {

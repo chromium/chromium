@@ -604,6 +604,61 @@ suite('AppContent', () => {
 
           assertTrue(blocksCalled, 'Should be called after layout');
         });
+
+    test(
+        'rapid updateContent calls only send rendered blocks once',
+        async () => {
+          contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
+          let callCount = 0;
+          contentController.onRenderedTextBlocksAvailable = () => {
+            callCount++;
+          };
+
+          app.updateContent();
+          app.updateContent();
+          app.updateContent();
+
+          assertFalse(callCount > 0, 'Should wait for requestAnimationFrame');
+
+          // Wait for the animation frame.
+          await new Promise(resolve => requestAnimationFrame(resolve));
+
+          assertEquals(1, callCount, 'Should only be called once');
+        });
+
+    test('cancels scheduled requestAnimationFrame on disconnect', async () => {
+      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
+      let callCount = 0;
+      contentController.onRenderedTextBlocksAvailable = () => {
+        callCount++;
+      };
+
+      app.updateContent();
+      assertFalse(callCount > 0, 'Should wait for requestAnimationFrame');
+
+      app.disconnectedCallback();
+
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      assertEquals(0, callCount, 'Should not be called after disconnect');
+    });
+
+    test('cancels scheduled requestAnimationFrame on showLoading', async () => {
+      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
+      let callCount = 0;
+      contentController.onRenderedTextBlocksAvailable = () => {
+        callCount++;
+      };
+
+      app.updateContent();
+      assertFalse(callCount > 0, 'Should wait for requestAnimationFrame');
+
+      app.showLoading();
+
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      assertEquals(0, callCount, 'Should not be called after showLoading');
+    });
   });
 
   suite('on links toggle', () => {
