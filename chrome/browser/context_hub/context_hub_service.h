@@ -24,6 +24,7 @@
 #include "base/types/id_type.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
@@ -155,11 +156,13 @@ class ContextHubService : public KeyedService,
   // `callback` on completion indicating whether the generation was successful.
   void GenerateFirstPartyAutoTodos(AutoTodosStore::OperationCallback callback);
 
-  // Returns the timestamp when First Party Auto Todos were last generated.
-  base::Time GetLastFirstPartyGenerationTime() const;
+  // Returns generation metadata (last generation time and error state) for
+  // First Party Auto Todos.
+  AutoTodosGenerationMetadata GetFirstPartyGenerationMetadata() const;
 
-  // Returns the timestamp when Third Party Auto Todos were last generated.
-  base::Time GetLastThirdPartyGenerationTime() const;
+  // Returns generation metadata (last generation time and error state) for
+  // Third Party Auto Todos.
+  AutoTodosGenerationMetadata GetThirdPartyGenerationMetadata() const;
 
   // Generates tab-based todos and saves them in the AutoTodos store. Invokes
   // `callback` on completion indicating whether the generation was successful.
@@ -508,13 +511,13 @@ class ContextHubService : public KeyedService,
 
   std::unique_ptr<AutoTodosStore> auto_todos_store_;
 
-  // Timestamp of the most recent successful First Party Auto Todos generation
-  // during the current browser session.
-  base::Time last_first_party_generation_time_;
+  // Metadata for the most recent First Party Auto Todos generation during the
+  // current browser session.
+  AutoTodosGenerationMetadata first_party_generation_metadata_;
 
-  // Timestamp of the most recent successful Third Party Auto Todos generation
-  // during the current browser session.
-  base::Time last_third_party_generation_time_;
+  // Metadata for the most recent Third Party Auto Todos generation during the
+  // current browser session.
+  AutoTodosGenerationMetadata third_party_generation_metadata_;
 
   // Periodic timer that generates and stores 1P AutoTodos during the session.
   base::RepeatingTimer first_party_auto_todos_timer_;

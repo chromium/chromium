@@ -327,8 +327,8 @@ void ContextHubService::MaybeTriggerFirstPartyAutoTodosGeneration() {
     return;
   }
   const base::TimeDelta time_since_last_generation =
-      base::Time::Now() - last_first_party_generation_time_;
-  if (!last_first_party_generation_time_.is_null() &&
+      base::Time::Now() - first_party_generation_metadata_.last_generation_time;
+  if (!first_party_generation_metadata_.last_generation_time.is_null() &&
       time_since_last_generation >= base::TimeDelta() &&
       time_since_last_generation <
           features::kFirstPartyAutoTodosInterval.Get()) {
@@ -381,8 +381,8 @@ void ContextHubService::OnResume() {
   // system suspend on most platforms. Use Time::Now() (wall-clock time) to
   // determine the actual elapsed time since the last generation.
   const base::TimeDelta time_since_last_generation =
-      base::Time::Now() - last_first_party_generation_time_;
-  if (last_first_party_generation_time_.is_null() ||
+      base::Time::Now() - first_party_generation_metadata_.last_generation_time;
+  if (first_party_generation_metadata_.last_generation_time.is_null() ||
       time_since_last_generation < base::TimeDelta() ||
       time_since_last_generation >=
           features::kFirstPartyAutoTodosInterval.Get()) {
@@ -436,6 +436,7 @@ void ContextHubService::GenerateFirstPartyAutoTodos(
     return;
   }
 
+  first_party_generation_metadata_.has_error = false;
   is_generating_first_party_auto_todos_ = true;
   observers_.Notify(&Observer::OnFirstPartyAutoTodosGenerationStateChanged,
                     true);
@@ -489,12 +490,14 @@ bool ContextHubService::IsGeneratingFirstPartyAutoTodos() const {
   return is_generating_first_party_auto_todos_;
 }
 
-base::Time ContextHubService::GetLastFirstPartyGenerationTime() const {
-  return last_first_party_generation_time_;
+AutoTodosGenerationMetadata ContextHubService::GetFirstPartyGenerationMetadata()
+    const {
+  return first_party_generation_metadata_;
 }
 
-base::Time ContextHubService::GetLastThirdPartyGenerationTime() const {
-  return last_third_party_generation_time_;
+AutoTodosGenerationMetadata ContextHubService::GetThirdPartyGenerationMetadata()
+    const {
+  return third_party_generation_metadata_;
 }
 
 void ContextHubService::GenerateTabBasedTodos(
@@ -506,6 +509,8 @@ void ContextHubService::GenerateTabBasedTodos(
     }
     return;
   }
+
+  third_party_generation_metadata_.has_error = false;
 
   auto_todos_store_->GetAllItems(base::BindOnce(
       &ContextHubService::OnAllAutoTodosFetchedForTabBasedTodos,
@@ -564,7 +569,8 @@ void ContextHubService::OnAllAutoTodosFetchedForTabBasedTodos(
   }
 
   if (eligible_tabs.empty()) {
-    last_third_party_generation_time_ = base::Time::Now();
+    third_party_generation_metadata_.last_generation_time = base::Time::Now();
+    third_party_generation_metadata_.has_error = false;
     if (callback) {
       // Return early if there are no eligible tabs to process. Return true to
       // indicate that the operation was successful, just with no results.
@@ -723,9 +729,10 @@ void ContextHubService::FinishTabBasedTodosGeneration(bool success) {
   active_tab_todos_requests_ = 0;
   pending_tab_todos_requests_ = {};
   generated_tab_todos_.clear();
+  third_party_generation_metadata_.has_error = !success;
 
   if (success) {
-    last_third_party_generation_time_ = base::Time::Now();
+    third_party_generation_metadata_.last_generation_time = base::Time::Now();
   }
 
   observers_.Notify(&Observer::OnThirdPartyAutoTodosGenerationStateChanged,
@@ -803,8 +810,9 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
 void ContextHubService::FinishFirstPartyAutoTodosGeneration(bool success) {
   is_generating_first_party_auto_todos_ = false;
   first_party_auto_todos_retry_timer_.Stop();
+  first_party_generation_metadata_.has_error = !success;
   if (success) {
-    last_first_party_generation_time_ = base::Time::Now();
+    first_party_generation_metadata_.last_generation_time = base::Time::Now();
     // Reset the periodic background timer so the 24-hour countdown restarts
     // from this generation (whether triggered automatically or manually). This
     // prevents a manual generation (e.g. 2 hours before the scheduled timer)
@@ -862,7 +870,7 @@ void ContextHubService::ClearFirstPartyAutoTodos(
     std::move(callback).Run(false);
     return;
   }
-  last_first_party_generation_time_ = base::Time();
+  first_party_generation_metadata_ = {};
   auto_todos_store_->ClearFirstPartyTodos(std::move(callback));
 }
 
@@ -872,7 +880,7 @@ void ContextHubService::ClearThirdPartyAutoTodos(
     std::move(callback).Run(false);
     return;
   }
-  last_third_party_generation_time_ = base::Time();
+  third_party_generation_metadata_ = {};
   auto_todos_store_->ClearThirdPartyTodos(std::move(callback));
 }
 

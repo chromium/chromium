@@ -184,6 +184,25 @@ struct StructTraits<browser::context_hub::mojom::AutoTodoItemDataView,
 };
 
 template <>
+struct StructTraits<
+    browser::context_hub::mojom::AutoTodosGenerationMetadataDataView,
+    context_hub::AutoTodosGenerationMetadata> {
+  static base::Time last_generation_time(
+      const context_hub::AutoTodosGenerationMetadata& metadata) {
+    return metadata.last_generation_time;
+  }
+
+  static bool has_error(
+      const context_hub::AutoTodosGenerationMetadata& metadata) {
+    return metadata.has_error;
+  }
+
+  static bool Read(
+      browser::context_hub::mojom::AutoTodosGenerationMetadataDataView data,
+      context_hub::AutoTodosGenerationMetadata* out);
+};
+
+template <>
 struct StructTraits<browser::context_hub::mojom::DriveFileDataView,
                     personal_context::proto::DriveFile> {
   static GURL url(const personal_context::proto::DriveFile& drive_file) {

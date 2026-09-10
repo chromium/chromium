@@ -102,6 +102,14 @@ struct AutoTodoEntry {
   }
 };
 
+// Metadata regarding the generation of Auto Todos.
+struct AutoTodosGenerationMetadata {
+  // Timestamp of the last successful generation.
+  base::Time last_generation_time;
+  // Whether the last generation attempt failed.
+  bool has_error = false;
+};
+
 }  // namespace context_hub
 
 #endif  // CHROME_BROWSER_CONTEXT_HUB_AUTO_TODOS_AUTO_TODO_ENTRY_H_

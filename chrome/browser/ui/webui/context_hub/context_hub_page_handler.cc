@@ -89,19 +89,20 @@ void ContextHubPageHandler::GetAutoTodos(GetAutoTodosCallback callback) {
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
   if (!service) {
-    std::move(callback).Run({}, {}, base::Time(), base::Time());
+    std::move(callback).Run({}, {}, context_hub::AutoTodosGenerationMetadata(),
+                            context_hub::AutoTodosGenerationMetadata());
     return;
   }
 
-  base::Time last_first_party_generation_time =
-      service->GetLastFirstPartyGenerationTime();
-  base::Time last_third_party_generation_time =
-      service->GetLastThirdPartyGenerationTime();
+  context_hub::AutoTodosGenerationMetadata first_party_metadata =
+      service->GetFirstPartyGenerationMetadata();
+  context_hub::AutoTodosGenerationMetadata third_party_metadata =
+      service->GetThirdPartyGenerationMetadata();
 
   service->GetAutoTodos(base::BindOnce(
       [](GetAutoTodosCallback callback,
-         base::Time last_first_party_generation_time,
-         base::Time last_third_party_generation_time,
+         context_hub::AutoTodosGenerationMetadata first_party_metadata,
+         context_hub::AutoTodosGenerationMetadata third_party_metadata,
          std::vector<context_hub::AutoTodoEntry> entries) {
         std::vector<context_hub::AutoTodoEntry> first_party_todos;
         std::vector<context_hub::AutoTodoEntry> third_party_todos;
@@ -112,12 +113,11 @@ void ContextHubPageHandler::GetAutoTodos(GetAutoTodosCallback callback) {
             third_party_todos.push_back(std::move(entry));
           }
         }
-        std::move(callback).Run(
-            std::move(first_party_todos), std::move(third_party_todos),
-            last_first_party_generation_time, last_third_party_generation_time);
+        std::move(callback).Run(std::move(first_party_todos),
+                                std::move(third_party_todos),
+                                first_party_metadata, third_party_metadata);
       },
-      std::move(callback), last_first_party_generation_time,
-      last_third_party_generation_time));
+      std::move(callback), first_party_metadata, third_party_metadata));
 }
 
 void ContextHubPageHandler::UpdateAutoTodo(

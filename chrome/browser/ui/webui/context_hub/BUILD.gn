@@ -47,6 +47,10 @@ mojom("mojo_bindings") {
           cpp = "::context_hub::AutoTodoEntry"
         },
         {
+          mojom = "browser.context_hub.mojom.AutoTodosGenerationMetadata"
+          cpp = "::context_hub::AutoTodosGenerationMetadata"
+        },
+        {
           mojom = "browser.context_hub.mojom.SmartSearchResult"
           cpp = "::personal_context::proto::SmartSearchItem"
         },

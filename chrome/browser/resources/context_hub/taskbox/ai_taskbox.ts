@@ -193,7 +193,9 @@ export class AiTaskboxElement extends CrLitElement {
               .callbackRouter.onFirstPartyAutoTodosGenerationStateChanged
               .addListener((isGenerating: boolean) => {
                 this.isGeneratingGmailTodos_ = isGenerating;
-                if (!isGenerating) {
+                if (isGenerating) {
+                  this.hasGmailGenerationError_ = false;
+                } else if (!this.hasGmailGenerationError_) {
                   this.lastGmailGenerationTime_ = new Date();
                   this.hasGeneratedGmail_ = true;
                 }
@@ -203,7 +205,9 @@ export class AiTaskboxElement extends CrLitElement {
               .callbackRouter.onThirdPartyAutoTodosGenerationStateChanged
               .addListener((isGenerating: boolean) => {
                 this.isGeneratingTabTodos_ = isGenerating;
-                if (!isGenerating) {
+                if (isGenerating) {
+                  this.hasTabGenerationError_ = false;
+                } else if (!this.hasTabGenerationError_) {
                   this.lastTabGenerationTime_ = new Date();
                   this.hasGeneratedTab_ = true;
                 }
@@ -218,8 +222,8 @@ export class AiTaskboxElement extends CrLitElement {
         {
           firstPartyTodos,
           thirdPartyTodos,
-          lastFirstPartyGenerationTime,
-          lastThirdPartyGenerationTime,
+          firstPartyMetadata,
+          thirdPartyMetadata,
         },
         {feedbacks},
       ] =
@@ -227,16 +231,18 @@ export class AiTaskboxElement extends CrLitElement {
             browserProxyFactory.getInstance().handler.getAutoTodos(),
             browserProxyFactory.getInstance().handler.getTodoFeedbacks(),
           ]);
+      this.hasGmailGenerationError_ = firstPartyMetadata.hasError;
+      this.hasTabGenerationError_ = thirdPartyMetadata.hasError;
       this.lastGmailGenerationTime_ =
-          (lastFirstPartyGenerationTime &&
-           lastFirstPartyGenerationTime.internalValue > 0n) ?
-          convertMojoTimeToDate(lastFirstPartyGenerationTime) :
+          (firstPartyMetadata.lastGenerationTime &&
+           firstPartyMetadata.lastGenerationTime.internalValue > 0n) ?
+          convertMojoTimeToDate(firstPartyMetadata.lastGenerationTime) :
           null;
       this.hasGeneratedGmail_ = this.lastGmailGenerationTime_ !== null;
       this.lastTabGenerationTime_ =
-          (lastThirdPartyGenerationTime &&
-           lastThirdPartyGenerationTime.internalValue > 0n) ?
-          convertMojoTimeToDate(lastThirdPartyGenerationTime) :
+          (thirdPartyMetadata.lastGenerationTime &&
+           thirdPartyMetadata.lastGenerationTime.internalValue > 0n) ?
+          convertMojoTimeToDate(thirdPartyMetadata.lastGenerationTime) :
           null;
       this.hasGeneratedTab_ = this.lastTabGenerationTime_ !== null;
       const feedbackMap = new Map<string, boolean>();
@@ -474,6 +480,7 @@ export class AiTaskboxElement extends CrLitElement {
         this.dismissedTodos = null;
         this.hasGeneratedGmail_ = false;
         this.lastGmailGenerationTime_ = null;
+        this.hasGmailGenerationError_ = false;
       }
     } catch (e) {
       console.error('Failed to clear workspace todos:', e);
@@ -495,6 +502,7 @@ export class AiTaskboxElement extends CrLitElement {
         this.dismissedTabTodos = null;
         this.hasGeneratedTab_ = false;
         this.lastTabGenerationTime_ = null;
+        this.hasTabGenerationError_ = false;
       }
     } catch (e) {
       console.error('Failed to clear browser todos:', e);

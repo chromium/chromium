@@ -190,6 +190,16 @@ bool StructTraits<browser::context_hub::mojom::AutoTodoItemDataView,
 }
 
 // static
+bool StructTraits<
+    browser::context_hub::mojom::AutoTodosGenerationMetadataDataView,
+    context_hub::AutoTodosGenerationMetadata>::
+    Read(browser::context_hub::mojom::AutoTodosGenerationMetadataDataView data,
+         context_hub::AutoTodosGenerationMetadata* out) {
+  out->has_error = data.has_error();
+  return data.ReadLastGenerationTime(&out->last_generation_time);
+}
+
+// static
 browser::context_hub::mojom::SourceReferenceDataView::Tag
 UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
             personal_context::proto::SourceReference>::

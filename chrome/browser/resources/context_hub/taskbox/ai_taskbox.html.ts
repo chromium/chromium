@@ -73,7 +73,9 @@ ${this.showingReadingList_ ? html`
                         ${
           this.isGeneratingGmailTodos_ ?
               'Generating...' :
-              this.getFormattedTimeAgo_(this.lastGmailGenerationTime_)}
+              this.hasGmailGenerationError_ ?
+                  'Failed to generate' :
+                  this.getFormattedTimeAgo_(this.lastGmailGenerationTime_)}
                       </span>
                       <cr-icon-button
                           iron-icon="cr:sync"
@@ -210,7 +212,9 @@ ${this.showingReadingList_ ? html`
                         ${
           this.isGeneratingTabTodos_ ?
               'Generating...' :
-              this.getFormattedTimeAgo_(this.lastTabGenerationTime_)}
+              this.hasTabGenerationError_ ?
+                  'Failed to generate' :
+                  this.getFormattedTimeAgo_(this.lastTabGenerationTime_)}
                       </span>
                       <cr-icon-button
                           iron-icon="cr:sync"
