@@ -548,7 +548,7 @@ class CatapAudioInputStreamTest : public base::MultiProcessTest {
     }
 
     for (NSNumber* obj_element in actualArray) {
-      if (expectedIDs.count([obj_element unsignedIntValue]) == 0) {
+      if (!expectedIDs.contains([obj_element unsignedIntValue])) {
         return false;
       }
     }
@@ -757,7 +757,7 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
     EXPECT_TRUE([fake_catap_api()->last_tap_description isExclusive]);
     for (NSNumber* device_id_number in
          [fake_catap_api()->last_tap_description processes]) {
-      EXPECT_TRUE(device_ids_to_exclude.count(
+      EXPECT_TRUE(device_ids_to_exclude.contains(
           static_cast<AudioObjectID>([device_id_number intValue])));
     }
   }

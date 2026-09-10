@@ -120,7 +120,7 @@ uint32_t MediaPermissionDispatcher::RegisterCallback(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   uint32_t request_id = next_request_id_++;
-  DCHECK(!requests_.count(request_id));
+  DCHECK(!requests_.contains(request_id));
   requests_[request_id] = std::move(permission_status_cb);
 
   return request_id;

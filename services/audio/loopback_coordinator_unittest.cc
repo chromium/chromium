@@ -121,9 +121,9 @@ TEST_F(LoopbackCoordinatorTest, ForEachSourceIteratesOverAllMembers) {
 
   // Verify that the callback was run for every member we added.
   EXPECT_EQ(found_sources.size(), 3u);
-  EXPECT_TRUE(found_sources.count(&source1));
-  EXPECT_TRUE(found_sources.count(&source2));
-  EXPECT_TRUE(found_sources.count(&source3));
+  EXPECT_TRUE(found_sources.contains(&source1));
+  EXPECT_TRUE(found_sources.contains(&source2));
+  EXPECT_TRUE(found_sources.contains(&source3));
 
   // Cleanup.
   coordinator_.RemoveMember(&source1);
