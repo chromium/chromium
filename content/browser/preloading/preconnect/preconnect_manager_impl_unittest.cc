@@ -1125,6 +1125,69 @@ TEST_F(PreconnectManagerImplTest,
                                             network_anonymization_key, net::OK);
 }
 
+TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlFastPath) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPreconnectManagerDirectFastPath);
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = false;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
+
+  // In the fast path, PreconnectSockets is called immediately during
+  // StartPreconnectUrl without invoking ResolveHostProxy or requiring
+  // CompleteHostLookup.
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _));
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+
+  // Non http url shouldn't be preconnected.
+  GURL non_http_url("file:///tmp/index.html");
+  preconnect_manager_->StartPreconnectUrl(
+      non_http_url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestStartPreconnectUrlFastPath_PreconnectDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPreconnectManagerDirectFastPath);
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = false;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
+
+  // PreconnectSockets should not be called when delegate returns false.
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+}
+
 TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {
   GURL main_frame_url("http://google.com");
   net::NetworkAnonymizationKey network_anonymization_key =
