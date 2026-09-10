@@ -7,7 +7,10 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/contextual_search/contextual_search_service.h"
+
+namespace contextual_search {
+class ContextualSearchService;
+}
 
 class Profile;
 

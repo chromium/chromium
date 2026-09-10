@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
-#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -19,6 +18,9 @@
 class Profile;
 
 namespace optimization_guide {
+
+class ModelQualityLogEntry;
+struct OptimizationGuideModelExecutionResult;
 
 // Triggers validation of the model. Used for manual testing.
 inline constexpr char kModelValidateSwitch[] =
