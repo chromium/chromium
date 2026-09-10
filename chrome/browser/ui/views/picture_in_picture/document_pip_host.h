@@ -235,6 +235,7 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
  private:
   friend class content::WebContentsUserData<DocumentPipHost>;
+  friend class DocumentPipHostTestApi;
   // Grant the child-dialog resize tests access to the private test-only hooks
   // below (RunPendingChildResizeForTesting/IsChildResizePendingForTesting), so
   // they can drive the pending resize deterministically without a public API.
