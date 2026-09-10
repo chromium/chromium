@@ -543,6 +543,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     @Override
+    public void prepareHiding() {
+        mTabListCoordinator.prepareHiding();
+    }
+
+    @Override
     public void postHiding() {
         mTabListCoordinator.postHiding();
         // TODO(crbug.com/40239632): This shouldn't be required if resetWithListOfTabs(null) is

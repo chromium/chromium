@@ -469,6 +469,7 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     public void testNewTabButton() {
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
         FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
 
         assertEquals(mContext.getString(R.string.button_new_tab), buttonData.resolveText(mContext));
@@ -481,11 +482,29 @@ public class TabSwitcherPaneUnitTest {
 
         View mockView = mock(View.class);
         buttonData.onPress(mockView);
+        verify(mTabSwitcherPaneCoordinator).prepareHiding();
         verify(mNewTabButtonClickListener).onClick(mockView);
     }
 
     @Test
     public void testCreateNewTab() {
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        assertTrue(mTabSwitcherPane.createNewTab());
+        verify(mTabSwitcherPaneCoordinator).prepareHiding();
+        verify(mNewTabButtonClickListener).onClick(null);
+    }
+
+    @Test
+    public void testNewTabButton_NoCoordinator() {
+        FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
+
+        View mockView = mock(View.class);
+        buttonData.onPress(mockView);
+        verify(mNewTabButtonClickListener).onClick(mockView);
+    }
+
+    @Test
+    public void testCreateNewTab_NoCoordinator() {
         assertTrue(mTabSwitcherPane.createNewTab());
         verify(mNewTabButtonClickListener).onClick(null);
     }

@@ -46,12 +46,6 @@ public class TabListConfig {
     public final boolean supportsShrinkCloseAnimation;
 
     /**
-     * Whether the component delays adding tabs to the model when created from switcher/group UI
-     * until after the switcher or dialog finishes hiding.
-     */
-    public final boolean supportsDelayedTabAddition;
-
-    /**
      * Whether the tab list items support a context click listener (e.g. mouse right click).
      * Defaults to false; enabled for Tab Switcher Grid and Dialogs where context clicks trigger tab
      * item context actions.
@@ -80,7 +74,6 @@ public class TabListConfig {
         supportsModifierMultiSelect = builder.mSupportsModifierMultiSelect;
         supportsTabLoadingState = builder.mSupportsTabLoadingState;
         supportsShrinkCloseAnimation = builder.mSupportsShrinkCloseAnimation;
-        supportsDelayedTabAddition = builder.mSupportsDelayedTabAddition;
         supportsTabContextClick = builder.mSupportsTabContextClick;
         tabClosingSource = builder.mTabClosingSource;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
@@ -96,7 +89,6 @@ public class TabListConfig {
         private boolean mSupportsModifierMultiSelect;
         private boolean mSupportsTabLoadingState;
         private boolean mSupportsShrinkCloseAnimation;
-        private boolean mSupportsDelayedTabAddition;
         private boolean mSupportsTabContextClick;
         private @TabClosingSource int mTabClosingSource;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
@@ -158,18 +150,6 @@ public class TabListConfig {
          */
         public Builder setSupportsShrinkCloseAnimation(boolean supportsShrinkCloseAnimation) {
             mSupportsShrinkCloseAnimation = supportsShrinkCloseAnimation;
-            return this;
-        }
-
-        /**
-         * Sets whether the component delays adding tabs to the model when created from
-         * switcher/group UI.
-         *
-         * @param supportsDelayedTabAddition Whether to delay tab addition until post-hiding.
-         * @return The {@link Builder} instance.
-         */
-        public Builder setSupportsDelayedTabAddition(boolean supportsDelayedTabAddition) {
-            mSupportsDelayedTabAddition = supportsDelayedTabAddition;
             return this;
         }
 

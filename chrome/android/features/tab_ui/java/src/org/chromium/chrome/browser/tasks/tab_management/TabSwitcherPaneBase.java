@@ -226,11 +226,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     @Override
     public boolean createNewTab() {
-        if (mNewTabButtonClickListener != null) {
-            mNewTabButtonClickListener.onClick(null);
-            return true;
-        }
-        return false;
+        onNewTabButtonClicked(null);
+        return true;
     }
 
     @Override
@@ -661,6 +658,15 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     /** Returns the PaneHubController if one exists or null otherwise. */
     protected @Nullable PaneHubController getPaneHubController() {
         return mPaneHubController;
+    }
+
+    /** Handles clicks on the new tab button. */
+    protected void onNewTabButtonClicked(@Nullable View view) {
+        @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
+        if (coordinator != null) {
+            coordinator.prepareHiding();
+        }
+        mNewTabButtonClickListener.onClick(view);
     }
 
     /** Returns the current {@link TabSwitcherPaneCoordinator} or null if one doesn't exist. */

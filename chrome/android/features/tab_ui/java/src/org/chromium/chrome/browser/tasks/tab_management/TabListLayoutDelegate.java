@@ -191,10 +191,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         int newIndex = getUiIndexForTab(tab.getId());
 
         mMediator.setLastSelectedTabListModelIndex(oldIndex);
-        if (mMediator.isTabDelayed(tab)) {
-            // If tab is being added later, it will be selected later.
-            return;
-        }
         mMediator.selectTab(oldIndex, newIndex);
     }
 
@@ -202,7 +198,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         // The URL of the tab and the navigation handle can match without it being a
         // same document navigation if the tab had no renderer and needed to start a
@@ -225,7 +221,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onTitleUpdated(Tab updatedTab) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         // TODO(crbug.com/40136874) The null check for tab here should be redundant once
@@ -241,21 +237,21 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
         if (!toDifferentDocument) return;
         updateLoadingState(tab, true);
     }
 
     @Override
     public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
         if (!toDifferentDocument) return;
         updateLoadingState(tab, false);
     }
 
     @Override
     public void onCrash(Tab tab) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
         updateLoadingState(tab, false);
     }
 
@@ -268,7 +264,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (model == null) return;
@@ -283,7 +279,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onUrlUpdated(Tab updatedTab) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (!TabUtils.isValid(updatedTab) || model == null) return;
@@ -302,7 +298,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
@@ -314,7 +310,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     @Override
     public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         int index = mModelList.indexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;
@@ -597,7 +593,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     }
 
     private void updateLoadingState(Tab tab, boolean isLoading) {
-        if (!mMediator.supportsTabLoadingState() || !mMediator.isShowingTabs()) return;
+        if (!mMediator.supportsTabLoadingState() || !mMediator.isTrackingTabs()) return;
         @Nullable PropertyModel model = mModelList.getModelFromTabId(tab.getId());
         if (model == null) return;
         // Suppress loading indicator for NTP. NTP loads instantly, but the brief load events can

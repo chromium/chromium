@@ -1661,153 +1661,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabAddition_FlatLayout_Dialog_delayAdd() {
-        mMediator.setComponentIdForTesting(TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER);
-        initAndAssertAllProperties();
-
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1, mTab2, newTab));
-        mockRepresentativeTabs(mTab1, mTab2, newTab);
-        when(mTabModel.getRelatedTabList(eq(TAB3_ID))).thenReturn(List.of(newTab));
-        assertThat(mModelList.size(), equalTo(2));
-
-        // Add tab marked as delayed.
-        mTabModelObserverCaptor
-                .getValue()
-                .didAddTab(
-                        newTab,
-                        TabLaunchType.FROM_TAB_GROUP_UI,
-                        TabCreationState.LIVE_IN_FOREGROUND,
-                        true);
-
-        // Verify tab did not get added and delayed tab is captured.
-        assertThat(mModelList.size(), equalTo(2));
-        assertThat(mMediator.getTabToAddDelayedForTesting(), equalTo(newTab));
-
-        // Select delayed tab.
-        mTabModelObserverCaptor
-                .getValue()
-                .didSelectTab(newTab, TabSelectionType.FROM_USER, mTab1.getId());
-        // Assert old tab is still marked as selected.
-        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
-
-        when(mTabModel.iterator()).thenAnswer(_ -> List.of(mTab1, mTab2, newTab).iterator());
-        when(mTabModel.getTabAt(2)).thenReturn(newTab);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        // Hide dialog to complete and ensure the delayed tab is not added.
-        mMediator.resetWithListOfTabs(null, null, false);
-        verify(mTabModel).removeObserver(any());
-        verify(mTabModel).removeTabGroupObserver(any());
-
-        mMediator.postHiding();
-        // Assert tab was not added.
-        assertThat(mModelList.size(), equalTo(0));
-    }
-
-    @Test
-    public void tabAddition_GroupedLayout_delayAdd() {
-        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
-        initAndAssertAllProperties();
-
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1, mTab2, newTab));
-        mockRepresentativeTabs(mTab1, mTab2, newTab);
-        when(mTabModel.getRelatedTabList(eq(TAB3_ID))).thenReturn(List.of(newTab));
-        assertThat(mModelList.size(), equalTo(2));
-
-        // Add tab marked as delayed
-        mTabModelObserverCaptor
-                .getValue()
-                .didAddTab(
-                        newTab,
-                        TabLaunchType.FROM_TAB_SWITCHER_UI,
-                        TabCreationState.LIVE_IN_FOREGROUND,
-                        true);
-
-        // Verify tab did not get added and delayed tab is captured.
-        assertThat(mModelList.size(), equalTo(2));
-        assertThat(mMediator.getTabToAddDelayedForTesting(), equalTo(newTab));
-
-        // Select delayed tab
-        mTabModelObserverCaptor
-                .getValue()
-                .didSelectTab(newTab, TabSelectionType.FROM_USER, mTab1.getId());
-        // Assert old tab is still marked as selected
-        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
-
-        when(mTabModel.iterator()).thenAnswer(_ -> List.of(mTab1, mTab2, newTab).iterator());
-        when(mTabModel.getTabAt(2)).thenReturn(newTab);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        // Hide GTS to complete tab addition and selection
-        mMediator.postHiding();
-        // Assert tab added and selected. Assert old tab is de-selected.
-        assertThat(mModelList.size(), equalTo(3));
-        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
-        assertThat(mModelList.get(2).model.get(TabProperties.IS_SELECTED), equalTo(true));
-        assertNull(mMediator.getTabToAddDelayedForTesting());
-        verify(mTab1).removeObserver(mTabObserverCaptor.getValue());
-        verify(mTab2).removeObserver(mTabObserverCaptor.getValue());
-        verify(newTab).removeObserver(mTabObserverCaptor.getValue());
-        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
-        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverCaptor.getValue());
-    }
-
-    @Test
-    public void tabAddition_GroupedLayout_delayAdd_WithUnexpectedUpdate() {
-        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
-        initAndAssertAllProperties();
-
-        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
-        when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(List.of(newTab));
-        mockRepresentativeTabs(mTab1, mTab2, newTab);
-        assertEquals(2, mModelList.size());
-
-        // Add tab marked as delayed.
-        mTabModelObserverCaptor
-                .getValue()
-                .didAddTab(
-                        newTab,
-                        TabLaunchType.FROM_TAB_SWITCHER_UI,
-                        TabCreationState.LIVE_IN_FOREGROUND,
-                        true);
-
-        // Verify tab did not get added and delayed tab is captured.
-        assertThat(mModelList.size(), equalTo(2));
-        assertThat(mMediator.getTabToAddDelayedForTesting(), equalTo(newTab));
-
-        // Select delayed tab.
-        mTabModelObserverCaptor
-                .getValue()
-                .didSelectTab(newTab, TabSelectionType.FROM_USER, mTab2.getId());
-        // Assert old tab is still marked as selected.
-        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
-
-        // Remove the first two tabs.
-        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
-        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
-        when(mTabModel.getTabAt(0)).thenReturn(newTab);
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.iterator()).thenAnswer(_ -> List.of(newTab).iterator());
-        mockRepresentativeTabs(newTab);
-
-        // Hide GTS to complete tab addition and selection.
-        mMediator.postHiding();
-        // Assert tab added and selected. Assert old tab is de-selected.
-        assertThat(mModelList.size(), equalTo(1));
-        assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
-        assertNull(mMediator.getTabToAddDelayedForTesting());
-        verify(mTab1).removeObserver(mTabObserverCaptor.getValue());
-        verify(mTab2).removeObserver(mTabObserverCaptor.getValue());
-        verify(newTab).removeObserver(mTabObserverCaptor.getValue());
-        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
-        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverCaptor.getValue());
-    }
-
-    @Test
     public void tabAddition_GroupedLayout_Skip() {
         // Add a new tab to the group with mTab2.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -5649,6 +5502,83 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testObserversRemovedOnPrepareHiding() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.getValue());
+
+        // Prepare hiding the GTS. The observers should be removed immediately.
+        mMediator.prepareHiding();
+        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverCaptor.getValue());
+
+        // Subsequent postHiding should safely no-op since observers are already detached.
+        mMediator.postHiding();
+        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testQuickReturnAfterPrepareHiding_withNewTab_rebuildsModelList() {
+        initAndAssertAllProperties();
+        assertEquals(2, mModelList.size());
+
+        // Prepare hiding (e.g. when opening a new tab from GTS).
+        mMediator.prepareHiding();
+        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverCaptor.getValue());
+
+        // Simulate quick-return (< 3s / before soft cleanup) with a new tab in TabModel.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        mockRepresentativeTabs(mTab1, mTab2, tab3);
+        List<Tab> updatedTabs = List.of(mTab1, mTab2, tab3);
+
+        int tabModelObserverCount = mTabModelObserverCaptor.getAllValues().size();
+        int tabGroupObserverCount = mTabGroupObserverCaptor.getAllValues().size();
+
+        mMediator.resetWithListOfTabs(
+                updatedTabs, /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+
+        // Observers should be re-attached.
+        assertEquals(tabModelObserverCount + 1, mTabModelObserverCaptor.getAllValues().size());
+        assertEquals(tabGroupObserverCount + 1, mTabGroupObserverCaptor.getAllValues().size());
+
+        // Model list should be rebuilt with the new tab.
+        assertEquals(3, mModelList.size());
+        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+    }
+
+    @Test
+    public void testQuickReturnAfterPrepareHiding_withoutTabChange_updatesInPlace() {
+        initAndAssertAllProperties();
+        assertEquals(2, mModelList.size());
+
+        // Prepare hiding.
+        mMediator.prepareHiding();
+        verify(mTabModel).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabModel).removeTabGroupObserver(mTabGroupObserverCaptor.getValue());
+
+        // Simulate quick-return (< 3s) where tab list is unchanged.
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        int tabModelObserverCount = mTabModelObserverCaptor.getAllValues().size();
+        int tabGroupObserverCount = mTabGroupObserverCaptor.getAllValues().size();
+
+        mMediator.resetWithListOfTabs(tabs, /* tabGroupSyncIds= */ null, /* quickMode= */ false);
+
+        // Observers should be re-attached.
+        assertEquals(tabModelObserverCount + 1, mTabModelObserverCaptor.getAllValues().size());
+        assertEquals(tabGroupObserverCount + 1, mTabGroupObserverCaptor.getAllValues().size());
+
+        // Model list should remain updated in place without being rebuilt.
+        assertEquals(2, mModelList.size());
+        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+    }
+
+    @Test
     public void testGetSpanCount_OnXrDevice() {
         DeviceInfo.setIsXrForTesting(true);
         // Perform action and validate for compact width.
@@ -6797,11 +6727,6 @@ public class TabListMediatorUnitTest {
                 hasMatchingConfig
                         ? mTabListConfig.supportsShrinkCloseAnimation
                         : (mode == TabListMode.GRID);
-        boolean supportsDelayedTabAddition =
-                hasMatchingConfig
-                        ? mTabListConfig.supportsDelayedTabAddition
-                        : (type == TabListMediatorType.TAB_SWITCHER
-                                || type == TabListMediatorType.TAB_GRID_DIALOG);
         boolean supportsTabContextClick =
                 hasMatchingConfig
                         ? mTabListConfig.supportsTabContextClick
@@ -6829,7 +6754,6 @@ public class TabListMediatorUnitTest {
                         .setSupportsModifierMultiSelect(supportsModifierMultiSelect)
                         .setSupportsTabLoadingState(supportsTabLoadingState)
                         .setSupportsShrinkCloseAnimation(supportsShrinkCloseAnimation)
-                        .setSupportsDelayedTabAddition(supportsDelayedTabAddition)
                         .setSupportsTabContextClick(supportsTabContextClick)
                         .setTabClosingSource(tabClosingSource)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)

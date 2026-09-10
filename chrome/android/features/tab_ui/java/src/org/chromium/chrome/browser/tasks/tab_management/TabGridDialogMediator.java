@@ -153,6 +153,9 @@ public class TabGridDialogMediator
         /** Prepare the TabGridDialog before show. */
         void prepareDialog();
 
+        /** Prepares the TabGridDialog for hiding by detaching observers before exit animation. */
+        void prepareHiding();
+
         /** Cleanup post hiding dialog. */
         void postHiding();
 
@@ -648,6 +651,8 @@ public class TabGridDialogMediator
         if (mSnackbarManager != null) {
             mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
         }
+
+        mDialogController.prepareHiding();
 
         // Save the title first so that the animation has the correct title.
         saveCurrentGroupModifiedTitle();

@@ -83,7 +83,7 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList = new TabListModel();
         mDelegate = new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
-        when(mMediator.isShowingTabs()).thenReturn(true);
+        when(mMediator.isTrackingTabs()).thenReturn(true);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab1.isInitialized()).thenReturn(true);
         when(mTab2.getId()).thenReturn(TAB2_ID);
@@ -482,8 +482,8 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testTabObserverCallbacks_WhenNotShowingTabs_NoOp() {
-        when(mMediator.isShowingTabs()).thenReturn(false);
+    public void testTabObserverCallbacks_WhenNotTrackingTabs_NoOp() {
+        when(mMediator.isTrackingTabs()).thenReturn(false);
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         createAndAddPropertyModel(TAB1_ID);
@@ -877,18 +877,6 @@ public class GroupedLayoutDelegateUnitTest {
         assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
         verify(mMediator).setLastSelectedTabListModelIndex(TabModel.INVALID_TAB_INDEX);
         verify(mMediator).selectTab(TabModel.INVALID_TAB_INDEX, 0);
-    }
-
-    @Test
-    public void testDidSelectTab_TabDelayed_DoesNotSelect() {
-        createAndAddPropertyModel(TAB1_ID);
-        createAndAddPropertyModel(TAB2_ID);
-        when(mMediator.isTabDelayed(mTab2)).thenReturn(true);
-
-        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
-
-        verify(mMediator).setLastSelectedTabListModelIndex(0);
-        verify(mMediator, never()).selectTab(anyInt(), anyInt());
     }
 
     @Test

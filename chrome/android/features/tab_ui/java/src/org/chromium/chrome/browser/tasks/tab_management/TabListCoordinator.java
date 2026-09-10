@@ -325,16 +325,11 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
         @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
         boolean isGridMode = mMode == TabListMode.GRID;
-        boolean isGridOrDialogComponent =
-                componentId == TabComponentId.GRID_TAB_SWITCHER
-                        || componentId == TabComponentId.TAB_GRID_DIALOG_FROM_STRIP
-                        || componentId == TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER;
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(layoutType)
                         .setTabUiType(tabUiType)
                         .setSupportsMessageCards(isGridMode)
                         .setSupportsShrinkCloseAnimation(isGridMode)
-                        .setSupportsDelayedTabAddition(isGridOrDialogComponent)
                         .setSupportsTabContextClick(true)
                         .setTabClosingSource(TabClosingSource.UNKNOWN)
                         .build();
@@ -793,6 +788,12 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         return mMediator;
     }
 
+    /** Prepares the tab list for hiding by detaching observers before the exit animation. */
+    void prepareHiding() {
+        mMediator.prepareHiding();
+    }
+
+    /** Cleans up the tab list after hiding completes. */
     void postHiding() {
         unregisterLayoutChangeListener();
         mMediator.postHiding();

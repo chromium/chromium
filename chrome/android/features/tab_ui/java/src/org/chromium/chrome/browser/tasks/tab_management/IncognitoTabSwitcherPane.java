@@ -192,7 +192,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                         R.drawable.new_tab_icon);
         mEnabledNewTabButtonData =
                 new DelegateButtonData.Builder(newTabButtonData)
-                        .setOnPress(newTabButtonClickListener::onClick)
+                        .setOnPress(this::onNewTabButtonClicked)
                         .build();
         mDisabledNewTabButtonData = new DelegateButtonData.Builder(newTabButtonData).build();
 

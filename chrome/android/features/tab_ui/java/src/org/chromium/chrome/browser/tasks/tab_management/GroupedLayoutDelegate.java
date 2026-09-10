@@ -233,7 +233,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         if (mMediator.isTabInTabGroup(updatedTab)) {
             @Nullable Pair<Integer, Tab> indexAndTab =
@@ -252,7 +252,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void onUrlUpdated(Tab updatedTab) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         if (mMediator.isTabInTabGroup(updatedTab)) {
             @Nullable Pair<Integer, Tab> indexAndTab =
@@ -274,7 +274,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
-        if (!mMediator.isShowingTabs()) return;
+        if (!mMediator.isTrackingTabs()) return;
 
         if (mMediator.isTabInTabGroup(updatedTab)) {
             Token tabGroupId = updatedTab.getTabGroupId();

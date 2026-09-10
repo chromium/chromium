@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -516,6 +517,11 @@ public class IncognitoTabSwitcherPaneUnitTest {
             View mockView = mock(View.class);
             buttonData.onPress(mockView);
             verify(mNewTabButtonClickListener).onClick(mockView);
+            TabSwitcherPaneCoordinator coordinator =
+                    mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+            if (coordinator != null) {
+                verify(coordinator, atLeastOnce()).prepareHiding();
+            }
         }
     }
 

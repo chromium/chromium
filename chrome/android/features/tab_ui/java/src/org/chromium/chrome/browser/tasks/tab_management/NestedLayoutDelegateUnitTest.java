@@ -82,7 +82,7 @@ public class NestedLayoutDelegateUnitTest {
         mModelList = new TabListModel();
         mDelegate = new NestedLayoutDelegate(mMediator, mModelList);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
-        when(mMediator.isShowingTabs()).thenReturn(true);
+        when(mMediator.isTrackingTabs()).thenReturn(true);
         when(mMediator.supportsTabLoadingState()).thenReturn(true);
         when(mTabModel.getTabGroupColorWithFallback(any(Token.class)))
                 .thenReturn(TabGroupColorId.BLUE);
@@ -830,18 +830,6 @@ public class NestedLayoutDelegateUnitTest {
 
         verify(mMediator).setLastSelectedTabListModelIndex(0);
         verify(mMediator).selectTab(0, 1);
-    }
-
-    @Test
-    public void testDidSelectTab_TabDelayed() {
-        addTabToModelList(TAB1_ID, null);
-        addTabToModelList(TAB2_ID, null);
-        when(mMediator.isTabDelayed(mTab2)).thenReturn(true);
-
-        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
-
-        verify(mMediator).setLastSelectedTabListModelIndex(0);
-        verify(mMediator, never()).selectTab(anyInt(), anyInt());
     }
 
     @Test

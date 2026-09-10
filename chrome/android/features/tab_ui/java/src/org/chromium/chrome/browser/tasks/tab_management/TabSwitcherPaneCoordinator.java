@@ -1113,6 +1113,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         }
     }
 
+    /** Prepares the tab switcher for hiding by detaching observers before exit animation. */
+    void prepareHiding() {
+        mTabListCoordinator.prepareHiding();
+    }
+
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         Runnable onAnimEnd =
                 () -> {

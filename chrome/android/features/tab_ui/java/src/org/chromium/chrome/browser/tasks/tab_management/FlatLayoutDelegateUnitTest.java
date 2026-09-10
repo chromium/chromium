@@ -80,7 +80,7 @@ public class FlatLayoutDelegateUnitTest {
         mDelegate = new FlatLayoutDelegate(mMediator, mModelList);
 
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
-        when(mMediator.isShowingTabs()).thenReturn(true);
+        when(mMediator.isTrackingTabs()).thenReturn(true);
         when(mMediator.supportsTabLoadingState()).thenReturn(true);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab1.isInitialized()).thenReturn(true);
@@ -372,8 +372,8 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testTabObserverCallbacks_WhenNotShowingTabs_NoOp() {
-        when(mMediator.isShowingTabs()).thenReturn(false);
+    public void testTabObserverCallbacks_WhenNotTrackingTabs_NoOp() {
+        when(mMediator.isTrackingTabs()).thenReturn(false);
         addTabsToModelList(TAB1_ID);
         PropertyModel model = mModelList.get(0).model;
 
@@ -607,17 +607,6 @@ public class FlatLayoutDelegateUnitTest {
 
         verify(mMediator).setLastSelectedTabListModelIndex(0);
         verify(mMediator).selectTab(0, 1);
-    }
-
-    @Test
-    public void testDidSelectTab_TabDelayed() {
-        addTabsToModelList(TAB1_ID, TAB2_ID);
-        when(mMediator.isTabDelayed(mTab2)).thenReturn(true);
-
-        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
-
-        verify(mMediator).setLastSelectedTabListModelIndex(0);
-        verify(mMediator, never()).selectTab(anyInt(), anyInt());
     }
 
     @Test

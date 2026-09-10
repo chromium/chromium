@@ -171,7 +171,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                                         R.string.button_new_tab,
                                         R.string.button_new_tab,
                                         R.drawable.new_tab_icon))
-                        .setOnPress(newTabButtonClickListener::onClick)
+                        .setOnPress(this::onNewTabButtonClicked)
                         .build());
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);

@@ -407,6 +407,7 @@ public class TabGridDialogMediatorUnitTest {
 
         assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+        verify(mDialogController).prepareHiding();
 
         // Simulate the animation finishing.
         mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
@@ -948,6 +949,8 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.hideDialog(false);
+
+        verify(mDialogController).prepareHiding();
 
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
