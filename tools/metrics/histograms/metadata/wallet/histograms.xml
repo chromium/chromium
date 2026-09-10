@@ -23,6 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="Wallet.NetworkRequest.RequestType">
+  <variant name="GetDetailsForUpsertPass"
+      summary="getting details for upsert pass"/>
   <variant name="GetUnmaskedPrivatePass" summary="unmasking a private pass"/>
   <variant name="UpsertPass" summary="upserting a public pass"/>
   <variant name="UpsertPrivatePass" summary="upserting a private pass"/>

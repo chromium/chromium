@@ -76,6 +76,11 @@ class WalletHttpClientImplTest : public testing::Test {
         .Resolve("v1/e/privatePasses:batchGet");
   }
 
+  GURL GetDetailsForUpsertPassUrl() {
+    return GURL(features::kWalletSaveUrl.Get())
+        .Resolve("v1/passes:getDetailsForUpsert");
+  }
+
   WalletHttpClientImpl* client() { return client_.get(); }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -422,6 +427,108 @@ TEST_F(WalletHttpClientImplTest, GetUnmaskedPass_Latency) {
 
   histogram_tester.ExpectUniqueTimeSample(
       "Wallet.NetworkRequest.GetUnmaskedPrivatePass.Latency", kLatency, 1);
+}
+
+TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Success) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::expected<WalletHttpClient::PassUpsertDetails,
+                                        WalletHttpClient::WalletRequestError>>
+      callback;
+  client()->GetDetailsForUpsertPass(
+      WalletHttpClient::PassType::kVehicleRegistration, callback.GetCallback());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  GURL expected_url = GetDetailsForUpsertPassUrl();
+  EXPECT_TRUE(test_url_loader_factory()->IsPending(expected_url.spec()));
+  std::optional<std::string> auth_header =
+      test_url_loader_factory()
+          ->GetPendingRequest(0)
+          ->request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization);
+  EXPECT_EQ(auth_header.value_or(std::string()),
+            base::StrCat({"Bearer ", kAccessToken}));
+
+  api::GetDetailsForUpsertPassResponse response;
+  response.set_context_token("test_context_token");
+  auto* legal_message = response.mutable_legal_message();
+  auto* line = legal_message->add_line();
+  line->set_template_("Legal text {0}");
+  auto* param = line->add_template_parameter();
+  param->set_display_text("Link");
+  param->set_url("https://example.com");
+
+  test_url_loader_factory()->AddResponse(expected_url.spec(),
+                                         response.SerializeAsString());
+
+  ASSERT_TRUE(callback.Wait());
+  EXPECT_TRUE(callback.Get().has_value());
+  EXPECT_EQ(callback.Get()->context_token, "test_context_token");
+  ASSERT_TRUE(callback.Get()->legal_message.has_value());
+  histogram_tester.ExpectUniqueSample("Wallet.NetworkRequest.OauthError",
+                                      GoogleServiceAuthError::NONE, 1);
+}
+
+TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Failure) {
+  base::test::TestFuture<base::expected<WalletHttpClient::PassUpsertDetails,
+                                        WalletHttpClient::WalletRequestError>>
+      callback;
+  client()->GetDetailsForUpsertPass(
+      WalletHttpClient::PassType::kVehicleRegistration, callback.GetCallback());
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  GURL expected_url = GetDetailsForUpsertPassUrl();
+  EXPECT_TRUE(test_url_loader_factory()->IsPending(expected_url.spec()));
+  test_url_loader_factory()->AddResponse(
+      expected_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_FAILED));
+
+  ASSERT_TRUE(callback.Wait());
+  EXPECT_FALSE(callback.Get().has_value());
+  EXPECT_EQ(callback.Get().error(),
+            WalletHttpClient::WalletRequestError::kGenericError);
+}
+
+TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Latency) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::expected<WalletHttpClient::PassUpsertDetails,
+                                        WalletHttpClient::WalletRequestError>>
+      callback;
+  client()->GetDetailsForUpsertPass(
+      WalletHttpClient::PassType::kVehicleRegistration, callback.GetCallback());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  task_environment().FastForwardBy(kLatency);
+  api::GetDetailsForUpsertPassResponse response;
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GetDetailsForUpsertPassUrl().spec(), response.SerializeAsString());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Wallet.NetworkRequest.GetDetailsForUpsertPass.Latency", kLatency, 1);
+}
+
+TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_ResponseSize) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::expected<WalletHttpClient::PassUpsertDetails,
+                                        WalletHttpClient::WalletRequestError>>
+      callback;
+  client()->GetDetailsForUpsertPass(
+      WalletHttpClient::PassType::kVehicleRegistration, callback.GetCallback());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  api::GetDetailsForUpsertPassResponse response;
+  response.set_context_token("test_context_token");
+  std::string response_string = response.SerializeAsString();
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GetDetailsForUpsertPassUrl().spec(), response_string);
+
+  histogram_tester.ExpectUniqueSample(
+      "Wallet.NetworkRequest.GetDetailsForUpsertPass.ResponseByteSize",
+      response_string.size(), 1);
 }
 
 }  // namespace

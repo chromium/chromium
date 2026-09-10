@@ -49,6 +49,9 @@ class WalletHttpClientImpl : public WalletHttpClient {
       UpsertPrivatePassCallback callback) override;
   void GetUnmaskedPass(std::string_view pass_id,
                        GetUnmaskedPassCallback callback) override;
+  void GetDetailsForUpsertPass(
+      PassType pass_type,
+      GetDetailsForUpsertPassCallback callback) override;
 
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;

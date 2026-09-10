@@ -81,6 +81,8 @@ std::string WalletNetworkRequestTypeToString(
       return "UpsertPrivatePass";
     case WalletRequest::WalletNetworkRequestType::kGetUnmaskedPrivatePass:
       return "GetUnmaskedPrivatePass";
+    case WalletRequest::WalletNetworkRequestType::kGetDetailsForUpsertPass:
+      return "GetDetailsForUpsertPass";
   }
 }
 

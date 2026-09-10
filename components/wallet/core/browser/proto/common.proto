@@ -24,3 +24,28 @@ message RpcStatus {
   optional string message = 2;
   repeated Any details = 3;
 }
+
+// The legal message component displays text to the user indicating that they
+// must agree to one or more legal documents.
+message LegalMessage {
+  // A hyperlink, typically to a legal document.
+  message Link {
+    optional string display_text = 1;
+    optional string url = 2;
+  }
+
+  // A line of text that should be displayed to the user.
+  message Line {
+    optional string template = 1;
+    repeated Link template_parameter = 2;
+  }
+
+  // Lines of text to be displayed for this LegalMessage.
+  repeated Line line = 1;
+
+  // Opaque server-generated token representing the legal message and its
+  // associated disclosures.
+  optional bytes token = 3;
+
+  reserved 2;
+}

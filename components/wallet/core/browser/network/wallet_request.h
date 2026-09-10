@@ -30,7 +30,8 @@ class WalletRequest {
     kUpsertPass = 0,
     kUpsertPrivatePass = 1,
     kGetUnmaskedPrivatePass = 2,
-    kMaxValue = kGetUnmaskedPrivatePass,
+    kGetDetailsForUpsertPass = 3,
+    kMaxValue = kGetDetailsForUpsertPass,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/histograms.xml:Wallet.NetworkRequest.RequestType)
 

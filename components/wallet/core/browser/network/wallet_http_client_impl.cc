@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
+#include "components/wallet/core/browser/network/get_details_for_upsert_pass_request.h"
 #include "components/wallet/core/browser/network/get_unmasked_pass_request.h"
 #include "components/wallet/core/browser/network/upsert_private_pass_request.h"
 #include "components/wallet/core/browser/network/upsert_public_pass_request.h"
@@ -79,6 +80,14 @@ void WalletHttpClientImpl::GetUnmaskedPass(std::string_view pass_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendRequest(std::make_unique<GetUnmaskedPassRequest>(std::string(pass_id),
                                                        std::move(callback)));
+}
+
+void WalletHttpClientImpl::GetDetailsForUpsertPass(
+    PassType pass_type,
+    GetDetailsForUpsertPassCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SendRequest(std::make_unique<GetDetailsForUpsertPassRequest>(
+      pass_type, std::move(callback)));
 }
 
 void WalletHttpClientImpl::SendRequest(std::unique_ptr<WalletRequest> request) {

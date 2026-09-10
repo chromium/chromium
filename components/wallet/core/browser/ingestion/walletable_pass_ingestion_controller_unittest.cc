@@ -67,6 +67,11 @@ class MockWalletHttpClient : public WalletHttpClient {
               (std::string_view pass_id,
                WalletHttpClient::GetUnmaskedPassCallback callback),
               (override));
+  MOCK_METHOD(void,
+              GetDetailsForUpsertPass,
+              (WalletHttpClient::PassType pass_type,
+               WalletHttpClient::GetDetailsForUpsertPassCallback callback),
+              (override));
 };
 
 class MockWalletablePassClient : public WalletablePassClient {
