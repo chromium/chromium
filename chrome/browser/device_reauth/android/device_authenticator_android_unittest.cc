@@ -81,16 +81,6 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
   raw_ptr<MockDeviceAuthenticatorBridge> bridge_ = nullptr;
 };
 
-TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsSource) {
-  base::HistogramTester histogram_tester;
-
-  authenticator()->AuthenticateWithMessage(u"", base::DoNothing());
-
-  histogram_tester.ExpectUniqueSample(
-      "Android.DeviceAuthenticator.AuthSource",
-      device_reauth::DeviceAuthSource::kPasswordManager, 1);
-}
-
 TEST_F(DeviceAuthenticatorAndroidTest, DoesntTriggerAuthIfWithin60Seconds) {
   // Simulate a previous successful authentication
   base::HistogramTester histogram_tester;

@@ -1230,16 +1230,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Desktop windowing mode is supported and active."/>
 </enum>
 
-<enum name="DeviceAuthSource">
-  <int value="0" label="Password Manager"/>
-  <int value="1" label="Autofill"/>
-  <int value="2" label="Icognito"/>
-  <int value="3" label="Device Lock Page"/>
-  <int value="4" label="Settings Batch Upload"/>
-  <int value="5" label="Bookmark Batch Upload"/>
-  <int value="6" label="Passwords CSV Download"/>
-</enum>
-
 <enum name="DeviceLockDialogAction">
   <int value="0" label="Create device lock dialog shown"/>
   <int value="1" label="Existing device lock dialog shown"/>

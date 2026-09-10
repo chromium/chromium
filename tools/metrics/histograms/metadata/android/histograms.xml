@@ -1997,18 +1997,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DeviceAuthenticator.AuthSource"
-    enum="DeviceAuthSource" expires_after="2025-09-07">
-  <owner>ioanap@chromium.org</owner>
-  <owner>friedrichh@chromium.org</owner>
-  <owner>clhager@google.com</owner>
-  <summary>
-    Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
-    user. It records where the request comes from (Password Manager, Autofill,
-    Incognito or Device Lock Page).
-  </summary>
-</histogram>
-
 <histogram name="Android.DeviceSize.ScreenSizeInTensOfInches"
     units="10x inches" expires_after="2027-01-17">
   <owner>twellington@chromium.org</owner>

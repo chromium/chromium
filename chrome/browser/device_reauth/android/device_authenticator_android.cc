@@ -54,11 +54,6 @@ void LogAuthResult(device_reauth::DeviceAuthSource source,
   }
 }
 
-void LogAuthSource(device_reauth::DeviceAuthSource source) {
-  base::UmaHistogramEnumeration("Android.DeviceAuthenticator.AuthSource",
-                                source);
-}
-
 }  // namespace
 
 DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
@@ -94,8 +89,6 @@ void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
   }
 
   callback_ = std::move(callback);
-
-  LogAuthSource(source_);
 
   if (!NeedsToAuthenticate()) {
     LogAuthResult(source_, DeviceAuthFinalResult::kAuthStillValid);
