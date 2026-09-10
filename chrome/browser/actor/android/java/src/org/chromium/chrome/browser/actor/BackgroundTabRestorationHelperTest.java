@@ -304,12 +304,12 @@ public class BackgroundTabRestorationHelperTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testMaybeRestoreBackgroundTab_success_destroysPlaceholderContentsState() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.loadTab(TAB_ID)).thenReturn(mBackgroundPoolTab);
-        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX)))
-                .thenReturn(mTab);
-
         TabState tabState = new TabState();
         tabState.contentsState = mWebContentsState;
+
+        when(mBackgroundTabPool.loadTab(TAB_ID)).thenReturn(mBackgroundPoolTab);
+        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX), eq(tabState)))
+                .thenReturn(mTab);
 
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
@@ -322,7 +322,9 @@ public class BackgroundTabRestorationHelperTest {
 
         assertEquals(mTab, restoredTab);
         verify(mBackgroundTabPool).loadTab(TAB_ID);
-        verify(mBackgroundPoolTab).attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX));
+        verify(mBackgroundPoolTab).prepareForForeground(mTabModelSelector);
+        verify(mBackgroundPoolTab)
+                .attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX), eq(tabState));
         verify(mWebContentsState).destroy();
     }
 

@@ -46,18 +46,51 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
     }
 
     @Override
+    public @TabId int getOriginalTabId() {
+        return mTabId;
+    }
+
+    @Override
     public @TabId int getPlaceholderTabId() {
         return mPlaceholderTabId;
     }
 
     @Override
-    public Tab attachTabImpl(TabModel tabModel, int index) {
+    public Tab attachTab(TabModel tabModel, int index, @Nullable TabState placeholderTabState) {
         assert mTabState != null : "ColdBackgroundTab has already been attached or destroyed.";
         mPool.removeTabById(mTabId);
-        TabState state = mTabState;
+
+        Tab placeholderTab = tabModel.getTabById(mPlaceholderTabId);
+        if (placeholderTab != null) {
+            tabModel.getTabRemover().removeTab(placeholderTab, /* allowDialog= */ false);
+            placeholderTab.destroy();
+        }
+
+        if (placeholderTabState != null && placeholderTabState.contentsState != null) {
+            placeholderTabState.contentsState.destroy();
+            placeholderTabState.contentsState = null;
+        }
+
+        TabState backgroundState = mTabState;
         mTabState = null;
+
+        if (placeholderTabState != null) {
+            transferPlaceholderMetadata(backgroundState, placeholderTabState);
+        }
+
         TabCreator tabCreator = tabModel.getTabCreator();
-        return assertNonNull(tabCreator.createFrozenTab(state, mTabId, index));
+        return assertNonNull(tabCreator.createFrozenTab(backgroundState, mTabId, index));
+    }
+
+    private static void transferPlaceholderMetadata(
+            TabState targetState, TabState placeholderState) {
+        if (placeholderState.tabGroupId != null) {
+            targetState.tabGroupId = placeholderState.tabGroupId;
+        }
+        if (placeholderState.rootId != Tab.INVALID_TAB_ID) {
+            targetState.rootId = placeholderState.rootId;
+        }
+        targetState.isPinned = placeholderState.isPinned;
     }
 
     @Override
@@ -66,6 +99,7 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
             WebContentsState contentsState = mTabState.contentsState;
             if (contentsState != null) {
                 contentsState.destroy();
+                mTabState.contentsState = null;
             }
             mTabState = null;
         }

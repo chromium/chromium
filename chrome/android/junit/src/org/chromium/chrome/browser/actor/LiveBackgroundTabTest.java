@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +32,8 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -54,6 +57,7 @@ public class LiveBackgroundTabTest {
     @Mock private TabRemover mTabRemover;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabDelegateFactory mTabDelegateFactory;
+    @Mock private WebContentsState mPlaceholderContentsState;
 
     private LiveBackgroundTab mLiveBackgroundTab;
 
@@ -87,17 +91,56 @@ public class LiveBackgroundTabTest {
     }
 
     @Test
-    public void testAttachTabImpl_attachesAndRemovesFromPool() {
+    public void testAttachTab_attachesAndRemovesFromPool() {
         mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
 
-        Tab attached = mLiveBackgroundTab.attachTabImpl(mTabModel, 2);
+        Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2);
 
         assertSame(mTab, attached);
         verify(mTabModel)
                 .addTab(mTab, 2, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
         verify(mPool).removeTabById(TAB_ID);
 
-        assertThrows(AssertionError.class, () -> mLiveBackgroundTab.attachTabImpl(mTabModel, 2));
+        assertThrows(AssertionError.class, () -> mLiveBackgroundTab.attachTab(mTabModel, 2));
+    }
+
+    @Test
+    public void testAttachTab_withPlaceholderState_destroysContentsStateAndTransfersMetadata() {
+        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+
+        Token placeholderGroupToken = new Token(3L, 4L);
+        TabState placeholderState = new TabState();
+        placeholderState.contentsState = mPlaceholderContentsState;
+        placeholderState.tabGroupId = placeholderGroupToken;
+        placeholderState.rootId = 555;
+        placeholderState.isPinned = true;
+
+        Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2, placeholderState);
+
+        assertSame(mTab, attached);
+        verify(mTab).setTabGroupId(placeholderGroupToken);
+        verify(mTab).setRootId(555);
+        verify(mPlaceholderContentsState).destroy();
+        assertNull(placeholderState.contentsState);
+        verify(mTabModel).pinTab(TAB_ID, /* showUngroupDialog= */ false);
+        verify(mTabModel).moveTab(TAB_ID, 2);
+        verify(mTabModel)
+                .addTab(mTab, 2, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
+        verify(mPool).removeTabById(TAB_ID);
+    }
+
+    @Test
+    public void testAttachTab_withPlaceholderInModel_removesPlaceholder() {
+        mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+
+        when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
+
+        Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2, /* placeholderTabState= */ null);
+
+        assertSame(mTab, attached);
+        verify(mTabRemover).removeTab(mPlaceholderTab, /* allowDialog= */ false);
+        verify(mPlaceholderTab).destroy();
+        verify(mPool).removeTabById(TAB_ID);
     }
 
     @Test
