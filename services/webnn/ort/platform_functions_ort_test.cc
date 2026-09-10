@@ -15,6 +15,8 @@ TEST_F(WebNNOrtPlatformFunctionsTest, AllFunctionsLoaded) {
   PlatformFunctions* platformFunctions = PlatformFunctions::GetInstance();
   EXPECT_TRUE(platformFunctions->ort_api());
   EXPECT_TRUE(platformFunctions->ort_model_editor_api());
+  EXPECT_TRUE(platformFunctions->ort_compile_api());
+  EXPECT_TRUE(platformFunctions->ort_interop_api());
 }
 
 }  // namespace webnn::ort
