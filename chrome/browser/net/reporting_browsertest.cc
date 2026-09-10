@@ -37,6 +37,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "partition_alloc/page_allocator.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -187,12 +188,9 @@ class ReportingBrowserTest : public BaseReportingBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This is a subclass of `ReportingBrowserTest` for testing unresponsive crash
-// reports when the process is killed without an explicit hung exit code.
-class ReportingBrowserTestUnresponsiveWithoutHungExitCode
-    : public ReportingBrowserTest {
+class CrashReportingBrowserTest : public ReportingBrowserTest {
  public:
-  ReportingBrowserTestUnresponsiveWithoutHungExitCode() {
+  CrashReportingBrowserTest() {
     // Disable WebUI toolbar features to avoid intermittent timeouts in
     // InProcessBrowserTest::PreRunTestOnMainThread() when waiting for the
     // initial WebUI toolbar paint callback.
@@ -204,12 +202,11 @@ class ReportingBrowserTestUnresponsiveWithoutHungExitCode
             features::kWebUIToolbarProcessOverheadExperiment});
   }
 
-  ReportingBrowserTestUnresponsiveWithoutHungExitCode(
-      const ReportingBrowserTestUnresponsiveWithoutHungExitCode&) = delete;
-  ReportingBrowserTestUnresponsiveWithoutHungExitCode& operator=(
-      const ReportingBrowserTestUnresponsiveWithoutHungExitCode&) = delete;
+  CrashReportingBrowserTest(const CrashReportingBrowserTest&) = delete;
+  CrashReportingBrowserTest& operator=(const CrashReportingBrowserTest&) =
+      delete;
 
-  ~ReportingBrowserTestUnresponsiveWithoutHungExitCode() override = default;
+  ~CrashReportingBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -586,6 +583,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 // These tests intentionally crash a render process, and so fail ASan tests.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashReport DISABLED_CrashReport
+#define MAYBE_CrashReportOOM DISABLED_CrashReportOOM
+#define MAYBE_CrashReportOOMTakesPriorityOverUnresponsive \
+  DISABLED_CrashReportOOMTakesPriorityOverUnresponsive
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
   DISABLED_CrashReportUnresponsiveCrossOriginIframe
@@ -600,6 +600,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_SpecifyCrashEndpoint DISABLED_SpecifyCrashEndpoint
 #else
 #define MAYBE_CrashReport CrashReport
+#define MAYBE_CrashReportOOM CrashReportOOM
+#define MAYBE_CrashReportOOMTakesPriorityOverUnresponsive \
+  CrashReportOOMTakesPriorityOverUnresponsive
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
 #define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
   CrashReportUnresponsiveCrossOriginIframe
@@ -678,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   EXPECT_EQ("unresponsive", *reason);
 }
 
-IN_PROC_BROWSER_TEST_P(ReportingBrowserTestUnresponsiveWithoutHungExitCode,
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
                        MAYBE_CrashReportUnresponsiveWithoutHungExitCode) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -722,11 +725,99 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestUnresponsiveWithoutHungExitCode,
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
   const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
   const std::string* reason = body->FindString("reason");
 
+  ASSERT_NE(type, nullptr);
   EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
   EXPECT_EQ(*url, main_url.spec());
+
+  ASSERT_NE(reason, nullptr);
   EXPECT_EQ("unresponsive", *reason);
+}
+
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest, MAYBE_CrashReportOOM) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::SimulateOOMPrimaryMainFrameAndWaitForExit(contents);
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that the crash report was generated with reason: "oom".
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::string* reason = body->FindString("reason");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(*url, main_url.spec());
+
+  ASSERT_NE(reason, nullptr);
+  EXPECT_EQ("oom", *reason);
+}
+
+IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
+                       MAYBE_CrashReportOOMTakesPriorityOverUnresponsive) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  // Mark the renderer as unresponsive.
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+
+  // Simulate OOM shutdown while unresponsive.
+  content::SimulateOOMPrimaryMainFrameAndWaitForExit(contents);
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that the crash report was generated with reason: "oom" rather than
+  // "unresponsive".
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::string* reason = body->FindString("reason");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(*url, main_url.spec());
+
+  ASSERT_NE(reason, nullptr);
+  EXPECT_EQ("oom", *reason);
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
@@ -1291,9 +1382,7 @@ IN_PROC_BROWSER_TEST_P(HistogramReportingBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All,
-                         ReportingBrowserTestUnresponsiveWithoutHungExitCode,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, CrashReportingBrowserTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          NonIsolatedReportingBrowserTest,
                          ::testing::Bool());
