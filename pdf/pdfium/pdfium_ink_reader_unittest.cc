@@ -102,6 +102,7 @@ TEST_P(PDFiumInkReaderTest, BasicTextAnnotation) {
           .is_bold = true,
           .is_italic = false,
           .is_strikethrough = false,
+          .is_underline = false,
           .text = "Hello\n!",
       }));
 
@@ -145,6 +146,7 @@ TEST_P(PDFiumInkReaderTest, StrikethroughTextAnnotation) {
           .is_bold = true,
           .is_italic = false,
           .is_strikethrough = true,
+          .is_underline = false,
           .text = "Hello\n!",
       }));
 
@@ -209,6 +211,7 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
           .is_bold = true,
           .is_italic = false,
           .is_strikethrough = false,
+          .is_underline = false,
           .text = "Hello",
       }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
@@ -233,6 +236,7 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
           .is_bold = false,
           .is_italic = true,
           .is_strikethrough = false,
+          .is_underline = false,
           .text = "World",
       }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&

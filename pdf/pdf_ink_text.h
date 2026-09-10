@@ -72,6 +72,7 @@ struct InkTextBoxAttributes {
   bool is_bold;
   bool is_italic;
   bool is_strikethrough;
+  bool is_underline;
   std::string text;
 };
 

@@ -591,7 +591,8 @@ TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
                   "styles": {
                     "bold": false,
                     "italic": true,
-                    "strikethrough": false
+                    "strikethrough": false,
+                    "underline": false
                   }
                 },
                 "viewportOrientation": 0
@@ -1024,6 +1025,7 @@ class PdfInkModuleTextTest : public testing::Test {
                        .is_bold = true,
                        .is_italic = true,
                        .is_strikethrough = true,
+                       .is_underline = true,
                        .text = kOriginalText,
                    });
     test_box.ink_loaded_text_id = kLoadedTextId;
@@ -1441,7 +1443,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
   histograms.ExpectTotalCount("PDF.Ink2TextAnnotationStrikethrough", 0);
 
   {
-    // Send an edited message with bold=true, italic=false, strikethrough=false.
+    // Send an edited message with bold=true, italic=false, strikethrough=false,
+    // underline=false.
     base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
                                                           kPageIndex, kPdfZoom);
 
@@ -1453,7 +1456,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
     text_attributes.Set("styles", base::DictValue()
                                       .Set("bold", true)
                                       .Set("italic", false)
-                                      .Set("strikethrough", false));
+                                      .Set("strikethrough", false)
+                                      .Set("underline", false));
     data.Set("textAttributes", std::move(text_attributes));
 
     EXPECT_TRUE(ink_module().OnMessage(
@@ -1466,7 +1470,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
   }
 
   {
-    // Send an edited message with bold=false, italic=true, strikethrough=false.
+    // Send an edited message with bold=false, italic=true,
+    // strikethrough=false, underline=false.
     base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
                                                           kPageIndex, kPdfZoom);
     base::ListValue typefaces_edit;
@@ -1477,7 +1482,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
     text_attributes_edit.Set("styles", base::DictValue()
                                            .Set("bold", false)
                                            .Set("italic", true)
-                                           .Set("strikethrough", false));
+                                           .Set("strikethrough", false)
+                                           .Set("underline", false));
     data.Set("textAttributes", std::move(text_attributes_edit));
 
     EXPECT_TRUE(ink_module().OnMessage(
@@ -1493,7 +1499,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
   }
 
   {
-    // Send an edited message with bold=false, italic=false, strikethrough=true.
+    // Send an edited message with bold=false, italic=false,
+    // strikethrough=true, underline=false.
     base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
                                                           kPageIndex, kPdfZoom);
     base::ListValue typefaces_edit;
@@ -1504,7 +1511,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageStyleMetrics) {
     text_attributes_edit.Set("styles", base::DictValue()
                                            .Set("bold", false)
                                            .Set("italic", false)
-                                           .Set("strikethrough", true));
+                                           .Set("strikethrough", true)
+                                           .Set("underline", false));
     data.Set("textAttributes", std::move(text_attributes_edit));
 
     EXPECT_TRUE(ink_module().OnMessage(
