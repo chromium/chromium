@@ -1240,6 +1240,12 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
 
 void OmniboxEditModel::StartZeroSuggestRequest(
     bool user_clobbered_permanent_text) {
+  // In Full WebUI mode, the WebUI searchbox manages zero-suggest queries
+  // directly via `SearchboxHandler`.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    return;
+  }
+
   // Early exit if a query is already in progress or the popup is already open.
   // This is what allows this method to be called multiple times in multiple
   // code locations without harm.

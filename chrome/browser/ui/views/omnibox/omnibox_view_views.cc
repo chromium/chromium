@@ -1587,7 +1587,7 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
           base::FeatureList::IsEnabled(
               omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
         location_bar_view_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
-            /*query_zps=*/true);
+            /*query_zps=*/false);
       }
     }
   }

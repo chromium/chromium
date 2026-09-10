@@ -326,6 +326,20 @@ TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
   EXPECT_TRUE(view()->IsSelectAll());
 }
 
+TEST_F(OmniboxEditModelTest, FullWebUISuppressesZeroSuggestRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+  location_bar_model()->set_url(GURL("https://www.example.com/"));
+  location_bar_model()->set_url_for_display(u"https://www.example.com/");
+  EXPECT_TRUE(model()->ResetDisplayTexts());
+  model()->Revert();
+
+  // In Full WebUI mode, native OmniboxEditModel::StartZeroSuggestRequest early-
+  // returns so WebUI can exclusively manage autocomplete queries.
+  model()->StartZeroSuggestRequest();
+  EXPECT_TRUE(controller()->autocomplete_controller()->done());
+}
+
 // This verifies the fix for a bug where calling OpenMatch() with a valid
 // alternate nav URL would fail a DCHECK if the input began with "http://".
 // The failure was due to erroneously trying to strip the scheme from the
