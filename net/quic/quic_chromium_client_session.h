@@ -897,7 +897,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // the migration fails and |close_session_on_error| is true, session will be
   // closed.
   using MigrationCallback = base::OnceCallback<void(MigrationResult)>;
-  void MigrateWithoutProbing(handles::NetworkHandle network,
+  void MigrateWithoutProbing(MigrationCause migration_cause,
+                             handles::NetworkHandle network,
                              IPEndPoint peer_address,
                              bool close_session_on_error,
                              MigrationCallback migration_callback);
@@ -1028,9 +1029,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // If <network, peer_addres> is identical to the current path, the probe
   // is sent on a different port.
   using ProbingCallback = base::OnceCallback<void(ProbingResult)>;
-  void StartProbing(ProbingCallback probing_callback,
+  void StartProbing(MigrationCause migration_cause,
                     handles::NetworkHandle network,
-                    const quic::QuicSocketAddress& peer_address);
+                    const quic::QuicSocketAddress& peer_address,
+                    ProbingCallback probing_callback);
 
   // Helper to finish network probe once socket has been opened. Always called
   // asynchronously.
@@ -1040,9 +1042,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Perform a few checks before StartProbing. If any of those checks fails,
   // StartProbing will be skipped.
-  void MaybeStartProbing(ProbingCallback probing_callback,
+  void MaybeStartProbing(MigrationCause migration_cause,
                          handles::NetworkHandle network,
-                         const quic::QuicSocketAddress& peer_address);
+                         const quic::QuicSocketAddress& peer_address,
+                         ProbingCallback probing_callback);
 
   // Helper method to perform a few checks and initiate connection migration
   // attempt when path degrading is detected.
@@ -1060,19 +1063,23 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   //    default network;
   //  - If now on the default network, cancel timer to migrate back to default
   //    network.
-  void MigrateNetworkImmediately(handles::NetworkHandle network);
+  void MigrateNetworkImmediately(MigrationCause migration_cause,
+                                 handles::NetworkHandle network);
 
   // Called when MigrateWithoutProbing() call from MigrateNetworkImmediately
   // completes. Always called asynchronously.
   void FinishMigrateNetworkImmediately(handles::NetworkHandle network,
                                        MigrationResult result);
 
-  void StartMigrateBackToDefaultNetworkTimer(base::TimeDelta delay);
+  void StartMigrateBackToDefaultNetworkTimer(MigrationCause migration_cause,
+                                             base::TimeDelta delay);
   void CancelMigrateBackToDefaultNetworkTimer();
-  void TryMigrateBackToDefaultNetwork(base::TimeDelta timeout);
-  void FinishTryMigrateBackToDefaultNetwork(base::TimeDelta timeout,
+  void TryMigrateBackToDefaultNetwork(MigrationCause migration_cause,
+                                      base::TimeDelta timeout);
+  void FinishTryMigrateBackToDefaultNetwork(MigrationCause migration_cause,
+                                            base::TimeDelta timeout,
                                             ProbingResult result);
-  void MaybeRetryMigrateBackToDefaultNetwork();
+  void MaybeRetryMigrateBackToDefaultNetwork(MigrationCause migration_cause);
 
   // If migrate idle session is enabled, returns true and post a task to close
   // the connection if session's idle time exceeds the |idle_migration_period_|.
@@ -1153,8 +1160,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool migrate_session_early_v2_;
   bool migrate_session_on_network_change_v2_;
   // True when session migration has started from MigrateSessionOnWriteError.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   bool pending_migrate_session_on_write_error_ = false;
   // True when a session migration starts from MigrateNetworkImmediately.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   bool pending_migrate_network_immediately_ = false;
   bool migrate_idle_session_;
   bool allow_port_migration_;
@@ -1163,11 +1176,23 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   base::TimeDelta max_time_on_non_default_network_;
   // Maximum allowed number of migrations to non-default network triggered by
   // packet write error per default network.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   int max_migrations_to_non_default_network_on_write_error_;
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   int current_migrations_to_non_default_network_on_write_error_ = 0;
   // Maximum allowed number of migrations to non-default network triggered by
   // path degrading per default network.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   int max_migrations_to_non_default_network_on_path_degrading_;
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   int current_migrations_to_non_default_network_on_path_degrading_ = 0;
   raw_ptr<const quic::QuicClock> clock_;  // Unowned.
   int yield_after_packets_;
@@ -1221,22 +1246,45 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Stores the packet that witnesses socket write error. This packet will be
   // written to an alternate socket when the migration completes and the
   // alternate socket is unblocked.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   scoped_refptr<QuicChromiumPacketWriter::ReusableIOBuffer> packet_;
   // Stores the latest default network platform marks if migration is enabled.
   // Otherwise, stores the network interface that is used by the connection.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   handles::NetworkHandle default_network_;
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   int retry_migrate_back_count_ = 0;
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   base::OneShotTimer migrate_back_to_default_timer_;
+  // TODO(crbug.com/557126867): Remove this when we remove the old connection
+  // migration UMAs.
   MigrationCause current_migration_cause_ = UNKNOWN_CAUSE;
   // True if a packet needs to be sent when packet writer is unblocked to
   // complete connection migration. The packet can be a cached packet if
-  // |packet_| is set, a queued packet, or a PING packet.
+  // `packet_` is set, a queued packet, or a PING packet.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   bool send_packet_after_migration_ = false;
   // True if migration is triggered, and there is no alternate network to
   // migrate to.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   bool wait_for_new_network_ = false;
   // True if read errors should be ignored. Set when migration on write error is
   // posted and unset until the first packet is written after migration.
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   bool ignore_read_error_ = false;
 
   bool attempted_zero_rtt_ = false;
@@ -1251,6 +1299,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   quic::KeyUpdateReason last_key_update_reason_ =
       quic::KeyUpdateReason::kInvalid;
 
+  // TODO(crbug.com/558250723): Consider moving this, and every other field
+  // connected to a migration attempt state, into a new manager-like entity for
+  // migration attempts.
   QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
 
   // Map of origin to Accept-CH header field values received via ALPS.

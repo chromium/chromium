@@ -2437,7 +2437,7 @@ void QuicChromiumClientSession::MigrateSessionOnWriteError(
       "WriteError");
   pending_migrate_session_on_write_error_ = true;
   MigrateWithoutProbing(
-      new_network, ToIPEndPoint(connection()->peer_address()),
+      ON_WRITE_ERROR, new_network, ToIPEndPoint(connection()->peer_address()),
       /*close_session_on_error=*/false,
       base::BindOnce(
           &QuicChromiumClientSession::FinishMigrateSessionOnWriteError,
@@ -2459,6 +2459,7 @@ void QuicChromiumClientSession::FinishMigrateSessionOnWriteError(
   }
   if (new_network != default_network_) {
     StartMigrateBackToDefaultNetworkTimer(
+        ON_MIGRATE_BACK_TO_DEFAULT_NETWORK,
         base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
   } else {
     CancelMigrateBackToDefaultNetworkTimer();
@@ -2636,6 +2637,7 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
     // Session gets off the |default_network|, stay on |network| for now but
     // try to migrate back to default network after 1 second.
     StartMigrateBackToDefaultNetworkTimer(
+        ON_MIGRATE_BACK_TO_DEFAULT_NETWORK,
         base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
   }
 }
@@ -2751,9 +2753,12 @@ void QuicChromiumClientSession::OnNetworkConnected(
     if (current_migration_cause_ == ON_WRITE_ERROR) {
       current_migrations_to_non_default_network_on_write_error_++;
     }
-    // |wait_for_new_network_| is true, there was no working network previously.
-    // |network| is now the only possible candidate, migrate immediately.
-    MigrateNetworkImmediately(network);
+    // `wait_for_new_network_` is true, there was no working network previously.
+    // `network` is now the only possible candidate, migrate immediately.
+    // TODO(crbug.com/557126867): Correctly retrieve and propagate the cause of
+    // the migration instead of relying on the mutable
+    // `current_migration_cause_`.
+    MigrateNetworkImmediately(current_migration_cause_, network);
   } else {
     // The connection is path degrading.
     DCHECK(connection()->IsPathDegrading());
@@ -2829,7 +2834,7 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
 
   // Current network is being disconnected, migrate immediately to the
   // alternative network.
-  MigrateNetworkImmediately(new_network);
+  MigrateNetworkImmediately(ON_NETWORK_DISCONNECTED, new_network);
 }
 
 void QuicChromiumClientSession::OnNetworkMadeDefault(
@@ -2879,10 +2884,12 @@ void QuicChromiumClientSession::OnNetworkMadeDefault(
   // Stay on the current network. Try to migrate back to default network
   // without any delay, which will start probing the new default network and
   // migrate to the new network immediately on success.
-  StartMigrateBackToDefaultNetworkTimer(base::TimeDelta());
+  StartMigrateBackToDefaultNetworkTimer(ON_NETWORK_MADE_DEFAULT,
+                                        base::TimeDelta());
 }
 
 void QuicChromiumClientSession::MigrateNetworkImmediately(
+    MigrationCause migration_cause,
     handles::NetworkHandle network) {
   // There is no choice but to migrate to |network|. If any error encountered,
   // close the session. When migration succeeds:
@@ -2933,7 +2940,7 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
   pending_migrate_network_immediately_ = true;
   MigrateWithoutProbing(
-      network, ToIPEndPoint(connection()->peer_address()),
+      migration_cause, network, ToIPEndPoint(connection()->peer_address()),
       /*close_session_on_error=*/true,
       base::BindOnce(
           &QuicChromiumClientSession::FinishMigrateNetworkImmediately,
@@ -2957,6 +2964,7 @@ void QuicChromiumClientSession::FinishMigrateNetworkImmediately(
   // We are forced to migrate to |network|, probably |default_network_| is
   // not working, start to migrate back to default network after 1 secs.
   StartMigrateBackToDefaultNetworkTimer(
+      ON_MIGRATE_BACK_TO_DEFAULT_NETWORK,
       base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
 }
 
@@ -3224,8 +3232,8 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
   // Probe a different port, session will migrate to the probed port on success.
   // DoNothingAs is passed in for `probing_callback` as the return value of
   // StartProbing is not needed.
-  StartProbing(base::DoNothingAs<void(ProbingResult)>(), default_network_,
-               peer_address());
+  StartProbing(CHANGE_PORT_ON_PATH_DEGRADING, default_network_, peer_address(),
+               base::DoNothingAs<void(ProbingResult)>());
   net_log_.EndEvent(NetLogEventType::QUIC_PORT_MIGRATION_TRIGGERED);
 }
 
@@ -3277,15 +3285,16 @@ void QuicChromiumClientSession::
   // network and decide whether it wants to migrate back to the default
   // network on success. DoNothingAs is passed in for `probing_callback` as the
   // return value of MaybeStartProbing is not needed.
-  MaybeStartProbing(base::DoNothingAs<void(ProbingResult)>(), alternate_network,
-                    peer_address());
+  MaybeStartProbing(CHANGE_NETWORK_ON_PATH_DEGRADING, alternate_network,
+                    peer_address(), base::DoNothingAs<void(ProbingResult)>());
   net_log_.EndEvent(NetLogEventType::QUIC_CONNECTION_MIGRATION_TRIGGERED);
 }
 
 void QuicChromiumClientSession::MaybeStartProbing(
-    ProbingCallback probing_callback,
+    MigrationCause migration_cause,
     handles::NetworkHandle network,
-    const quic::QuicSocketAddress& peer_address) {
+    const quic::QuicSocketAddress& peer_address,
+    ProbingCallback probing_callback) {
   if (!session_pool_) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(probing_callback),
@@ -3327,7 +3336,8 @@ void QuicChromiumClientSession::MaybeStartProbing(
     return;
   }
 
-  StartProbing(std::move(probing_callback), network, peer_address);
+  StartProbing(migration_cause, network, peer_address,
+               std::move(probing_callback));
 }
 
 void QuicChromiumClientSession::CreateContextForMultiPortPath(
@@ -3415,9 +3425,10 @@ void QuicChromiumClientSession::MigrateToMultiPortPath(
 }
 
 void QuicChromiumClientSession::StartProbing(
-    ProbingCallback probing_callback,
+    MigrationCause migration_cause,
     handles::NetworkHandle network,
-    const quic::QuicSocketAddress& peer_address) {
+    const quic::QuicSocketAddress& peer_address,
+    ProbingCallback probing_callback) {
   // Check if probing manager is probing the same path.
   auto* existing_context = static_cast<QuicChromiumPathValidationContext*>(
       connection()->GetPathValidationContext());
@@ -3439,7 +3450,7 @@ void QuicChromiumClientSession::StartProbing(
   DatagramClientSocket* probing_socket_ptr = probing_socket.get();
 
   auto attempt_context = std::make_unique<QuicMigrationAttemptContext>(
-      current_migration_cause_, GetCurrentNetwork(), network, peer_address,
+      migration_cause, GetCurrentNetwork(), network, peer_address,
       std::make_unique<QuicChromiumPacketReader>(
           std::move(probing_socket), clock_, this, yield_after_packets_,
           yield_after_duration_, net_log_),
@@ -3451,7 +3462,7 @@ void QuicChromiumClientSession::StartProbing(
                      weak_factory_.GetWeakPtr(), std::move(probing_callback),
                      std::move(attempt_context));
 
-  if (current_migration_cause_ != UNKNOWN_CAUSE &&
+  if (migration_cause != UNKNOWN_CAUSE &&
       !MidMigrationCallbackForTesting().is_null()) {
     std::move(MidMigrationCallbackForTesting()).Run();  // IN-TEST
   }
@@ -3517,6 +3528,7 @@ void QuicChromiumClientSession::FinishStartProbing(
 }
 
 void QuicChromiumClientSession::StartMigrateBackToDefaultNetworkTimer(
+    MigrationCause migration_cause,
     base::TimeDelta delay) {
   if (current_migration_cause_ != ON_NETWORK_MADE_DEFAULT) {
     current_migration_cause_ = ON_MIGRATE_BACK_TO_DEFAULT_NETWORK;
@@ -3528,7 +3540,7 @@ void QuicChromiumClientSession::StartMigrateBackToDefaultNetworkTimer(
       FROM_HERE, delay,
       base::BindOnce(
           &QuicChromiumClientSession::MaybeRetryMigrateBackToDefaultNetwork,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), migration_cause));
 }
 
 void QuicChromiumClientSession::CancelMigrateBackToDefaultNetworkTimer() {
@@ -3537,6 +3549,7 @@ void QuicChromiumClientSession::CancelMigrateBackToDefaultNetworkTimer() {
 }
 
 void QuicChromiumClientSession::TryMigrateBackToDefaultNetwork(
+    MigrationCause migration_cause,
     base::TimeDelta timeout) {
   if (default_network_ == handles::kInvalidNetworkHandle) {
     DVLOG(1) << "Default network is not connected";
@@ -3551,13 +3564,14 @@ void QuicChromiumClientSession::TryMigrateBackToDefaultNetwork(
   // will be cancelled and manager starts to probe |default_network_|
   // immediately.
   MaybeStartProbing(
+      migration_cause, default_network_, peer_address(),
       base::BindOnce(
           &QuicChromiumClientSession::FinishTryMigrateBackToDefaultNetwork,
-          weak_factory_.GetWeakPtr(), timeout),
-      default_network_, peer_address());
+          weak_factory_.GetWeakPtr(), migration_cause, timeout));
 }
 
 void QuicChromiumClientSession::FinishTryMigrateBackToDefaultNetwork(
+    MigrationCause migration_cause,
     base::TimeDelta timeout,
     ProbingResult result) {
   if (result != ProbingResult::PENDING) {
@@ -3573,14 +3587,15 @@ void QuicChromiumClientSession::FinishTryMigrateBackToDefaultNetwork(
       FROM_HERE, timeout,
       base::BindOnce(
           &QuicChromiumClientSession::MaybeRetryMigrateBackToDefaultNetwork,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), migration_cause));
 }
 
-void QuicChromiumClientSession::MaybeRetryMigrateBackToDefaultNetwork() {
+void QuicChromiumClientSession::MaybeRetryMigrateBackToDefaultNetwork(
+    MigrationCause migration_cause) {
   base::TimeDelta retry_migrate_back_timeout =
       base::Seconds(UINT64_C(1) << retry_migrate_back_count_);
   if (pending_migrate_session_on_write_error_) {
-    StartMigrateBackToDefaultNetworkTimer(base::TimeDelta());
+    StartMigrateBackToDefaultNetworkTimer(migration_cause, base::TimeDelta());
     return;
   }
   if (default_network_ == GetCurrentNetwork()) {
@@ -3594,7 +3609,7 @@ void QuicChromiumClientSession::MaybeRetryMigrateBackToDefaultNetwork() {
     NotifyFactoryOfSessionGoingAway();
     return;
   }
-  TryMigrateBackToDefaultNetwork(retry_migrate_back_timeout);
+  TryMigrateBackToDefaultNetwork(migration_cause, retry_migrate_back_timeout);
 }
 
 bool QuicChromiumClientSession::CheckIdleTimeExceedsIdleMigrationPeriod() {
@@ -4038,11 +4053,13 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
       GetCurrentNetwork() != default_network_) {
     current_migration_cause_ = ON_MIGRATE_BACK_TO_DEFAULT_NETWORK;
     StartMigrateBackToDefaultNetworkTimer(
+        ON_MIGRATE_BACK_TO_DEFAULT_NETWORK,
         base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
   }
 }
 
 void QuicChromiumClientSession::MigrateWithoutProbing(
+    MigrationCause migration_cause,
     handles::NetworkHandle network,
     IPEndPoint peer_address,
     bool close_session_on_error,
@@ -4089,7 +4106,7 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
   DatagramClientSocket* socket_ptr = socket.get();
 
   auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      current_migration_cause_, GetCurrentNetwork(), network,
+      migration_cause, GetCurrentNetwork(), network,
       ToQuicSocketAddress(peer_address),
       std::make_unique<QuicChromiumPacketReader>(
           std::move(socket), clock_, this, yield_after_packets_,
@@ -4285,8 +4302,9 @@ void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
     return;
   }
 
-  StartProbing(base::DoNothingAs<void(ProbingResult)>(), default_network_,
-               server_preferred_address);
+  StartProbing(ON_SERVER_PREFERRED_ADDRESS_AVAILABLE, default_network_,
+               server_preferred_address,
+               base::DoNothingAs<void(ProbingResult)>());
   net_log_.EndEvent(
       NetLogEventType::QUIC_START_VALIDATING_SERVER_PREFERRED_ADDRESS);
 }
