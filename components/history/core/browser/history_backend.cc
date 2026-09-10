@@ -2979,8 +2979,13 @@ URLRows HistoryBackend::GetMatchesForHost(const std::u16string& host_name) {
   if (db_ && db_->InitURLEnumeratorForEverything(&iter)) {
     URLRow row;
     std::string host_name_utf8 = base::UTF16ToUTF8(host_name);
+    const bool improved_suffix_matching = base::FeatureList::IsEnabled(
+        kBrowsingHistoryImprovedHostnameSuffixMatching);
     while (iter.GetNextURL(&row)) {
-      if (row.url().is_valid() && row.url().GetHost() == host_name_utf8) {
+      const bool matches_host = improved_suffix_matching
+                                    ? row.url().DomainIs(host_name_utf8)
+                                    : (row.url().GetHost() == host_name_utf8);
+      if (row.url().is_valid() && matches_host) {
         results.push_back(std::move(row));
       }
     }

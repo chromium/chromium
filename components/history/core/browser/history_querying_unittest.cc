@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -17,12 +18,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 // Tests the history service for querying functionality.
 
@@ -482,6 +487,69 @@ TEST_F(HistoryQueryTest, TextSearchPaging) {
   // shouldn't appear.
   int expected_results[] = {2, 3, 1, 7, 6, 5};
   TestPaging("title", expected_results);
+}
+
+TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
+  ASSERT_TRUE(history_.get());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kBrowsingHistoryImprovedHostnameSuffixMatching);
+
+  // Add test entries to verify suffix matching.
+  // Note: "http://example.com/" is already populated in SetUp().
+  const TestEntry entries[] = {
+      {"http://www.example.com/", "Host WWW Example", 1,
+       base::Time::Now() - base::Days(1)},
+      {"http://subdomain.example.com/", "Host Subdomain Example", 2,
+       base::Time::Now() - base::Days(2)},
+      {"http://www.somesite.com/", "Host WWW Somesite", 3,
+       base::Time::Now() - base::Days(3)},
+      {"http://somesite.com.someothersite.com/", "Host Subdomain of Other", 4,
+       base::Time::Now() - base::Days(4)},
+      {"http://some.site/somesite.com", "Host Path Match Only", 5,
+       base::Time::Now() - base::Days(5)},
+      {"http://mysomesite.com/", "Host Non-Subdomain Prefix", 6,
+       base::Time::Now() - base::Days(6)},
+  };
+  for (const auto& entry : entries) {
+    AddEntryToHistory(entry);
+  }
+
+  QueryOptions options;
+  options.host_only = true;
+
+  // host:example.com matches example.com, www.example.com, and
+  // subdomain.example.com.
+  {
+    QueryResults results;
+    QueryHistory("example.com", options, &results);
+    EXPECT_THAT(
+        results,
+        testing::UnorderedElementsAre(
+            testing::Property(&URLResult::url, GURL("http://example.com/")),
+            testing::Property(&URLResult::url, GURL("http://www.example.com/")),
+            testing::Property(&URLResult::url,
+                              GURL("http://subdomain.example.com/"))));
+  }
+
+  // host:www.example.com matches www.example.com.
+  {
+    QueryResults results;
+    QueryHistory("www.example.com", options, &results);
+    EXPECT_EQ(1U, results.size());
+    EXPECT_EQ(GURL("http://www.example.com/"), results[0].url());
+  }
+
+  // host:somesite.com matches www.somesite.com, but not
+  // somesite.com.someothersite.com, and also not some.site/somesite.com, and
+  // also not mysomesite.com.
+  {
+    QueryResults results;
+    QueryHistory("somesite.com", options, &results);
+    EXPECT_EQ(1U, results.size());
+    EXPECT_EQ(GURL("http://www.somesite.com/"), results[0].url());
+  }
 }
 
 }  // namespace history
