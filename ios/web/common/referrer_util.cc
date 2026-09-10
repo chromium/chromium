@@ -7,61 +7,24 @@
 #include "base/notreached.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "net/url_request/referrer_policy.h"
+#include "net/url_request/url_request_job.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web {
 
 std::string ReferrerHeaderValueForNavigation(const GURL& destination,
                                              const web::Referrer& referrer) {
-  bool is_downgrade = referrer.url.SchemeIsCryptographic() &&
-                      !destination.SchemeIsCryptographic();
-  switch (referrer.policy) {
-    case ReferrerPolicyAlways:
-      return referrer.url.GetAsReferrer().spec();
-    case ReferrerPolicyNever:
-      return std::string();
-    case ReferrerPolicyOrigin:
-      return referrer.url.DeprecatedGetOriginAsURL().spec();
-    case ReferrerPolicyDefault:
-    case ReferrerPolicyNoReferrerWhenDowngrade:
-      if (is_downgrade) {
-        return std::string();
-      }
-      return referrer.url.GetAsReferrer().spec();
-    case ReferrerPolicyOriginWhenCrossOrigin:
-      if (referrer.url.DeprecatedGetOriginAsURL() !=
-          destination.DeprecatedGetOriginAsURL()) {
-        return referrer.url.DeprecatedGetOriginAsURL().spec();
-      }
-      return referrer.url.GetAsReferrer().spec();
-    case ReferrerPolicySameOrigin:
-      if (referrer.url.DeprecatedGetOriginAsURL() !=
-          destination.DeprecatedGetOriginAsURL()) {
-        return std::string();
-      }
-      return referrer.url.GetAsReferrer().spec();
-    case ReferrerPolicyStrictOrigin:
-      if (is_downgrade) {
-        return std::string();
-      }
-      return referrer.url.DeprecatedGetOriginAsURL().spec();
-    case ReferrerPolicyStrictOriginWhenCrossOrigin:
-      if (is_downgrade) {
-        return std::string();
-      }
-      if (referrer.url.DeprecatedGetOriginAsURL() !=
-          destination.DeprecatedGetOriginAsURL()) {
-        return referrer.url.DeprecatedGetOriginAsURL().spec();
-      }
-      return referrer.url.GetAsReferrer().spec();
-  }
-  NOTREACHED();
+  return net::URLRequestJob::ComputeReferrerForPolicy(
+             PolicyForNavigation(destination, referrer), referrer.url,
+             destination)
+      .spec();
 }
 
 net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
                                         const web::Referrer& referrer) {
-  // Based on the matching logic in content's
-  // resource_dispatcher_host_impl.cc
+  // Based on the matching logic in
+  // services/network/public/cpp/resource_request.cc
   switch (referrer.policy) {
     case ReferrerPolicyAlways:
       return net::ReferrerPolicy::NEVER_CLEAR;
