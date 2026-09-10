@@ -111,13 +111,16 @@ void JourneyLoggerAndroid::SetCompleted(JNIEnv* env) {
 }
 
 void JourneyLoggerAndroid::SetAborted(JNIEnv* env, int32_t jreason) {
-  DCHECK_GE(jreason, 0);
-  DCHECK_LT(jreason, JourneyLogger::AbortReason::ABORT_REASON_MAX);
+  CHECK_GE(jreason, 0);
+  CHECK_LT(jreason, JourneyLogger::AbortReason::ABORT_REASON_MAX);
   journey_logger_.SetAborted(static_cast<JourneyLogger::AbortReason>(jreason));
 }
 
-void JourneyLoggerAndroid::SetNotShown(JNIEnv* env) {
-  journey_logger_.SetNotShown();
+void JourneyLoggerAndroid::SetNotShown(JNIEnv* env, int32_t jreason) {
+  CHECK_GE(jreason, 0);
+  CHECK_LT(jreason, JourneyLogger::NotShownReason::NOT_SHOWN_REASON_MAX);
+  journey_logger_.SetNotShown(
+      static_cast<JourneyLogger::NotShownReason>(jreason));
 }
 
 void JourneyLoggerAndroid::RecordCheckoutStep(JNIEnv* env, int32_t jstep) {

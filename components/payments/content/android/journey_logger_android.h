@@ -47,7 +47,7 @@ class JourneyLoggerAndroid {
       const base::android::JavaRef<jintArray>& jmethods);
   void SetCompleted(JNIEnv* env);
   void SetAborted(JNIEnv* env, int32_t jreason);
-  void SetNotShown(JNIEnv* env);
+  void SetNotShown(JNIEnv* env, int32_t jreason);
   void RecordCheckoutStep(JNIEnv* env, int32_t jstep);
   void SetPaymentAppUkmSourceId(JNIEnv* env, ukm::SourceId source_id);
 

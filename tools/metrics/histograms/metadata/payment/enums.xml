@@ -96,6 +96,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="15" label="Could not show: User activation required"/>
   <int value="16" label="Could not show: Background tab"/>
   <int value="17" label="Could not show: No supported payment method"/>
+  <int value="18" label="Could not show: User cancel"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/payments/core/payment_request_metrics.h:PaymentRequestOutcome) -->

@@ -55,7 +55,8 @@ enum class PaymentRequestOutcome {
   kNotShownUserActivationRequired = 15,
   kNotShownBackgroundTab = 16,
   kNotShownNoSupportedPaymentMethod = 17,
-  kMaxValue = kNotShownNoSupportedPaymentMethod
+  kNotShownUserCancel = 18,
+  kMaxValue = kNotShownUserCancel
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:PaymentRequestOutcome)
 

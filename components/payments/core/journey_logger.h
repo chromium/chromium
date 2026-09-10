@@ -148,6 +148,18 @@ class JourneyLogger {
     ABORT_REASON_MAX,
   };
 
+  // The reason why the Payment Request was not shown.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: NotShownReason
+  enum NotShownReason {
+    NOT_SHOWN_REASON_ALREADY_SHOWING = 0,
+    NOT_SHOWN_REASON_USER_ACTIVATION_REQUIRED = 1,
+    NOT_SHOWN_REASON_BACKGROUND_TAB = 2,
+    NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD = 3,
+    NOT_SHOWN_REASON_USER_CANCEL = 4,
+    NOT_SHOWN_REASON_MAX,
+  };
+
   // The categories of the payment methods.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: PaymentMethodCategory
@@ -256,7 +268,7 @@ class JourneyLogger {
   void SetAborted(AbortReason reason);
 
   // Records that the Payment Request was not shown to the user.
-  void SetNotShown();
+  void SetNotShown(NotShownReason reason);
 
   // Records that PaymentRequest.canMakePayment() was called.
   void SetCanMakePaymentCalled();

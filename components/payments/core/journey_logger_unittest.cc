@@ -73,7 +73,8 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_CanMakePaymentCalled) {
   JourneyLogger logger(ukm::kInvalidSourceId);
 
   logger.SetCanMakePaymentCalled();
-  logger.SetNotShown();
+  logger.SetNotShown(
+      JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD);
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events2");
@@ -87,7 +88,8 @@ TEST(JourneyLoggerTest,
   JourneyLogger logger(ukm::kInvalidSourceId);
 
   logger.SetHasEnrolledInstrumentCalled();
-  logger.SetNotShown();
+  logger.SetNotShown(
+      JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD);
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events2");
@@ -101,7 +103,8 @@ TEST(JourneyLoggerTest,
   JourneyLogger logger(ukm::kInvalidSourceId);
 
   logger.SetInitiatedInCrossSiteIframe();
-  logger.SetNotShown();
+  logger.SetNotShown(
+      JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD);
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events2");
@@ -1025,6 +1028,41 @@ TEST(JourneyLoggerTest,
       "PaymentRequest.MandatoryPaymentAppUi."
       "PaymentHandlerPausedResolutionOutcome",
       PaymentHandlerPausedResolutionOutcome::kWindowClosed, 1);
+}
+
+TEST(JourneyLoggerTest, Outcome_Completed) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  std::vector<PaymentMethodCategory> methods{PaymentMethodCategory::kGoogle};
+  logger.SetRequestedPaymentMethods(methods);
+  logger.SetShown();
+  logger.SetSelectedMethod(PaymentMethodCategory::kGoogle);
+  logger.SetCompleted();
+
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Outcome",
+                                      PaymentRequestOutcome::kSuccess, 1);
+}
+
+TEST(JourneyLoggerTest, Outcome_Aborted) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
+
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Outcome",
+                                      PaymentRequestOutcome::kAbortedByUser, 1);
+}
+
+TEST(JourneyLoggerTest, Outcome_NotShown) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_ALREADY_SHOWING);
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.Outcome", PaymentRequestOutcome::kNotShownAlreadyShowing,
+      1);
 }
 
 }  // namespace payments

@@ -164,8 +164,8 @@ public class JourneyLogger {
      *
      * @param reason An int indicating why the payment request was aborted.
      */
-    public void setAborted(int reason) {
-        assert reason < AbortReason.MAX;
+    public void setAborted(@AbortReason int reason) {
+        assert reason >= 0 && reason < AbortReason.MAX;
 
         // The abort reasons on Android cascade into each other, so only the first one should be
         // recorded.
@@ -175,13 +175,17 @@ public class JourneyLogger {
         }
     }
 
-    /** Records that the Payment Request was not shown to the user. */
-    public void setNotShown() {
-        assert !mHasRecorded;
+    /**
+     * Records that the Payment Request was not shown to the user.
+     *
+     * @param reason The reason the PaymentRequest was not shown.
+     */
+    public void setNotShown(@NotShownReason int reason) {
+        assert reason >= 0 && reason < NotShownReason.MAX;
 
         if (!mHasRecorded) {
             mHasRecorded = true;
-            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid);
+            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid, reason);
         }
     }
 
@@ -244,9 +248,9 @@ public class JourneyLogger {
 
         void setCompleted(long nativeJourneyLoggerAndroid);
 
-        void setAborted(long nativeJourneyLoggerAndroid, int reason);
+        void setAborted(long nativeJourneyLoggerAndroid, @AbortReason int reason);
 
-        void setNotShown(long nativeJourneyLoggerAndroid);
+        void setNotShown(long nativeJourneyLoggerAndroid, @NotShownReason int reason);
 
         void recordCheckoutStep(long nativeJourneyLoggerAndroid, int step);
 
