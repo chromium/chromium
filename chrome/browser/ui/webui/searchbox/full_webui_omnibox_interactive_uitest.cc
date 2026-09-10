@@ -997,6 +997,45 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
                            "(el) => el && el.dropdownIsVisible"));
 }
 
+// Verifies that navigating to the Omnibox via Tab traversal opens and focuses
+// the full WebUI popup instead of retaining focus in the native textfield.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       TabTraversalOpensAndFocusesWebUIPopup) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"),
+
+      // Blur and close the Omnibox popup by clicking the webpage body.
+      ClickWebPageBody(kTab1),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
+      WaitForPopupTransitionLockout(),
+
+      // Focus the view directly before the Omnibox.
+      Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        auto* omnibox_view = browser_view->GetLocationBarView()->omnibox_view();
+        auto* focus_manager = browser_view->GetFocusManager();
+        auto* prev_view = focus_manager->GetNextFocusableView(
+            omnibox_view, nullptr, /*reverse=*/true,
+            /*dont_loop=*/false);
+        CHECK(prev_view);
+        prev_view->RequestFocus();
+      }),
+
+      // Traverse focus into the Omnibox using Tab.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_TAB, ui::EF_NONE),
+
+      // Verify the WebUI popup opens and gains focus.
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      InSameContext(WaitForWebContentsReady(
+          kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))),
+      InAnyContext(CheckWebUIInputFocus(true)),
+      // Verify that the native omnibox textfield does not retain focus.
+      WaitForOmniboxFocus(false));
+}
+
 class FullWebUIOmniboxAimInteractiveTestBase
     : public FullWebUIOmniboxInteractiveTestBase {
  public:
