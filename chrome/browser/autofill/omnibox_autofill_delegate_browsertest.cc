@@ -250,12 +250,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillDelegateBrowserTest,
 
 // Checks that Omnibox Autofill is *not* allowed when form fields are contained
 // within an iframe, and that iframe is *not* allowlisted.
+//
+// `cc-exp` is in the allowlisted iframe (b.com) and `cc-number` is in the
+// non-allowlisted iframe (c.com) (with `cc-name` in the main frame) to ensure
+// the form is not considered complete until both iframes load. This
+// prevents duplicate metric logging if the non-allowlisted iframe loads
+// first (crbug.com/554201650).
 IN_PROC_BROWSER_TEST_F(OmniboxAutofillDelegateBrowserTest,
                        FieldInNonAllowlistedIframe_Aborts) {
   base::HistogramTester histogram_tester;
 
-  SetUrlContent("/iframe_allowlisted.html",
-                R"(<input autocomplete="cc-name">)");
+  SetUrlContent("/iframe_allowlisted.html", R"(<input autocomplete="cc-exp">)");
   SetUrlContent("/iframe_non_allowlisted.html",
                 R"(<input autocomplete="cc-number">)");
 
@@ -263,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillDelegateBrowserTest,
       R"(<form>
            <iframe src="%s"></iframe>
            <iframe src="%s"></iframe>
-           <input autocomplete="cc-exp">
+           <input autocomplete="cc-name">
          </form>)",
       embedded_https_test_server()
           .GetURL("b.com", "/iframe_allowlisted.html")
