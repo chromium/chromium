@@ -91,6 +91,10 @@ Lock& FilePathWatcher::GetWatchThreadLockForTest() {
 const void* FilePathWatcher::GetOverlappedPointerForTest() {
   return impl_->GetOverlappedPointerForTest();  // IN-TEST
 }
+
+void FilePathWatcher::SetNextReadDirectoryChangesErrorForTest(uint32_t error) {
+  impl_->SetNextReadDirectoryChangesErrorForTest(error);  // IN-TEST
+}
 #endif
 
 }  // namespace base

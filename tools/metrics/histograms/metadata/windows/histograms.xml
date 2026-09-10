@@ -224,6 +224,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.FilePathWatcher.ReadDirectoryChangesError"
+    enum="WinGetLastError" expires_after="2027-09-07">
+  <owner>grt@chromium.org</owner>
+  <owner>memmott@chromium.org</owner>
+  <summary>
+    Records the error from an asynchronous or synchronous ReadDirectoryChangesW
+    failure while a FilePathWatcher is active.
+  </summary>
+</histogram>
+
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
     expires_after="2026-05-24">
   <owner>brucedawson@chromium.org</owner>

@@ -23,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -674,6 +675,48 @@ TEST_F(FilePathWatcherTest, WindowsUsesSeparateOverlappedPerWatcher) {
 
   EXPECT_NE(watcher1.GetOverlappedPointerForTest(),
             watcher2.GetOverlappedPointerForTest());
+}
+
+TEST_F(FilePathWatcherTest, WindowsReportsReadDirectoryChangesError) {
+  HistogramTester histogram_tester;
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  watcher.SetNextReadDirectoryChangesErrorForTest(ERROR_GEN_FAILURE);
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  event_expecter.AddExpectedEventForPath(test_file(), /*error=*/true);
+  delegate.RunUntilEventsMatch(event_expecter);
+  histogram_tester.ExpectUniqueSample(
+      "Windows.FilePathWatcher.ReadDirectoryChangesError", ERROR_GEN_FAILURE,
+      1);
+}
+
+TEST_F(FilePathWatcherTest,
+       WindowsRetriesAfterReadDirectoryChangesAccessDenied) {
+  HistogramTester histogram_tester;
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  watcher.SetNextReadDirectoryChangesErrorForTest(ERROR_ACCESS_DENIED);
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  delegate.RunUntilEventsMatch(testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(delegate.events(), testing::Each(testing::Not(HasErrored())));
+
+  delegate.SpinAndDiscardAllReceivedEvents();
+  ASSERT_TRUE(WriteFile(test_file(), "updated content"));
+  delegate.RunUntilEventsMatch(testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(delegate.events(), testing::Each(testing::Not(HasErrored())));
+
+  histogram_tester.ExpectUniqueSample(
+      "Windows.FilePathWatcher.ReadDirectoryChangesError", ERROR_ACCESS_DENIED,
+      1);
 }
 #endif
 
