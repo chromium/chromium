@@ -303,9 +303,6 @@ message FormFillingRequest {
   // Specifies a field that is part of the form. Autofill will be triggered from
   // this field, but will fill other fields of the same autofill section with
   // the available data.
-  //
-  // TODO(crbug.com/452946211): This field is repeated to be able to support a form that
-  // is spread over multiple autofill sections.
   repeated ActionTarget trigger_fields = 1;
 
   // Specifies which data is requested. The requested data type will be
@@ -810,9 +807,6 @@ message ActionsResult {
 message BrowserStartTask {
   // The id of the tab the task should be started in. If not set, the task
   // will be started in a new tab.
-  // TODO(crbug.com/421441072): Remove this field. This is only needed in the short term
-  // since we need a mechanism to start tasks in a new tab, and the model has
-  // not yet been trained to use CreateTabAction.
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 
