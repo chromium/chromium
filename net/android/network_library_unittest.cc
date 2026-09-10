@@ -164,4 +164,12 @@ TEST(NetworkLibraryTest, GetEchMode) {
   }
 }
 
+// Regression test for https://crbug.com/558378904.
+TEST(NetworkLibraryTest, GetEchMode_InvalidHostname) {
+  // Verifies that GetEchMode does not crash with an IllegalArgumentException
+  // when given hostnames with a leading dot, returning kOpportunistic instead.
+  EXPECT_EQ(EchMode::kOpportunistic, GetEchMode(".example.com"));
+  EXPECT_EQ(EchMode::kOpportunistic, GetEchMode("."));
+}
+
 }  // namespace net::android
