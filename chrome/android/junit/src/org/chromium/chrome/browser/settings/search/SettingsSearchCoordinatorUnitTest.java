@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.HashMap;
@@ -124,6 +125,7 @@ public class SettingsSearchCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        LocalizationUtils.setRtlForTesting(false);
         SettingsIndexData.reset();
         // Avoid runnable pollution between tests.
         ShadowLooper.idleMainLooper();
@@ -356,6 +358,123 @@ public class SettingsSearchCoordinatorUnitTest {
         var queryLp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
         assertEquals(expectedMargin - mToolbar.getPaddingStart(), queryLp.getMarginStart());
         assertEquals(expectedMargin - endPadding, queryLp.getMarginEnd());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testSingleColumnSearchUiWidth_withoutSettingsInTab_accountsForToolbarPadding() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+
+        // Give toolbar padding, insets, and an initial non-zero end margin.
+        mToolbar.setPaddingRelative(16, 0, 16, 0);
+        mToolbar.setContentInsetsRelative(16, 16);
+        var toolbarLp = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+        toolbarLp.setMarginEnd(24);
+        mToolbar.setLayoutParams(toolbarLp);
+
+        mCoordinator.initializeSearchUi(null);
+
+        // Simulate tablet in portrait (800dp width < 840dp multi-column threshold).
+        int rootWidth = 800;
+        int rootHeight = 100;
+        View rootView = mActivity.findViewById(R.id.settings_activity);
+        assertNotNull(rootView);
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(rootWidth, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(rootHeight, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, rootWidth, rootHeight);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        View query = mActivity.findViewById(R.id.search_query_container);
+        assertNotNull(query);
+
+        // Toolbar margins should be reset to 0 in single-column mode.
+        toolbarLp = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+        assertEquals(0, toolbarLp.getMarginStart());
+        assertEquals(0, toolbarLp.getMarginEnd());
+
+        int itemMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
+        int expectedMargin =
+                (rootWidth - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 + itemMargin;
+
+        var searchBoxLp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        assertEquals(expectedMargin, searchBoxLp.getMarginStart());
+        assertEquals(expectedMargin, searchBoxLp.getMarginEnd());
+
+        int endPadding = Math.max(mToolbar.getPaddingEnd(), mToolbar.getContentInsetEnd());
+        var queryLp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
+        assertEquals(expectedMargin - mToolbar.getPaddingStart(), queryLp.getMarginStart());
+        assertEquals(expectedMargin - endPadding, queryLp.getMarginEnd());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testSingleColumnSearchUiWidth_inRtl_withMenuIcon_adjustsEndMargin() {
+        // Enable RTL layout direction.
+        LocalizationUtils.setRtlForTesting(true);
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+
+        // Configure toolbar padding and content insets.
+        mToolbar.setPaddingRelative(16, 0, 16, 0);
+        mToolbar.setContentInsetsRelative(16, 16);
+
+        // Find the ActionMenuView on toolbar and simulate a visible menu icon (e.g. 3-dot help
+        // menu in standalone SettingsActivity).
+        ActionMenuView menuView = null;
+        for (int i = 0; i < mToolbar.getChildCount(); i++) {
+            View child = mToolbar.getChildAt(i);
+            if (child instanceof ActionMenuView) {
+                menuView = (ActionMenuView) child;
+                break;
+            }
+        }
+        assertNotNull(menuView);
+        int menuWidth = 96;
+        menuView.setVisibility(View.VISIBLE);
+
+        mCoordinator.initializeSearchUi(null);
+
+        // Simulate tablet in portrait (800dp width < 840dp multi-column threshold).
+        int rootWidth = 800;
+        int rootHeight = 100;
+        View rootView = mActivity.findViewById(R.id.settings_activity);
+        assertNotNull(rootView);
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(rootWidth, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(rootHeight, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, rootWidth, rootHeight);
+        ShadowLooper.idleMainLooper();
+
+        // Layout the menu view with the simulated width and update search UI width.
+        menuView.layout(0, 0, menuWidth, 48);
+        mCoordinator.updateSingleColumnSearchUiWidth();
+
+        View query = mActivity.findViewById(R.id.search_query_container);
+        assertNotNull(query);
+
+        // In RTL, start is right and end is left. The menu icon is on the left (end).
+        // Therefore, the menu offset (menuWidth - itemMargin) decreases startMargin and
+        // increases endMargin to shift the UI away from the menu.
+        int itemMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
+        int expectedMargin =
+                (rootWidth - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 + itemMargin;
+        int menuOffset = menuWidth - itemMargin;
+        int expectedStartMargin = expectedMargin - menuOffset - mToolbar.getPaddingStart();
+        int endPadding = Math.max(mToolbar.getPaddingEnd(), mToolbar.getContentInsetEnd());
+        int expectedEndMargin = expectedMargin + menuOffset - endPadding;
+
+        // Verify query container margins are adjusted properly for RTL.
+        var queryLp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
+        assertEquals(expectedStartMargin, queryLp.getMarginStart());
+        assertEquals(expectedEndMargin, queryLp.getMarginEnd());
     }
 
     /** Regression test for https://crbug.com/545872336. */

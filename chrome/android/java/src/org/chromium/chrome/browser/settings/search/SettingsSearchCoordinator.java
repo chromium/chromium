@@ -91,6 +91,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -1355,9 +1356,15 @@ public class SettingsSearchCoordinator
             int itemMargin = getPixelSize(R.dimen.settings_item_margin);
             margin += itemMargin;
             if (menuWidth > 0) {
-                // The menu icon on the right pushes the UI to left. Adjust the margin.
-                startMargin = margin + menuWidth - itemMargin;
-                endMargin = margin - (menuWidth - itemMargin);
+                // The menu icon pushes the UI to the other side. Adjust the margin.
+                int menuOffset = menuWidth - itemMargin;
+                if (LocalizationUtils.isLayoutRtl()) {
+                    startMargin = margin - menuOffset;
+                    endMargin = margin + menuOffset;
+                } else {
+                    startMargin = margin + menuOffset;
+                    endMargin = margin - menuOffset;
+                }
             } else {
                 // SettingsInTab does not have a menu icon, so don't adjust the margin.
                 startMargin = margin;
@@ -1370,19 +1377,23 @@ public class SettingsSearchCoordinator
             endMargin = margin + menuWidth;
         }
 
-        if (SettingsInTab.isEnabled()) {
-            // Multi-column mode sets an end margin on the action bar to align with the column gap.
-            // When transitioning to single-column mode, reset the margins to fill the width.
-            var lp = (ViewGroup.MarginLayoutParams) mActionBar.getLayoutParams();
-            if (lp.getMarginStart() != 0 || lp.getMarginEnd() != 0) {
-                updateView(mActionBar, 0, 0, LayoutParams.MATCH_PARENT);
-            }
+        // Multi-column mode sets an end margin on the action bar to align with the column gap.
+        // When transitioning to single-column mode, reset the margins to fill the width.
+        var actionBarlp = (ViewGroup.MarginLayoutParams) mActionBar.getLayoutParams();
+        if (actionBarlp.getMarginStart() != 0 || actionBarlp.getMarginEnd() != 0) {
+            updateView(mActionBar, 0, 0, LayoutParams.MATCH_PARENT);
         }
 
         // Use LayoutParams.MATCH_PARENT so the search views scale continuously with the parent
         // container (AppBarLayout or Toolbar) during window resizes and side panel transitions,
         // without setting fixed pixel widths that could cause layout overflow.
-        if (searchBox != null) {
+        // In single-column mode on tablets, searchBox is hosted in AppBarLayout (while in
+        // multi-column mode it is hosted in Toolbar). During orientation or layout transitions,
+        // updateSingleColumnSearchUiWidth() may run before switchSearchUiLayout() reparents
+        // searchBox back to AppBarLayout; avoid modifying its LayoutParams while it is still
+        // temporarily hosted in Toolbar.
+        View appBar = findViewById(R.id.app_bar_layout);
+        if (searchBox != null && (appBar == null || searchBox.getParent() == appBar)) {
             var lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
             if (lp.getMarginStart() != margin
                     || lp.getMarginEnd() != margin
@@ -1391,18 +1402,16 @@ public class SettingsSearchCoordinator
             }
         }
         if (query != null) {
-            // In SettingsInTab, the query container is hosted inside the action bar toolbar,
-            // which has internal horizontal padding and content insets. Because the query
-            // container has layout_gravity="end", Toolbar aligns it from the end using
-            // contentInsetEnd, but does not apply contentInsetStart to its start edge. Subtract
-            // the toolbar's start padding and effective end padding from the margins so that the
-            // query container aligns horizontally with the search box.
-            if (SettingsInTab.isEnabled()) {
-                startMargin = Math.max(0, startMargin - mActionBar.getPaddingStart());
-                int endPadding =
-                        Math.max(mActionBar.getPaddingEnd(), mActionBar.getContentInsetEnd());
-                endMargin = Math.max(0, endMargin - endPadding);
-            }
+            // The query container is hosted inside the action bar toolbar, which has internal
+            // horizontal padding and content insets. Because the query container has
+            // layout_gravity="end", Toolbar aligns it from the end using contentInsetEnd, but
+            // does not apply contentInsetStart to its start edge. Subtract the toolbar's start
+            // padding and effective end padding from the margins so that the query container aligns
+            // horizontally with the search box.
+            startMargin = Math.max(0, startMargin - mActionBar.getPaddingStart());
+            int endPadding = Math.max(mActionBar.getPaddingEnd(), mActionBar.getContentInsetEnd());
+            endMargin = Math.max(0, endMargin - endPadding);
+
             var lp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
             if (lp.getMarginStart() != startMargin
                     || lp.getMarginEnd() != endMargin

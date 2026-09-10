@@ -63,8 +63,11 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
+
+import java.util.Locale;
 
 /**
  * Integration tests for {@link SettingsPage} inside a native tab. Most tests use a mix of onView()
@@ -96,6 +99,7 @@ public class SettingsPageTest {
 
     @After
     public void tearDown() {
+        LocalizationUtils.setRtlForTesting(false);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
@@ -652,6 +656,94 @@ public class SettingsPageTest {
                 "Search query container should match search box width after navigating back",
                 searchBoxBounds.width(),
                 queryBoundsAfterBack.width());
+    }
+
+    /** Regression test for https://crbug.com/548848118. */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testSearchBoxAlignmentInPortrait_Rtl() {
+        // Start in portrait (single-column mode on tablet).
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        // Set RTL layout.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalizationUtils.setRtlForTesting(true);
+                    var activity = mActivityTestRule.getActivity();
+                    Configuration config =
+                            new Configuration(activity.getResources().getConfiguration());
+                    config.setLayoutDirection(new Locale("ar"));
+                    activity.getResources()
+                            .updateConfiguration(
+                                    config, activity.getResources().getDisplayMetrics());
+                    activity.getWindow()
+                            .getDecorView()
+                            .setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                });
+
+        // Load settings in portrait.
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+
+        // Capture search_box and search_icon screen bounds.
+        Rect searchBoxBounds = getViewScreenBounds(R.id.search_box);
+        Rect searchIconBounds = getViewScreenBounds(R.id.search_icon);
+
+        // Tap on search box to enter search state.
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+
+        // Capture search_query_container and back_arrow_icon screen bounds.
+        Rect queryBounds = getViewScreenBounds(R.id.search_query_container);
+        Rect backArrowBounds = getViewScreenBounds(R.id.back_arrow_icon);
+
+        assertEquals(
+                "Search query container should match search box width in RTL",
+                searchBoxBounds.width(),
+                queryBounds.width());
+        assertEquals(
+                "Search query container should align horizontally with search box in RTL (left)",
+                searchBoxBounds.left,
+                queryBounds.left);
+        assertEquals(
+                "Search query container should align horizontally with search box in RTL (right)",
+                searchBoxBounds.right,
+                queryBounds.right);
+        assertEquals(
+                "Back arrow icon should horizontally align with search icon in RTL",
+                searchIconBounds.left,
+                backArrowBounds.left);
+
+        // Tap on Search settings bar and change orientation to Landscape and then Portrait.
+        ensureActivityOrientation(Configuration.ORIENTATION_LANDSCAPE);
+
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+
+        Rect searchBoxBoundsAfterRotate = getViewScreenBounds(R.id.search_box);
+        Rect searchIconBoundsAfterRotate = getViewScreenBounds(R.id.search_icon);
+
+        assertEquals(
+                "Search box should match initial width after rotating back",
+                searchBoxBounds.width(),
+                searchBoxBoundsAfterRotate.width());
+        assertEquals(
+                "Search box should align horizontally after rotating back (left)",
+                searchBoxBounds.left,
+                searchBoxBoundsAfterRotate.left);
+        assertEquals(
+                "Search box should align horizontally after rotating back (right)",
+                searchBoxBounds.right,
+                searchBoxBoundsAfterRotate.right);
+        assertEquals(
+                "Search icon should align horizontally after rotating back",
+                searchIconBounds.left,
+                searchIconBoundsAfterRotate.left);
     }
 
     /** Returns the on-screen bounds of the view with the given id. */
