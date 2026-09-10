@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.touch_to_fill.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the TouchToFillAutofill
@@ -26,6 +28,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
  */
 @NullMarked
 class TouchToFillAutofillView implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.TOUCH_TO_FILL_AUTOFILL)
+                    .build();
+
     private final BottomSheetController mBottomSheetController;
     private final View mContentView;
     private @Nullable Runnable mDismissHandler;
@@ -105,6 +112,11 @@ class TouchToFillAutofillView implements BottomSheetContent {
     @Override
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
