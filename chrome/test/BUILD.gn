@@ -1137,8 +1137,6 @@ if (is_android) {
     }
 
     sources = [
-      "../browser/android/persisted_tab_data/persisted_tab_data_android_browsertest.cc",
-      "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
@@ -5824,21 +5822,6 @@ test("unit_tests") {
 
   if (is_android) {
     sources += [
-      "../browser/android/backup/dict_pref_backup_serializer_unittest.cc",
-      "../browser/android/compositor/compositor_view_unittest.cc",
-      "../browser/android/compositor/retry_strategy_unittest.cc",
-      "../browser/android/compositor/tab_content_manager_unittest.cc",
-      "../browser/android/framebust_intervention/framebust_blocked_delegate_android_unittest.cc",
-      "../browser/android/history/history_deletion_bridge_unittest.cc",
-      "../browser/android/ntp/new_tab_page_url_handler_unittest.cc",
-      "../browser/android/omnibox/suggestions_omt_input_anchor_unittest.cc",
-      "../browser/android/oom_intervention/near_oom_reduction_message_delegate_unittest.cc",
-      "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",
-      "../browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory_unittest.cc",
-      "../browser/android/search_permissions/search_permissions_service_unittest.cc",
-      "../browser/android/selection/chrome_selection_dropdown_menu_delegate_unittest.cc",
-      "../browser/android/usage_stats/usage_stats_database_unittest.cc",
-      "../browser/android/webapps/twa_launch_queue_delegate_unittest.cc",
       "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",
     ]
 

@@ -979,17 +979,32 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "backup/dict_pref_backup_serializer_unittest.cc",
+    "compositor/compositor_view_unittest.cc",
+    "compositor/retry_strategy_unittest.cc",
+    "compositor/tab_content_manager_unittest.cc",
     "customtabs/detached_resource_request_unittest.cc",
     "customtabs/tab_interaction_recorder_android_unittest.cc",
     "foreign_session_helper_unittest.cc",
+    "framebust_intervention/framebust_blocked_delegate_android_unittest.cc",
+    "history/history_deletion_bridge_unittest.cc",
     "metrics/android_atoms_logger_unittest.cc",
     "metrics/android_session_durations_service_unittest.cc",
+    "ntp/new_tab_page_url_handler_unittest.cc",
     "omnibox/autocomplete_controller_android_unittest.cc",
     "omnibox/chrome_omnibox_navigation_observer_android_unittest.cc",
+    "omnibox/suggestions_omt_input_anchor_unittest.cc",
     "omnibox/tab_context_capture_request_unittest.cc",
+    "oom_intervention/near_oom_reduction_message_delegate_unittest.cc",
+    "oom_intervention/oom_intervention_decider_unittest.cc",
+    "persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory_unittest.cc",
     "recently_closed_tabs_bridge_unittest.cc",
+    "search_permissions/search_permissions_service_unittest.cc",
+    "selection/chrome_selection_dropdown_menu_delegate_unittest.cc",
     "tab_android_unittest.cc",
     "tab_web_contents_destroyer_unittest.cc",
+    "usage_stats/usage_stats_database_unittest.cc",
+    "webapps/twa_launch_queue_delegate_unittest.cc",
     "webapps/twa_launch_queue_tab_helper_unittest.cc",
   ]
 
@@ -999,6 +1014,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     ":tabs_public",
+    ":usage_stats_proto",
     "//base/test:test_support",
     "//cc/slim",
     "//chrome/android:chrome_jni_headers",
@@ -1007,7 +1023,10 @@ source_set("unit_tests") {
     "//chrome/browser/actor:test_support",
     "//chrome/browser/actor/ui:test_support",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/flags:flags_android",
+    "//chrome/browser/permissions",
+    "//chrome/browser/persisted_state_db",
     "//chrome/browser/renderer_host",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
@@ -1019,8 +1038,13 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/actor/core",
     "//components/autofill/core/browser:test_support",
+    "//components/blocked_content",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
     "//components/javascript_dialogs",
     "//components/lens",
+    "//components/leveldb_proto:test_support",
+    "//components/messages/android:test_support",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
     "//components/omnibox/common",
@@ -1047,6 +1071,7 @@ source_set("unit_tests") {
     "//ui/android",
     "//ui/base",
     "//ui/base:features",
+    "//ui/menus",
     "//url",
   ]
 }
@@ -1055,16 +1080,23 @@ source_set("android_browsertests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
   sources = [
     "customtabs/custom_tabs_browsertest.cc",
     "customtabs/tab_interaction_recorder_browsertest.cc",
     "historical_tab_saver_browsertest.cc",
+    "persisted_tab_data/persisted_tab_data_android_browsertest.cc",
+    "persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
     "webview_renderer_extension_browsertest.cc",
   ]
   deps = [
     ":android",
     ":tabs_public",
     "//base/test:test_support",
+    "//chrome/browser/android/persisted_tab_data/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab",
     "//chrome/test/base:android_browser_test",
