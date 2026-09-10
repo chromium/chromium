@@ -189,7 +189,8 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
 
   // Returns the search session id for the current query flow.
   std::string search_session_id() const {
-    return cluster_info_->search_session_id();
+    return cluster_info_.has_value() ? cluster_info_->search_session_id()
+                                     : std::string();
   }
 
   // Testing method to reset the cluster info state.

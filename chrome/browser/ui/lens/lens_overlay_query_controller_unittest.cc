@@ -5314,4 +5314,45 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 }
 
+TEST_F(LensOverlayQueryControllerTest, SearchSessionIdNulloptSafe) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Verify that before query flow / before cluster info is received,
+  // search_session_id() returns an empty string safely without crashing.
+  EXPECT_TRUE(query_controller.search_session_id().empty());
+
+  // Set up fake cluster info response and start query flow.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_page_contents=*/{},
+      /*primary_content_type=*/lens::MimeType::kUnknown,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  EXPECT_EQ(query_controller.search_session_id(), kTestSearchSessionId);
+
+  // After ending query and resetting cluster info state, search_session_id()
+  // should safely return empty again without crashing.
+  query_controller.EndQuery();
+  query_controller.ResetRequestClusterInfoStateForTesting();
+  EXPECT_TRUE(query_controller.search_session_id().empty());
+}
+
 }  // namespace lens
