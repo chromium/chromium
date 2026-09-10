@@ -28,8 +28,10 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/plugins/plugin_utils.h"
@@ -423,6 +425,45 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerPermissionEmbeddingBrowserTest,
 
   EXPECT_FALSE(embedding_origin_override.has_value())
       << "got override " << embedding_origin_override.value_or(GURL());
+}
+
+class ContextualTasksExtensionPermissionDelegationBrowserTest
+    : public PermissionDelegationBrowserTest {
+ public:
+  ContextualTasksExtensionPermissionDelegationBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksRearchitecture,
+         extensions_features::kApiContextualTasksPrivate},
+        {});
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionPermissionDelegationBrowserTest,
+                       GetCanonicalOriginOverride) {
+  GURL contextual_tasks_ext_url(base::StrCat(
+      {extensions::kExtensionScheme, "://",
+       extension_misc::kContextualTasksExtensionId, "/input_plate.html"}));
+  GURL google_search_url("https://www.google.com/search?q=test");
+  GURL contextual_tasks_webui_url(chrome::kChromeUIContextualTasksURL);
+
+  // Contextual tasks extension embedded in Google Search -> Delegates to
+  // embedding origin (returns nullopt):
+  EXPECT_EQ(ChromePermissionsClient::GetInstance()->GetCanonicalOriginOverride(
+                contextual_tasks_ext_url, google_search_url),
+            std::nullopt);
+
+  // Contextual tasks extension embedded in Contextual Tasks WebUI ->
+  // Overridden to DSE (Google) origin:
+  std::optional<GURL> webui_override =
+      ChromePermissionsClient::GetInstance()->GetCanonicalOriginOverride(
+          contextual_tasks_ext_url, contextual_tasks_webui_url);
+  ASSERT_TRUE(webui_override.has_value());
+  EXPECT_EQ(webui_override->host(), "www.google.com");
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -113,6 +113,7 @@ source_set("permissions") {
     "//components/content_extraction/content/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/contextual_tasks/public:feature_list",
     "//components/embedder_support:permissions",
     "//components/google/core/common",
     "//components/infobars/content",
@@ -170,6 +171,10 @@ source_set("permissions") {
     }
   }
   allow_circular_includes_from = []
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/clipboard" ]
@@ -285,6 +290,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/test:test_support",
+    "//components/contextual_tasks/public:feature_list",
     "//components/optimization_guide/core:test_support",
     "//components/passage_embeddings/core",
     "//components/permissions/prediction_service",
