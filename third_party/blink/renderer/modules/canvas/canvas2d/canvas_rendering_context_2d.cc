@@ -1247,6 +1247,9 @@ void CanvasRenderingContext2D::CreateProvider() {
         canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
         canvas());
   }
+  if (shared_image_provider_ && shared_image_provider_->IsGraphite()) {
+    Recorder()->DisableLineDrawingAsPaths();
+  }
 }
 
 base::ByteSize CanvasRenderingContext2D::AllocatedBufferSize() const {
@@ -1398,6 +1401,9 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     shared_image_provider_->RestoreBackBuffer(
         image->PaintImageForCurrentFrame());
     shared_image_provider_->SetRecorder(std::move(recorder));
+    if (shared_image_provider_->IsGraphite()) {
+      Recorder()->DisableLineDrawingAsPaths();
+    }
   } else {
     bitmap_provider_->RestoreBackBuffer(image->PaintImageForCurrentFrame());
     bitmap_provider_->SetRecorder(std::move(recorder));
@@ -1468,6 +1474,9 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
   if (shared_image_provider_) {
     shared_image_provider_->RestoreBackBuffer(builder.TakePaintImage());
     shared_image_provider_->SetRecorder(hibernation_handler->ReleaseRecorder());
+    if (shared_image_provider_->IsGraphite()) {
+      Recorder()->DisableLineDrawingAsPaths();
+    }
   } else if (bitmap_provider_) {
     bitmap_provider_->RestoreBackBuffer(builder.TakePaintImage());
     bitmap_provider_->SetRecorder(hibernation_handler->ReleaseRecorder());
@@ -1488,6 +1497,9 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ResetResourceProvider();
   shared_image_provider_ = std::move(provider);
+  if (shared_image_provider_ && shared_image_provider_->IsGraphite()) {
+    Recorder()->DisableLineDrawingAsPaths();
+  }
 }
 
 void CanvasRenderingContext2D::SetBitmapProviderForTesting(

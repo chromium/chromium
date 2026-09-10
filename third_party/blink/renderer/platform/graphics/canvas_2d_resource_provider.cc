@@ -179,7 +179,6 @@ void Canvas2DResourceProvider::SetRecorder(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   recorder->SetClient(this);
   recorder_ = std::move(recorder);
-  DisableLineDrawingAsPathsIfNecessary();
 }
 
 void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
@@ -303,14 +302,12 @@ void Canvas2DResourceProvider::WillDrawUnaccelerated() {
   EnsureWriteAccess();
 }
 
-void Canvas2DResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
-  if (context_provider_wrapper_ &&
-      context_provider_wrapper_->ContextProvider()
-              .GetGpuFeatureInfo()
-              .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-          gpu::kGpuFeatureStatusEnabled) {
-    Recorder().DisableLineDrawingAsPaths();
-  }
+bool Canvas2DResourceProvider::IsGraphite() const {
+  return context_provider_wrapper_ &&
+         context_provider_wrapper_->ContextProvider()
+                 .GetGpuFeatureInfo()
+                 .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+             gpu::kGpuFeatureStatusEnabled;
 }
 
 bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
@@ -939,13 +936,9 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
     // Graphite can handle a large buffer size.
-    if (context_provider_wrapper_->ContextProvider()
-            .GetGpuFeatureInfo()
-            .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-        gpu::kGpuFeatureStatusEnabled) {
+    if (IsGraphite()) {
       max_recorded_op_bytes_ =
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
-      recorder_->DisableLineDrawingAsPaths();
     }
   }
 

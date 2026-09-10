@@ -261,6 +261,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gpu::raster::RasterInterface* RasterInterface() const;
   MemoryManagedPaintCanvas& GetCanvasForTesting();
   void RestoreBackBuffer(const cc::PaintImage&);
+  bool IsGraphite() const;
 
  protected:
   Canvas2DResourceProvider(gfx::Size,
@@ -336,7 +337,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
-  void DisableLineDrawingAsPathsIfNecessary();
 
   SkSurfaceProps GetSkSurfaceProps() const;
   virtual sk_sp<SkSurface> CreateSkSurface() const;
