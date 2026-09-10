@@ -72,6 +72,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -2551,6 +2552,57 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
 
   // Total count should still be 2.
   histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 2);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       SameDocumentNavigation_TriggersEvaluation) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Start embedded test server to serve real pages.
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Disable initial eligibility so the first page load doesn't trigger a cue.
+  cue_target()->eligible = false;
+  auto test_source_target = std::make_unique<TestCueTarget>();
+  test_source_target->eligible = false;
+  test_source_target->generate_result =
+      MakeCompleteResponse().contextual_cues(0);
+  auto* test_source_target_ptr = test_source_target.get();
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kTestSource, std::move(test_source_target));
+
+  // 1. Load initial page with ineligible target.
+  GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kTargetFeatureNotEligible, 1);
+
+  // 2. Make the target eligible and perform same-document navigation.
+  test_source_target_ptr->eligible = true;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "history.pushState({}, '', '/title2.html');"));
+  observer.Wait();
+
+  // 3. Verify cue evaluation triggers on same-document navigation.
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 2);
+  histogram_tester.ExpectBucketCount("ContextualCueing.V2.Decision",
+                                     ContextualCueingDecision::kSuccess, 1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::ContextualCueing_CueShown::kEntryName);
+  ASSERT_EQ(2u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[1].get(),
+      ukm::builders::ContextualCueing_CueShown::kProactiveCueDecisionName,
+      static_cast<int64_t>(ContextualCueingDecision::kSuccess));
 }
 
 class TargetRegisteringObserver : public TabStripModelObserver {
