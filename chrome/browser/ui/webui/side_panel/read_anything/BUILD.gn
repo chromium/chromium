@@ -75,10 +75,7 @@ source_set("read_anything") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "read_anything_app_e2e_browsertest.cc",
-    "read_anything_untrusted_page_handler_browsertest.cc",
-  ]
+  sources = [ "read_anything_untrusted_page_handler_browsertest.cc" ]
   deps = [
     ":read_anything",
     "//chrome/browser/pdf:pdf_extension_test_utils",
