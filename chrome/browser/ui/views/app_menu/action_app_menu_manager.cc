@@ -407,13 +407,14 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
   AppMenuBuilder(root).AddSection(
       DisplayType::kBlock, [this](AppMenuBuilder& section) {
         Profile* profile = browser_window_interface_->GetProfile();
-        const std::optional<std::u16string> new_tab_text_override =
-            (profile->IsIncognitoProfile() ||
-             profile->IsEnterpriseIsolatedModeProfile()) &&
-                    !profile->IsGuestSession()
-                ? std::make_optional(
-                      l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB))
-                : std::nullopt;
+        std::optional<std::u16string> new_tab_text_override;
+        if (profile->IsEnterpriseIsolatedModeProfile()) {
+          new_tab_text_override =
+              l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB);
+        } else if (profile->IsIncognitoProfile()) {
+          new_tab_text_override =
+              l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB);
+        }
         section
             .AddAction(
                 kActionNewTab, DisplayType::kBlock,
