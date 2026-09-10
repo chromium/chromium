@@ -660,9 +660,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
         </message>
-        <message name="IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION" desc="The text label of the contact info option for the Your saved info submenu that allows user to manage their list of saved addresses and Autofill preferences for addresses.">
-          &amp;Contact info
-        </message>
 
         <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="The text label of the passwords and autofill menu item">
           Passwords and &amp;autofill
@@ -1097,8 +1094,8 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest password...
           </message>
-          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="The text label of the addresses and more item for the passwords and autofill submenu">
-            &amp;Addresses and more
+          <message name="IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION" desc="The text label of the contact info option for the Your saved info submenu that allows user to manage their list of saved addresses and Autofill preferences for addresses.">
+            &amp;Contact info
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1463,8 +1460,8 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest Password...
           </message>
-          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the passwords and autofill submenu">
-            &amp;Addresses and More
+          <message name="IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION" desc="In Title Case: The text label of the contact info option for the Your saved info submenu that allows user to manage their list of saved addresses and Autofill preferences for addresses.">
+            &amp;Contact Info
           </message>
         </if>
 
@@ -1574,9 +1571,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_FIND" desc="The text label of the Find... menu item">
             &amp;Find...
           </message>
-          <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the passwords and autofill submenu">
-            &amp;Payment methods
-          </message>
           <message name="IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION" desc="The text label of the payments option for the Your saved info submenu that allows user to manage their list of saved payment methods and Autofill preferences for payment methods.">
             &amp;Payments
           </message>
@@ -1681,9 +1675,6 @@ are declared in tools/grit/grit_args.gni.
             &amp;Find...
           </message>
 
-          <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="In Title Case: The text label of the payment method for the passwords and autofill submenu">
-            &amp;Payment Methods
-          </message>
           <message name="IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION" desc="In Title Case: The text label of the payments option for the Your saved info submenu that allows user to manage their list of saved payment methods and Autofill preferences for payment methods.">
             &amp;Payments
           </message>

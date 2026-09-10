@@ -1015,9 +1015,6 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_SHOW_PAYMENT_METHODS:
       ShowPaymentMethods(browser_);
       break;
-    case IDC_SHOW_ADDRESSES:
-      ShowAddresses(browser_);
-      break;
     case IDC_SHOW_CONTACT_INFO:
       ShowContactInfo(browser_);
       break;
@@ -1890,7 +1887,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_TURN_ON_SYNC, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_SIGNIN_WHEN_PAUSED, true);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_SIGNIN, true);
-  command_updater_->UpdateCommandEnabled(IDC_SHOW_ADDRESSES, !guest_session);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_CONTACT_INFO, !guest_session);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_IDENTITY_DOCS,
                                          !guest_session);

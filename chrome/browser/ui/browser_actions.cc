@@ -1493,8 +1493,8 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi, tab_strip_model),
           kActionShowAddressesBubbleOrPage,
-          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+          IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
+          IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
           features::IsRoundedIconsEnabled()
               ? vector_icons::kLocationOnIcon
               : vector_icons::kLocationOnChromeRefreshOldIcon)
@@ -1536,8 +1536,9 @@ void BrowserActions::InitializeChromeMenuActions() {
                 }
               },
               bwi, tab_strip_model),
-          kActionShowPaymentsBubbleOrPage, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-          IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+          kActionShowPaymentsBubbleOrPage,
+          IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION,
+          IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION,
           features::IsRoundedIconsEnabled() ? kCreditCardIcon
                                             : kCreditCardChromeRefreshOldIcon)
           .SetEnabled(!is_guest_session)
@@ -2540,26 +2541,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 chrome::ShowPaymentMethods(bwi);
               },
               bwi),
-          kActionShowPaymentMethods, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-          IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+          kActionShowPaymentMethods,
+          IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION,
+          IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION,
           features::IsRoundedIconsEnabled() ? kCreditCardIcon
                                             : kCreditCardChromeRefreshOldIcon)
-          .SetEnabled(!profile->IsGuestSession())
-          .Build());
-
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::ShowAddresses(bwi);
-              },
-              bwi),
-          kActionShowAddresses, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-          features::IsRoundedIconsEnabled()
-              ? vector_icons::kLocationOnIcon
-              : vector_icons::kLocationOnChromeRefreshOldIcon)
           .SetEnabled(!profile->IsGuestSession())
           .Build());
 

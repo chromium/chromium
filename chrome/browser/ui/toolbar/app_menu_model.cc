@@ -1870,13 +1870,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_PAYMENT_METHODS);
       break;
-    case IDC_SHOW_ADDRESSES:
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowAddresses",
-                                      delta);
-      }
-      LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
-      break;
     case IDC_SHOW_CONTACT_INFO:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowContactInfo",

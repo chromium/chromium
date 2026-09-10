@@ -49,7 +49,6 @@ should be able to be added at any place in this file.
   <variant name=".kActionSendSharedTabGroupFeedback"
       summary="Send shared tab group feedback action"/>
   <variant name=".kActionSendTabToSelf" summary="Send tab to self action"/>
-  <variant name=".kActionShowAddresses" summary="Show addresses action"/>
   <variant name=".kActionShowAddressesBubbleOrPage"
       summary="Show addresses action"/>
   <variant name=".kActionShowChromeLabs" summary="Show Chrome Labs action"/>

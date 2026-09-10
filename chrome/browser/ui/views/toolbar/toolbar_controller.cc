@@ -237,7 +237,6 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
            {kActionRouteMedia, "PinnedCastButton"},
            {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
-           {kActionShowAddresses, "PinnedShowAddressesBubbleOrPageButton"},
            {kActionShowAddressesBubbleOrPage,
             "PinnedShowAddressesBubbleOrPageButton"},
            {kActionShowChromeLabs, "PinnedShowChromeLabsButton"},
