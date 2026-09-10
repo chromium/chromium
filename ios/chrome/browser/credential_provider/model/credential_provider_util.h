@@ -34,6 +34,9 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
 // Returns the favicon file key.
 NSString* GetFaviconFileKey(const GURL& url);
 
+// Returns whether `key` is a valid favicon file key.
+bool IsValidFaviconFileKey(NSString* key);
+
 // Update favicons in the Chrome app group storage.
 void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
                                      bool fallback_to_google_server);

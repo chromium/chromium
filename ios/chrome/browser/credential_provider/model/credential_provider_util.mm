@@ -6,6 +6,8 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
+#import <array>
+
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
 #import "base/check_is_test.h"
@@ -13,6 +15,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/synchronization/lock.h"
@@ -130,8 +133,27 @@ NSString* GetFaviconFileKey(const GURL& url) {
   return base::SysUTF8ToNSString(base::HexEncode(result));
 }
 
+bool IsValidFaviconFileKey(NSString* key) {
+  constexpr NSUInteger kFaviconKeyLength = CC_SHA256_DIGEST_LENGTH * 2;
+  if (!key || key.length != kFaviconKeyLength) {
+    return false;
+  }
+  std::array<unichar, kFaviconKeyLength> buffer;
+  [key getCharacters:buffer.data() range:NSMakeRange(0, kFaviconKeyLength)];
+
+  for (NSUInteger i = 0; i < kFaviconKeyLength; ++i) {
+    if (!base::IsHexDigit(buffer[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
                                      NSString* filename) {
+  if (!IsValidFaviconFileKey(filename)) {
+    return;
+  }
   base::OnceCallback<void()> write_image = base::BindOnce(^{
     NSError* error = nil;
     NSData* data = [NSKeyedArchiver archivedDataWithRootObject:attributes
@@ -220,6 +242,9 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                               bool fallback_to_google_server) {
   DCHECK(favicon_loader);
   DCHECK(filename);
+  if (!IsValidFaviconFileKey(filename)) {
+    return;
+  }
   if (skip_max_verification) {
     ContinueFetchingFavicon(favicon_loader->AsWeakPtr(), site_url, filename,
                             fallback_to_google_server,
@@ -348,8 +373,8 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
       continue;
     }
     NSString* filename = credential.favicon;
-    if (!credential.favicon) {
-      // Add favicon name to the credential and update the store.
+    if (!IsValidFaviconFileKey(filename)) {
+      // Ensure the credential has an updated favicon key and update the store.
       filename = GetFaviconFileKey(url);
       ArchivableCredential* newCredential =
           [[ArchivableCredential alloc] initWithFavicon:filename

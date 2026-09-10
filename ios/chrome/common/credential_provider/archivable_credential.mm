@@ -87,8 +87,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 - (instancetype)initWithFavicon:(NSString*)favicon
                      credential:(id<Credential>)credential {
   if (credential.isPasskey) {
-    // Use the passkey initilizer
-    self = [self initWithFavicon:credential.favicon
+    // Use the passkey initializer
+    self = [self initWithFavicon:favicon
                             gaia:credential.gaia
                 recordIdentifier:credential.recordIdentifier
                           syncId:credential.syncId
@@ -106,7 +106,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                     editedByUser:credential.editedByUser];
   } else {
     // Use the password initializer
-    self = [self initWithFavicon:credential.favicon
+    self = [self initWithFavicon:favicon
                             gaia:credential.gaia
                         password:credential.password
                             rank:credential.rank
