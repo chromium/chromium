@@ -101,15 +101,17 @@ export function getHtml(this: HistoryItemElement) {
                       focus-row-control focus-type="critical-action"
                       tabindex="0"
                       aria-label="${action.label}"
+                      aria-describedby="critical-action-icon-${index}"
                       @click="${this.onCriticalActionClick_}"
                       @keydown="${this.onCriticalActionKeydown_}">
                     <span class="critical-action-label">${action.label}</span>
-                    <cr-icon-button class="critical-action-button"
-                        iron-icon="cr:open-in-new"
+                    <cr-icon id="critical-action-icon-${index}"
+                        class="critical-action-button"
+                        icon="cr:open-in-new"
+                        role="img"
                         title="${action.tooltip}"
-                        aria-label="${action.tooltip}"
-                        tabindex="-1">
-                    </cr-icon-button>
+                        aria-label="${this.getCriticalActionAriaLabel_(action)}">
+                    </cr-icon>
                   </div>
                 `)}
               </div>

@@ -72,6 +72,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"reviewGeminiActivity", IDS_HISTORY_REVIEW_GEMINI_ACTIVITY},
       {"geminiKeyBrowsingActionsTitle",
        IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE},
+      {"criticalActionLinkoutA11yLabel",
+       IDS_HISTORY_CRITICAL_ACTION_LINKOUT_A11Y_LABEL},
       {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
       {"searchResult", IDS_HISTORY_SEARCH_RESULT},
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},

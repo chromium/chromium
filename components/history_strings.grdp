@@ -329,6 +329,9 @@
   <message name="IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE" desc="Tooltip text for the expand button on history items for Gemini actor visits." translateable="false">
     Gemini key browsing actions
   </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_LINKOUT_A11Y_LABEL" desc="Accessibility label for a critical action linkout icon in history item indicating the destination." translateable="false">
+    <ph name="DESTINATION">$1<ex>Contact info</ex></ph>, opens in a new tab
+  </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED" desc="Label for password filled critical action in history item." translateable="false">
     Password filled
   </message>

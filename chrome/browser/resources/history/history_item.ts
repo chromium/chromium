@@ -291,6 +291,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
     return this.item?.criticalActions || [];
   }
 
+  protected getCriticalActionAriaLabel_(action: CriticalAction): string {
+    return loadTimeData.getStringF(
+        'criticalActionLinkoutA11yLabel', action.tooltip);
+  }
+
   protected onCriticalActionClick_(e: Event) {
     e.stopPropagation();
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);

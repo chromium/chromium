@@ -268,15 +268,14 @@
 }
 
 .critical-action-button {
-  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
-  --cr-icon-button-hover-background-color: transparent;
-  --cr-icon-button-active-background-color: transparent;
-  --cr-icon-button-icon-size: 18px;
-  --cr-icon-button-size: 20px;
+  --iron-icon-fill-color: var(--cr-secondary-text-color);
+  --iron-icon-height: 18px;
+  --iron-icon-width: 18px;
+  padding: 1px;
 }
 
 .critical-action-row:hover .critical-action-button {
-  --cr-icon-button-fill-color: var(--cr-primary-text-color);
+  --iron-icon-fill-color: var(--cr-primary-text-color);
 }
 
 #icons {

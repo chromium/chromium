@@ -317,16 +317,23 @@ suite('<history-item> integration test', function() {
       assertEquals('listitem', row.getAttribute('role'));
       assertEquals('critical-action', row.getAttribute('focus-type'));
       assertEquals(expectedAction.label, row.getAttribute('aria-label'));
+      assertEquals(
+          `critical-action-icon-${i}`, row.getAttribute('aria-describedby'));
 
       const label = row.querySelector('.critical-action-label');
       assertTrue(!!label);
       assertEquals(expectedAction.label, label.textContent.trim());
 
-      const button = row.querySelector<HTMLElement>('.critical-action-button');
-      assertTrue(!!button);
-      assertEquals('cr:open-in-new', button.getAttribute('iron-icon'));
-      assertEquals(expectedAction.tooltip, button.getAttribute('title'));
-      assertEquals(expectedAction.tooltip, button.getAttribute('aria-label'));
+      const icon = row.querySelector<HTMLElement>('.critical-action-button');
+      assertTrue(!!icon);
+      assertEquals('CR-ICON', icon.tagName);
+      assertEquals(`critical-action-icon-${i}`, icon.id);
+      assertEquals('cr:open-in-new', icon.getAttribute('icon'));
+      assertEquals('img', icon.getAttribute('role'));
+      assertEquals(expectedAction.tooltip, icon.getAttribute('title'));
+      assertEquals(
+          `${expectedAction.tooltip}, opens in a new tab`,
+          icon.getAttribute('aria-label'));
     });
 
     let openedUrl = '';
