@@ -22,6 +22,8 @@ import android.graphics.Color;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +38,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -43,6 +46,7 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -76,6 +80,7 @@ public class UrlBarMediatorUnitTest {
         OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
         Clipboard.setInstanceForTesting(mClipboard);
         mContext = ContextUtils.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mDelegate = mUrlBarDelegate;
         mModel =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
@@ -83,7 +88,7 @@ public class UrlBarMediatorUnitTest {
                         .build();
         mMediator =
                 new UrlBarMediator(
-                        ContextUtils.getApplicationContext(),
+                        mContext,
                         mModel,
                         /* textChangeListener= */ null,
                         /* richTextChangeListener= */ null) {
@@ -535,6 +540,24 @@ public class UrlBarMediatorUnitTest {
         assertEquals("Hint 1", mModel.get(UrlBarProperties.HINT_TEXT));
         mMediator.setUrlBarHintText("Incognito Hint");
         assertEquals("Incognito Hint", mModel.get(UrlBarProperties.HINT_TEXT));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void setUrlBarHintTextColorForNtp_auroraDisabled() {
+        mMediator.setUrlBarHintTextColorForNtp();
+        assertEquals(
+                SemanticColorUtils.getDefaultTextColor(mContext),
+                mModel.get(UrlBarProperties.HINT_TEXT_COLOR));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void setUrlBarHintTextColorForNtp_auroraEnabled() {
+        mMediator.setUrlBarHintTextColorForNtp();
+        assertEquals(
+                MaterialColors.getColor(mContext, R.attr.colorOutline, "UrlBarMediator"),
+                mModel.get(UrlBarProperties.HINT_TEXT_COLOR));
     }
 
     @Test

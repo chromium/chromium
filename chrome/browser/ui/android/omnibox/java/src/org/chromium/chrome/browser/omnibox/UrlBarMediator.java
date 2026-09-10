@@ -11,10 +11,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
@@ -41,6 +44,8 @@ import java.util.Objects;
 /** Handles collecting and pushing state information to the UrlBar model. */
 @NullMarked
 class UrlBarMediator implements UrlBarTextContextMenuDelegate {
+    private static final String TAG = "UrlBarMediator";
+
     private final Context mContext;
     private final PropertyModel mModel;
 
@@ -503,10 +508,13 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         setBrandedColorScheme(brandedColorScheme);
     }
 
-    /** Sets search box hint text color to be colorOnSurface for NTP's un-focus state. */
+    /** Sets search box hint text color for NTP's un-focus state. */
     void setUrlBarHintTextColorForNtp() {
         mIsHintTextFixedForNtp = true;
-        final @ColorInt int hintTextColor = SemanticColorUtils.getDefaultTextColor(mContext);
+        final @ColorInt int hintTextColor =
+                ChromeFeatureList.sNtpAurora.isEnabled()
+                        ? MaterialColors.getColor(mContext, R.attr.colorOutline, TAG)
+                        : SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
     }
 
