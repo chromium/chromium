@@ -6464,8 +6464,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5741" label="V8Element_ContainerTiming_AttributeSetter"/>
   <int value="5742" label="V8Element_ContainerTimingIgnore_AttributeGetter"/>
   <int value="5743" label="V8Element_ContainerTimingIgnore_AttributeSetter"/>
-  <int value="5744" label="ContainerTimingObserverRegistered"/>
-  <int value="5745" label="ContainerTimingObserverReportedEntries"/>
+  <int value="5744" label="ContainerTimingExplicitlyRequested"/>
+  <int value="5745" label="ContainerTimingObserved"/>
   <int value="5746" label="CookieStoreMaxAge"/>
   <int value="5747" label="SVGFEBlendElement"/>
   <int value="5748" label="SVGFEColorMatrixElement"/>
@@ -6751,6 +6751,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6013" label="InteractionContentfulPaintExplicitlyRequested"/>
   <int value="6014" label="InteractionContentfulPaintObserved"/>
   <int value="6015" label="VideoAdDetected"/>
+  <int value="6016" label="ElementTimingEntryEmitted"/>
+  <int value="6017" label="ContainerTimingEntryEmitted"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -9249,6 +9251,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="450" label="EventTiming"/>
   <int value="451" label="SoftNavigations"/>
   <int value="452" label="InteractionContentfulPaint"/>
+  <int value="453" label="ElementTiming"/>
+  <int value="454" label="ContainerTiming"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

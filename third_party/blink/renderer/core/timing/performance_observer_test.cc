@@ -195,7 +195,7 @@ TEST_F(PerformanceObserverTest, ObserveEntryTypesUseCounters) {
       {"longtask", WebFeature::kLongTaskObserver},
       {"visibility-state", WebFeature::kVisibilityStateObserver},
       {"long-animation-frame", WebFeature::kLongAnimationFrameObserver},
-      {"container", WebFeature::kContainerTimingObserverRegistered},
+      {"container", WebFeature::kContainerTimingExplicitlyRequested},
       {"soft-navigation", WebFeature::kSoftNavigationExplicitlyRequested},
       {"interaction-contentful-paint",
        WebFeature::kInteractionContentfulPaintExplicitlyRequested},

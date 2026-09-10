@@ -328,7 +328,7 @@ void PerformanceObserver::observe(ScriptState* script_state,
   }
   if (filter_options_ & PerformanceEntry::kContainer) {
     UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kContainerTimingObserverRegistered);
+                      WebFeature::kContainerTimingExplicitlyRequested);
   }
   if (filter_options_ & PerformanceEntry::kSoftNavigation) {
     UseCounter::Count(GetExecutionContext(),

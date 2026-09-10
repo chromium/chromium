@@ -469,10 +469,14 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kContainer:
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kContainerTimingExplicitlyRequested);
       entries = &container_timing_buffer_;
       break;
 
     case PerformanceEntry::kElement:
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kElementTimingExplicitlyRequested);
       entries = &element_timing_buffer_;
       break;
 
@@ -1251,7 +1255,7 @@ void Performance::NotifyObserversOfContainerEntry(
   }
   if (observer_found) {
     UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kContainerTimingObserverReportedEntries);
+                      WebFeature::kContainerTimingObserved);
   }
 }
 

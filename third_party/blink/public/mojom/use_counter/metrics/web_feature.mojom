@@ -5057,8 +5057,8 @@ enum WebFeature {
   kV8Element_ContainerTiming_AttributeSetter = 5741,
   kV8Element_ContainerTimingIgnore_AttributeGetter = 5742,
   kV8Element_ContainerTimingIgnore_AttributeSetter = 5743,
-  kContainerTimingObserverRegistered = 5744,
-  kContainerTimingObserverReportedEntries = 5745,
+  kContainerTimingExplicitlyRequested = 5744,
+  kContainerTimingObserved = 5745,
   kCookieStoreMaxAge = 5746,
   kSVGFEBlendElement = 5747,
   kSVGFEColorMatrixElement = 5748,
@@ -5330,6 +5330,8 @@ enum WebFeature {
   kInteractionContentfulPaintExplicitlyRequested = 6013,
   kInteractionContentfulPaintObserved = 6014,
   kVideoAdDetected = 6015,
+  kElementTimingEntryEmitted = 6016,
+  kContainerTimingEntryEmitted = 6017,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

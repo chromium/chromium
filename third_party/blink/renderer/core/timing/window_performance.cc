@@ -1454,6 +1454,8 @@ void WindowPerformance::AddElementTiming(
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
   entry->SetPaintTimingInfo(paint_timing_info);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kElementTimingEntryEmitted);
   if (HasObserverFor(PerformanceEntry::kElement)) {
     NotifyObserversOfEntry(*entry);
   }
@@ -1484,6 +1486,8 @@ void WindowPerformance::AddContainerTiming(
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
   entry->SetPaintTimingInfo(paint_timing_info);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kContainerTimingEntryEmitted);
   if (HasObserverFor(PerformanceEntry::kContainer)) {
     NotifyObserversOfContainerEntry(*entry);
   }

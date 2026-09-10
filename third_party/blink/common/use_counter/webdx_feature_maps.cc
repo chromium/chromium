@@ -503,6 +503,10 @@ GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kIdentityDigitalCredentialsCreation,
            WebDXFeature::kDigitalCredentials},
           {WebFeature::kHTMLInCanvas, WebDXFeature::kCanvasHtml},
+          {WebFeature::kElementTimingExplicitlyRequested,
+           WebDXFeature::kElementTiming},
+          {WebFeature::kContainerTimingExplicitlyRequested,
+           WebDXFeature::kContainerTiming},
           // Add new features above this line.
       }};
 
