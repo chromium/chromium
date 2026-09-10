@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 
+class ApplicationLocaleStorage;
 class ArcAppListPrefs;
 class PrefService;
 class Profile;
@@ -47,10 +48,11 @@ namespace settings {
 // Collection of all OsSettingsSection implementations.
 class OsSettingsSections {
  public:
-  // `local_state` and `browser_policy_connector_ash` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   OsSettingsSections(
       PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       Profile* profile,
       SearchTagRegistry* search_tag_registry,

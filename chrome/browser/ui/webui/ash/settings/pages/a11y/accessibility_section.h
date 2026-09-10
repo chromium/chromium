@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_ACCESSIBILITY_SECTION_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -13,6 +14,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace content {
@@ -28,9 +30,12 @@ class AccessibilitySection : public OsSettingsSection,
                              public content::VoicesChangedDelegate,
                              public extensions::ExtensionRegistryObserver {
  public:
-  AccessibilitySection(Profile* profile,
-                       SearchTagRegistry* search_tag_registry,
-                       PrefService* pref_service);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  AccessibilitySection(
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile,
+      SearchTagRegistry* search_tag_registry,
+      PrefService* pref_service);
   ~AccessibilitySection() override;
 
   // OsSettingsSection:
@@ -60,6 +65,7 @@ class AccessibilitySection : public OsSettingsSection,
   void UpdateTextToSpeechVoiceSearchTags();
   void UpdateTextToSpeechEnginesSearchTags();
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;

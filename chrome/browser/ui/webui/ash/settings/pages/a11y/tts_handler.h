@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_TTS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_TTS_HANDLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/settings_with_tts_preview_handler.h"
 #include "content/public/browser/tts_controller.h"
+
+class ApplicationLocaleStorage;
 
 namespace ash::settings {
 
 // ChromeOS "/manageAccessibility/tts/*" settings page UI handler.
 class TtsHandler : public SettingsWithTtsPreviewHandler {
  public:
-  TtsHandler();
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  explicit TtsHandler(
+      const ApplicationLocaleStorage* application_locale_storage);
 
   TtsHandler(const TtsHandler&) = delete;
   TtsHandler& operator=(const TtsHandler&) = delete;
@@ -41,6 +46,7 @@ class TtsHandler : public SettingsWithTtsPreviewHandler {
   int GetVoiceLangMatchScore(const content::VoiceData* voice,
                              const std::string& app_locale);
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   base::WeakPtrFactory<TtsHandler> weak_factory_{this};
 };
 

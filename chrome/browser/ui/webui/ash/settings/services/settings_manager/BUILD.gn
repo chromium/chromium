@@ -27,6 +27,7 @@ static_library("settings_manager") {
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:global_features",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",

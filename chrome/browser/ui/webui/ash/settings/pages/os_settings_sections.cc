@@ -36,6 +36,7 @@ using ::chromeos::settings::mojom::Section;
 
 OsSettingsSections::OsSettingsSections(
     PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
@@ -85,9 +86,10 @@ OsSettingsSections::OsSettingsSections(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
 
-  AddSection(mojom::Section::kAccessibility,
-             std::make_unique<AccessibilitySection>(
-                 profile, search_tag_registry, prefs));
+  AddSection(
+      mojom::Section::kAccessibility,
+      std::make_unique<AccessibilitySection>(
+          application_locale_storage, profile, search_tag_registry, prefs));
 
   AddSection(
       mojom::Section::kAboutChromeOs,

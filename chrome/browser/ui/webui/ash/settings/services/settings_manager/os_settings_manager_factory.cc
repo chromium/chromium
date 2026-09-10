@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
@@ -70,6 +71,7 @@ OsSettingsManagerFactory::BuildServiceInstanceForBrowserContext(
   // base::NoDestructor.
   return std::make_unique<OsSettingsManager>(
       g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       profile,
       local_search_service::LocalSearchServiceProxyFactory::

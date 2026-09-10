@@ -17,6 +17,7 @@
 #include "ash/constants/url_constants.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -617,10 +618,12 @@ bool IsAccessibilityMouseKeysEnabled() {
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       pref_service_(pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetA11ySearchConcepts());
@@ -1608,7 +1611,8 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<AccessibilityHandler>(profile()));
   web_ui->AddMessageHandler(
       std::make_unique<SwitchAccessHandler>(profile()->GetPrefs()));
-  web_ui->AddMessageHandler(std::make_unique<TtsHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<TtsHandler>(&application_locale_storage_.get()));
   web_ui->AddMessageHandler(std::make_unique<SelectToSpeakHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<::settings::FontHandler>(profile()));

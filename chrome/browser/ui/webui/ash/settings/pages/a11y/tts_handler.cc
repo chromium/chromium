@@ -7,17 +7,18 @@
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/event_router.h"
@@ -30,7 +31,9 @@
 
 namespace ash::settings {
 
-TtsHandler::TtsHandler() = default;
+TtsHandler::TtsHandler(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 TtsHandler::~TtsHandler() = default;
 
@@ -77,7 +80,7 @@ void TtsHandler::HandleGetDisplayNameForLocale(const base::ListValue& args) {
   const std::string locale = args[1].GetString();
 
   const std::u16string display_name = l10n_util::GetDisplayNameForLocale(
-      locale, g_browser_process->GetApplicationLocale(), true);
+      locale, application_locale_storage_->Get(), true);
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, base::UTF16ToUTF8(display_name));
@@ -87,8 +90,7 @@ void TtsHandler::HandleGetApplicationLocale(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string callback_id = args[0].GetString();
 
-  const std::string& application_locale =
-      g_browser_process->GetApplicationLocale();
+  const std::string& application_locale = application_locale_storage_->Get();
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, application_locale);
@@ -99,7 +101,7 @@ void TtsHandler::OnVoicesChanged() {
       content::TtsController::GetInstance();
   std::vector<content::VoiceData> voices;
   tts_controller->GetVoices(Profile::FromWebUI(web_ui()), GURL(), &voices);
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   base::ListValue responses;
   for (const auto& voice : voices) {
     base::DictValue response;
@@ -112,10 +114,8 @@ void TtsHandler::OnVoicesChanged() {
           l10n_util::GetStringUTF8(IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE));
     } else {
       language_code = base::i18n::GetLanguageSubtagUsingLanguageTag(voice.lang);
-      response.Set(
-          "displayLanguage",
-          l10n_util::GetDisplayNameForLocale(
-              language_code, g_browser_process->GetApplicationLocale(), true));
+      response.Set("displayLanguage", l10n_util::GetDisplayNameForLocale(
+                                          language_code, app_locale, true));
     }
     response.Set("name", voice.name);
     response.Set("remote", voice.remote);
