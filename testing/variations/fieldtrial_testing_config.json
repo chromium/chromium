@@ -10275,6 +10275,21 @@
             ]
         }
     ],
+    "HandleMissingWmDestroy": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HandleMissingWmDestroy"
+                    ]
+                }
+            ]
+        }
+    ],
     "HangoutsExtensionV3": [
         {
             "platforms": [
