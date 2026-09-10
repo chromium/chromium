@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kPrivateInsightsFeature);
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval;
 
-// Enables Private AI Compute error reporting over Private Insights.
-COMPONENT_EXPORT(PRIVATE_INSIGHTS)
-BASE_DECLARE_FEATURE(kPrivateInsightsPaicErrorReporting);
-
 // Enables using Attestation Transparency Verifier in Private Insights.
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<bool> kFcpUseAttestationTransparencyVerifier;

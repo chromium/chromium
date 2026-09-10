@@ -13,9 +13,6 @@ BASE_FEATURE(kPrivateInsightsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval{
     &kPrivateInsightsFeature, "upload_interval", base::Minutes(30)};
 
-BASE_FEATURE(kPrivateInsightsPaicErrorReporting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const base::FeatureParam<bool> kFcpUseAttestationTransparencyVerifier{
     &kPrivateInsightsFeature, "fcp_use_attestation_transparency_verifier",
     false};
