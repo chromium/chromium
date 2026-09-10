@@ -1208,6 +1208,43 @@ source_set("browser_tests") {
   sources = []
   deps = []
 
+  if (!is_android) {
+    sources +=
+        [ "download_protection/download_protection_service_browsertest.cc" ]
+    deps += [
+      ":safe_browsing",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/test:test_support",
+      "//components/safe_browsing/content/browser/web_ui",
+    ]
+
+    if (enterprise_cloud_content_analysis) {
+      sources += [
+        "cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
+        "download_protection/deep_scanning_browsertest.cc",
+      ]
+
+      deps += [
+        "//chrome/browser/enterprise/connectors/analysis:browser_tests",
+        "//chrome/browser/enterprise/test:test_support",
+        "//chrome/browser/ui/views:file_system_access_test_support",
+        "//components/enterprise/connectors/core:content_analysis_browser_test_base",
+        "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+      ]
+    }
+
+    if (safe_browsing_mode != 0) {
+      sources += [ "gemini_antiscam_protection/gemini_antiscam_protection_service_browsertest.cc" ]
+      deps += [
+        "//components/optimization_guide/core:model_execution_test_support",
+        "//components/safe_browsing/content/browser:client_side_detection",
+        "//components/safe_browsing/content/browser:client_side_detection_service",
+        "//components/safe_browsing/content/renderer/phishing_classifier",
+        "//components/safe_browsing/core/common/phishing_classifier",
+      ]
+    }
+  }
+
   if (enable_extensions) {
     sources +=
         [ "extension_telemetry/extension_telemetry_service_browsertest.cc" ]
@@ -1248,10 +1285,12 @@ source_set("browser_tests") {
       "chrome_password_protection_service_browsertest.cc",
       "chrome_password_protection_service_sync_browsertest.cc",
       "client_side_detection_host_browsertest.cc",
+      "notification_content_detection/notification_content_detection_service_browsertest.cc",
       "ohttp_key_service_browsertest.cc",
       "safe_browsing_blocking_page_test.cc",
       "safe_browsing_navigation_observer_browsertest.cc",
       "safe_browsing_service_browsertest.cc",
+      "tailored_security/chrome_tailored_security_service_browsertest.cc",
       "url_lookup_service_browsertest.cc",
     ]
     deps += [
@@ -1262,6 +1301,7 @@ source_set("browser_tests") {
       "//base/test:test_support",
       "//chrome/browser/interstitials:idn_test_support",
       "//chrome/browser/metrics/desktop_session_duration",
+      "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/password_manager:test_support",
       "//chrome/browser/password_manager:test_support_ui",
       "//chrome/browser/password_manager/factories",
@@ -1285,6 +1325,7 @@ source_set("browser_tests") {
       "//components/error_page/content/browser",
       "//components/no_state_prefetch/browser",
       "//components/omnibox/browser",
+      "//components/optimization_guide/core:model_execution_test_support",
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_detection_images_cache",
       "//components/safe_browsing/content/browser:client_side_detection_service",
