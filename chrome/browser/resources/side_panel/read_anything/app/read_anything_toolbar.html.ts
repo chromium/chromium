@@ -15,6 +15,13 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     @keydown="${this.onToolbarKeydown_}"
     @reset-toolbar="${this.onResetToolbar_}"
     @toolbar-overflow="${this.onToolbarOverflow_}">
+    ${this.isLineFocusShowing ? html`
+    <cr-button class="toolbar-button" id="line-focus-off"
+      tabindex="-1"
+      @click="${this.onLineFocusOffClick_}">
+      ${this.i18n('turnLineFocusOffTitle')}
+    </cr-button>
+    ` : ''}
     <span id="audio-controls" class="audio-background-${this.getAudioState_()}">
       <span ?hidden="${this.hideSpinner_}">
         <picture class="spinner toolbar-button audio-controls">
@@ -78,13 +85,6 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         iron-icon="read-anything:audio_magic_eraser"
         @click="${this.onAiPlaybackClick_}">
     </cr-icon-button>
-    ` : ''}
-    ${this.isLineFocusShowing ? html`
-    <cr-button class="toolbar-button" id="line-focus-off"
-      tabindex="-1"
-      @click="${this.onLineFocusOffClick_}">
-      ${this.i18n('turnLineFocusOffTitle')}
-    </cr-button>
     ` : ''}
 
   ${!this.isImmersiveEnabled_ ? html`

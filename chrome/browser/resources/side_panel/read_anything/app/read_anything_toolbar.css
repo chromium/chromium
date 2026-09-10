@@ -78,7 +78,7 @@
   --cr-button-text-color: var(--rate-button-text-color);
   background: var(--audio-player-background-color);
   border: none;
-  margin-inline-end: 8px;
+  margin-inline-end: auto;
   position: relative;
   z-index: 9998;
 }
