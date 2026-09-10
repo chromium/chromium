@@ -250,6 +250,7 @@ blink_core_tests_paint = [
   "clip_rect_test.cc",
   "compositing/compositing_reason_finder_test.cc",
   "compositing/compositing_test.cc",
+  "contoured_border_geometry_test.cc",
   "css_mask_painter_test.cc",
   "cull_rect_updater_test.cc",
   "fragment_data_test.cc",

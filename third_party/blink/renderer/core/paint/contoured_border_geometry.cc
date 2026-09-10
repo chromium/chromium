@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 
+#include <limits>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
@@ -120,6 +122,18 @@ float RadiiConstraintFactorForOppositeCorners(const ContouredRect::Corner& a,
   const gfx::QuadF hull_a = ComputeHullQuad(a);
   const gfx::QuadF hull_b = ComputeHullQuad(b);
   if (!hull_a.IntersectsQuad(hull_b)) {
+    return 1;
+  }
+
+  // Ignore intersections caused by floating-point noise when the hulls should
+  // only touch.
+  static constexpr float kNearTouchingScale =
+      1 - 5 * std::numeric_limits<float>::epsilon();
+  const gfx::QuadF slightly_scaled_hull_a =
+      ScaleQuadFromOrigin(hull_a, a.Outer(), kNearTouchingScale);
+  const gfx::QuadF slightly_scaled_hull_b =
+      ScaleQuadFromOrigin(hull_b, b.Outer(), kNearTouchingScale);
+  if (!slightly_scaled_hull_a.IntersectsQuad(slightly_scaled_hull_b)) {
     return 1;
   }
 
