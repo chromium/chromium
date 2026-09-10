@@ -163,16 +163,6 @@ void PredictionModelFetcherImpl::HandleResponse(
       -net_status);
 
   for (const auto& model_info : pending_models_request_->requested_models()) {
-    if (response_code >= 0 &&
-        response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
-      base::UmaHistogramEnumeration(
-          base::StrCat({"OptimizationGuide.PredictionModelFetcher."
-                        "GetModelsResponse.Status.",
-                        optimization_guide::GetStringNameForOptimizationTarget(
-                            model_info.optimization_target())}),
-          static_cast<net::HttpStatusCode>(response_code),
-          net::HTTP_VERSION_NOT_SUPPORTED);
-    }
     // Net error codes are negative but histogram enums must be positive.
     base::UmaHistogramSparse(
         base::StrCat({"OptimizationGuide.PredictionModelFetcher."

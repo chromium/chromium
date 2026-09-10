@@ -336,10 +336,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
   // Should not have made fetch request.
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
-      "PainfulPageLoad",
-      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
@@ -382,10 +378,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status",
-      net::HTTP_NOT_FOUND, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
-      "PainfulPageLoad",
       net::HTTP_NOT_FOUND, 1);
 
   histogram_tester.ExpectTotalCount(
@@ -753,8 +745,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       histogram_tester.get(),
       "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 1);
   histogram_tester->ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
-      "PainfulPageLoad",
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status",
       net::HTTP_OK, 1);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
@@ -833,8 +824,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   // The model fetch will happen, and the model will be removed from the store,
   // and the observers notified of null model.
   histogram_tester->ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status."
-      "PainfulPageLoad",
+      "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status",
       net::HTTP_OK, 1);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);

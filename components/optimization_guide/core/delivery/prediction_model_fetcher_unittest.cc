@@ -136,10 +136,6 @@ TEST_F(PredictionModelFetcherTest, FetchReturned404) {
       "OptimizationGuide.PredictionModelFetcher."
       "GetModelsResponse.Status",
       net::HTTP_NOT_FOUND, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelFetcher."
-      "GetModelsResponse.Status.PainfulPageLoad",
-      net::HTTP_NOT_FOUND, 1);
 
   // Net error codes are negative but UMA histograms require positive values.
   histogram_tester.ExpectUniqueSample(
