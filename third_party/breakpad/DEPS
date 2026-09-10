@@ -7,6 +7,5 @@ specific_include_rules = {
     '+base',
     '+google_breakpad',
     '+processor',
-    '+testing',
   ],
 }
