@@ -321,6 +321,13 @@ void WebStateImpl::RealizedWebState::OnNavigationFinished(
     return;
   }
 
+  // Clear provisional WebUI if the navigation was cancelled/failed, or if it
+  // committed to a non-WebUI page.
+  if (web_ui_ && (!context->HasCommitted() ||
+                  !web::GetWebClient()->IsAppSpecificURL(context->GetUrl()))) {
+    ClearWebUI();
+  }
+
   const bool same_document = context->IsSameDocument();
   base::WeakPtr<NavigationContextImpl> weak_context = context->GetWeakPtr();
   for (auto& observer : observers()) {

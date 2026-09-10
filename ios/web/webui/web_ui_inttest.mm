@@ -9,6 +9,7 @@
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/grit/ios_web_resources.h"
+#import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -149,4 +150,38 @@ TEST_F(WebUITest, LoadWebUIPageLoadViaLinkClick) {
   ASSERT_TRUE(WebStateImpl::FromWebState(web_state())->HasWebUI());
 }
 
+// Tests that WebUI is cleared if a subsequent navigation fails to commit.
+TEST_F(WebUITest, WebUIClearedOnFailedNavigation) {
+  WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
+  ASSERT_TRUE(web_state_impl->HasWebUI());
+
+  // Simulate a navigation that cancels or fails before committing.
+  std::unique_ptr<NavigationContextImpl> context =
+      NavigationContextImpl::CreateNavigationContext(
+          web_state(), GURL("testwebui://testwebui2"),
+          /*has_user_gesture=*/true, ui::PAGE_TRANSITION_TYPED,
+          /*is_renderer_initiated=*/false);
+  context->SetHasCommitted(false);
+  web_state_impl->OnNavigationFinished(context.get());
+
+  // WebUI must be cleared.
+  EXPECT_FALSE(web_state_impl->HasWebUI());
+}
+
+TEST_F(WebUITest, WebUIClearedOnNavigatingToNonWebUIPage) {
+  WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
+  ASSERT_TRUE(web_state_impl->HasWebUI());
+
+  // Navigation successfully to a regular, non-WebUI webpage.
+  std::unique_ptr<NavigationContextImpl> context =
+      NavigationContextImpl::CreateNavigationContext(
+          web_state(), GURL("https://www.google.com"),
+          /*has_user_gesture=*/true, ui::PAGE_TRANSITION_LINK,
+          /*is_renderer_initiated=*/false);
+  context->SetHasCommitted(true);
+  web_state_impl->OnNavigationFinished(context.get());
+
+  // WebUI must be cleared.
+  EXPECT_FALSE(web_state_impl->HasWebUI());
+}
 }  // namespace web
