@@ -772,8 +772,22 @@ class GraphBuilderTflite final {
       const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeExpand(
       const mojom::Expand& expand);
+  // Emits a single `BROADCAST_TO`, except when the graph targets a GPU
+  // delegate, where `SerializeBroadcastToAsReshapeAndTile()` is used instead.
   base::expected<OperatorOffset, std::string> SerializeBroadcastToOperation(
       TensorIndex input_tensor_index,
+      base::span<const int32_t> input_dimensions,
+      ::tflite::TensorType input_tensor_type,
+      base::span<const int32_t> output_dimensions,
+      TensorIndex output_tensor_index);
+  // Expresses a broadcast as `RESHAPE` + `TILE`, which the ML Drift GPU
+  // delegate supports natively while `BROADCAST_TO` it does not. Only valid for
+  // shapes accepted by `CanBroadcastToAsReshapeAndTile()`.
+  base::expected<OperatorOffset, std::string>
+  SerializeBroadcastToAsReshapeAndTile(
+      TensorIndex input_tensor_index,
+      base::span<const int32_t> input_dimensions,
+      ::tflite::TensorType input_tensor_type,
       base::span<const int32_t> output_dimensions,
       TensorIndex output_tensor_index);
   base::expected<OperatorOffset, std::string> SerializeGather(
