@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/sync/sync_appsync_service.h"
 #include <memory>
 
-#include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,11 +29,7 @@ class SyncAppsyncServiceTest : public testing::Test {
     return sync_appsync_service_.get();
   }
 
-  void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
-
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
   testing::NiceMock<syncer::MockSyncService> sync_service_;
   FakeChromeUserManager user_manager_;
   std::unique_ptr<SyncAppsyncService> sync_appsync_service_;
@@ -42,7 +37,6 @@ class SyncAppsyncServiceTest : public testing::Test {
 
 TEST_F(SyncAppsyncServiceTest, DoesNotCrash) {
   sync_appsync_service()->Shutdown();
-  RunAllPendingTasks();
 }
 
 }  // namespace
