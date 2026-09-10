@@ -2652,11 +2652,6 @@
       status: "stable",
     },
     {
-      // crbug.com/420857717
-      name: "EmojiMonochromeRendering",
-      status: "stable"
-    },
-    {
       // Controls whether XSLT processing is selectively re-enabled for
       // Common Alerting Protocol (CAP) alert XML documents when native XSLT
       // is otherwise disabled.
