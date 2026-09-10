@@ -17,9 +17,10 @@ config("private_config") {
 source_set("libprotobuf-mutator") {
   testonly = true
 
-  # Remove *San and coverage for a performance boost.
+  # Remove coverage and sanitizers other than ASan for a performance boost.
+  # ASan is kept enabled to match Protobuf. See https://crbug.com/558759075.
   configs -= not_fuzzed_remove_configs
-  configs += not_fuzzed_add_configs
+  configs += not_fuzzed_needs_asan_add_configs
   configs += [ ":private_config" ]
 
   public_configs = [ ":public_config" ]
