@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
@@ -80,6 +82,28 @@ TEST_F(FontTest, ConvertBaseline) {
   EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kCentralBaseline), -30);
   EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kAlphabeticBaseline), 80);
   EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kCentralBaseline), 50);
+}
+
+TEST_F(FontTest, FixedPitchMatchesTypeface) {
+  for (const char* path :
+       {"Ahem.woff", "third_party/Roboto/roboto-regular.woff2"}) {
+    SCOPED_TRACE(path);
+    Font* font = CreateTestFont(AtomicString("test"),
+                                test::PlatformTestDataPath(path), 16);
+    const SimpleFontData* font_data = font->PrimaryFont();
+    ASSERT_TRUE(font_data);
+    const FontPlatformData& platform_data = font_data->PlatformData();
+    ASSERT_TRUE(platform_data.Typeface());
+    EXPECT_EQ(font_data->IsFixedPitch(),
+              platform_data.Typeface()->isFixedPitch());
+
+    const auto* zero_size_platform_data =
+        MakeGarbageCollected<FontPlatformData>(platform_data, 0);
+    const auto* zero_size_font_data =
+        MakeGarbageCollected<SimpleFontData>(zero_size_platform_data);
+    EXPECT_EQ(zero_size_font_data->IsFixedPitch(),
+              platform_data.Typeface()->isFixedPitch());
+  }
 }
 
 TEST_F(FontTest, IdeographicFullWidthAhem) {

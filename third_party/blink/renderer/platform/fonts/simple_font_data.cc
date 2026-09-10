@@ -79,6 +79,8 @@ SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
       shape_cache_(MakeGarbageCollected<NGShapeCache>(this)),
       font_(platform_data->size() ? platform_data->CreateSkFont()
                                   : skia::DefaultFont()),
+      is_fixed_pitch_(platform_data->Typeface() &&
+                      platform_data->Typeface()->isFixedPitch()),
       custom_font_data_(custom_data) {
   // Every time new SimpleFontData instance is created, Skia will ask
   // FreeType to get the metrics for glyphs by invoking
