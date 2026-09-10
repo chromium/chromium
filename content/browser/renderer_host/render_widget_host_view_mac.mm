@@ -734,6 +734,7 @@ void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {
 
 void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+  SetTextInputActive(false);
   browser_compositor_->DidEnterBackForwardCache();
   // If we have the fallback content timer running, force it to stop. Else, when
   // the page is restored the timer could also fire, setting whatever

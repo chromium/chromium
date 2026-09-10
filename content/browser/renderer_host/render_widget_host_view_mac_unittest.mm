@@ -2175,6 +2175,21 @@ TEST_F(InputMethodMacTest, SecurePasswordInput) {
   EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
 }
 
+TEST_F(InputMethodMacTest, SecurePasswordInputDisabledInBackForwardCache) {
+  ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  EXPECT_CALL(*host_, Focus()).Times(::testing::AnyNumber());
+  EXPECT_CALL(*host_, Blur()).Times(::testing::AnyNumber());
+
+  [window_ makeFirstResponder:tab_view()->GetInProcessNSView()];
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
+  tab_view()->SetActive(true);
+  ASSERT_TRUE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  tab_view()->DidEnterBackForwardCache();
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+}
+
 TEST_F(InputMethodMacTest, SecureHasBeenAPasswordInput) {
   ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
   ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
