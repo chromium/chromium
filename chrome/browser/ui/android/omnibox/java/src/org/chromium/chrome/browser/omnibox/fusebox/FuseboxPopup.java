@@ -47,6 +47,7 @@ class FuseboxPopup {
     /* package */ final View mCameraButton;
     /* package */ final View mGalleryButton;
     /* package */ final View mFileButton;
+    /* package */ final View mDriveButton;
     /* package */ final View mToolsDivider;
     /* package */ final TextView mToolsHeader;
 
@@ -140,6 +141,7 @@ class FuseboxPopup {
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
         mFileButton = contentView.findViewById(R.id.fusebox_pick_file_button);
+        mDriveButton = contentView.findViewById(R.id.fusebox_pick_drive_button);
 
         mToolsDivider = contentView.findViewById(R.id.fusebox_tools_divider);
         mToolsHeader = contentView.findViewById(R.id.fusebox_tools_header);
@@ -173,6 +175,11 @@ class FuseboxPopup {
                         : R.string.omnibox_navattach_files,
                 R.drawable.ic_attach_file_24dp,
                 R.string.accessibility_omnibox_add_files);
+        initializeItem(
+                mDriveButton,
+                R.string.omnibox_navattach_drive,
+                R.drawable.gs_drive_vd_theme_24,
+                R.string.accessibility_omnibox_add_from_drive);
 
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
@@ -182,7 +189,13 @@ class FuseboxPopup {
         mRecentTabsContainer = contentView.findViewById(R.id.fusebox_recent_tabs_container);
 
         mAttachmentButtons =
-                List.of(mAddCurrentTab, mTabButton, mGalleryButton, mCameraButton, mFileButton);
+                List.of(
+                        mAddCurrentTab,
+                        mTabButton,
+                        mGalleryButton,
+                        mCameraButton,
+                        mFileButton,
+                        mDriveButton);
 
         mDividers =
                 mRecentTabsDivider != null

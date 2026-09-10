@@ -131,6 +131,15 @@ class FuseboxViewBinder {
                     model,
                     FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE,
                     view.popup.mAddCurrentTab);
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED) {
+            view.popup.mDriveButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED) {
+            view.popup.mDriveButton.setEnabled(
+                    model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE) {
+            updateButtonVisibility(
+                    model, FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE, view.popup.mDriveButton);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_CLICKED) {
             view.popup.mFileButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run());

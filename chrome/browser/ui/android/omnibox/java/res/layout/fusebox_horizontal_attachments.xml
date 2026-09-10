@@ -35,13 +35,7 @@ found in the LICENSE file.
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_file_button"/>
 
-    <!-- TODO: Dynamically control the button visibility. -->
-    <TextView
-        android:id="@+id/fusebox_pick_drive_button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:drawableStart="@drawable/gs_drive_vd_theme_24"
-        android:text="@string/omnibox_navattach_drive"
-        android:contentDescription="@string/accessibility_omnibox_add_from_drive" />
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_pick_drive_button"/>
 </LinearLayout>

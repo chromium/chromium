@@ -282,6 +282,14 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void driveButtonClickListener_isCalled() {
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED, mRunnable);
+
+        mPopup.mDriveButton.performClick();
+        verify(mRunnable).run();
+    }
+
+    @Test
     public void tabPickerButtonClickListener_isCalled() {
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, mRunnable);
 
@@ -410,6 +418,24 @@ public class FuseboxViewBinderUnitTest {
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mFileButton.getVisibility());
+    }
+
+    @Test
+    public void driveButtonVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mDriveButton.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mDriveButton.getVisibility());
+    }
+
+    @Test
+    public void driveButtonEnabled_setsEnabled() {
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED, true);
+        assertTrue(mPopup.mDriveButton.isEnabled());
+
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED, false);
+        assertFalse(mPopup.mDriveButton.isEnabled());
     }
 
     @Test
@@ -640,12 +666,12 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1, data2));
         int headerIndex = mPopup.mViewGroup.indexOfChild(mPopup.mModelsHeader);
         assertEquals(2, mPopup.mViewGroup.getChildCount() - (headerIndex + 1));
-        assertEquals(5, mPopup.mAttachmentButtons.size());
+        assertEquals(6, mPopup.mAttachmentButtons.size());
         assertEquals(2, mPopup.mDynamicThemedButtons.size());
 
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1));
         assertEquals(1, mPopup.mViewGroup.getChildCount() - (headerIndex + 1));
-        assertEquals(5, mPopup.mAttachmentButtons.size());
+        assertEquals(6, mPopup.mAttachmentButtons.size());
         assertEquals(1, mPopup.mDynamicThemedButtons.size());
     }
 

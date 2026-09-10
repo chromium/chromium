@@ -266,6 +266,7 @@ public class FuseboxPopupUnitTest {
         assertNotNull(mFuseboxPopup.mCameraButton);
         assertNotNull(mFuseboxPopup.mGalleryButton);
         assertNotNull(mFuseboxPopup.mFileButton);
+        assertNotNull(mFuseboxPopup.mDriveButton);
     }
 
     @Test
@@ -282,6 +283,7 @@ public class FuseboxPopupUnitTest {
         assertNotNull(mFuseboxPopup.mCameraButton);
         assertNotNull(mFuseboxPopup.mGalleryButton);
         assertNotNull(mFuseboxPopup.mFileButton);
+        assertNotNull(mFuseboxPopup.mDriveButton);
     }
 
     @Test

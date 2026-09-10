@@ -208,6 +208,7 @@ public class FuseboxMetricsUnitTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, true);
+        mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE, true);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -227,6 +228,9 @@ public class FuseboxMetricsUnitTest {
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonShown",
                                 FuseboxMetrics.FuseboxAttachmentButtonType.FILES)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.AttachmentButtonShown",
+                                FuseboxMetrics.FuseboxAttachmentButtonType.DRIVE_FILES)
                         .build();
 
         mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);

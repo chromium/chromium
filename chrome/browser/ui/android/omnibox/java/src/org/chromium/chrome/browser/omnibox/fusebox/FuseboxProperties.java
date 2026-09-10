@@ -170,6 +170,18 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_CURRENT_TAB_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Action to perform when the user clicks the Drive button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_DRIVE_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the Drive button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_DRIVE_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the Drive button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_DRIVE_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the File button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_FILE_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -295,6 +307,9 @@ class FuseboxProperties {
         POPUP_ATTACH_CURRENT_TAB_ENABLED,
         POPUP_ATTACH_CURRENT_TAB_FAVICON,
         POPUP_ATTACH_CURRENT_TAB_VISIBLE,
+        POPUP_ATTACH_DRIVE_CLICKED,
+        POPUP_ATTACH_DRIVE_ENABLED,
+        POPUP_ATTACH_DRIVE_VISIBLE,
         POPUP_ATTACH_FILE_CLICKED,
         POPUP_ATTACH_FILE_ENABLED,
         POPUP_ATTACH_FILE_VISIBLE,
