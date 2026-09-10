@@ -595,6 +595,10 @@ crbug.com/536977902 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryO
 
 crbug.com/544795245 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_ViewTransitionsCapture [ Failure ]
 
+# Pixel 6 failures
+# Periodically exhibits flaky timeouts
+crbug.com/559557324 [ android android-Pixel-6 android-chromium ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
