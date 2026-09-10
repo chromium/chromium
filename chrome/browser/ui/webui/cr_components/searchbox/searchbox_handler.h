@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"
