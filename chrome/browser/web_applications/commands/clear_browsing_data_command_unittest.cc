@@ -28,8 +28,6 @@ namespace web_app {
 class ClearBrowsingDataCommandTest : public WebAppTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
     WebAppTest::SetUp();
 
     auto association_manager =
@@ -45,9 +43,6 @@ class ClearBrowsingDataCommandTest : public WebAppTest {
     fake_provider().on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {

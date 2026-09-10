@@ -587,10 +587,6 @@ class AppHomePageHandlerUpdateTest : public AppHomePageHandlerTest {
     AppHomePageHandlerTest::SetUpOnMainThread();
     EXPECT_TRUE(embedded_https_test_server().Start());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kWebAppMigrationApi};
 };
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, HandlePageCalls) {

@@ -31,10 +31,7 @@ class WebAppSamplingMetricsProviderBrowserTest : public WebAppBrowserTestBase {
   static constexpr std::string_view kMigrateToSuggestUrl =
       "/web_apps/migration/migrate_to/suggest.html";
 
-  WebAppSamplingMetricsProviderBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
-  }
+  WebAppSamplingMetricsProviderBrowserTest() = default;
 
   void EmitMetrics() {
     base::RunLoop run_loop;

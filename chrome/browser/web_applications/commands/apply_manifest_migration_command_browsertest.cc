@@ -75,9 +75,6 @@ class ApplyManifestMigrationCommandBrowserTest : public WebAppBrowserTestBase {
     return testing::AssertionSuccess();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppMigrationApi};
-
   base::HistogramTester histogram_tester_;
 };
 

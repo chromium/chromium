@@ -383,10 +383,6 @@ TEST_F(UpdateValidatedOriginAssociationsCommandTest, AppDisabled) {
 }
 
 TEST_F(UpdateValidatedOriginAssociationsCommandTest, MigrationSourcesSuccess) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kWebAppMigrationApi);
-
   GURL start_url("https://example.com/");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Test App";
@@ -482,10 +478,6 @@ TEST_F(UpdateValidatedOriginAssociationsCommandTest,
 
 TEST_F(UpdateValidatedOriginAssociationsCommandTest,
        RemoveStaleMigrationSource) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kWebAppMigrationApi);
-
   GURL start_url("https://example.com/");
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->title = u"Test App";

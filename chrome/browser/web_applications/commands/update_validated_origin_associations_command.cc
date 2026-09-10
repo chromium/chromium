@@ -159,8 +159,7 @@ void UpdateValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
     app.SetOriginAssociationLastValidationCheckTime(now_time);
   }
 
-  if (migration_sources_updated &&
-      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+  if (migration_sources_updated) {
     lock_->scheduler().ScheduleResolveWebAppPendingMigrationInfo(
         base::DoNothing());
   }

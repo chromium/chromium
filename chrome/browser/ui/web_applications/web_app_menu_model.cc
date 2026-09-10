@@ -130,9 +130,6 @@ void WebAppMenuModel::Build() {
       app_browser_controller->AsWebAppBrowserController();
   if (app_controller && (app_controller->HasPendingUpdate() ||
                          app_controller->HasPendingMigration())) {
-    if (app_controller->HasPendingMigration()) {
-      CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
-    }
     AddSeparator(ui::SPACING_SEPARATOR);
     gfx::ImageSkia icon = app_controller->GetAppMenuIcon();
     ui::ImageModel update_icon;

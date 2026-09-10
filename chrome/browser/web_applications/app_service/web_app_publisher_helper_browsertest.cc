@@ -230,11 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperBrowserTest,
 }
 
 class WebAppPublisherHelperMigrationTest
-    : public WebAppPublisherHelperBrowserTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kWebAppMigrationApi};
-};
+    : public WebAppPublisherHelperBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperMigrationTest, MigrationCalls) {
   ASSERT_TRUE(embedded_test_server()->Start());

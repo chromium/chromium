@@ -39,11 +39,6 @@ namespace {
 class WebAppInstallFromMigrateFromFieldCommandBrowserTest
     : public WebAppBrowserTestBase {
  public:
-  WebAppInstallFromMigrateFromFieldCommandBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
-  }
-
   void SetUp() override {
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &WebAppInstallFromMigrateFromFieldCommandBrowserTest::

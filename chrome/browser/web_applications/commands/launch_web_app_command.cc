@@ -152,7 +152,6 @@ void LaunchWebAppCommand::OnAppLaunched(
       WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp());
   bool has_scope_extensions = app && !app->scope_extensions().empty();
   bool has_migration_sources_for_revalidation =
-      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
       app && !app->unvalidated_migration_sources().empty();
 
   bool should_validate = false;

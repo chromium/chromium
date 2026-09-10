@@ -35,8 +35,6 @@ namespace {
 class WebAppInstallFromMigrateFromFieldCommandTest : public WebAppTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
     WebAppTest::SetUp();
 
     auto* provider = FakeWebAppProvider::Get(profile());
@@ -52,9 +50,6 @@ class WebAppInstallFromMigrateFromFieldCommandTest : public WebAppTest {
   WebAppCommandManager& command_manager() {
     return provider().command_manager();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(WebAppInstallFromMigrateFromFieldCommandTest, NoSourceAppInstalled) {

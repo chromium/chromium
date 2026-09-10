@@ -449,8 +449,6 @@ class WebAppOriginAssociationManagerRevocationTest
   }
 
   raw_ptr<webapps::TestWebAppOriginAssociationFetcher> fetcher_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppMigrationApi};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerRevocationTest,

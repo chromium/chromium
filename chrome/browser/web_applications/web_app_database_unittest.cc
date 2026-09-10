@@ -174,10 +174,6 @@ class WebAppDatabaseTest : public WebAppTest {
       update->DeleteApp(app_id);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppMigrationApi};
 };
 
 TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {

@@ -78,51 +78,49 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
-    if (!manifest->migrate_from.empty()) {
-      provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
-          web_contents.GetWeakPtr(), manifest.Clone(), base::DoNothing());
+  if (!manifest->migrate_from.empty()) {
+    provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
+        web_contents.GetWeakPtr(), manifest.Clone(), base::DoNothing());
 
-      WebAppTabHelper* tab_helper =
-          WebAppTabHelper::FromWebContents(&web_contents);
-      if (tab_helper && tab_helper->window_app_id().has_value()) {
-        const webapps::AppId& window_app_id = *tab_helper->window_app_id();
-        for (const auto& migrate_from : manifest->migrate_from) {
-          std::optional<webapps::ManifestId> migrate_from_manifest_id =
-              webapps::ManifestId::Create(migrate_from->id);
-          if (!migrate_from_manifest_id.has_value()) {
-            continue;
-          }
-          if (GenerateAppIdFromManifestId(*migrate_from_manifest_id) ==
-                  window_app_id &&
-              migrate_from->install_url.has_value()) {
-            std::optional<base::Time> previous_time_for_silent_icon_update =
-                base::OptionalFromPtr(base::FindOrNull(
-                    update_check_for_silent_updates_, window_app_id));
-            provider_->scheduler().FetchManifestAndUpdate(
-                *migrate_from->install_url, *migrate_from_manifest_id,
-                previous_time_for_silent_icon_update,
-                /*force_trusted_silent_update=*/false,
-                base::BindOnce(&ManifestUpdateManager::
-                                   OnMigrationFetchManifestAndUpdateComplete,
-                               weak_factory_.GetWeakPtr(), window_app_id));
-          }
+    WebAppTabHelper* tab_helper =
+        WebAppTabHelper::FromWebContents(&web_contents);
+    if (tab_helper && tab_helper->window_app_id().has_value()) {
+      const webapps::AppId& window_app_id = *tab_helper->window_app_id();
+      for (const auto& migrate_from : manifest->migrate_from) {
+        std::optional<webapps::ManifestId> migrate_from_manifest_id =
+            webapps::ManifestId::Create(migrate_from->id);
+        if (!migrate_from_manifest_id.has_value()) {
+          continue;
+        }
+        if (GenerateAppIdFromManifestId(*migrate_from_manifest_id) ==
+                window_app_id &&
+            migrate_from->install_url.has_value()) {
+          std::optional<base::Time> previous_time_for_silent_icon_update =
+              base::OptionalFromPtr(base::FindOrNull(
+                  update_check_for_silent_updates_, window_app_id));
+          provider_->scheduler().FetchManifestAndUpdate(
+              *migrate_from->install_url, *migrate_from_manifest_id,
+              previous_time_for_silent_icon_update,
+              /*force_trusted_silent_update=*/false,
+              base::BindOnce(&ManifestUpdateManager::
+                                 OnMigrationFetchManifestAndUpdateComplete,
+                             weak_factory_.GetWeakPtr(), window_app_id));
         }
       }
     }
-    if (manifest->migrate_to &&
-        provider_->registrar_unsafe().AppMatches(
-            GenerateAppIdFromManifest(*manifest),
-            WebAppFilter::CanAppInstallTargetMigrationApp())) {
-      std::optional<webapps::ManifestId> source_manifest_id =
-          webapps::ManifestId::Create(manifest->id);
-      std::optional<webapps::ManifestId> target_manifest_id =
-          webapps::ManifestId::Create(manifest->migrate_to->id);
-      CHECK(source_manifest_id.has_value() && target_manifest_id.has_value());
-      provider_->scheduler().ScheduleInstallMigrateToApp(
-          *source_manifest_id, *target_manifest_id,
-          manifest->migrate_to->install_url, base::DoNothing());
-    }
+  }
+  if (manifest->migrate_to &&
+      provider_->registrar_unsafe().AppMatches(
+          GenerateAppIdFromManifest(*manifest),
+          WebAppFilter::CanAppInstallTargetMigrationApp())) {
+    std::optional<webapps::ManifestId> source_manifest_id =
+        webapps::ManifestId::Create(manifest->id);
+    std::optional<webapps::ManifestId> target_manifest_id =
+        webapps::ManifestId::Create(manifest->migrate_to->id);
+    CHECK(source_manifest_id.has_value() && target_manifest_id.has_value());
+    provider_->scheduler().ScheduleInstallMigrateToApp(
+        *source_manifest_id, *target_manifest_id,
+        manifest->migrate_to->install_url, base::DoNothing());
   }
 
   TriggerManifestUpdateProcess(web_contents, app_id);

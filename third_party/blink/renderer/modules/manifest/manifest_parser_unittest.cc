@@ -5356,9 +5356,6 @@ TEST_F(ManifestParserTest, ParsePreferRelatedApplicationsParseRules) {
 }
 
 TEST_F(ManifestParserTest, MigrateToParseRules) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kWebAppMigrationApi);
-
   // If no migrate_to, null.
   {
     auto& manifest = ParseManifest(R"({})");
@@ -5477,9 +5474,6 @@ TEST_F(ManifestParserTest, MigrateToParseRules) {
 }
 
 TEST_F(ManifestParserTest, MigrateFromParseRules) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kWebAppMigrationApi);
-
   // If no migrate_from, empty.
   {
     auto& manifest = ParseManifest(R"({})");

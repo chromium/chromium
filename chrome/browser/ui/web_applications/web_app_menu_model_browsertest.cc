@@ -170,8 +170,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMenuModelBrowserTest, HasPendingUpdate) {
 
 class WebAppMenuModelMigrationBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebAppMenuModelMigrationBrowserTest()
-      : WebAppBrowserTestBase({blink::features::kWebAppMigrationApi}, {}) {}
+  WebAppMenuModelMigrationBrowserTest() = default;
   ~WebAppMenuModelMigrationBrowserTest() override = default;
 };
 

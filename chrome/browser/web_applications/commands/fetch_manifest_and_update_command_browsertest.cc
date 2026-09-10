@@ -63,13 +63,6 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandTest, BasicUpdate) {
 
 class FetchManifestAndUpdateCommandMigrationTest
     : public FetchManifestAndUpdateCommandTest {
- public:
-  FetchManifestAndUpdateCommandMigrationTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kWebAppMigrationApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,

@@ -175,9 +175,6 @@ class InstallAppLocallyCommandTest : public WebAppTest {
  private:
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppMigrationApi};
 };
 
 TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {

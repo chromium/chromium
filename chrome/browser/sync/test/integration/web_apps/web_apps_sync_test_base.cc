@@ -25,7 +25,6 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif
-  enabled_features.push_back(blink::features::kWebAppMigrationApi);
 
   scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }

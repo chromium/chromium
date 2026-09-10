@@ -45,8 +45,7 @@ namespace web_app {
 class WebAppBlockedMigrationInfoBarDelegateBrowserTest
     : public WebAppBrowserTestBase {
  public:
-  WebAppBlockedMigrationInfoBarDelegateBrowserTest()
-      : WebAppBrowserTestBase({blink::features::kWebAppMigrationApi}, {}) {}
+  WebAppBlockedMigrationInfoBarDelegateBrowserTest() = default;
   WebAppBlockedMigrationInfoBarDelegateBrowserTest(
       const WebAppBlockedMigrationInfoBarDelegateBrowserTest&) = delete;
   WebAppBlockedMigrationInfoBarDelegateBrowserTest& operator=(
@@ -328,11 +327,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
 class WebAppBlockedMigrationInfoBarDelegateUiTest
     : public SupportsTestUi<WebAppBrowserTestBase, TestBrowserUi> {
  public:
-  WebAppBlockedMigrationInfoBarDelegateUiTest()
-      : SupportsTestUi<WebAppBrowserTestBase, TestBrowserUi>(
-            std::vector<base::test::FeatureRef>{
-                blink::features::kWebAppMigrationApi},
-            std::vector<base::test::FeatureRef>{}) {}
+  WebAppBlockedMigrationInfoBarDelegateUiTest() = default;
 
   void ShowUi(const std::string& name) override {
     ASSERT_TRUE(embedded_test_server()->Start());

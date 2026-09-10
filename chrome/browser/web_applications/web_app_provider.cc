@@ -562,9 +562,7 @@ void WebAppProvider::OnSyncBridgeReady(
           },
           AsWeakPtr()));
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
-    scheduler().ScheduleResolveWebAppPendingMigrationInfo(base::DoNothing());
-  }
+  scheduler().ScheduleResolveWebAppPendingMigrationInfo(base::DoNothing());
 
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kShouldGarbageCollectStoragePartitions)) {

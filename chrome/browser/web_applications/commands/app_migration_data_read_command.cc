@@ -51,7 +51,6 @@ void AppMigrationDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
   const WebAppRegistrar& registrar = lock_->registrar();
 
-  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
   if (!registrar.AppMatches(old_app_id_,
                             WebAppFilter::IsAppValidMigrationSource()) ||
       !registrar.GetInstallState(new_app_id_).has_value()) {

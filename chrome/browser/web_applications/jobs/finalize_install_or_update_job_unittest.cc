@@ -160,10 +160,7 @@ class TestInstallManagerObserver : public WebAppInstallManagerObserver {
 
 class FinalizeInstallOrUpdateJobTest : public WebAppTest {
  public:
-  FinalizeInstallOrUpdateJobTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
-  }
+  FinalizeInstallOrUpdateJobTest() = default;
   FinalizeInstallOrUpdateJobTest(const FinalizeInstallOrUpdateJobTest&) =
       delete;
   FinalizeInstallOrUpdateJobTest& operator=(
@@ -255,7 +252,6 @@ class FinalizeInstallOrUpdateJobTest : public WebAppTest {
   raw_ptr<MockWebAppCommandScheduler> mock_scheduler_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 

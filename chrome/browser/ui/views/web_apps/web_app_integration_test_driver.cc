@@ -5110,7 +5110,6 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-  enabled_features.push_back(blink::features::kWebAppMigrationApi);
   enabled_features.push_back(features::kWebAppInstallDialog);
   disabled_features.push_back(
       features::kDesktopPWAsWindowControlsOverlayWithNoToggle);

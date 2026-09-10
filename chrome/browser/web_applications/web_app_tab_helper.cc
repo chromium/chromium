@@ -189,8 +189,7 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
       std::move(window_app_id_);
   window_app_id_ = std::move(window_app_id);
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
-      (previous_window_app_id != window_app_id_)) {
+  if (previous_window_app_id != window_app_id_) {
     MaybeShowBlockedMigrationInfoBar();
   }
 

@@ -53,12 +53,6 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
   };
 
-  ApplyManifestMigrationCommandTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
-  }
-  ~ApplyManifestMigrationCommandTest() override = default;
-
   void SetUp() override {
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
@@ -214,7 +208,6 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<FakeWebAppOriginAssociationManager> association_manager_ = nullptr;
 };
 

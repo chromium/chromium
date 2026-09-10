@@ -288,12 +288,7 @@ content::EvalJsResult EvalFullscreenRequest(
 
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
-  WebAppFrameToolbarBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{blink::features::kWebAppMigrationApi, {}}},
-        /*disabled_features=*/{});
-  }
+  WebAppFrameToolbarBrowserTest() = default;
 
   WebAppFrameToolbarTestHelper* helper() {
     return &web_app_frame_toolbar_helper_;
@@ -324,7 +319,6 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.

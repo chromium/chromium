@@ -54,9 +54,7 @@ class ReplaceMigrationSuggestedAppBrowserTest
  public:
   ReplaceMigrationSuggestedAppBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebAppMigrationApi,
-         blink::features::kWebAppInstallation},
-        {});
+        {blink::features::kWebAppInstallation}, {});
   }
   ~ReplaceMigrationSuggestedAppBrowserTest() override = default;
 

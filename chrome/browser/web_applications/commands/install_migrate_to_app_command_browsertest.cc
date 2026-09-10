@@ -29,18 +29,10 @@ class InstallMigrateToAppCommandBrowserTest : public WebAppBrowserTestBase {
   static constexpr std::string_view kMigrateToManifestId =
       "/web_apps/migration/migrate_to/manifest_id";
 
-  InstallMigrateToAppCommandBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
-  }
-
   webapps::AppId GetTargetAppId() {
     return GenerateAppIdFromManifestId(webapps::ManifestId(
         embedded_https_test_server().GetURL(kMigrateToManifestId)));
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InstallMigrateToAppCommandBrowserTest,

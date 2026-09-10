@@ -114,8 +114,6 @@ void ApplyManifestMigrationCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   all_apps_lock_ = std::move(lock);
 
-  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
-
   // Exit early if the source app cannot be migrated to a different app.
   if (!all_apps_lock_->registrar().AppMatches(
           source_app_id_, WebAppFilter::IsAppValidMigrationSource())) {

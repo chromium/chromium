@@ -43,8 +43,6 @@ class AppMigrationDataReadCommandTest : public WebAppTest {
  public:
   void SetUp() override {
     WebAppTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppMigrationApi);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -81,9 +79,6 @@ class AppMigrationDataReadCommandTest : public WebAppTest {
     PendingMigrationInfo info(manifest_id, MigrationBehavior::kSuggest);
     app->SetPendingMigrationInfo(info);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppMigrationDataReadCommandTest, SignificantIconChange) {

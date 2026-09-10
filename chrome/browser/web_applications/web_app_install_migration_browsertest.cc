@@ -45,9 +45,6 @@ class WebAppInstallMigrationBrowserTest : public WebAppBrowserTestBase {
         "target_from_source/manifest_id");
     WebAppBrowserTestBase::SetUp();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppMigrationApi};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
