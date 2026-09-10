@@ -2068,28 +2068,38 @@ bool TabsQueryFunction::MatchesTab(::tabs::TabInterface* candidate_tab,
     return false;
   }
 
-  bool check_title = query_info_.title && !query_info_.title->empty();
-  if (check_title || !target_url_patterns.is_empty()) {
-    // "title" and "url" properties are considered privileged data and can
-    // only be checked if the extension has the "tabs" permission or it has
-    // access to the WebContents's origin. Otherwise, this tab is considered
-    // not matched.
-    if (!extension_->permissions_data()->HasAPIPermissionForTab(
-            ExtensionTabUtil::GetTabId(web_contents),
-            mojom::APIPermissionID::kTab) &&
-        !extension_->permissions_data()->HasHostPermission(
-            web_contents->GetURL())) {
+  // "title" and "url" properties are considered privileged data and can
+  // only be checked if the extension has access to the tab's data.
+  // Otherwise, this tab is considered not matched.
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension(), source_context_type(),
+                                            web_contents);
+  if (query_info_.title && !query_info_.title->empty()) {
+    bool matches_title =
+        scrub_tab_behavior.committed_info != ExtensionTabUtil::kScrubTabFully &&
+        base::MatchPattern(web_contents->GetTitle(),
+                           base::UTF8ToUTF16(*query_info_.title));
+    if (!matches_title) {
       return false;
     }
+  }
 
-    if (check_title &&
-        !base::MatchPattern(web_contents->GetTitle(),
-                            base::UTF8ToUTF16(*query_info_.title))) {
-      return false;
-    }
+  if (!target_url_patterns.is_empty()) {
+    bool matches_committed =
+        scrub_tab_behavior.committed_info != ExtensionTabUtil::kScrubTabFully &&
+        target_url_patterns.MatchesURL(web_contents->GetLastCommittedURL());
 
-    if (!target_url_patterns.is_empty() &&
-        !target_url_patterns.MatchesURL(web_contents->GetURL())) {
+    content::NavigationEntry* pending_entry =
+        web_contents->GetController().GetPendingEntry();
+    bool matches_pending =
+        pending_entry &&
+        scrub_tab_behavior.pending_info != ExtensionTabUtil::kScrubTabFully &&
+        target_url_patterns.MatchesURL(pending_entry->GetVirtualURL());
+
+    // Note: It's okay to indicate the tab matched even if it only has access
+    // to one of [pending, committed]. The tab will be scrubbed appropriately
+    // when it's returned below.
+    if (!matches_committed && !matches_pending) {
       return false;
     }
   }

@@ -9,6 +9,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
@@ -87,6 +88,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4402,6 +4404,127 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryWithHostPermission) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       QueryPermissionsWithPendingNavigation) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/slow");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Constants for testing.
+  static constexpr char kHostA[] = "a.example";
+  static constexpr char kHostB[] = "b.example";
+  static constexpr char kTitleA[] = "Site A Title";
+  static constexpr char kTitleB[] = "Site B Title";
+  // Query templates.
+  constexpr char kTitleQuery[] = R"([{"title": "%s"}])";
+  constexpr char kUrlQuery[] = R"([{"url": "*://%s/*"}])";
+  constexpr char kCombinedQuery[] = R"([{"title": "%s", "url": "*://%s/*"}])";
+
+  auto count_matches = [&](const Extension* ext,
+                           const std::string& query_json) {
+    return RunQueryFunction(ext, query_json.c_str()).size();
+  };
+
+  const GURL url_a = embedded_test_server()->GetURL(kHostA, "/empty.html");
+  const GURL url_b = embedded_test_server()->GetURL(kHostB, "/slow");
+
+  // Set up the initial tab.
+  tabs::TabInterface* tab = GetTabListInterface()->OpenTab(url_a, -1);
+  ASSERT_TRUE(tab);
+  content::WebContents* web_contents = tab->GetContents();
+  content::WaitForLoadStop(web_contents);
+  web_contents->GetController().GetVisibleEntry()->SetTitle(
+      base::ASCIIToUTF16(std::string(kTitleA)));
+  EXPECT_EQ(url_a, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(kTitleA, base::UTF16ToUTF8(web_contents->GetTitle()));
+
+  // Build test extensions with distinct permission scopes.
+  auto extension_a =
+      ExtensionBuilder("ExtensionA")
+          .AddHostPermission(base::StringPrintf("*://%s/*", kHostA))
+          .Build();
+  auto extension_b =
+      ExtensionBuilder("ExtensionB")
+          .AddHostPermission(base::StringPrintf("*://%s/*", kHostB))
+          .Build();
+  auto extension_tabs =
+      ExtensionBuilder("TabsPermission").AddAPIPermission("tabs").Build();
+
+  // Start in-flight browser-initiated navigation to url_b.
+  content::NavigationController::LoadURLParams params(url_b);
+  params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  web_contents->GetController().LoadURLWithParams(params);
+  response.WaitForRequest();
+
+  // Verify that the committed URL and title have not yet been updated to url_b.
+  EXPECT_EQ(url_a, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(url_b, web_contents->GetVisibleURL());
+  EXPECT_EQ(kTitleA, base::UTF16ToUTF8(web_contents->GetTitle()));
+
+  {
+    SCOPED_TRACE("Before navigation (A committed, B pending)");
+
+    // Extension A: matches committed A info, but cannot see pending URL for B.
+    EXPECT_EQ(1u, count_matches(extension_a.get(),
+                                base::StringPrintf(kTitleQuery, kTitleA)));
+    EXPECT_EQ(1u, count_matches(extension_a.get(),
+                                base::StringPrintf(kUrlQuery, kHostA)));
+    EXPECT_EQ(0u, count_matches(extension_a.get(),
+                                base::StringPrintf(kUrlQuery, kHostB)));
+
+    // Extension B: can match its pending URL, but cannot see committed title or
+    // URL from A.
+    EXPECT_EQ(0u, count_matches(extension_b.get(),
+                                base::StringPrintf(kUrlQuery, kHostA)));
+    EXPECT_EQ(1u, count_matches(extension_b.get(),
+                                base::StringPrintf(kUrlQuery, kHostB)));
+    // Bug fix for crbug.com/513741326: Cross-origin check (B cannot see A's
+    // committed info).
+    EXPECT_EQ(0u, count_matches(extension_b.get(),
+                                base::StringPrintf(kTitleQuery, kTitleA)));
+    EXPECT_EQ(
+        0u, count_matches(extension_b.get(),
+                          base::StringPrintf(kCombinedQuery, kTitleA, kHostB)));
+
+    // Tabs extension: has global access to all titles and URLs.
+    EXPECT_EQ(1u, count_matches(extension_tabs.get(),
+                                base::StringPrintf(kTitleQuery, kTitleA)));
+    EXPECT_EQ(1u, count_matches(extension_tabs.get(),
+                                base::StringPrintf(kUrlQuery, kHostA)));
+    EXPECT_EQ(1u, count_matches(extension_tabs.get(),
+                                base::StringPrintf(kUrlQuery, kHostB)));
+  }
+
+  // Complete the navigation.
+  response.Send(
+      base::StringPrintf("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
+                         "<html><head><title>%s</title></head></html>",
+                         kTitleB));
+  response.Done();
+  content::WaitForLoadStop(web_contents);
+
+  // Verify that the committed URL and title have been updated to url_b.
+  EXPECT_EQ(url_b, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(url_b, web_contents->GetVisibleURL());
+  EXPECT_EQ(kTitleB, base::UTF16ToUTF8(web_contents->GetTitle()));
+
+  {
+    SCOPED_TRACE("After navigation (B committed)");
+
+    // Extension A no longer matches anything on this tab.
+    EXPECT_EQ(0u, count_matches(extension_a.get(),
+                                base::StringPrintf(kTitleQuery, kTitleB)));
+    EXPECT_EQ(0u, count_matches(extension_a.get(),
+                                base::StringPrintf(kUrlQuery, kHostB)));
+
+    // Extension B now matches committed B title and URL.
+    EXPECT_EQ(1u, count_matches(extension_b.get(),
+                                base::StringPrintf(kTitleQuery, kTitleB)));
+    EXPECT_EQ(1u, count_matches(extension_b.get(),
+                                base::StringPrintf(kUrlQuery, kHostB)));
+  }
+}
+
 #if BUILDFLAG(ENABLE_PDF)
 // Test that using the PDF extension for tab updates is treated as a
 // renderer-initiated navigation. crbug.com/40085816
@@ -5726,13 +5849,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionTabsDiscardTest, DiscardEvent) {
                      )";
   }
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
-                     absl::StrFormat(R"(
+                     base::StringPrintf(R"(
       chrome.tabs.create({"url": "about:blank"}, function(created_tab) {
         chrome.tabs.%s.addListener(%s);
         chrome.tabs.discard(created_tab.id);
       });
                                      )",
-                                     event_name, event_listener));
+                                        event_name, event_listener));
 
   ExtensionTestMessageListener success_listener("success");
 
