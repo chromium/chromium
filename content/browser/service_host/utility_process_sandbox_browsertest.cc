@@ -43,7 +43,7 @@ std::vector<Sandbox> GetSandboxTypesToTest() {
     return types;
   }
 
-  for (Sandbox t = Sandbox::kNoSandbox; t <= Sandbox::kMaxValue;
+  for (Sandbox t = Sandbox::kMinValue; t <= Sandbox::kMaxValue;
        t = static_cast<Sandbox>(static_cast<int>(t) + 1)) {
     // These sandbox types can't be spawned in a utility process.
     if (t == Sandbox::kRenderer || t == Sandbox::kGpu ||
@@ -103,7 +103,6 @@ class UtilityProcessSandboxBrowserTest
         break;
 
       case Sandbox::kCdm:
-      case Sandbox::kOnDeviceModelExecution:
       case Sandbox::kPrintCompositor:
       case Sandbox::kService:
       case Sandbox::kServiceWithJit:
@@ -133,6 +132,11 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kNearby:
 #endif  // BUILDFLAG(IS_CHROMEOS)
       case Sandbox::kNetwork:
+      // kOnDeviceModelExecution launches from the unsandboxed zygote without
+      // Layer-1 user or PID namespaces, but is protected by Layer-2 Seccomp-BPF
+      // with syscall brokering. Therefore, only partial sandbox flags are
+      // expected.
+      case Sandbox::kOnDeviceModelExecution:
       case Sandbox::kPrintBackend:
       case Sandbox::kScreenAI:
       case Sandbox::kSpeechRecognition: {
