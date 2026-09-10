@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "components/contextual_tasks/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
@@ -242,6 +244,10 @@ TEST_F(AssistantAIMMediatorTest,
   EXPECT_TRUE(blocked_decision.ShouldCancelNavigation());
   EXPECT_EQ(url_loader_->load_new_tab_call_count, 1);
   EXPECT_EQ(url_loader_->last_params.web_params.url, third_party_url);
+  EXPECT_TRUE(url_loader_->last_params.web_params.is_renderer_initiated);
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      url_loader_->last_params.web_params.transition_type,
+      ui::PAGE_TRANSITION_LINK));
 }
 
 // Tests that the navigation policy decider intercepts and cancels
@@ -271,6 +277,49 @@ TEST_F(AssistantAIMMediatorTest, InterceptsThirdPartyURLAndOpensInNewTab) {
   EXPECT_TRUE(blocked_decision.ShouldCancelNavigation());
   EXPECT_EQ(url_loader_->load_new_tab_call_count, 1);
   EXPECT_EQ(url_loader_->last_params.web_params.url, third_party_url);
+  EXPECT_TRUE(url_loader_->last_params.web_params.is_renderer_initiated);
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      url_loader_->last_params.web_params.transition_type,
+      ui::PAGE_TRANSITION_LINK));
+}
+
+// Tests that the navigation policy decider cancels navigation to non-HTTP/HTTPS
+// URLs (such as about: or chrome://) without opening a new tab.
+TEST_F(AssistantAIMMediatorTest, CancelsNonHttpOrHttpsURLWithoutOpeningNewTab) {
+  id<CRWWebStatePolicyDecider> policy_decider =
+      static_cast<id<CRWWebStatePolicyDecider>>(mediator_);
+
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+
+  const GURL test_urls[] = {
+      GURL("about:version"),
+      GURL("chrome://flags"),
+      GURL("javascript:alert(1)"),
+      GURL("file:///etc/passwd"),
+  };
+
+  for (const GURL& test_url : test_urls) {
+    base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+
+    [policy_decider
+        shouldAllowRequest:[NSURLRequest
+                               requestWithURL:net::NSURLWithGURL(test_url)]
+               requestInfo:web::WebStatePolicyDecider::RequestInfo(
+                               ui::PageTransition::PAGE_TRANSITION_LINK,
+                               /*target_frame_is_main=*/true,
+                               /*target_frame_is_cross_origin=*/true,
+                               /*target_window_is_cross_origin=*/false,
+                               /*is_user_initiated=*/true,
+                               /*user_tapped_recently=*/true)
+           decisionHandler:base::CallbackToBlock(future.GetCallback())];
+    EXPECT_TRUE(future.Get().ShouldCancelNavigation());
+    EXPECT_EQ(url_loader_->load_new_tab_call_count, 0);
+  }
+
+  [mock_container_handler_ verify];
 }
 
 // Tests that the navigation policy decider allows authorized Google

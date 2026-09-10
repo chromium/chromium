@@ -48,6 +48,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
 @interface AssistantAIMMediator () <CRWWebFramesManagerObserver,
@@ -242,10 +243,11 @@
   // the main browser instead.
   if (requestInfo.target_frame_is_main) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
-    // Filter out about:blank initialization navigations to prevent spawning
-    // empty tabs in the main browser upon loading the Assistant AIM sheet.
-    if (URL.is_valid() && !URL.IsAboutBlank()) {
+    // Only replay valid HTTP or HTTPS URLs in the main browser.
+    if (URL.is_valid() && URL.SchemeIsHTTPOrHTTPS()) {
       UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+      params.web_params.is_renderer_initiated = true;
+      params.web_params.transition_type = ui::PAGE_TRANSITION_LINK;
       _urlLoader->Load(params);
       [_containerHandler
           animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
