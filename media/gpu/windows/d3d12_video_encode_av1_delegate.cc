@@ -431,7 +431,8 @@ aom::AV1RateControlRtcConfig ConvertToRateControlConfig(
     const VideoBitrateAllocation& bitrate_allocation,
     const D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC& resolution,
     uint32_t frame_rate,
-    int num_temporal_layers) {
+    int num_temporal_layers,
+    uint8_t bit_depth) {
   aom::AV1RateControlRtcConfig rc_config{};
   // Default value from
   // //third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc.
@@ -446,6 +447,7 @@ aom::AV1RateControlRtcConfig ConvertToRateControlConfig(
 
   rc_config.width = resolution.Width;
   rc_config.height = resolution.Height;
+  rc_config.bit_depth = bit_depth;
   rc_config.target_bandwidth = bitrate_allocation.GetSumBps() / 1000.;
   rc_config.framerate = frame_rate;
   rc_config.max_quantizer = kAV1MaxQuantizer;
@@ -891,11 +893,12 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
       .FeatureFlags = enabled_features_,
       .OrderHintBitsMinus1 = kDefaultOrderHintBitsMinus1};
 
+  const uint8_t bit_depth = input_format_ == DXGI_FORMAT_P010 ? 10 : 8;
   if (config.bitrate.mode() == Bitrate::Mode::kConstant ||
       config.bitrate.mode() == Bitrate::Mode::kVariable) {
-    software_brc_ = aom::AV1RateControlRTC::Create(
-        ConvertToRateControlConfig(is_screen_, bitrate_allocation_, input_size_,
-                                   config.framerate, GetNumTemporalLayers()));
+    software_brc_ = aom::AV1RateControlRTC::Create(ConvertToRateControlConfig(
+        is_screen_, bitrate_allocation_, input_size_, config.framerate,
+        GetNumTemporalLayers(), bit_depth));
     rate_control_ = D3D12VideoEncoderRateControl::CreateCqp(
         26 /*i_frame_qp*/, 30 /*p_frame_qp*/, 30 /*b_frame_qp*/);
   }
@@ -979,8 +982,7 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
             "Failed to initialize DPB."};
   }
   sequence_header_ =
-      FillAV1BuilderSequenceHeader(GetNumTemporalLayers(), profile,
-                                   input_format_ == DXGI_FORMAT_P010 ? 10 : 8,
+      FillAV1BuilderSequenceHeader(GetNumTemporalLayers(), profile, bit_depth,
                                    input_size_, tier_level, enabled_features_);
   picture_id_ = -1;
   current_rate_control_ = rate_control_;
@@ -1010,7 +1012,7 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(
   if (bitrate_allocation != bitrate_allocation_ || framerate != framerate_) {
     if (!software_brc_->UpdateRateControl(ConvertToRateControlConfig(
             is_screen_, bitrate_allocation, input_size_, framerate,
-            GetNumTemporalLayers()))) {
+            GetNumTemporalLayers(), sequence_header_.bit_depth))) {
       LOG(ERROR) << "Failed to update rate control parameters";
       return false;
     }
@@ -1127,11 +1129,6 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
   // Enable SCC tools will turn off CDEF, loop filter, etc on I-frame.
   if (!picture_ctrl_.allow_intrabc) {
     if (software_brc_) {
-      // TODO(crbug.com/537818862): these levels are 8 bit only. libaom's RTC
-      // rate controller hardcodes `AOM_BITS_8` and `AomAV1RateControlRtcConfig`
-      // has no bit depth field, so 10 bit streams are filtered too weakly here.
-      // Fixing this needs a libaom change to plumb the bit depth through, see
-      // also https://aomedia.issues.chromium.org/issues/544795255.
       const aom::AV1LoopfilterLevel lf = software_brc_->GetLoopfilterLevel();
       base::span(picture_params_.LoopFilter.LoopFilterLevel)[0] =
           base::span(lf.filter_level)[0];
