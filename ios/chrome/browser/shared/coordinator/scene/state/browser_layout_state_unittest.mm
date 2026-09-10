@@ -49,6 +49,8 @@ TEST_F(BrowserLayoutStateTest, UpdatesToolbarPositionAndNotifiesObservers) {
   [layout_state_ addObserver:mock_observer];
 
   OCMExpect([mock_observer browserLayoutState:layout_state_
+                    willChangeToolbarPosition:ToolbarPosition::kBottom]);
+  OCMExpect([mock_observer browserLayoutState:layout_state_
                      didChangeToolbarPosition:ToolbarPosition::kBottom]);
 
   [layout_state_
