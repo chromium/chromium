@@ -20,6 +20,9 @@
 
 namespace webnn {
 
+// The maximum rank of any WebNN operand.
+inline constexpr size_t kMaxTensorRank = 8;
+
 enum class OperandDataType {
   kFloat32,
   kFloat16,
@@ -52,7 +55,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
     // TODO(crbug.com/329482489): Specify the max rank of an operand. Consider
     // exposing different ranks for different backends (e.g. Core ML supports
     // only up to rank 5).
-    if (shape.size() > 8) {
+    if (shape.size() > kMaxTensorRank) {
       return base::unexpected(
           "Invalid descriptor: The maximum rank of an operand is 8.");
     }
