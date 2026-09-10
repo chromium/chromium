@@ -105,6 +105,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
             <button id="lensSearchButton" class="searchbox-icon-button"
                 tabindex="${this.virtualFocusEnabled &&
                     this.dropdownIsVisible ? -1 : 0}"
+                @pointerdown="${this.onLensSearchPointerdown_}"
+                @pointercancel="${this.onLensSearchPointercancel_}"
                 @click="${this.onLensSearchClick_}"
                 title="${this.i18n('lensSearchButtonLabel')}">
             </button>

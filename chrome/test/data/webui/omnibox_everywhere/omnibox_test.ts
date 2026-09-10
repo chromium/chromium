@@ -479,6 +479,115 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       });
 
   test(
+      'clicking lens button again toggles it off without calling ' +
+          'showScreenshotMenu again',
+      async () => {
+        const lensButton =
+            omnibox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
+        assertTrue(!!lensButton);
+        assertFalse(omnibox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertTrue(omnibox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertFalse(omnibox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+      });
+
+  test(
+      'pointerdown on lens button while open suppresses reopening on click ' +
+          'even after onScreenshotMenuClosed',
+      async () => {
+        const lensButton =
+            omnibox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
+        assertTrue(!!lensButton);
+
+        lensButton.click();
+        await microtasksFinished();
+        assertTrue(omnibox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+
+        lensButton.dispatchEvent(new PointerEvent('pointerdown', {
+          bubbles: true,
+          composed: true,
+          button: 0,
+        }));
+        testProxy.page.onScreenshotMenuClosed();
+        await microtasksFinished();
+        assertFalse(omnibox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertFalse(omnibox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+      });
+
+  test(
+      'non-primary pointerdown on lens button does not suppress reopening',
+      async () => {
+        const lensButton =
+            omnibox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
+        assertTrue(!!lensButton);
+
+        lensButton.click();
+        await microtasksFinished();
+        assertTrue(omnibox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+
+        lensButton.dispatchEvent(new PointerEvent('pointerdown', {
+          bubbles: true,
+          composed: true,
+          button: 2,
+        }));
+        testProxy.page.onScreenshotMenuClosed();
+        await microtasksFinished();
+        assertFalse(omnibox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertTrue(omnibox.isScreenshotMenuOpen);
+        assertEquals(2, testProxy.handler.getCallCount('showScreenshotMenu'));
+      });
+
+  test('pointercancel on lens button resets suppression', async () => {
+    const lensButton =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
+    assertTrue(!!lensButton);
+
+    lensButton.click();
+    await microtasksFinished();
+    assertTrue(omnibox.isScreenshotMenuOpen);
+    assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+
+    lensButton.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      composed: true,
+      button: 0,
+    }));
+    lensButton.dispatchEvent(new PointerEvent('pointercancel', {
+      bubbles: true,
+      composed: true,
+    }));
+    testProxy.page.onScreenshotMenuClosed();
+    await microtasksFinished();
+    assertFalse(omnibox.isScreenshotMenuOpen);
+
+    lensButton.click();
+    await microtasksFinished();
+
+    assertTrue(omnibox.isScreenshotMenuOpen);
+    assertEquals(2, testProxy.handler.getCallCount('showScreenshotMenu'));
+  });
+
+  test(
       'stepCyclesSelection returns false to cycle within popup like Omnibox',
       () => {
         const match = createSearchMatchForTesting();
@@ -830,6 +939,57 @@ suite('OmniboxEverywhereComposeboxTest', () => {
 
         assertFalse(composebox.isScreenshotMenuOpen);
         assertFalse(lensContainer.classList.contains('menu-open'));
+      });
+
+  test(
+      'clicking lens button in composebox again toggles it off without ' +
+          'calling showScreenshotMenu again',
+      async () => {
+        const lensButton = composebox.shadowRoot.querySelector<HTMLElement>(
+            '#lensSearchButton');
+        assertTrue(!!lensButton);
+        assertFalse(composebox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertTrue(composebox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertFalse(composebox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+      });
+
+  test(
+      'pointerdown on composebox lens button while open suppresses ' +
+          'reopening on click even after onScreenshotMenuClosed',
+      async () => {
+        const lensButton = composebox.shadowRoot.querySelector<HTMLElement>(
+            '#lensSearchButton');
+        assertTrue(!!lensButton);
+
+        lensButton.click();
+        await microtasksFinished();
+        assertTrue(composebox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+
+        lensButton.dispatchEvent(new PointerEvent('pointerdown', {
+          bubbles: true,
+          composed: true,
+          button: 0,
+        }));
+        testProxy.page.onScreenshotMenuClosed();
+        await microtasksFinished();
+        assertFalse(composebox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertFalse(composebox.isScreenshotMenuOpen);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
       });
 });
 

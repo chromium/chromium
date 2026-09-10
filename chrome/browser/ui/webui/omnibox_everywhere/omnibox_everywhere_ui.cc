@@ -651,6 +651,7 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
     const gfx::Rect& anchor_rect,
     base::WeakPtr<ContextualSearchboxScreenshareController> controller) {
   if (screenshot_menu_runner_ && screenshot_menu_runner_->IsRunning()) {
+    screenshot_menu_runner_->Cancel();
     if (controller) {
       controller->OnScreenshotMenuClosed();
     }
@@ -716,7 +717,8 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
 
 void OmniboxEverywhereUI::OnScreenshotMenuClosed() {
   if (active_screenshot_controller_) {
-    active_screenshot_controller_->OnScreenshotMenuClosed();
+    auto controller = std::move(active_screenshot_controller_);
+    controller->OnScreenshotMenuClosed();
   }
 }
 

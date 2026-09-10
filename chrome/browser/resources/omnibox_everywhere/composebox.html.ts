@@ -144,6 +144,8 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                 <div class="searchbox-icon-button-container lens ${
                     this.isScreenshotMenuOpen ? 'menu-open' : ''}">
                   <button id="lensSearchButton" class="searchbox-icon-button"
+                      @pointerdown="${this.onLensSearchPointerdown_}"
+                      @pointercancel="${this.onLensSearchPointercancel_}"
                       @click="${this.onLensSearchClick_}"
                       title="${this.i18n('lensSearchButtonLabel')}">
                   </button>
