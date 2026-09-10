@@ -13,24 +13,24 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace translate {
 
-class TranslatePageActionInteractiveUiTest : public InProcessBrowserTest {
+class TranslatePageActionInteractiveUiTest : public InteractiveBrowserTest {
  public:
   TranslatePageActionInteractiveUiTest() = default;
 
@@ -41,12 +41,9 @@ class TranslatePageActionInteractiveUiTest : public InProcessBrowserTest {
 
   ~TranslatePageActionInteractiveUiTest() override = default;
 
-  // Returns the page action view.
-  page_actions::PageActionViewInterface* GetTranslateIcon() {
-    ToolbarButtonProvider* provider =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-    return provider->GetPageActionViewInterface(kActionShowTranslate);
+  page_actions::PageActionTestAccessor GetTranslateIcon() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionShowTranslate);
   }
 
   views::BubbleDialogDelegate* GetBubble() const {
@@ -76,49 +73,49 @@ class TranslatePageActionInteractiveUiTest : public InProcessBrowserTest {
 
     return widget;
   }
+
+  MultiStep WaitForPartialTranslateBubble(bool visible) {
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                        kPartialTranslateBubbleVisible);
+
+    return Steps(
+        PollState(kPartialTranslateBubbleVisible,
+                  [this]() { return GetPartialTranslateBubble() != nullptr; }),
+        WaitForState(kPartialTranslateBubbleVisible, visible),
+        StopObservingState(kPartialTranslateBubbleVisible));
+  }
 };
 
 // Verifies that clicking the Translate icon closes the Partial Translate bubble
 // and results in neither of the two Translate bubbles being shown.
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        ClosePartialTranslateBubble) {
-  // Show the Translate icon.
-  ChromeTranslateClient::FromWebContents(
-      browser()->GetTabStripModel()->GetActiveWebContents())
-      ->GetTranslateManager()
-      ->GetLanguageState()
-      ->SetTranslateEnabled(true);
-  auto* translate_icon = GetTranslateIcon();
-  EXPECT_THAT(translate_icon, ::testing::NotNull());
-
   TranslateBubbleController* controller =
       TranslateBubbleController::From(browser());
   auto anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   views::View* anchor_view = anchor_widget->GetContentsView();
-  controller->SetAnchorViewForTesting(anchor_view);
-  controller->StartPartialTranslate("fr", "en", std::u16string());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(GetPartialTranslateBubble(), ::testing::NotNull());
 
-  // Clicking the icon should close the Partial Translate bubble and should not
-  // open the Full Page Translate bubble.
-  views::View* translate_icon_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kTranslatePageActionElementId,
-          views::ElementTrackerViews::GetContextForView(
-              BrowserView::GetBrowserViewForBrowser(browser())));
-  EXPECT_THAT(translate_icon_view, ::testing::NotNull());
-
-  base::RunLoop loop;
-  ui_test_utils::MoveMouseToCenterAndClick(
-      translate_icon_view, ui_controls::LEFT,
-      ui_controls::DOWN | ui_controls::UP, loop.QuitClosure());
-  loop.Run();
-
-  EXPECT_THAT(GetPartialTranslateBubble(), ::testing::IsNull());
-  EXPECT_THAT(GetBubble(), ::testing::IsNull());
-  controller->SetAnchorViewForTesting(nullptr);
+  RunTestSequence(
+      // Show the Translate icon.
+      Do([&]() {
+        ChromeTranslateClient::FromWebContents(
+            browser()->GetTabStripModel()->GetActiveWebContents())
+            ->GetTranslateManager()
+            ->GetLanguageState()
+            ->SetTranslateEnabled(true);
+      }),
+      WaitForShow(kTranslatePageActionElementId), Do([&]() {
+        controller->SetAnchorViewForTesting(anchor_view);
+        controller->StartPartialTranslate("fr", "en", std::u16string());
+      }),
+      WaitForPartialTranslateBubble(/*visible=*/true),
+      // Clicking the icon should close the Partial Translate bubble and should
+      // not open the Full Page Translate bubble.
+      MoveMouseTo(kTranslatePageActionElementId), ClickMouse(),
+      WaitForPartialTranslateBubble(/*visible=*/false),
+      CheckResult([&]() { return GetBubble(); }, ::testing::IsNull()),
+      Do([&]() { controller->SetAnchorViewForTesting(nullptr); }));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
@@ -130,10 +127,10 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
 
-  EXPECT_EQ(GetTranslateIcon()->GetAccessibleName(),
+  EXPECT_EQ(GetTranslateIcon().GetAccessibleName(),
             BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_SHOW_TRANSLATE)));
-  EXPECT_EQ(GetTranslateIcon()->GetTooltipText(),
+  EXPECT_EQ(GetTranslateIcon().GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
 }
 
