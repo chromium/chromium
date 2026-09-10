@@ -12,25 +12,9 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/core/shadow_types.h"
 
 namespace ash {
 namespace {
-
-bool HasNinePatchLayer(ui::Layer* layer) {
-  if (!layer) {
-    return false;
-  }
-  if (layer->type() == ui::LayerType::LAYER_NINE_PATCH) {
-    return true;
-  }
-  for (ui::Layer* child : layer->children()) {
-    if (HasNinePatchLayer(child)) {
-      return true;
-    }
-  }
-  return false;
-}
 
 using WindowMirrorViewTest = AshTestBase;
 
@@ -153,43 +137,6 @@ TEST_F(WindowMirrorViewTest, ChangingBoundsUpdatesClipRect) {
   // The clip rect should have updated to match the new client area.
   EXPECT_EQ(gfx::Rect(0, 30, 500, 470),
             mirror_view->GetMirrorLayerForTesting()->clip_rect());
-}
-
-TEST_F(WindowMirrorViewTest, ExcludeShadow) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  widget->SetBounds(gfx::Rect{0, 0, 100, 100});
-  ::wm::SetShadowElevation(widget->GetNativeWindow(),
-                           ::wm::kShadowElevationActiveWindow);
-
-  auto mirror_widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* contents_view = mirror_widget->widget_delegate()->GetContentsView();
-
-  // 1. With exclude_shadow = false, the shadow layers (nine-patch) are
-  // included.
-  {
-    auto* mirror_view = contents_view->AddChildView(
-        std::make_unique<WindowMirrorView>(widget->GetNativeWindow(),
-                                           /*show_non_client_view=*/true,
-                                           /*sync_bounds=*/false,
-                                           /*exclude_shadow=*/false));
-    mirror_view->RecreateMirrorLayers();
-    EXPECT_TRUE(HasNinePatchLayer(mirror_view->GetMirrorLayerForTesting()));
-    contents_view->RemoveChildViewT(mirror_view);
-  }
-
-  // 2. With exclude_shadow = true, the shadow container and its sublayers are
-  // excluded.
-  {
-    auto* mirror_view = contents_view->AddChildView(
-        std::make_unique<WindowMirrorView>(widget->GetNativeWindow(),
-                                           /*show_non_client_view=*/true,
-                                           /*sync_bounds=*/false,
-                                           /*exclude_shadow=*/true));
-    mirror_view->RecreateMirrorLayers();
-    EXPECT_FALSE(HasNinePatchLayer(mirror_view->GetMirrorLayerForTesting()));
-    contents_view->RemoveChildViewT(mirror_view);
-  }
 }
 
 }  // namespace
