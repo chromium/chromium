@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
+import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertPreferenceScreenMatchesIndex;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.highlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeSearchQuery;
@@ -196,6 +197,26 @@ public class ManageSyncSettingsTest {
                     entry(
                             UserSelectableType.THEMES,
                             ManageSyncSettings.PREF_ACCOUNT_SECTION_THEMES_TOGGLE));
+
+    /**
+     * Preference keys to bypass in the parity check:
+     *
+     * <ul>
+     *   <li>Hidden preferences that are currently (or erroneously) indexed as searchable entries
+     *       (failing the reverse parity check).
+     *   <li>Temporary known discrepancies tracked by bugs.
+     * </ul>
+     */
+    private static final Set<String> ALLOWLISTED_PREFERENCE_KEYS =
+            Set.of(
+                    ManageSyncSettings.PREF_IDENTITY_ERROR_CARD_PREFERENCE,
+                    ManageSyncSettings.PREF_BATCH_UPLOAD_CARD_PREFERENCE,
+
+                    // TODO(http://crbug.com/559486938): Remove once the bug is fixed.
+                    ManageSyncSettings.PREF_SIGN_OUT,
+
+                    // TODO(http://crbug.com/558260627): Remove once the bug is fixed.
+                    ManageSyncSettings.PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
 
     private SettingsActivityInterface mSettingsActivityInterface;
 
@@ -1707,30 +1728,23 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    public void testSearchPersonalizationAndLinkingTitle_signedIn_nonEea() {
+    public void testPreferenceScreenMatchesSearchIndex_signedIn_nonEea() {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
-        mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
 
-        typeSearchQuery("personalization");
-
-        onViewWaiting(withText(R.string.sign_in_personalize_google_services_title))
-                .check(matches(isDisplayed()));
+        assertPreferenceScreenMatchesIndex(fragment, ALLOWLISTED_PREFERENCE_KEYS);
     }
 
     @Test
     @SmallTest
-    public void testSearchPersonalizationAndLinkingTitle_signedIn_eea() {
+    public void testPreferenceScreenMatchesSearchIndex_signedIn_eea() {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
-        mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
 
-        typeSearchQuery("linking");
-
-        onViewWaiting(withText(R.string.sign_in_personalize_google_services_title_eea))
-                .check(matches(isDisplayed()));
+        assertPreferenceScreenMatchesIndex(fragment, ALLOWLISTED_PREFERENCE_KEYS);
     }
-
 
     private void assertOpensIncognitoSession(
             boolean openAsWindow, Matcher<Intent> expectedIntentMatcher) {

@@ -123,7 +123,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     public static final String PREF_IDENTITY_ERROR_CARD_PREFERENCE = "identity_error_card";
 
     @VisibleForTesting
-    private static final String PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR =
+    public static final String PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR =
             "settings_sync_disabled_by_administrator";
 
     @VisibleForTesting
