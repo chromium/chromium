@@ -4,15 +4,20 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.PictureInPictureParams;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.PowerManager;
 
 import org.junit.Before;
@@ -43,6 +48,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.media_session.mojom.MediaSession.SuspendType;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Test FullscreenVideoPictureInPictureController. */
@@ -138,6 +144,37 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         setHasFullscreenVideo(false);
         mController.attemptPictureInPicture();
         verify(mActivity, times(0)).enterPictureInPictureMode(any());
+    }
+
+    /** Verify that having a registered no-pip component in recent tasks blocks PiP. */
+    @Test
+    public void pictureInPictureBlockedForRegisteredNoPipComponent() {
+        setHasFullscreenVideo(true);
+        String testActivityName = "org.chromium.chrome.browser.media.TestNoPipActivity";
+        FullscreenVideoPictureInPictureController.registerNoPipComponentName(testActivityName);
+
+        ActivityManager activityManager = mock(ActivityManager.class);
+        ActivityManager.AppTask appTask = mock(ActivityManager.AppTask.class);
+        ActivityManager.RecentTaskInfo taskInfo = new ActivityManager.RecentTaskInfo();
+        taskInfo.topActivity =
+                new ComponentName(ContextUtils.getApplicationContext(), testActivityName);
+        when(appTask.getTaskInfo()).thenReturn(taskInfo);
+        when(activityManager.getAppTasks()).thenReturn(List.of(appTask));
+        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(activityManager);
+
+        mController.attemptPictureInPicture();
+        verify(mActivity, times(0)).enterPictureInPictureMode(any());
+    }
+
+    /** Verify that disableAutoPictureInPicture disables auto-enter. */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void disableAutoPictureInPicture() {
+        FullscreenVideoPictureInPictureController.disableAutoPictureInPicture(mActivity);
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
+        assertFalse(captor.getValue().isAutoEnterEnabled());
     }
 
     /** After starting pip, dismiss should move the task to back if it's been long enough. */

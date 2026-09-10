@@ -147,12 +147,27 @@ public class AndroidTaskUtils {
 
     /**
      * Get all recent tasks with component name matching any of the given names.
+     *
      * @param context the Android Context
      * @param componentsAccepted the set of names accepted
      * @return all matching recent {@link AppTask} and their respective {@link RecentTaskInfo}
      */
     public static Set<Pair<AppTask, RecentTaskInfo>> getRecentAppTasksMatchingComponentNames(
             Context context, Set<String> componentsAccepted) {
+        return getRecentAppTasksMatchingComponentNames(
+                context, componentsAccepted, /* matchTopAndBaseActivities= */ false);
+    }
+
+    /**
+     * Get all recent tasks with component name matching any of the given names.
+     *
+     * @param context the Android Context
+     * @param componentsAccepted the set of names accepted
+     * @param matchTopAndBaseActivities whether to also match top and base activity class names
+     * @return all matching recent {@link AppTask} and their respective {@link RecentTaskInfo}
+     */
+    public static Set<Pair<AppTask, RecentTaskInfo>> getRecentAppTasksMatchingComponentNames(
+            Context context, Set<String> componentsAccepted, boolean matchTopAndBaseActivities) {
         HashSet<Pair<AppTask, RecentTaskInfo>> matchingTasks = new HashSet<>();
 
         ActivityManager manager =
@@ -163,7 +178,19 @@ public class AndroidTaskUtils {
             if (info == null) continue;
             String componentName = AndroidTaskUtils.getTaskComponentName(task);
 
-            if (componentsAccepted.contains(componentName)) {
+            boolean matches = componentName != null && componentsAccepted.contains(componentName);
+            if (matchTopAndBaseActivities) {
+                matches =
+                        matches
+                                || (info.topActivity != null
+                                        && componentsAccepted.contains(
+                                                info.topActivity.getClassName()))
+                                || (info.baseActivity != null
+                                        && componentsAccepted.contains(
+                                                info.baseActivity.getClassName()));
+            }
+
+            if (matches) {
                 matchingTasks.add(Pair.create(task, info));
             }
         }

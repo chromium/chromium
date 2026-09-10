@@ -42,8 +42,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 /** A controller for entering Picture in Picture mode with fullscreen videos. */
 @NullMarked
@@ -122,10 +125,17 @@ public class FullscreenVideoPictureInPictureController {
     private static final boolean ENABLE_AUTO_ENTER =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
 
-    // Components names that won't trigger the pip mode. Use cases like notification clicks won't
-    // trigger pip.
-    private static final Set<String> NO_PIP_COMPONENT_NAMES =
-            Collections.singleton(NotificationIntentInterceptor.TrampolineActivity.class.getName());
+    // Component names that won't trigger the pip mode. Use cases like notification clicks or
+    // launching immersive video playback won't trigger pip.
+    private static final Set<String> sNoPipComponentNames =
+            Collections.synchronizedSet(new HashSet<>());
+
+    static {
+        sNoPipComponentNames.add(NotificationIntentInterceptor.TrampolineActivity.class.getName());
+    }
+
+    private static final Map<Activity, FullscreenVideoPictureInPictureController> sControllers =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     // If true, then we will use `setSourceRectHint()` to enable fancy transitions into pip.
     // However, since this also causes visible flicker especially when transitioning from landscape
@@ -174,6 +184,8 @@ public class FullscreenVideoPictureInPictureController {
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
         mPowerManager = (PowerManager) mActivity.getSystemService(Activity.POWER_SERVICE);
+
+        sControllers.put(mActivity, this);
 
         if (ENABLE_AUTO_ENTER) {
             addObserversIfNeeded();
@@ -243,8 +255,47 @@ public class FullscreenVideoPictureInPictureController {
 
     private boolean canStartPipBasedOnRecentTasks() {
         return AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
-                        mActivity, NO_PIP_COMPONENT_NAMES)
+                        mActivity, sNoPipComponentNames, /* matchTopAndBaseActivities= */ true)
                 .isEmpty();
+    }
+
+    /**
+     * Register a component class name that should prevent entering Picture-in-Picture mode when
+     * present in recent tasks.
+     *
+     * @param className The fully qualified class name to register.
+     */
+    public static void registerNoPipComponentName(String className) {
+        sNoPipComponentNames.add(className);
+    }
+
+    /**
+     * Disable auto-enter Picture-in-Picture immediately on the given activity (e.g. before
+     * launching an activity that should not trigger PiP).
+     *
+     * @param activity The activity on which to disable auto-PiP.
+     */
+    public static void disableAutoPictureInPicture(@Nullable Activity activity) {
+        if (!ENABLE_AUTO_ENTER || activity == null) {
+            return;
+        }
+
+        FullscreenVideoPictureInPictureController controller = sControllers.get(activity);
+        if (controller != null) {
+            controller.mIsAutoEnterAllowed = false;
+        }
+
+        if (!activity.getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            return;
+        }
+
+        try {
+            activity.setPictureInPictureParams(
+                    new PictureInPictureParams.Builder().setAutoEnterEnabled(false).build());
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Error disabling auto PiP", e);
+        }
     }
 
     /**
@@ -392,6 +443,7 @@ public class FullscreenVideoPictureInPictureController {
      * later, when the activity is restarted.
      */
     public void onDestroy() {
+        sControllers.remove(mActivity);
         removeObserversIfNeeded();
     }
 
