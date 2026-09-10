@@ -107,7 +107,8 @@ ComposeboxHandler::ComposeboxHandler(
                                                                   web_contents,
                                                                   this),
                         std::move(get_session_callback),
-                        std::move(clear_session_callback)) {}
+                        std::move(clear_session_callback),
+                        /*screenshare_delegate=*/nullptr) {}
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -118,13 +119,15 @@ ComposeboxHandler::ComposeboxHandler(
     content::WebContents* web_contents,
     std::unique_ptr<OmniboxClient> omnibox_client,
     GetSessionHandleCallback get_session_callback,
-    ClearSessionHandleCallback clear_session_callback)
+    ClearSessionHandleCallback clear_session_callback,
+    ContextualSearchboxScreenshareController::Delegate* screenshare_delegate)
     : ContextualSearchboxHandler(std::move(pending_searchbox_handler),
                                  std::move(pending_searchbox_page),
                                  profile,
                                  web_contents,
                                  std::move(omnibox_client),
-                                 std::move(get_session_callback)),
+                                 std::move(get_session_callback),
+                                 screenshare_delegate),
       clear_session_callback_(std::move(clear_session_callback)),
       handler_(this, std::move(pending_handler)) {
   // Set the callback for getting suggest inputs from the session.

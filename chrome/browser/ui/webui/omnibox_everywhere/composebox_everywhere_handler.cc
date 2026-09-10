@@ -45,7 +45,7 @@ ComposeboxEverywhereHandler::ComposeboxEverywhereHandler(
     content::WebContents* web_contents,
     GetSessionHandleCallback get_session_callback,
     ClearSessionHandleCallback clear_session_callback,
-    ScreenshareDelegate* screenshare_delegate)
+    ContextualSearchboxScreenshareController::Delegate* screenshare_delegate)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_searchbox_handler),
@@ -56,10 +56,9 @@ ComposeboxEverywhereHandler::ComposeboxEverywhereHandler(
                                                        web_contents,
                                                        this),
           std::move(get_session_callback),
-          std::move(clear_session_callback)),
-      service_(OmniboxEverywhereServiceFactory::GetForProfile(profile)) {
-  set_screenshare_delegate(screenshare_delegate);
-}
+          std::move(clear_session_callback),
+          screenshare_delegate),
+      service_(OmniboxEverywhereServiceFactory::GetForProfile(profile)) {}
 
 ComposeboxEverywhereHandler::~ComposeboxEverywhereHandler() = default;
 

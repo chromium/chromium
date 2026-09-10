@@ -4252,7 +4252,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #if !BUILDFLAG(IS_ANDROID)
 class MockScreenshareDelegate
-    : public ContextualSearchboxHandler::ScreenshareDelegate {
+    : public ContextualSearchboxScreenshareController::Delegate {
  public:
   MOCK_METHOD(void,
               ShowScreenshotMenu,
@@ -4264,14 +4264,14 @@ class MockScreenshareDelegate
 TEST_F(ContextualSearchboxHandlerTest, ShowScreenshotMenu_ForwardsToDelegate) {
   MockScreenshareDelegate delegate;
   EXPECT_CALL(delegate, ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4), testing::_));
-  handler().set_screenshare_delegate(&delegate);
+  handler().set_screenshare_delegate_for_testing(&delegate);
 
   handler().ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4));
 }
 
 TEST_F(ContextualSearchboxHandlerTest,
        ShowScreenshotMenu_NoDelegate_NotifiesClosed) {
-  handler().set_screenshare_delegate(nullptr);
+  handler().set_screenshare_delegate_for_testing(nullptr);
   EXPECT_CALL(mock_searchbox_page_, OnScreenshotMenuClosed());
   handler().ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4));
   mock_searchbox_page_.FlushForTesting();

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_screenshare_controller.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/mojom/omnibox_everywhere.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -20,11 +20,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/menus/simple_menu_model.h"
-#include "ui/webui/resources/cr_components/composebox/composebox.mojom-forward.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 
 class ComposeboxEverywhereHandler;
+class ContextualSearchboxHandler;
 class MostVisitedHandler;
 class MostVisitedPrefObserver;
 class OmniboxContextMenu;
@@ -70,7 +71,7 @@ class OmniboxEverywhereUI
       public omnibox_everywhere_debug::mojom::PageHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
-      public ContextualSearchboxHandler::ScreenshareDelegate,
+      public ContextualSearchboxScreenshareController::Delegate,
       public ui::SimpleMenuModel::Delegate {
  public:
   explicit OmniboxEverywhereUI(content::WebUI* web_ui);
@@ -161,7 +162,7 @@ class OmniboxEverywhereUI
   // or omnibox_handler_).
   ContextualSearchboxHandler* GetContextualSearchboxHandler() const;
 
-  // ContextualSearchboxHandler::ScreenshareDelegate:
+  // ContextualSearchboxScreenshareController::Delegate:
   void ShowScreenshotMenu(
       const gfx::Rect& anchor_rect,
       base::WeakPtr<ContextualSearchboxScreenshareController> controller)

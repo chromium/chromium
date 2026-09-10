@@ -512,7 +512,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     content::WebContents* web_contents,
     std::unique_ptr<OmniboxClient> client,
     GetSessionHandleCallback get_session_callback,
-    ScreenshareDelegate* screenshare_delegate)
+    ContextualSearchboxScreenshareController::Delegate* screenshare_delegate)
     : SearchboxHandler(std::move(pending_searchbox_handler),
                        std::move(pending_page),
                        profile,
@@ -671,14 +671,8 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
   }
 }
 
-ContextualSearchboxHandler::ScreenshareDelegate*
-ContextualSearchboxHandler::screenshare_delegate() const {
-  return screenshare_controller_ ? screenshare_controller_->delegate()
-                                 : nullptr;
-}
-
-void ContextualSearchboxHandler::set_screenshare_delegate(
-    ScreenshareDelegate* screenshare_delegate) {
+void ContextualSearchboxHandler::set_screenshare_delegate_for_testing(
+    ContextualSearchboxScreenshareController::Delegate* screenshare_delegate) {
   if (screenshare_controller_) {
     screenshare_controller_->set_delegate(screenshare_delegate);
   }

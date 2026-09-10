@@ -44,10 +44,6 @@
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
-namespace content {
-class NavigationHandle;
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
@@ -61,6 +57,10 @@ class OmniboxPopupDeactivationBlocker;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ComposeboxDriveSignInPromoController;
 #endif
+
+namespace content {
+class NavigationHandle;
+}
 
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
@@ -140,16 +140,9 @@ class ContextualSearchboxHandler
 #endif
 {
  public:
-  using ScreenshareDelegate =
-      ContextualSearchboxScreenshareController::Delegate;
-  using RegionCaptureSource = ScreenshareDelegate::RegionCaptureSource;
-
-  ScreenshareDelegate* screenshare_delegate() const;
-  void set_screenshare_delegate(ScreenshareDelegate* screenshare_delegate);
-
   using RecontextualizeTabCallback = base::OnceCallback<void(bool)>;
 
-  explicit ContextualSearchboxHandler(
+  ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_page,
@@ -157,7 +150,8 @@ class ContextualSearchboxHandler
       content::WebContents* web_contents,
       std::unique_ptr<OmniboxClient> client,
       GetSessionHandleCallback get_session_callback,
-      ScreenshareDelegate* screenshare_delegate = nullptr);
+      ContextualSearchboxScreenshareController::Delegate* screenshare_delegate =
+          nullptr);
 
   ~ContextualSearchboxHandler() override;
 
@@ -336,6 +330,9 @@ class ContextualSearchboxHandler
       const contextual_search::InputState& state) {
     OnInputStateChanged(state);
   }
+
+  void set_screenshare_delegate_for_testing(
+      ContextualSearchboxScreenshareController::Delegate* screenshare_delegate);
 
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldOpenInLensSidePanelForTesting(

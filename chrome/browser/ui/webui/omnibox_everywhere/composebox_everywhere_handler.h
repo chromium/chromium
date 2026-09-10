@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_COMPOSEBOX_EVERYWHERE_HANDLER_H_
 
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_screenshare_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -29,7 +30,7 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
       content::WebContents* web_contents,
       GetSessionHandleCallback get_session_callback,
       ClearSessionHandleCallback clear_session_callback,
-      ScreenshareDelegate* screenshare_delegate = nullptr);
+      ContextualSearchboxScreenshareController::Delegate* screenshare_delegate);
 
   ComposeboxEverywhereHandler(const ComposeboxEverywhereHandler&) = delete;
   ComposeboxEverywhereHandler& operator=(const ComposeboxEverywhereHandler&) =

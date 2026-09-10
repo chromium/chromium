@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_screenshare_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,7 +34,8 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
       content::WebUI* web_ui,
       OmniboxEverywhereService* service,
       GetSessionHandleCallback get_session_callback,
-      ScreenshareDelegate* screenshare_delegate = nullptr);
+      ContextualSearchboxScreenshareController::Delegate* screenshare_delegate =
+          nullptr);
 
   OmniboxEverywhereHandler(const OmniboxEverywhereHandler&) = delete;
   OmniboxEverywhereHandler& operator=(const OmniboxEverywhereHandler&) = delete;

@@ -125,7 +125,7 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
     content::WebUI* web_ui,
     OmniboxEverywhereService* service,
     GetSessionHandleCallback get_session_callback,
-    ScreenshareDelegate* screenshare_delegate)
+    ContextualSearchboxScreenshareController::Delegate* screenshare_delegate)
     : ContextualSearchboxHandler(
           std::move(pending_page_handler),
           std::move(pending_page),
