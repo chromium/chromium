@@ -180,6 +180,7 @@ void Surface::OnViewTransitionSaved(
   // Since the transition's Save directive is fulfilled, we can remove it as
   // dependency.
   view_transition_dependencies_.erase(transition_token);
+  deadline_->SetViewTransitionDeadline(base::TimeTicks());
 
   // Return early since there are still dependencies to be fulfilled.
   if (!view_transition_dependencies_.empty() ||
@@ -358,7 +359,12 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
                       surface_info_.id().ToString(), "ActivationDependencies",
                       std::move(traced_value));
 
-    deadline_->Set(ResolveFrameDeadline(pending_frame_data_->frame));
+    deadline_->SetFrameDeadline(
+        ResolveFrameDeadline(pending_frame_data_->frame));
+    if (features::UsePerDependencyDeadlines()) {
+      deadline_->SetViewTransitionDeadline(
+          ResolveViewTransitionDeadline(pending_frame_data_->frame));
+    }
     if (deadline_->HasDeadlinePassed()) {
       ActivatePendingFrameForDeadline();
     } else {
@@ -777,6 +783,23 @@ FrameDeadline Surface::ResolveFrameDeadline(
   return FrameDeadline(deadline.frame_start_time(), deadline_in_frames,
                        deadline.frame_interval(),
                        false /* use_default_lower_bound_deadline */);
+}
+
+base::TimeTicks Surface::ResolveViewTransitionDeadline(
+    const CompositorFrame& current_frame) {
+  if (view_transition_dependencies_.empty()) {
+    return base::TimeTicks();
+  }
+
+  if (!current_frame.metadata.view_transition_deadline_in_frames.has_value()) {
+    return base::TimeTicks();
+  }
+  uint32_t deadline_in_frames =
+      *current_frame.metadata.view_transition_deadline_in_frames;
+
+  const FrameDeadline& deadline = current_frame.metadata.deadline;
+  return deadline.frame_start_time() +
+         deadline_in_frames * deadline.frame_interval();
 }
 
 void Surface::UpdateActivationDependencies(

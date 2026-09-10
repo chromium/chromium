@@ -20,6 +20,7 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
+#include "components/viz/service/surfaces/surface_dependency_deadline.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -681,6 +682,108 @@ TEST_F(SurfaceTest, ReentrantSurfaceActivationStaleAllocationGroup) {
   // Step 5: Submit a new frame for S. UpdateActivationDependencies() iterates
   // `blocking_allocation_groups_` which shouldn't contain G1.
   s_support->SubmitCompositorFrame(s_lsid, build_frame({}, {}));
+}
+
+class SurfaceDependencyDeadlineTest : public testing::Test {
+ public:
+  SurfaceDependencyDeadlineTest() : deadline_(&test_clock_) {}
+  ~SurfaceDependencyDeadlineTest() override { deadline_.Cancel(); }
+
+ protected:
+  base::SimpleTestTickClock test_clock_;
+  SurfaceDependencyDeadline deadline_;
+};
+
+TEST_F(SurfaceDependencyDeadlineTest, DisabledFeatureOnlyUsesGlobalDeadline) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kPerDependencyDeadlines);
+
+  base::TimeTicks start_time = test_clock_.NowTicks();
+  FrameDeadline frame_deadline(start_time, 5u, base::Milliseconds(10),
+                               /*use_default_lower_bound_deadline=*/false);
+
+  deadline_.SetFrameDeadline(frame_deadline);
+
+  // At 40ms (before 50ms):
+  test_clock_.Advance(base::Milliseconds(40));
+  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+
+  // At 50ms (global deadline expires):
+  test_clock_.Advance(base::Milliseconds(10));
+  EXPECT_TRUE(deadline_.HasDeadlinePassed());
+}
+
+TEST_F(SurfaceDependencyDeadlineTest, NoDeadlineSetReturnsTrue) {
+  // When no deadline is set (deadline_ is std::nullopt), HasDeadlinePassed()
+  // returns true.
+  EXPECT_FALSE(deadline_.has_deadline());
+  EXPECT_TRUE(deadline_.HasDeadlinePassed());
+}
+
+TEST_F(SurfaceDependencyDeadlineTest, RespectsViewTransitionDeadline) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPerDependencyDeadlines);
+
+  base::TimeTicks start_time = test_clock_.NowTicks();
+  // Global deadline is 20ms.
+  FrameDeadline frame_deadline(start_time, 2u, base::Milliseconds(10),
+                               /*use_default_lower_bound_deadline=*/false);
+
+  deadline_.SetFrameDeadline(frame_deadline);
+  // View transition deadline is 50ms.
+  deadline_.SetViewTransitionDeadline(start_time + base::Milliseconds(50));
+
+  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+
+  // At 20ms: global deadline passes, but view transition deadline is still
+  // pending.
+  test_clock_.Advance(base::Milliseconds(20));
+  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+
+  // At 50ms: view transition deadline expires.
+  test_clock_.Advance(base::Milliseconds(30));
+  EXPECT_TRUE(deadline_.HasDeadlinePassed());
+}
+
+TEST_F(SurfaceDependencyDeadlineTest,
+       ActivatesEarlyWhenViewTransitionResolvedEarly) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPerDependencyDeadlines);
+
+  base::TimeTicks start_time = test_clock_.NowTicks();
+  // Global deadline is 20ms.
+  FrameDeadline frame_deadline(start_time, 2u, base::Milliseconds(10),
+                               /*use_default_lower_bound_deadline=*/false);
+
+  deadline_.SetFrameDeadline(frame_deadline);
+  // View transition deadline is 80ms.
+  deadline_.SetViewTransitionDeadline(start_time + base::Milliseconds(80));
+
+  // At 25ms: global deadline has passed, but view transition is still
+  // pending.
+  test_clock_.Advance(base::Milliseconds(25));
+  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+
+  // At 30ms: view transition is resolved early.
+  test_clock_.Advance(base::Milliseconds(5));
+  deadline_.SetViewTransitionDeadline(base::TimeTicks());
+  EXPECT_TRUE(deadline_.HasDeadlinePassed());
+}
+
+TEST_F(SurfaceDependencyDeadlineTest, CancelResetsViewTransitionDeadline) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPerDependencyDeadlines);
+
+  base::TimeTicks start_time = test_clock_.NowTicks();
+  FrameDeadline frame_deadline(start_time, 10u, base::Milliseconds(10),
+                               /*use_default_lower_bound_deadline=*/false);
+  deadline_.SetFrameDeadline(frame_deadline);
+  deadline_.SetViewTransitionDeadline(start_time + base::Milliseconds(50));
+  EXPECT_FALSE(deadline_.view_transition_deadline_for_testing().is_null());
+
+  deadline_.Cancel();
+  EXPECT_TRUE(deadline_.view_transition_deadline_for_testing().is_null());
+  EXPECT_TRUE(deadline_.HasDeadlinePassed());
 }
 
 }  // namespace

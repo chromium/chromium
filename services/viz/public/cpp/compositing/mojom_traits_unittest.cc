@@ -860,6 +860,7 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
   FrameDeadline frame_deadline(base::TimeTicks(), 4u, base::TimeDelta(), true);
   const float min_page_scale_factor = 3.5f;
   const float top_controls_visible_height = 12.f;
+  constexpr uint32_t view_transition_deadline_in_frames = 240u;
 
   CompositorFrameMetadata input;
   input.device_scale_factor = device_scale_factor;
@@ -877,6 +878,8 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
       begin_frame_ack_sequence_number;
   input.min_page_scale_factor = min_page_scale_factor;
   input.top_controls_visible_height.emplace(top_controls_visible_height);
+  input.view_transition_deadline_in_frames.emplace(
+      view_transition_deadline_in_frames);
 
   CompositorFrameMetadata output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(input,
@@ -903,6 +906,8 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
             output.begin_frame_ack.frame_id.sequence_number);
   EXPECT_EQ(min_page_scale_factor, output.min_page_scale_factor);
   EXPECT_EQ(*output.top_controls_visible_height, top_controls_visible_height);
+  EXPECT_EQ(output.view_transition_deadline_in_frames,
+            view_transition_deadline_in_frames);
 }
 
 TEST_F(CompositingStructTraitsTest,

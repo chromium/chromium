@@ -3168,7 +3168,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // Use the cached values because `TakeViewTransitionRequests()` clears the
   // requests from the tree.
   if (delay_layer_tree_view_deletion && has_view_transition_with_animate) {
-    frame_deadline = 240;
+    if (features::UsePerDependencyDeadlines()) {
+      metadata.view_transition_deadline_in_frames = 240u;
+    } else {
+      frame_deadline = 240;
+    }
   }
   metadata.deadline =
       viz::FrameDeadline(CurrentBeginFrameArgs().frame_time, frame_deadline,

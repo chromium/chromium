@@ -165,6 +165,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // value set.
   std::optional<float> top_controls_visible_height;
 
+  // The deadline in frames for view transitions.
+  std::optional<uint32_t> view_transition_deadline_in_frames;
+
   // Display transform hint when the frame is generated. Note this is only
   // applicable to frames of the root surface.
   gfx::OverlayTransform display_transform_hint = gfx::OVERLAY_TRANSFORM_NONE;

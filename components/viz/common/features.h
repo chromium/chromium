@@ -216,6 +216,9 @@ VIZ_COMMON_EXPORT bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kPerDependencyDeadlines);
+VIZ_COMMON_EXPORT bool UsePerDependencyDeadlines();
+
 }  // namespace features
 
 #endif  // COMPONENTS_VIZ_COMMON_FEATURES_H_

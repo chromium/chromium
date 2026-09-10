@@ -382,12 +382,18 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   // it can become pending or active.
   QueueFrameResult CommitFrame(FrameData frame);
 
-  // Resolve the activation deadline specified by |current_frame| into a wall
+  // Resolve the activation deadline specified by `current_frame` into a wall
   // time to be used by SurfaceDependencyDeadline.
   FrameDeadline ResolveFrameDeadline(const CompositorFrame& current_frame);
 
+  // Resolves the view transition deadline into wall time to be used by
+  // SurfaceDependencyDeadline. Returns a null base::TimeTicks if there are no
+  // view transition dependencies or if no view transition deadline is specified.
+  base::TimeTicks ResolveViewTransitionDeadline(
+      const CompositorFrame& current_frame);
+
   // Updates the set of unresolved activation dependenices of the
-  // |current_frame|. If the deadline requested by the frame is 0 then no
+  // `current_frame`. If the deadline requested by the frame is 0 then no
   // dependencies will be added even if they're not yet available.
   void UpdateActivationDependencies(const CompositorFrame& current_frame);
 

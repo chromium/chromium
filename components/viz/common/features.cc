@@ -551,4 +551,15 @@ bool ShouldDiscardVizBufferQueueOnVisibilityChange() {
          base::FeatureList::IsEnabled(kVizBufferQueueDiscardOnVisibilityChange);
 }
 
+// When enabled, deadlines are tracked per activation dependency of a
+// CompositorFrame independently. Each dependent surface uses its own specified
+// deadline policy (e.g., from cc::DeadlinePolicy), allowing the frame to
+// activate once all its dependencies have individually resolved or expired,
+// without being bounded by the frame's overall global deadline.
+BASE_FEATURE(kPerDependencyDeadlines, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool UsePerDependencyDeadlines() {
+  return base::FeatureList::IsEnabled(kPerDependencyDeadlines);
+}
+
 }  // namespace features

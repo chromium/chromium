@@ -66,6 +66,8 @@ StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->is_mobile_optimized = data.is_mobile_optimized();
   out->is_software = data.is_software();
   out->top_controls_visible_height = data.top_controls_visible_height();
+  out->view_transition_deadline_in_frames =
+      data.view_transition_deadline_in_frames();
 
   if (!data.ReadScreenshotDestination(&out->screenshot_destination)) {
     return base::unexpected(DeserializationError());

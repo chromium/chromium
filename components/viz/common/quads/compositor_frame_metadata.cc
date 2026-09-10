@@ -79,6 +79,11 @@ void CompositorFrameMetadata::AsValueInto(
                      *top_controls_visible_height);
   }
 
+  if (view_transition_deadline_in_frames) {
+    value->SetInteger("view_transition_deadline_in_frames",
+                      *view_transition_deadline_in_frames);
+  }
+
   value->SetInteger("display_transform_hint",
                     static_cast<int>(display_transform_hint));
   value->SetBoolean("is_mobile_optimized", is_mobile_optimized);
@@ -146,6 +151,8 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       send_frame_token_to_embedder(other.send_frame_token_to_embedder),
       min_page_scale_factor(other.min_page_scale_factor),
       top_controls_visible_height(other.top_controls_visible_height),
+      view_transition_deadline_in_frames(
+          other.view_transition_deadline_in_frames),
       display_transform_hint(other.display_transform_hint),
       is_mobile_optimized(other.is_mobile_optimized),
       transition_directives(other.transition_directives),
