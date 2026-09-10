@@ -35,7 +35,7 @@ interface SVGAElement : SVGGraphicsElement {
     [Reflect] attribute DOMString hreflang;
     [Reflect] attribute DOMString type;
 
-    [Reflect] attribute DOMString referrerPolicy;
+    [Reflect, ReflectOnly=("", "no-referrer", "origin", "no-referrer-when-downgrade", "origin-when-cross-origin", "unsafe-url", "same-origin", "strict-origin", "strict-origin-when-cross-origin"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
 };
 
 SVGAElement includes SVGURIReference;
