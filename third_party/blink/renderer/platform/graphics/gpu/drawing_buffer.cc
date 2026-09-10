@@ -1145,11 +1145,6 @@ std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformInternal(
     produce_sync_token = back_color_buffer_->EndAccess();
   }
 
-  if (!produce_sync_token.HasData()) {
-    // This should only happen if the context has been lost.
-    return std::nullopt;
-  }
-
   std::optional<gpu::SyncToken> sync_token = copy_function(
       src_color_buffer->shared_image, produce_sync_token, src_alpha_type);
 
