@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "components/openscreen_platform/network_util.h"
@@ -138,9 +137,8 @@ void UdpSocket::JoinMulticastGroup(const IPAddress& address,
 
 void UdpSocket::SendMessage(ByteView data, const IPEndpoint& dest) {
   const auto send_to_address = openscreen_platform::ToNetEndPoint(dest);
-  base::span<const uint8_t> UNSAFE_TODO(data_span(data.data(), data.size()));
   udp_socket_->SendTo(
-      send_to_address, data_span,
+      send_to_address, base::span(data),
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       base::BindOnce(&UdpSocket::SendCallback, weak_ptr_factory_.GetWeakPtr()));
 }

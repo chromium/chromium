@@ -4,13 +4,12 @@
 
 #include "components/openscreen_platform/tls_client_connection.h"
 
-#include <cstring>
 #include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -224,11 +223,10 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
   std::vector<uint8_t> accumulated_data =
       socket_streams()->TakeAccumulatedOutboundData();
   ASSERT_EQ(message.size() * 2, accumulated_data.size());
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(message.data(), accumulated_data.data(), message.size())));
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(message.data(), accumulated_data.data() + message.size(),
-                message.size())));
+  base::span<const uint8_t> data_span(accumulated_data);
+  EXPECT_EQ(base::span(message), data_span.first(message.size()));
+  EXPECT_EQ(base::span(message),
+            data_span.subspan(message.size(), message.size()));
 
   // Attempt to send three messages, but expect the third to fail.
   EXPECT_TRUE(connection()->Send(message));
@@ -237,11 +235,10 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
   base::RunLoop().RunUntilIdle();
   accumulated_data = socket_streams()->TakeAccumulatedOutboundData();
   ASSERT_EQ(message.size() * 2, accumulated_data.size());
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(message.data(), accumulated_data.data(), message.size())));
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(message.data(), accumulated_data.data() + message.size(),
-                message.size())));
+  data_span = base::span(accumulated_data);
+  EXPECT_EQ(base::span(message), data_span.first(message.size()));
+  EXPECT_EQ(base::span(message),
+            data_span.subspan(message.size(), message.size()));
 
   // Sending should resume when there is capacity available again.
   EXPECT_TRUE(connection()->Send(message));

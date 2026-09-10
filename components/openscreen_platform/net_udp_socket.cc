@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "components/openscreen_platform/network_util.h"
@@ -83,8 +82,9 @@ bool NetUdpSocket::HandleRecvFromResult(int result) {
 
   DCHECK_GT(result, 0);
 
-  openscreen::UdpPacket packet(read_buffer_->data(),
-                               UNSAFE_TODO(read_buffer_->data() + result));
+  base::span<const uint8_t> packet_data =
+      read_buffer_->first(static_cast<size_t>(result));
+  openscreen::UdpPacket packet(packet_data.begin(), packet_data.end());
   packet.set_source(openscreen_platform::ToOpenScreenEndPoint(from_address_));
   return RunClientCallback([this, &packet](Client& client) {
     client.OnRead(this, std::move(packet));
@@ -185,20 +185,16 @@ void NetUdpSocket::SendMessage(openscreen::ByteView data,
   }
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
-  UNSAFE_TODO(memcpy(buffer->data(), data.data(), data.size()));
+  buffer->span().copy_from_nonoverlapping(base::span(data));
 
   base::WeakPtr<NetUdpSocket> weak_this = weak_ptr_factory_.GetWeakPtr();
   const int result = udp_socket_.SendTo(
       buffer.get(), data.size(), openscreen_platform::ToNetEndPoint(dest),
       base::BindOnce(&NetUdpSocket::OnSendToCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (!weak_this) {
-    return;
-  }
-
   send_pending_ = true;
 
-  if (result != net::ERR_IO_PENDING) {
+  if (result != net::ERR_IO_PENDING && weak_this) {
     OnSendToCompleted(result);
   }
 }
