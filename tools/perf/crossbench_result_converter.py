@@ -107,7 +107,7 @@ def convert(
     _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
-  if benchmark and benchmark.lower().startswith('web-power'):
+  if benchmark and benchmark.lower().startswith(('web-power', 'web_power')):
     _web_power(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 

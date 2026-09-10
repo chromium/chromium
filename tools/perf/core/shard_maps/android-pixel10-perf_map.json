@@ -554,7 +554,8 @@
             "web_power.crossbench": {
                 "crossbench_name": "web-power",
                 "arguments": [
-                    "--disable-field-trials"
+                    "--disable-field-trials",
+                    "--required-device-config-mode=warn"
                 ]
             }
         },
