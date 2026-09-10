@@ -404,6 +404,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // frame connector is set.
   blink::mojom::IntrinsicSizingInfoPtr pending_sizing_info_;
 
+  // The display feature set for emulation, if any.
+  std::optional<DisplayFeature> display_feature_;
+
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
 };
 
