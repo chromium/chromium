@@ -476,6 +476,31 @@ TEST(ClientSharedImageTest,
   EXPECT_TRUE(exported_vec.empty());
 }
 
+TEST(ClientSharedImageTest,
+     AutomaticSyncTokenManagement_EndDisplayCompositorAccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  SyncToken compositor_token(CommandBufferNamespace::GPU_IO,
+                             CommandBufferId::FromUnsafeValue(789),
+                             /*release_count=*/101);
+
+  client_si->EndDisplayCompositorAccess(compositor_token);
+
+  auto exported_result = client_si->EndImport(SyncToken());
+  SyncToken expected_creation_token = client_si->creation_sync_token();
+  expected_creation_token.SetVerifyFlush();
+  SyncToken expected_compositor_token = compositor_token;
+  expected_compositor_token.SetVerifyFlush();
+  EXPECT_TRUE(exported_result.IsEqualForTesting(
+      SharedImageExportResult::CreateForTesting(
+          {expected_creation_token, expected_compositor_token})));
+}
+
 // Checks whether ClientSharedImage correctly stores only the latest SyncToken
 // on a sequence when feature UseAutomaticSyncTokenManagement is enabled.
 TEST(ClientSharedImageTest, AutomaticSyncTokenManagement_SyncTokenUpdate) {

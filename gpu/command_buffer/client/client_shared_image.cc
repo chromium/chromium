@@ -660,6 +660,14 @@ std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
   }
 }
 
+void ClientSharedImage::EndDisplayCompositorAccess(
+    const SyncToken& sync_token) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    StoreSyncTokenInternal(sync_token);
+  }
+}
+
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   TRACE_EVENT("gpu", "ClientSharedImage::Map", "format",
               metadata_.format.ToString(), "usage", metadata_.usage.ToString(),
