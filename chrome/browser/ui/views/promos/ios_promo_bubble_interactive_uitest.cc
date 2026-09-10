@@ -51,8 +51,6 @@ class IOSPromoBubbleBrowserTest
 
     if (IsWalletBrandingV2Enabled()) {
       enabled_features.push_back(
-          {autofill::features::kAutofillEnableWalletBranding, {}});
-      enabled_features.push_back(
           {autofill::features::kAutofillEnableWalletBrandingV2, {}});
     } else {
       disabled_features.emplace_back(
