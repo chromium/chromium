@@ -263,7 +263,7 @@ suite('PermissionChipTest', function() {
 
     const iconEl = chip.shadowRoot.querySelector<HTMLElement>('#icon');
     assertTrue(!!iconEl);
-    assertTrue(iconEl.style.maskImage.includes('videocam_chrome_refresh.svg'));
+    assertTrue(iconEl.style.maskImage.includes('videocam.svg'));
 
     const messageEl = chip.shadowRoot.querySelector<HTMLElement>('#message');
     assertTrue(!!messageEl);

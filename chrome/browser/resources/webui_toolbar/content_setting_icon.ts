@@ -170,62 +170,52 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         iconName = blocked ? 'database_off' : 'database';
         break;
       case ContentSettingImageType.kImages:
-        iconName =
-            blocked ? 'photo_off_chrome_refresh' : 'photo_chrome_refresh';
+        iconName = blocked ? 'hide_image' : 'photo';
         break;
       case ContentSettingImageType.kJavaScript:
-        iconName = blocked ? 'code_off_chrome_refresh' : 'code_chrome_refresh';
+        iconName = blocked ? 'code_off' : 'code';
         break;
       case ContentSettingImageType.kMixedScript:
-        iconName = blocked ? 'not_secure_warning_off_chrome_refresh' :
-                             'not_secure_warning_chrome_refresh';
+        iconName = blocked ? 'warning_off' : 'warning';
         break;
       case ContentSettingImageType.kSound:
-        iconName =
-            blocked ? 'volume_off_chrome_refresh' : 'volume_up_chrome_refresh';
+        iconName = blocked ? 'volume_off' : 'volume_up';
         break;
       case ContentSettingImageType.kAds:
-        iconName = blocked ? 'ads_off_chrome_refresh' : 'ads_chrome_refresh';
+        iconName = blocked ? 'ad_off' : 'ad';
         break;
       case ContentSettingImageType.kGeolocation:
-        iconName = blocked ? 'location_off_chrome_refresh' :
-                             'location_on_chrome_refresh';
+        iconName = blocked ? 'location_off' : 'location_on';
         break;
       case ContentSettingImageType.kProtocolHandlers:
-        iconName = blocked ? 'protocol_handler_off_chrome_refresh' :
-                             'protocol_handler_chrome_refresh';
+        iconName = blocked ? 'protocol_handler_off' : 'protocol_handler';
         break;
       case ContentSettingImageType.kMidiSysex:
-        iconName = blocked ? 'midi_off_chrome_refresh' : 'midi_chrome_refresh';
+        iconName = blocked ? 'piano_off' : 'piano';
         break;
       case ContentSettingImageType.kAutomaticDownloads:
-        iconName = blocked ? 'file_download_off_chrome_refresh' :
-                             'file_download_chrome_refresh';
+        iconName = blocked ? 'file_download_off' : 'download';
         break;
       case ContentSettingImageType.kClipboardReadWrite:
         iconName = blocked ? 'content_paste_off' : 'content_paste';
         break;
       case ContentSettingImageType.kMediaStream:
-        iconName =
-            blocked ? 'videocam_off_chrome_refresh' : 'videocam_chrome_refresh';
+        iconName = blocked ? 'videocam_off' : 'videocam';
         break;
       case ContentSettingImageType.kNotifications:
-        iconName = blocked ? 'notifications_off_chrome_refresh' :
-                             'notifications_chrome_refresh';
+        iconName = blocked ? 'notifications_off' : 'notifications';
         break;
       case ContentSettingImageType.kSensors:
-        iconName =
-            blocked ? 'sensors_off_chrome_refresh' : 'sensors_chrome_refresh';
+        iconName = blocked ? 'sensors_off' : 'sensors';
         break;
       case ContentSettingImageType.kStorageAccess:
-        iconName = blocked ? 'storage_access_off' : 'storage_access';
+        iconName = blocked ? 'vr180_create2d_off' : 'vr180_create2d';
         break;
       case ContentSettingImageType.kPopups:
         iconName = blocked ? 'iframe_off' : 'iframe';
         break;
       case ContentSettingImageType.kFramebust:
-        iconName = blocked ? 'open_in_new_off_chrome_refresh' :
-                             'open_in_new_chrome_refresh';
+        iconName = blocked ? 'open_in_new_off' : 'open_in_new';
         break;
       // <if expr="is_chromeos">
       case ContentSettingImageType.kSmartCard:

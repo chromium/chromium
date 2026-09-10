@@ -262,42 +262,40 @@ export class PermissionChipElement extends PermissionChipElementBase {
     }
 
     let iconName = '';
-    // TODO(crbug.com/502598627): This maps new rounded icon names and old names
-    // to the same pre-canned SVG, which means it doesn't actually support
-    // rounded icons. We will need to add the rounded SVGs and update this
-    // mapping if we want to support them in the future.
+    // Maps icon names to their modern canonical SVG filenames in
+    // shared/rhs_icons/.
     switch (this.chipState.iconName) {
       case 'kLocationOnIcon':
       case 'kLocationOnChromeRefreshOldIcon':
-        iconName = 'location_on_chrome_refresh';
+        iconName = 'location_on';
         break;
       case 'kLocationOffIcon':
       case 'kLocationOffChromeRefreshOldIcon':
-        iconName = 'location_off_chrome_refresh';
+        iconName = 'location_off';
         break;
       case 'kVideocamIcon':
       case 'kVideocamChromeRefreshOldIcon':
-        iconName = 'videocam_chrome_refresh';
+        iconName = 'videocam';
         break;
       case 'kVideocamOffIcon':
       case 'kVideocamOffChromeRefreshOldIcon':
-        iconName = 'videocam_off_chrome_refresh';
+        iconName = 'videocam_off';
         break;
       case 'kMicIcon':
       case 'kMicChromeRefreshOldIcon':
-        iconName = 'mic_chrome_refresh';
+        iconName = 'mic';
         break;
       case 'kMicOffIcon':
       case 'kMicOffChromeRefreshOldIcon':
-        iconName = 'mic_off_chrome_refresh';
+        iconName = 'mic_off';
         break;
       case 'kNotificationsIcon':
       case 'kNotificationsChromeRefreshOldIcon':
-        iconName = 'notifications_chrome_refresh';
+        iconName = 'notifications';
         break;
       case 'kNotificationsOffIcon':
       case 'kNotificationsOffChromeRefreshOldIcon':
-        iconName = 'notifications_off_chrome_refresh';
+        iconName = 'notifications_off';
         break;
       default:
         break;
