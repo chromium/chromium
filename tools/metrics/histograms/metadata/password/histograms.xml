@@ -2239,19 +2239,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.LocalUpmActivated" enum="Boolean"
-    expires_after="2026-10-19">
-  <owner>ioanap@chromium.org</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    Records on startup whether the user was activated for local UPM. Records
-    false for users who have a migration of local passwords scheduled but didn't
-    get activated yet.
-
-    Can be obsoleted once PasswosrdManager.LocalUpmActivationStatus saturates.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.LoginDatabaseInit2"
     enum="LoginDatabaseInitError" expires_after="2027-02-07">
   <owner>mamir@chromium.org</owner>
