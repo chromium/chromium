@@ -1061,6 +1061,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       InvalidUpdateWindowBoundsWithSmallSizes) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+
+  // Get the display bounds so we can position the window outside of them.
+  gfx::Rect displays;
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
+    displays.Union(display.bounds());
+  }
+
+  int window_id = ExtensionTabUtil::GetWindowId(browser_window_interface());
+  int window_left = displays.right() + 10;
+  int window_top = displays.bottom() + 10;
+
+  static const char kArgsUpdateFunction[] =
+      "[%u, {\"left\": %d, \"top\": %d, \"width\": %d, \"height\": %d}]";
+
+  // Windows with an empty or tiny size cannot be moved outside the displays.
+  constexpr struct {
+    int width;
+    int height;
+  } kSizes[] = {{0, 500}, {500, 0}, {0, 0}, {1, 1}};
+  for (const auto& size : kSizes) {
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(base::MatchPattern(
+        utils::RunFunctionAndReturnError(
+            function.get(),
+            base::StringPrintf(kArgsUpdateFunction, window_id, window_left,
+                               window_top, size.width, size.height),
+            profile()),
+        keys::kInvalidWindowBoundsError))
+        << "size: " << size.width << "x" << size.height;
+  }
+
+  // Resizing a window to an empty size is not valid regardless of its
+  // position.
+  auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+  function->set_extension(extension.get());
+  EXPECT_TRUE(base::MatchPattern(
+      utils::RunFunctionAndReturnError(
+          function.get(), base::StringPrintf("[%u, {\"width\": 0}]", window_id),
+          profile()),
+      keys::kInvalidWindowBoundsError));
+}
+
 // On Android this fails when Run() calls BaseWindow::CanResize() returns false
 // due to default Android Browser Tests not having free-form windows.
 #if !BUILDFLAG(IS_ANDROID)
@@ -1094,6 +1140,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                                               window_left, window_top),
                            profile(), api_test_utils::FunctionMode::kNone));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       UpdatingWindowBoundsSucceedsForSmallOnScreenBounds) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+
+  int window_id = ExtensionTabUtil::GetWindowId(browser_window_interface());
+
+  // A tiny window is valid as long as it is fully within a display.
+  const gfx::Point center =
+      display::Screen::Get()->GetPrimaryDisplay().bounds().CenterPoint();
+  static const char kArgsUpdateFunction[] =
+      "[%u, {\"left\": %d, \"top\": %d, \"width\": 1, \"height\": 1}]";
+  auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+  function->set_extension(extension.get());
+  EXPECT_TRUE(
+      utils::RunFunction(function.get(),
+                         base::StringPrintf(kArgsUpdateFunction, window_id,
+                                            center.x(), center.y()),
+                         profile(), api_test_utils::FunctionMode::kNone));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1392,6 +1458,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
                            base::StringPrintf(kArgsCreateFunctionOnlySize,
                                               window_width, window_height),
                            profile(), api_test_utils::FunctionMode::kNone));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest,
+                       ValidateCreateWindowBoundsWithSmallSizes) {
+  // Get the display bounds so we can position the window outside of them.
+  gfx::Rect displays;
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
+    displays.Union(display.bounds());
+  }
+
+  static const char kArgsCreateFunction[] =
+      "[{\"left\": %d, \"top\": %d, \"width\": %d, \"height\": %d }]";
+  int window_left = displays.right() + 10;
+  int window_top = displays.bottom() + 10;
+
+  // Windows with an empty or tiny size cannot be created outside the
+  // displays.
+  constexpr struct {
+    int width;
+    int height;
+  } kSizes[] = {{0, 100}, {100, 0}, {0, 0}, {1, 1}};
+  for (const auto& size : kSizes) {
+    EXPECT_TRUE(base::MatchPattern(
+        RunCreateWindowExpectError(base::StringPrintf(kArgsCreateFunction,
+                                                      window_left, window_top,
+                                                      size.width, size.height)),
+        keys::kInvalidWindowBoundsError))
+        << "size: " << size.width << "x" << size.height;
+  }
+
+  // Bounds with an empty size are not valid regardless of position.
+  EXPECT_TRUE(base::MatchPattern(
+      RunCreateWindowExpectError("[{\"width\": 0, \"height\": 0 }]"),
+      keys::kInvalidWindowBoundsError));
+
+  {
+    // A tiny window is valid as long as it is fully within a display.
+    const gfx::Point center =
+        display::Screen::Get()->GetPrimaryDisplay().bounds().CenterPoint();
+    auto function = base::MakeRefCounted<WindowsCreateFunction>();
+    function->set_extension(ExtensionBuilder("Test").Build().get());
+    EXPECT_TRUE(utils::RunFunction(
+        function.get(),
+        base::StringPrintf(kArgsCreateFunction, center.x(), center.y(), 1, 1),
+        profile(), api_test_utils::FunctionMode::kNone));
   }
 }
 

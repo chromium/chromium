@@ -839,13 +839,22 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
     return false;
   }
 
-  int intersect_area = 0;
+  // An empty rect cannot intersect any display.
+  if (bounds.IsEmpty()) {
+    return false;
+  }
+
+  const int bounds_area = checked_area.ValueOrDie();
+
+  int64_t intersect_area = 0;
   for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     gfx::Rect display_bounds = display.bounds();
     display_bounds.Intersect(bounds);
     intersect_area += display_bounds.size().GetArea();
   }
-  return intersect_area >= (bounds.size().GetArea() / 2);
+  // Compare using multiplication rather than division, which would truncate
+  // to zero for areas smaller than two.
+  return 2 * intersect_area >= bounds_area;
 }
 
 }  // namespace tabs_internal
@@ -1511,8 +1520,12 @@ std::string WindowsCreateFunction::SetWindowBounds(
     window_bounds.AdjustToFit(display.bounds());
   }
 
-  // Immediately fail if the window bounds don't intersect the displays.
-  if ((set_window_position || set_window_size) &&
+  // Immediately fail if the window bounds don't intersect the displays. If
+  // only a position was specified and the default bounds have not been
+  // initialized (see above), there is no size to validate against yet.
+  const bool has_bounds_to_validate =
+      set_window_size || (set_window_position && !window_bounds.IsEmpty());
+  if (has_bounds_to_validate &&
       !tabs_internal::WindowBoundsIntersectDisplays(window_bounds)) {
     return tabs_constants::kInvalidWindowBoundsError;
   }
