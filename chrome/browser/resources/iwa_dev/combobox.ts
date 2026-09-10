@@ -212,50 +212,47 @@ export class IwaDevComboboxElement extends CrLitElement {
     if ((e.key === 'ArrowDown' || (this.readonly && e.key === ' ')) &&
         this.options.length > 0) {
       e.preventDefault();
+      e.stopPropagation();
       this.openSuggestions_();
     }
   }
 
+  private closeSuggestions_() {
+    this.showSuggestions_ = false;
+    this.highlightedIndex_ = -1;
+  }
+
   private onKeydownWhenSuggestionsExpanded_(e: KeyboardEvent) {
     const filtered = this.getFilteredOptions_();
+    const highlighted = filtered[this.highlightedIndex_];
+
+    // In editable mode, allow typing a space character.
+    if (e.key === ' ' && (!this.readonly || !highlighted)) {
+      return;
+    }
 
     switch (e.key) {
       case 'ArrowDown':
-        e.preventDefault();
-        this.navigateHighlight_(1, filtered);
-        break;
       case 'ArrowUp':
-        e.preventDefault();
-        this.navigateHighlight_(-1, filtered);
+        this.navigateHighlight_(e.key === 'ArrowDown' ? 1 : -1, filtered);
         break;
       case 'Enter':
-        e.preventDefault();
-        if (this.highlightedIndex_ >= 0 &&
-            this.highlightedIndex_ < filtered.length) {
-          this.selectOption_(filtered[this.highlightedIndex_]!.value);
-        } else {
-          this.showSuggestions_ = false;
-          this.highlightedIndex_ = -1;
-        }
-        break;
       case ' ':
-        // In readonly mode, Space selects the highlighted option like a native
-        // <select> element. In editable mode, do nothing so the space character
-        // can be typed into the input.
-        if (this.readonly && this.highlightedIndex_ >= 0 &&
-            this.highlightedIndex_ < filtered.length) {
-          e.preventDefault();
-          this.selectOption_(filtered[this.highlightedIndex_]!.value);
+        if (highlighted) {
+          this.selectOption_(highlighted.value);
+        } else {
+          this.closeSuggestions_();
         }
         break;
       case 'Escape':
-        e.preventDefault();
-        this.showSuggestions_ = false;
-        this.highlightedIndex_ = -1;
+        this.closeSuggestions_();
         break;
       default:
-        break;
+        return;
     }
+
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   private openSuggestions_() {
@@ -289,8 +286,7 @@ export class IwaDevComboboxElement extends CrLitElement {
 
   private toggleSuggestions_() {
     if (this.showSuggestions_) {
-      this.showSuggestions_ = false;
-      this.highlightedIndex_ = -1;
+      this.closeSuggestions_();
     } else {
       this.openSuggestions_();
       this.$.input.focus();

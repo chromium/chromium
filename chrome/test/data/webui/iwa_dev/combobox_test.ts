@@ -589,18 +589,54 @@ suite('<iwa-dev-combobox>', () => {
       });
 
   test(
-      'keyboard navigation: Enter when collapsed does not prevent default',
+      'keyboard navigation: Enter when collapsed does not prevent default' +
+          ' or stop propagation',
       async () => {
         combobox.options = [{value: 'first'}];
         await microtasksFinished();
         assertFalse(isSuggestionsOpen());
 
-        const enterEvent = new KeyboardEvent(
-            'keydown', {key: 'Enter', bubbles: true, cancelable: true});
+        let hostKeydownFired = false;
+        combobox.addEventListener('keydown', () => {
+          hostKeydownFired = true;
+        });
+
+        const enterEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
         combobox.inputElement.dispatchEvent(enterEvent);
         await microtasksFinished();
 
         assertFalse(enterEvent.defaultPrevented);
+        assertTrue(hostKeydownFired);
+      });
+
+  test(
+      'keyboard navigation: Enter when expanded stops propagation',
+      async () => {
+        combobox.options = [{value: 'first'}, {value: 'second'}];
+        combobox.focus();
+        combobox.inputElement.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(isSuggestionsOpen());
+
+        let hostKeydownFired = false;
+        combobox.addEventListener('keydown', () => {
+          hostKeydownFired = true;
+        });
+
+        combobox.inputElement.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(hostKeydownFired);
       });
 
   test('keyboard navigation: Escape closes suggestions', async () => {
