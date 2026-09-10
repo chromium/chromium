@@ -11395,6 +11395,27 @@ const ComputedStyle* Element::UncachedStyleForPseudoElement(
       request);
 }
 
+const ComputedStyle* Element::StyleForFirstLineInherited(
+    const StyleRecalcContext& style_recalc_context,
+    const StyleRequest& request) {
+  StyleRequest first_line_inherited_request = request;
+  first_line_inherited_request.pseudo_id =
+      IsPseudoElement() ? To<PseudoElement>(this)->GetPseudoIdForStyling()
+                        : kPseudoIdNone;
+  first_line_inherited_request.can_trigger_animations = false;
+  StyleRecalcContext local_recalc_context(style_recalc_context);
+  local_recalc_context.old_style = PostStyleUpdateScope::GetOldStyle(*this);
+  Element* target = IsPseudoElement() ? parentElement() : this;
+  const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
+      target, local_recalc_context, first_line_inherited_request);
+  if (result) {
+    ComputedStyleBuilder builder(*result);
+    builder.SetStyleType(kPseudoIdFirstLineInherited);
+    result = builder.TakeStyle();
+  }
+  return result;
+}
+
 const ComputedStyle* Element::StyleForPseudoElement(
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& request) {
@@ -11404,61 +11425,8 @@ const ComputedStyle* Element::StyleForPseudoElement(
                            ? GetPseudoIdForStyling()
                            : request.pseudo_id;
 
-  const bool is_before_or_after_like =
-      pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
-      pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdExpandIcon ||
-      pseudo_id == kPseudoIdPickerIcon;
-
-  if (is_before_or_after_like) {
-    DCHECK(request.parent_override);
-    DCHECK(request.layout_parent_override);
-
-    const ComputedStyle* layout_parent_style = request.parent_override;
-    if (layout_parent_style->Display() == EDisplay::kContents) {
-      Element* layout_parent =
-          LayoutTreeBuilderTraversal::LayoutParentElement(*this);
-      CHECK(layout_parent);
-      layout_parent_style = layout_parent->GetComputedStyle();
-    }
-    StyleRequest before_after_request = request;
-    before_after_request.layout_parent_override = layout_parent_style;
-    const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
-        this, style_recalc_context, before_after_request);
-    if (result) {
-      if (result->GetCounterDirectives()) {
-        SetPseudoElementStylesChangeCounters(true);
-      }
-      Element* originating_element_or_self =
-          IsPseudoElement()
-              ? &To<PseudoElement>(this)->UltimateOriginatingElement()
-              : this;
-      if (auto* quote =
-              DynamicTo<HTMLQuoteElement>(originating_element_or_self)) {
-        ComputedStyleBuilder builder(*result);
-        quote->AdjustPseudoStyleLocale(builder);
-        result = builder.TakeStyle();
-      }
-    }
-    return result;
-  }
-
   if (pseudo_id == kPseudoIdFirstLineInherited) {
-    StyleRequest first_line_inherited_request = request;
-    first_line_inherited_request.pseudo_id =
-        IsPseudoElement() ? To<PseudoElement>(this)->GetPseudoIdForStyling()
-                          : kPseudoIdNone;
-    first_line_inherited_request.can_trigger_animations = false;
-    StyleRecalcContext local_recalc_context(style_recalc_context);
-    local_recalc_context.old_style = PostStyleUpdateScope::GetOldStyle(*this);
-    Element* target = IsPseudoElement() ? parentElement() : this;
-    const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
-        target, local_recalc_context, first_line_inherited_request);
-    if (result) {
-      ComputedStyleBuilder builder(*result);
-      builder.SetStyleType(kPseudoIdFirstLineInherited);
-      result = builder.TakeStyle();
-    }
-    return result;
+    return StyleForFirstLineInherited(style_recalc_context, request);
   }
 
   StyleRequest style_request = request;
@@ -11474,12 +11442,38 @@ const ComputedStyle* Element::StyleForPseudoElement(
       layout_parent_style = layout_grand_parent->GetComputedStyle();
     }
     style_request.layout_parent_override = layout_parent_style;
+  } else if (request.layout_parent_override &&
+             request.layout_parent_override->Display() == EDisplay::kContents) {
+    Element* layout_parent =
+        LayoutTreeBuilderTraversal::LayoutParentElement(*this);
+    CHECK(layout_parent);
+    style_request.layout_parent_override = layout_parent->GetComputedStyle();
   }
 
   const ComputedStyle* result = GetDocument().GetStyleResolver().ResolveStyle(
       this, style_recalc_context, style_request);
-  if (result && result->GetCounterDirectives()) {
-    SetPseudoElementStylesChangeCounters(true);
+
+  if (result) {
+    if (result->GetCounterDirectives()) {
+      SetPseudoElementStylesChangeCounters(true);
+    }
+    if (pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) {
+      // We currently choose generated auto quotes from the originating element
+      // language for HTML quote elements which use ::before/::after to
+      // implement quote rendering. When we start supporting 'match-parent',
+      // this needs to handle other pseudo elements which generate 'open-quote'
+      // and 'close-quote' too.
+      Element* originating_element_or_self =
+          IsPseudoElement()
+              ? &To<PseudoElement>(this)->UltimateOriginatingElement()
+              : this;
+      if (auto* quote =
+              DynamicTo<HTMLQuoteElement>(originating_element_or_self)) {
+        ComputedStyleBuilder builder(*result);
+        quote->AdjustPseudoStyleLocale(builder);
+        result = builder.TakeStyle();
+      }
+    }
   }
   return result;
 }

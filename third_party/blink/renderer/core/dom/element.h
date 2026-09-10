@@ -1648,6 +1648,10 @@ class CORE_EXPORT Element : public ContainerNode {
   const ComputedStyle* StyleForPseudoElement(const StyleRecalcContext&,
                                              const StyleRequest&);
 
+  // StyleForPseudoElement specifically for kPseudoIdFirstLineInherited.
+  const ComputedStyle* StyleForFirstLineInherited(const StyleRecalcContext&,
+                                                  const StyleRequest&);
+
   // These are used by ResolveStyle with Highlight Inheritance when caching
   // is not used.
   const ComputedStyle* StyleForHighlightPseudoElement(
