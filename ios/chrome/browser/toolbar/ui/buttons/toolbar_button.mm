@@ -260,6 +260,7 @@ UIColor* NormalTintColor() {
 - (void)checkImageVisibility {
   if (!self.hidden && !self.currentImage) {
     [self setImage:self.image forState:UIControlStateNormal];
+    [self bringSubviewToFront:self.imageView];
     [self updateHighlight];
   }
 }
