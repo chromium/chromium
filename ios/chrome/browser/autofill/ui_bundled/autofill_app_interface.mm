@@ -43,7 +43,6 @@
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/password_string.h"
-#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -834,12 +833,6 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
   }
 }
 
-+ (void)showAtMemoryUI {
-  id<AtMemoryCommands> atMemoryHandler = HandlerForProtocol(
-      chrome_test_util::GetMainBrowser()->GetCommandDispatcher(),
-      AtMemoryCommands);
-  [atMemoryHandler showAtMemory];
-}
 
 + (autofill::EntityDataManager*)entityDataManager {
   return autofill::FakeCreditCardServer::GetAutofillClient()

@@ -39,15 +39,19 @@ using autofill::FieldGlobalId;
   AtMemoryGranularFillCoordinator* _atMemoryGranularFillCoordinator;
   // Mediator for AtMemory filling.
   AtMemoryMediator* _mediator;
+  // Field ID that initiated AtMemory.
+  FieldGlobalId _fieldId;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                            contentInjector:
-                               (id<ManualFillContentInjector>)contentInjector {
+                               (id<ManualFillContentInjector>)contentInjector
+                                   fieldId:(FieldGlobalId)fieldId {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _contentInjector = contentInjector;
+    _fieldId = fieldId;
   }
   return self;
 }
@@ -68,13 +72,10 @@ using autofill::FieldGlobalId;
           autofillClient->GetAutofillManagerForPrimaryMainFrame());
   CHECK(autofillManager);
 
-  // TODO(crbug.com/555810315): An empty `FieldGlobalId` is temporarily passed
-  // here until the initiating field ID is propagated to the coordinator.
-  _mediator =
-      [[AtMemoryMediator alloc] initWithAtMemoryManager:atMemoryManager
-                                        autofillManager:autofillManager
-                                        contentInjector:_contentInjector
-                                                fieldId:FieldGlobalId()];
+  _mediator = [[AtMemoryMediator alloc] initWithAtMemoryManager:atMemoryManager
+                                                autofillManager:autofillManager
+                                                contentInjector:_contentInjector
+                                                        fieldId:_fieldId];
   _mediator.atMemoryHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AtMemoryCommands);
 

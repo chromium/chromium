@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/unguessable_token.h"
 #import "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
@@ -158,4 +159,40 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedFills) {
   [mediator_ fillWithSuggestion:suggestion];
 
   EXPECT_OCMOCK_VERIFY(mock_injector_);
+}
+
+// Tests that fillWithSuggestion: with an obfuscated suggestion succeeds when
+// initialized with a valid FieldGlobalId.
+TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedWithValidFieldId) {
+  FieldGlobalId field_id(
+      autofill::LocalFrameToken(base::UnguessableToken::Create()),
+      autofill::FieldRendererId(42));
+  BrowserAutofillManager* autofill_manager =
+      static_cast<BrowserAutofillManager*>(
+          autofill_client_->GetAutofillManagerForPrimaryMainFrame());
+  AtMemoryMediator* mediator =
+      [[AtMemoryMediator alloc] initWithAtMemoryManager:at_memory_manager_.get()
+                                        autofillManager:autofill_manager
+                                        contentInjector:mock_injector_
+                                                fieldId:field_id];
+
+  Suggestion suggestion(base::SysNSStringToUTF16(kObfuscatedContent),
+                        SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload payload(
+      base::SysNSStringToUTF16(kObfuscatedContent),
+      MemoryDataType::kPassportNumber);
+  payload.is_personal_context_sourced = true;
+  suggestion.payload = std::move(payload);
+
+  [[mock_injector_ reject] userDidPickContent:[OCMArg any]
+                                passwordField:NO
+                                requiresHTTPS:YES
+                              jumpToNextField:NO
+                                   actionType:autofill::mojom::FieldActionType::
+                                                  kReplaceSelectionForAtMemory];
+
+  [mediator fillWithSuggestion:suggestion];
+
+  EXPECT_OCMOCK_VERIFY(mock_injector_);
+  [mediator disconnect];
 }

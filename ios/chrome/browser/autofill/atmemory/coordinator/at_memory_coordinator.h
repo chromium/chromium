@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/common/unique_ids.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol ManualFillContentInjector;
@@ -20,6 +21,7 @@
                                    browser:(Browser*)browser
                            contentInjector:
                                (id<ManualFillContentInjector>)contentInjector
+                                   fieldId:(autofill::FieldGlobalId)fieldId
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

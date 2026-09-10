@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
@@ -19,8 +20,8 @@ class WebState;
 // Delegate for AutofillAgent.
 @protocol AutofillAgentDelegate
 
-// Presents the AtMemory UI.
-- (void)showAtMemory;
+// Presents the AtMemory UI for a specific field.
+- (void)showAtMemoryForField:(autofill::FieldGlobalId)fieldId;
 
 // Shows a snackbar displaying a message with `messageText` and a button with
 // `buttonText` which triggers `messageAction` on tap. `completionAction` will

@@ -11,5 +11,5 @@ source_set("public") {
     "at_memory_search_provider.h",
     "at_memory_search_result_commands.h",
   ]
-  deps = [ "//base" ]
+  deps = [ "//components/autofill/core/common" ]
 }

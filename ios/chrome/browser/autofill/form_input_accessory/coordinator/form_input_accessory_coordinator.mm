@@ -98,6 +98,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
+using autofill::FieldGlobalId;
+
 namespace {
 // Delay between the time the view is shown, and the time the suggestion label
 // is highlighted.
@@ -372,7 +374,13 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
                       forDataType:(manual_fill::ManualFillDataType)dataType
          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   if (dataType == manual_fill::ManualFillDataType::kAtMemory) {
-    [self showAtMemory];
+    std::optional<FieldGlobalId> fieldId =
+        [_formInputAccessoryMediator lastFocusedFieldGlobalId];
+    // Explicitly using `has_value()` for `FieldGlobalId`.
+    if (!fieldId.has_value()) {
+      return;
+    }
+    [self showAtMemoryForField:fieldId.value()];
     return;
   }
 
@@ -812,14 +820,15 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 
 #pragma mark - AtMemoryCommands
 
-- (void)showAtMemory {
-  if (_atMemoryCoordinator) {
+- (void)showAtMemoryForField:(FieldGlobalId)fieldId {
+  if (!fieldId.renderer_id || _atMemoryCoordinator) {
     return;
   }
   _atMemoryCoordinator = [[AtMemoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                 contentInjector:self.injectionHandler];
+                 contentInjector:self.injectionHandler
+                         fieldId:fieldId];
 
   [self.childCoordinators addObject:_atMemoryCoordinator];
 

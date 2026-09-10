@@ -10,6 +10,8 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
@@ -41,6 +43,8 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
 
+using autofill::FieldGlobalId;
+using autofill::FieldRendererId;
 using autofill::FormActivityParams;
 
 namespace {
@@ -876,4 +880,98 @@ TEST_F(FormInputAccessoryMediatorTest,
   [mediator_ updateWithNewWebState:web_state_list_.GetActiveWebState()];
 
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that lastFocusedFieldGlobalId returns nullopt when no field is focused.
+TEST_F(FormInputAccessoryMediatorTest,
+       LastFocusedFieldGlobalIdEmptyWhenNoFieldFocused) {
+  EXPECT_EQ(mediator_.lastFocusedFieldGlobalId, std::nullopt);
+}
+
+// Tests that lastFocusedFieldGlobalId returns a valid FieldGlobalId when a
+// field is focused on an HTTPS frame.
+TEST_F(FormInputAccessoryMediatorTest,
+       LastFocusedFieldGlobalIdValidOnHttpsFrame) {
+  autofill::TestAutofillClientIOS autofill_client(
+      web_state_list_.GetActiveWebState(), nil);
+
+  auto* fake_frames_manager = static_cast<web::FakeWebFramesManager*>(
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_list_.GetActiveWebState()));
+  auto https_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
+  std::string frame_id = https_frame->GetFrameId();
+  web::WebFrame* frame_ptr = https_frame.get();
+  fake_frames_manager->AddWebFrame(std::move(https_frame));
+
+  autofill::AutofillDriverIOS* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+          web_state_list_.GetActiveWebState(), frame_ptr);
+  ASSERT_TRUE(driver);
+
+  FormActivityParams params =
+      CreateFormActivityParams(FormActivityParams::FieldType::kText);
+  params.frame_id = frame_id;
+  params.field_renderer_id = autofill::FieldRendererId(123);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(frame_ptr, params);
+
+  FieldGlobalId expected_field_id(driver->GetFrameToken(),
+                                  autofill::FieldRendererId(123));
+  EXPECT_EQ(mediator_.lastFocusedFieldGlobalId, expected_field_id);
+}
+
+// Tests that lastFocusedFieldGlobalId returns nullopt on a non-cryptographic
+// HTTP frame.
+TEST_F(FormInputAccessoryMediatorTest,
+       LastFocusedFieldGlobalIdEmptyOnHttpFrame) {
+  autofill::TestAutofillClientIOS autofill_client(
+      web_state_list_.GetActiveWebState(), nil);
+
+  auto* fake_frames_manager = static_cast<web::FakeWebFramesManager*>(
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_list_.GetActiveWebState()));
+  auto http_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("http://example.com"));
+  std::string frame_id = http_frame->GetFrameId();
+  web::WebFrame* frame_ptr = http_frame.get();
+  fake_frames_manager->AddWebFrame(std::move(http_frame));
+
+  FormActivityParams params =
+      CreateFormActivityParams(FormActivityParams::FieldType::kText);
+  params.frame_id = frame_id;
+  params.field_renderer_id = autofill::FieldRendererId(123);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(frame_ptr, params);
+
+  EXPECT_EQ(mediator_.lastFocusedFieldGlobalId, std::nullopt);
+}
+
+// Tests that lastFocusedFieldGlobalId returns nullopt after disconnecting the
+// mediator.
+TEST_F(FormInputAccessoryMediatorTest,
+       LastFocusedFieldGlobalIdResetOnDisconnect) {
+  autofill::TestAutofillClientIOS autofill_client(
+      web_state_list_.GetActiveWebState(), nil);
+
+  auto* fake_frames_manager = static_cast<web::FakeWebFramesManager*>(
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_list_.GetActiveWebState()));
+  auto https_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com"));
+  std::string frame_id = https_frame->GetFrameId();
+  web::WebFrame* frame_ptr = https_frame.get();
+  fake_frames_manager->AddWebFrame(std::move(https_frame));
+
+  FormActivityParams params =
+      CreateFormActivityParams(FormActivityParams::FieldType::kText);
+  params.frame_id = frame_id;
+  params.field_renderer_id = autofill::FieldRendererId(123);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(frame_ptr, params);
+  EXPECT_NE(mediator_.lastFocusedFieldGlobalId, std::nullopt);
+
+  [mediator_ disconnect];
+
+  EXPECT_EQ(mediator_.lastFocusedFieldGlobalId, std::nullopt);
 }

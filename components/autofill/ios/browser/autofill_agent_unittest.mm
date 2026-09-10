@@ -1367,8 +1367,14 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_AutocompleteAtMemoryButton) {
   id delegate_mock = OCMProtocolMock(@protocol(AutofillAgentDelegate));
   autofill_agent_.delegate = delegate_mock;
 
-  // Expect `showAtMemory` to be called.
-  OCMExpect([delegate_mock showAtMemory]);
+  // Expect `showAtMemoryForField:` to be called.
+  autofill::AutofillDriverIOS* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
+                                                           fake_main_frame_);
+  ASSERT_TRUE(driver);
+  autofill::FieldGlobalId expected_field_id(driver->GetFrameToken(),
+                                            FieldRendererId(2));
+  OCMExpect([delegate_mock showAtMemoryForField:expected_field_id]);
 
   // Select suggestion to trigger AtMemory.
   __block BOOL completion_handler_called = NO;

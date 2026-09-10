@@ -210,7 +210,6 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/common",
     "//components/password_manager/core/browser",
-    "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
