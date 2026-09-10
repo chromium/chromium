@@ -212,10 +212,6 @@ ui::Layer* SystemShadow::GetLayer() {
   return shadow()->layer();
 }
 
-ui::LayerNinePatch* SystemShadow::GetNinePatchLayer() {
-  return shadow()->shadow_layer();
-}
-
 void SystemShadow::ObserveColorProviderSource(
     ui::ColorProviderSource* color_provider_source) {
   Observe(color_provider_source);

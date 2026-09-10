@@ -64,18 +64,6 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // shadow style.
   void Init(int elevation);
 
-  // Exposed to allow setting animation parameters for bounds and opacity
-  // animations.
-  ui::LayerNinePatch* shadow_layer() {
-    ui::Layer* layer = shadow_layer_owner_.layer();
-    return layer ? layer->AsNinePatch() : nullptr;
-  }
-
-  ui::LayerNinePatch* fading_layer() {
-    ui::Layer* layer = fading_layer_owner_.layer();
-    return layer ? layer->AsNinePatch() : nullptr;
-  }
-
   // Moves and resizes the shadow layer to frame |content_bounds|.
   // This should be used to adjust the shadow's size and position (rather than
   // applying transformations to the `layer()` of this Shadow).
@@ -108,6 +96,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
     return details_ ? &details_.value() : nullptr;
   }
 
+  ui::LayerNinePatch* shadow_layer_for_testing() { return shadow_layer(); }
+  ui::LayerNinePatch* fading_layer_for_testing() { return fading_layer(); }
+
  private:
   // A shadow layer owner that correctly updates the nine patch layer details
   // when it gets recreated.
@@ -127,6 +118,16 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
    private:
     const raw_ptr<Shadow> owner_shadow_;
   };
+
+  ui::LayerNinePatch* shadow_layer() {
+    ui::Layer* layer = shadow_layer_owner_.layer();
+    return layer ? layer->AsNinePatch() : nullptr;
+  }
+
+  ui::LayerNinePatch* fading_layer() {
+    ui::Layer* layer = fading_layer_owner_.layer();
+    return layer ? layer->AsNinePatch() : nullptr;
+  }
 
   // Updates the shadow layer and its image to reflect |desired_elevation_|.
   void RecreateShadowLayer();

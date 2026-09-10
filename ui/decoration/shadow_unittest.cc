@@ -110,7 +110,7 @@ TEST_F(ShadowTest, EmptyContentBounds) {
   shadow.Init(kElevationLarge);
   // Initially, content bounds are empty and layer bounds should be empty.
   EXPECT_TRUE(shadow.layer()->bounds().IsEmpty());
-  EXPECT_TRUE(shadow.shadow_layer()->bounds().IsEmpty());
+  EXPECT_TRUE(shadow.shadow_layer_for_testing()->bounds().IsEmpty());
 
   // Set non-empty content bounds.
   gfx::Rect content_bounds(100, 100, 300, 300);
@@ -118,17 +118,19 @@ TEST_F(ShadowTest, EmptyContentBounds) {
   gfx::Rect shadow_bounds(content_bounds);
   shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
-  EXPECT_EQ(shadow_bounds.size(), shadow.shadow_layer()->bounds().size());
+  EXPECT_EQ(shadow_bounds.size(),
+            shadow.shadow_layer_for_testing()->bounds().size());
 
   // Reset to empty content bounds. Layer bounds should collapse to empty.
   shadow.SetContentBounds(gfx::Rect());
   EXPECT_TRUE(shadow.layer()->bounds().IsEmpty());
-  EXPECT_TRUE(shadow.shadow_layer()->bounds().IsEmpty());
+  EXPECT_TRUE(shadow.shadow_layer_for_testing()->bounds().IsEmpty());
 
   // Restore non-empty content bounds.
   shadow.SetContentBounds(content_bounds);
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
-  EXPECT_EQ(shadow_bounds.size(), shadow.shadow_layer()->bounds().size());
+  EXPECT_EQ(shadow_bounds.size(),
+            shadow.shadow_layer_for_testing()->bounds().size());
 }
 
 // Test if the shadow's layer bounds are modified, setting the same content
@@ -179,14 +181,14 @@ TEST_F(ShadowTest, ConfigureBeforeInit) {
   EXPECT_EQ(Shadow::Style::kMaterialDesign, shadow.style());
 
   EXPECT_FALSE(shadow.layer());
-  EXPECT_FALSE(shadow.shadow_layer());
+  EXPECT_FALSE(shadow.shadow_layer_for_testing());
   EXPECT_FALSE(shadow.details_for_testing());
 
   // Call Init() and verify that the shadow appearance is correctly updated with
   // the previously configured properties.
   shadow.Init(kElevationLarge);
   EXPECT_TRUE(shadow.layer());
-  EXPECT_TRUE(shadow.shadow_layer());
+  EXPECT_TRUE(shadow.shadow_layer_for_testing());
   ASSERT_TRUE(shadow.details_for_testing());
 
   gfx::Rect shadow_bounds(content_bounds);

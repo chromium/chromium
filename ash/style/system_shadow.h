@@ -22,7 +22,6 @@ namespace ui {
 class ColorProvider;
 class ColorProviderSource;
 class Layer;
-class LayerNinePatch;
 class Shadow;
 }  // namespace ui
 
@@ -101,12 +100,6 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // Return the layer of the shadow. The layer is commonly used for setting
   // layer hierarchy, visibility, and transformation.
   ui::Layer* GetLayer();
-
-  // Return the nine patch layer of the shadow. The nine patch layer is a child
-  // layer of the shadow's layer painted with the shadow image. Normally, set
-  // the hierarchy, visibility and transformation on the shadow's layer instead
-  // of the nine patch layer.
-  ui::LayerNinePatch* GetNinePatchLayer();
 
   // Observe the given color provider source to update the shadow colors.
   void ObserveColorProviderSource(
