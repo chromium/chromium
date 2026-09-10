@@ -9,7 +9,7 @@
 
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/orb/orb_impl.h"
+#include "services/network/public/cpp/orb/orb_impl.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network::orb {
@@ -24,8 +24,9 @@ void RemoveAllHttpResponseHeaders(
   size_t it = 0;
   std::string name;
   std::string value;
-  while (headers->EnumerateHeaderLines(&it, &name, &value))
+  while (headers->EnumerateHeaderLines(&it, &name, &value)) {
     names_of_headers_to_remove.push_back(name);
+  }
 
   headers->RemoveHeaders(names_of_headers_to_remove);
 }
@@ -42,8 +43,9 @@ std::unique_ptr<ResponseAnalyzer> ResponseAnalyzer::Create(
 
 void SanitizeBlockedResponseHeaders(network::mojom::URLResponseHead& response) {
   response.content_length = 0;
-  if (response.headers)
+  if (response.headers) {
     RemoveAllHttpResponseHeaders(response.headers);
+  }
 }
 
 }  // namespace network::orb

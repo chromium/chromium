@@ -22,8 +22,8 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/orb/orb_impl.h"
-#include "services/network/orb/orb_mimetypes.h"
+#include "services/network/public/cpp/orb/orb_impl.h"
+#include "services/network/public/cpp/orb/orb_mimetypes.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,8 +118,9 @@ inline std::ostream& operator<<(std::ostream& out, const MimeType& value) {
     base::ReplaceChars(packet, "\n", "\\n", &packet);
     base::ReplaceChars(packet, "\t", "\\t", &packet);
     base::ReplaceChars(packet, "\r", "\\r", &packet);
-    if (packets.length() > 1)
+    if (packets.length() > 1) {
       packets += ", ";
+    }
     packets += "\"";
     packets += packet;
     packets += "\"";
@@ -177,8 +178,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
-        Verdict::kAllow,                       // verdict
-        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
+        Verdict::kAllow,                            // verdict
+        kVerdictPacketForHeadersBasedVerdict,       // verdict_packet
     },
     {
         "Allowed: Same-origin JSON with parser breaker and HTML mime type",
@@ -189,7 +190,7 @@ const TestScenario kScenarios[] = {
         "text/html",                       // response_content_type
         MimeType::kHtml,                   // canonical_mime_type
         {")]}',\n[true, true, false, \"user@chromium.org\"]"},  // packets
-        false,  // resource_is_sensitive
+        false,                                 // resource_is_sensitive
         Verdict::kAllow,                       // verdict
         kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
@@ -202,7 +203,7 @@ const TestScenario kScenarios[] = {
         "text/json",                       // response_content_type
         MimeType::kJson,                   // canonical_mime_type
         {")]}'\n[true, true, false, \"user@chromium.org\"]"},  // packets
-        false,  // resource_is_sensitive
+        false,                                 // resource_is_sensitive
         Verdict::kAllow,                       // verdict
         kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
@@ -216,8 +217,8 @@ const TestScenario kScenarios[] = {
         MimeType::kOthers,                 // canonical_mime_type
         {"var x=3;"},                      // packets
         false,                             // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Allowed: Cross-site XHR to HTML with CORS for origin",
@@ -230,8 +231,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Allowed: Cross-site XHR to XML with CORS for any",
@@ -243,9 +244,9 @@ const TestScenario kScenarios[] = {
         "application/rss+xml",             // response_content_type
         MimeType::kXml,                    // canonical_mime_type
         {"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"},  // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Allowed: Cross-site XHR to JSON with CORS for null",
@@ -253,13 +254,13 @@ const TestScenario kScenarios[] = {
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "Access-Control-Allow-Origin: null",    // response_headers
-        "text/json",                            // response_content_type
-        MimeType::kJson,                        // canonical_mime_type
-        {"{\"x\" : 3}"},                        // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "Access-Control-Allow-Origin: null",   // response_headers
+        "text/json",                           // response_content_type
+        MimeType::kJson,                       // canonical_mime_type
+        {"{\"x\" : 3}"},                       // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         // This case won't be reached in practice today, because CORB is only
@@ -331,13 +332,13 @@ const TestScenario kScenarios[] = {
         "http://www.a.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
         "X-Content-Type-Options: nosniff\n"
-        "Access-Control-Allow-Origin: *",       // response_headers
-        "application/javascript",               // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {")]}'\n[true, false]"},                // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "Access-Control-Allow-Origin: *",      // response_headers
+        "application/javascript",              // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
+        {")]}'\n[true, false]"},               // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Blocked: JSON object labeled as JavaScript with a no-sniff header",
@@ -345,24 +346,24 @@ const TestScenario kScenarios[] = {
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "X-Content-Type-Options: nosniff",      // response_headers
-        "application/javascript",               // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {"{ \"key\"", ": true }"},              // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kBlock,                        // verdict
-        1,                                      // verdict_packet
+        "X-Content-Type-Options: nosniff",  // response_headers
+        "application/javascript",           // response_content_type
+        MimeType::kOthers,                  // canonical_mime_type
+        {"{ \"key\"", ": true }"},          // packets
+        false,                              // resource_is_sensitive
+        Verdict::kBlock,                    // verdict
+        1,                                  // verdict_packet
     },
     {
         "Allowed: Empty response with PNG mime type",
         __LINE__,
-        "http://www.b.com/resource.html",  // target_url
-        "http://www.a.com/",               // initiator_origin
-        "HTTP/1.1 200 OK",                 // response_headers
-        "image/png",                       // response_content_type
-        MimeType::kOthers,                 // canonical_mime_type
-        {},                                // packets
-        false,                             // resource_is_sensitive
+        "http://www.b.com/resource.html",       // target_url
+        "http://www.a.com/",                    // initiator_origin
+        "HTTP/1.1 200 OK",                      // response_headers
+        "image/png",                            // response_content_type
+        MimeType::kOthers,                      // canonical_mime_type
+        {},                                     // packets
+        false,                                  // resource_is_sensitive
         Verdict::kAllowBecauseOutOfData,        // verdict
         kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
@@ -372,11 +373,11 @@ const TestScenario kScenarios[] = {
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "X-Content-Type-Options: nosniff",  // response_headers
-        "image/png",                        // response_content_type
-        MimeType::kOthers,                  // canonical_mime_type
-        {},                                 // packets
-        false,                              // resource_is_sensitive
+        "X-Content-Type-Options: nosniff",      // response_headers
+        "image/png",                            // response_content_type
+        MimeType::kOthers,                      // canonical_mime_type
+        {},                                     // packets
+        false,                                  // resource_is_sensitive
         Verdict::kAllowBecauseOutOfData,        // verdict
         kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
@@ -392,8 +393,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                   // canonical_mime_type
         {"foo({\"x\" : 3})"},              // packets
         false,                             // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Allowed: Cross-site script to JavaScript labeled as text",
@@ -405,8 +406,8 @@ const TestScenario kScenarios[] = {
         MimeType::kPlain,                  // canonical_mime_type
         {"var x = 3;"},                    // packets
         false,                             // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Allowed: JSON-like JavaScript labeled as text",
@@ -417,9 +418,9 @@ const TestScenario kScenarios[] = {
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
         {"{", "    \n", "var x = 3;\n", "console.log('hello');"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        2,                          // verdict_packet
+        false,            // resource_is_sensitive
+        Verdict::kAllow,  // verdict
+        2,                // verdict_packet
     },
 
     {
@@ -432,8 +433,8 @@ const TestScenario kScenarios[] = {
         MimeType::kJson,                   // canonical_mime_type
         {"invoke({ \"key\": true });"},    // packets
         false,                             // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Allowed (for now): JSON array literal labeled as text/plain",
@@ -445,8 +446,8 @@ const TestScenario kScenarios[] = {
         MimeType::kPlain,                      // canonical_mime_type
         {"[1, 2, {}, true, false, \"yay\"]"},  // packets
         false,                                 // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                       // verdict
+        0,                                     // verdict_packet
     },
     {
         "Allowed: JSON array literal on which a function is called.",
@@ -459,8 +460,8 @@ const TestScenario kScenarios[] = {
         {"[1, 2, {}, true, false, \"yay\"]", ".map(x => console.log(x))",
          ".map(x => console.log(x));"},  // packets
         false,                           // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                 // verdict
+        0,                               // verdict_packet
     },
     {
         "Allowed: Cross-site XHR to nonsense labeled as XML",
@@ -472,8 +473,8 @@ const TestScenario kScenarios[] = {
         MimeType::kXml,                    // canonical_mime_type
         {"Won't sniff as XML"},            // packets
         false,                             // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Allowed: Cross-site XHR to nonsense labeled as JSON",
@@ -485,45 +486,45 @@ const TestScenario kScenarios[] = {
         MimeType::kJson,                   // canonical_mime_type
         {"Won't sniff as JSON"},           // packets
         false,                             // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Allowed: Cross-site XHR to partial match for <HTML> tag",
         __LINE__,
-        "http://www.b.com/resource.html",  // target_url
-        "http://www.a.com/",               // initiator_origin
-        "HTTP/1.1 200 OK",                 // response_headers
-        "text/html",                       // response_content_type
-        MimeType::kHtml,                   // canonical_mime_type
-        {"<htm"},                          // packets
-        false,                             // resource_is_sensitive
+        "http://www.b.com/resource.html",       // target_url
+        "http://www.a.com/",                    // initiator_origin
+        "HTTP/1.1 200 OK",                      // response_headers
+        "text/html",                            // response_content_type
+        MimeType::kHtml,                        // canonical_mime_type
+        {"<htm"},                               // packets
+        false,                                  // resource_is_sensitive
         Verdict::kAllowBecauseOutOfData,        // verdict
         kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
     {
         "Allowed: HTML tag appears only after net::kMaxBytesToSniff",
         __LINE__,
-        "http://www.b.com/resource.html",  // target_url
-        "http://www.a.com/",               // initiator_origin
-        "HTTP/1.1 200 OK",                 // response_headers
-        "text/html",                       // response_content_type
-        MimeType::kHtml,                   // canonical_mime_type
-        {kHTMLWithTooLongComment},         // packets
-        false,                             // resource_is_sensitive
+        "http://www.b.com/resource.html",       // target_url
+        "http://www.a.com/",                    // initiator_origin
+        "HTTP/1.1 200 OK",                      // response_headers
+        "text/html",                            // response_content_type
+        MimeType::kHtml,                        // canonical_mime_type
+        {kHTMLWithTooLongComment},              // packets
+        false,                                  // resource_is_sensitive
         Verdict::kAllowBecauseOutOfData,        // verdict
         kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
     {
         "Allowed: Empty response with html mime type",
         __LINE__,
-        "http://www.b.com/resource.html",  // target_url
-        "http://www.a.com/",               // initiator_origin
-        "HTTP/1.1 200 OK",                 // response_headers
-        "text/html",                       // response_content_type
-        MimeType::kHtml,                   // canonical_mime_type
-        {},                                // packets
-        false,                             // resource_is_sensitive
+        "http://www.b.com/resource.html",       // target_url
+        "http://www.a.com/",                    // initiator_origin
+        "HTTP/1.1 200 OK",                      // response_headers
+        "text/html",                            // response_content_type
+        MimeType::kHtml,                        // canonical_mime_type
+        {},                                     // packets
+        false,                                  // resource_is_sensitive
         Verdict::kAllowBecauseOutOfData,        // verdict
         kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
@@ -589,13 +590,13 @@ const TestScenario kScenarios[] = {
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "X-Content-Type-Options: nosniff",      // response_headers
-        "text/html",                            // response_content_type
-        MimeType::kHtml,                        // canonical_mime_type
-        {"Wouldn't sniff as HTML"},             // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kBlock,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "X-Content-Type-Options: nosniff",     // response_headers
+        "text/html",                           // response_content_type
+        MimeType::kHtml,                       // canonical_mime_type
+        {"Wouldn't sniff as HTML"},            // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kBlock,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Blocked: Cross-origin, same-site XHR to nosniff HTML without CORS",
@@ -621,9 +622,9 @@ const TestScenario kScenarios[] = {
         "text/html",                        // response_content_type
         MimeType::kHtml,                    // canonical_mime_type
         {")]", "}'\n[true, true, false, \"user@chromium.org\"]"},  // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kBlock,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        false,                                 // resource_is_sensitive
+        Verdict::kBlock,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
 
     {
@@ -634,13 +635,13 @@ const TestScenario kScenarios[] = {
         "http://www.b.com/resource.html",  // target_url
         "http://www.a.com/",               // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "X-Content-Type-Options: nosniff",      // response_headers
-        "text/html",                            // response_content_type
-        MimeType::kHtml,                        // canonical_mime_type
-        {},                                     // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kBlock,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "X-Content-Type-Options: nosniff",     // response_headers
+        "text/html",                           // response_content_type
+        MimeType::kHtml,                       // canonical_mime_type
+        {},                                    // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kBlock,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
 
     // CORB only applies to `no-cors` responses.
@@ -657,8 +658,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<hTmL><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Allowed: CORB N/A for CORS requests: Cross-site XHR with wrong CORS",
@@ -671,8 +672,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<hTmL><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Allowed: CORB N/A for CORS requests: JSON parser-breaker + wrong CORS",
@@ -686,8 +687,8 @@ const TestScenario kScenarios[] = {
         MimeType::kOthers,                  // canonical_mime_type
         {")]}'\n[true, false]"},            // packets
         true,                               // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                    // verdict
+        0,                                  // verdict_packet
     },
 
     // Blocked responses due to sniffing:
@@ -701,8 +702,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Blocked: Cross-site XHR to XML without CORS",
@@ -713,9 +714,9 @@ const TestScenario kScenarios[] = {
         "application/xml",                 // response_content_type
         MimeType::kXml,                    // canonical_mime_type
         {"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        false,            // resource_is_sensitive
+        Verdict::kBlock,  // verdict
+        0,                // verdict_packet
     },
     {
         "Blocked: Cross-site XHR to JSON without CORS",
@@ -727,8 +728,8 @@ const TestScenario kScenarios[] = {
         MimeType::kJson,                   // canonical_mime_type
         {"{\"x\" : 3}"},                   // packets
         false,                             // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                   // verdict
+        0,                                 // verdict_packet
     },
     {
         "Blocked: slow-arriving JSON labeled as text/plain",
@@ -740,8 +741,8 @@ const TestScenario kScenarios[] = {
         MimeType::kPlain,                             // canonical_mime_type
         {"    ", "\t", "{", "\"x\" ", "  ", ": 3}"},  // packets
         false,                                        // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        5,                          // verdict_packet
+        Verdict::kBlock,                              // verdict
+        5,                                            // verdict_packet
     },
     {
         "Blocked: slow-arriving xml labeled as text/plain",
@@ -753,8 +754,8 @@ const TestScenario kScenarios[] = {
         MimeType::kPlain,                              // canonical_mime_type
         {"    ", "\t", "<", "?", "x", "m", "l", ">"},  // packets
         false,                                         // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        6,                          // verdict_packet
+        Verdict::kBlock,                               // verdict
+        6,                                             // verdict_packet
     },
     {
         "Blocked: slow-arriving html labeled as text/plain",
@@ -765,10 +766,10 @@ const TestScenario kScenarios[] = {
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
         {"    <!--", "\t -", "-", "->", "\n", "<", "s", "c", "r", "i", "p",
-         "t"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        11,                         // verdict_packet
+         "t"},            // packets
+        false,            // resource_is_sensitive
+        Verdict::kBlock,  // verdict
+        11,               // verdict_packet
     },
     {
         "Blocked: slow-arriving html with commented-out xml tag",
@@ -779,9 +780,9 @@ const TestScenario kScenarios[] = {
         "text/plain",                      // response_content_type
         MimeType::kPlain,                  // canonical_mime_type
         {"    <!--", " <?xml ", "-->\n", "<", "h", "e", "a", "d"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        7,                          // verdict_packet
+        false,            // resource_is_sensitive
+        Verdict::kBlock,  // verdict
+        7,                // verdict_packet
     },
     {
         "Blocked: Cross-site XHR to HTML labeled as text without CORS",
@@ -793,8 +794,8 @@ const TestScenario kScenarios[] = {
         MimeType::kPlain,                           // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Blocked: Cross-site <script> inclusion of HTML w/ DTD without CORS",
@@ -808,8 +809,8 @@ const TestScenario kScenarios[] = {
          "itemtype=\"http://schema.org/SearchResultsPage\" ",
          "lang=\"en\"><head>"},  // packets
         false,                   // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        1,                          // verdict_packet
+        Verdict::kBlock,         // verdict
+        1,                       // verdict_packet
     },
     {
         "Blocked: Cross-site fetch HTML from NaCl without CORS response",
@@ -821,8 +822,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // first_chunk
         false,                                      // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Blocked: Cross-site JSON with parser breaker and JSON mime type",
@@ -833,9 +834,9 @@ const TestScenario kScenarios[] = {
         "text/json",                   // response_content_type
         MimeType::kJson,               // canonical_mime_type
         {")]", "}'\n[true, true, false, \"user@chromium.org\"]"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        1,                          // verdict_packet
+        false,            // resource_is_sensitive
+        Verdict::kBlock,  // verdict
+        1,                // verdict_packet
     },
     {
         "Blocked: Cross-site JSON with parser breaker/nosniff/other mime type",
@@ -847,9 +848,9 @@ const TestScenario kScenarios[] = {
         "application/octet-stream",         // response_content_type
         MimeType::kOthers,                  // canonical_mime_type
         {")]", "}'\n[true, true, false, \"user@chromium.org\"]"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        1,                          // verdict_packet
+        false,            // resource_is_sensitive
+        Verdict::kBlock,  // verdict
+        1,                // verdict_packet
     },
     {
         "Blocked: Cross-site JSON with parser breaker and other mime type",
@@ -860,43 +861,43 @@ const TestScenario kScenarios[] = {
         "application/javascript",      // response_content_type
         MimeType::kOthers,             // canonical_mime_type
         {"for(;;)", ";[true, true, false, \"user@chromium.org\"]"},  // packets
-        false,  // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        1,                          // verdict_packet
+        false,            // resource_is_sensitive
+        Verdict::kBlock,  // verdict
+        1,                // verdict_packet
     },
     {
         // Test based on wpt/.../corb/.../css-with-json-parser-breaker.css
         "Blocked: Cross-site CSS with parser breaker and text/css mime type",
         __LINE__,
-        "http://a.com/resource.css",            // target_url
-        "http://c.com/",                        // initiator_origin
-        "HTTP/1.1 200 OK",                      // response_headers
-        "text/css",                             // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
+        "http://a.com/resource.css",           // target_url
+        "http://c.com/",                       // initiator_origin
+        "HTTP/1.1 200 OK",                     // response_headers
+        "text/css",                            // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
         {R"()]}'
             {}
-            #header { color: red; } )"},        // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+            #header { color: red; } )"},       // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         // Test based on http/tests/security/resources/xorigincss1.css
         "Blocked: Cross-site HTML/CSS polyglot with text/css mime type",
         __LINE__,
-        "http://a.com/resource.css",            // target_url
-        "http://c.com/",                        // initiator_origin
-        "HTTP/1.1 200 OK",                      // response_headers
-        "text/css",                             // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
+        "http://a.com/resource.css",           // target_url
+        "http://c.com/",                       // initiator_origin
+        "HTTP/1.1 200 OK",                     // response_headers
+        "text/css",                            // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
         {R"(  <html>{}\n"
               .id3 {
                 background-color: yellow;
               }
-              </html> )"},                      // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+              </html> )"},                     // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Blocked: Cross-site XHR to a filesystem URI",
@@ -908,8 +909,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Blocked: Cross-site XHR to a blob URI",
@@ -921,8 +922,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     // Range response. The product code doesn't currently look at the exact
     // range specified, so we can get away with testing with arbitrary/random
@@ -1013,10 +1014,10 @@ const TestScenario kScenarios[] = {
         // Body of test response is based on:
         // 1) net/base/mime_sniffer.cc
         // 2) https://mimesniff.spec.whatwg.org/#signature-for-mp4
-        {"....ftypmp4...."},                    // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        {"....ftypmp4...."},                   // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Allowed: video/mp4 206 media - beginning of resource",
@@ -1031,9 +1032,9 @@ const TestScenario kScenarios[] = {
         // 1) net/base/mime_sniffer.cc
         // 2) https://mimesniff.spec.whatwg.org/#signature-for-mp4
         {"MIME type means this doesn't have to sniff as video"},  // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Allowed: video/mp4 206 media - middle of resource",
@@ -1060,8 +1061,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                           // canonical_mime_type
         {/* empty body doesn't sniff as html */},  // packets
         false,                                     // resource_is_sensitive
-        Verdict::kAllow,                       // verdict
-        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
+        Verdict::kAllow,                           // verdict
+        kVerdictPacketForHeadersBasedVerdict,      // verdict_packet
     },
     {
         "Allowed after sniffing: cross-site 204 response with no data",
@@ -1073,8 +1074,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                           // canonical_mime_type
         {/* empty body doesn't sniff as html */},  // packets
         false,                                     // resource_is_sensitive
-        Verdict::kAllowBecauseOutOfData,        // verdict
-        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
+        Verdict::kAllowBecauseOutOfData,           // verdict
+        kVerdictPacketForInconclusiveSniffing,     // verdict_packet
     },
 
     // Testing the CORB protection logging.
@@ -1084,13 +1085,13 @@ const TestScenario kScenarios[] = {
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "Vary: Origin",                         // response_headers
-        "application/javascript",               // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {"var x=3;"},                           // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "Vary: Origin",                        // response_headers
+        "application/javascript",              // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
+        {"var x=3;"},                          // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Not Sensitive: vary user-agent is present and should be ignored",
@@ -1098,13 +1099,13 @@ const TestScenario kScenarios[] = {
         "http://www.a.com/resource.js",  // target_url
         "http://www.a.com/",             // initiator_origin
         "HTTP/1.1 200 OK\n"
-        "Vary: Origin, User-Agent",             // response_headers
-        "application/javascript",               // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {"var x=3;"},                           // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "Vary: Origin, User-Agent",            // response_headers
+        "application/javascript",              // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
+        {"var x=3;"},                          // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
         "Not Sensitive: cache-control no-store should be ignored",
@@ -1113,13 +1114,13 @@ const TestScenario kScenarios[] = {
         "http://www.a.com/",             // initiator_origin
         "HTTP/1.1 200 OK\n"
         "Vary: Origin\n"
-        "Cache-Control: No-Store",              // response_headers
-        "application/javascript",               // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {"var x=3;"},                           // packets
-        false,                                  // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "Cache-Control: No-Store",             // response_headers
+        "application/javascript",              // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
+        {"var x=3;"},                          // packets
+        false,                                 // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     // Responses with the Access-Control-Allow-Origin header value other than *.
     {
@@ -1166,8 +1167,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Sensitive, Allowed after sniffing: javascript with CORS heuristic",
@@ -1181,8 +1182,8 @@ const TestScenario kScenarios[] = {
         MimeType::kOthers,         // canonical_mime_type
         {"var x=3;"},              // packets
         true,                      // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,           // verdict
+        0,                         // verdict_packet
     },
     {
         "Sensitive slow-arriving JSON with CORS heurisitic. Only needs "
@@ -1196,8 +1197,8 @@ const TestScenario kScenarios[] = {
         MimeType::kJson,                              // canonical_mime_type
         {"    ", "\t", "{", "\"x\" ", "  ", ": 3}"},  // packets
         true,                                         // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        5,                          // verdict_packet
+        Verdict::kAllow,                              // verdict
+        5,                                            // verdict_packet
     },
 
     // Responses with Vary: Origin and Cache-Control: Private headers.
@@ -1263,8 +1264,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Sensitive, Allowed after sniffing: javascript with cache heuristic",
@@ -1278,8 +1279,8 @@ const TestScenario kScenarios[] = {
         MimeType::kOthers,         // canonical_mime_type
         {"var x=3;"},              // packets
         true,                      // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,           // verdict
+        0,                         // verdict_packet
     },
     {
         "Sensitive slow-arriving JSON with cache heurisitic. Only needs "
@@ -1294,8 +1295,8 @@ const TestScenario kScenarios[] = {
         MimeType::kJson,                              // canonical_mime_type
         {"    ", "\t", "{", "\"x\" ", "  ", ": 3}"},  // packets
         true,                                         // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        5,                          // verdict_packet
+        Verdict::kAllow,                              // verdict
+        5,                                            // verdict_packet
     },
 
     // The next two tests together ensure that when CORB blocks and strips the
@@ -1337,8 +1338,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
 
     // A test that makes sure we don't double log the CORB protection stats.
@@ -1359,8 +1360,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
 
     // Response with an unknown MIME type.
@@ -1374,12 +1375,12 @@ const TestScenario kScenarios[] = {
         "Vary: Origin\n"
         "Content-Range: bytes 200-1000/67589\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
-        "unknown/mime_type",                    // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {"var x=3;"},                           // packets
-        true,                                   // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "unknown/mime_type",                   // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
+        {"var x=3;"},                          // packets
+        true,                                  // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
 
     // Responses with the accept-ranges header.
@@ -1395,8 +1396,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Sensitive response with an accept-ranges header but value |none|.",
@@ -1410,8 +1411,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Non-sensitive response with an accept-ranges header.",
@@ -1424,8 +1425,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
-        Verdict::kAllow,                       // verdict
-        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
+        Verdict::kAllow,                            // verdict
+        kVerdictPacketForHeadersBasedVerdict,       // verdict_packet
     },
     // Sensitive responses with the accept-ranges header, a protected MIME type
     // and protection decision = kBlock.
@@ -1495,8 +1496,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Cache-heuristic response with an accept-ranges header.",
@@ -1511,8 +1512,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         "Cache + CORS heuristics, accept-ranges header says |none|.",
@@ -1528,8 +1529,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     // A Sensitive response with the accept-ranges header and a protected MIME
     // type but protection decision = kAllow (so the secondary accept-ranges
@@ -1544,12 +1545,12 @@ const TestScenario kScenarios[] = {
         "Accept-Ranges: bytes\n"
         "Content-Range: bytes 200-1000/67589\n"
         "Access-Control-Allow-Origin: http://www.a.com/",  // response_headers
-        "application/javascript",               // response_content_type
-        MimeType::kOthers,                      // canonical_mime_type
-        {"var x=3;"},                           // packets
-        true,                                   // resource_is_sensitive
-        Verdict::kAllow,                        // verdict
-        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+        "application/javascript",              // response_content_type
+        MimeType::kOthers,                     // canonical_mime_type
+        {"var x=3;"},                          // packets
+        true,                                  // resource_is_sensitive
+        Verdict::kAllow,                       // verdict
+        kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     // Sensitive responses with no data.
     {
@@ -1563,8 +1564,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                           // canonical_mime_type
         {/* empty body doesn't sniff as html */},  // packets
         true,                                      // resource_is_sensitive
-        Verdict::kAllowBecauseOutOfData,        // verdict
-        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
+        Verdict::kAllowBecauseOutOfData,           // verdict
+        kVerdictPacketForInconclusiveSniffing,     // verdict_packet
     },
 
     // These responses confirm we are correctly reporting when a nosniff header
@@ -1585,8 +1586,8 @@ const TestScenario kScenarios[] = {
         MimeType::kHtml,                            // canonical_mime_type
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,                            // verdict
+        0,                                          // verdict_packet
     },
     // These next responses have nosniff headers but are missing one of the
     // other criteria.
@@ -1603,8 +1604,8 @@ const TestScenario kScenarios[] = {
         MimeType::kOthers,         // canonical_mime_type
         {"var x=3;"},              // packets
         true,                      // resource_is_sensitive
-        Verdict::kAllow,            // verdict
-        0,                          // verdict_packet
+        Verdict::kAllow,           // verdict
+        0,                         // verdict_packet
     },
     {
         "Cache heuristic with nosniff header and protection decision == kBlock",
@@ -1779,8 +1780,9 @@ class ResponseAnalyzerTest : public testing::Test,
         // Append the next packet of the response body. If appending the entire
         // packet would exceed net::kMaxBytesToSniff we truncate the data.
         size_t bytes_to_append = strlen(packets_vector[packet_index]);
-        if (data_offset + bytes_to_append > net::kMaxBytesToSniff)
+        if (data_offset + bytes_to_append > net::kMaxBytesToSniff) {
           bytes_to_append = net::kMaxBytesToSniff - data_offset;
+        }
         data_buffer.append(packets_vector[packet_index], bytes_to_append);
 
         // Hand |analyzer_| the data to sniff.

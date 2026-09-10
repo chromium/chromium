@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/orb/orb_impl.h"
+#include "services/network/public/cpp/orb/orb_impl.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,9 +12,9 @@
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
-#include "services/network/orb/orb_mimetypes.h"
-#include "services/network/orb/orb_sniffers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/orb/orb_mimetypes.h"
+#include "services/network/public/cpp/orb/orb_sniffers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -60,8 +60,9 @@ bool IsAudioOrVideoMimeType(std::string_view mime_type) {
   // (sniffing audio/video in the OpaqueResponseBlockingAnalyzer::Sniff method
   // below) because net::SniffMimeTypeFromLocalData may return
   // "application/ogg".
-  if (base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg"))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg")) {
     return true;
+  }
 
   // TODO(lukasza): Address this departure from the spec (which doesn't
   // explicitly mention DASH and other MIME types here).  The current
@@ -70,13 +71,16 @@ bool IsAudioOrVideoMimeType(std::string_view mime_type) {
   // modify ORB spec to match this implementation.  If there is too much
   // web-compatibility risk, then ORB might need to fully parse DASH/HLS
   // manifests.
-  if (base::EqualsCaseInsensitiveASCII(mime_type, "application/dash+xml"))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "application/dash+xml")) {
     return true;
+  }
   if (base::EqualsCaseInsensitiveASCII(mime_type,
-                                       "application/vnd.apple.mpegurl"))
+                                       "application/vnd.apple.mpegurl")) {
     return true;
-  if (base::EqualsCaseInsensitiveASCII(mime_type, "text/vtt"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "text/vtt")) {
     return true;
+  }
 
   return false;
 }
@@ -89,12 +93,14 @@ bool IsTextCssMimeType(std::string_view mime_type) {
 // or a MIME type whose essence is "text/css" or "image/svg+xml".
 bool IsOpaqueSafelistedMimeType(std::string_view mime_type) {
   // Based on the spec: Is it a MIME type whose essence is text/css [...] ?
-  if (IsTextCssMimeType(mime_type))
+  if (IsTextCssMimeType(mime_type)) {
     return true;
+  }
 
   // Based on the spec: Is it a MIME type whose essence is [...] image/svg+xml?
-  if (IsNonSniffableImageMimeType(mime_type))
+  if (IsNonSniffableImageMimeType(mime_type)) {
     return true;
+  }
 
   // Deviation from spec: We do not handle JavaScript MIME types here. See
   // comments at IsOpaqueSafelistedMimeTypeThatWeSniffAnyway and the
@@ -102,8 +108,9 @@ bool IsOpaqueSafelistedMimeType(std::string_view mime_type) {
 
   // TODO(vogelheim): Departure from the spec - see the comment in
   // IsAudioOrVideoMimeType for more details.
-  if (IsAudioOrVideoMimeType(mime_type))
+  if (IsAudioOrVideoMimeType(mime_type)) {
     return true;
+  }
 
   return false;
 }
@@ -123,8 +130,9 @@ bool IsOpaqueSafelistedMimeTypeThatWeSniffAnyway(std::string_view mime_type) {
 
 // This corresponds to https://fetch.spec.whatwg.org/#ok-status
 bool IsOkayHttpStatus(const mojom::URLResponseHead& response) {
-  if (!response.headers)
+  if (!response.headers) {
     return false;
+  }
 
   int code = response.headers->response_code();
   return (200 <= code) && (code <= 299);
@@ -132,8 +140,9 @@ bool IsOkayHttpStatus(const mojom::URLResponseHead& response) {
 
 bool IsHttpStatus(const mojom::URLResponseHead& response,
                   int expected_status_code) {
-  if (!response.headers)
+  if (!response.headers) {
     return false;
+  }
 
   int code = response.headers->response_code();
   return code == expected_status_code;
@@ -141,11 +150,13 @@ bool IsHttpStatus(const mojom::URLResponseHead& response,
 
 bool IsRangeResponseWithMiddleOfResource(
     const mojom::URLResponseHead& response) {
-  if (!response.headers)
+  if (!response.headers) {
     return false;
+  }
 
-  if (!IsHttpStatus(response, 206))
+  if (!IsHttpStatus(response, 206)) {
     return false;
+  }
 
   std::optional<std::string> range =
       response.headers->GetNormalizedHeader("content-range");
@@ -169,12 +180,14 @@ bool IsOpaqueResponse(const std::optional<url::Origin>& request_initiator,
                       mojom::RequestMode request_mode,
                       const mojom::URLResponseHead& response) {
   // ORB only applies to "no-cors" requests.
-  if (request_mode != mojom::RequestMode::kNoCors)
+  if (request_mode != mojom::RequestMode::kNoCors) {
     return false;
+  }
 
   // Browser-initiated requests are never opaque.
-  if (!request_initiator.has_value())
+  if (!request_initiator.has_value()) {
     return false;
+  }
 
   // Requests from foo.example.com will consult foo.example.com's service worker
   // first (if one has been registered).  The service worker can handle requests
@@ -204,8 +217,7 @@ bool IsOpaqueResponse(const std::optional<url::Origin>& request_initiator,
   return true;
 }
 
-bool HasNoSniff(
-    const mojom::URLResponseHead& response) {
+bool HasNoSniff(const mojom::URLResponseHead& response) {
   // https://fetch.spec.whatwg.org/#determine-nosniff
   if (!response.headers) {
     return false;
@@ -239,22 +251,26 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
     mojom::RequestDestination request_destination_from_renderer,
     const network::mojom::URLResponseHead& response) {
   // Exclude responses that ORB doesn't apply to.
-  if (!IsOpaqueResponse(request_initiator, request_mode, response))
+  if (!IsOpaqueResponse(request_initiator, request_mode, response)) {
     return Decision::kAllow;
+  }
   DCHECK(request_initiator.has_value());
 
   // Same-origin requests are allowed (the ORB spec doesn't explicitly deal with
   // this, because it assumes that the Fetch spec has already determined that
   // the request is cross-origin, before handing off to ORB).
-  if (request_initiator->IsSameOriginWith(request_url))
+  if (request_initiator->IsSameOriginWith(request_url)) {
     return Decision::kAllow;
+  }
 
   // Remember request properties that will be needed later.
   is_http_status_okay_ = IsOkayHttpStatus(response);
-  if (response.content_length == 0)
+  if (response.content_length == 0) {
     is_empty_response_ = true;
-  if (response.headers && response.headers->response_code() == 204)
+  }
+  if (response.headers && response.headers->response_code() == 204) {
     is_empty_response_ = true;
+  }
 
   // TODO(lukasza): Consider tweaking how `final_request_url_` is used to
   // properly handle interactions between redirects and range requests.  For
@@ -273,13 +289,13 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
 
   // 1. Let mimeType be the result of extracting a MIME type from response's
   //    header list.
-  if (response.headers)
+  if (response.headers) {
     response.headers->GetMimeType(&mime_type_);
+  }
 
   // 2. Let nosniff be the result of determining nosniff given response's header
   //    list.
-  is_no_sniff_header_present_ =
-      HasNoSniff(response);
+  is_no_sniff_header_present_ = HasNoSniff(response);
 
   // 3. If mimeType is not failure, then:
   if (!mime_type_.empty()) {
@@ -297,8 +313,9 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
     // TODO(vogelheim/lukasza): Resolve this difference from the ORB spec.
     // TODO(vogelheim/lukasza): Consider other early-allow mechanisms (e.g. CORP
     // - see https://github.com/annevk/orb/issues/30#issuecomment-971373842).
-    if (IsOpaqueSafelistedMimeType(mime_type_))
+    if (IsOpaqueSafelistedMimeType(mime_type_)) {
       return Decision::kAllow;
+    }
 
     // ii. If mimeType is an opaque-blocklisted-never-sniffed MIME type, then
     //     return false.
@@ -385,8 +402,9 @@ Decision OpaqueResponseBlockingAnalyzer::Sniff(std::string_view data) {
   // 9. If the image type pattern matching algorithm given bytes does not
   //    return undefined, then return true.
   constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::StartsWith(sniffed_mime_type, "image/", kCaseInsensitive))
+  if (base::StartsWith(sniffed_mime_type, "image/", kCaseInsensitive)) {
     return Decision::kAllow;
+  }
 
   // At this point, a number of MIME types should be out of the running.
   CHECK(!IsTextCssMimeType(mime_type_));  // OpaqueSafelistedMimeType are not
@@ -447,8 +465,9 @@ Decision OpaqueResponseBlockingAnalyzer::HandleEndOfSniffableResponseBody() {
   // TODO(vogelheim/lukasza): Resolve this difference from the ORB spec.
   // TODO(vogelheim/lukasza): Consider other early-allow mechanisms (e.g. CORP -
   // see https://github.com/annevk/orb/issues/30#issuecomment-971373842).
-  if (IsOpaqueSafelistedMimeTypeThatWeSniffAnyway(mime_type_))
+  if (IsOpaqueSafelistedMimeTypeThatWeSniffAnyway(mime_type_)) {
     return Decision::kAllow;
+  }
 
   // TODO(lukasza): Implement the following steps from ORB spec:
   // 10. If nosniff is true, then return false.
