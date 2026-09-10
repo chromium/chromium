@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "media/base/limit_checks.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/platform_features.h"
@@ -298,6 +299,15 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
     }
 
     DCHECK(!new_pic_size.IsEmpty());
+
+    // Ensure that the `new_pic_size` that comes directly from web-controlled
+    // contents is bounds checked before passing off the the HW decoder.
+    if (!ValidMediaSize(new_pic_size)) [[unlikely]] {
+      DVLOG(1) << "Frame size: " << new_pic_size.ToString()
+               << " exceeds maximum video size limits.";
+      SetError();
+      return kDecodeError;
+    }
 
     bool is_color_space_change = false;
     if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {

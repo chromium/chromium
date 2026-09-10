@@ -217,6 +217,7 @@ source_set("base") {
     "key_systems_impl.h",
     "key_systems_support_registration.cc",
     "key_systems_support_registration.h",
+    "limit_checks.h",
     "limiting_audio_queue.cc",
     "limiting_audio_queue.h",
     "limits.h",
