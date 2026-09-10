@@ -14,10 +14,10 @@ export interface TemplatizedDomNodes {
 export function getHtml(this: BookmarksListElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <promo-card id="promoCard" class="card"
-      ?hidden="${!this.shouldShowPromoCard_}"
-      @should-show-promo-card="${this.onShouldShowPromoCard_}">
-  </promo-card>
+<promo-card id="promoCard" class="card"
+    ?hidden="${!this.shouldShowPromoCard_}"
+    @should-show-promo-card="${this.onShouldShowPromoCard_}">
+</promo-card>
 <cr-lazy-list id="list" class="card"
     .items="${this.displayedIds_}"
     .scrollTarget="${this}"
