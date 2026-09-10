@@ -49,9 +49,7 @@ ______________________________________________________________________
 
 ### Step 1: Read and Parse `figma-variables.md`
 
-1. Read
-   `agents/projects/chrome-design-system/skills/generate-token-map/assets/figma-variables.md`
-   using `view_file`.
+1. Read `./figma-variables.md` using `view_file`.
 2. Extract all Figma design variables (e.g., **143 variables** across **11
    categories**):
    01. `System & Surface Colors`
@@ -159,9 +157,8 @@ If no matching Clank token can be found, the result should be **(none)**.
      - `C++ Equivalent Identifier`
      - `CSS Equivalent Identifier`
      - `Clank (Android) Equivalent`
-2. Save the formatted file to
-   `agents/projects/chrome-design-system/assets/tokens/tokens.md` using
-   `write_to_file` with `Overwrite: true`.
+2. Save the formatted file to `./tokens.md` using `write_to_file` with
+   `Overwrite: true`.
 
 ### Step 6: Summarize Results to the User
 

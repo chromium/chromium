@@ -6,47 +6,74 @@ description: Recreate Figma design frames as production-ready Chromium C++ Views
 # Figma to Views: Code Generation
 
 ## Prerequisites
-- **Figma MCP Server**: Must be active and configured in the workspace context to fetch designs and metadata.
-- **Chromium Repository**: This skill should be executed from inside the root directory of the Chromium repository source code (`//src/`).
 
----
+- **Figma MCP Server**: Must be active and configured in the workspace context
+  to fetch designs and metadata.
+- **Chromium Repository**: This skill should be executed from inside the root
+  directory of the Chromium repository source code (`//src/`).
+
+______________________________________________________________________
 
 ## 1. Discovery & Context Retrieval
 
-When given a Figma design URL (e.g., `https://www.figma.com/design/:fileKey/:fileName?node-id=:nodeId`):
+When given a Figma design URL (e.g.,
+`https://www.figma.com/design/:fileKey/:fileName?node-id=:nodeId`):
 
-1. **Extract Parameters**: Extract the `fileKey` and the `nodeId` (replace hyphens with colons, e.g., `128-1951` becomes `128:1951`).
-2. **Retrieve Design Context**: Call `get_design_context` with `fileKey` and `nodeId` to fetch the metadata, layout hierarchy, layer styles, and text annotations of the frame.
-3.  **Reference Existing Component Specs**: Look up component spec files for relevant components using the `project-knowledge` skill to map Figma components to Chromium C++ Views components.
-4. **Reference Token Mapping**: Consult the Chrome Design System token mapping using the `project-knowledge` skill to translate the variables from the Figma design (e.g., `desktop/sys/base-colors/base`) to equivalent C++ identifiers (`ui::kColorSysBase`).
+1. **Extract Parameters**: Extract the `fileKey` and the `nodeId` (replace
+   hyphens with colons, e.g., `128-1951` becomes `128:1951`).
+2. **Retrieve Design Context**: Call `get_design_context` with `fileKey` and
+   `nodeId` to fetch the metadata, layout hierarchy, layer styles, and text
+   annotations of the frame.
+3. **Reference Existing Component Specs**: Look up component spec files for
+   relevant components using the `chrome-components` skill to map Figma
+   components to Chromium C++ Views components.
+4. **Reference Token Mapping**: Consult the Chrome Design System token mapping
+   using the `chrome-tokens` skill to translate the variables from the Figma
+   design (e.g., `desktop/sys/base-colors/base`) to equivalent C++ identifiers
+   (`ui::kColorSysBase`).
 
----
+______________________________________________________________________
 
 ## 2. Design-to-Code Gap Auditing
 
-Before writing any code, first check if the user already did an audit of this Figma design against production coding standards within the current chat session's recent history (past 5 commands). If not, perform the audit. Incorporate the feedback from this audit into the following code implementation.
+Before writing any code, first check if the user already did an audit of this
+Figma design against production coding standards within the current chat
+session's recent history (past 5 commands). If not, perform the audit.
+Incorporate the feedback from this audit into the following code implementation.
 
----
+______________________________________________________________________
 
 ## 3. Views Component Implementation
 
 ### Implementation Rules
 
-- **Surface & Background Colors**: Map Figma variables strictly to their C++ `ui::ColorId` equivalents as documented in Chrome Design System token mappings.
-   - Theme Inheritance: The C++ View must adapt automatically to the user's Chrome Appearance setting (e.g. light/dark mode) without hardcoded theme checks.
-- **Corner Radius Tokens**: Do not hardcode arbitrary radius numbers when design system tokens apply. Retrieve standard radii dynamically from `views::LayoutProvider`.
-- **Responsive Layout & Flex Spacing**: Use `views::BoxLayout` or `views::BoxLayoutView` for structured horizontal and vertical stacking.
-   - Apply consistent spacing and padding using `gfx::Insets::VH(...)` and `SetBetweenChildSpacing(...)`.
-   - Use `SetFlexForView(child, 1)` on horizontal or vertical layouts to distribute space proportionally.
-- **Scope**: Focus strictly on building the UI. Do not add functionality beyond what is specified in
-the Figma mockup. If the Figma mockup includes a window frame or top Chrome frame, disregard these.
-- **Output Location**: Save the implementation files inside the  out/<ComponentName>  directory
-(relative to the skill directory), unless specified otherwise.
+- **Surface & Background Colors**: Map Figma variables strictly to their C++
+  `ui::ColorId` equivalents as documented in Chrome Design System token
+  mappings.
+  - Theme Inheritance: The C++ View must adapt automatically to the user's
+    Chrome Appearance setting (e.g. light/dark mode) without hardcoded theme
+    checks.
+- **Corner Radius Tokens**: Do not hardcode arbitrary radius numbers when design
+  system tokens apply. Retrieve standard radii dynamically from
+  `views::LayoutProvider`.
+- **Responsive Layout & Flex Spacing**: Use `views::BoxLayout` or
+  `views::BoxLayoutView` for structured horizontal and vertical stacking.
+  - Apply consistent spacing and padding using `gfx::Insets::VH(...)` and
+    `SetBetweenChildSpacing(...)`.
+  - Use `SetFlexForView(child, 1)` on horizontal or vertical layouts to
+    distribute space proportionally.
+- **Scope**: Focus strictly on building the UI. Do not add functionality beyond
+  what is specified in the Figma mockup. If the Figma mockup includes a window
+  frame or top Chrome frame, disregard these.
+- **Output Location**: Save the implementation files inside the
+  out/<ComponentName> directory (relative to the skill directory), unless
+  specified otherwise.
 - **Builds**: Do not run any builds.
 
 ### File 1: `<component_name>_view.h`
 
 *Example Boilerplate:*
+
 ```cpp
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -80,6 +107,7 @@ class ComponentNameView : public views::View {
 ### File 2: `<component_name>_view.cc`
 
 *Example Boilerplate:*
+
 ```cpp
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be

@@ -25,10 +25,10 @@ When given a Figma design URL (e.g.,
    `nodeId` to fetch the metadata, layout hierarchy, layer styles, and text
    annotations of the frame.
 3. **Reference Existing Component Specs**: Look up component spec files for
-   relevant components using the `project-knowledge` skill to map Figma
+   relevant components using the `chrome-components` skill to map Figma
    components to Chromium C++ Views components.
 4. **Reference Token Mapping**: Consult the Chrome Design System token mapping
-   using the `project-knowledge` skill to translate the variables from the Figma
+   using the `chrome-tokens` skill to translate the variables from the Figma
    design (e.g., `desktop/sys/base-colors/base`) to equivalent C++ identifiers
    (`ui::kColorSysBase`).
 

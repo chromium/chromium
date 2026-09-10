@@ -152,7 +152,7 @@ rules:
 - If the file already exists, update it only with necessary changes rather than
   generating from scratch.
 - The document must follow the exact structure specified in
-  `assets/spec-template.md`.
+  `../assets/spec-template.md`.
   - Links to components in code MUST be relative to the repo root (`//src/`),
     NOT the user's filesystem (do not include `file://`).
   - In Section 1 (`Component Metadata & Source Files`), include columns for all
@@ -162,5 +162,5 @@ rules:
     omit/remove that platform's column from subsequent comparison tables
     (Section 2, Section 3, Section 4).
 - Make the file viewable as an artifact.
-- Ask the user to confirm saving the markdown file to the
-  `agents/projects/chrome-design-system/assets/component-specs/` directory.
+- Ask the user to confirm saving the markdown file to the `./component-specs/`
+  directory.
