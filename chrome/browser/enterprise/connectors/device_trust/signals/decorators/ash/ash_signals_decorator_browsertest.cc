@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -18,6 +19,9 @@
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/device_signals/core/browser/signals_types.h"
@@ -96,7 +100,19 @@ void SetupFakeNetwork() {
   shill_service_client->SetServiceProperty(kWifiServicePath,
                                            shill::kStateProperty,
                                            base::Value(shill::kStateOnline));
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([] {
+    auto* network_state_handler =
+        ash::NetworkHandler::Get()->network_state_handler();
+    const auto* cellular =
+        network_state_handler->GetDeviceState(kCellularDevicePath);
+    const auto* wifi = network_state_handler->GetDeviceState(kWifiDevicePath);
+    const auto* default_network = network_state_handler->DefaultNetwork();
+    return cellular && cellular->imei() == kFakeImei &&
+           cellular->meid() == kFakeMeid && wifi &&
+           wifi->mac_address() == kMacAddress && default_network &&
+           default_network->path() == kWifiServicePath &&
+           default_network->device_path() == kWifiDevicePath;
+  }));
 }
 
 }  // namespace
