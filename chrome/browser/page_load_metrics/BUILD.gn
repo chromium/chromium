@@ -282,6 +282,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/webui:webui_util",
+      "//ui/views:test_support",
     ]
   }
 

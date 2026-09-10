@@ -34,6 +34,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/views/test/test_layout_provider.h"
 
 using content::NavigationSimulator;
 using page_load_metrics::PageLoadMetricsObserverTester;
@@ -104,6 +105,7 @@ class InitialWebUIPageLoadMetricsObserverTest
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 
  private:
+  views::test::TestLayoutProvider layout_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
