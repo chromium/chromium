@@ -72,7 +72,7 @@ class AutoPipSettingHelper {
     kNotShownBlocked = 6,
 
     // The prompt was not shown because automatic picture-in-picture was blocked
-    // due to the user being in incognito mode.
+    // due to the user being in incognito or isolated mode.
     kNotShownIncognito = 7,
 
     kMaxValue = kNotShownIncognito,

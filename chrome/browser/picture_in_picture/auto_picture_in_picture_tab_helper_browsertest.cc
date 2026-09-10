@@ -47,6 +47,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -2379,6 +2380,112 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   // There should no longer be a picture-in-picture window.
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+}
+
+class AutoPictureInPictureTabHelperIsolatedModeBrowserTest
+    : public AutoPictureInPictureTabHelperBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AutoPictureInPictureTabHelperBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperIsolatedModeBrowserTest,
+                       ContentSettingAskIsBlockForIsolatedMode) {
+  // Load a page that registers for autopip.
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  LoadCameraMicrophonePage(isolated_browser);
+  auto* original_web_contents =
+      isolated_browser->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAccept(original_web_contents);
+
+  // There should not currently be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Open and switch to a new tab.
+  OpenNewTab(isolated_browser);
+  auto* second_web_contents =
+      isolated_browser->GetTabStripModel()->GetActiveWebContents();
+
+  // There should not be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the original tab.
+  isolated_browser->GetTabStripModel()->ActivateTabAt(
+      isolated_browser->GetTabStripModel()->GetIndexOfWebContents(
+          original_web_contents));
+
+  // There should still be no picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Explicitly enable the content setting.
+  SetContentSetting(original_web_contents, CONTENT_SETTING_ALLOW);
+
+  // Switch back to the second tab.
+  content::MediaStartStopObserver enter_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  isolated_browser->GetTabStripModel()->ActivateTabAt(
+      isolated_browser->GetTabStripModel()->GetIndexOfWebContents(
+          second_web_contents));
+  enter_pip_observer.Wait();
+
+  // A picture-in-picture window should automatically open.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the original tab.
+  content::MediaStartStopObserver exit_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+  isolated_browser->GetTabStripModel()->ActivateTabAt(
+      isolated_browser->GetTabStripModel()->GetIndexOfWebContents(
+          original_web_contents));
+  exit_pip_observer.Wait();
+
+  // There should no longer be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureTabHelperIsolatedModeBrowserTest,
+    PromptResultRecorded_VideoConferencingNotShownIsolatedMode) {
+  // Load a page that registers for autopip and start video playback.
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  LoadCameraMicrophonePage(isolated_browser, "a.com");
+  auto* web_contents =
+      isolated_browser->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAccept(
+      isolated_browser->GetTabStripModel()->GetActiveWebContents());
+  SetContentSetting(web_contents, CONTENT_SETTING_ASK);
+
+  base::HistogramTester histograms;
+  OpenNewTab(isolated_browser);
+  EXPECT_FALSE(web_contents->HasPictureInPictureDocument());
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples =
+      histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
+
+  // Verify metrics.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(
+      1, samples->GetCount(static_cast<int>(PromptResult::kNotShownIncognito)));
+  CheckPromptResultUkmMetricNotRecorded(web_contents->GetLastCommittedURL(),
+                                        UkmEntry::kVideoConferencingName);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,

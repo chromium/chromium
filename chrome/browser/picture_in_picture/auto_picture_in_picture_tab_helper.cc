@@ -591,10 +591,11 @@ void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
   StopAndResetAsyncTasks();
 
   // Prevent scheduling asynchronous checks if we are already in picture in
-  // picture, picture in picture was blocked due to content setting/incognito,
-  // we are using camera or microphone, or a media session does not exist. Also
-  // prevent these checks if we are already eligible for auto picture in
-  // picture, since auto picture in picture requests will succeed anyways.
+  // picture, picture in picture was blocked due to content setting/incognito/
+  // isolated mode, we are using camera or microphone, or a media session does
+  // not exist. Also prevent these checks if we are already eligible for auto
+  // picture in picture, since auto picture in picture requests will succeed
+  // anyways.
   //
   // The `blocked_due_to_content_setting_` check is performed to prevent
   // recording duplicate entries for blocking metrics.
@@ -701,9 +702,9 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   CHECK(!is_in_picture_in_picture_);
 
   // The user may block autopip via a content setting. Also, if we're in an
-  // incognito window, then we should treat "ask" as "block". This should be the
-  // final check before triggering autopip since it will record metrics about
-  // why autopip has been blocked.
+  // incognito or isolated mode window, then we should treat "ask" as "block".
+  // This should be the final check before triggering autopip since it will
+  // record metrics about why autopip has been blocked.
   ContentSetting setting = GetCurrentContentSetting();
   if (setting == CONTENT_SETTING_BLOCK) {
     blocked_due_to_content_setting_ = true;
@@ -716,7 +717,7 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
     return false;
   } else if (setting == CONTENT_SETTING_ASK &&
              Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-                 ->IsIncognitoProfile()) {
+                 ->IsPrimaryOTRProfileWithRegularParent()) {
     blocked_due_to_content_setting_ = true;
 
     if (should_record_blocking_metrics) {

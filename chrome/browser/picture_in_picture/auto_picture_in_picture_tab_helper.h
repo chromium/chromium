@@ -470,9 +470,9 @@ class AutoPictureInPictureTabHelper
   media::PictureInPictureEventsInfo::AutoPipReason auto_pip_trigger_reason_ =
       media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
 
-  // Set to true if auto picture in picture was blocked due to content setting
-  // or incognito, false otherwise. The value is used to prevent recording
-  // duplicate entries for blocking metrics.
+  // Set to true if auto picture in picture was blocked due to content setting,
+  // incognito or isolated mode, false otherwise. The value is used to prevent
+  // recording duplicate entries for blocking metrics.
   bool blocked_due_to_content_setting_ = false;
 
 #if BUILDFLAG(IS_ANDROID)

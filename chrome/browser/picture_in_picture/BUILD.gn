@@ -284,6 +284,7 @@ if (!is_android) {
       "//chrome/browser/web_applications",
       "//chrome/test:test_support",
       "//components/content_settings/core/browser",
+      "//components/enterprise/isolated_mode",
       "//components/metrics:content",
       "//components/permissions",
       "//components/viz/common",
