@@ -430,15 +430,21 @@ void OmniboxPopupViewFullWebUI::OnBlur() {
 }
 
 void OmniboxPopupViewFullWebUI::OnPopupHandlerReady() {
+  is_popup_handler_ready_ = true;
   if (on_ready_callback_) {
     std::move(on_ready_callback_).Run();
   }
 }
 
 bool OmniboxPopupViewFullWebUI::IsPopupHandlerReady() const {
-  // TODO(b/552490988): Use a stronger guarantee about WebUI readiness.
-  return const_cast<OmniboxPopupViewFullWebUI*>(this)->GetPopupHandler() !=
-         nullptr;
+  // Check `is_popup_handler_ready_` to handle the synchronous
+  // `OnPopupHandlerReady()` callback invoked during the `OmniboxPopupHandler`
+  // constructor before `std::make_unique` finishes assigning to
+  // `popup_ui->popup_handler_`. Also check `GetPopupHandler()` to verify
+  // presence once construction has completed.
+  return is_popup_handler_ready_ ||
+         const_cast<OmniboxPopupViewFullWebUI*>(this)->GetPopupHandler() !=
+             nullptr;
 }
 
 OmniboxPopupHandler* OmniboxPopupViewFullWebUI::GetPopupHandler() {

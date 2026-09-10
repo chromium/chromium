@@ -75,6 +75,10 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   bool has_completed_first_tab_changed_ = false;
   bool is_reverting_ = false;
   bool focused_ = false;
+  // True once `OnPopupHandlerReady()` has been notified. This is tracked
+  // separately because `GetPopupHandler()` can be null during the
+  // `OmniboxPopupHandler` constructor before the unique_ptr is assigned.
+  bool is_popup_handler_ready_ = false;
   // Invoked when the WebUI Mojo handler connects to trigger one-time focus
   // handoff from `OmniboxViewViews` to `OmniboxPopupViewFullWebUI`.
   base::OnceClosure on_ready_callback_;

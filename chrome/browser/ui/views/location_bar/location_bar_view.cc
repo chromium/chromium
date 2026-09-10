@@ -590,6 +590,22 @@ void LocationBarView::SelectAll() {
 
 void LocationBarView::FocusLocation(bool is_user_initiated,
                                     bool clear_focus_if_failed) {
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    if (IsFullWebUiOmniboxReady()) {
+      // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for
+      // the WebUI omnibox and `omnibox_view_` has `FocusBehavior::NEVER`.
+      // Route Views focus to `LocationBarView` and forward to `popup_view` so
+      // that subsequent layout passes don't trigger
+      // `FocusManager::AdvanceFocusIfNecessary()`.
+      if (auto* focus_manager = GetFocusManager()) {
+        focus_manager->SetFocusedView(this);
+      }
+      if (auto* popup_view = GetOmniboxPopupView()) {
+        popup_view->OnFocus(/*query_zps=*/is_user_initiated);
+      }
+      return;
+    }
+  }
   omnibox_view_->SetFocus(is_user_initiated);
   if (clear_focus_if_failed && !omnibox_view_->HasFocus() &&
       !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
@@ -1565,7 +1581,7 @@ void LocationBarView::OnPageInfoBubbleClosed(
 
 void LocationBarView::FocusSearch() {
   // This is called by keyboard accelerator, so it's user-initiated.
-  omnibox_view_->SetFocus(/*is_user_initiated=*/true);
+  FocusLocation(/*is_user_initiated=*/true, /*clear_focus_if_failed=*/false);
   omnibox_view_->EnterKeywordModeForDefaultSearchProvider();
 }
 
@@ -1667,6 +1683,9 @@ void LocationBarView::OnFocus() {
     // and selects text without triggering an unexpected Zero-Prefix Suggestion
     // (ZPS) query.
     omnibox_view_->SetFocus(/*is_user_initiated=*/false);
+    if (auto* popup_view = GetOmniboxPopupView()) {
+      popup_view->OnFocus(/*query_zps=*/false);
+    }
   } else {
     // This is only called when the user explicitly focuses the location bar.
     // Renderer-initiated focuses go through the `FocusLocation()` call instead.

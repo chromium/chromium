@@ -1079,6 +1079,40 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       CheckWebUIInputFocus(true));
 }
 
+// Verifies that opening a new window / tab on NTP focuses the WebUI Omnibox
+// popup and that focus is sustained without being stolen by subsequent layout
+// passes or `views::FocusManager::AdvanceFocusIfNecessary()`.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       NewWindowOpensAndFocusesWebUIOmniboxOnNTP) {
+  RunTestSequence(
+      WaitForBrowserActive(),
+      // Instrument the default tab 0 and navigate to NTP
+      InstrumentTab(kTab1, 0),
+      NavigateWebContents(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1),
+      // Verify WebUI popup opens automatically on the NTP
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      // Verify WebUI searchbox has DOM focus and focus is not stolen
+      CheckWebUIInputFocus(true),
+      // Wait to ensure all asynchronous tasks, timers, and animations settle.
+      WaitForPopupTransitionLockout(base::Seconds(1)),
+      // Force an explicit layout pass on BrowserView (which re-evaluates
+      // LocationBarView::UpdateFocusBehavior() and would trigger
+      // AdvanceFocusIfNecessary if OmniboxViewViews had focus).
+      Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        browser_view->InvalidateLayout();
+        browser_view->GetWidget()->LayoutRootViewIfNecessary();
+      }),
+      // Verify popup is STILL showing and DOM input is STILL focused.
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckWebUIInputFocus(true),
+      // Verify native OmniboxViewViews does not have Views focus.
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
+}
+
 // Verifies that pressing Shift+Enter on a match opens the result in a new
 // window and resets the original window's omnibox popup state to steady state.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
