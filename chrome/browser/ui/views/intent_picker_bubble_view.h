@@ -26,6 +26,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 class Checkbox;
 class Widget;
@@ -141,7 +145,9 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // |accepted| is true, the dialog should be immediately accepted with that app
   // selected. If |index| is nullopt, no app is selected, and the Accept button
   // will be disabled
-  void OnAppSelected(std::optional<size_t> index, bool accepted);
+  void OnAppSelected(std::optional<size_t> index,
+                     bool accepted,
+                     const ui::Event* event);
 
   void Initialize();
 

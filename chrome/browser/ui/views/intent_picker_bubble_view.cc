@@ -60,6 +60,7 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/window/dialog_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/chromeos/devicetype_utils.h"
@@ -97,8 +98,8 @@ bool IsDoubleClick(const ui::Event& event) {
 
 // Callback for when an app is selected in the app list. First parameter is the
 // index, second parameter is true if the dialog should be immediately accepted.
-using AppSelectedCallback =
-    base::RepeatingCallback<void(std::optional<size_t>, bool)>;
+using AppSelectedCallback = base::RepeatingCallback<
+    void(std::optional<size_t>, bool, const ui::Event*)>;
 
 // Grid view:
 
@@ -110,7 +111,8 @@ class IntentPickerAppGridButton : public views::Button {
  public:
   // Callback for when this app is selected. Parameter is true if the dialog
   // should be immediately accepted.
-  using ButtonSelectedCallback = base::RepeatingCallback<void(bool)>;
+  using ButtonSelectedCallback =
+      base::RepeatingCallback<void(bool, const ui::Event*)>;
 
   IntentPickerAppGridButton(ButtonSelectedCallback selected_callback,
                             const ui::ImageModel& icon_model,
@@ -185,7 +187,7 @@ class IntentPickerAppGridButton : public views::Button {
   void OnFocus() override {
     Button::OnFocus();
     if (select_on_focus_) {
-      selected_callback_.Run(false);
+      selected_callback_.Run(false, nullptr);
     }
   }
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
@@ -217,7 +219,7 @@ class IntentPickerAppGridButton : public views::Button {
     bool should_open = IsDoubleClick(event) ||
                        (event.IsKeyEvent() &&
                         event.AsKeyEvent()->key_code() == ui::VKEY_RETURN);
-    selected_callback_.Run(should_open);
+    selected_callback_.Run(should_open, &event);
   }
 
   // Updates the accessible name of the bubble in the ViewsAX cache.
@@ -300,7 +302,7 @@ class IntentPickerAppGridView
   }
 
   void SetSelectedIndex(std::optional<size_t> index) override {
-    SetSelectedIndexInternal(index, false);
+    SetSelectedIndexInternal(index, false, nullptr);
   }
 
   std::optional<size_t> GetSelectedIndex() const override {
@@ -309,7 +311,8 @@ class IntentPickerAppGridView
 
  private:
   void SetSelectedIndexInternal(std::optional<size_t> new_index,
-                                bool accepted) {
+                                bool accepted,
+                                const ui::Event* event) {
     if (selected_app_index_.has_value()) {
       GetButtonAtIndex(selected_app_index_.value())->SetSelected(false);
     }
@@ -324,7 +327,7 @@ class IntentPickerAppGridView
 
     selected_app_index_ = new_index;
 
-    selected_callback_.Run(new_index, accepted);
+    selected_callback_.Run(new_index, accepted, event);
   }
 
   IntentPickerAppGridButton* GetButtonAtIndex(size_t index) {
@@ -475,7 +478,7 @@ class IntentPickerAppListView
       accepted = true;
     }
 
-    selected_callback_.Run(index, accepted);
+    selected_callback_.Run(index, accepted, event);
   }
 
   size_t CalculateNextAppIndex(int delta) {
@@ -686,7 +689,8 @@ void IntentPickerBubbleView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void IntentPickerBubbleView::OnAppSelected(std::optional<size_t> index,
-                                           bool accepted) {
+                                           bool accepted,
+                                           const ui::Event* event) {
   SetButtonEnabled(ui::mojom::DialogButton::kOk, index.has_value());
 
   if (index.has_value()) {
@@ -695,6 +699,13 @@ void IntentPickerBubbleView::OnAppSelected(std::optional<size_t> index,
 
   if (accepted) {
     DCHECK(index.has_value());
+    DCHECK(event);
+    if (GetDialogClientView() &&
+        GetDialogClientView()->IsPossiblyUnintendedInteraction(
+            *event,
+            /*allow_key_events=*/ShouldAllowKeyEventsDuringInputProtection())) {
+      return;
+    }
     AcceptDialog();
   }
 }

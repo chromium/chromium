@@ -50,6 +50,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -539,7 +540,46 @@ TEST_P(IntentPickerBubbleViewLayoutTest, DoubleClickToAccept) {
                        BubbleType::kLinkCapturing,
                        /*initiating_origin=*/std::nullopt);
 
+  // Bypass input protection cooldown.
+  bubble()->GetDialogClientView()->ResetViewShownTimeStampForTesting();
+
   views::test::ButtonTestApi button(GetButtonAtIndex(0));
+
+  button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
+                                    gfx::PointF(), ui::EventTimeForNow(),
+                                    ui::EF_NONE, ui::EF_NONE));
+  button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
+                                    gfx::PointF(), ui::EventTimeForNow(),
+                                    ui::EF_IS_DOUBLE_CLICK, ui::EF_NONE));
+
+  EXPECT_EQ(last_selected_launch_name(), "web_app_id");
+  EXPECT_EQ(last_close_reason(), apps::IntentPickerCloseReason::OPEN_APP);
+}
+
+TEST_P(IntentPickerBubbleViewLayoutTest,
+       DoubleClickBlockedDuringInputProtection) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
+
+  views::test::ButtonTestApi button(GetButtonAtIndex(0));
+
+  // Double-click immediately upon bubble appearance (within protection window).
+  button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
+                                    gfx::PointF(), ui::EventTimeForNow(),
+                                    ui::EF_NONE, ui::EF_NONE));
+  button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
+                                    gfx::PointF(), ui::EventTimeForNow(),
+                                    ui::EF_IS_DOUBLE_CLICK, ui::EF_NONE));
+
+  EXPECT_FALSE(bubble_widget->IsClosed());
+  EXPECT_EQ(bubble()->GetSelectedIndex(), 0u);
+  EXPECT_TRUE(last_selected_launch_name().empty());
+
+  // Reset cooldown and verify double-click now succeeds.
+  bubble()->GetDialogClientView()->ResetViewShownTimeStampForTesting();
 
   button.NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                     gfx::PointF(), ui::EventTimeForNow(),
