@@ -10,6 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.core.text.BidiFormatter;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -37,6 +40,30 @@ public class SmsFetcherMessageHandler {
     private static long sSmsFetcherMessageHandlerAndroid;
     private static @Nullable String sTopOrigin;
     private static @Nullable String sEmbeddedOrigin;
+
+    @VisibleForTesting static final int MAX_OTP_DISPLAY_LENGTH = 32;
+
+    /**
+     * Sanitizes the one-time code for safe display in the notification title. Strips Unicode
+     * control characters (Cc) and formatting characters (Cf, which includes BiDi overrides like
+     * RLO, LRO, FSI, PDI), collapses whitespace runs and Unicode separators (including NBSP
+     * U+00A0), and caps the maximum length.
+     *
+     * @param oneTimeCode The raw one time code from SMS.
+     * @return The sanitized code safe for UI display.
+     */
+    @VisibleForTesting
+    static String sanitizeOneTimeCodeForDisplay(String oneTimeCode) {
+        if (oneTimeCode == null) return "";
+        // Strip control characters (Cc) and formatting characters (Cf, including BiDi overrides).
+        String sanitized = oneTimeCode.replaceAll("[\\p{Cc}\\p{Cf}]", "");
+        // Collapse whitespace runs and Unicode separators (e.g. NBSP U+00A0, thin space, etc.).
+        sanitized = sanitized.replaceAll("[\\p{Z}\\s]+", " ").trim();
+        if (sanitized.length() > MAX_OTP_DISPLAY_LENGTH) {
+            sanitized = sanitized.substring(0, MAX_OTP_DISPLAY_LENGTH) + "…";
+        }
+        return sanitized;
+    }
 
     /** Handles the interaction of an incoming notification when an expected SMS arrives. */
     public static final class NotificationReceiver extends BroadcastReceiver {
@@ -75,29 +102,37 @@ public class SmsFetcherMessageHandler {
      * @param oneTimeCode The one time code from SMS
      * @param topOrigin The top frame origin from the SMS
      * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
-     *         contain an iframe origin.
+     *     contain an iframe origin.
      * @param clientName The client name where the remote request comes from
      */
-    private static String getNotificationTitle(
+    @VisibleForTesting
+    static String getNotificationTitle(
             String oneTimeCode,
             String topOrigin,
             @Nullable String embeddedOrigin,
             String clientName) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
+        BidiFormatter bidi = BidiFormatter.getInstance();
+        String safeOtp = bidi.unicodeWrap(sanitizeOneTimeCodeForDisplay(oneTimeCode));
+        String safeClientName = bidi.unicodeWrap(clientName);
+        String safeTopOrigin = bidi.unicodeWrap(topOrigin);
+        String safeEmbeddedOrigin =
+                embeddedOrigin == null ? null : bidi.unicodeWrap(embeddedOrigin);
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
-            if (embeddedOrigin == null) {
+            if (safeEmbeddedOrigin == null) {
                 return resources.getString(
                         R.string.sms_fetcher_notification_title_simple_string,
-                        oneTimeCode,
-                        topOrigin);
+                        safeOtp,
+                        safeTopOrigin);
             }
             return resources.getString(
                     R.string.sms_fetcher_notification_title_simple_string,
-                    oneTimeCode,
-                    embeddedOrigin);
+                    safeOtp,
+                    safeEmbeddedOrigin);
         }
         return resources.getString(
-                R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
+                R.string.sms_fetcher_notification_title, safeOtp, safeClientName);
     }
 
     /**
@@ -108,19 +143,26 @@ public class SmsFetcherMessageHandler {
      *     contain an iframe origin.
      * @param clientName The client name where the remote request comes from
      */
-    private static String getNotificationText(
+    @VisibleForTesting
+    static String getNotificationText(
             String topOrigin, @Nullable String embeddedOrigin, String clientName) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
+        BidiFormatter bidi = BidiFormatter.getInstance();
+        String safeTopOrigin = bidi.unicodeWrap(topOrigin);
+        String safeClientName = bidi.unicodeWrap(clientName);
+        String safeEmbeddedOrigin =
+                embeddedOrigin == null ? null : bidi.unicodeWrap(embeddedOrigin);
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
-            if (embeddedOrigin == null) return clientName;
-            return topOrigin + " · " + clientName;
+            if (safeEmbeddedOrigin == null) return safeClientName;
+            return safeTopOrigin + " · " + safeClientName;
         }
-        return embeddedOrigin == null
-                ? resources.getString(R.string.sms_fetcher_notification_text, topOrigin)
+        return safeEmbeddedOrigin == null
+                ? resources.getString(R.string.sms_fetcher_notification_text, safeTopOrigin)
                 : resources.getString(
                         R.string.sms_fetcher_notification_text_for_embedded_frame,
-                        topOrigin,
-                        embeddedOrigin);
+                        safeTopOrigin,
+                        safeEmbeddedOrigin);
     }
 
     /**

@@ -1206,6 +1206,13 @@ if (is_android) {
     ]
   }
 
+  robolectric_library(
+      "chrome_junit_tests_org.chromium.chrome.browser.sharing") {
+    sources = [ "src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandlerTest.java" ]
+
+    deps = [ ":chrome_junit_tests_helper" ]
+  }
+
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.signin") {
     sources = [
       "src/org/chromium/chrome/browser/signin/ChildAccountStatusSupplierTest.java",
