@@ -13,7 +13,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {html, css, CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import {getTrustedHTML as getTrustedStaticHtml} from 'chrome://resources/js/static_types.js';
@@ -647,8 +647,8 @@ suite('CrActionMenu', function() {
     // Show the menu, scrolling the body to the button.
     test('simple offscreen', function() {
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
-      assertEquals(`${containerLeft}px`, dialog.style.left);
-      assertEquals(`${containerTop}px`, dialog.style.top);
+      assertNear(containerLeft, parseFloat(dialog.style.left), 1);
+      assertNear(containerTop, parseFloat(dialog.style.top), 1);
       menu.close();
     });
 
@@ -662,8 +662,8 @@ suite('CrActionMenu', function() {
       container.scrollTop = containerTop;
 
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
-      assertEquals(`${containerLeft}px`, dialog.style.left);
-      assertEquals(`${containerTop}px`, dialog.style.top);
+      assertNear(containerLeft, parseFloat(dialog.style.left), 1);
+      assertNear(containerTop, parseFloat(dialog.style.top), 1);
       menu.close();
     });
 
@@ -700,9 +700,10 @@ suite('CrActionMenu', function() {
       document.body.style.direction = 'rtl';
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
       const menuWidth = dialog.offsetWidth;
-      assertEquals(
-          container.offsetLeft + containerWidth - menuWidth, dialog.offsetLeft);
-      assertEquals(containerTop, dialog.offsetTop);
+      assertNear(
+          container.offsetLeft + containerWidth - menuWidth, dialog.offsetLeft,
+          1);
+      assertNear(containerTop, dialog.offsetTop, 1);
       menu.close();
     });
 

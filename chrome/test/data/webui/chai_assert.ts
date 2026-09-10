@@ -84,6 +84,17 @@ export function assertLT(value1: number, value2: number,
 /**
  * @param expected The expected value.
  * @param actual The actual value.
+ * @param tolerance The maximum difference between the values.
+ * @param message Additional error message.
+ */
+export function assertNear(
+    expected: number, actual: number, tolerance: number, message?: string) {
+  assert.closeTo(actual, expected, tolerance, message);
+}
+
+/**
+ * @param expected The expected value.
+ * @param actual The actual value.
  * @param message Additional error message.
  */
 export function assertNotEquals(expected: any, actual: any,
