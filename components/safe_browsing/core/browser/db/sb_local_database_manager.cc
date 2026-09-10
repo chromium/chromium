@@ -41,7 +41,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // TODO(crbug.com/362791941): Handle v4 references
-// TODO(crbug.com/362791941): Convert |comments| to `comments`
 // TODO(crbug.com/362791941): Change DCHECKs to CHECKs
 namespace safe_browsing {
 
@@ -753,8 +752,8 @@ void SBLocalDatabaseManager::DatabaseReadyForChecks(
 
     PopulateArtificialDatabase();
 
-    // The consistency of the stores read from the disk needs to verified. Post
-    // that task on the task runner. It calls |DatabaseReadyForUpdates|
+    // The consistency of the stores read from the disk needs to be verified.
+    // Post that task on the task runner. It calls `DatabaseReadyForUpdates`
     // callback with the stores to reset, if any, and then we can schedule the
     // database updates.
     sb_database_->VerifyChecksum(

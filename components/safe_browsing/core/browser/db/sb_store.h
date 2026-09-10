@@ -21,7 +21,6 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 class V5StoreFileFormat;
 
-// TODO(crbug.com/362791941): replace all |comments| with `comments`.
 namespace safe_browsing {
 
 namespace V5 {
@@ -311,11 +310,11 @@ class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
 // The base class for the Safe Browsing V4 and V5 stores.
 class SBStore {
  public:
-  // The |task_runner| is used to ensure that the operations in this file are
-  // performed on the correct thread. |store_path| specifies the location on
+  // The `task_runner` is used to ensure that the operations in this file are
+  // performed on the correct thread. `store_path` specifies the location on
   // disk for this file. The constructor doesn't read the store file from disk.
   // If the store is being created to apply an update to the old store, then
-  // |old_file_size| is the size of the existing file on disk for this store;
+  // `old_file_size` is the size of the existing file on disk for this store;
   // 0 otherwise. This is needed so that we can correctly report the size of
   // store file on disk, even if writing the new file fails after successfully
   // applying an update.
@@ -343,11 +342,9 @@ class SBStore {
   // Reset internal state.
   virtual void Reset() = 0;
 
-  // TODO(crbug.com/362791941): All comments in sb_* files should use the modern
-  // `code` format rather than the older |code| format.
   // Scheduled after reading the store file from disk on startup. When run, it
   // ensures that the checksum of the hash prefixes in lexicographical sorted
-  // order matches the expected value in |expected_checksum_|. Returns true if
+  // order matches the expected value in `expected_checksum_`. Returns true if
   // it matches; false otherwise. Checksum verification can take a long time,
   // so it is performed outside of the hotpath of loading SafeBrowsing database,
   // which blocks resource loads.

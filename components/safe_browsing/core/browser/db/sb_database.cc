@@ -34,7 +34,6 @@
 
 using base::TimeTicks;
 
-// TODO(crbug.com/362791941): replace all |comments| with `comments` for v5.
 // TODO(crbug.com/362791941): change all DCHECKs to CHECKs for v5 usages.
 namespace safe_browsing {
 
@@ -247,14 +246,14 @@ SBDatabase::SBDatabase(
       pending_store_updates_(0) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
   // This method executes on the DB sequence, whereas
-  // |sequence_checker_| is meant to verify methods that should
+  // `sequence_checker_` is meant to verify methods that should
   // execute on the UI sequence. Detach that sequence checker here; it
   // will be bound to the UI sequence in InitializeOnUIThread().
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 void SBDatabase::InitializeOnUIThread() {
-  // This invocation serves to bind |sequence_checker_| to the UI sequence
+  // This invocation serves to bind `sequence_checker_` to the UI sequence
   // after its having been detached from the DB sequence in this object's
   // constructor.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

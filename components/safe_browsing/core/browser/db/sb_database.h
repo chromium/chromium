@@ -26,7 +26,6 @@ class SafeBrowsingServiceTest;
 class TestSafeBrowsingDatabaseHelper;
 
 // TODO(crbug.com/362791941): Handle references to v4.
-// TODO(crbug.com/362791941): replace all |comments| with `comments` for v5.
 namespace safe_browsing {
 
 class SBDatabase;
@@ -90,10 +89,10 @@ class SBDatabaseFactory {
 class SBDatabase {
  public:
   // Factory method to create a SBDatabase. It creates the database on the
-  // provided |db_task_runner| containing stores in |store_file_name_map|. When
+  // provided `db_task_runner` containing stores in `store_file_name_map`. When
   // the database creation is complete, it runs the NewDatabaseReadyCallback on
   // the same thread as it was called.
-  // NOTE: Within |new_db_callback| the client should invoke
+  // NOTE: Within `new_db_callback` the client should invoke
   // SBDatabase::InitializeOnUIThread() on the UI thread.
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
@@ -121,20 +120,20 @@ class SBDatabase {
   std::unique_ptr<StoreStateMap> GetStoreStateMap();
 
   // Check if all the selected stores are available and populated.
-  // Returns false if any of |stores_to_check| don't have valid data.
-  // A store may be unavailble if either it hasn't yet gotten a proper
+  // Returns false if any of `stores_to_check` don't have valid data.
+  // A store may be unavailable if either it hasn't yet gotten a proper
   // full-update (just after install, or corrupted/missing file), or if it's
   // not supported in this build (i.e. Chromium).
   virtual bool AreAllStoresAvailable(
       const StoresToCheck& stores_to_check) const;
 
   // Check if any of the stores are available and populated.
-  // Returns false if all of |stores_to_check| don't have valid data.
+  // Returns false if all of `stores_to_check` don't have valid data.
   virtual bool AreAnyStoresAvailable(
       const StoresToCheck& stores_to_check) const;
 
-  // Searches for hash prefixes matching the |full_hashes| in stores in the
-  // database, filtered by |stores_to_check|. The callback is run
+  // Searches for hash prefixes matching the `full_hashes` in stores in the
+  // database, filtered by `stores_to_check`. The callback is run
   // asynchronously, with the identifier of the stores along with the matching
   // hash prefixes.
   virtual void GetStoresMatchingFullHash(
@@ -146,14 +145,14 @@ class SBDatabase {
   // found.
   virtual int64_t GetStoreSizeInBytes(const ListIdentifier& store) const;
 
-  // Resets the stores in |stores_to_reset| to an empty state. This is done if
+  // Resets the stores in `stores_to_reset` to an empty state. This is done if
   // the checksum doesn't match the expected value.
   void ResetStores(const std::vector<ListIdentifier>& stores_to_reset);
 
   // Schedules verification of the checksum of each store read from disk on task
   // runner. If the checksum doesn't match, that store is passed to the
-  // |db_ready_for_updates_callback|. At the end,
-  // |db_ready_for_updates_callback| is scheduled (on the same thread as it was
+  // `db_ready_for_updates_callback`. At the end,
+  // `db_ready_for_updates_callback` is scheduled (on the same thread as it was
   // called) to indicate that the database updates can now be scheduled.
   void VerifyChecksum(
       DatabaseReadyForUpdatesCallback db_ready_for_updates_callback);
@@ -199,7 +198,7 @@ class SBDatabase {
   FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestSomeStoresMatchFullHash);
 
   // Factory method to create a SBDatabase. When the database creation is
-  // complete, it calls the NewDatabaseReadyCallback on |callback_task_runner|.
+  // complete, it calls the NewDatabaseReadyCallback on `callback_task_runner`.
   static void CreateOnTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
@@ -207,12 +206,12 @@ class SBDatabase {
       const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
       NewDatabaseReadyCallback callback);
 
-  // Makes the passed |factory| the factory used to instantiate a SBDatabase.
+  // Makes the passed `factory` the factory used to instantiate a SBDatabase.
   // Only for tests.
   static void RegisterDatabaseFactoryForTest(
       std::unique_ptr<SBDatabaseFactory> factory);
 
-  // Makes the passed |factory| the factory used to instantiate SBStores. Only
+  // Makes the passed `factory` the factory used to instantiate SBStores. Only
   // for tests.
   static void RegisterStoreFactoryForTest(
       std::unique_ptr<SBStoreFactory> factory);
@@ -228,7 +227,7 @@ class SBDatabase {
   // the old store to get deleted.
   void UpdatedStoreReady(ListIdentifier identifier, SBStorePtr store);
 
-  // See |VerifyChecksum|.
+  // See `VerifyChecksum`.
   void OnChecksumVerified(
       DatabaseReadyForUpdatesCallback db_ready_for_updates_callback,
       const std::vector<ListIdentifier>& stores_to_reset);

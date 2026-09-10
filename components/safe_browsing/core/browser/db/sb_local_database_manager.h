@@ -31,7 +31,6 @@
 #include "url/gurl.h"
 
 // TODO(crbug.com/362791941): Handle v4 references
-// TODO(crbug.com/362791941): Convert |comments| to `comments`
 namespace safe_browsing {
 
 namespace V5 {
@@ -106,7 +105,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
-  // TODO(vakh): |CheckExtensionIDs| in the base class accepts a set of
+  // TODO(vakh): `CheckExtensionIDs` in the base class accepts a set of
   // std::strings but the overriding method in this class accepts a set of
   // FullHashStr objects. Since FullHashStr is currently std::string, it
   // compiles, but this difference should be eliminated.
@@ -180,8 +179,8 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // this is set to null.
     raw_ptr<Client> client;
 
-    // Determines which funtion from the |client| needs to be called once we
-    // know whether the URL in |url| is safe or unsafe.
+    // Determines which function from the `client` needs to be called once we
+    // know whether the URL in `url` is safe or unsafe.
     const ClientCallbackType client_callback_type;
 
     // The most severe threat verdict for the URLs/hashes being checked.
@@ -213,14 +212,14 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
     const StoresToCheck stores_to_check;
 
     // The URLs that are being checked for being unsafe. The size of exactly
-    // one of |full_hashes| and |urls| should be greater than 0.
+    // one of `full_hashes` and `urls` should be greater than 0.
     const std::vector<GURL> urls;
 
     // The full hashes that are being checked for being safe.
     std::vector<FullHashStr> full_hashes;
 
-    // The most severe SBThreatType for each full hash in |full_hashes|. The
-    // length of |full_hash_threat_type| must always match |full_hashes|.
+    // The most severe SBThreatType for each full hash in `full_hashes`. The
+    // length of `full_hash_threat_type` must always match `full_hashes`.
     std::vector<SBThreatType> full_hash_threat_types;
 
     // List of full hashes of urls we are checking and corresponding store and
@@ -237,8 +236,8 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
     ThreatMetadata url_metadata;
 
     // Specifies whether the PendingCheck is in the SBLocalDatabaseManager's
-    // |pending_checks_| set. This property is for sanity-checking that when the
-    // check is destructed, it should never still be in |pending_checks_|, since
+    // `pending_checks_` set. This property is for sanity-checking that when the
+    // check is destructed, it should never still be in `pending_checks_`, since
     // functions could still be called on those checks afterwards.
     bool is_in_pending_checks = false;
 
@@ -283,14 +282,14 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Called when the database has been updated and schedules the next update.
   void DatabaseUpdated();
 
-  // Matches the full_hashes for a |check| with the hashes stored in
-  // |artificially_marked_store_and_hash_prefixes_|. For each full hash match,
-  // it populates |full_hash_to_store_and_hash_prefixes| with the matched hash
+  // Matches the full_hashes for a `check` with the hashes stored in
+  // `artificially_marked_store_and_hash_prefixes_`. For each full hash match,
+  // it populates `full_hash_to_store_and_hash_prefixes` with the matched hash
   // prefix and store.
   void GetArtificialPrefixMatches(const std::unique_ptr<PendingCheck>& check);
 
   // Identifies the prefixes and the store they matched in, for a given
-  // |check|.  The callback is run asynchronously with the identifier of
+  // `check`.  The callback is run asynchronously with the identifier of
   // the stores along with the matching hash prefixes.
   void GetPrefixMatches(PendingCheck* check,
                         base::OnceCallback<void(DbLookupResult)> callback);
@@ -350,16 +349,16 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Schedules a full-hash check for a given set of prefixes.
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 
-  // Checks |stores_to_check| in database synchronously for hash prefixes
-  // matching the full hashes for |url|. This function is meant for stores that
+  // Checks `stores_to_check` in database synchronously for hash prefixes
+  // matching the full hashes for `url`. This function is meant for stores that
   // have full hash information locally.
   void HandleUrl(const GURL& url,
                  const StoresToCheck& stores_to_check,
                  base::OnceCallback<void(bool)> callback);
 
-  // Called when the |v4_get_hash_protocol_manager_| has the full hash response
+  // Called when the `v4_get_hash_protocol_manager_` has the full hash response
   // available for the URL that we requested. It determines the severest
-  // threat type and responds to the |client| with that information.
+  // threat type and responds to the `client` with that information.
   // TODO(crbug.com/372395685): Deprecate with v4.
   virtual void OnFullHashResponseV4(
       std::unique_ptr<PendingCheck> pending_check,
@@ -376,7 +375,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
                             SBThreatType threat_type,
                             const ThreatMetadata& metadata);
 
-  // Performs the full hash checking of the URL in |check|.
+  // Performs the full hash checking of the URL in `check`.
   virtual void PerformFullHashCheck(std::unique_ptr<PendingCheck> check);
 
   // When the database is ready to use, process the checks that were queued
@@ -395,8 +394,8 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // complete. This is used to get to a safe state for shutdown.
   void DropQueuedAndPendingChecks();
 
-  // Calls the appropriate method on the |client| object, based on the contents
-  // of |pending_check|. May only be invoked once on a given check. May not be
+  // Calls the appropriate method on the `client` object, based on the contents
+  // of `pending_check`. May only be invoked once on a given check. May not be
   // invoked on an Abandon()'ed check.
   void RespondToClient(std::unique_ptr<PendingCheck> pending_check);
 
@@ -404,16 +403,16 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // to schedule a network request to verify the prefix matches.
   void RespondOrScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 
-  // Callers should generally use |RespondToClient| instead, which will clean up
-  // the |pending_check|. Callers should use this function when they don't own
-  // the |pending_check|. Like |RespondToClient|, this calls the appropriate
-  // method on the |client| object, based on the contents of |pending_check|.
+  // Callers should generally use `RespondToClient` instead, which will clean up
+  // the `pending_check`. Callers should use this function when they don't own
+  // the `pending_check`. Like `RespondToClient`, this calls the appropriate
+  // method on the `client` object, based on the contents of `pending_check`.
   // May only be invoked once on a given check, and resets the `client` pointer.
   // May not be invoked on an Abandon()'ed check.
   void RespondToClientWithoutPendingCheckCleanup(PendingCheck* pending_check);
 
-  // Instantiates and initializes |sb_database_| on the task runner. Sets up the
-  // callback for |DatabaseReady| when the database is ready for use.
+  // Instantiates and initializes `sb_database_` on the task runner. Sets up the
+  // callback for `DatabaseReady` when the database is ready for use.
   void SetupDatabase();
 
   // Instantiates and initializes `update_protocol_manager_` with either a V4 or
@@ -424,8 +423,8 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
 
-  // Updates the |list_client_states_| with the state information in
-  // |store_state_map|.
+  // Updates the `list_client_states_` with the state information in
+  // `store_state_map`.
   void UpdateListClientStates(
       const std::unique_ptr<StoreStateMap>& store_state_map);
 

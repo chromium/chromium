@@ -65,7 +65,7 @@ class FakeV4Store : public V4Store {
 
 // This factory creates a "fake" store. It allows the caller to specify whether
 // the store has a hash prefix matching a full hash. This is used to test the
-// |GetStoresMatchingFullHash()| method in |SBDatabase|.
+// `GetStoresMatchingFullHash()` method in `SBDatabase`.
 class FakeV4StoreFactory : public V4StoreFactory {
  public:
   explicit FakeV4StoreFactory(bool hash_prefix_matches)

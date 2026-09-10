@@ -44,7 +44,6 @@
 #include "testing/platform_test.h"
 
 // TODO(crbug.com/362791941): Handle v4 references
-// TODO(crbug.com/362791941): Convert |comments| to `comments`
 namespace safe_browsing {
 
 using enum ExtendedReportingLevel;
@@ -179,7 +178,7 @@ class FakeV5GetHashProtocolManager : public V5GetHashProtocolManager {
 }  // namespace
 
 // Use this if you want to use a real V4GetHashProtocolManager, but substitute
-// the server response via the |test_url_loader_factory|.
+// the server response via the `test_url_loader_factory`.
 // This must be defined outside the anonymous namespace so that it can be
 // included as a friend class for V4GetHashProtocolManager.
 class GetHashProtocolManagerFactoryWithTestUrlLoader
@@ -429,8 +428,8 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 
 class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
  public:
-  // |match_expected| specifies whether a full hash match is expected.
-  // |expected_sb_threat_type| identifies which callback method to expect to get
+  // `match_expected` specifies whether a full hash match is expected.
+  // `expected_sb_threat_type` identifies which callback method to expect to get
   // called.
   explicit TestAllowlistClient(bool match_expected,
                                SBThreatType expected_sb_threat_type)
@@ -1226,7 +1225,7 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
        TestCheckBrowseUrlReturnsNoMatchWhenDisabled) {
   WaitForTasksOnTaskRunner();
 
-  // The same URL returns |false| in the previous test because
+  // The same URL returns `false` in the previous test because
   // sb_local_database_manager_ is enabled.
   ForceDisableLocalDatabaseManager();
 
@@ -1918,10 +1917,10 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
       CheckBrowseUrlType::kHashDatabase));
 
   // That check gets queued. Now, let's cancel the check. After this, we should
-  // not receive a call for |OnCheckBrowseUrlResult| with |first_url|.
+  // not receive a call for `OnCheckBrowseUrlResult` with `first_url`.
   sb_local_database_manager_->CancelCheck(&client);
 
-  // Now, re-use that client but for |second_url|.
+  // Now, reuse that client but for `second_url`.
   client.mutable_expected_urls()->assign(1, second_url);
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       second_url, usual_threat_types_, &client,
@@ -1929,8 +1928,8 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
 
   // Wait for PerformFullHashCheck to complete.
   WaitForTasksOnTaskRunner();
-  // |on_check_browse_url_result_called_| is true only if OnCheckBrowseUrlResult
-  // gets called with the |url| equal to |expected_url|, which is |second_url|
+  // `on_check_browse_url_result_called_` is true only if OnCheckBrowseUrlResult
+  // gets called with the `url` equal to `expected_url`, which is `second_url`
   // in
   // this test.
   EXPECT_TRUE(client.on_check_browse_url_result_called());
@@ -2154,8 +2153,8 @@ TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-// This is similar to |TestCheckExtensionIDsOneIsBlocklisted|, but it uses a
-// real |V4GetHashProtocolManager| instead of |FakeGetHashProtocolManager|. This
+// This is similar to `TestCheckExtensionIDsOneIsBlocklisted`, but it uses a
+// real `V4GetHashProtocolManager` instead of `FakeGetHashProtocolManager`. This
 // tests that the values passed into the protocol manager are usable.
 TEST_F(
     SBLocalDatabaseManagerTest_ExtensionNetworkQuery,

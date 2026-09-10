@@ -40,7 +40,7 @@ class TestV4Store : public V4Store {
 
   void MarkPrefixAsBad(HashPrefixStr prefix);
 
-  // |prefixes| does not need to be sorted.
+  // `prefixes` does not need to be sorted.
   void SetPrefixes(std::vector<HashPrefixStr> prefixes, PrefixSize size);
 
   HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override;
@@ -154,8 +154,8 @@ struct TestV4HashResponseInfo {
  private:
   TestV4HashResponseInfo();
 };
-// Converts the |response_infos| into a serialized version of a
-// |FindFullHashesResponse|. It also adds values for the cache durations.
+// Converts the `response_infos` into a serialized version of a
+// `FindFullHashesResponse`. It also adds values for the cache durations.
 std::string GetV4HashResponse(
     std::vector<TestV4HashResponseInfo> response_infos);
 

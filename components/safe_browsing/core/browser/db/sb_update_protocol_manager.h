@@ -58,7 +58,7 @@ class SBUpdateProtocolManager {
   virtual ~SBUpdateProtocolManager();
 
   // Constructs a SBUpdateProtocolManager that issues network requests using
-  // |url_loader_factory|. It schedules updates to get the hash prefixes for
+  // `url_loader_factory`. It schedules updates to get the hash prefixes for
   // SafeBrowsing lists.
   SBUpdateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -121,7 +121,7 @@ class SBUpdateProtocolManager {
   base::TimeDelta next_update_interval_;
 
   // The time when the next update is scheduled to be requested. This is valid
-  // only when |update_timer_| is running.
+  // only when `update_timer_` is running.
   std::optional<base::Time> next_update_time_ = std::nullopt;
 
   // The config of the client making Pver4 requests.

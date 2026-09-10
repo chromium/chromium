@@ -302,7 +302,7 @@ V5StoreReadResult V5Store::ReadFromDiskInternal() {
     expected_checksum_ = file_format.list_details().checksum().sha256();
   }
 
-  // Update |file_size_| now because we parsed the file correctly.
+  // Update `file_size_` now because we parsed the file correctly.
   file_size_ = file_size;
   if (file_format.list_details().has_hash_file()) {
     file_size_ += file_format.list_details().hash_file().file_size();

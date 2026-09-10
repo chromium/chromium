@@ -25,7 +25,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/362791941): replace all |comments| with `comments` for v5.
 namespace net {
 class HttpRequestHeaders;
 }  // namespace net
@@ -193,7 +192,7 @@ enum class SBThreatType {
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;
 
-// Return true if |set| only contains types that are valid for CheckBrowseUrl().
+// Return true if `set` only contains types that are valid for CheckBrowseUrl().
 // Intended for use in DCHECK().
 bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set);
 
@@ -454,12 +453,12 @@ class SBProtocolManagerUtil {
   static FullHashStr GetFullHash(const GURL& url);
 
   // Generates a Pver4 request URL and sets the appropriate header values.
-  // |request_base64| is the serialized request protocol buffer encoded in
+  // `request_base64` is the serialized request protocol buffer encoded in
   // base 64.
-  // |method_name| is the name of the method to call, as specified in the proto,
-  // |config| is an instance of V4ProtocolConfig that stores the client config,
-  // |gurl| is set to the value of the PVer4 request URL,
-  // |headers| is populated with the appropriate header values.
+  // `method_name` is the name of the method to call, as specified in the proto,
+  // `config` is an instance of V4ProtocolConfig that stores the client config,
+  // `gurl` is set to the value of the PVer4 request URL,
+  // `headers` is populated with the appropriate header values.
   static void GetRequestUrlAndHeaders(const std::string& request_base64,
                                       const std::string& method_name,
                                       const V4ProtocolConfig& config,
@@ -467,14 +466,14 @@ class SBProtocolManagerUtil {
                                       net::HttpRequestHeaders* headers);
 
   // Worker function for calculating the backoff times.
-  // |multiplier| is doubled for each consecutive error after the
-  // first, and |error_count| is incremented with each call.
+  // `multiplier` is doubled for each consecutive error after the
+  // first, and `error_count` is incremented with each call.
   // Backoff interval is MIN(((2^(n-1))*15 minutes) * (RAND + 1), 24 hours)
   // where n is the number of consecutive errors.
   static base::TimeDelta GetNextBackOffInterval(size_t* error_count,
                                                 size_t* multiplier);
 
-  // Generate the set of FullHashes to check for |url|.
+  // Generate the set of FullHashes to check for `url`.
   static void UrlToFullHashes(const GURL& url,
                               std::vector<FullHashStr>* full_hashes);
 
@@ -494,8 +493,8 @@ class SBProtocolManagerUtil {
   static void SetClientInfoFromConfig(ClientInfo* client_info,
                                       const V4ProtocolConfig& config);
 
-  // Stores the client state values for each of the lists in |store_state_map|
-  // into |list_client_states|.
+  // Stores the client state values for each of the lists in `store_state_map`
+  // into `list_client_states`.
   // TODO(crbug.com/372395685): Deprecate with v4.
   static void GetListClientStatesFromStoreStateMap(
       const std::unique_ptr<StoreStateMap>& store_state_map,
@@ -510,8 +509,8 @@ class SBProtocolManagerUtil {
   FRIEND_TEST_ALL_PREFIXES(SBProtocolManagerUtilUrlParsingTest, UrlParsing);
   FRIEND_TEST_ALL_PREFIXES(SBProtocolManagerUtilTest, CanonicalizeUrl);
 
-  // Composes a URL using |prefix|, |method| (e.g.: encodedFullHashes).
-  // |request_base64|, |client_id|, |version| and |key_param|. |prefix|
+  // Composes a URL using `prefix`, `method` (e.g.: encodedFullHashes),
+  // `request_base64`, `client_id`, `version` and `key_param`. `prefix`
   // should contain the entire url prefix including scheme, host and path.
   static std::string ComposeUrl(const std::string& prefix,
                                 const std::string& method,
