@@ -32,6 +32,7 @@ use rust_gtest_interop::prelude::*;
 use bindings::for_testing::DummyRegistrarForTesting;
 use bindings::receiver::{PendingAssociatedReceiver, PendingReceiver};
 use bindings::remote::{PendingAssociatedRemote, PendingRemote};
+use mojom_value_parser_core::Predicate;
 use mojom_value_parser_core::*;
 use ordered_float::OrderedFloat;
 use parser_unittests_rust::parser_unittests::*;
@@ -2880,4 +2881,24 @@ fn test_context_shadowing() {
     let mojom_val = union_val.clone().into_mojom_value(&registrar);
     let parsed_union = UnionContext::try_from_mojom_value(mojom_val, &registrar).unwrap();
     assert_eq!(union_val, parsed_union);
+}
+
+#[gtest(MojomParseTest, ParsingResultShadowing)]
+fn test_parsing_result_shadowing() {
+    use parser_unittests_rust::parser_unittests::ParsingResult;
+    let registrar = DummyRegistrarForTesting::new(false);
+    let original = ParsingResult { value: 12345 };
+    let mojom_val = original.clone().into_mojom_value(&registrar);
+    let parsed = ParsingResult::try_from_mojom_value(mojom_val, &registrar).unwrap();
+    assert_eq!(original, parsed);
+}
+
+#[gtest(MojomParseTest, PredicateShadowing)]
+fn test_predicate_shadowing() {
+    use parser_unittests_rust::parser_unittests::Predicate as TestPredicate;
+    let registrar = DummyRegistrarForTesting::new(false);
+    let original = TestPredicate { value: 67890 };
+    let mojom_val = original.clone().into_mojom_value(&registrar);
+    let parsed = TestPredicate::try_from_mojom_value(mojom_val, &registrar).unwrap();
+    assert_eq!(original, parsed);
 }
