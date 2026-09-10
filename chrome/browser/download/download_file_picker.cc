@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "components/download/public/common/base_file.h"
 #include "content/public/browser/browser_context.h"
@@ -24,9 +25,9 @@
 #include "ui/aura/window.h"
 #endif
 
-using download::DownloadItem;
 using content::DownloadManager;
 using content::WebContents;
+using download::DownloadItem;
 
 DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
                                        const base::FilePath& suggested_path,

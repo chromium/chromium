@@ -110,6 +110,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -609,7 +610,6 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
   OnActiveTabChanged(change, selection);
 }
 
-
 void Browser::TabStripEmpty() {
   // Note: even though the tab strip is empty, the call to Close() may not
   // result in closing this Browser. This can happen in the case of closing
@@ -841,11 +841,9 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
         selection.new_contents);
   }
 
-
   SearchTabHelper::FromWebContents(selection.new_contents)->OnTabActivated();
   did_active_tab_change_callback_list_.Notify(this);
 }
-
 
 void Browser::OnTabReplacedAt(WebContents* old_contents,
                               WebContents* new_contents,
@@ -904,7 +902,6 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
         location_bar->SaveStateToContents(contents);
       }
     }
-
   }
 
   SetAsDelegate(contents, false);

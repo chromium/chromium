@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_window_deleter.h"
 
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 void BrowserWindowDeleter::operator()(BrowserWindow* browser_window) {
   browser_window->DeleteBrowserWindow();

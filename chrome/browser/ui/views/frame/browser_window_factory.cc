@@ -23,6 +23,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/browser_view_ash.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 

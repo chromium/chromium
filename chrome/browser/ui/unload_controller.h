@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/download_close_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -37,24 +38,9 @@ class UnloadController : public WebContentsCollection::Observer,
   using WarnBeforeClosingCallback =
       base::OnceCallback<void(WarnBeforeClosingResult)>;
 
-  // The context for a download blocked notification from
-  // OkToCloseWithInProgressDownloads.
-  enum class DownloadCloseType {
-    // Browser close is not blocked by download state.
-    kOk,
-
-    // The browser is shutting down and there are active downloads
-    // that would be cancelled.
-    kBrowserShutdown,
-
-    // There are active downloads associated with this incognito profile
-    // that would be canceled.
-    kLastWindowInIncognitoProfile,
-
-    // There are active downloads associated with this guest session
-    // that would be canceled.
-    kLastWindowInGuestSession,
-  };
+  // Defined in download_close_type.h so that callers which only need the
+  // enum do not have to depend on this controller.
+  using DownloadCloseType = ::DownloadCloseType;
 
   DECLARE_USER_DATA(UnloadController);
 

@@ -599,6 +599,12 @@ source_set("tab_dialogs") {
   }
 }
 
+# The DownloadCloseType enum, split out of UnloadController so that callers
+# which only need to name it do not have to depend on the controller.
+source_set("download_close_type") {
+  public = [ "download_close_type.h" ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -628,6 +634,7 @@ static_library("ui") {
     ":accelerator_utils_headers",
     ":browser_live_tab_context",
     ":crypto_module_password_dialog",
+    ":download_close_type",
     ":enterprise_startup_dialog",
     ":screen_capture_notification_ui",
     ":simple_message_box_headers",
@@ -3787,6 +3794,7 @@ if (!is_android) {
       "unload_controller.h",
     ]
     public_deps = [
+      ":download_close_type",
       "//base",
       "//chrome/browser/tab_contents",
       "//chrome/browser/ui/browser_window",

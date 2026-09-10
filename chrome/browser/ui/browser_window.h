@@ -13,8 +13,8 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
+#include "chrome/browser/ui/download_close_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -376,7 +376,7 @@ class BrowserWindow : public ui::BaseWindow {
   // This method should call |callback| with the user's response.
   virtual void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
-      UnloadController::DownloadCloseType dialog_type,
+      DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) = 0;
 
   // Shows the app menu (for accessibility).
