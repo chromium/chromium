@@ -9,6 +9,9 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_handle.h>
 
+#include <optional>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/memory/self_deleting.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,11 +36,15 @@ class ContentDirectoryLoaderFactory
   // ContentDirectoryLoaderFactory.  The factory is self-owned - it will delete
   // itself once there are no more receivers (including the receiver associated
   // with the returned mojo::PendingRemote and the receivers bound by the Clone
-  // method).
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
+  // method). If `content_directory_name` is set, the returned factory will
+  // only serve resources from that directory; requests for any other content
+  // directory will fail.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
+      std::optional<std::string> content_directory_name);
 
   ContentDirectoryLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+      std::optional<std::string> content_directory_name,
       base::SelfDeletingPassKey key);
 
   ContentDirectoryLoaderFactory(const ContentDirectoryLoaderFactory&) = delete;
@@ -60,6 +67,9 @@ class ContentDirectoryLoaderFactory
       const std::string& content_directory_name,
       const base::FilePath& relative_file_path,
       fidl::InterfaceRequest<fuchsia::io::Node> file_request);
+
+  // If set, requests are only served from the named content directory.
+  const std::optional<std::string> content_directory_name_;
 
   // Used for executing blocking URLLoader routines.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

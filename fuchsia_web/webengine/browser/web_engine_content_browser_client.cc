@@ -245,11 +245,11 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 WebEngineContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
     content::FrameTreeNodeId frame_tree_node_id) {
-  if (scheme == kFuchsiaDirScheme) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableContentDirectories)) {
-      return ContentDirectoryLoaderFactory::Create();
-    }
+  if (scheme == kFuchsiaDirScheme &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableContentDirectories)) {
+    return ContentDirectoryLoaderFactory::Create(
+        /*content_directory_name=*/std::nullopt);
   }
   return {};
 }
@@ -260,10 +260,15 @@ void WebEngineContentBrowserClient::
         int render_frame_id,
         const std::optional<url::Origin>& request_initiator_origin,
         NonNetworkURLLoaderFactoryMap* factories) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+  // Only documents served from a content directory may load content-directory
+  // subresources, and only from the directory that served the document.
+  if (request_initiator_origin &&
+      request_initiator_origin->scheme() == kFuchsiaDirScheme &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
     factories->emplace(kFuchsiaDirScheme,
-                       ContentDirectoryLoaderFactory::Create());
+                       ContentDirectoryLoaderFactory::Create(
+                           request_initiator_origin->host()));
   }
 }
 
