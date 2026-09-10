@@ -1562,6 +1562,15 @@ class GpuIntegrationTest(
       'arm-mali-g78',  # android-pixel-6
       'nvidia-nvidia-tegra',  # android-shield-android-tv
       'imagination-technologies-0x71061212',  # android-pixel-10
+      # android-pixel-11-pro-xl
+      (
+        'google-inc.-(imagination-technologies)-angle-('
+        'imagination-technologies-vulkan-1.4.317-('
+        'powervr-c-series-cxtp-48-1536-mc1-(0x70061042))'
+        '-powervr-c-series-vulkan-driver-1.662.3024)'
+      ),
+      # also android-pixel-11-pro-xl
+      'google-inc.-(imagination-technologies)-0x70061042',
       'samsung-electronics-co.-ltd.-0x2600200',  # android-sm-s926b
       'vmware,',  # VMs
       'vmware,-0x1050',  # ChromeOS VMs

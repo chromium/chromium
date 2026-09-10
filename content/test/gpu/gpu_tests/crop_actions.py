@@ -121,6 +121,7 @@ class NonWhiteContentCropAction(BaseCropAction):
     'Brya',
     # Chromebooks using the Corsola board.
     'Corsola',
+    'Pixel 11 Pro XL',
   }
 
   def __init__(self, initial_crop: BaseCropAction | None = None):

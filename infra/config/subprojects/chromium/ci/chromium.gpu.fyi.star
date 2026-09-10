@@ -571,13 +571,92 @@ ci.thin_tester(
         # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
         # should be running the same tests as 'Android FYI Release (Pixel 11)'.
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_all_android_arm64_release_gtests",
+            "gpu_all_android_arm64_release_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
             "gpu_pixel_11_experimental",
             "very_limited_capacity_bot",
         ],
+        per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "context_lost_validating_tests": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "expected_color_pixel_validating_test": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pixel_11.gl_tests_passthrough.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "pixel_skia_gold_validating_test": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "screenshot_sync_validating_tests": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "webcodecs_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "webcodecs_validating_ganesh_tests": targets.per_test_modification(
+                replacements = targets.replacements(
+                    args = {
+                        # This is currently necessary due to this config
+                        # originally testing default behavior, but default
+                        # behavior testing generally being omitted from FYI
+                        # testers as part of bundle standardization.
+                        # TODO(crbug.com/541312843): Remove this once we decide
+                        # which explicit configuration to test here.
+                        "--extra-browser-args": None,
+                    },
+                ),
+            ),
+            "webgl2_conformance_validating_tests": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "webgl_conformance_gles_passthrough_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "webgl_conformance_validating_ganesh_tests": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "webgl_conformance_validating_graphite_tests": targets.remove(
+                reason = "Passthrough is already shipped everywhere but Webview",
+            ),
+            "webrtc_graphite_tests": targets.remove(
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 11 devices",
+            ),
+            "webrtc_validating_ganesh_tests": targets.per_test_modification(
+                replacements = targets.replacements(
+                    args = {
+                        # This is currently necessary due to this config
+                        # originally testing default behavior, but default
+                        # behavior testing generally being omitted from FYI
+                        # testers as part of bundle standardization.
+                        # TODO(crbug.com/541312843): Remove this once we decide
+                        # which explicit configuration to test here.
+                        "--extra-browser-args": None,
+                    },
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,

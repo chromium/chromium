@@ -36,6 +36,7 @@ TAG_SPECIALIZATIONS = {
       'android-14',
       'android-15',
       'android-16',
+      'android-17',
     ],
     'chromeos': [],
     'fuchsia': [],
@@ -98,6 +99,7 @@ TAG_SPECIALIZATIONS = {
       'google-0xffff',
       'google-0xc0de',
     ],
+    'google-inc.-(imagination-technologies)': [],
     'imagination': [],
     'imagination-technologies': [],
     'intel': [
@@ -199,6 +201,7 @@ TAG_HEADER = """\
 {OS_TAGS}
 # Devices
 # tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
+#             android-pixel-11-pro-xl
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1 android-sm-s926b
 #         android-brya android-corsola
