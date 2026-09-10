@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillTravelFragment;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.autofill.settings.NonCardPaymentMethodsManagementFragment;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
@@ -231,6 +232,10 @@ public class SettingsFragmentRegistry {
                 "referrer",
                 AutofillAndPasswordsFragment.EXTRA_REFERRER,
                 /* defaultValue= */ AutofillSettingsReferrer.SETTINGS_MENU);
+        registerIntParameterMapping(
+                "optionsReferrer",
+                AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER,
+                /* defaultValue= */ AutofillOptionsReferrer.SETTINGS);
 
         // Register default argument providers cleanly without hardcoding in URL parsing logic
         sDefaultArgsProviders.put(
@@ -240,6 +245,15 @@ public class SettingsFragmentRegistry {
                         bundle.putInt(
                                 ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
                                 NightModeMetrics.ThemeSettingsEntry.SETTINGS);
+                    }
+                });
+        sDefaultArgsProviders.put(
+                AutofillOptionsFragment.class,
+                bundle -> {
+                    if (!bundle.containsKey(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER)) {
+                        bundle.putInt(
+                                AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER,
+                                AutofillOptionsReferrer.SETTINGS);
                     }
                 });
     }

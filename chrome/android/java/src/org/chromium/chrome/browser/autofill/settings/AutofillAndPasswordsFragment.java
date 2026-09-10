@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -137,6 +138,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
+    private final CallbackController mSignInPromoCallbackController = new CallbackController();
     private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private OneshotSupplier<WindowAndroid> mWindowAndroidSupplier;
     private ActivityResultTracker mActivityResultTracker;
@@ -243,7 +245,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
         autofillSettingsPref.setTitle(AutofillOptionsMediator.getFragmentTitle(getContext()));
         autofillSettingsPref.setOnPreferenceClickListener(
                 preference -> {
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(getContext())
                             .startSettings(
                                     getContext(),
                                     AutofillOptionsFragment.class,
@@ -274,19 +276,23 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
         if (mSigninPromoCoordinator != null) {
             mSigninPromoCoordinator.destroy();
         }
+        mSignInPromoCallbackController.destroy();
         super.onDestroy();
     }
 
     private void setupSignInPromo() {
         SupplierUtils.waitForAll(
-                () -> {
-                    if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.INITIALIZED)) {
-                        mSigninPromoCoordinator = createSigninPromoCoordinator();
-                        ((SigninPromoPreference) findPreference(PREF_SIGNIN_PROMO))
-                                .setCoordinator(mSigninPromoCoordinator);
-                        updateSignInPromo();
-                    }
-                },
+                mSignInPromoCallbackController.makeCancelable(
+                        () -> {
+                            if (getLifecycle()
+                                    .getCurrentState()
+                                    .isAtLeast(Lifecycle.State.INITIALIZED)) {
+                                mSigninPromoCoordinator = createSigninPromoCoordinator();
+                                ((SigninPromoPreference) findPreference(PREF_SIGNIN_PROMO))
+                                        .setCoordinator(mSigninPromoCoordinator);
+                                updateSignInPromo();
+                            }
+                        }),
                 mWindowAndroidSupplier,
                 mBottomSheetControllerSupplier,
                 mSnackbarManagerSupplier,

@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguagesManager.LanguageListType;
@@ -296,6 +298,18 @@ public class SettingsFragmentRegistryTest {
         assertEquals(
                 NightModeMetrics.ThemeSettingsEntry.SETTINGS,
                 bundle.getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
+
+        // Verify that parsing an autofill options URL without explicit query
+        // parameters automatically populates the mandatory
+        // autofill-options-referrer extra expected by AutofillOptionsFragment.
+        Bundle autofillOptionsBundle =
+                SettingsFragmentRegistry.parseUrlArguments("chrome://settings/autofill/settings");
+        assertTrue(
+                autofillOptionsBundle.containsKey(
+                        AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
+        assertEquals(
+                AutofillOptionsReferrer.SETTINGS,
+                autofillOptionsBundle.getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 
     @Test
