@@ -11,7 +11,8 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check_deref.h"
-#include "base/containers/extend.h"
+#include "base/check_op.h"
+#include "base/containers/span_writer.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -740,7 +741,7 @@ TEST_F(UnexportableKeyMacTest, GenerateAttestationKeyAndRestore) {
   EXPECT_EQ(restored_key->GetWrappedKey(), wrapped_key);
 }
 
-TEST_F(UnexportableKeyMacTest, CertifySlowlyStatementAndSignature) {
+TEST_F(UnexportableKeyMacTest, CertifySlowly) {
   ASSERT_TRUE(provider_);
   std::unique_ptr<UnexportableSigningKey> signing_key =
       provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
@@ -754,13 +755,13 @@ TEST_F(UnexportableKeyMacTest, CertifySlowlyStatementAndSignature) {
   ASSERT_OK_AND_ASSIGN(AttestationStatement cert,
                        attestation_key->CertifySlowly(*signing_key, challenge));
   EXPECT_EQ(cert.format, AttestationStatement::kSecureEnclave);
-  EXPECT_TRUE(cert.subject_key.empty());
+  EXPECT_EQ(cert.subject_key, signing_key->GetSubjectPublicKeyInfo());
 
-  std::vector<uint8_t> expected_statement = challenge;
-  // TODO(crbug.com/406190025): Make the hash algorithm generic once we use
-  // the crypto::sign algorithms.
-  base::Extend(expected_statement,
-               hash::Sha256(signing_key->GetSubjectPublicKeyInfo()));
+  std::vector<uint8_t> expected_statement(2 * hash::kSha256Size);
+  base::SpanWriter<uint8_t> statement_writer(expected_statement);
+  statement_writer.Write(hash::Sha256(challenge));
+  statement_writer.Write(hash::Sha256(signing_key->GetSubjectPublicKeyInfo()));
+  CHECK_EQ(statement_writer.remaining(), 0u);
   EXPECT_EQ(cert.statement, expected_statement);
 
   EXPECT_THAT(cert.signature, SizeIs(64u));

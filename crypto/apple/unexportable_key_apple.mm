@@ -27,9 +27,10 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/raw_span.h"
@@ -377,18 +378,18 @@ class UnexportableAttestationKeyApple
   std::optional<AttestationStatement> CertifySlowly(
       const UnexportableSigningKey& signing_key,
       base::span<const uint8_t> challenge) override {
-    std::vector<uint8_t> raw_stmt;
-    // TODO(crbug.com/406190025): Make the hash algorithm generic once we use
-    // the crypto::sign algorithms.
-    raw_stmt.reserve(challenge.size() + hash::kSha256Size);
-    base::Extend(raw_stmt, challenge);
-    base::Extend(raw_stmt, hash::Sha256(signing_key.GetSubjectPublicKeyInfo()));
+    std::vector<uint8_t> spki = signing_key.GetSubjectPublicKeyInfo();
+    std::vector<uint8_t> statement(2 * hash::kSha256Size);
+    base::SpanWriter<uint8_t> statement_writer(statement);
+    statement_writer.Write(hash::Sha256(challenge));
+    statement_writer.Write(hash::Sha256(spki));
+    CHECK_EQ(statement_writer.remaining(), 0u);
 
     ASSIGN_OR_RETURN(std::vector<uint8_t> der_sig,
-                     SignSlowlyImpl(GetSecKeyRef(), raw_stmt,
+                     SignSlowlyImpl(GetSecKeyRef(), statement,
                                     TPMOperation::kKeyCertification));
 
-    ASSIGN_OR_RETURN(keypair::PublicKey public_key,
+    ASSIGN_OR_RETURN(auto public_key,
                      keypair::PublicKey::FromSubjectPublicKeyInfo(
                          GetSubjectPublicKeyInfo()));
 
@@ -397,8 +398,9 @@ class UnexportableAttestationKeyApple
 
     return AttestationStatement{
         .format = AttestationStatement::kSecureEnclave,
-        .statement = std::move(raw_stmt),
+        .statement = std::move(statement),
         .signature = std::move(raw_sig),
+        .subject_key = std::move(spki),
     };
   }
 };

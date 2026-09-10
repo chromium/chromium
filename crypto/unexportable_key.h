@@ -118,19 +118,20 @@ class CRYPTO_EXPORT UnexportableSigningKey {
 struct CRYPTO_EXPORT AttestationStatement {
   enum Format {
     // TPM 2.0 platform attestation format.
-    // `statement` is a binary TPMS_ATTEST structure.
+    // `statement` is a binary TPMS_ATTEST structure. The qualifying data is the
+    // hash corresponding to `Algorithm()` of the server's challenge.
     // `signature` is a binary TPMT_SIGNATURE structure.
     // `subject_key` is the TPM 2.0 `TPMT_PUBLIC` binary structure of the
     // certified key.
     kTpm,
     // Custom Secure Enclave format used on macOS/iOS.
-    // `statement` is the concatenation of the server's challenge and the
-    // SHA-256 hash of the signing key's Subject PublicKey Info (SPKI).
-    // TODO(crbug.com/406190025): Make this generic once we use the
-    // crypto::sign algorithms.
+    // `statement` is the concatenation of the SHA-256 hash of the server's
+    // challenge and the SHA-256 hash of the signing key's Subject PublicKey
+    // Info (SPKI).
     // `signature` is the signature over `statement` signed using the Secure
     // Enclave attestation key in raw IEEE P1363 format (concatenation of
     // big-endian `r` and `s`, 64 bytes for P-256).
+    // `subject_key` is the signing key's Subject PublicKey Info (SPKI).
     kSecureEnclave,
   };
   Format format = kTpm;
