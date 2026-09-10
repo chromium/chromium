@@ -129,11 +129,14 @@ bool ShouldSerializeCornerAsNormal(const CSSValuePair& value) {
       return true;
     }
   }
-  const CSSPrimitiveValue& param =
-      To<cssvalue::CSSSuperellipseValue>(shape).Param();
-  return param.IsNumericLiteralValue() &&
-         To<CSSNumericLiteralValue>(param).DoubleValue() ==
-             Superellipse::Round().Parameter();
+  if (const auto* super_ellipse =
+          DynamicTo<cssvalue::CSSSuperellipseValue>(shape)) {
+    const CSSPrimitiveValue& param = super_ellipse->Param();
+    return param.IsNumericLiteralValue() &&
+           To<CSSNumericLiteralValue>(param).DoubleValue() ==
+               Superellipse::Round().Parameter();
+  }
+  return false;
 }
 
 String SerializeCornerValue(const CSSValuePair& value) {
