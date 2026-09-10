@@ -623,6 +623,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
   }
 
+  DCHECK(CanGenerateContent());
   DCHECK(!style.ContentBehavesAsNormal());
   DCHECK(!style.ContentPreventsBoxGeneration());
 
@@ -704,7 +705,6 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdScrollButtonInlineStart:
     case kPseudoIdScrollButtonInlineEnd:
     case kPseudoIdScrollButtonBlockEnd:
-    case kPseudoIdOverscrollAreaParent:
       return true;
     default:
       return false;

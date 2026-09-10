@@ -60,6 +60,8 @@ class CORE_EXPORT PseudoElement : public Element {
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
 
+  // Returns true if the PseudoElement can generates child boxes based on the
+  // CSS content property.
   bool CanGenerateContent() const;
   bool CanHaveNestedPseudoElement() const;
   bool CanStartSelection() const override { return false; }
