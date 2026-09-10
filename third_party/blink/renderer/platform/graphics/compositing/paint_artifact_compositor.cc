@@ -221,6 +221,17 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
       }
     }
     if (!transform) {
+      // A synthesized clip mask layer's transform space may not be shared by
+      // any pending layer, e.g. when all masked content lives in descendant
+      // transform spaces; resolve it from the cache entry that owns the layer.
+      for (const auto& entry : synthesized_clip_cache_) {
+        if (entry.synthesized_clip->Layer() == layer.get()) {
+          transform = entry.transform_key.Get();
+          break;
+        }
+      }
+    }
+    if (!transform) {
       for (const auto& pending_layer : pending_layers_) {
         if (pending_layer.GetPropertyTreeState().Transform().CcNodeId(
                 layer->property_tree_sequence_number()) ==

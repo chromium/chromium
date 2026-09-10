@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
@@ -3343,6 +3344,31 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipIsNotDrawable) {
       GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
   ASSERT_EQ(e0_id, mask_isolation_0.parent_id);
   EXPECT_EQ(SkBlendMode::kSrcOver, mask_isolation_0.blend_mode);
+}
+
+TEST_P(PaintArtifactCompositorTest, GetLayersAsJSONSynthesizedClipMaskLayer) {
+  // A synthesized clip mask layer is emitted in the clip's local transform
+  // space. When the only masked content is composited into a descendant
+  // space, no pending layer shares that space, and GetLayersAsJSON must
+  // resolve the mask layer's transform from the synthesized clip cache.
+  auto* t1 = CreateTransform(t0(), MakeTranslationMatrix(50, 0));
+  auto* t2 = CreateTransform(*t1, gfx::Transform(), gfx::Point3F(),
+                             {CompositingReason::kWillChangeTransform});
+  auto* c1 = CreateClipPathClip(c0(), *t1, FloatRoundedRect(50, 50, 300, 200));
+
+  TestPaintArtifact artifact;
+  artifact.Chunk(*t2, *c1, e0())
+      .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack);
+  Update(artifact.Build());
+  ASSERT_EQ(2u, LayerCount());
+  ASSERT_EQ(SynthesizedClipLayerAt(0), LayerAt(1));
+
+  std::unique_ptr<JSONObject> json =
+      GetPaintArtifactCompositor().GetLayersAsJSON(0);
+  ASSERT_TRUE(json);
+  JSONArray* layers = json->GetArray("layers");
+  ASSERT_TRUE(layers);
+  EXPECT_EQ(2u, layers->size());
 }
 
 TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
