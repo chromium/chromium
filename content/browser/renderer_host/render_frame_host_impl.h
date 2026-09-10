@@ -94,6 +94,7 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/initiator_navigation_state.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/reload_type.h"
@@ -302,7 +303,6 @@ class GuestPageHolderImpl;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
-class InitiatorNavigationStateImpl;
 class PeerConnectionTrackerHost;
 class PendingNavigation;
 class PrefetchedSignedExchangeCache;
@@ -462,13 +462,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
   static void SetCodeCacheHostReceiverHandlerForTesting(
       CodeCacheHostReceiverHandler handler);
-
-  // Get the InitiatorNavigationStateImpl associated with `frame_token`.
-  static scoped_refptr<InitiatorNavigationState>
-  GetInitiatorNavigationStateFromFrameToken(
-      const blink::LocalFrameToken* frame_token,
-      int initiator_process_id,
-      BrowserContext* browser_context);
 
   RenderFrameHostImpl(const RenderFrameHostImpl&) = delete;
   RenderFrameHostImpl& operator=(const RenderFrameHostImpl&) = delete;
@@ -2223,6 +2216,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return policy_container_host_.get();
   }
 
+  scoped_refptr<InitiatorNavigationState> current_navigation_state() const {
+    return current_navigation_state_;
+  }
+
   // This is used by RenderFrameHostManager to ensure the replacement
   // RenderFrameHost is properly initialized when performing an early commit
   // as a recovery for a crashed frame.
@@ -3223,6 +3220,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // NavigationRequests initiated by this RFH.
   scoped_refptr<InitiatorNavigationState> GetCurrentInitiatorNavigationState();
 
+  // Used in tests. This bypasses normal lifecycle security checks around
+  // setting a PolicyContainerHost and generating an InitiatorNavigationState.
+  void SetPolicyContainerHostForTesting(
+      scoped_refptr<PolicyContainerHost> policy_container_host,
+      const blink::InitiatorStateToken& new_initiator_state_token);
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -4169,15 +4172,39 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // `current_initiator_state_token_` will also be set to
   // `new_initiator_state_token` to reflect the update of policies in the
   // RenderFrameHost.
+  // This will also cause the creation of a new `current_navigation_state_`
+  // identified by the passed `new_initiator_state_token`.
+  // `bypass_lifecycle_checks` is used to bypass the lifecycle checks when
+  // creating the new `current_navigation_state_`. This is only ever true for
+  // the early commit after a crash (where a speculative RFH is committed) and
+  // in tests.
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host,
-      const blink::InitiatorStateToken& new_initiator_state_token);
+      const blink::InitiatorStateToken& new_initiator_state_token,
+      bool bypass_lifecycle_checks);
 
   // PolicyContainerHost::Client:
   void DidChangeReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy) final;
   void DidUpdateInitiatorStateToken(
       const blink::InitiatorStateToken& new_initiator_state_token) final;
+
+  // Updates the `current_initiator_navigation_state_` following an updated of
+  // `current_initiator_state_token_`. This returns false if the updated
+  // `current_initiator_state_token_` already has an InitiatorNavigationState
+  // associated to it in the BrowsingInstance, as InitiatorNavigationStates must
+  // be uniquely identified by `initiator_state_token`. The caller of the
+  // function must take into account the return value of this function. When the
+  // initiator state token is updated by the browser process, failure should
+  // never happen. When the token is updated by the renderer process, failure
+  // can only happen in the case of a compromised renderer and should cause
+  // termination of the renderer process.
+  // `bypass_lifecycle_checks` is used to bypass the lifecycle checks when
+  // creating the new `current_navigation_state_`. This is only ever true for
+  // the early commit after a crash (where a speculative RFH is committed) and
+  // in tests.
+  [[nodiscard]] bool UpdateCurrentInitiatorNavigationState(
+      bool bypass_lifecycle_checks);
 
   // Initializes |local_network_access_request_policy_|. Constructor helper.
   void InitializeLocalNetworkAccessRequestPolicy();
@@ -5323,10 +5350,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the InitiatorNavigationState set at the time this document was created,
   // because it could've changed with dynamic CSP policies set via meta tags,
   // or the referrer policy being updated in the renderer process.
-  // TODO(crbug.com/510258191): Actually have the InitiatorNavigationState be
-  // indexed on an initiator state token, once the initiator state token is
-  // properly set in the browser and renderer processes.
   blink::InitiatorStateToken current_initiator_state_token_;
+
+  // A record of the current state of the RenderFrameHost, to pass to
+  // navigations started from the current document. It is updated when the state
+  // of the `policy_container_host_` changes. Note that this is not the state of
+  // the initiator of the navigation that committed inside the RenderFrameHost,
+  // but the state of the RenderFrameHost itself.
+  scoped_refptr<InitiatorNavigationState> current_navigation_state_;
 
   // The current document's HTTP response head. This is used by back-forward
   // cache, for navigating a second time toward the same document.

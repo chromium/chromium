@@ -18,6 +18,7 @@
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 
 namespace media {
@@ -133,15 +134,26 @@ class CONTENT_EXPORT BrowserContextImpl {
           receiver,
       std::unique_ptr<NavigationStateKeepAlive> handle);
 
-  // Get the NavigationStateKeepAlive associated with `frame_token`. See
-  // `navigation_state_keep_alive_map_`.
-  NavigationStateKeepAlive* GetNavigationStateKeepAlive(
-      blink::LocalFrameToken frame_token);
+  // Get the InitiatorNavigationState associated with `initiator_document_token`
+  // and `initiator_state_token`.
+  // See `initiator_navigation_state_map_`.
+  scoped_refptr<InitiatorNavigationState> GetInitiatorNavigationState(
+      const blink::DocumentToken& initiator_document_token,
+      const blink::InitiatorStateToken& initiator_state_token);
 
-  // Removes the NavigationStateKeepAlive associated with `frame_token`. This
-  // should be called when the keep alive is destructed.
-  void RemoveKeepAliveHandleFromMap(blink::LocalFrameToken frame_token,
-                                    NavigationStateKeepAlive* keep_alive);
+  // Adds the InitiatorNavigationState to the InitiatorNavigationStateMap. This
+  // should be called when creating an InitiatiorNavigationState.
+  // Returns false if the map already has an entry for
+  // `initiator_navigation_state`'s `initiator_state_token` and
+  // `initiator_document_token`, in which case the existing value is not
+  // overridden.
+  bool AddInitiatorNavigationStateToMap(
+      InitiatorNavigationState* initiator_navigation_state);
+
+  // Removes the InitiatorNavigationState from the InitiatorNavigationStateMap.
+  // This should be called when the InitiatorNavigationState is destructed.
+  void RemoveInitiatorNavigationStateFromMap(
+      InitiatorNavigationState* initiator_navigation_state);
 
  private:
   // Creates the media service for storing/retrieving WebRTC encoding and
@@ -201,22 +213,24 @@ class CONTENT_EXPORT BrowserContextImpl {
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;
 #endif
 
-  // Maps frame tokens to NavigationStateKeepAlives. There is one
-  // NavigationStateKeepAlive per LocalFrameToken. It's possible to have
-  // multiple keep alives per LocalFrameToken (e.g., multiple in-flight
-  // navigations per RenderFrameHost), but this map will store the most recent
-  // NavigationStateKeepAlive.
-  // In the case of multiple navigations for a RenderFrameHost,
-  // it is assumed that they are handled in order, with the latest navigation's
-  // keep alive storing the state for that RenderFrameHost.
+  // Maps initiator state tokens to InitiatorNavigationStates. There is exactly
+  // one InitiatorNavigationState per initiator state token and initiator
+  // document token pair. See InitiatorNavigationStateImpl for more details on
+  // the lifetime and ownership of InitiatorNavigationStates.
+  // We keep a map of initiator state token and initiator document token to
+  // InitiatorNavigationStates in BrowserContextImpl because the
+  // InitiatorNavigationState may outlive the RenderFrameHostImpl that created
+  // it, and may still need to be looked up after the RFHI destruction.
   // Note: This member must be above `keep_alive_handles_receiver_set_`. During
-  // destruction, when NavigationStateKeepAlives get removed from the receiver
-  // set, they will then remove themselves from
-  // `navigation_state_keep_alive_map_`, so this map must still be alive when
-  // that happens.
-  using TokenNavigationStateKeepAliveMap =
-      absl::flat_hash_map<blink::LocalFrameToken, NavigationStateKeepAlive*>;
-  TokenNavigationStateKeepAliveMap navigation_state_keep_alive_map_;
+  // destruction, NavigationStateKeepAlives get removed from the receiver set.
+  // This may trigger the deletion of the InitiatorNavigationStates they had a
+  // reference on. When that happens, the InitiatorNavigationState will remove
+  // itself from `initiator_navigation_state_map_`, so this map must still be
+  // alive when that happens.
+  using TokenInitiatorNavigationStateMap = absl::flat_hash_map<
+      std::pair<blink::DocumentToken, blink::InitiatorStateToken>,
+      InitiatorNavigationState*>;
+  TokenInitiatorNavigationStateMap initiator_navigation_state_map_;
 
   // Active keepalive handles for in-flight navigations. They are retained
   // on `BrowserContextImpl` because, by design, they may need to outlive the
@@ -224,7 +238,10 @@ class CONTENT_EXPORT BrowserContextImpl {
   // in a different BrowserContext.
   // Note that this set may contain in-flight navigations for different
   // RenderFrameHosts, and furthermore, there may even be multiple in-flight
-  // navigations for a single RenderFrameHost.
+  // navigations for a single RenderFrameHost. It is also possible that several
+  // of the NavigationStateKeepAliveHandles reference the same
+  // InitiatorNavigationState. This is in fact the likeliest option in the case
+  // of multiple navigations in the same RenderFrameHost.
   mojo::UniqueReceiverSet<blink::mojom::NavigationStateKeepAliveHandle>
       keep_alive_handles_receiver_set_;
 

@@ -352,6 +352,15 @@ void DragController::PerformDrop(DragData* drag_data,
 
       FrameLoadRequest request(nullptr, resource_request);
 
+      // Use the local frame's document token and initiator state token. The
+      // browser process expects all renderer-initiated navigations to come with
+      // valid tokens.
+      // TODO(crbug.com/331733543): Pass a valid document token and initiator
+      // state token from the source of the drag. In the browser process, ensure
+      // the tokens remain valid by registering a keep alive.
+      request.SetInitiatorDocumentToken(local_root.GetDocumentToken());
+      request.SetInitiatorStateToken(local_root.GetInitiatorStateToken());
+
       // Open the dropped URL in a new tab to avoid potential data-loss in the
       // current tab. See https://crbug.com/451659.
       // First tab should be focused, the rest should be background tabs.

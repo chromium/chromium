@@ -22,6 +22,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/batched_proxy_ipc_sender.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -922,13 +923,36 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 
   blink::LocalFrameToken* initiator_frame_token =
       base::OptionalToPtr(params->initiator_frame_token);
-  // TODO(crbug.com/510258191): Ensure that a well behaving renderer always has
-  // an associated |initiator_navigation_state|, and terminate renderer
-  // processes whose |initiator_navigation_state| we cannot find.
+
   scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
-      RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
-          initiator_frame_token, GetProcess()->GetDeprecatedID(),
-          current_rfh->GetBrowserContext());
+      BrowserContextImpl::From(current_rfh->GetBrowserContext())
+          ->GetInitiatorNavigationState(params->initiator_document_token,
+                                        params->initiator_state_token);
+
+  // A well behaving renderer should always have an InitiatorNavigationState
+  // associated to its `initiator_document_token` and `initiator_state_token`.
+  // Terminate those that don't.
+  if (!initiator_navigation_state) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFPH_OPEN_URL_INVALID_INITIATOR_TOKENS);
+    return;
+  }
+
+  // RenderFrameProxyHost::OpenURL is used during navigation requests triggered
+  // by cross-process initiators. The initiator of the navigation must have the
+  // same process as this RenderFrameProxyHost. Otherwise, the navigation would
+  // have gone to a different RenderFrameProxyHost. Validate that the
+  // InitiatorNavigationState that we retrieved is indeed associated with the
+  // process of the RenderFrameProxyHost.
+  ChildProcessId initiator_state_process_id =
+      static_cast<InitiatorNavigationStateImpl*>(
+          initiator_navigation_state.get())
+          ->process_id();
+  if (initiator_state_process_id != GetProcess()->GetID()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFPH_OPEN_URL_INVALID_INITIATOR_PROCESS);
+    return;
+  }
 
   bool is_initiator_sandboxed_with_forms = false;
   if (initiator_navigation_state) {

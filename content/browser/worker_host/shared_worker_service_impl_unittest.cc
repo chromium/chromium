@@ -1732,7 +1732,7 @@ TEST_P(SharedWorkerServiceImplCreationContextTest,
     case ContextTypeTestCase::kMismatchRendererSecure: {
       auto policies = rfh->policy_container_host()->policies().Clone();
       policies.is_web_secure_context = false;
-      rfh->SetPolicyContainerHost(
+      rfh->SetPolicyContainerHostForTesting(
           base::MakeRefCounted<PolicyContainerHost>(std::move(policies)),
           blink::InitiatorStateToken());
     }
@@ -1805,7 +1805,7 @@ TEST_P(SharedWorkerServiceImplCreationContextTest, SpoofingProtection) {
   {
     auto policies = rfh_a->policy_container_host()->policies().Clone();
     policies.is_web_secure_context = false;
-    rfh_a->SetPolicyContainerHost(
+    rfh_a->SetPolicyContainerHostForTesting(
         base::MakeRefCounted<PolicyContainerHost>(std::move(policies)),
         blink::InitiatorStateToken());
   }

@@ -17,10 +17,8 @@
 namespace content {
 
 NavigationStateKeepAlive::NavigationStateKeepAlive(
-    scoped_refptr<InitiatorNavigationState> initiator_navigation_state,
-    BrowserContextImpl* browser_context)
-    : browser_context_(browser_context),
-      initiator_navigation_state_(std::move(initiator_navigation_state)) {
+    scoped_refptr<InitiatorNavigationState> initiator_navigation_state)
+    : initiator_navigation_state_(std::move(initiator_navigation_state)) {
   CHECK(initiator_navigation_state_);
   SiteInstanceGroup* group = static_cast<InitiatorNavigationStateImpl*>(
                                  initiator_navigation_state_.get())
@@ -54,13 +52,6 @@ NavigationStateKeepAlive::~NavigationStateKeepAlive() {
         ->group()
         ->DecrementKeepAliveCount();
   }
-
-  // There are two pointers to `this` in BrowserContext. One in the
-  // ReceiverSet, which owns `this`, and another in the
-  // NavigationStateKeepAliveMap. When `this`  gets removed from the
-  // ReceiverSet, also remove the map entry to avoid dangling pointers.
-  browser_context_->RemoveKeepAliveHandleFromMap(
-      initiator_navigation_state_impl->frame_token(), this);
 }
 
 }  // namespace content

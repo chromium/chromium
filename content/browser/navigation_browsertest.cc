@@ -39,6 +39,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_url_handler_impl.h"
+#include "content/browser/renderer_host/initiator_navigation_state_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -4573,13 +4574,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   TestNavigationObserver observer(shell()->web_contents());
   EXPECT_EQ(expected_str, EvalJs(shell(), js_str).ExtractString());
-
-  // Expect at this point that a NavigationStateKeepAlive has been created for
-  // the form submission.
-  NavigationStateKeepAlive* keep_alive =
-      BrowserContextImpl::From(current_frame_host()->GetBrowserContext())
-          ->GetNavigationStateKeepAlive(current_frame_host()->GetFrameToken());
-  ASSERT_TRUE(keep_alive);
 
   // Disable ref counts on the process, which resets all ref counts to 0. This
   // seems to happen in practice in https://crbug.com/348150830 when a
@@ -10390,6 +10384,76 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(frame_entry->redirect_chain().size(), 2u);
   EXPECT_EQ(frame_entry->redirect_chain()[0], GURL(url::kAboutBlankURL));
   EXPECT_EQ(frame_entry->redirect_chain()[1], target_url);
+}
+
+// Checks that the InitiatorNavigationState for a navigation is properly updated
+// and inherited when the policies change in the renderer process.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, InitiatorNavigationStateUpdate) {
+  // Navigate to a page with two cross-site iframes.
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c)");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  FrameTreeNode* root = main_frame();
+  ASSERT_EQ(2U, root->child_count());
+  FrameTreeNode* iframe1 = root->child_at(0);
+  FrameTreeNode* iframe2 = root->child_at(1);
+
+  // Now, the top level frame will navigate the two cross-origin iframes to
+  // about:blank while changing its referrer policy in the middle of triggering
+  // the two navigations.
+  FrameTestNavigationManager manager1(iframe1->frame_tree_node_id(),
+                                      web_contents(), GURL("about:blank"));
+  FrameTestNavigationManager manager2(iframe2->frame_tree_node_id(),
+                                      web_contents(), GURL("about:blank"));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    window.frames[0].location = 'about:blank';
+    var meta = document.createElement('meta');
+    meta.name = 'referrer';
+    meta.content = 'no-referrer';
+    document.head.appendChild(meta);
+    window.frames[1].location = 'about:blank';
+  )"));
+
+  ASSERT_TRUE(manager1.WaitForFirstYieldAfterDidStartNavigation());
+  ASSERT_TRUE(manager2.WaitForFirstYieldAfterDidStartNavigation());
+
+  scoped_refptr<InitiatorNavigationStateImpl> initiator_state_1(
+      static_cast<InitiatorNavigationStateImpl*>(
+          manager1.GetNavigationHandle()->GetInitiatorNavigationState().get()));
+  ASSERT_TRUE(initiator_state_1);
+
+  scoped_refptr<InitiatorNavigationStateImpl> initiator_state_2(
+      static_cast<InitiatorNavigationStateImpl*>(
+          manager2.GetNavigationHandle()->GetInitiatorNavigationState().get()));
+  ASSERT_TRUE(initiator_state_2);
+
+  // The two navigations should have different InitiatorNavigationStates because
+  // the PolicyContainerPolicies were modified in between the navigation starts.
+  EXPECT_NE(initiator_state_1.get(), initiator_state_2.get());
+  EXPECT_NE(initiator_state_1->policy_container_policies().referrer_policy,
+            initiator_state_2->policy_container_policies().referrer_policy);
+  EXPECT_EQ(initiator_state_1->policy_container_policies().referrer_policy,
+            network::mojom::ReferrerPolicy::kDefault);
+  EXPECT_EQ(initiator_state_2->policy_container_policies().referrer_policy,
+            network::mojom::ReferrerPolicy::kNever);
+
+  EXPECT_TRUE(manager1.WaitForNavigationFinished());
+  EXPECT_TRUE(manager2.WaitForNavigationFinished());
+
+  EXPECT_TRUE(manager1.was_committed());
+  EXPECT_TRUE(manager2.was_committed());
+
+  // The correct policies should be inherited by each iframe upon commit.
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+            iframe1->current_frame_host()
+                ->policy_container_host()
+                ->referrer_policy());
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+            iframe2->current_frame_host()
+                ->policy_container_host()
+                ->referrer_policy());
 }
 
 }  // namespace content

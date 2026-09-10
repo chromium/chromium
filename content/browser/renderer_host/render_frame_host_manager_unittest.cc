@@ -573,7 +573,10 @@ class RenderFrameHostManagerTest
             .value());
     CHECK(frame_host);
 
-    frame_host->SetPolicyContainerHost(
+    // Note: because we did not go through the normal route of committing the
+    // navigation, the RenderFrameHost is still in speculative lifecycle state
+    // and should not normally receive a PolicyContainerHost.
+    frame_host->SetPolicyContainerHostForTesting(
         base::MakeRefCounted<PolicyContainerHost>(),
         blink::InitiatorStateToken());
     return frame_host;

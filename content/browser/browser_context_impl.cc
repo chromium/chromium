@@ -416,27 +416,51 @@ void BrowserContextImpl::RegisterKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
         receiver,
     std::unique_ptr<NavigationStateKeepAlive> handle) {
-  auto frame_token = static_cast<InitiatorNavigationStateImpl*>(
-                         handle->initiator_navigation_state().get())
-                         ->frame_token();
-  navigation_state_keep_alive_map_[frame_token] = handle.get();
   keep_alive_handles_receiver_set_.Add(std::move(handle), std::move(receiver));
 }
 
-NavigationStateKeepAlive* BrowserContextImpl::GetNavigationStateKeepAlive(
-    blink::LocalFrameToken frame_token) {
-  return base::FindPtrOrNull(navigation_state_keep_alive_map_, frame_token);
+scoped_refptr<InitiatorNavigationState>
+BrowserContextImpl::GetInitiatorNavigationState(
+    const blink::DocumentToken& initiator_document_token,
+    const blink::InitiatorStateToken& initiator_state_token) {
+  auto it = initiator_navigation_state_map_.find(
+      std::make_pair(initiator_document_token, initiator_state_token));
+  if (it == initiator_navigation_state_map_.end()) {
+    return nullptr;
+  }
+  return base::WrapRefCounted(it->second);
 }
 
-void BrowserContextImpl::RemoveKeepAliveHandleFromMap(
-    blink::LocalFrameToken frame_token,
-    NavigationStateKeepAlive* keep_alive) {
-  // The NavigationStateKeepAlive associated with `frame_token` may have
-  // changed. Make sure the specified one is removed from the map.
-  auto it = navigation_state_keep_alive_map_.find(frame_token);
-  if (it != navigation_state_keep_alive_map_.end() &&
-      it->second == keep_alive) {
-    navigation_state_keep_alive_map_.erase(it);
+bool BrowserContextImpl::AddInitiatorNavigationStateToMap(
+    InitiatorNavigationState* initiator_navigation_state) {
+  InitiatorNavigationStateImpl* initiator_navigation_state_impl =
+      static_cast<InitiatorNavigationStateImpl*>(initiator_navigation_state);
+  auto key =
+      std::make_pair(initiator_navigation_state_impl->document_token(),
+                     initiator_navigation_state_impl->initiator_state_token());
+  auto it = initiator_navigation_state_map_.find(key);
+  if (it != initiator_navigation_state_map_.end()) {
+    // Do not override an existing InitiatorNavigationState.
+    return false;
+  }
+  initiator_navigation_state_impl->SetBrowserContext(
+      weak_factory_.GetWeakPtr());
+  initiator_navigation_state_map_.insert(
+      std::make_pair(key, initiator_navigation_state));
+  return true;
+}
+
+void BrowserContextImpl::RemoveInitiatorNavigationStateFromMap(
+    InitiatorNavigationState* initiator_navigation_state) {
+  InitiatorNavigationStateImpl* initiator_navigation_state_impl =
+      static_cast<InitiatorNavigationStateImpl*>(initiator_navigation_state);
+  auto key =
+      std::make_pair(initiator_navigation_state_impl->document_token(),
+                     initiator_navigation_state_impl->initiator_state_token());
+  auto it = initiator_navigation_state_map_.find(key);
+  if (it != initiator_navigation_state_map_.end()) {
+    CHECK(it->second == initiator_navigation_state);
+    initiator_navigation_state_map_.erase(it);
   }
 }
 
