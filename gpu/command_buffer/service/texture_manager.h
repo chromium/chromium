@@ -377,6 +377,13 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
     return face_infos_[0].level_infos.size();
   }
 
+  GLsizei NumMipLevels(size_t face_index = 0) const {
+    if (face_index < face_infos_.size()) {
+      return face_infos_[face_index].num_mip_levels;
+    }
+    return 0;
+  }
+
  private:
   friend class TextureManager;
   friend class TextureRef;

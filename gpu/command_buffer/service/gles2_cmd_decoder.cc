@@ -1662,6 +1662,8 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
   // Wrapper for glGenerateMipmap
   void DoGenerateMipmap(GLenum target);
+  void RecreateMipmapLevelsBeforeGenerate(TextureRef* texture_ref,
+                                          GLenum target);
 
   // Helper for DoGetBooleanv, Floatv, and Intergerv to adjust pname
   // to account for different pname values defined in different extension
@@ -5966,12 +5968,91 @@ void GLES2DecoderImpl::DoGenerateMipmap(GLenum target) {
     }
   }
 
+  if (workarounds().recreate_mipmap_levels_before_generate &&
+      !tex->IsImmutable()) {
+    RecreateMipmapLevelsBeforeGenerate(texture_ref, target);
+  }
+
   LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("glGenerateMipmap");
   api()->glGenerateMipmapEXTFn(target);
 
   GLenum error = LOCAL_PEEK_GL_ERROR("glGenerateMipmap");
   if (error == GL_NO_ERROR) {
     texture_manager()->MarkMipmapsGenerated(texture_ref);
+  }
+}
+
+void GLES2DecoderImpl::RecreateMipmapLevelsBeforeGenerate(
+    TextureRef* texture_ref,
+    GLenum target) {
+  DCHECK(texture_ref);
+  Texture* tex = texture_ref->texture();
+  DCHECK(tex);
+  DCHECK(!tex->IsImmutable());
+
+  const GLint base_level = tex->base_level();
+  const size_t num_faces = (target == GL_TEXTURE_CUBE_MAP) ? 6 : 1;
+
+  ScopedPixelUnpackState reset_restore(&state_);
+
+  for (size_t face_idx = 0; face_idx < num_faces; ++face_idx) {
+    const GLenum face_target = (target == GL_TEXTURE_CUBE_MAP)
+                                   ? GLES2Util::IndexToGLFaceTarget(face_idx)
+                                   : target;
+    const Texture::LevelInfo* base_info =
+        tex->GetLevelInfo(face_target, base_level);
+    if (!base_info) {
+      continue;
+    }
+
+    const GLenum internal_format = base_info->internal_format;
+    const GLenum format = base_info->format;
+    const GLenum type = base_info->type;
+
+    const GLenum adjusted_internal_format =
+        TextureManager::AdjustTexInternalFormat(feature_info_.get(),
+                                                internal_format, type);
+    const GLenum adjusted_format =
+        TextureManager::AdjustTexFormat(feature_info_.get(), format);
+
+    const GLsizei num_mips = tex->NumMipLevels(face_idx);
+    GLsizei level_width = base_info->width;
+    GLsizei level_height = base_info->height;
+    GLsizei level_depth = base_info->depth;
+
+    for (GLsizei level = base_level + 1; level < base_level + num_mips;
+         ++level) {
+      level_width = std::max(1, level_width >> 1);
+      level_height = std::max(1, level_height >> 1);
+      if (target != GL_TEXTURE_2D_ARRAY) {
+        level_depth = std::max(1, level_depth >> 1);
+      }
+
+      const Texture::LevelInfo* level_info =
+          tex->GetLevelInfo(face_target, level);
+      const bool needs_recreate =
+          !level_info || level_info->width != level_width ||
+          level_info->height != level_height ||
+          level_info->depth != level_depth ||
+          level_info->internal_format != internal_format ||
+          level_info->type != type;
+
+      if (needs_recreate) {
+        if (face_target == GL_TEXTURE_3D ||
+            face_target == GL_TEXTURE_2D_ARRAY) {
+          api()->glTexImage3DFn(face_target, level, adjusted_internal_format,
+                                level_width, level_height, level_depth, 0,
+                                adjusted_format, type, nullptr);
+        } else {
+          api()->glTexImage2DFn(face_target, level, adjusted_internal_format,
+                                level_width, level_height, 0, adjusted_format,
+                                type, nullptr);
+        }
+        texture_manager()->SetLevelInfo(
+            texture_ref, face_target, level, internal_format, level_width,
+            level_height, level_depth, 0, format, type, gfx::Rect());
+      }
+    }
   }
 }
 

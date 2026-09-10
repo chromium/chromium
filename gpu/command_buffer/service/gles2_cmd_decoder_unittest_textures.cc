@@ -4786,6 +4786,191 @@ TEST_P(GLES3DecoderReattachTextureAfterLayerIncreaseTest,
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+class GLES3DecoderRecreateMipmapLevelsBeforeGenerateTest
+    : public GLES3DecoderManualInitTest {};
+
+INSTANTIATE_TEST_SUITE_P(Service,
+                         GLES3DecoderRecreateMipmapLevelsBeforeGenerateTest,
+                         ::testing::Bool());
+
+TEST_P(GLES3DecoderRecreateMipmapLevelsBeforeGenerateTest,
+       RecreateMipmapLevelsBeforeGenerate2D) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.recreate_mipmap_levels_before_generate = GetParam();
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  const GLenum kTarget = GL_TEXTURE_2D;
+  const GLint kInternalFormat = GL_RGBA8;
+  const GLenum kFormat = GL_RGBA;
+  const GLenum kType = GL_UNSIGNED_BYTE;
+
+  DoBindTexture(kTarget, client_texture_id_, kServiceTextureId);
+  DoTexImage2D(kTarget, 1, kInternalFormat, 1, 1, 0, kFormat, kType,
+               shared_memory_id_, kSharedMemoryOffset);
+  DoTexImage2D(kTarget, 0, kInternalFormat, 4, 4, 0, kFormat, kType,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  if (GetParam()) {
+    EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(AnyNumber());
+    EXPECT_CALL(*gl_, TexImage2D(kTarget, 1, kInternalFormat, 2, 2, 0, kFormat,
+                                 kType, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, TexImage2D(kTarget, 2, kInternalFormat, 1, 1, 0, kFormat,
+                                 kType, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
+
+  EXPECT_CALL(*gl_, GenerateMipmapEXT(kTarget)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+
+  cmds::GenerateMipmap cmd;
+  cmd.Init(kTarget);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_P(GLES3DecoderRecreateMipmapLevelsBeforeGenerateTest,
+       RecreateMipmapLevelsBeforeGenerate3D) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.recreate_mipmap_levels_before_generate = GetParam();
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  const GLenum kTarget = GL_TEXTURE_3D;
+  const GLint kInternalFormat = GL_RGBA8;
+  const GLenum kFormat = GL_RGBA;
+  const GLenum kType = GL_UNSIGNED_BYTE;
+
+  DoBindTexture(kTarget, client_texture_id_, kServiceTextureId);
+  DoTexImage3D(kTarget, 0, kInternalFormat, 4, 4, 4, 0, kFormat, kType,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  if (GetParam()) {
+    EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(AnyNumber());
+    EXPECT_CALL(*gl_, TexImage3D(kTarget, 1, kInternalFormat, 2, 2, 2, 0,
+                                 kFormat, kType, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, TexImage3D(kTarget, 2, kInternalFormat, 1, 1, 1, 0,
+                                 kFormat, kType, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
+
+  EXPECT_CALL(*gl_, GenerateMipmapEXT(kTarget)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+
+  cmds::GenerateMipmap cmd;
+  cmd.Init(kTarget);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_P(GLES3DecoderRecreateMipmapLevelsBeforeGenerateTest,
+       RecreateMipmapLevelsBeforeGenerate2DArray) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.recreate_mipmap_levels_before_generate = GetParam();
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  const GLenum kTarget = GL_TEXTURE_2D_ARRAY;
+  const GLint kInternalFormat = GL_RGBA8;
+  const GLenum kFormat = GL_RGBA;
+  const GLenum kType = GL_UNSIGNED_BYTE;
+
+  DoBindTexture(kTarget, client_texture_id_, kServiceTextureId);
+  DoTexImage3D(kTarget, 0, kInternalFormat, 4, 4, 2, 0, kFormat, kType,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  if (GetParam()) {
+    EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(AnyNumber());
+    EXPECT_CALL(*gl_, TexImage3D(kTarget, 1, kInternalFormat, 2, 2, 2, 0,
+                                 kFormat, kType, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, TexImage3D(kTarget, 2, kInternalFormat, 1, 1, 2, 0,
+                                 kFormat, kType, nullptr))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
+
+  EXPECT_CALL(*gl_, GenerateMipmapEXT(kTarget)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+
+  cmds::GenerateMipmap cmd;
+  cmd.Init(kTarget);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_P(GLES3DecoderRecreateMipmapLevelsBeforeGenerateTest,
+       RecreateMipmapLevelsBeforeGenerateCubeMap) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.recreate_mipmap_levels_before_generate = GetParam();
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  const GLenum kTarget = GL_TEXTURE_CUBE_MAP;
+  const GLint kInternalFormat = GL_RGBA8;
+  const GLenum kFormat = GL_RGBA;
+  const GLenum kType = GL_UNSIGNED_BYTE;
+
+  DoBindTexture(kTarget, client_texture_id_, kServiceTextureId);
+  for (int face = 0; face < 6; ++face) {
+    DoTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 1, kInternalFormat, 1,
+                 1, 0, kFormat, kType, shared_memory_id_, kSharedMemoryOffset);
+    DoTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, kInternalFormat, 4,
+                 4, 0, kFormat, kType, shared_memory_id_, kSharedMemoryOffset);
+  }
+
+  if (GetParam()) {
+    EXPECT_CALL(*gl_, PixelStorei(_, _)).Times(AnyNumber());
+    for (int face = 0; face < 6; ++face) {
+      EXPECT_CALL(*gl_,
+                  TexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 1,
+                             kInternalFormat, 2, 2, 0, kFormat, kType, nullptr))
+          .Times(1)
+          .RetiresOnSaturation();
+      EXPECT_CALL(*gl_,
+                  TexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 2,
+                             kInternalFormat, 1, 1, 0, kFormat, kType, nullptr))
+          .Times(1)
+          .RetiresOnSaturation();
+    }
+  }
+
+  EXPECT_CALL(*gl_, GenerateMipmapEXT(kTarget)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+
+  cmds::GenerateMipmap cmd;
+  cmd.Init(kTarget);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
 // TODO(gman): Complete this test.
 // TEST_P(GLES2DecoderTest, CompressedTexImage2DGLError) {
 // }

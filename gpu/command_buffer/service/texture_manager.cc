@@ -1726,9 +1726,21 @@ void Texture::BindToServiceId(GLuint service_id) {
 
 const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
                                                 GLint level) const {
-  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_EXTERNAL_OES &&
-      target != GL_TEXTURE_RECTANGLE_ANGLE) {
-    return nullptr;
+  switch (target) {
+    case GL_TEXTURE_2D:
+    case GL_TEXTURE_EXTERNAL_OES:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+    case GL_TEXTURE_3D:
+    case GL_TEXTURE_2D_ARRAY:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
+    case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
+    case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
+      break;
+    default:
+      return nullptr;
   }
 
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);

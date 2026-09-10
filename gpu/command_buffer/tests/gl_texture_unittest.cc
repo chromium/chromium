@@ -392,4 +392,256 @@ INSTANTIATE_TEST_SUITE_P(GLTextureTestWithWorkaround,
                          GLTextureTest,
                          testing::Bool());
 
+// Mipmap tests reuse most of the GLTextureTest code but enable the
+// recreate_mipmap_levels_before_generate workaround instead.
+class GLTextureMipmapTest : public GLTextureTest {
+ protected:
+  void SetUp() override {
+    GLManager::Options options;
+    options.size = gfx::Size(kWindowWidth, kWindowHeight);
+    options.context_type = CONTEXT_TYPE_OPENGLES3;
+
+    GpuDriverBugWorkarounds workarounds;
+    workarounds.recreate_mipmap_levels_before_generate = GetParam();
+
+    gl_.InitializeWithWorkarounds(options, workarounds);
+  }
+};
+
+// Test that calling glGenerateMipmap on a 2D texture with existing mismatched
+// (undersized) nonzero mip levels properly regenerates and renders the levels.
+TEST_P(GLTextureMipmapTest, GenerateMipmapWithMismatchedLevels2D) {
+  if (!IsApplicable()) {
+    return;
+  }
+
+  GLuint program = SetupDrawProgram();
+  EXPECT_NE(program, 0u);
+
+  GLuint tex = 0;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  // Upload Level 1: 1x1 solid red (mismatched dimensions relative to Level 0).
+  const uint32_t red_pixel = 0xFF0000FF;
+  glTexImage2D(GL_TEXTURE_2D, 1, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               &red_pixel);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Upload Level 0: 64x64 solid green.
+  constexpr int kLevel0Width = 64;
+  constexpr int kLevel0Height = 64;
+  std::vector<uint32_t> green_data(kLevel0Width * kLevel0Height, 0xFF00FF00);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, kLevel0Width, kLevel0Height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, green_data.data());
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Generate mipmaps.
+  glGenerateMipmap(GL_TEXTURE_2D);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Verify Level 1 sampling renders green.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 1);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1);
+  DrawQuad(program);
+  const uint8_t kGreen[4] = {0, 255, 0, 255};
+  EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, kWindowWidth, kWindowHeight, 0,
+                                        kGreen, nullptr));
+
+  glDeleteTextures(1, &tex);
+  glDeleteProgram(program);
+}
+
+// Test that calling glGenerateMipmap on a 3D texture with mismatched nonzero
+// levels works correctly.
+TEST_P(GLTextureMipmapTest, GenerateMipmapWithMismatchedLevels3D) {
+  if (!IsApplicable()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+  // TODO(crbug.com/551065272): Figure out why this fails with an incomplete
+  // framebuffer error on Android x86/x64.
+  GTEST_SKIP() << "Skipping test on Android x86/x64";
+#else
+  GLuint tex = 0;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_3D, tex);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  // Upload Level 1: 1x1x1 solid red.
+  const uint32_t red_pixel = 0xFF0000FF;
+  glTexImage3D(GL_TEXTURE_3D, 1, GL_RGBA8, 1, 1, 1, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, &red_pixel);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Upload Level 0: 16x16x4 solid green.
+  constexpr int kLevel0Width = 16;
+  constexpr int kLevel0Height = 16;
+  constexpr int kLevel0Depth = 4;
+  std::vector<uint32_t> green_data(kLevel0Width * kLevel0Height * kLevel0Depth,
+                                   0xFF00FF00);
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, kLevel0Width, kLevel0Height,
+               kLevel0Depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, green_data.data());
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  glGenerateMipmap(GL_TEXTURE_3D);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Setup FBO for verifying texture contents.
+  constexpr int kLevel1Width = 8;
+  constexpr int kLevel1Height = 8;
+  const uint8_t kGreen[4] = {0, 255, 0, 255};
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+
+  // Verify the contents of layer 0.
+  glFramebufferTextureLayer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex, 1,
+                            0);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, kLevel1Width, kLevel1Height, 0,
+                                        kGreen, nullptr));
+
+  // Verify the contents of layer 1.
+  glFramebufferTextureLayer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex, 1,
+                            1);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, kLevel1Width, kLevel1Height, 0,
+                                        kGreen, nullptr));
+
+  glDeleteTextures(1, &tex);
+  glDeleteFramebuffers(1, &fbo);
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+}
+
+// Test that calling glGenerateMipmap on a 2D array texture with mismatched
+// nonzero levels works correctly.
+TEST_P(GLTextureMipmapTest, GenerateMipmapWithMismatchedLevels2DArray) {
+  if (!IsApplicable()) {
+    return;
+  }
+
+  GLuint tex = 0;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  // Upload Level 1: 1x1x2 solid red.
+  const uint32_t red_pixels[2] = {0xFF0000FF, 0xFF0000FF};
+  glTexImage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, 1, 1, 2, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, red_pixels);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Upload Level 0: 16x16x2 solid green.
+  constexpr int kLevel0Width = 16;
+  constexpr int kLevel0Height = 16;
+  constexpr int kLevel0Layers = 2;
+  std::vector<uint32_t> green_data(kLevel0Width * kLevel0Height * kLevel0Layers,
+                                   0xFF00FF00);
+  glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, kLevel0Width, kLevel0Height,
+               kLevel0Layers, 0, GL_RGBA, GL_UNSIGNED_BYTE, green_data.data());
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Setup FBO for verifying texture contents.
+  constexpr int kLevel1Width = 8;
+  constexpr int kLevel1Height = 8;
+  const uint8_t kGreen[4] = {0, 255, 0, 255};
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+
+  // Verify the contents of layer 0.
+  glFramebufferTextureLayer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex, 1,
+                            0);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, kLevel1Width, kLevel1Height, 0,
+                                        kGreen, nullptr));
+
+  // Verify the contents of layer 1.
+  glFramebufferTextureLayer(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex, 1,
+                            1);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, kLevel1Width, kLevel1Height, 0,
+                                        kGreen, nullptr));
+
+  glDeleteTextures(1, &tex);
+  glDeleteFramebuffers(1, &fbo);
+}
+
+// Test that calling glGenerateMipmap on a cube map with mismatched nonzero
+// levels works correctly.
+TEST_P(GLTextureMipmapTest, GenerateMipmapWithMismatchedLevelsCubeMap) {
+  if (!IsApplicable()) {
+    return;
+  }
+
+  GLuint tex = 0;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  const uint32_t red_pixel = 0xFF0000FF;
+  for (int face = 0; face < 6; ++face) {
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 1, GL_RGBA8, 1, 1, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, &red_pixel);
+    EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  }
+
+  constexpr int kLevel0Width = 16;
+  constexpr int kLevel0Height = 16;
+  std::vector<uint32_t> green_data(kLevel0Width * kLevel0Height, 0xFF00FF00);
+  for (int face = 0; face < 6; ++face) {
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGBA8,
+                 kLevel0Width, kLevel0Height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 green_data.data());
+    EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  }
+
+  glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Setup FBO for verifying texture contents.
+  constexpr int kLevel1Width = 8;
+  constexpr int kLevel1Height = 8;
+  const uint8_t kGreen[4] = {0, 255, 0, 255};
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+
+  for (int face = 0; face < 6; ++face) {
+    // Verify the contents of the face.
+    glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, tex, 1);
+    EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+              glCheckFramebufferStatus(GL_READ_FRAMEBUFFER));
+    EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+    EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, kLevel1Width, kLevel1Height, 0,
+                                          kGreen, nullptr));
+  }
+
+  glDeleteTextures(1, &tex);
+  glDeleteFramebuffers(1, &fbo);
+}
+
+INSTANTIATE_TEST_SUITE_P(GLTextureMipmapTestWithWorkaround,
+                         GLTextureMipmapTest,
+                         testing::Bool());
+
 }  // namespace gpu

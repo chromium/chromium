@@ -3945,6 +3945,17 @@
       "features": [
         "use_g22_topleft_color_space_for_yuv_vp"
       ]
+    },
+    {
+      "id": 498,
+"cr_bugs": [
+        551065272
+      ],
+      "description": "Recreate mipmap levels before calling glGenerateMipmap on Mali GPUs",
+      "gl_vendor": "ARM.*",
+      "features": [
+        "recreate_mipmap_levels_before_generate"
+      ]
     }
   ]
 }
