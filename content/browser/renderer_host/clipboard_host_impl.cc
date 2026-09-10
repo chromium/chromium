@@ -125,7 +125,7 @@ void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadAvailableTypes(
     ui::ClipboardBuffer clipboard_buffer,
     ReadAvailableTypesCallback callback) {
-  if (!IsContextActive()) {
+  if (!IsPasteAllowed(clipboard_buffer)) {
     std::move(callback).Run({});
     return;
   }
@@ -196,7 +196,7 @@ void ClipboardHostImpl::OnReadAvailableTypes(
 void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
                                           ui::ClipboardBuffer clipboard_buffer,
                                           IsFormatAvailableCallback callback) {
-  if (!IsContextActive()) {
+  if (!IsPasteAllowed(clipboard_buffer)) {
     std::move(callback).Run(false);
     return;
   }

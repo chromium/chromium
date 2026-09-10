@@ -279,6 +279,52 @@ TEST_F(ClipboardHostImplTest, GetSequenceNumber) {
   EXPECT_NE(id3, id4);
 }
 
+TEST_F(ClipboardHostImplTest,
+       ClipboardSequenceNumberDoesNotRequirePasteAuthorization) {
+  ClipboardPasteAllowedBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  browser_client.set_is_clipboard_paste_allowed(false);
+
+  absl::uint128 sequence_number;
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
+                                      &sequence_number);
+  EXPECT_NE(absl::uint128(), sequence_number);
+}
+
+TEST_F(ClipboardHostImplTest,
+       ClipboardFormatMetadataRequiresPasteAuthorization) {
+  ClipboardPasteAllowedBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"clipboard-text");
+  }
+
+  browser_client.set_is_clipboard_paste_allowed(false);
+
+  std::vector<std::u16string> types = {u"non-empty"};
+  mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
+  EXPECT_TRUE(types.empty());
+
+  bool format_available = true;
+  mojo_clipboard()->IsFormatAvailable(blink::mojom::ClipboardFormat::kPlaintext,
+                                      ui::ClipboardBuffer::kCopyPaste,
+                                      &format_available);
+  EXPECT_FALSE(format_available);
+
+  browser_client.set_is_clipboard_paste_allowed(true);
+
+  mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
+  EXPECT_TRUE(std::ranges::contains(types, u"text/plain"));
+
+  mojo_clipboard()->IsFormatAvailable(blink::mojom::ClipboardFormat::kPlaintext,
+                                      ui::ClipboardBuffer::kCopyPaste,
+                                      &format_available);
+  EXPECT_TRUE(format_available);
+}
+
 class ClipboardHostImplWriteTest : public RenderViewHostTestHarness {
  protected:
   ClipboardHostImplWriteTest()
