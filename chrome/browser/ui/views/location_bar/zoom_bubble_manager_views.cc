@@ -39,8 +39,9 @@ views::BubbleAnchor ZoomBubbleManagerViews::GetZoomBubbleAnchor() {
       (browser_view_->IsToolbarVisible() &&
        (!immersive_mode_controller->IsEnabled() ||
         immersive_mode_controller->IsRevealed()))) {
-    return browser_view_->toolbar_button_provider()->GetBubbleAnchor(
-        kActionShowZoomBubble);
+    ToolbarButtonProvider* provider = browser_view_->toolbar_button_provider();
+    return provider ? provider->GetBubbleAnchor(kActionShowZoomBubble)
+                    : views::BubbleAnchor();
   }
   return views::BubbleAnchor();
 }
@@ -51,6 +52,11 @@ gfx::NativeView ZoomBubbleManagerViews::GetNativeView() {
 
 std::u16string ZoomBubbleManagerViews::GetZoomActionAccessibleName() {
   ToolbarButtonProvider* provider = browser_view_->toolbar_button_provider();
-  return provider->GetPageActionViewInterface(kActionShowZoomBubble)
-      ->GetAccessibleName();
+  if (provider) {
+    if (auto* page_action =
+            provider->GetPageActionViewInterface(kActionShowZoomBubble)) {
+      return page_action->GetAccessibleName();
+    }
+  }
+  return std::u16string();
 }
