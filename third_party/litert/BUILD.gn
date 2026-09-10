@@ -86,6 +86,13 @@ config("litert_config") {
     defines += [ "_USE_MATH_DEFINES" ]
   }
 
+  if (build_with_internal_optimization_guide) {
+    include_dirs += [
+      "$root_gen_dir/components/optimization_guide/internal/third_party/ml_drift/src",
+      "//components/optimization_guide/internal/third_party/ml_drift/src",
+    ]
+  }
+
   visibility = [
     ":*",
     "//third_party/tflite:*",
@@ -206,6 +213,25 @@ flatbuffer("weight_cache_schema_litert") {
     "//components/optimization_guide/internal/*",
     "//third_party/tflite:*",
   ]
+}
+
+if (build_with_internal_optimization_guide) {
+  flatbuffer("serialization_schema_litert") {
+    sources = [ "src/ml_drift_delegate/delegate/serialization_weight_cache/serialization_schema.fbs" ]
+    flatc_out_dir = "src/ml_drift_delegate/delegate/serialization_weight_cache"
+    args = [
+      "-I",
+      rebase_path(
+          "//components/optimization_guide/internal/third_party/ml_drift/src",
+          root_build_dir),
+    ]
+    mutable = true
+    deps = [ "//components/optimization_guide/internal/third_party/ml_drift:ml_drift_flatbuffers" ]
+    visibility = [
+      ":*",
+      "//components/optimization_guide/internal/*",
+    ]
+  }
 }
 
 source_set("mutable_tflite_schema") {
@@ -352,6 +378,9 @@ source_set("litert_headers") {
     "//third_party/flatbuffers",
     "//third_party/zlib",
   ]
+  if (build_with_internal_optimization_guide) {
+    public_deps += [ ":serialization_schema_litert" ]
+  }
   if (use_litert_tflite) {
     public_deps += [ ":tflite_public_headers" ]
   }
