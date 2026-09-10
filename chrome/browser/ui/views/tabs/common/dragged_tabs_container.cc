@@ -357,13 +357,16 @@ void DraggedTabsContainer::AddViewToHorizontalDragLayout(
     const gfx::Rect& view_bounds,
     bool is_source_dragged_view) {
   gfx::Rect bounds = view_bounds;
-  bounds.set_x(dragging_views_bounds_.width());
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const int x = dragging_views_.empty()
+                    ? 0
+                    : dragging_views_bounds_.width() - tab_overlap;
+  bounds.set_x(x);
   dragging_views_.insert(
       {dragging_view, {.offset = bounds.OffsetFromOrigin()}});
   dragged_view_observations_.AddObservation(dragging_view);
 
-  dragging_views_bounds_.set_width(dragging_views_bounds_.width() +
-                                   bounds.width());
+  dragging_views_bounds_.set_width(bounds.right());
   dragging_views_bounds_.set_height(
       std::max(dragging_views_bounds_.height(), bounds.height()));
 

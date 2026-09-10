@@ -9,19 +9,24 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -32,6 +37,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1569,3 +1575,109 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
 }
 
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.
+
+class HorizontalTabDragTest : public InteractiveBrowserTest {
+ public:
+  HorizontalTabDragTest() {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kTabStripUnification},
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+  ~HorizontalTabDragTest() override = default;
+
+ protected:
+  BrowserView& GetBrowserView() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    CHECK(browser_view);
+    return *browser_view;
+  }
+
+  UnpinnedTabContainerView* GetUnpinnedContainer() {
+    auto* region = views::AsViewClass<BaseTabStripRegionView>(
+        GetBrowserView().tab_strip_view());
+    return region ? region->GetUnpinnedTabsContainer() : nullptr;
+  }
+
+  views::View* GetTabViewAt(int index) {
+    auto* region = views::AsViewClass<BaseTabStripRegionView>(
+        GetBrowserView().tab_strip_view());
+    if (!region || !region->root_node_for_testing()) {
+      return nullptr;
+    }
+    auto* tab = browser()->GetTabStripModel()->GetTabAtIndex(index);
+    auto* node =
+        region->root_node_for_testing()->GetNodeForHandle(tab->GetHandle());
+    return node ? node->view() : nullptr;
+  }
+
+  auto NameTabViewAt(std::string_view tab_name, int tab_index) {
+    return NameView(tab_name, base::BindLambdaForTesting([this, tab_index]() {
+                      return GetTabViewAt(tab_index);
+                    }));
+  }
+
+  auto StartDragBetweenTabs(int from_tab_index, int to_tab_index) {
+    const char kTabToDragFrom[] = "Tab to drag";
+    const char kTabToDragTo[] = "Tab to drag to";
+    return Steps(
+        Log("Start drag from " + base::NumberToString(from_tab_index) + " to " +
+            base::NumberToString(to_tab_index)),
+        NameTabViewAt(kTabToDragFrom, from_tab_index),
+        NameTabViewAt(kTabToDragTo, to_tab_index), MoveMouseTo(kTabToDragFrom),
+        ClickMouse(ui_controls::LEFT, /*release=*/false),
+        MoveMouseTo(kTabToDragTo),
+        Do([this]() { views::test::RunScheduledLayout(&GetBrowserView()); }));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  gfx::AnimationTestApi::RenderModeResetter disable_animation_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
+  int strip_collective_width = 0;
+
+  RunTestSequence(
+      // Add tabs until they are compressed.
+      Do([this]() {
+        for (int i = 0; i < 11; ++i) {
+          chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                           /*foreground=*/false);
+        }
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      // Select multiple contiguous tabs.
+      Do([this]() {
+        ui::ListSelectionModel selection;
+        selection.SetSelectedIndex(2);
+        selection.AddIndexToSelection(1);
+        selection.AddIndexToSelection(2);
+        selection.AddIndexToSelection(3);
+        browser()->GetTabStripModel()->SetSelectionFromModel(selection);
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      // Record the collective width of the selected tabs in the tab strip.
+      Do([&]() {
+        views::View* tab1 = GetTabViewAt(1);
+        views::View* tab3 = GetTabViewAt(3);
+        ASSERT_TRUE(tab1 && tab3);
+        strip_collective_width = tab3->bounds().right() - tab1->bounds().x();
+      }),
+      StartDragBetweenTabs(2, 0), PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+      // Verify the collective width in the drag view matches the tab strip.
+      Do([&]() {
+        auto* unpinned_container = GetUnpinnedContainer();
+        ASSERT_TRUE(unpinned_container);
+        ASSERT_TRUE(unpinned_container->IsHandlingDrag());
+        EXPECT_EQ(unpinned_container->GetDraggingViewsBounds().width(),
+                  strip_collective_width);
+      }),
+      ReleaseMouse(), WaitForState(kDragStatePoller, false));
+}
