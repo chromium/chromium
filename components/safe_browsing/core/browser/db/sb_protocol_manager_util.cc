@@ -12,6 +12,7 @@
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,8 +32,6 @@
 #include "url/url_util.h"
 
 using base::Time;
-
-// TODO(crbug.com/362791941): change all DCHECKs to CHECKs for v5 usages.
 namespace safe_browsing {
 
 // Can be overriden by tests.
@@ -310,7 +309,8 @@ ListIdentifier GetUrlUwsId() {
 }
 
 std::string GetUmaSuffixForStore(const base::FilePath& file_path) {
-  DCHECK_EQ(kStoreSuffix, file_path.BaseName().Extension());
+  CHECK_EQ(kStoreSuffix, file_path.BaseName().Extension(),
+           base::NotFatalUntil::M162);
   return base::StringPrintf(
       ".%" PRFilePath, file_path.BaseName().RemoveExtension().value().c_str());
 }
@@ -527,9 +527,9 @@ ListIdentifier::ListIdentifier(PlatformType platform_type,
       threat_type_(threat_type),
       uses_v5_api_(false) {
   CHECK(!base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
-  DCHECK(PlatformType_IsValid(platform_type));
-  DCHECK(ThreatEntryType_IsValid(threat_entry_type));
-  DCHECK(ThreatType_IsValid(threat_type));
+  CHECK(PlatformType_IsValid(platform_type), base::NotFatalUntil::M162);
+  CHECK(ThreatEntryType_IsValid(threat_entry_type), base::NotFatalUntil::M162);
+  CHECK(ThreatType_IsValid(threat_type), base::NotFatalUntil::M162);
 }
 
 ListIdentifier::ListIdentifier(const ListUpdateResponse& response)
@@ -546,7 +546,7 @@ ListIdentifier::ListIdentifier(SBThreatType sb_threat_type)
 base::TimeDelta SBProtocolManagerUtil::GetNextBackOffInterval(
     size_t* error_count,
     size_t* multiplier) {
-  DCHECK(multiplier && error_count);
+  CHECK(multiplier && error_count, base::NotFatalUntil::M162);
   (*error_count)++;
   if (*error_count > 1 && *error_count < 9) {
     // With error count 9 and above we will hit the 24 hour max interval.
@@ -579,7 +579,7 @@ std::string SBProtocolManagerUtil::ComposeUrl(const std::string& prefix,
                                               const std::string& method,
                                               const std::string& request_base64,
                                               const std::string& key_param) {
-  DCHECK(!prefix.empty() && !method.empty());
+  CHECK(!prefix.empty() && !method.empty(), base::NotFatalUntil::M162);
   std::string url = base::StringPrintf(
       "%s/%s?$req=%s&$ct=application/x-protobuf", prefix.c_str(),
       method.c_str(), request_base64.c_str());
@@ -708,7 +708,7 @@ void SBProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
                                             std::string* canonicalized_hostname,
                                             std::string* canonicalized_path,
                                             std::string* canonicalized_query) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M162);
 
   // We only canonicalize "normal" URLs.
   if (!url.IsStandard()) {
@@ -864,7 +864,7 @@ void SBProtocolManagerUtil::GeneratePathVariantsToCheck(
 void SBProtocolManagerUtil::SetClientInfoFromConfig(
     ClientInfo* client_info,
     const V4ProtocolConfig& config) {
-  DCHECK(client_info);
+  CHECK(client_info, base::NotFatalUntil::M162);
   client_info->set_client_id(config.client_name);
   client_info->set_client_version(config.version);
 }

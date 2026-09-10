@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -33,8 +34,6 @@
 #endif
 
 using base::TimeTicks;
-
-// TODO(crbug.com/362791941): change all DCHECKs to CHECKs for v5 usages.
 namespace safe_browsing {
 
 namespace {
@@ -146,8 +145,8 @@ void SBDatabase::Create(
     const base::FilePath& base_path,
     const ListInfos& list_infos,
     NewDatabaseReadyCallback new_db_callback) {
-  DCHECK(base_path.IsAbsolute());
-  DCHECK(!list_infos.empty());
+  CHECK(base_path.IsAbsolute(), base::NotFatalUntil::M162);
+  CHECK(!list_infos.empty(), base::NotFatalUntil::M162);
 
   const scoped_refptr<base::SequencedTaskRunner> callback_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
@@ -164,7 +163,8 @@ void SBDatabase::CreateOnTaskRunner(
     const ListInfos& list_infos,
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
     NewDatabaseReadyCallback new_db_callback) {
-  DCHECK(db_task_runner->RunsTasksInCurrentSequence());
+  CHECK(db_task_runner->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   if (!base::CreateDirectory(base_path)) {
     return;
@@ -244,7 +244,8 @@ SBDatabase::SBDatabase(
     : store_map_(std::move(store_map)),
       db_task_runner_(db_task_runner),
       pending_store_updates_(0) {
-  DCHECK(db_task_runner->RunsTasksInCurrentSequence());
+  CHECK(db_task_runner->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   // This method executes on the DB sequence, whereas
   // `sequence_checker_` is meant to verify methods that should
   // execute on the UI sequence. Detach that sequence checker here; it
@@ -265,14 +266,15 @@ void SBDatabase::StopOnUIThread() {
 }
 
 SBDatabase::~SBDatabase() {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(db_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 }
 
 void SBDatabase::ApplyUpdate(std::unique_ptr<SBUpdateResponseMap> update_map,
                              DatabaseUpdatedCallback db_updated_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!pending_store_updates_);
-  DCHECK(db_updated_callback_.is_null());
+  CHECK(!pending_store_updates_, base::NotFatalUntil::M162);
+  CHECK(db_updated_callback_.is_null(), base::NotFatalUntil::M162);
 
   db_updated_callback_ = db_updated_callback;
 
@@ -314,7 +316,7 @@ void SBDatabase::ApplyUpdate(std::unique_ptr<SBUpdateResponseMap> update_map,
 void SBDatabase::UpdatedStoreReady(ListIdentifier identifier,
                                    SBStorePtr new_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_store_updates_);
+  CHECK(pending_store_updates_, base::NotFatalUntil::M162);
   if (new_store) {
     if (auto it = store_map_->find(identifier); it != store_map_->end()) {
       it->second.swap(new_store);

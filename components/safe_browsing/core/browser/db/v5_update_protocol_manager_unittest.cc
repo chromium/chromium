@@ -195,7 +195,7 @@ TEST_F(V5UpdateProtocolManagerTest, TestDisableAutoUpdates) {
 
   pm->ScheduleNextUpdate(std::move(store_state_map_));
   EXPECT_FALSE(IsUpdateScheduled(pm.get()));
-  DCHECK(!HasPendingRequest(pm.get()));
+  CHECK(!HasPendingRequest(pm.get()));
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestEnableAutoUpdates) {
@@ -205,7 +205,7 @@ TEST_F(V5UpdateProtocolManagerTest, TestEnableAutoUpdates) {
 
   pm->ScheduleNextUpdate(std::move(store_state_map_));
   EXPECT_TRUE(IsUpdateScheduled(pm.get()));
-  DCHECK(!HasPendingRequest(pm.get()));
+  CHECK(!HasPendingRequest(pm.get()));
 }
 
 TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingNetwork) {
