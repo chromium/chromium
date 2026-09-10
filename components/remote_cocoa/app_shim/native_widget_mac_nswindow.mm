@@ -23,6 +23,7 @@
 #import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#import "ui/base/cocoa/default_command_dispatcher_delegate.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ui_base_features.h"
@@ -211,6 +212,7 @@ struct NSEdgeAndCornerThicknesses {
 @implementation NativeWidgetMacNSWindow {
  @private
   CommandDispatcher* __strong _commandDispatcher;
+  DefaultCommandDispatcherDelegate* __strong _defaultCommandDispatcherDelegate;
   id<UserInterfaceItemCommandHandler> __strong _commandHandler;
   id<WindowTouchBarDelegate> __weak _touchBarDelegate;
   NSData* __strong _lastSavedRestorableState;
@@ -246,6 +248,9 @@ struct NSEdgeAndCornerThicknesses {
                                  backing:bufferingType
                                    defer:deferCreation])) {
     _commandDispatcher = [[CommandDispatcher alloc] initWithOwner:self];
+    _defaultCommandDispatcherDelegate =
+        [[DefaultCommandDispatcherDelegate alloc] init];
+    [_commandDispatcher setDelegate:_defaultCommandDispatcherDelegate];
     self.releasedWhenClosed = NO;
   }
   return self;

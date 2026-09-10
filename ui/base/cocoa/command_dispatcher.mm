@@ -82,9 +82,10 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   return NO;
 }
 
-// |_delegate| may be nil in this method. Rather than adding nil checks to every
-// call, we rely on the fact that method calls to nil return nil, and that nil
-// == ui::PerformKeyEquivalentResult::kUnhandled;
+// NativeWidgetMacNSWindow always installs a DefaultCommandDispatcherDelegate,
+// which a more specific delegate may later replace. Tests and other
+// CommandDispatchingWindow hosts may still leave |_delegate| nil; calls on
+// nil return nil, and nil == ui::PerformKeyEquivalentResult::kUnhandled.
 - (BOOL)performKeyEquivalent:(NSEvent*)event {
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
   TRACE_EVENT2("ui", "CommandDispatcher::performKeyEquivalent", "window num",

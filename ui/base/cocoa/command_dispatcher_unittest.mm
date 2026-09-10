@@ -7,15 +7,26 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#import "ui/base/cocoa/default_command_dispatcher_delegate.h"
 #import "ui/base/test/cocoa_helper.h"
 
 @interface TestCommandDispatchingWindow
     : CocoaTestHelperWindow <CommandDispatchingWindow> {
   CommandDispatcher* __strong _dispatcher;
 }
+@property(nonatomic, weak)
+    NSWindow<CommandDispatchingWindow>* commandDispatchParent;
+// Stands in for the firstResponder: records and answers
+// -defaultPerformKeyEquivalent:.
+@property(nonatomic) BOOL firstResponderHandlesKeyEquivalent;
+@property(nonatomic) BOOL firstResponderSawKeyEquivalent;
 @end
 
 @implementation TestCommandDispatchingWindow
+@synthesize commandDispatchParent = _commandDispatchParent;
+@synthesize firstResponderHandlesKeyEquivalent =
+    _firstResponderHandlesKeyEquivalent;
+@synthesize firstResponderSawKeyEquivalent = _firstResponderSawKeyEquivalent;
 
 - (instancetype)initWithContentRect:(NSRect)contentRect {
   if ((self = [super initWithContentRect:contentRect])) {
@@ -28,15 +39,12 @@
   return _dispatcher;
 }
 
-- (NSWindow<CommandDispatchingWindow>*)commandDispatchParent {
-  return nil;
-}
-
 - (void)setCommandHandler:(id<UserInterfaceItemCommandHandler>)commandHandler {
 }
 
 - (BOOL)defaultPerformKeyEquivalent:(NSEvent*)event {
-  return NO;
+  _firstResponderSawKeyEquivalent = YES;
+  return _firstResponderHandlesKeyEquivalent;
 }
 
 - (BOOL)defaultValidateUserInterfaceItem:
@@ -48,6 +56,50 @@
 }
 
 - (void)commandDispatchUsingKeyModifiers:(id)sender {
+}
+
+@end
+
+@interface TestCommandDispatcherDelegate : NSObject <CommandDispatcherDelegate>
+// Result to return from -prePerformKeyEquivalent:window:. kHandled stands in
+// for a reserved command, which ChromeCommandDispatcherDelegate consumes
+// before the firstResponder.
+@property(nonatomic) ui::PerformKeyEquivalentResult preResult;
+// Window the pre-firstResponder stage most recently ran for, or nil.
+@property(nonatomic, weak) NSWindow* windowSeenBeforeFirstResponder;
+@end
+
+@implementation TestCommandDispatcherDelegate
+@synthesize preResult = _preResult;
+@synthesize windowSeenBeforeFirstResponder = _windowSeenBeforeFirstResponder;
+
+- (ui::PerformKeyEquivalentResult)prePerformKeyEquivalent:(NSEvent*)event
+                                                   window:(NSWindow*)window {
+  self.windowSeenBeforeFirstResponder = window;
+  return self.preResult;
+}
+
+- (ui::PerformKeyEquivalentResult)postPerformKeyEquivalent:(NSEvent*)event
+                                                    window:(NSWindow*)window
+                                              isRedispatch:(BOOL)isRedispatch {
+  return ui::PerformKeyEquivalentResult::kUnhandled;
+}
+
+@end
+
+// Stands in for a RenderWidgetHostViewCocoa holding a Keyboard Lock: it has
+// exclusive access to the event, so no delegate may preempt it.
+@interface KeyLockedResponderView : NSView <CommandDispatcherTarget>
+@end
+
+@implementation KeyLockedResponderView
+
+- (BOOL)acceptsFirstResponder {
+  return YES;
+}
+
+- (BOOL)isKeyLocked:(NSEvent*)event {
+  return YES;
 }
 
 @end
@@ -123,6 +175,88 @@ TEST_F(CommandDispatcherTest, RedispatchDropsEventIfNilWindowAndOwnerNotKey) {
                                                 keyCode:0];
   EXPECT_EQ(nil_window_event.window, nil);
   EXPECT_FALSE([dispatcher redispatchKeyEvent:nil_window_event]);
+}
+
+// A window with only DefaultCommandDispatcherDelegate forwards the
+// pre-firstResponder stage to the command dispatch parent, so reserved
+// commands still bypass this window's firstResponder
+// (https://crbug.com/556432989).
+TEST_F(CommandDispatcherTest, PreFirstResponderStageRunsOnDispatchParent) {
+  TestCommandDispatchingWindow* parent =
+      [[TestCommandDispatchingWindow alloc] init];
+  TestCommandDispatcherDelegate* delegate =
+      [[TestCommandDispatcherDelegate alloc] init];
+  delegate.preResult = ui::PerformKeyEquivalentResult::kHandled;
+  [parent commandDispatcher].delegate = delegate;
+
+  DefaultCommandDispatcherDelegate* default_delegate =
+      [[DefaultCommandDispatcherDelegate alloc] init];
+  [window_ commandDispatcher].delegate = default_delegate;
+
+  window_.commandDispatchParent = parent;
+  // The firstResponder would consume the event, e.g. a renderer composing IME
+  // text.
+  window_.firstResponderHandlesKeyEquivalent = YES;
+
+  EXPECT_TRUE([[window_ commandDispatcher] performKeyEquivalent:key_event_]);
+  EXPECT_NSEQ(parent, delegate.windowSeenBeforeFirstResponder);
+  EXPECT_FALSE(window_.firstResponderSawKeyEquivalent);
+
+  [parent close];
+}
+
+// The parent's pre-firstResponder stage must not preempt the firstResponder
+// for commands it declines to consume, e.g. non-reserved ones.
+TEST_F(CommandDispatcherTest, DispatchParentDecliningLeavesFirstResponder) {
+  TestCommandDispatchingWindow* parent =
+      [[TestCommandDispatchingWindow alloc] init];
+  TestCommandDispatcherDelegate* delegate =
+      [[TestCommandDispatcherDelegate alloc] init];
+  delegate.preResult = ui::PerformKeyEquivalentResult::kUnhandled;
+  [parent commandDispatcher].delegate = delegate;
+
+  DefaultCommandDispatcherDelegate* default_delegate =
+      [[DefaultCommandDispatcherDelegate alloc] init];
+  [window_ commandDispatcher].delegate = default_delegate;
+
+  window_.commandDispatchParent = parent;
+  window_.firstResponderHandlesKeyEquivalent = YES;
+
+  EXPECT_TRUE([[window_ commandDispatcher] performKeyEquivalent:key_event_]);
+  EXPECT_TRUE(window_.firstResponderSawKeyEquivalent);
+
+  [parent close];
+}
+
+// A delegate inspects the firstResponder of the window that owns its
+// dispatcher, so delegating this window's pre-firstResponder stage to the
+// parent leaves a key lock held here unseen. Verifies the lock is honored
+// anyway, keeping the firstResponder's exclusive access to the event.
+TEST_F(CommandDispatcherTest, DispatchParentStageHonorsKeyLock) {
+  TestCommandDispatchingWindow* parent =
+      [[TestCommandDispatchingWindow alloc] init];
+  TestCommandDispatcherDelegate* delegate =
+      [[TestCommandDispatcherDelegate alloc] init];
+  delegate.preResult = ui::PerformKeyEquivalentResult::kHandled;
+  [parent commandDispatcher].delegate = delegate;
+
+  DefaultCommandDispatcherDelegate* default_delegate =
+      [[DefaultCommandDispatcherDelegate alloc] init];
+  [window_ commandDispatcher].delegate = default_delegate;
+
+  KeyLockedResponderView* locked_responder =
+      [[KeyLockedResponderView alloc] init];
+  [window_.contentView addSubview:locked_responder];
+  ASSERT_TRUE([window_ makeFirstResponder:locked_responder]);
+
+  window_.commandDispatchParent = parent;
+  window_.firstResponderHandlesKeyEquivalent = YES;
+
+  EXPECT_TRUE([[window_ commandDispatcher] performKeyEquivalent:key_event_]);
+  EXPECT_FALSE(delegate.windowSeenBeforeFirstResponder);
+  EXPECT_TRUE(window_.firstResponderSawKeyEquivalent);
+
+  [parent close];
 }
 
 }  // namespace ui

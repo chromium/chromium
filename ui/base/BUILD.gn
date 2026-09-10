@@ -308,6 +308,8 @@ component("base") {
       "cocoa/cursor_accessibility_scale_factor.mm",
       "cocoa/cursor_utils.h",
       "cocoa/cursor_utils.mm",
+      "cocoa/default_command_dispatcher_delegate.h",
+      "cocoa/default_command_dispatcher_delegate.mm",
       "cocoa/defaults_utils.h",
       "cocoa/defaults_utils.mm",
       "cocoa/find_pasteboard.h",

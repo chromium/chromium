@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -32,6 +33,26 @@
 
 using BrowserNativeWidgetMacInteractiveTest = InProcessBrowserTest;
 
+@interface KeyEquivalentSpyView : NSView
+@property(nonatomic) BOOL receivedKeyEquivalent;
+@property(nonatomic) BOOL composing;
+@end
+
+@implementation KeyEquivalentSpyView
+@synthesize receivedKeyEquivalent = _receivedKeyEquivalent;
+@synthesize composing = _composing;
+
+- (BOOL)acceptsFirstResponder {
+  return YES;
+}
+- (BOOL)performKeyEquivalent:(NSEvent*)event {
+  self.receivedKeyEquivalent = YES;
+  // IME composition consumes the equivalent so it never bubbles. Matches
+  // RenderWidgetHostViewCocoa returning YES while composing.
+  return self.composing;
+}
+@end
+
 // Tests that closing the browser immediately after toggling fullscreen doesn't
 // crash and successfully closes the browser.
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacInteractiveTest,
@@ -50,6 +71,66 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacInteractiveTest,
   // Wait for the browser to be destroyed. If there is a crash or if it hangs,
   // the test will fail/timeout.
   observer.Wait();
+}
+
+// Child widgets (WebUI omnibox popup) use DefaultCommandDispatcherDelegate,
+// which forwards reserved equivalents to the parent before the firstResponder.
+// A composing firstResponder must not consume Cmd+T; others still reach it.
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacInteractiveTest,
+                       ChildWindowKeyEquivalentDispatch) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  auto child_widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.parent = BrowserView::GetBrowserViewForBrowser(browser())
+                      ->GetWidget()
+                      ->GetNativeView();
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+  child_widget->Init(std::move(params));
+  child_widget->Show();
+
+  NSWindow* child_window = child_widget->GetNativeWindow().GetNativeNSWindow();
+  KeyEquivalentSpyView* spy = [[KeyEquivalentSpyView alloc] init];
+  [child_window.contentView addSubview:spy];
+  ASSERT_TRUE([child_window makeFirstResponder:spy]);
+  [child_window makeKeyWindow];
+
+  auto cmd_event = [&](NSString* character, unsigned short key_code) {
+    return [NSEvent keyEventWithType:NSEventTypeKeyDown
+                            location:NSZeroPoint
+                       modifierFlags:NSEventModifierFlagCommand
+                           timestamp:0
+                        windowNumber:child_window.windowNumber
+                             context:nil
+                          characters:character
+         charactersIgnoringModifiers:character
+                           isARepeat:NO
+                             keyCode:key_code];
+  };
+
+  // US-ANSI T/L hardware keycodes. Numeric to avoid Carbon.h.
+  constexpr unsigned short kKeyCodeT = 17;
+  constexpr unsigned short kKeyCodeL = 37;
+
+  TabStripModel* tabs = browser()->GetTabStripModel();
+  ASSERT_EQ(1, tabs->count());
+
+  // Korean IME composition: the firstResponder would consume the first Cmd+T
+  // (no-op) and only a second press after composition ended would fire.
+  spy.composing = YES;
+
+  // Cmd+T is reserved: handled by the parent on the first press, not the
+  // composing firstResponder.
+  EXPECT_TRUE([child_window performKeyEquivalent:cmd_event(@"t", kKeyCodeT)]);
+  EXPECT_EQ(2, tabs->count());
+  EXPECT_FALSE(spy.receivedKeyEquivalent);
+
+  // Cmd+L is not reserved: composing firstResponder still consumes it.
+  EXPECT_TRUE([child_window performKeyEquivalent:cmd_event(@"l", kKeyCodeL)]);
+  EXPECT_TRUE(spy.receivedKeyEquivalent);
+  EXPECT_EQ(2, tabs->count());
 }
 
 namespace {
