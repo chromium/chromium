@@ -15,6 +15,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -1358,6 +1359,11 @@ TEST_F(ChromeAutofillClientTest,
   // If the enterprise policy flag is OFF, IsAutofillEnabled does not check AI
   // types.
   EXPECT_FALSE(client()->IsAutofillEnabled());
+}
+
+TEST_F(ChromeAutofillClientTest, GetAffiliationService) {
+  EXPECT_EQ(AffiliationServiceFactory::GetForProfile(profile()),
+            client()->GetAffiliationService());
 }
 
 }  // namespace

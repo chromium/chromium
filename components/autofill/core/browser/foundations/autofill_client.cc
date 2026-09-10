@@ -125,6 +125,10 @@ AutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
   return nullptr;
 }
 
+affiliations::AffiliationService* AutofillClient::GetAffiliationService() {
+  return nullptr;
+}
+
 personal_context::PersonalContextFirstRunService*
 AutofillClient::GetPersonalContextFirstRunService() {
   return nullptr;

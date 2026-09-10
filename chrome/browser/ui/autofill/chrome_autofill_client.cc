@@ -29,6 +29,7 @@
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
@@ -515,6 +516,12 @@ ChromeAutofillClient::GetPersonalContextFirstRunService() {
 
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {
   return single_field_fill_router_;
+}
+
+affiliations::AffiliationService*
+ChromeAutofillClient::GetAffiliationService() {
+  Profile* profile = GetProfile();
+  return AffiliationServiceFactory::GetForProfile(profile);
 }
 
 AutocompleteHistoryManager*

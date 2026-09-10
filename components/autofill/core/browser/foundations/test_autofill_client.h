@@ -356,6 +356,14 @@ class TestAutofillClientTemplate : public T {
     password_ml_prediction_model_handler_ = std::move(handler);
   }
 
+  affiliations::AffiliationService* GetAffiliationService() override {
+    return affiliation_service_;
+  }
+
+  void set_affiliation_service(affiliations::AffiliationService* service) {
+    affiliation_service_ = service;
+  }
+
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override {
     return last_committed_primary_main_frame_url_;
   }
@@ -1050,6 +1058,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestVotesUploader> votes_uploader_;
 
   std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
+  raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
