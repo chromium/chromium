@@ -125,6 +125,13 @@
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+namespace features {
+// Controls sampling/recording of Windows.IsPinnedToTaskbar3.
+BASE_FEATURE(kWindowsIsPinnedToTaskbar3, base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 // The number of restarts to wait until removing the enable-benchmarking flag.
@@ -737,16 +744,15 @@ void RecordLinuxGlibcVersion() {
 #if BUILDFLAG(IS_WIN)
 // Record the UMA histogram when a response is received.
 void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
-  // Used for histograms; do not reorder.
-  enum Result { kNotPinned = 0, kPinned = 1, kFailure = 2, kNumResults };
+  using shell_integration::win::IsPinnedToTaskbarResult;
 
-  Result result = kFailure;
+  IsPinnedToTaskbarResult result = IsPinnedToTaskbarResult::kFailure;
   if (succeeded) {
-    result = is_pinned_to_taskbar ? kPinned : kNotPinned;
+    result = is_pinned_to_taskbar ? IsPinnedToTaskbarResult::kPinned
+                                  : IsPinnedToTaskbarResult::kNotPinned;
   }
 
-  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result,
-                                kNumResults);
+  base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result);
 
   // If Chrome is not pinned to taskbar, clear the recording that the installer
   // pinned Chrome to the taskbar, so that if the user pins Chrome back to the
@@ -760,12 +766,12 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   // true if the installer pinned Chrome, and it's not pinned on this startup,
   // false if the installer pinned Chrome, and it's still pinned.
   if (GetInstallerPinnedChromeToTaskbar().value_or(false)) {
-    if (result == kNotPinned) {
+    if (result == IsPinnedToTaskbarResult::kNotPinned) {
       SetInstallerPinnedChromeToTaskbar(false);
     }
-    if (result != kFailure) {
+    if (result != IsPinnedToTaskbarResult::kFailure) {
       base::UmaHistogramBoolean("Windows.InstallerPinUnpinned",
-                                result == kNotPinned);
+                                result == IsPinnedToTaskbarResult::kNotPinned);
     }
   }
 }
@@ -776,6 +782,14 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
 void RecordIsPinnedToTaskbarHistogram() {
   shell_integration::win::GetIsPinnedToTaskbarState(
       base::BindOnce(&OnIsPinnedToTaskbarResult));
+}
+
+// Records the Windows.IsPinnedToTaskbar3 histogram. Runs on a best-effort STA
+// thread.
+void RecordIsPinnedToTaskbar3Histogram() {
+  base::UmaHistogramEnumeration(
+      "Windows.IsPinnedToTaskbar3",
+      shell_integration::win::GetIsPinnedToTaskbar3State());
 }
 
 // This registry key is not fully documented but there is information on it
@@ -1123,6 +1137,17 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
     background_task_runner->PostDelayedTask(
         FROM_HERE, base::BindOnce(&RecordIsPinnedToTaskbarHistogram),
         base::Seconds(45));
+  }
+
+  // Windows.IsPinnedToTaskbar3 uses IPinnedList3 to verify taskbar pinning
+  // state when kWindowsIsPinnedToTaskbar3 is enabled.
+  if (base::FeatureList::IsEnabled(features::kWindowsIsPinnedToTaskbar3)) {
+    base::ThreadPool::CreateCOMSTATaskRunner(
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
+        ->PostDelayedTask(FROM_HERE,
+                          base::BindOnce(&RecordIsPinnedToTaskbar3Histogram),
+                          base::Seconds(45));
   }
 #endif  // BUILDFLAG(IS_WIN)
 

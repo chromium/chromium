@@ -64,11 +64,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/win/installer_downloader/installer_downloader_model_impl.cc:InstallerDownloaderFailureReason) -->
 
+<!-- LINT.IfChange(IsPinnedToTaskbarResult) -->
+
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>
   <int value="2" label="Failed to determine"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/shell_integration_win.h:IsPinnedToTaskbarResult) -->
 
 <enum name="NTSTATUS">
   <int value="-2147483647" label="0x80000001 - STATUS_GUARD_PAGE_VIOLATION"/>

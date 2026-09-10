@@ -15,6 +15,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -24,6 +25,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -39,6 +41,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
@@ -56,6 +59,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/taskbar_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "components/variations/variations_associated_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -569,6 +573,56 @@ std::wstring GetHttpSchemeUserChoiceProgId() {
   return prog_id.get();
 }
 
+// Checks if any shortcut in `directory` points to `chrome_exe` and is confirmed
+// pinned by IPinnedList3. Returns true immediately if a pinned shortcut is
+// found. Sets `had_com_error` to true if any IPinnedList3 query fails.
+bool CheckShortcutDirectoryForPin(const base::FilePath& directory,
+                                  const base::FilePath& chrome_exe,
+                                  bool& had_com_error) {
+  CHECK(!directory.empty());
+
+  base::FileEnumerator shortcuts_enum(directory, /*recursive=*/false,
+                                      base::FileEnumerator::FILES,
+                                      FILE_PATH_LITERAL("*.lnk"));
+  base::FilePath target_path;
+  for (base::FilePath shortcut = shortcuts_enum.Next(); !shortcut.empty();
+       shortcut = shortcuts_enum.Next()) {
+    if (base::win::ResolveShortcut(shortcut, &target_path, nullptr) &&
+        base::FilePath::CompareEqualIgnoreCase(chrome_exe.value(),
+                                               target_path.value())) {
+      std::optional<bool> pinned = IsShortcutPinnedToTaskbar(shortcut);
+      if (!pinned.has_value()) {
+        had_com_error = true;
+      } else if (*pinned) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+// Checks subdirectories under `implicit_apps_path` for pinned Chrome shortcuts.
+// Sets `had_com_error` to true if any IPinnedList3 query fails.
+bool CheckImplicitAppShortcutsForPin(const base::FilePath& implicit_apps_path,
+                                     const base::FilePath& chrome_exe,
+                                     bool& had_com_error) {
+  CHECK(!implicit_apps_path.empty());
+
+  base::FileEnumerator directory_enum(implicit_apps_path, /*recursive=*/false,
+                                      base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath sub_dir = directory_enum.Next(); !sub_dir.empty();
+       sub_dir = directory_enum.Next()) {
+    if (CheckShortcutDirectoryForPin(sub_dir, chrome_exe, had_com_error)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+
 }  // namespace
 
 bool SetAsDefaultBrowser() {
@@ -769,6 +823,39 @@ void MigrateTaskbarPinsCallback(const base::FilePath& taskbar_path,
 
 void GetIsPinnedToTaskbarState(IsPinnedToTaskbarCallback result_callback) {
   IsPinnedToTaskbarHelper::GetState(std::move(result_callback));
+}
+
+IsPinnedToTaskbarResult GetIsPinnedToTaskbar3State() {
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
+
+  const base::FilePath chrome_exe =
+      base::PathService::CheckedGet(base::FILE_EXE);
+
+  bool had_com_error = false;
+  base::FilePath taskbar_path;
+  const bool got_taskbar =
+      base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_path) &&
+      !taskbar_path.empty();
+  if (got_taskbar &&
+      CheckShortcutDirectoryForPin(taskbar_path, chrome_exe, had_com_error)) {
+    return IsPinnedToTaskbarResult::kPinned;
+  }
+
+  base::FilePath implicit_apps_path;
+  const bool got_implicit =
+      base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                             &implicit_apps_path) &&
+      !implicit_apps_path.empty();
+  if (got_implicit && CheckImplicitAppShortcutsForPin(
+                          implicit_apps_path, chrome_exe, had_com_error)) {
+    return IsPinnedToTaskbarResult::kPinned;
+  }
+
+  if ((!got_taskbar && !got_implicit) || had_com_error) {
+    return IsPinnedToTaskbarResult::kFailure;
+  }
+
+  return IsPinnedToTaskbarResult::kNotPinned;
 }
 
 int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,

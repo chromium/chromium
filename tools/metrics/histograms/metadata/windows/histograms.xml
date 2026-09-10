@@ -381,6 +381,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.IsPinnedToTaskbar3" enum="IsPinnedToTaskbarResult"
+    expires_after="2027-02-24">
+  <owner>songhaoli@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Indicates whether Chrome (chrome.exe) is pinned to the Windows taskbar for
+    the current user, queried using IPinnedList3. Recorded 45s after startup on
+    a background sequence when the WindowsIsPinnedToTaskbar3 feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Windows.OneDriveSyncState.{SyncedState}" enum="BooleanEnabled"
     expires_after="2027-02-07">
   <owner>koretadaniel@chromium.org</owner>

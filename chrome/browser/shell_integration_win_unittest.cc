@@ -9,12 +9,15 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/base_paths_win.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
@@ -363,6 +366,42 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateMixedCaseDirTest) {
   // the default profile name.
   shortcuts_[0].properties.set_app_id(chrome_app_id_);
   base::win::ValidateShortcut(shortcuts_[0].path, shortcuts_[0].properties);
+}
+
+TEST_F(ShellIntegrationWinMigrateShortcutTest, GetIsPinnedToTaskbar3StateTest) {
+  base::ScopedPathOverride exe_override(base::FILE_EXE, chrome_exe_,
+                                        /*is_absolute=*/true, /*create=*/false);
+  base::ScopedPathOverride taskbar_override(base::DIR_TASKBAR_PINS,
+                                            temp_dir_.GetPath());
+  base::ScopedPathOverride implicit_override(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                                             temp_dir_sub_dir_.GetPath());
+
+  // 1. Initial state: No shortcuts exist -> kNotPinned.
+  EXPECT_EQ(IsPinnedToTaskbarResult::kNotPinned, GetIsPinnedToTaskbar3State());
+
+  // 2. Add chrome.exe shortcut to Taskbar directory.
+  base::win::ShortcutProperties chrome_props;
+  chrome_props.set_target(chrome_exe_);
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      temp_dir_.GetPath().Append(L"Chrome.lnk"), chrome_props,
+      base::win::ShortcutOperation::kCreateAlways));
+
+  EXPECT_NE(IsPinnedToTaskbarResult::kPinned, GetIsPinnedToTaskbar3State());
+}
+
+TEST_F(ShellIntegrationWinMigrateShortcutTest,
+       GetIsPinnedToTaskbar3StateFailuresTest) {
+  // Failure: Both taskbar and implicit app shortcut paths fail to resolve.
+  base::ScopedPathOverride exe_override(
+      base::FILE_EXE, chrome_exe_, /*is_absolute=*/true, /*create=*/false);
+  base::ScopedPathOverride taskbar_override(base::DIR_TASKBAR_PINS,
+                                            base::FilePath(),
+                                            /*should_skip_check=*/true);
+  base::ScopedPathOverride implicit_override(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                                             base::FilePath(),
+                                             /*should_skip_check=*/true);
+
+  EXPECT_EQ(IsPinnedToTaskbarResult::kFailure, GetIsPinnedToTaskbar3State());
 }
 
 TEST(ShellIntegrationWinTest, GetAppModelIdForProfileTest) {

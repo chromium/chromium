@@ -72,6 +72,23 @@ using ConnectionErrorCallback = base::OnceClosure;
 using IsPinnedToTaskbarCallback = base::OnceCallback<void(bool, bool)>;
 void GetIsPinnedToTaskbarState(IsPinnedToTaskbarCallback result_callback);
 
+// LINT.IfChange(IsPinnedToTaskbarResult)
+// Buckets for Windows.IsPinnedToTaskbar and Windows.IsPinnedToTaskbar3
+// histograms.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IsPinnedToTaskbarResult {
+  kNotPinned = 0,
+  kPinned = 1,
+  kFailure = 2,
+  kMaxValue = kFailure,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:IsPinnedToTaskbarResult)
+
+// Uses IPinnedList3 to verify if Chrome (chrome.exe) is pinned to the taskbar.
+// Must be called on an STA COM thread.
+IsPinnedToTaskbarResult GetIsPinnedToTaskbar3State();
+
 // Unpins `shortcuts` from the taskbar, and run `completion_callback` when done.
 void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
                     base::OnceClosure completion_callback);

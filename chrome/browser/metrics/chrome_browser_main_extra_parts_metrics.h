@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -45,6 +46,12 @@ class SamplingMetricsProvider;
 namespace chrome {
 void AddMetricsExtraParts(ChromeBrowserMainParts* main_parts);
 }
+
+#if BUILDFLAG(IS_WIN)
+namespace features {
+BASE_DECLARE_FEATURE(kWindowsIsPinnedToTaskbar3);
+}  // namespace features
+#endif  // BUILDFLAG(IS_WIN)
 
 class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
                                            public display::DisplayObserver {
