@@ -209,14 +209,8 @@ public class ManageSyncSettingsTest {
      */
     private static final Set<String> ALLOWLISTED_PREFERENCE_KEYS =
             Set.of(
-                    ManageSyncSettings.PREF_IDENTITY_ERROR_CARD_PREFERENCE,
-                    ManageSyncSettings.PREF_BATCH_UPLOAD_CARD_PREFERENCE,
-
                     // TODO(http://crbug.com/559486938): Remove once the bug is fixed.
-                    ManageSyncSettings.PREF_SIGN_OUT,
-
-                    // TODO(http://crbug.com/558260627): Remove once the bug is fixed.
-                    ManageSyncSettings.PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
+                    ManageSyncSettings.PREF_SIGN_OUT);
 
     private SettingsActivityInterface mSettingsActivityInterface;
 

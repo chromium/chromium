@@ -114,16 +114,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 BatchUploadCardPreference.Listener {
     @VisibleForTesting public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_password";
     @VisibleForTesting public static final String FRAGMENT_CUSTOM_PASSPHRASE = "custom_password";
-    @VisibleForTesting public static final String FRAGMENT_PASSPHRASE_TYPE = "password_type";
+    private static final String FRAGMENT_PASSPHRASE_TYPE = "password_type";
 
-    @VisibleForTesting
     private static final String PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE = "central_account_card";
 
     @VisibleForTesting
     public static final String PREF_IDENTITY_ERROR_CARD_PREFERENCE = "identity_error_card";
 
-    @VisibleForTesting
-    public static final String PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR =
+    private static final String PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR =
             "settings_sync_disabled_by_administrator";
 
     @VisibleForTesting
@@ -993,6 +991,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
                     var frag = ManageSyncSettings.class.getName();
+
+                    // These preferences should not be searchable - transient or informational UI.
+                    indexData.removeEntryForKey(frag, PREF_IDENTITY_ERROR_CARD_PREFERENCE);
+                    indexData.removeEntryForKey(frag, PREF_BATCH_UPLOAD_CARD_PREFERENCE);
+                    indexData.removeEntryForKey(frag, PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
+
                     if (!shouldShowExtensionsItem(profile)) {
                         indexData.removeEntryForKey(frag, PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE);
                     }
