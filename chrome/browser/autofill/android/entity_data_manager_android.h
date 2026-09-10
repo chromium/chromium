@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_DATA_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_DATA_MANAGER_ANDROID_H_
 
+#include <optional>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/autofill/android/entity_type_android.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -51,8 +54,6 @@ class PersonalContextEligibilityService;
 }
 
 namespace autofill {
-
-class WalletPassAccessManager;
 
 // Android wrapper of the EntityDataManager which provides access from the
 // Java layer.
@@ -120,6 +121,11 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
                                  int32_t description_string_id,
                                  int32_t accept_button_string_id,
                                  base::OnceClosure on_local_save_fallback);
+
+  // Retrieves the details (legal message and context token) required to upsert
+  // a pass from Wallet servers.
+  void GetDetailsForUpsertPass(
+      WalletPassAccessManager::GetDetailsForUpsertPassCallback callback);
 
   // Gets information about all entities to be displayed in the management
   // service.

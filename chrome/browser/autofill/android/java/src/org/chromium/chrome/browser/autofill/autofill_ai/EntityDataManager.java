@@ -11,12 +11,14 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
+import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
@@ -108,6 +110,18 @@ public class EntityDataManager implements Destroyable {
                         descriptionStringId,
                         acceptButtonStringId,
                         onLocalSaveFallback);
+    }
+
+    /**
+     * Retrieves the details (legal message and context token) required to upsert a pass.
+     *
+     * @param callback Callback to receive the response, or null if the request failed or was not
+     *     possible.
+     */
+    public void getDetailsForUpsertPass(Callback<@Nullable DetailsForUpsertPass> callback) {
+        ThreadUtils.assertOnUiThread();
+        EntityDataManagerJni.get()
+                .getDetailsForUpsertPass(mNativeEntityDataManagerAndroid, callback);
     }
 
     /**
@@ -370,6 +384,11 @@ public class EntityDataManager implements Destroyable {
                 int descriptionStringId,
                 int acceptButtonStringId,
                 @JniType("base::OnceClosure") Runnable onLocalSaveFallback);
+
+        void getDetailsForUpsertPass(
+                long nativeEntityDataManagerAndroid,
+                @JniType("autofill::WalletPassAccessManager::GetDetailsForUpsertPassCallback")
+                        Callback<@Nullable DetailsForUpsertPass> callback);
 
         @JniType("std::vector<EntityInstanceWithLabels>")
         List<EntityInstanceWithLabels> getEntitiesWithLabels(long nativeEntityDataManagerAndroid);

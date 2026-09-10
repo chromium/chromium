@@ -16,6 +16,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
+#include "chrome/browser/autofill/android/details_for_upsert_pass_android.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_instance_with_labels.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"
@@ -264,6 +265,15 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
   AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
                             description_string_id, accept_button_string_id,
                             std::move(on_local_save_fallback));
+}
+
+void EntityDataManagerAndroid::GetDetailsForUpsertPass(
+    WalletPassAccessManager::GetDetailsForUpsertPassCallback callback) {
+  if (!wallet_pass_access_manager_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  wallet_pass_access_manager_->GetDetailsForUpsertPass(std::move(callback));
 }
 
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(

@@ -22,9 +22,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
+import org.chromium.components.autofill.autofill_ai.DetailsForUpsertPass;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
@@ -45,6 +47,7 @@ public class EntityDataManagerTest {
     @Mock private EntityDataManager.Natives mEntityDataManagerJniMock;
     @Mock private Profile mProfile;
     @Mock private EntityInstance mEntityInstance;
+    @Mock private Callback<DetailsForUpsertPass> mGetDetailsForUpsertPassCallback;
 
     private EntityDataManager mEntityDataManager;
     private static final long NATIVE_PTR = 12345L;
@@ -95,6 +98,13 @@ public class EntityDataManagerTest {
                         descriptionStringId,
                         acceptButtonStringId,
                         localSaveFallback);
+    }
+
+    @Test
+    public void testGetDetailsForUpsertPass() {
+        mEntityDataManager.getDetailsForUpsertPass(mGetDetailsForUpsertPassCallback);
+        verify(mEntityDataManagerJniMock)
+                .getDetailsForUpsertPass(NATIVE_PTR, mGetDetailsForUpsertPassCallback);
     }
 
     @Test
