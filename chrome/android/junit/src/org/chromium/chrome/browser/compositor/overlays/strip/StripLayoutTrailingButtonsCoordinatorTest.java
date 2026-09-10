@@ -189,7 +189,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mWindowAndroid,
                         /* density= */ 1.0f,
                         mToolbarContainerView,
-                        /* isAppInDesktopWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
                         /* isTopResumedActivity= */ false,
                         mTaskTracker,
                         mIsIncognito,
@@ -1117,11 +1117,11 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertNotNull("Glic button should be created.", mGlicButton);
         assertNotNull("Glic Actor button should be created.", mGlicActorButton);
 
-        // Focused state
+        // Focused state in multi-window mode
         mCoordinator.updateGlicButtonOpacity(
-                /* isAppInDesktopWindow= */ true, /* isTopResumedActivity= */ true);
+                /* isInMultiWindowMode= */ true, /* isTopResumedActivity= */ true);
         assertEquals(
-                "Glic button opacity should be 1.0 when focused in desktop windowing mode.",
+                "Glic button opacity should be 1.0 when focused in multi-window mode.",
                 1.0f,
                 mGlicButton.getOpacity(),
                 MathUtils.EPSILON);
@@ -1141,11 +1141,11 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 mGlicActorButton.getClickableOpacityThreshold(),
                 MathUtils.EPSILON);
 
-        // Unfocused state
+        // Unfocused state in multi-window mode
         mCoordinator.updateGlicButtonOpacity(
-                /* isAppInDesktopWindow= */ true, /* isTopResumedActivity= */ false);
+                /* isInMultiWindowMode= */ true, /* isTopResumedActivity= */ false);
         assertEquals(
-                "Glic button opacity should be 0.65 when unfocused in desktop windowing mode.",
+                "Glic button opacity should be 0.65 when unfocused in multi-window mode.",
                 0.65f,
                 mGlicButton.getOpacity(),
                 MathUtils.EPSILON);
@@ -1162,6 +1162,30 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertEquals(
                 "Glic Actor button clickable threshold should be 0.65 when unfocused.",
                 0.65f,
+                mGlicActorButton.getClickableOpacityThreshold(),
+                MathUtils.EPSILON);
+
+        // Unfocused state in fullscreen mode
+        mCoordinator.updateGlicButtonOpacity(
+                /* isInMultiWindowMode= */ false, /* isTopResumedActivity= */ false);
+        assertEquals(
+                "Glic button opacity should be 1.0 when unfocused in fullscreen mode.",
+                1.0f,
+                mGlicButton.getOpacity(),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Glic button clickable threshold should be 1.0 in fullscreen mode.",
+                1.0f,
+                mGlicButton.getClickableOpacityThreshold(),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Glic Actor button opacity should be 1.0 when unfocused in fullscreen mode.",
+                1.0f,
+                mGlicActorButton.getOpacity(),
+                MathUtils.EPSILON);
+        assertEquals(
+                "Glic Actor button clickable threshold should be 1.0 in fullscreen mode.",
+                1.0f,
                 mGlicActorButton.getClickableOpacityThreshold(),
                 MathUtils.EPSILON);
     }

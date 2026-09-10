@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -99,6 +100,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
      * @param toolbarManager The ToolbarManager instance.
      * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
+     * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher}.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
@@ -135,6 +137,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ActivityWindowAndroid windowAndroid,
             ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @Nullable MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActionConfirmationManager actionConfirmationManager,
             DataSharingTabManager dataSharingTabManager,
             BottomSheetController bottomSheetController,
@@ -182,6 +185,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         windowAndroid,
                         toolbarManager,
                         desktopWindowStateManager,
+                        multiWindowModeStateDispatcher,
                         actionConfirmationManager,
                         dataSharingTabManager,
                         bottomSheetController,

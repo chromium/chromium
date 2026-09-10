@@ -1231,6 +1231,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getWindowAndroid(),
                             getToolbarManager(),
                             mRootUiCoordinator.getDesktopWindowStateManager(),
+                            getMultiWindowModeStateDispatcher(),
                             actionConfirmationManager,
                             mRootUiCoordinator.getDataSharingTabManager(),
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),

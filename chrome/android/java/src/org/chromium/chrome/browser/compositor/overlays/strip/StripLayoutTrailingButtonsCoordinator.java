@@ -227,7 +227,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private float mLeftPadding;
     private float mTopPadding;
     private boolean mIsTopResumedActivity;
-    private boolean mIsAppInDesktopWindow;
+    private boolean mIsInMultiWindowMode;
     private boolean mIsGlicUiVisible;
     private @Nullable String mNudgeLabel;
     private int mLastGlicActorButtonState = ButtonState.DEFAULT;
@@ -314,7 +314,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param density The display density.
      * @param toolbarControlContainer The view containing toolbar controls.
-     * @param isAppInDesktopWindow Whether the app is in a desktop window.
+     * @param isInMultiWindowMode Whether the app is in multi-window mode.
      * @param isTopResumedActivity Whether the app is the top resumed activity.
      * @param taskTracker The {@link ChromeAndroidTaskTracker} for tracking tasks.
      * @param isIncognito Whether the current tab model is incognito.
@@ -342,7 +342,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             ActivityWindowAndroid windowAndroid,
             float density,
             View toolbarControlContainer,
-            boolean isAppInDesktopWindow,
+            boolean isInMultiWindowMode,
             boolean isTopResumedActivity,
             ChromeAndroidTaskTracker taskTracker,
             boolean isIncognito,
@@ -521,7 +521,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
 
         updateButtonTints(mIsIncognito);
-        updateGlicButtonOpacity(isAppInDesktopWindow, isTopResumedActivity);
+        updateGlicButtonOpacity(isInMultiWindowMode, isTopResumedActivity);
     }
 
     /** Destroys the coordinator and unregisters observers. */
@@ -1112,11 +1112,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             boolean animate, float targetGlicWidth, float targetActorWidth) {
         if (mGlicButton == null || mGlicActorButton == null) return;
 
-        float targetOpacity =
-                isUnfocusedInDw()
-                        ? mContext.getResources()
-                                .getFloat(R.dimen.tab_strip_glic_button_icon_unfocused_alpha)
-                        : 1.0f;
+        float targetOpacity = getTargetGlicButtonOpacity();
         mGlicButton.setClickableOpacityThreshold(targetOpacity);
         mGlicActorButton.setClickableOpacityThreshold(targetOpacity);
         boolean targetActorVisible = shouldGlicActorBeVisible();
@@ -1342,23 +1338,19 @@ public class StripLayoutTrailingButtonsCoordinator {
     /**
      * Updates the opacity of the Glic buttons based on app focus state.
      *
-     * @param isAppInDesktopWindow Whether the app is in a desktop window.
+     * @param isInMultiWindowMode Whether the app is in multi-window mode.
      * @param isTopResumedActivity Whether the app is the top resumed activity.
      */
-    public void updateGlicButtonOpacity(
-            boolean isAppInDesktopWindow, boolean isTopResumedActivity) {
-        mIsAppInDesktopWindow = isAppInDesktopWindow;
+    public void updateGlicButtonOpacity(boolean isInMultiWindowMode, boolean isTopResumedActivity) {
+        mIsInMultiWindowMode = isInMultiWindowMode;
         mIsTopResumedActivity = isTopResumedActivity;
         if (mGlicButton == null || mGlicActorButton == null) return;
-        float targetOpacity =
-                isUnfocusedInDw()
-                        ? mContext.getResources()
-                                .getFloat(R.dimen.tab_strip_glic_button_icon_unfocused_alpha)
-                        : 1.0f;
+        float targetOpacity = getTargetGlicButtonOpacity();
         mGlicButton.setOpacity(targetOpacity);
         mGlicButton.setClickableOpacityThreshold(targetOpacity);
         mGlicActorButton.setOpacity(targetOpacity);
         mGlicActorButton.setClickableOpacityThreshold(targetOpacity);
+        mRenderHost.requestRender();
     }
 
     /** Returns the total width used by the trailing buttons including padding. */
@@ -1592,8 +1584,16 @@ public class StripLayoutTrailingButtonsCoordinator {
                 / 2;
     }
 
-    private boolean isUnfocusedInDw() {
-        return mIsAppInDesktopWindow && !mIsTopResumedActivity;
+    private boolean isUnfocusedInMultiWindow() {
+        return mIsInMultiWindowMode && !mIsTopResumedActivity;
+    }
+
+    private float getTargetGlicButtonOpacity() {
+        return mContext.getResources()
+                .getFloat(
+                        isUnfocusedInMultiWindow()
+                                ? R.dimen.tab_strip_glic_button_icon_unfocused_alpha
+                                : R.dimen.tab_strip_glic_button_icon_focused_alpha);
     }
 
     /**

@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -171,6 +172,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private ToolbarManager mToolbarManager;
     @Mock private StatusBarColorController mStatusBarColorController;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private BottomSheetController mBottomSheetController;
@@ -295,6 +297,7 @@ public class StripLayoutHelperManagerTest {
                         mWindowAndroid,
                         mToolbarManager,
                         mDesktopWindowStateManager,
+                        mMultiWindowModeStateDispatcher,
                         mActionConfirmationManager,
                         mDataSharingTabManager,
                         mBottomSheetController,
