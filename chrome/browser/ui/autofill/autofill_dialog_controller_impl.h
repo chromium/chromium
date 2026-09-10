@@ -50,7 +50,7 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   void SetViewFactoryForTest(FactoryCallback view_factory_for_test) {
     view_factory_for_test_ = std::move(view_factory_for_test);
   }
-  bool HasDialogViewForTest() const { return !!autofill_dialog_view_; }
+  bool HasDialogViewForTest() const { return autofill_dialog_view_ != nullptr; }
   void DismissForTest() { Dismiss(); }
 
  private:

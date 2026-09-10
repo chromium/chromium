@@ -40,7 +40,7 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
   }
 
   bool DidShowBottomSheet() {
-    return !!controller_->autofill_vcn_enroll_bottom_sheet_bridge_;
+    return controller_->autofill_vcn_enroll_bottom_sheet_bridge_ != nullptr;
   }
 #else   // !BUILDFLAG(IS_ANDROID)
   VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus

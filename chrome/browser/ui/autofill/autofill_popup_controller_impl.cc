@@ -607,7 +607,7 @@ AutofillPopupControllerImpl::GetSuggestionMetadata(size_t row_index) const {
   multi_index.push_back(row_index);
   return {
       .multi_index = std::move(multi_index),
-      .from_search_result = !!filter_,
+      .from_search_result = filter_.has_value(),
   };
 }
 
