@@ -69,16 +69,12 @@ def CheckTestingBuildbot(input_api, output_api):
   return []
 
 
-def CheckLucicfgGenOutputMain(input_api, output_api):
+def CheckLucicfgGenOutput(input_api, output_api):
   return input_api.RunTests(
     input_api.canned_checks.CheckLucicfgGenOutput(
       input_api, output_api, 'main.star'
     )
-  )
-
-
-def CheckLucicfgGenOutputDev(input_api, output_api):
-  return input_api.RunTests(
+  ) + input_api.RunTests(
     input_api.canned_checks.CheckLucicfgGenOutput(
       input_api, output_api, 'dev.star'
     )
