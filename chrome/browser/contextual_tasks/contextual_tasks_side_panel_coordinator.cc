@@ -48,6 +48,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/contextual_tasks/contextual_tasks_extensions_container.h"
+#endif
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
@@ -1445,14 +1449,15 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
   views::BubbleAnchor specification_anchor =
       views::BubbleAnchor(anchor_element);
 
-  std::unique_ptr<PageInfoBubbleSpecification> specification =
-      PageInfoBubbleSpecification::Builder(
-          specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
-          contents, contents->GetVisibleURL())
-          // TODO(crbug.com/533073052): Add functional callback later. Currently
-          // DoNothing() to ensure the menu item renders.
-          .SetOnExtensionsClickedCallback(base::DoNothing())
-          .Build();
+  PageInfoBubbleSpecification::Builder builder(
+      specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
+      contents, contents->GetVisibleURL());
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  builder.SetOnExtensionsClickedCallback(base::BindRepeating(
+      &ContextualTasksSidePanelCoordinator::OnSeeExtensionsClicked,
+      weak_ptr_factory_.GetWeakPtr(), specification_anchor));
+#endif
+  std::unique_ptr<PageInfoBubbleSpecification> specification = builder.Build();
 
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
@@ -1465,6 +1470,24 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
   // Desktop
 #endif
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+void ContextualTasksSidePanelCoordinator::OnSeeExtensionsClicked(
+    views::BubbleAnchor anchor) {
+  content::WebContents* contents = GetActiveWebContents();
+  if (!contents) {
+    return;
+  }
+  if (!extensions_container_) {
+    extensions_container_ =
+        std::make_unique<ContextualTasksExtensionsContainer>(browser_window_,
+                                                             contents);
+  } else {
+    extensions_container_->SetWebContents(contents);
+  }
+  extensions_container_->ShowExtensionsMenu(anchor);
+}
+#endif
 
 void ContextualTasksSidePanelCoordinator::OnLogoPointerDown() {
 #if !BUILDFLAG(IS_ANDROID)

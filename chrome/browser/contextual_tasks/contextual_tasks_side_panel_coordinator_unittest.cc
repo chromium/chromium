@@ -299,6 +299,16 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     return mock;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+  void TriggerOnSeeExtensionsClicked(views::BubbleAnchor anchor) {
+    coordinator_->OnSeeExtensionsClicked(anchor);
+  }
+
+  ContextualTasksExtensionsContainer* GetExtensionsContainer() {
+    return coordinator_->extensions_container_.get();
+  }
+#endif
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -1283,6 +1293,14 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       "https://www.google.com/search?udm=50&q=test&cs=0&gsc=2&hl=en");
   EXPECT_EQ(cached_wc->GetVisibleURL(), expected_url);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnSeeExtensionsClicked_NoActiveContents) {
+  TriggerOnSeeExtensionsClicked(views::BubbleAnchor());
+  EXPECT_EQ(GetExtensionsContainer(), nullptr);
+}
+#endif
 
 }  // namespace contextual_tasks
 
