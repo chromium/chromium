@@ -19,7 +19,7 @@ declare_args() {
 
   # Enable modification checks in non-garbage-collected blink::Vector
   # (i.e. PartitionAllocator-backed) to detect modifications during iteration.
-  enable_vector_modification_checks = false
+  enable_vector_modification_checks = true
 
   # Whether blink::HeapVector promptly frees its backing store via
   # Allocator::FreeVectorBacking(). When disabled, the backing store is left to
