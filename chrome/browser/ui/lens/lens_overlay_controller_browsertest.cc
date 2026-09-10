@@ -110,6 +110,7 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
@@ -10027,4 +10028,244 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCoBrowsePreselectionTest,
   EXPECT_EQ(preselection_widget->widget_delegate()->GetAccessibleWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED));
+}
+
+class LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest
+    : public LensOverlayControllerBrowserTest {
+ public:
+  LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest() = default;
+
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {lens::features::kLensOverlayNonBlockingPrivacyNotice,
+         lens::features::kLensOverlayContextualSearchbox,
+         contextual_tasks::kContextualTasksSidePanel},
+        /*disabled_features=*/{contextual_tasks::kContextualTasks});
+  }
+
+  void SetUpOnMainThread() override {
+    LensOverlayControllerBrowserTest::SetUpOnMainThread();
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        lens::prefs::kLensSharingPageScreenshotEnabled, false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        lens::prefs::kLensSharingPageContentEnabled, false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest,
+                       AcceptPrivacyNoticeWithoutUserActivation_Rejected) {
+  WaitForPaint();
+
+  base::HistogramTester histogram_tester;
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  auto* prefs = browser()->GetProfile()->GetPrefs();
+  EXPECT_FALSE(
+      prefs->GetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(lens::prefs::kLensSharingPageContentEnabled));
+
+  // Open the overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* overlay_web_contents = GetOverlayWebContents();
+  ASSERT_NE(overlay_web_contents, nullptr);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  content::RenderFrameHost* rfh = overlay_web_contents->GetPrimaryMainFrame();
+  ASSERT_NE(rfh, nullptr);
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+
+  content::RenderProcessHostBadMojoMessageWaiter bad_message_waiter(
+      rfh->GetProcess());
+
+  // Invoke AcceptPrivacyNotice via JavaScript without user activation.
+  content::ExecuteScriptAsyncWithoutUserGesture(
+      overlay_web_contents,
+      "document.querySelector('lens-overlay-app').browserProxy.handler."
+      "acceptPrivacyNotice();");
+
+  EXPECT_EQ(
+      "Received bad user message: AcceptPrivacyNotice called without user "
+      "activation.",
+      bad_message_waiter.Wait());
+
+  // Permissions should not be granted.
+  EXPECT_FALSE(
+      prefs->GetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(lens::prefs::kLensSharingPageContentEnabled));
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest,
+    AcceptPrivacyNoticeWithUserActivation_GrantsPermissions) {
+  WaitForPaint();
+
+  base::HistogramTester histogram_tester;
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  auto* prefs = browser()->GetProfile()->GetPrefs();
+  EXPECT_FALSE(
+      prefs->GetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(lens::prefs::kLensSharingPageContentEnabled));
+
+  // Open the overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* overlay_web_contents = GetOverlayWebContents();
+  ASSERT_NE(overlay_web_contents, nullptr);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  // Invoke AcceptPrivacyNotice with user activation via ExecJs (default option
+  // includes user gesture).
+  EXPECT_TRUE(content::ExecJs(
+      overlay_web_contents,
+      "document.querySelector('lens-overlay-app').browserProxy.handler."
+      "acceptPrivacyNotice();"));
+
+  // Wait for permissions to be granted.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return prefs->GetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled) &&
+           prefs->GetBoolean(lens::prefs::kLensSharingPageContentEnabled);
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted",
+      lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kAccepted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest,
+                       DismissPrivacyNotice_Success) {
+  WaitForPaint();
+
+  base::HistogramTester histogram_tester;
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* overlay_web_contents = GetOverlayWebContents();
+  ASSERT_NE(overlay_web_contents, nullptr);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  // Invoke DismissPrivacyNotice via JavaScript.
+  EXPECT_TRUE(content::ExecJs(
+      overlay_web_contents,
+      "document.querySelector('lens-overlay-app').browserProxy.handler."
+      "dismissPrivacyNotice();"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted",
+      lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kDismissed, 1);
+}
+
+class LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest
+    : public LensOverlayControllerBrowserTest {
+ public:
+  LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest() = default;
+
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {lens::features::kLensOverlayContextualSearchbox,
+         contextual_tasks::kContextualTasksSidePanel},
+        /*disabled_features=*/{
+            lens::features::kLensOverlayNonBlockingPrivacyNotice,
+            contextual_tasks::kContextualTasks});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest,
+    AcceptPrivacyNoticeWhenFeatureDisabled_ReportsBadMessage) {
+  WaitForPaint();
+
+  base::HistogramTester histogram_tester;
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay with non-blocking privacy notice disabled.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* overlay_web_contents = GetOverlayWebContents();
+  ASSERT_NE(overlay_web_contents, nullptr);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  content::RenderFrameHost* rfh = overlay_web_contents->GetPrimaryMainFrame();
+  ASSERT_NE(rfh, nullptr);
+
+  content::RenderProcessHostBadMojoMessageWaiter bad_message_waiter(
+      rfh->GetProcess());
+
+  // Invoke AcceptPrivacyNotice when feature is disabled.
+  content::ExecuteScriptAsync(
+      overlay_web_contents,
+      "document.querySelector('lens-overlay-app').browserProxy.handler."
+      "acceptPrivacyNotice();");
+
+  EXPECT_EQ(
+      "Received bad user message: AcceptPrivacyNotice called when "
+      "non-blocking privacy notice is not enabled.",
+      bad_message_waiter.Wait());
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest,
+    DismissPrivacyNoticeWhenFeatureDisabled_ReportsBadMessage) {
+  WaitForPaint();
+
+  base::HistogramTester histogram_tester;
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay with non-blocking privacy notice disabled.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* overlay_web_contents = GetOverlayWebContents();
+  ASSERT_NE(overlay_web_contents, nullptr);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  content::RenderFrameHost* rfh = overlay_web_contents->GetPrimaryMainFrame();
+  ASSERT_NE(rfh, nullptr);
+
+  content::RenderProcessHostBadMojoMessageWaiter bad_message_waiter(
+      rfh->GetProcess());
+
+  // Invoke DismissPrivacyNotice when feature is disabled.
+  content::ExecuteScriptAsync(
+      overlay_web_contents,
+      "document.querySelector('lens-overlay-app').browserProxy.handler."
+      "dismissPrivacyNotice();");
+
+  EXPECT_EQ(
+      "Received bad user message: DismissPrivacyNotice called when "
+      "non-blocking privacy notice is not enabled.",
+      bad_message_waiter.Wait());
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted", 0);
 }

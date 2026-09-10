@@ -103,6 +103,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/base/network_change_notifier.h"
 #include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -2295,6 +2296,28 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession(
 }
 
 void LensOverlayController::AcceptPrivacyNotice() {
+  if (!lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled()) {
+    if (mojo::IsInMessageDispatch()) {
+      receiver_.ReportBadMessage(
+          "AcceptPrivacyNotice called when non-blocking privacy notice is not "
+          "enabled.");
+    }
+    return;
+  }
+
+  views::WebView* overlay_web_view = GetOverlayWebView();
+  content::RenderFrameHost* rfh =
+      overlay_web_view && overlay_web_view->GetWebContents()
+          ? overlay_web_view->GetWebContents()->GetPrimaryMainFrame()
+          : nullptr;
+  if (!rfh || !rfh->HasTransientUserActivation()) {
+    if (mojo::IsInMessageDispatch()) {
+      receiver_.ReportBadMessage(
+          "AcceptPrivacyNotice called without user activation.");
+    }
+    return;
+  }
+
   // Permanently grant permissions, then restart the query flow and upload page
   // content for contextualization.
   Profile* profile =
@@ -2311,6 +2334,14 @@ void LensOverlayController::AcceptPrivacyNotice() {
 }
 
 void LensOverlayController::DismissPrivacyNotice() {
+  if (!lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled()) {
+    if (mojo::IsInMessageDispatch()) {
+      receiver_.ReportBadMessage(
+          "DismissPrivacyNotice called when non-blocking privacy notice is not "
+          "enabled.");
+    }
+    return;
+  }
   lens::RecordNonBlockingPrivacyNoticeAccepted(
       lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kDismissed,
       invocation_source_);

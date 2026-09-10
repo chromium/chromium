@@ -107,12 +107,20 @@ OverlayBaseController::GetLensOverlayBlurLayerDelegateForTesting() {
   return overlay_blur_layer_delegate_.get();
 }
 
+views::WebView* OverlayBaseController::GetOverlayWebView() const {
+  if (IsOverlayViewShared()) {
+    return overlay_web_view_.get();
+  }
+  return overlay_web_view_ ? overlay_web_view_.get()
+                           : owned_overlay_web_view_.get();
+}
+
 views::View* OverlayBaseController::GetOverlayViewForTesting() {
   return overlay_view_.get();
 }
 
 views::WebView* OverlayBaseController::GetOverlayWebViewForTesting() {
-  return overlay_web_view_.get();
+  return GetOverlayWebView();
 }
 
 void OverlayBaseController::OnViewBoundsChanged(views::View* observed_view) {
@@ -856,13 +864,7 @@ void OverlayBaseController::HideOverlayAndSetHiddenState() {
 }
 
 void OverlayBaseController::SetOverlayRoundedCorner() {
-  views::WebView* overlay_web_view = nullptr;
-  if (IsOverlayViewShared()) {
-    overlay_web_view = overlay_web_view_.get();
-  } else {
-    overlay_web_view = !!overlay_web_view_ ? overlay_web_view_.get()
-                                           : owned_overlay_web_view_.get();
-  }
+  views::WebView* overlay_web_view = GetOverlayWebView();
   CHECK(overlay_web_view);
 
   // Only tab-scoped overlays (where `!IsOverlayViewShared()`) live inside a

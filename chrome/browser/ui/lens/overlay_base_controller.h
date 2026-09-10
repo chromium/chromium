@@ -358,6 +358,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Close the preselection bubble.
   void ClosePreselectionBubbleImpl();
 
+  // Returns the web view hosting the overlay WebUI if it exists.
+  views::WebView* GetOverlayWebView() const;
+
   // Returns the host view that the overlay should be attached to. Can be null.
   views::View* GetHostView() const;
 
