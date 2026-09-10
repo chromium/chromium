@@ -1865,9 +1865,16 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE" desc="The title of the toggle shown in the settings page that allows managing the authentication requirement before seeings smarter form understanding settings sensitive fields, such as passport number and national id card number." formatter_data="android_java">
     Verify it’s you to autofill sensitive info
   </message>
-  <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the at-memory promo bubble.">
-    Type @@ in any form to find and fill info without switching tabs
-  </message>
+  <if expr="is_macosx">
+    <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble on macOS. '⌘ ⌘' represents pressing the Command key twice.">
+      Press ⌘ ⌘ in any form to find and fill info without switching tabs
+    </message>
+  </if>
+  <if expr="not is_macosx">
+    <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble.">
+      Press Ctrl twice in any form to find and fill info without switching tabs
+    </message>
+  </if>
   <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Description of the at-memory promo bubble.">
     Enhanced autofill can now find and fill info — like flight numbers and appointment times — from apps like Gmail and Photos
   </message>
