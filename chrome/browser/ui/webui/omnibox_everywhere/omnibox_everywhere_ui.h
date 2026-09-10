@@ -76,6 +76,12 @@ class OmniboxEverywhereUI
   explicit OmniboxEverywhereUI(content::WebUI* web_ui);
   OmniboxEverywhereUI(const OmniboxEverywhereUI&) = delete;
   OmniboxEverywhereUI& operator=(const OmniboxEverywhereUI&) = delete;
+
+  enum ScreenshotMenuCommand {
+    kScreenshotEntireScreen = 1,
+    kScreenshotWindow,
+    kScreenshotRegion,
+  };
   ~OmniboxEverywhereUI() override;
 
   static constexpr std::string_view GetWebUIName() {
@@ -147,11 +153,13 @@ class OmniboxEverywhereUI
   OmniboxEverywhereHandler* omnibox_handler() { return omnibox_handler_.get(); }
   OmniboxEverywherePageHandler* page_handler() { return page_handler_.get(); }
 
+  static bool IsScreenshotCommandEnabled(ContextualSearchboxHandler* handler);
+
   // TODO(b/555331826): Clean up handler retrieval to avoid inspecting handler
   // instantiation state.
   // Returns the active ContextualSearchboxHandler (either composebox_handler_
   // or omnibox_handler_).
-  ContextualSearchboxHandler* GetContextualSearchboxHandler();
+  ContextualSearchboxHandler* GetContextualSearchboxHandler() const;
 
   // ContextualSearchboxHandler::ScreenshareDelegate:
   void ShowScreenshotMenu(

@@ -9,17 +9,22 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -82,20 +87,36 @@ class OmniboxEverywhereHandlerTest
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
 
+    auto query_controller_config_params = std::make_unique<
+        contextual_search::ContextualSearchContextController::ConfigParams>();
+    auto query_controller_ptr = std::make_unique<MockQueryController>(
+        /*identity_manager=*/nullptr, url_loader_factory(),
+        version_info::Channel::UNKNOWN, "en-US", template_url_service(),
+        /*variations_client=*/nullptr,
+        std::move(query_controller_config_params));
+    auto metrics_recorder_ptr =
+        std::make_unique<MockContextualSearchMetricsRecorder>();
+
+    contextual_session_handle_ =
+        ContextualSearchServiceFactory::GetForProfile(profile())
+            ->CreateSessionForTesting(std::move(query_controller_ptr),
+                                      std::move(metrics_recorder_ptr));
+    contextual_session_handle_->CheckSearchContentSharingSettings(
+        profile()->GetPrefs());
+
     web_ui_.set_web_contents(web_contents());
     mock_service_ = std::make_unique<MockOmniboxEverywhereService>(profile());
 
     handler_ = std::make_unique<OmniboxEverywhereHandlerPublic>(
         handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
         /*metrics_reporter=*/nullptr, &web_ui_, mock_service_.get(),
-        base::BindRepeating(
-            []() -> contextual_search::ContextualSearchSessionHandle* {
-              return nullptr;
-            }));
+        base::BindLambdaForTesting(
+            [&]() { return contextual_session_handle_.get(); }));
   }
 
   void TearDown() override {
     handler_.reset();
+    contextual_session_handle_.reset();
     mock_service_.reset();
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
@@ -106,6 +127,8 @@ class OmniboxEverywhereHandlerTest
   std::unique_ptr<MockOmniboxEverywhereService> mock_service_;
   testing::NiceMock<MockSearchboxPage> page_;
   mojo::Remote<searchbox::mojom::PageHandler> handler_remote_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextual_session_handle_;
   std::unique_ptr<OmniboxEverywhereHandlerPublic> handler_;
 };
 
@@ -329,6 +352,22 @@ TEST_F(OmniboxEverywhereHandlerTest, FileContextValidationErrorHandoff) {
       contextual_search::ContextUploadStatus::kValidationFailed,
       contextual_search::ContextUploadErrorType::
           kBrowserProcessingFileTooLargeError);
+}
+
+TEST_F(OmniboxEverywhereHandlerTest, ScreenshotMenuDisabledAtMaxFiles) {
+  // Screenshot commands are disabled when handler is null.
+  EXPECT_FALSE(OmniboxEverywhereUI::IsScreenshotCommandEnabled(nullptr));
+
+  // Screenshot commands are enabled initially with 0 files.
+  EXPECT_TRUE(OmniboxEverywhereUI::IsScreenshotCommandEnabled(handler_.get()));
+
+  // Add default max inputs.
+  for (size_t i = 0; i < omnibox::kDefaultMaxTotalInputs; ++i) {
+    contextual_session_handle_->CreateContextToken();
+  }
+
+  // Screenshot commands are disabled once max files limit is reached.
+  EXPECT_FALSE(OmniboxEverywhereUI::IsScreenshotCommandEnabled(handler_.get()));
 }
 
 }  // namespace

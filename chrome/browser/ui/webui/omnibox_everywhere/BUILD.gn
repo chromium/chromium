@@ -12,6 +12,7 @@ if (is_win || is_mac) {
       ":omnibox_everywhere",
       "//base/test:test_support",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/contextual_search",
       "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/bookmarks/browser",

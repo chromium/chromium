@@ -49,6 +49,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -73,12 +74,6 @@
 #include "ui/webui/webui_util.h"
 
 namespace {
-
-enum ScreenshotMenuCommand {
-  kScreenshotEntireScreen = 1,
-  kScreenshotWindow,
-  kScreenshotRegion,
-};
 
 // Minimum preferred width for the screenshot Views menu, matching UX specs
 // and the previous dropdown implementation (320px).
@@ -599,8 +594,8 @@ void OmniboxEverywhereUI::CreateHelpBubbleHandler(
           web_ui()->GetRenderFrameHost()));
 }
 
-ContextualSearchboxHandler*
-OmniboxEverywhereUI::GetContextualSearchboxHandler() {
+ContextualSearchboxHandler* OmniboxEverywhereUI::GetContextualSearchboxHandler()
+    const {
   if (is_composebox_mode_ && composebox_handler_) {
     return composebox_handler_.get();
   }
@@ -729,7 +724,7 @@ void OmniboxEverywhereUI::OnScreenshotMenuClosed() {
 }
 
 void OmniboxEverywhereUI::ExecuteCommand(int command_id, int event_flags) {
-  if (!active_screenshot_controller_) {
+  if (!active_screenshot_controller_ || !IsCommandIdEnabled(command_id)) {
     return;
   }
   auto controller = std::move(active_screenshot_controller_);
@@ -753,7 +748,41 @@ bool OmniboxEverywhereUI::IsCommandIdChecked(int command_id) const {
   return false;
 }
 
+// static
+bool OmniboxEverywhereUI::IsScreenshotCommandEnabled(
+    ContextualSearchboxHandler* contextual_searchbox_handler) {
+  if (!contextual_searchbox_handler) {
+    return false;
+  }
+  const auto& composebox_config =
+      ntp_composebox::FeatureConfig::Get().config.composebox();
+  size_t max_files = composebox_config.max_num_files() > 0
+                         ? composebox_config.max_num_files()
+                         : omnibox::kDefaultMaxTotalInputs;
+
+  auto* input_state_model = contextual_searchbox_handler->input_state_model();
+  if (input_state_model) {
+    const auto& input_state = input_state_model->GetInputState();
+    if (std::ranges::contains(input_state.disabled_input_types,
+                              omnibox::InputType::INPUT_TYPE_LENS_IMAGE)) {
+      return false;
+    }
+    if (input_state.max_total_inputs > 0) {
+      max_files = input_state.max_total_inputs;
+    }
+  }
+
+  return contextual_searchbox_handler->GetUploadedContextTokens().size() <
+         max_files;
+}
+
 bool OmniboxEverywhereUI::IsCommandIdEnabled(int command_id) const {
+  switch (command_id) {
+    case kScreenshotEntireScreen:
+    case kScreenshotWindow:
+    case kScreenshotRegion:
+      return IsScreenshotCommandEnabled(GetContextualSearchboxHandler());
+  }
   return true;
 }
 
