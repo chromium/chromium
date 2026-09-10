@@ -19,6 +19,7 @@ ci.builder(
     contact_team_email = "dlf@google.com",
     execution_timeout = 6 * time.hour,
     properties = {
+        "config_path": "build/lexan/configs/tbi/linux-patched-fix-strict-deps.textproto",
         "toolchain": "CLANG",
         "trusted_build_instance": "lexan-release-infra-linux-prod-postsubmit",
         "trusted_build_instance_env": "prod",
@@ -41,6 +42,7 @@ ci.builder(
     contact_team_email = "dlf@google.com",
     execution_timeout = 6 * time.hour,
     properties = {
+        "config_path": "build/lexan/configs/tbi/linux-patched-fix-strict-deps.textproto",
         "toolchain": "CLANG",
         "trusted_build_instance": "lexan-release-infra-linux-staging-postsubmit",
         "trusted_build_instance_env": "staging",
