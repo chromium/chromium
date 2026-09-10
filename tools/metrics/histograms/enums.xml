@@ -19892,6 +19892,7 @@ from previous Chrome versions.
   <int value="1605398303" label="MacSystemMediaPermissionsInfoUI:enabled"/>
   <int value="1605611615" label="enable-webrtc-srtp-aes-gcm"/>
   <int value="1605929915" label="PasswordManualFallbackAvailable:enabled"/>
+  <int value="1606034932" label="GlicBackgroundActuationTabGroupSync:disabled"/>
   <int value="1607360072" label="EnableStaticQrCodeForPix:disabled"/>
   <int value="1607484807" label="AutofillEnableSupportForLandmark:enabled"/>
   <int value="1607541874" label="SettingsLandingPageRedesign:enabled"/>
@@ -21436,6 +21437,7 @@ from previous Chrome versions.
   <int value="2079182437" label="TabStateFlatBuffer:enabled"/>
   <int value="2079658706" label="IncreasedCmdBufferParseSlice:disabled"/>
   <int value="2079672348" label="ExperimentalKeyboardLockUI:disabled"/>
+  <int value="2080155450" label="GlicBackgroundActuationTabGroupSync:enabled"/>
   <int value="2080372825" label="AutofillAiWalletFlightReservation:enabled"/>
   <int value="2080571369"
       label="ForceOnDeviceAppControlsForAllRegions:disabled"/>
