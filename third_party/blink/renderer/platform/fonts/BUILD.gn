@@ -17,3 +17,17 @@ rust_static_library("font_format") {
     "//third_party/rust/skrifa/v0_46:lib",
   ]
 }
+
+rust_static_library("ift_patcher_rs") {
+  crate_root = "ift/ift_patcher.rs"
+  sources = [ crate_root ]
+  cpp_api_from_rust = {
+    target_name = "ift_patcher_bindings"
+    cpp_namespace = "ift_patcher_rs"
+  }
+  deps = [
+    "//third_party/rust/incremental_font_transfer/v0_7:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/read_fonts/v0_43:lib",
+  ]
+}

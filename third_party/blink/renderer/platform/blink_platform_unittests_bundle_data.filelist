@@ -814,6 +814,8 @@ image-decoders/testing/plte-weirdness.png
 image-decoders/testing/private-critical-chunk-before-ihdr.png
 image-decoders/testing/radient-bad-terminator.gif
 image-decoders/testing/radient.gif
+testing/data/00.1.ift_gk
+testing/data/04.1.ift_gk
 testing/data/Ahem.woff
 testing/data/AhemSpaceLigature.woff
 testing/data/anim_none.gif
@@ -878,6 +880,7 @@ testing/data/red-full-ranged-8bpc.avif
 testing/data/rgb-jpeg-red.jpg
 testing/data/roboto-a-different-cmap.ttf
 testing/data/roboto-a.ttf
+testing/data/roboto-ift.ttf
 testing/data/third_party/Amiri/amiri_arabic.woff2
 testing/data/third_party/MEgalopolis/MEgalopolisExtra.woff
 testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2

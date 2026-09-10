@@ -1,0 +1,26 @@
+Name: Roboto Font
+Short Name: roboto-classic
+URL: https://github.com/googlefonts/roboto-classic
+Version: N/A
+Date: 2026-09-02
+Update Mechanism: Manual
+License: OFL-1.1
+License File: OFL.txt
+Security Critical: no
+Shipped: no
+
+Description:
+Licensing and origin metadata for the Roboto font subset and Incremental Font
+Transfer (IFT) glyph-keyed patches used by IftPatcherTest in
+third_party/blink/renderer/platform/fonts/ift/ift_patcher_test.cc.
+
+The test fixture files reside in the parent directory (testing/data/) because the
+relative patch URLs ("00.1.ift_gk", "04.1.ift_gk") are embedded directly within
+the font binary:
+- third_party/blink/renderer/platform/testing/data/roboto-ift.ttf
+- third_party/blink/renderer/platform/testing/data/00.1.ift_gk
+- third_party/blink/renderer/platform/testing/data/04.1.ift_gk
+
+Local Modifications:
+Derived from Roboto by generating an IFT base font subset containing codepoint 'a'
+with IFT/IFTX tables, and two glyph-keyed patch payloads for codepoints 'b' and 'c'.
