@@ -35,7 +35,6 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
   CHECK(type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
         type == syncer::AUTOFILL_WALLET_DATA ||
         type == syncer::AUTOFILL_WALLET_METADATA ||
-        type == syncer::AUTOFILL_WALLET_OFFER ||
         type == syncer::AUTOFILL_WALLET_USAGE);
   CHECK(pref_service);
   CHECK(sync_service);

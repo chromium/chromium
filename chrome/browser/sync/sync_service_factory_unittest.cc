@@ -195,7 +195,6 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
     datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
-    datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::AUTOFILL_WALLET_USAGE);
     datatypes.Put(syncer::BOOKMARKS);
     datatypes.Put(syncer::CONTACT_INFO);

@@ -73,7 +73,6 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
     datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
-    datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
     datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);

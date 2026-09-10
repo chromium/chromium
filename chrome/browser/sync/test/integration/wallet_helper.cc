@@ -367,8 +367,7 @@ std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile,
 sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType data_type,
                                               int profile,
                                               StoreType store_type) {
-  DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
-         data_type == syncer::AUTOFILL_WALLET_OFFER);
+  DCHECK_EQ(data_type, syncer::AUTOFILL_WALLET_DATA);
   sync_pb::DataTypeState result;
   scoped_refptr<AutofillWebDataService> wds =
       GetWebDataService(profile, store_type);

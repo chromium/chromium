@@ -109,7 +109,7 @@ std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(
     int profile,
     StoreType store_type);
 
-// Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
+// Function supports AUTOFILL_WALLET_DATA.
 sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType type,
                                               int profile,
                                               StoreType store_type);
