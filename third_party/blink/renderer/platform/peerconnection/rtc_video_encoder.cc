@@ -1211,11 +1211,20 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
           use_native_input_ = false;
         }
       } else if (frame->HasSharedImage()) {
-        if (!use_native_input_) {
-          use_native_input_ = true;
-          // TODO(https://issuetracker.google.com/issues/337130619): Ideally
-          // |input_buffers_| should be cleaned up here.
-        }
+        // Native input is supported if:
+        // 1. The frame is backed by a *mappable* SharedImage, or
+        // 2. The VEA supports direct encoding for this SharedImage
+        // usage/format,
+        //    or
+        // 3. The renderer can convert textures to NV12 via GPU shaders.
+        bool can_encode_natively =
+            frame->HasMappableSharedImage() ||
+            encoder_info_.DoesSupportGpuSharedImages(
+                frame->shared_image()->usage(), frame->format()) ||
+            (use_accelerated_pool_ &&
+             WebGraphicsContext3DVideoFramePool::
+                 IsGpuMemoryBufferReadbackFromTextureEnabled());
+        use_native_input_ = can_encode_natively;
       }
     }
   }
