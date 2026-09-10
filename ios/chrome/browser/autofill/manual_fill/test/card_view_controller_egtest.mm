@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <optional>
+
 #import "base/ios/ios_util.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -23,6 +26,7 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -281,7 +285,9 @@ void DismissPaymentBottomSheet() {
 }  // namespace
 
 // Integration Tests for Manual Fallback credit cards View Controller.
-@interface CreditCardViewControllerTestCase : ChromeTestCase
+@interface CreditCardViewControllerTestCase : ChromeTestCase {
+  std::optional<net::test_server::EmbeddedTestServer> _HTTPSServer;
+}
 @end
 
 @implementation CreditCardViewControllerTestCase
@@ -295,6 +301,7 @@ void DismissPaymentBottomSheet() {
 
 - (void)setUp {
   [super setUp];
+  _HTTPSServer.reset();
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [self loadURL];
@@ -318,6 +325,7 @@ void DismissPaymentBottomSheet() {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
+  _HTTPSServer.reset();
   [super tearDownHelper];
 }
 
@@ -1005,6 +1013,22 @@ void DismissPaymentBottomSheet() {
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
+  [self startHTTPSServer];
+  const GURL URL = _HTTPSServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+
+  // Check if the SSL warning page is displayed by verifying if the
+  // "details-button" element exists on the page.
+  base::Value result = [ChromeEarlGrey
+      evaluateJavaScript:@"document.getElementById('details-button') !== null"];
+  if (result.is_bool() && result.GetBool()) {
+    [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+    [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
+  }
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
   // Save a card.
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -1075,6 +1099,16 @@ void DismissPaymentBottomSheet() {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+}
+
+// Starts the dedicated HTTPS test server.
+- (void)startHTTPSServer {
+  _HTTPSServer.emplace(net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  _HTTPSServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("ios/testing/data/http_server_files/"));
+  net::test_server::RegisterDefaultHandlers(&_HTTPSServer.value());
+  GREYAssertTrue(_HTTPSServer->Start(), @"HTTPS Test server failed to start.");
 }
 
 - (void)verifyCreditCardButtonWithTitle:(NSString*)title

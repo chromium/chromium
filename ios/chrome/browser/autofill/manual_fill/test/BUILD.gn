@@ -33,6 +33,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
+    "//base",
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",

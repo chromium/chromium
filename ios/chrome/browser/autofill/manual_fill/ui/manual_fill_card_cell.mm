@@ -607,6 +607,10 @@ CGFloat GPayIconTopAnchorOffset() {
   base::RecordAction(base::UserMetricsAction(
       [self createMetricsAction:@"SelectExpirationMonth"]));
   if (self.card.recordType == kVirtualCard) {
+    if (![self.contentInjector canUserInjectInPasswordField:NO
+                                              requiresHTTPS:YES]) {
+      return;
+    }
     [self.navigationDelegate
         requestFullCreditCard:self.card
                     fieldType:manual_fill::PaymentFieldType::kExpirationMonth];
@@ -624,6 +628,10 @@ CGFloat GPayIconTopAnchorOffset() {
   base::RecordAction(base::UserMetricsAction(
       [self createMetricsAction:@"SelectExpirationYear"]));
   if (self.card.recordType == kVirtualCard) {
+    if (![self.contentInjector canUserInjectInPasswordField:NO
+                                              requiresHTTPS:YES]) {
+      return;
+    }
     [self.navigationDelegate
         requestFullCreditCard:self.card
                     fieldType:manual_fill::PaymentFieldType::kExpirationYear];
@@ -638,16 +646,17 @@ CGFloat GPayIconTopAnchorOffset() {
 }
 
 - (void)userDidTapCVC:(UIButton*)sender {
+  if (![self.contentInjector canUserInjectInPasswordField:NO
+                                            requiresHTTPS:YES]) {
+    return;
+  }
+
   base::RecordAction(
       base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
 
   // For cards that can be filled directly (e.g. local cards or unmasked virtual
   // cards), insert the stored CVC.
   if (self.card.canFillDirectly) {
-    if (![self.contentInjector canUserInjectInPasswordField:NO
-                                              requiresHTTPS:YES]) {
-      return;
-    }
     [self.contentInjector
         userDidPickContent:self.card.CVC
              passwordField:NO
@@ -664,6 +673,11 @@ CGFloat GPayIconTopAnchorOffset() {
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the card's data.
 - (void)onAutofillFormButtonTapped {
+  if (![self.contentInjector canUserInjectInPasswordField:NO
+                                            requiresHTTPS:YES]) {
+    return;
+  }
+
   base::UmaHistogramSparse(
       "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.ManualFallback",
       _cellIndex);
@@ -849,6 +863,20 @@ CGFloat GPayIconTopAnchorOffset() {
                               constraintEqualToConstant:kGPayIconWidth] ]];
 
   return imageView;
+}
+
+#pragma mark - Testing
+
+- (UIButton*)cvcButton {
+  return self.CVCLabeledChip.singleButton;
+}
+
+- (UIButton*)expirationMonthButton {
+  return self.expirationDateLabeledChip.expirationMonthButton;
+}
+
+- (UIButton*)expirationYearButton {
+  return self.expirationDateLabeledChip.expirationYearButton;
 }
 
 @end
