@@ -91,7 +91,7 @@ mod ffi {
             max_us: i64,
             buckets: usize,
         );
-        fn record_times(name: &str, sample_us: i64);
+        fn record_short_times(name: &str, sample_us: i64);
         fn record_medium_times(name: &str, sample_us: i64);
         fn record_long_times(name: &str, sample_us: i64);
         fn record_long_times_100(name: &str, sample_us: i64);
@@ -103,6 +103,7 @@ mod ffi {
             buckets: usize,
         );
         fn record_microseconds_times(name: &str, sample_us: i64);
+        fn time_ticks_now_microseconds() -> i64;
     }
 }
 
@@ -189,8 +190,8 @@ pub fn record_custom_times(
 
 /// Records the elapsed time `sample` to time histogram `name` for short
 /// timings up to 10 seconds (50 buckets, millisecond resolution).
-pub fn record_times(name: &str, sample: core::time::Duration) {
-    ffi::record_times(name, duration_to_us(sample));
+pub fn record_short_times(name: &str, sample: core::time::Duration) {
+    ffi::record_short_times(name, duration_to_us(sample));
 }
 
 /// Records the elapsed time `sample` to time histogram `name` for medium
@@ -233,4 +234,95 @@ pub fn record_custom_microseconds_times(
 /// from 1 microsecond up to 10 seconds (50 buckets, microsecond resolution).
 pub fn record_microseconds_times(name: &str, sample: core::time::Duration) {
     ffi::record_microseconds_times(name, duration_to_us(sample));
+}
+
+/// Scoped RAII timer that records the elapsed time of a scope to a
+/// histogram upon being dropped.
+///
+/// Defaults to using [`record_short_times`] (1ms – 10s, 50 buckets), but a
+/// custom reporting function or closure can be supplied via
+/// [`ScopedHistogramTimer::new_with_reporter`].
+///
+/// For any given timer, values recorded *outside* the given range get clamped
+/// to the underflow/overflow buckets respectively.
+///
+/// # Examples
+/// ```
+/// chromium::import! {
+///     "//base:histogram";
+/// }
+///
+/// fn do_work() {
+///     let _timer = histogram::ScopedHistogramTimer::new("My.FunctionTime");
+///     // ... do stuff ...
+/// } // Elapsed time is automatically recorded with `record_short_times` when `_timer` drops.
+///
+/// fn do_microsecond_work() {
+///     let _timer = histogram::ScopedHistogramTimer::new_with_reporter(
+///         "My.MicrosecondTime",
+///         histogram::record_microseconds_times,
+///     );
+///     // ... do stuff ...
+/// }
+/// ```
+#[must_use = "ScopedHistogramTimer records time when dropped; assign it to a variable or it will drop immediately"]
+pub struct ScopedHistogramTimer<'a, F = fn(&str, core::time::Duration)>
+where
+    F: FnOnce(&str, core::time::Duration),
+{
+    name: &'a str,
+    reporter: Option<F>,
+    start_ticks_microseconds: i64,
+}
+
+impl<'a> ScopedHistogramTimer<'a, fn(&str, core::time::Duration)> {
+    /// Constructs a scoped timer that records elapsed time using
+    /// [`record_short_times`].
+    pub fn new(name: &'a str) -> Self {
+        Self::new_with_reporter(name, record_short_times)
+    }
+}
+
+impl<'a, F> ScopedHistogramTimer<'a, F>
+where
+    F: FnOnce(&str, core::time::Duration),
+{
+    /// Constructs a scoped timer with a custom recording function or closure.
+    pub fn new_with_reporter(name: &'a str, reporter: F) -> Self {
+        debug_assert!(!name.is_empty(), "Histogram name must not be empty");
+        Self {
+            name,
+            reporter: Some(reporter),
+            start_ticks_microseconds: ffi::time_ticks_now_microseconds(),
+        }
+    }
+
+    /// Returns the elapsed duration since the timer was created.
+    pub fn elapsed(&self) -> core::time::Duration {
+        let elapsed_microseconds =
+            ffi::time_ticks_now_microseconds().saturating_sub(self.start_ticks_microseconds);
+        core::time::Duration::from_micros(elapsed_microseconds as u64)
+    }
+
+    /// Cancels the timer so that no sample is recorded when it is dropped.
+    ///
+    /// (This is equivalent to calling mem::forget; doing so is both safe and
+    /// will not result in memory leaks.)
+    pub fn cancel(mut self) {
+        self.reporter = None;
+    }
+}
+
+impl<'a, F> Drop for ScopedHistogramTimer<'a, F>
+where
+    F: FnOnce(&str, core::time::Duration),
+{
+    fn drop(&mut self) {
+        if let Some(reporter) = self.reporter.take() {
+            let elapsed_microseconds =
+                ffi::time_ticks_now_microseconds().saturating_sub(self.start_ticks_microseconds);
+            let duration = core::time::Duration::from_micros(elapsed_microseconds as u64);
+            reporter(self.name, duration);
+        }
+    }
 }

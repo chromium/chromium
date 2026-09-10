@@ -37,7 +37,7 @@ void record_custom_times(::rust::Str name,
                          int64_t min_us,
                          int64_t max_us,
                          size_t buckets);
-void record_times(::rust::Str name, int64_t sample_us);
+void record_short_times(::rust::Str name, int64_t sample_us);
 void record_medium_times(::rust::Str name, int64_t sample_us);
 void record_long_times(::rust::Str name, int64_t sample_us);
 void record_long_times_100(::rust::Str name, int64_t sample_us);
@@ -47,6 +47,7 @@ void record_custom_microseconds_times(::rust::Str name,
                                       int64_t max_us,
                                       size_t buckets);
 void record_microseconds_times(::rust::Str name, int64_t sample_us);
+int64_t time_ticks_now_microseconds();
 
 }  // namespace base::rust
 

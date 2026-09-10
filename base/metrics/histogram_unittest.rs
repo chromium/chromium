@@ -158,7 +158,7 @@ fn test_uma_histogram_memory() {
 #[gtest(RustHistogramTest, UmaHistogramTimes)]
 fn test_uma_histogram_times() {
     let tester = HistogramTester::new();
-    histogram::record_times("Test.Rust.Times", core::time::Duration::from_millis(500));
+    histogram::record_short_times("Test.Rust.Times", core::time::Duration::from_millis(500));
     tester.expect_unique_time_sample("Test.Rust.Times", core::time::Duration::from_millis(500), 1);
 
     histogram::record_medium_times("Test.Rust.MediumTimes", core::time::Duration::from_secs(30));
@@ -218,4 +218,79 @@ fn test_uma_histogram_microseconds_times() {
     );
     tester.expect_bucket_count("Test.Rust.CustomMicrosecondsTimes", 2000, 1);
     tester.expect_total_count("Test.Rust.CustomMicrosecondsTimes", 1);
+}
+
+#[gtest(RustHistogramTest, ScopedHistogramTimer)]
+fn test_scoped_histogram_timer() {
+    let tester = HistogramTester::new();
+    {
+        let _timer = histogram::ScopedHistogramTimer::new("Test.Rust.ScopedTimes");
+    }
+    tester.expect_total_count("Test.Rust.ScopedTimes", 1);
+
+    {
+        let _timer = histogram::ScopedHistogramTimer::new("Test.Rust.ScopedTimes");
+    }
+    tester.expect_total_count("Test.Rust.ScopedTimes", 2);
+}
+
+#[gtest(RustHistogramTest, ScopedHistogramTimerReporters)]
+fn test_scoped_histogram_timer_reporters() {
+    let tester = HistogramTester::new();
+    {
+        let _timer = histogram::ScopedHistogramTimer::new_with_reporter(
+            "Test.Rust.ScopedMicrosecondTimes",
+            histogram::record_microseconds_times,
+        );
+    }
+    tester.expect_total_count("Test.Rust.ScopedMicrosecondTimes", 1);
+
+    {
+        let _timer = histogram::ScopedHistogramTimer::new_with_reporter(
+            "Test.Rust.ScopedMediumTimes",
+            histogram::record_medium_times,
+        );
+    }
+    tester.expect_total_count("Test.Rust.ScopedMediumTimes", 1);
+
+    {
+        let _timer = histogram::ScopedHistogramTimer::new_with_reporter(
+            "Test.Rust.ScopedLongTimes",
+            histogram::record_long_times,
+        );
+    }
+    tester.expect_total_count("Test.Rust.ScopedLongTimes", 1);
+
+    {
+        let _timer = histogram::ScopedHistogramTimer::new_with_reporter(
+            "Test.Rust.ScopedCustomClosure",
+            |name, d| {
+                histogram::record_custom_times(
+                    name,
+                    d,
+                    core::time::Duration::from_millis(1),
+                    core::time::Duration::from_secs(10),
+                    50,
+                );
+            },
+        );
+    }
+    tester.expect_total_count("Test.Rust.ScopedCustomClosure", 1);
+}
+
+#[gtest(RustHistogramTest, ScopedHistogramTimerCancel)]
+fn test_scoped_histogram_timer_cancel() {
+    let tester = HistogramTester::new();
+    {
+        let timer = histogram::ScopedHistogramTimer::new("Test.Rust.ScopedTimesCancel");
+        timer.cancel();
+    }
+    tester.expect_total_count("Test.Rust.ScopedTimesCancel", 0);
+}
+
+#[gtest(RustHistogramTest, ScopedHistogramTimerElapsed)]
+fn test_scoped_histogram_timer_elapsed() {
+    let timer = histogram::ScopedHistogramTimer::new("Test.Rust.ScopedTimesElapsed");
+    let _elapsed = timer.elapsed();
+    timer.cancel();
 }

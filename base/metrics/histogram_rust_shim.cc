@@ -85,7 +85,7 @@ void record_custom_times(::rust::Str name,
                           Microseconds(min_us), Microseconds(max_us), buckets);
 }
 
-void record_times(::rust::Str name, int64_t sample_us) {
+void record_short_times(::rust::Str name, int64_t sample_us) {
   UmaHistogramTimes(std::string_view(name), Microseconds(sample_us));
 }
 
@@ -114,6 +114,10 @@ void record_custom_microseconds_times(::rust::Str name,
 void record_microseconds_times(::rust::Str name, int64_t sample_us) {
   UmaHistogramMicrosecondsTimes(std::string_view(name),
                                 Microseconds(sample_us));
+}
+
+int64_t time_ticks_now_microseconds() {
+  return base::TimeTicks::Now().since_origin().InMicroseconds();
 }
 
 }  // namespace base::rust
