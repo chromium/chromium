@@ -4128,7 +4128,7 @@
     },
     {
       name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
-      status: "test",
+      status: "stable",
       origin_trial_feature_name: "MediaPlaybackWhileNotVisiblePermissionPolicy",
     },
     {
