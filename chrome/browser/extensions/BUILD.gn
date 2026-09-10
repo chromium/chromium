@@ -1759,7 +1759,7 @@ static_library("test_support") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/crx_file",
-      "//components/safe_browsing/core/browser/db:v4_test_util",
+      "//components/safe_browsing/core/browser/db:sb_test_util",
       "//content/public/browser",
       "//extensions:test_support",
       "//extensions/browser",

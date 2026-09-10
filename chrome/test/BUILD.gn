@@ -311,7 +311,7 @@ static_library("test_support") {
     "//components/profile_metrics",
     "//components/push_messaging",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/safe_browsing/core/browser/db:sb_test_util",
     "//components/safe_browsing/core/browser/tailored_security_service",
     "//components/search_engines:test_support",
     "//components/services/storage",

@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "components/safe_browsing/core/browser/db/sb_test_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
-#include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {

@@ -14,8 +14,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/test/test_simple_task_runner.h"
+#include "components/safe_browsing/core/browser/db/sb_test_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace safe_browsing {

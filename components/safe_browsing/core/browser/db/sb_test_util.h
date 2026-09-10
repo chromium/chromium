@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_TEST_UTIL_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_TEST_UTIL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_TEST_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_TEST_UTIL_H_
 
 // Contains classes and methods useful for tests.
 
@@ -172,4 +172,4 @@ FullHashInfo GetFullHashInfoWithMetadata(const GURL& url,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_TEST_UTIL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_TEST_UTIL_H_

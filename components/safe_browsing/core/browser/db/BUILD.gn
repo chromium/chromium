@@ -348,14 +348,13 @@ source_set("sb_store") {
   ]
 }
 
-# TODO(crbug.com/362791941): Handle v4 references
-static_library("v4_test_util") {
+static_library("sb_test_util") {
   testonly = true
   sources = [
+    "sb_test_util.cc",
+    "sb_test_util.h",
     "v4_embedded_test_server_util.cc",
     "v4_embedded_test_server_util.h",
-    "v4_test_util.cc",
-    "v4_test_util.h",
     "v5_embedded_test_server_util.cc",
     "v5_embedded_test_server_util.h",
   ]
@@ -446,11 +445,11 @@ source_set("unit_tests_shared") {
     ":allowlist_checker_client",
     ":database_manager",
     ":safebrowsing_proto",
+    ":sb_test_util",
     ":test_database_manager",
     ":util",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
-    ":v4_test_util",
     ":v5_get_hash_protocol_manager",
     ":v5_search_hashes_cache",
     ":v5_search_hashes_util",
@@ -483,12 +482,12 @@ source_set("unit_tests_local_db") {
     ":sb_database",
     ":sb_local_database_manager",
     ":sb_store",
+    ":sb_test_util",
     ":sb_update_protocol_manager",
     ":unit_tests_shared",
     ":util",
     ":v4_protocol_manager_util",
     ":v4_store_proto",
-    ":v4_test_util",
     ":v5_get_hash_protocol_manager",
     ":v5_search_hashes_cache",
     "//base",
@@ -549,8 +548,8 @@ fuzzer_test("v4_store_fuzzer") {
   sources = [ "v4_store_fuzzer.cc" ]
   deps = [
     ":sb_store",
+    ":sb_test_util",
     ":v4_protocol_manager_util",
-    ":v4_test_util",
     "//base/test:test_support",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
