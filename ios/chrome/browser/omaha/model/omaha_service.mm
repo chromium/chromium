@@ -99,10 +99,10 @@ OmahaService* OmahaService::GetInstance() {
 }
 
 // static
-void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                             pending_url_loader_factory,
-                         const UpgradeRecommendedCallback& callback) {
-  DCHECK(pending_url_loader_factory);
+void OmahaService::Start(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    const UpgradeRecommendedCallback& callback) {
+  DCHECK(shared_url_loader_factory);
   DCHECK(!callback.is_null());
 
   if (!OmahaService::IsEnabled()) {
@@ -110,13 +110,11 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
   }
 
   OmahaService* service = GetInstance();
-  service->StartInternal();
-  service->set_upgrade_recommended_callback(callback);
+  service->StartInternal(
+      base::BindOnce(&network::SharedURLLoaderFactory::Create,
+                     shared_url_loader_factory->Clone()),
+      std::move(callback));
 
-  // This should only be called once.
-  DCHECK(!service->pending_url_loader_factory_ ||
-         !service->url_loader_factory_);
-  service->pending_url_loader_factory_ = std::move(pending_url_loader_factory);
   service->locale_lang_ =
       GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   web::GetIOThreadTaskRunner({})->PostTask(
@@ -186,11 +184,15 @@ OmahaService::~OmahaService() {
   }
 }
 
-void OmahaService::StartInternal() {
+void OmahaService::StartInternal(
+    PendingSharedURLLoaderFactoryCallback pending_url_loader_factory,
+    const UpgradeRecommendedCallback& callback) {
   if (started_) {
     return;
   }
   started_ = true;
+  pending_url_loader_factory_ = std::move(pending_url_loader_factory);
+  upgrade_recommended_callback_ = callback;
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
@@ -358,8 +360,7 @@ void OmahaService::SendPing() {
   // the test.
   if (pending_url_loader_factory_) {
     DCHECK(!url_loader_factory_);
-    url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-        std::move(pending_url_loader_factory_));
+    url_loader_factory_ = std::move(pending_url_loader_factory_).Run();
     DCHECK(url_loader_factory_);
   } else {
     CHECK(url_loader_factory_);
@@ -602,12 +603,6 @@ void OmahaService::ClearInstallRetryRequestId() {
   [defaults removeObjectForKey:kRetryRequestIdKey];
   // Clear critical state information for usage reporting.
   [defaults synchronize];
-}
-
-void OmahaService::InitializeURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  url_loader_factory_ = url_loader_factory;
 }
 
 void OmahaService::ClearPersistentStateForTests() {

@@ -31,9 +31,8 @@
 #pragma mark - Public methods.
 
 - (void)initializeOmaha {
-  OmahaService::Start(
-      GetApplicationContext()->GetSharedURLLoaderFactory()->Clone(),
-      base::DoNothing());
+  OmahaService::Start(GetApplicationContext()->GetSharedURLLoaderFactory(),
+                      base::DoNothing());
 }
 
 - (void)registerForApplicationWillResignActiveNotification {
