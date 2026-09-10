@@ -133,6 +133,24 @@ TEST(NetworkIsolationKeyTest, KeyWithNonGeneralNetworkPartition) {
   EXPECT_TRUE(key4.IsTransient());
 }
 
+TEST(NetworkIsolationKeyTest, SharedWorkerSameSiteCookiesNonePartition) {
+  SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
+  SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
+
+  NetworkIsolationKey general_key(site1, site2, /*nonce=*/std::nullopt,
+                                  NetworkIsolationPartition::kGeneral);
+
+  NetworkIsolationKey shared_worker_none_key(
+      site1, site2, /*nonce=*/std::nullopt,
+      NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone);
+
+  EXPECT_EQ(NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone,
+            shared_worker_none_key.GetNetworkIsolationPartition());
+  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 4",
+            shared_worker_none_key.ToCacheKeyString());
+  EXPECT_NE(general_key, shared_worker_none_key);
+}
+
 TEST(NetworkIsolationKeyTest, CreateEmptyWithPartition) {
   NetworkIsolationKey key = NetworkIsolationKey::CreateEmptyWithPartition(
       NetworkIsolationPartition::kDnsOverHttps);
