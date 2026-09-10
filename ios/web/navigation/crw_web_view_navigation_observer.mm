@@ -273,6 +273,19 @@ using web::NavigationManagerImpl;
     return;
   }
   GURL URL(net::GURLWithNSURL(self.webView.URL));
+
+  if ([CRWErrorPageHelper isErrorPageFileURL:URL]) {
+    // The document can only change to the bundled error page as the result of
+    // a full navigation (the browser presenting an error page, or a
+    // back/forward or reload navigation to an already committed error page),
+    // all of which are reported through the WKNavigationDelegate callbacks.
+    // This includes the user reloading an error page. A bare URL change can
+    // thus never legitimately correspond to the error page, so it must not be
+    // synced to the committed NavigationItem nor reported as a document URL
+    // change.
+    return;
+  }
+
   // URL changes happen at four points:
   // 1) When a load starts; at this point, the load is provisional, and
   //    it should be ignored until it's committed, since the document/window
@@ -283,6 +296,12 @@ using web::NavigationManagerImpl;
   // 3) When a navigation error occurs after provisional navigation starts,
   //    the URL reverts to the previous URL without triggering a new navigation.
   // 4) When the user is reloading an error page.
+  //
+  // Case 4 is handled by the error page check above. If `isLoading` is NO,
+  // then it must be case 2 or 3. If the last committed URL (_documentURL)
+  // matches the current URL, assume that it is case 3. If the URL does not
+  // match, assume it is a non-document-changing URL change, and handle
+  // accordingly.
   //
   // If `isLoading` is NO, then it must be case 2, 3, or 4. If the last
   // committed URL (_documentURL) matches the current URL, assume that it is
@@ -301,12 +320,6 @@ using web::NavigationManagerImpl;
   // window.location.href will match the previous URL at this stage, not the web
   // view's current URL.
   if (!self.webView.loading) {
-    if ([CRWErrorPageHelper isErrorPageFileURL:URL] &&
-        self.documentURL ==
-            [CRWErrorPageHelper failedNavigationURLFromErrorPageFileURL:URL]) {
-      // Case 4: reloading an error page.
-      return;
-    }
     if (self.documentURL == URL) {
       return;
     }

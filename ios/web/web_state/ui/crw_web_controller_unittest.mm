@@ -24,6 +24,7 @@
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/block_universal_links_buildflags.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
+#import "ios/web/navigation/crw_web_view_navigation_observer.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/navigation/navigation_item_impl.h"
@@ -72,8 +73,17 @@
 @interface CRWWKNavigationHandler (Testing)
 @property(nonatomic, copy) NSURL* allowedErrorPageFileURL;
 @end
+
+@interface CRWWebController (KVOForgeryTesting)
+// Exposes the observer that receives WKWebView KVO notifications so tests can
+// deliver a URL-change notification exactly as Foundation would when the
+// WebContent process updates WKWebView.URL.
+@property(nonatomic, strong, readonly)
+    CRWWebViewNavigationObserver* webViewNavigationObserver;
+@end
 @interface FakeWKFrameInfo : NSObject <NSCopying>
 @property(nonatomic, assign, getter=isMainFrame) BOOL mainFrame;
+@property(nonatomic, weak) WKWebView* webView;
 @end
 
 @implementation FakeWKFrameInfo
@@ -82,6 +92,7 @@
 - (id)copyWithZone:(NSZone*)zone {
   FakeWKFrameInfo* copy = [[[self class] allocWithZone:zone] init];
   copy.mainFrame = self.mainFrame;
+  copy.webView = self.webView;
   return copy;
 }
 @end
@@ -1349,6 +1360,118 @@ TEST_F(CRWWebControllerPolicyDeciderTest, RejectForgedErrorPageNavigation) {
   }));
 
   EXPECT_FALSE([web_controller() navigationHandler].allowedErrorPageFileURL);
+}
+
+// Tests that attempting to bypass the `allowedErrorPageFileURL` gate via a
+// forged error-page file URL through the KVO URL-change channel does not grant
+// navigation to an app-specific URL:
+//
+// 1. A cross-origin web page (the attacker's page) is committed.
+// 2. Baseline: a renderer-initiated navigation action to an app-specific
+//    (WebUI) URL is cancelled, and no WebUI is created.
+// 3. WKWebView.URL changes to a forged error-page file URL embedding
+//    `?url=<app-specific URL>` while webView.loading == NO. The observer
+//    ignores bare URL changes to bundled error page file URLs, so the committed
+//    NavigationItem and `_documentURL` are not poisoned.
+// 4. The subsequent renderer-initiated navigation action to the app-specific
+//    URL is still cancelled, and no WebUI is created.
+TEST_F(CRWWebControllerPolicyDeciderTest,
+       ForgedErrorPageURLViaKVODoesNotGrantAppSpecificNavigation) {
+  // Step 1: commit an ordinary cross-origin web page (the attacker's page).
+  WKNavigation* navigation =
+      static_cast<WKNavigation*>([[NSObject alloc] init]);
+  SetWebViewURL(@"https://attacker.example/");
+  [navigation_delegate_ webView:mock_web_view_
+      didStartProvisionalNavigation:navigation];
+  [fake_wk_list_ setCurrentURL:@"https://attacker.example/"];
+  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:navigation];
+  [navigation_delegate_ webView:mock_web_view_ didFinishNavigation:navigation];
+
+  // A renderer-initiated (link-click) main-frame navigation action to the
+  // app-specific WebUI URL.
+  NSURL* app_url = [NSURL URLWithString:@(kTestAppSpecificURL)];
+  NSMutableURLRequest* app_request =
+      [NSMutableURLRequest requestWithURL:app_url];
+  // For a renderer-initiated navigation away from the attacker's page, the
+  // request's mainDocumentURL is the current (attacker) page.
+  app_request.mainDocumentURL =
+      [NSURL URLWithString:@"https://attacker.example/"];
+  FakeWKFrameInfo* main_frame = [[FakeWKFrameInfo alloc] init];
+  main_frame.mainFrame = YES;
+  main_frame.webView = mock_web_view_;
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = app_request;
+  action.navigationType = WKNavigationTypeLinkActivated;
+  // Leave sourceFrame nil (like VerifyDecidePolicyForNavigationAction does):
+  // the cross-origin-frame heuristics at the end of
+  // decidePolicyForNavigationAction dereference live WKFrameInfo/WKWebView
+  // state that the OCMock fixture cannot provide; they run after the
+  // app-specific policy decision under test and do not affect it.
+  action.targetFrame = (WKFrameInfo*)main_frame;
+
+  // Step 2: baseline — the renderer-initiated app-specific navigation is
+  // cancelled and no WebUI exists.
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+  EXPECT_FALSE(WebStateImpl::FromWebState(web_state())->HasWebUI());
+
+  // Step 3: attempt to poison `_documentURL` through the KVO channel. The
+  // forged URL uses the app's real bundled error page path, exactly as a
+  // compromised WebContent process would after observing one genuine error page
+  // load.
+  NSString* error_page_path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_loaded"
+                                               ofType:@"html"];
+  ASSERT_TRUE(error_page_path);
+  NSString* forged_url_string =
+      [NSString stringWithFormat:@"file://%@?url=%@&dontLoad=true",
+                                 error_page_path, @(kTestAppSpecificURL)];
+  FakeWebStateObserver observer(web_state());
+  SetWebViewURL(forged_url_string);
+  // Deliver the KVO notification as Foundation would when WKWebView.URL changes
+  // while webView.loading == NO.
+  [[web_controller() webViewNavigationObserver]
+      observeValueForKeyPath:@"URL"
+                    ofObject:mock_web_view_
+                      change:@{}
+                     context:nullptr];
+
+  // The forged error-page file URL must be ignored by the observer: the
+  // committed NavigationItem is NOT updated and remains the attacker page URL.
+  NavigationItem* last_committed =
+      web_state()->GetNavigationManager()->GetLastCommittedItem();
+  ASSERT_TRUE(last_committed);
+  EXPECT_EQ(GURL("https://attacker.example/"), last_committed->GetURL());
+  // And the ignored change does not dispatch any navigation events.
+  EXPECT_FALSE(observer.did_start_navigation_info());
+  EXPECT_FALSE(observer.did_finish_navigation_info());
+
+  // Step 4: the identical renderer-initiated app-specific navigation action
+  // is still cancelled because the forged error-page URL was ignored and the
+  // browser never displayed an error page for this URL.
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+  EXPECT_FALSE(WebStateImpl::FromWebState(web_state())->HasWebUI());
 }
 
 // Tests that reloading an error page is only allowed if it is currently active,
