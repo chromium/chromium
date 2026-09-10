@@ -32,7 +32,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
-#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -41,10 +40,6 @@
 #include "ui/base/base_window.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "components/printing/browser/print_composite_client.h"
-#endif
 
 namespace glic {
 
@@ -361,19 +356,6 @@ void GlicSidePanelUi::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
-}
-
-void GlicSidePanelUi::PrintCrossProcessSubframe(
-    content::WebContents* web_contents,
-    const gfx::Rect& rect,
-    int document_cookie,
-    content::RenderFrameHost* subframe_host) const {
-#if BUILDFLAG(ENABLE_PRINTING)
-  auto* client = printing::PrintCompositeClient::FromWebContents(web_contents);
-  if (client) {
-    client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
-  }
-#endif
 }
 
 void GlicSidePanelUi::FocusIfOpen() {
