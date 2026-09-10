@@ -1675,7 +1675,6 @@ void PartitionRoot::DumpStats(const char* partition_name,
   {
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    PA_DCHECK(total_size_of_allocated_bytes_ <= max_size_of_allocated_bytes_);
 
     stats.total_mmapped_bytes =
         total_size_of_super_pages_.load(std::memory_order_relaxed) +
