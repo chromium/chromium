@@ -6966,7 +6966,12 @@ TEST_P(QuicSessionPoolTest,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
   quic_data.AddReadPauseForever();
+
+  MockQuicData quic_data2(version_);
+  quic_data2.AddReadPauseForever();
+
   quic_data.AddSocketDataToFactory(socket_factory_.get());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
   RequestBuilder builder(this);
@@ -6997,9 +7002,19 @@ TEST_P(QuicSessionPoolTest,
                                     callback_.callback()));
   session->CloseSessionOnErrorLater(
       0, quic::QUIC_TOO_MANY_RTOS, quic::ConnectionCloseBehavior::SILENT_CLOSE);
-  session->MigrateToSocket(
-      quic::QuicSocketAddress(), quic::QuicSocketAddress(), nullptr,
-      std::make_unique<QuicChromiumPacketWriter>(nullptr, task_runner.get()));
+  std::unique_ptr<DatagramClientSocket> socket(pool_->CreateSocket(
+      handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source()));
+  auto writer = std::make_unique<QuicChromiumPacketWriter>(socket.get(),
+                                                           task_runner.get());
+  auto reader = std::make_unique<QuicChromiumPacketReader>(
+      std::move(socket), session->connection()->clock(), session,
+      /*yield_after_packets=*/100, quic::QuicTime::Delta::Infinite(),
+      session->net_log());
+  auto context = std::make_unique<QuicMigrationAttemptContext>(
+      UNKNOWN_CAUSE, session->GetCurrentNetwork(),
+      handles::kInvalidNetworkHandle, quic::QuicSocketAddress(),
+      std::move(reader), std::move(writer));
+  session->CommitMigration(std::move(context));
 }
 
 // Regression test for https://crbug.com/1465889
