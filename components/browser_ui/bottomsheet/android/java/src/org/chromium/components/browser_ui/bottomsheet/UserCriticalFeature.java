@@ -37,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.AUTHENTICATOR_INCOGNITO_CONFIRMATION,
     UserCriticalFeature.PAYMENT_HANDLER,
     UserCriticalFeature.SECURE_PAYMENT_CONFIRMATION,
+    UserCriticalFeature.TOUCH_TO_FILL_PAYMENT_METHOD,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -51,4 +52,5 @@ public @interface UserCriticalFeature {
     int AUTHENTICATOR_INCOGNITO_CONFIRMATION = 8;
     int PAYMENT_HANDLER = 9;
     int SECURE_PAYMENT_CONFIRMATION = 10;
+    int TOUCH_TO_FILL_PAYMENT_METHOD = 11;
 }
