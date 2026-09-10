@@ -1,0 +1,124 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --topic-card-fallback-bg: var(--google-blue-100);
+  align-items: center;
+  background-color: var(--cr-card-background-color, #fff);
+  border: 1px solid var(--cr-separator-color, transparent);
+  border-radius: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  padding: 16px 24px;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+  width: 100%;
+}
+
+:host([hidden]) {
+  display: none !important;
+}
+
+:host(:hover) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Left: Topic Badge */
+.topic-badge {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 60px;
+  justify-content: center;
+  margin-inline-end: 20px;
+  position: relative;
+  width: 60px;
+}
+
+.badge-svg-bg {
+  height: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.badge-icon {
+  align-items: center;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  font-size: 28px;
+  justify-content: center;
+  line-height: 1;
+  position: relative;
+  user-select: none;
+  z-index: 1;
+}
+
+.badge-icon cr-icon {
+  height: 24px;
+  width: 24px;
+}
+
+/* Center: Topic Info */
+.topic-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  margin-inline-end: 24px;
+  min-width: 0;
+}
+
+.topic-title {
+  color: var(--cr-primary-text-color);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 24px;
+  margin: 0;
+}
+
+.topic-description {
+  color: var(--cr-secondary-text-color);
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+/* Right: Action Pill Button */
+.action-pill-button {
+  --cr-button-height: 38px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  padding-inline-end: 20px;
+  padding-inline-start: 20px;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host(:hover) {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  .badge-svg-bg {
+    opacity: 0.85;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid ButtonBorder;
+  }
+}

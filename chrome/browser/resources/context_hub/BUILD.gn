@@ -32,6 +32,8 @@ build_webui("build") {
     "taskbox/ai_taskbox.ts",
     "taskbox/todo_item.html.ts",
     "taskbox/todo_item.ts",
+    "topics/topic_card.html.ts",
+    "topics/topic_card.ts",
     "topics/topics_view.html.ts",
     "topics/topics_view.ts",
   ]
@@ -45,6 +47,7 @@ build_webui("build") {
     "tab_groups/tab_groups.css",
     "taskbox/ai_taskbox.css",
     "taskbox/todo_item.css",
+    "topics/topic_card.css",
     "topics/topics_view.css",
   ]
 
