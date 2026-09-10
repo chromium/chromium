@@ -86,6 +86,12 @@
   width: 10px;
 }
 
+:host-context([webui-rounded-icons]) #rightCloseIcon {
+  height: 24px;
+  padding: 0;
+  width: 24px;
+}
+
 :host-context([energy-effect-enabled_]) #leftCloseIcon {
   display: none;
 }
