@@ -172,7 +172,6 @@ Canvas2DResourceProvider::ReleaseRecorder() {
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   recorder_->SetClient(nullptr);
   recorder_.swap(recorder);
-  DisableLineDrawingAsPathsIfNecessary();
   return recorder;
 }
 
