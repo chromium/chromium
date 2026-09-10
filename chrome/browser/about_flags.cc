@@ -2075,6 +2075,26 @@ const FeatureEntry::FeatureParam kOmniboxAimModelPickerBottomSheet_2[] = {
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerBottomSheet_3[] = {
     {"show_model_picker", "true"},
     {"show_bottom_sheet_popup", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimContextMenuNoAccordion[] = {
+    {"show_bottom_sheet_popup", "false"},
+    {"fusebox_popup_carousel_ui", "false"},
+    {"fusebox_popup_use_accordion_ui", "false"}};
+const FeatureEntry::FeatureParam kOmniboxAimContextMenuAccordion[] = {
+    {"show_bottom_sheet_popup", "false"},
+    {"fusebox_popup_carousel_ui", "false"},
+    {"fusebox_popup_use_accordion_ui", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimBottomSheetCarouselAccordion[] = {
+    {"show_bottom_sheet_popup", "true"},
+    {"fusebox_popup_carousel_ui", "true"},
+    {"fusebox_popup_use_accordion_ui", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimBottomSheetListAccordion[] = {
+    {"show_bottom_sheet_popup", "true"},
+    {"fusebox_popup_carousel_ui", "false"},
+    {"fusebox_popup_use_accordion_ui", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimBottomSheetCarouselNoAccordion[] = {
+    {"show_bottom_sheet_popup", "true"},
+    {"fusebox_popup_carousel_ui", "true"},
+    {"fusebox_popup_use_accordion_ui", "false"}};
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerHint[] = {
     {"show_model_picker", "true"},
     {"use_ask_hint_for_ntp", "true"}};
@@ -2085,6 +2105,14 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"^ + Bottom Sheet (1)", kOmniboxAimModelPickerBottomSheet_1, nullptr},
     {"^ + Bottom Sheet (2)", kOmniboxAimModelPickerBottomSheet_2, nullptr},
     {"^ + Bottom Sheet (3)", kOmniboxAimModelPickerBottomSheet_3, nullptr},
+    {"Context Menu: No Accordion", kOmniboxAimContextMenuNoAccordion, nullptr},
+    {"Context Menu: With Accordion", kOmniboxAimContextMenuAccordion, nullptr},
+    {"Bottom Sheet: Carousel + Accordion",
+     kOmniboxAimBottomSheetCarouselAccordion, nullptr},
+    {"Bottom Sheet: List + Accordion", kOmniboxAimBottomSheetListAccordion,
+     nullptr},
+    {"Bottom Sheet: Carousel, No Accordion",
+     kOmniboxAimBottomSheetCarouselNoAccordion, nullptr},
     {"Model Picker Hint", kOmniboxAimModelPickerHint, nullptr},
 };
 

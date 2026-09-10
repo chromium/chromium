@@ -190,6 +190,20 @@ public class OmniboxFeatures {
     private static final BooleanCachedFeatureParam sShowBottomSheetPopup =
             newBooleanParam(sOmniboxMultimodalInput, "show_bottom_sheet_popup", false);
 
+    /**
+     * Whether the popup should use a horizontal carousel for attachments. This is private to ensure
+     * that callers use {@link #shouldUseCarousel()} which also checks if the platform is desktop.
+     */
+    private static final BooleanCachedFeatureParam sFuseboxPopupCarouselUi =
+            newBooleanParam(sOmniboxMultimodalInput, "fusebox_popup_carousel_ui", false);
+
+    /**
+     * Whether the popup should use an accordion for tools. This is private to ensure that callers
+     * use {@link #hasAccordion()} which also checks if the platform is desktop.
+     */
+    private static final BooleanCachedFeatureParam sFuseboxPopupAccordionUi =
+            newBooleanParam(sOmniboxMultimodalInput, "fusebox_popup_use_accordion_ui", false);
+
     public static final BooleanCachedFeatureParam sUseAskHintForNtp =
             newBooleanParam(sOmniboxMultimodalInput, "use_ask_hint_for_ntp", false);
 
@@ -410,13 +424,32 @@ public class OmniboxFeatures {
         sShowBottomSheetPopup.setForTesting(value);
     }
 
-    /**
-     * Returns whether the bottom sheet popup should be shown.
-     *
-     * <p>This checks both the feature param and whether the platform is desktop.
-     */
+    /** Modifies the output of {@link #shouldUseCarousel()} for testing. */
+    public static void setUseCarouselForTesting(boolean value) {
+        sFuseboxPopupCarouselUi.setForTesting(value);
+    }
+
+    /** Modifies the output of {@link #hasAccordion()} for testing. */
+    public static void setUseAccordionForTesting(boolean value) {
+        sFuseboxPopupAccordionUi.setForTesting(value);
+    }
+
+    /** Returns whether the bottom sheet popup should be shown. */
     public static boolean shouldShowBottomSheetPopup() {
         return !OmniboxCapabilities.isDesktopPlatform() && sShowBottomSheetPopup.getValue();
+    }
+
+    /** Returns whether the popup should use a horizontal carousel for attachments. */
+    public static boolean shouldUseCarousel() {
+        return shouldShowBottomSheetPopup() && sFuseboxPopupCarouselUi.getValue();
+    }
+
+    /** Returns whether the popup should use a collapsible accordion for tools. */
+    public static boolean hasAccordion() {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return false;
+        }
+        return sFuseboxPopupAccordionUi.getValue();
     }
 
     /**
