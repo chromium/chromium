@@ -2092,11 +2092,11 @@ public class PdfCoordinator
     }
 
     @Override
-    public boolean onLinkClicked(Uri uri) {
+    public void onLinkClicked(Uri uri) {
         String scheme = uri.getScheme();
         if (scheme == null || !ALLOWED_LINK_SCHEMES.contains(scheme.toLowerCase(Locale.ROOT))) {
             PdfUtils.recordHyperlinkClickResult(PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);
-            return false;
+            return;
         }
         LoadUrlParams params = new LoadUrlParams(uri.toString(), PAGE_TRANSITION_TYPE);
         params.setIsRendererInitiated(true);
@@ -2105,7 +2105,6 @@ public class PdfCoordinator
         // TODO(crbug.com/548013417): Reuse existing tab for link clicks.
         mNativePageHost.openNewTab(params);
         PdfUtils.recordHyperlinkClickResult(PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
-        return true;
     }
 
     @Override

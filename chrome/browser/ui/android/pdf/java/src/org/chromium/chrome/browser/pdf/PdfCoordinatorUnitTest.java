@@ -225,8 +225,7 @@ public class PdfCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Pdf.Hyperlink.ClickResult",
                         PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
-        boolean result = mPdfCoordinator.onLinkClicked(linkUri);
-        assertTrue("name should verify true", result);
+        mPdfCoordinator.onLinkClicked(linkUri);
         histogramExpectation.assertExpected();
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mNativePageHost).openNewTab(captor.capture());
@@ -363,9 +362,7 @@ public class PdfCoordinatorUnitTest {
                     HistogramWatcher.newSingleRecordWatcher(
                             "Android.Pdf.Hyperlink.ClickResult",
                             PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);
-            assertFalse(
-                    "onLinkClicked should reject " + raw,
-                    mPdfCoordinator.onLinkClicked(Uri.parse(raw)));
+            mPdfCoordinator.onLinkClicked(Uri.parse(raw));
             histogramExpectation.assertExpected();
         }
         verify(mNativePageHost, never()).openNewTab(any(LoadUrlParams.class));
@@ -381,9 +378,7 @@ public class PdfCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Pdf.Hyperlink.ClickResult",
                         PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);
-        assertFalse(
-                "onLinkClicked should reject schemeless URI.",
-                mPdfCoordinator.onLinkClicked(Uri.parse("//www.example.com/foo")));
+        mPdfCoordinator.onLinkClicked(Uri.parse("//www.example.com/foo"));
         histogramExpectation.assertExpected();
         verify(mNativePageHost, never()).openNewTab(any(LoadUrlParams.class));
     }
@@ -399,11 +394,7 @@ public class PdfCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Pdf.Hyperlink.ClickResult",
                         PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
-        boolean result = mPdfCoordinator.onLinkClicked(linkUri);
-        assertTrue(
-                "onLinkClicked should return true and load via NativePageHost when inline PDF V2"
-                        + " is disabled.",
-                result);
+        mPdfCoordinator.onLinkClicked(linkUri);
         histogramExpectation.assertExpected();
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mNativePageHost).openNewTab(captor.capture());
@@ -554,9 +545,7 @@ public class PdfCoordinatorUnitTest {
                     HistogramWatcher.newSingleRecordWatcher(
                             "Android.Pdf.Hyperlink.ClickResult",
                             PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
-            assertTrue(
-                    "onLinkClicked should accept " + raw,
-                    mPdfCoordinator.onLinkClicked(Uri.parse(raw)));
+            mPdfCoordinator.onLinkClicked(Uri.parse(raw));
             histogramExpectation.assertExpected();
         }
         verify(mNativePageHost, times(allowedUris.length)).openNewTab(any(LoadUrlParams.class));
