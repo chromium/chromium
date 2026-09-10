@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,12 +32,15 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
-/** Tests for {@link BaseSuggestionView}. */
+/** Layout unit tests for {@link BaseSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class BaseSuggestionViewTest {
+public class BaseSuggestionViewLayoutUnitTest {
     private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
+
     // Used as a (fixed) width of a refine icon.
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private int mActionIconWidthPx;
     private int mSemicompactSuggestionViewHeight;
     private int mCompactSuggestionViewHeight;
