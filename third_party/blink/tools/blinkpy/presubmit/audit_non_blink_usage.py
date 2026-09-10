@@ -435,6 +435,7 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/input/',
             'third_party/blink/public/common/input/',
         ],
         'allowed': [

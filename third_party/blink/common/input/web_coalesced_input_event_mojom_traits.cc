@@ -60,6 +60,30 @@ void TouchPointPropertiesFromPointerData(
   touch_point->rotation_angle = mojo_touch_point->rotation_angle;
 }
 
+blink::mojom::RailsMode RailsModeFromGestureScrollRailsMode(
+    ui::GestureScrollRailsMode mode) {
+  switch (mode) {
+    case ui::GestureScrollRailsMode::kNone:
+      return blink::mojom::RailsMode::kRailsModeFree;
+    case ui::GestureScrollRailsMode::kHorizontal:
+      return blink::mojom::RailsMode::kRailsModeHorizontal;
+    case ui::GestureScrollRailsMode::kVertical:
+      return blink::mojom::RailsMode::kRailsModeVertical;
+  }
+}
+
+ui::GestureScrollRailsMode GestureScrollRailsModeFromRailsMode(
+    blink::mojom::RailsMode mode) {
+  switch (mode) {
+    case blink::mojom::RailsMode::kRailsModeFree:
+      return ui::GestureScrollRailsMode::kNone;
+    case blink::mojom::RailsMode::kRailsModeHorizontal:
+      return ui::GestureScrollRailsMode::kHorizontal;
+    case blink::mojom::RailsMode::kRailsModeVertical:
+      return ui::GestureScrollRailsMode::kVertical;
+  }
+}
+
 }  // namespace
 
 bool StructTraits<blink::mojom::EventDataView,
@@ -181,6 +205,9 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->pointer_count;
           gesture_event->data.scroll_begin.cursor_control =
               gesture_data->scroll_data->cursor_control;
+          gesture_event->data.scroll_begin.rails_mode =
+              GestureScrollRailsModeFromRailsMode(
+                  gesture_data->scroll_data->rails_mode);
           break;
         case blink::WebInputEvent::Type::kGestureScrollEnd:
           gesture_event->data.scroll_end.delta_units =
@@ -203,6 +230,9 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->delta_x_unconstrained;
           gesture_event->data.scroll_update.delta_y_unconstrained =
               gesture_data->scroll_data->delta_y_unconstrained;
+          gesture_event->data.scroll_update.rails_mode =
+              GestureScrollRailsModeFromRailsMode(
+                  gesture_data->scroll_data->rails_mode);
           gesture_event->data.scroll_update.delta_units =
               gesture_data->scroll_data->delta_units;
           gesture_event->data.scroll_update.inertial_phase =
@@ -492,7 +522,9 @@ StructTraits<blink::mojom::EventDataView,
           // NOTE(crbug.com/479472367): ScrollBegin does not use unconstrained
           // values.
           gesture_event->data.scroll_begin.delta_x_hint,
-          gesture_event->data.scroll_begin.delta_y_hint);
+          gesture_event->data.scroll_begin.delta_y_hint,
+          RailsModeFromGestureScrollRailsMode(
+              gesture_event->data.scroll_begin.rails_mode));
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
@@ -504,7 +536,8 @@ StructTraits<blink::mojom::EventDataView,
           // NOTE(crbug.com/479472367): ScrollEnd does not use unconstrained
           // values.
           gesture_event->data.scroll_end.delta_x_compensated,
-          gesture_event->data.scroll_end.delta_y_compensated);
+          gesture_event->data.scroll_end.delta_y_compensated,
+          blink::mojom::RailsMode::kRailsModeFree);
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
@@ -513,7 +546,9 @@ StructTraits<blink::mojom::EventDataView,
           gesture_event->data.scroll_update.delta_units, false,
           gesture_event->data.scroll_update.inertial_phase, false, 0, false,
           gesture_event->data.scroll_update.delta_x_unconstrained,
-          gesture_event->data.scroll_update.delta_y_unconstrained);
+          gesture_event->data.scroll_update.delta_y_unconstrained,
+          RailsModeFromGestureScrollRailsMode(
+              gesture_event->data.scroll_update.rails_mode));
       break;
     case blink::WebInputEvent::Type::kGestureFlingStart:
       gesture_data->fling_data = blink::mojom::FlingData::New(

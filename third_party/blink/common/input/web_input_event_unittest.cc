@@ -3,10 +3,16 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/input/web_input_event.h"
+
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event_mojom_traits.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "ui/events/event_constants.h"
 
 namespace blink {
 
@@ -253,6 +259,36 @@ TEST(WebInputEventTest, PointerEventCoalescing) {
   event_to_be_coalesced = CreateWebPointerMoveEvent();
   event_to_be_coalesced.SetModifiers(WebInputEvent::kControlKey);
   EXPECT_FALSE(coalesced_event.CanCoalesce(event_to_be_coalesced));
+}
+
+TEST(WebInputEventTest, WebGestureEventMojoSerialization) {
+  // Create a WebGestureEvent (ScrollUpdate)
+  WebGestureEvent original_event(WebInputEvent::Type::kGestureScrollUpdate,
+                                 WebInputEvent::kNoModifiers,
+                                 WebInputEvent::GetStaticTimeStampForTests(),
+                                 WebGestureDevice::kTouchscreen);
+  original_event.data.scroll_update.delta_x = 10.0f;
+  original_event.data.scroll_update.delta_y = 20.0f;
+  original_event.data.scroll_update.rails_mode =
+      ui::GestureScrollRailsMode::kHorizontal;
+
+  auto original_coalesced = std::make_unique<WebCoalescedInputEvent>(
+      original_event, ui::LatencyInfo());
+
+  std::unique_ptr<WebCoalescedInputEvent> deserialized_coalesced;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<blink::mojom::Event>(
+      original_coalesced, deserialized_coalesced));
+
+  ASSERT_TRUE(deserialized_coalesced);
+  EXPECT_EQ(deserialized_coalesced->Event().GetType(),
+            WebInputEvent::Type::kGestureScrollUpdate);
+  const WebGestureEvent& deserialized_event =
+      static_cast<const WebGestureEvent&>(deserialized_coalesced->Event());
+
+  EXPECT_EQ(deserialized_event.data.scroll_update.delta_x, 10.0f);
+  EXPECT_EQ(deserialized_event.data.scroll_update.delta_y, 20.0f);
+  EXPECT_EQ(deserialized_event.data.scroll_update.rails_mode,
+            ui::GestureScrollRailsMode::kHorizontal);
 }
 
 }  // namespace blink

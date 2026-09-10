@@ -112,6 +112,9 @@ struct ScrollData {
   // struct.
   float delta_x_unconstrained;
   float delta_y_unconstrained;
+  // The rails mode represents the browser's SnapScrollController's
+  // scroll axis locking (railing) decision.
+  blink.mojom.RailsMode rails_mode;
 };
 
 struct PinchBeginData {

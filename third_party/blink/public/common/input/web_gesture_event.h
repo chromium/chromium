@@ -170,7 +170,10 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // target and instead just scroll the viewport.
       bool target_viewport;
       // Represents the browser's scroll axis locking (railing) decision for a
-      // GestureFlingStart event.
+      // GestureFlingStart event. Used by the browser's FlingController to
+      // assign `rails_mode` to generated GestureScrollUpdate events. This
+      // attribute is not mojofied and will not get transferred across since
+      // GestureFlingStart is consumed on the browser.
       ui::GestureScrollRailsMode rails_mode;
     } fling_start;
 
