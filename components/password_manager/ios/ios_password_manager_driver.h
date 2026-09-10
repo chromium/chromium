@@ -146,9 +146,14 @@ class IOSPasswordManagerDriver final
   // FieldDataManager, to ensure it also outlives the frame.
   const scoped_refptr<autofill::FieldDataManager> field_data_manager_;
 
-  bool is_in_main_frame_;
-  // The security origin associated with |web_frame_|.
+  // Indicates whether the associated web frame is the main frame.
+  bool is_in_main_frame_ = false;
+
+  // The security origin of the associated web frame.
   url::Origin security_origin_;
+
+  // The URL of the associated web frame.
+  GURL url_;
 
   // True when the conditions are met to display the proactive password
   // generation bottom sheet, the sheet that is automatically triggered when you

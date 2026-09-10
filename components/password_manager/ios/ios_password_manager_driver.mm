@@ -45,6 +45,10 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
   // Cache these values early, so that it can be accessed after frame deletion.
   is_in_main_frame_ = web_frame->IsMainFrame();
   security_origin_ = web_frame->GetSecurityOrigin();
+  url_ = web_frame->GetUrl();
+  if (url_.is_empty() && !security_origin_.opaque()) {
+    url_ = security_origin_.GetURL();
+  }
 }
 
 IOSPasswordManagerDriver::~IOSPasswordManagerDriver() = default;
@@ -211,7 +215,13 @@ int IOSPasswordManagerDriver::GetFrameId() const {
 }
 
 const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
-  return bridge_.lastCommittedURL;
+  if (is_in_main_frame_ && web_state_) {
+    const GURL& url = web_state_->GetLastCommittedURL();
+    if (!url.is_empty()) {
+      return url;
+    }
+  }
+  return url_;
 }
 
 const url::Origin& IOSPasswordManagerDriver::GetLastCommittedOrigin() const {

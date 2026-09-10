@@ -16,12 +16,8 @@ struct PasswordFormFillData;
 struct PasswordFormGenerationData;
 }  // namespace autofill
 
-class GURL;
-
 // C++ to ObjC bridge for methods of PasswordManagerDriver.
 @protocol PasswordManagerDriverBridge
-
-@property(readonly, nonatomic) const GURL& lastCommittedURL;
 
 // Prepares fill data with given password form data.
 // This method calls suggestions helper's processWithPasswordFormFillData.
