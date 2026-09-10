@@ -376,6 +376,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/545634112): Remove when launched to 100% on Desktop Android.
   feature_overrides.EnableFeature(chrome::android::kDisableGridTabSwitcher);
 
+  // Enable PDF V2 features on Android Desktop.
+  // TODO(crbug.com/555758312): Remove when rollout is complete.
+  feature_overrides.EnableFeature(chrome::android::kInlinePdfV2);
+  feature_overrides.EnableFeature(chrome::android::kInlinePdfV2Incognito);
+  feature_overrides.EnableFeature(chrome::android::kPdfReuseFragment);
+  feature_overrides.EnableFeature(chrome::android::kPdfLauncherActivity);
+
   // Enables spoofing the user agent platform as ChromeOS on desktop Android.
   // TODO(crbug.com/556358275): Enablement on tablets is tracked by this bug.
   feature_overrides.EnableFeature(
