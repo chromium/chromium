@@ -67,6 +67,7 @@ ProgressBarDialogView::ProgressBarDialogView(bool is_multiple_files)
   progress_bar_->SetPreferredSize(
       gfx::Size(kProgressBarWidth, kProgressBarHeight));
   progress_bar_->SizeToPreferredSize();
+  progress_bar_->SetBackgroundColor(ash::kColorAshDialogBackgroundColor);
 }
 
 ProgressBarDialogView::~ProgressBarDialogView() {
@@ -94,14 +95,6 @@ void ProgressBarDialogView::AddedToWidget() {
   GetWidget()->GetRootView()->GetViewAccessibility().SetRole(
       ax::mojom::Role::kDialog);
   GetWidget()->GetRootView()->GetViewAccessibility().SetName(view_name);
-}
-
-void ProgressBarDialogView::OnThemeChanged() {
-  DCHECK(progress_bar_);
-
-  views::BoxLayoutView::OnThemeChanged();
-  progress_bar_->SetBackgroundColor(
-      GetColorProvider()->GetColor(ash::kColorAshDialogBackgroundColor));
 }
 
 void ProgressBarDialogView::Show(aura::Window* parent,

@@ -41,7 +41,6 @@ class ProgressBarDialogView : public views::BoxLayoutView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
  private:
   // Progress bar view to show file streaming progress to the user.
