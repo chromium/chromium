@@ -20,18 +20,15 @@ namespace {
 // - The fallback interval when the session manager is unavailable.
 constexpr base::TimeDelta kMinPrewarmInterval = base::Seconds(60);
 
-// The prewarm timer interval when the URL provider callback returns an empty or
-// invalid URL.
-constexpr base::TimeDelta kLongPrewarmInterval = base::Minutes(10);
-
-// The maximum number of times to retry prewarming with an invalid URL.
-constexpr int kMaxInvalidUrlRetries = 5;
-
 }  // namespace
 
 DeviceBoundSessionPrewarmer::DeviceBoundSessionPrewarmer(
+    GURL prewarm_url,
     SessionManagerProvider session_manager_provider)
-    : session_manager_provider_(std::move(session_manager_provider)) {
+    : prewarm_url_(std::move(prewarm_url)),
+      session_manager_provider_(std::move(session_manager_provider)) {
+  CHECK(prewarm_url_.is_valid());
+  CHECK(prewarm_url_.SchemeIs(url::kHttpsScheme));
   CHECK(session_manager_provider_);
 }
 
@@ -39,12 +36,7 @@ DeviceBoundSessionPrewarmer::~DeviceBoundSessionPrewarmer() {
   Stop();
 }
 
-void DeviceBoundSessionPrewarmer::Start(
-    PrewarmUrlProvider url_provider_callback,
-    bool is_startup_prewarm) {
-  CHECK(url_provider_callback);
-  url_provider_callback_ = std::move(url_provider_callback);
-  invalid_url_consecutive_retries_ = 0;
+void DeviceBoundSessionPrewarmer::Start(bool is_startup_prewarm) {
   is_startup_prewarm_ = is_startup_prewarm;
 
   Stop();
@@ -60,31 +52,10 @@ void DeviceBoundSessionPrewarmer::Stop() {
 }
 
 void DeviceBoundSessionPrewarmer::DoPrewarm() {
-  // If the URL provider callback returns an empty or invalid URL, we should
-  // skip the prewarming entirely and schedule the next prewarm at a long
-  // interval up to a maximum number of consecutive failures.
-  GURL target_url = url_provider_callback_.Run();
-  const bool invalid_url =
-      !target_url.is_valid() || !target_url.SchemeIs(url::kHttpsScheme);
-  if (invalid_url) {
-    invalid_url_consecutive_retries_++;
-    base::UmaHistogramCounts100(
-        "Net.DeviceBoundSessions.PrewarmInvalidUrlConsecutiveFailures",
-        invalid_url_consecutive_retries_);
-    if (invalid_url_consecutive_retries_ <= kMaxInvalidUrlRetries) {
-      timer_.Start(FROM_HERE, kLongPrewarmInterval, this,
-                   &DeviceBoundSessionPrewarmer::DoPrewarm);
-    }
-    return;
-  }
-
-  // Reset the retry count if the URL is valid.
-  invalid_url_consecutive_retries_ = 0;
-
   if (network::mojom::DeviceBoundSessionManager* session_manager =
           session_manager_provider_.Run()) {
     session_manager->PrewarmSessionsForUrl(
-        target_url,
+        prewarm_url_,
         base::BindOnce(&DeviceBoundSessionPrewarmer::OnPrewarmComplete,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
