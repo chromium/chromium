@@ -37,6 +37,27 @@ constexpr base::TimeDelta kToggleCooldown = base::Seconds(3);
 constexpr int kTopMargin = 40;
 constexpr int kBottomMargin = 60;
 
+// Padding and spacing for the window contents.
+constexpr int kButtonRowSpacing = 12;
+constexpr int kHorizontalPadding = 12;
+constexpr int kVerticalPadding = 8;
+
+// Background rendering constants.
+constexpr int kCornerRadius = 6;
+constexpr double kBorderWidth = 6.0;
+constexpr double kBackgroundColor = 0.91;
+constexpr double kBorderRed = 0.13;
+constexpr double kBorderGreen = 0.69;
+constexpr double kBorderBlue = 0.11;
+
+// Arrow labels for alignment toggle button.
+constexpr char kUpArrow[] = "▲";
+constexpr char kDownArrow[] = "▼";
+
+// Disconnect reason strings.
+constexpr char kDisconnectClickedReason[] = "Disconnect button was clicked.";
+constexpr char kDisconnectDeletedReason[] = "Disconnect window deleted.";
+
 enum class WindowAnchor {
   kBottom,
   kTop,
@@ -92,8 +113,8 @@ class DisconnectWindowGtk : public HostWindow {
 
   // Used to distinguish resize events from other types of "configure-event"
   // notifications.
-  int current_width_;
-  int current_height_;
+  int current_width_ = 0;
+  int current_height_ = 0;
 
   std::vector<ScopedGSignal> signals_;
 
@@ -121,9 +142,6 @@ void AddRoundRectPath(cairo_t* cairo_context,
 
 // Renders the disconnect window background.
 void DrawBackground(cairo_t* cairo_context, int width, int height) {
-  // Set the arc radius for the corners.
-  const int kCornerRadius = 6;
-
   // Initialize the whole bitmap to be transparent.
   cairo_save(cairo_context);
   cairo_set_source_rgba(cairo_context, 0, 0, 0, 0);
@@ -135,23 +153,18 @@ void DrawBackground(cairo_t* cairo_context, int width, int height) {
   cairo_clip(cairo_context);
 
   // Paint the whole bitmap one color.
-  cairo_set_source_rgb(cairo_context, 0.91, 0.91, 0.91);
+  cairo_set_source_rgb(cairo_context, kBackgroundColor, kBackgroundColor,
+                       kBackgroundColor);
   cairo_paint(cairo_context);
 
   // Paint the round-rectangle edge.
-  cairo_set_source_rgb(cairo_context, 0.13, 0.69, 0.11);
-  cairo_set_line_width(cairo_context, 6);
+  cairo_set_source_rgb(cairo_context, kBorderRed, kBorderGreen, kBorderBlue);
+  cairo_set_line_width(cairo_context, kBorderWidth);
   AddRoundRectPath(cairo_context, width, height, kCornerRadius);
   cairo_stroke(cairo_context);
 }
 
-DisconnectWindowGtk::DisconnectWindowGtk()
-    : disconnect_window_(nullptr),
-      toggle_button_(nullptr),
-      message_(nullptr),
-      button_(nullptr),
-      current_width_(0),
-      current_height_(0) {}
+DisconnectWindowGtk::DisconnectWindowGtk() = default;
 
 DisconnectWindowGtk::~DisconnectWindowGtk() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -221,19 +234,22 @@ void DisconnectWindowGtk::Start(
           &DisconnectWindowGtk::OnConfigure);
 
   // Layout contains: toggle button, message label, and disconnect button.
-  GtkWidget* button_row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+  GtkWidget* button_row =
+      gtk_box_new(GTK_ORIENTATION_HORIZONTAL, kButtonRowSpacing);
   gtk_box_set_homogeneous(GTK_BOX(button_row), FALSE);
 
 #if GTK_CHECK_VERSION(3, 90, 0)
-  gtk_widget_set_margin_start(GTK_WIDGET(button_row), 12);
-  gtk_widget_set_margin_end(GTK_WIDGET(button_row), 12);
-  gtk_widget_set_margin_top(GTK_WIDGET(button_row), 8);
-  gtk_widget_set_margin_bottom(GTK_WIDGET(button_row), 8);
+  gtk_widget_set_margin_start(GTK_WIDGET(button_row), kHorizontalPadding);
+  gtk_widget_set_margin_end(GTK_WIDGET(button_row), kHorizontalPadding);
+  gtk_widget_set_margin_top(GTK_WIDGET(button_row), kVerticalPadding);
+  gtk_widget_set_margin_bottom(GTK_WIDGET(button_row), kVerticalPadding);
   gtk_container_add(GTK_CONTAINER(window), button_row);
 #else
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
   GtkWidget* align = gtk_alignment_new(0, 0, 1, 1);
-  gtk_alignment_set_padding(GTK_ALIGNMENT(align), 8, 8, 12, 12);
+  gtk_alignment_set_padding(GTK_ALIGNMENT(align), kVerticalPadding,
+                            kVerticalPadding, kHorizontalPadding,
+                            kHorizontalPadding);
   G_GNUC_END_IGNORE_DEPRECATIONS;
   gtk_container_add(GTK_CONTAINER(window), align);
   gtk_container_add(GTK_CONTAINER(align), button_row);
@@ -309,7 +325,7 @@ void DisconnectWindowGtk::OnClicked(GtkButton* button) {
 
   if (client_session_control_.get()) {
     client_session_control_->DisconnectSession(
-        ErrorCode::OK, "Disconnect button was clicked.", FROM_HERE);
+        ErrorCode::OK, kDisconnectClickedReason, FROM_HERE);
   }
 }
 
@@ -345,7 +361,7 @@ void DisconnectWindowGtk::UpdateToggleButtonText() {
   if (toggle_button_) {
     gtk_button_set_label(
         GTK_BUTTON(toggle_button_.get()),
-        (g_current_anchor == WindowAnchor::kBottom) ? "▲" : "▼");
+        (g_current_anchor == WindowAnchor::kBottom) ? kUpArrow : kDownArrow);
     int string_id = (g_current_anchor == WindowAnchor::kBottom)
                         ? IDS_MOVE_TO_TOP_BUTTON
                         : IDS_MOVE_TO_BOTTOM_BUTTON;
@@ -430,7 +446,7 @@ gboolean DisconnectWindowGtk::OnDelete(GtkWidget* window, GdkEvent* event) {
 
   if (client_session_control_.get()) {
     client_session_control_->DisconnectSession(
-        ErrorCode::OK, "Disconnect window deleted.", FROM_HERE);
+        ErrorCode::OK, kDisconnectDeletedReason, FROM_HERE);
   }
   return TRUE;
 }

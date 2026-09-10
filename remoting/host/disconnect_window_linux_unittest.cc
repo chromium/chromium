@@ -24,6 +24,28 @@ namespace remoting {
 
 namespace {
 
+constexpr char16_t kWindowTitle16[] = u"Chrome Remote Desktop";
+constexpr char16_t kMessageSharedText[] = u"Your desktop is shared with $1.";
+constexpr char16_t kStopSharingText[] = u"Stop Sharing";
+
+constexpr char kTestUserJid[] =
+    "remote.user@gmail.com/chromoting_ftl_11111111-2222-3333-4444-555555555555";
+
+constexpr char kLongUserJid[] =
+    "it-support-desk-remote-assistance-session-verification-operators@"
+    "secure-remote-support-verification-and-customer-protection-desk."
+    "assistance-operations-center-for-workspace-hosted-accounts-team."
+    "example-corporation-global-technical-services-departments.com/"
+    "chromoting_ftl_11111111-2222-3333-4444-555555555555";
+
+constexpr char kUnicodeUserJid[] =
+    "  \t\n  user_with_unicode_测试_🚀@example.com  \n"
+    "/chromoting_ftl_11111111-2222-3333-4444-555555555555";
+
+constexpr char kAttackUserJid[] =
+    "it.remote.assist.operator.session.9143a@example.com.fake.tld/"
+    "chromoting_ftl_11111111-2222-3333-4444-555555555555";
+
 class FakeClientSessionControl : public MockClientSessionControl {
  public:
   explicit FakeClientSessionControl(std::string client_jid)
@@ -74,15 +96,15 @@ class TestResourceBundleDelegate : public ui::ResourceBundle::Delegate {
   bool GetLocalizedString(int message_id,
                           std::u16string* value) const override {
     if (message_id == IDS_MESSAGE_SHARED) {
-      *value = u"Your desktop is shared with $1.";
+      *value = kMessageSharedText;
       return true;
     }
     if (message_id == IDS_PRODUCT_NAME) {
-      *value = u"Chrome Remote Desktop";
+      *value = kWindowTitle16;
       return true;
     }
     if (message_id == IDS_STOP_SHARING_BUTTON) {
-      *value = u"Stop Sharing";
+      *value = kStopSharingText;
       return true;
     }
     return false;
@@ -160,10 +182,7 @@ GtkWidget* FindDisconnectWindowLabel() {
 
 class DisconnectWindowLinuxTest : public testing::Test {
  public:
-  DisconnectWindowLinuxTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        resource_bundle_(&resource_delegate_),
-        resource_swapper_(&resource_bundle_) {}
+  DisconnectWindowLinuxTest() = default;
   ~DisconnectWindowLinuxTest() override = default;
 
   void TearDown() override {
@@ -173,10 +192,12 @@ class DisconnectWindowLinuxTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   TestResourceBundleDelegate resource_delegate_;
-  ui::ResourceBundle resource_bundle_;
-  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_swapper_;
+  ui::ResourceBundle resource_bundle_{&resource_delegate_};
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_swapper_{
+      &resource_bundle_};
 };
 
 TEST_F(DisconnectWindowLinuxTest, NormalEmailDoesNotCrash) {
@@ -184,8 +205,7 @@ TEST_F(DisconnectWindowLinuxTest, NormalEmailDoesNotCrash) {
     GTEST_SKIP() << "No display available for GTK.";
   }
 
-  FakeClientSessionControl session_control(
-      "john.smith@gmail.com/chromoting_ftl");
+  FakeClientSessionControl session_control(kTestUserJid);
   std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
   ASSERT_TRUE(window);
   window->Start(session_control.GetWeakPtr());
@@ -200,14 +220,7 @@ TEST_F(DisconnectWindowLinuxTest, LongEmailDoesNotCrash) {
     GTEST_SKIP() << "No display available for GTK.";
   }
 
-  const std::string kLongEmail =
-      "it-support-desk-remote-assistance-session-verification-operators@"
-      "secure-remote-support-verification-and-customer-protection-desk."
-      "assistance-operations-center-for-workspace-hosted-accounts-team."
-      "example-corporation-global-technical-services-departments.com/"
-      "chromoting_ftl";
-
-  FakeClientSessionControl session_control(kLongEmail);
+  FakeClientSessionControl session_control(kLongUserJid);
   std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
   ASSERT_TRUE(window);
   window->Start(session_control.GetWeakPtr());
@@ -222,11 +235,7 @@ TEST_F(DisconnectWindowLinuxTest, WhitespaceAndUnicodeEmailDoesNotCrash) {
     GTEST_SKIP() << "No display available for GTK.";
   }
 
-  // Multi-byte Unicode with whitespace formatting
-  const std::string kUnicodeEmail =
-      "  \t\n  user_with_unicode_测试_🚀@example.com  \n/chromoting_ftl";
-
-  FakeClientSessionControl session_control(kUnicodeEmail);
+  FakeClientSessionControl session_control(kUnicodeUserJid);
   std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
   ASSERT_TRUE(window);
   window->Start(session_control.GetWeakPtr());
@@ -244,11 +253,7 @@ TEST_F(DisconnectWindowLinuxTest, LongEmailPreservesDomainSuffix) {
   // An email exceeding kDefaultMaxEmailLength (36 characters) where the
   // authentic domain suffix would have been truncated under naive
   // end-truncation.
-  const std::string kAttackEmail =
-      "it.remote.assist.operator.session.9143a@example.com.fake.tld/"
-      "chromoting_ftl";
-
-  FakeClientSessionControl session_control(kAttackEmail);
+  FakeClientSessionControl session_control(kAttackUserJid);
   std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
   ASSERT_TRUE(window);
   window->Start(session_control.GetWeakPtr());
