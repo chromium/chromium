@@ -124,7 +124,7 @@ struct WTF_EXPORT HashTableStats {
 };
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-template <typename Allocator, bool isGCType = Allocator::kIsGarbageCollected>
+template <typename Allocator, bool kIsGcType = Allocator::kIsGarbageCollected>
 class HashTableStatsPtr;
 
 template <typename Allocator>
@@ -509,7 +509,7 @@ std::ostream& operator<<(std::ostream& stream,
 template <typename T,
           typename Allocator,
           typename Traits,
-          bool enterGCForbiddenScope>
+          bool kEnterGcForbiddenScope>
 struct Mover {
   STATIC_ONLY(Mover);
   static void Move(T&& from, T& to) {
@@ -590,11 +590,11 @@ struct HashTableAddResult final {
 
 template <typename HashTranslator,
           typename KeyTraits,
-          bool safeToCompareToEmptyOrDeleted>
+          bool kSafeToCompareToEmptyOrDeleted>
 struct HashTableKeyChecker {
   STATIC_ONLY(HashTableKeyChecker);
   // There's no simple generic way to make this check if
-  // safeToCompareToEmptyOrDeleted is false, so the check always passes.
+  // kSafeToCompareToEmptyOrDeleted is false, so the check always passes.
   template <typename T>
   static bool CheckKey(const T&) {
     return true;

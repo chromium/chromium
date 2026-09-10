@@ -525,7 +525,7 @@ class WTF_EXPORT String {
     return !impl_ || impl_->ContainsOnlyWhitespaceOrEmpty();
   }
 
-  template <bool isSpecialCharacter(UChar)>
+  template <bool (*is_special_character)(UChar)>
   bool IsAllSpecialCharacters() const;
 
   // Functions creating new string(s) from `this` string ------------
@@ -674,8 +674,8 @@ inline void swap(String& a, String& b) {
 
 // Definitions of string operations
 
-template <wtf_size_t inlineCapacity>
-String::String(const Vector<UChar, inlineCapacity>& vector)
+template <wtf_size_t kInlineCapacity>
+String::String(const Vector<UChar, kInlineCapacity>& vector)
     : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
 
 inline bool String::ContainsOnlyLatin1OrEmpty() const {
@@ -705,9 +705,9 @@ inline bool CodeUnitCompareLessThan(const String& a, const String& b) {
   return CodeUnitCompare(a.Impl(), b.Impl()) < 0;
 }
 
-template <bool isSpecialCharacter(UChar)>
+template <bool (*is_special_character)(UChar)>
 inline bool String::IsAllSpecialCharacters() const {
-  return StringView(*this).IsAllSpecialCharacters<isSpecialCharacter>();
+  return StringView(*this).IsAllSpecialCharacters<is_special_character>();
 }
 
 template <typename BufferType>

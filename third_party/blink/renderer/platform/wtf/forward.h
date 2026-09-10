@@ -43,13 +43,13 @@ class StringView;
 class TextPosition;
 
 template <typename T,
-          wtf_size_t inlineBuffer = 0,
+          wtf_size_t kInlineCapacity = 0,
           typename Allocator = PartitionAllocator>
 class Deque;
 template <typename T>
 class StringBuffer;
 template <typename T,
-          wtf_size_t inlineCapacity = 0,
+          wtf_size_t kInlineCapacity = 0,
           typename Allocator = PartitionAllocator>
 class Vector;
 

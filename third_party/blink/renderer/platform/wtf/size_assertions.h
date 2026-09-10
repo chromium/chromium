@@ -9,9 +9,9 @@
 
 namespace blink::internal {
 
-template <size_t ActualSize, size_t ExpectedSize>
+template <size_t kActualSize, size_t kExpectedSize>
 struct SizesEqual {
-  static constexpr bool value = ActualSize == ExpectedSize;
+  static constexpr bool value = kActualSize == kExpectedSize;
 };
 
 }  // namespace blink::internal
