@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/file_select_helper.h"
@@ -40,6 +41,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
@@ -105,6 +107,16 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
                                       kOmniboxEverywhereElementId);
 
 namespace {
+
+bool IsFuseboxEligible(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_eligibility_service &&
+         aim_eligibility_service->IsFuseboxEligible();
+}
 
 class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
  public:
@@ -1115,7 +1127,7 @@ void OmniboxEverywhereUIManager::AppendSettingsContextMenu() {
           ? IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS
           : IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
 
-  if (omnibox::ShouldShowAimContextMenuOption(profile_)) {
+  if (IsFuseboxEligible(profile_)) {
     if (auto* service = AiModeButtonServiceFactory::GetForProfile(profile_)) {
       if (const AiModeButtonUiConfig* config = service->GetCurrentConfig()) {
         context_menu_model_->AddCheckItem(kAlwaysShowAiMode,
@@ -1307,7 +1319,7 @@ bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
       return profile_ && (OmniboxEverywhereServiceFactory::GetForProfile(
                               profile_) != nullptr);
     case kAlwaysShowAiMode:
-      return true;
+      return IsFuseboxEligible(profile_);
     case kShowShortcuts:
       return prefs::AreShortcutsAvailableForProfile(profile_);
     case kCustomizeKeyboardShortcut:

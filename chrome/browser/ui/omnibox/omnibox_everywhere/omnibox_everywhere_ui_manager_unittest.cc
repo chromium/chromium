@@ -13,9 +13,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
+#include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
@@ -31,6 +33,7 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search_engines/test_ai_mode_button_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -116,6 +119,28 @@ class TestMenuRunnerHandler : public views::MenuRunnerHandler {
                  int32_t types) override {}
 };
 
+class TestingAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  TestingAimEligibilityService(Profile* profile, bool is_fusebox_eligible)
+      : ChromeAimEligibilityService(*profile->GetPrefs(),
+                                    /*template_url_service=*/nullptr,
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr,
+                                    /*configuration=*/{}),
+        is_fusebox_eligible_(is_fusebox_eligible) {}
+
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+
+  bool IsAimEligible() const override { return is_fusebox_eligible_; }
+  bool IsFuseboxEligible() const override { return is_fusebox_eligible_; }
+  bool IsAimAllowedByDse() const override { return is_fusebox_eligible_; }
+
+ private:
+  const bool is_fusebox_eligible_;
+};
+
 }  // namespace
 
 class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
@@ -127,6 +152,33 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
     feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
     set_native_widget_type(NativeWidgetType::kDesktop);
     ChromeViewsTestBase::SetUp();
+  }
+
+  void SetUpAimEligibilityService(bool is_fusebox_eligible) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_,
+        base::BindRepeating(
+            [](bool fusebox_eligible, content::BrowserContext* context)
+                -> std::unique_ptr<KeyedService> {
+              return std::make_unique<TestingAimEligibilityService>(
+                  static_cast<TestingProfile*>(context), fusebox_eligible);
+            },
+            is_fusebox_eligible));
+  }
+
+  void SetUpAiModeButtonService() {
+    AiModeButtonServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<TestAiModeButtonService>(
+              /*template_url_service=*/nullptr);
+          AiModeButtonUiConfig test_config(
+              SearchEngineType::SEARCH_ENGINE_GOOGLE, u"AI Mode", u"Google",
+              /*favicon_url=*/"", /*navigation_url=*/"",
+              /*navigation_url_empty=*/"");
+          service->current_ui_config_ = test_config;
+          return service;
+        }));
   }
 
   std::unique_ptr<OmniboxEverywhereUIManager> CreateUIManager() {
@@ -1321,6 +1373,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
+  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
+  SetUpAiModeButtonService();
+
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
@@ -1433,7 +1488,68 @@ TEST_F(OmniboxEverywhereUIManagerTest,
       omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAiModeFuseboxIneligible) {
+  SetUpAimEligibilityService(/*is_fusebox_eligible=*/false);
+  SetUpAiModeButtonService();
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_editable = false;
+  params.selection_text = u"";
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(
+      model
+          ->GetIndexOfCommandId(
+              omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode)
+          .has_value());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAiModeFuseboxEligible) {
+  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
+  SetUpAiModeButtonService();
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_editable = false;
+  params.selection_text = u"";
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(
+      model
+          ->GetIndexOfCommandId(
+              omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode)
+          .has_value());
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAlwaysShowAiModeToggle) {
+  SetUpAimEligibilityService(/*is_fusebox_eligible=*/true);
+  SetUpAiModeButtonService();
+
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
