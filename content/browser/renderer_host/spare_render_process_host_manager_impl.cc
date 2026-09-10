@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -519,9 +520,16 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   // Don't create a spare renderer when the system is under load.  This is
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
-  if (memory_limit() <= GetMemoryLimitThreshold()) {
-    no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
-    return nullptr;
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (GetTargetSpareRPHCount() == 0) {
+      no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
+      return nullptr;
+    }
+  } else {
+    if (memory_limit() <= GetMemoryLimitThreshold()) {
+      no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
+      return nullptr;
+    }
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -832,6 +840,28 @@ void SpareRenderProcessHostManagerImpl::PrepareForFutureRequests(
   }
 }
 
+void SpareRenderProcessHostManagerImpl::DestroySpare(
+    RenderProcessHost* spare_rph,
+    std::optional<SpareRendererDispatchResult> dispatch_result) {
+  if (dispatch_result.has_value()) {
+    base::UmaHistogramEnumeration(kSpareRendererDispatchResultUmaName,
+                                  dispatch_result.value());
+  }
+  // Stop observing the process, to avoid getting notifications as a
+  // consequence of the Cleanup call below - such notification could call
+  // back into CleanupSpare leading to stack overflow.
+  spare_rph->RemoveObserver(this);
+
+  // Make sure the RenderProcessHost object gets destroyed.
+  if (!spare_rph->AreRefCountsDisabled()) {
+    spare_rph->Cleanup();
+  }
+
+  for (auto& observer : observer_list_) {
+    observer.OnSpareRenderProcessHostRemoved(spare_rph);
+  }
+}
+
 void SpareRenderProcessHostManagerImpl::CleanupSpares(
     std::optional<SpareRendererDispatchResult> dispatch_result) {
   std::vector<raw_ptr<RenderProcessHost>> spare_rphs = std::move(spare_rphs_);
@@ -840,23 +870,7 @@ void SpareRenderProcessHostManagerImpl::CleanupSpares(
   deferred_destroy_timer_.Stop();
 
   for (RenderProcessHost* spare_rph : spare_rphs) {
-    if (dispatch_result.has_value()) {
-      base::UmaHistogramEnumeration(kSpareRendererDispatchResultUmaName,
-                                    dispatch_result.value());
-    }
-    // Stop observing the process, to avoid getting notifications as a
-    // consequence of the Cleanup call below - such notification could call
-    // back into CleanupSpare leading to stack overflow.
-    spare_rph->RemoveObserver(this);
-
-    // Make sure the RenderProcessHost object gets destroyed.
-    if (!spare_rph->AreRefCountsDisabled()) {
-      spare_rph->Cleanup();
-    }
-
-    for (auto& observer : observer_list_) {
-      observer.OnSpareRenderProcessHostRemoved(spare_rph);
-    }
+    DestroySpare(spare_rph, dispatch_result);
   }
   if (dispatch_result.has_value()) {
     no_spare_renderer_reason_ =
@@ -872,23 +886,58 @@ void SpareRenderProcessHostManagerImpl::CleanupSpares(
 
 void SpareRenderProcessHostManagerImpl::CleanupExtraSpares(
     std::optional<SpareRendererDispatchResult> dispatch_result) {
-  if (spare_rphs_.size() <= 1u) {
-    // There is either zero or one spare. Nothing to do.
+  TrimSpares(1u /* target_count */, dispatch_result);
+}
+
+void SpareRenderProcessHostManagerImpl::TrimSpares(
+    size_t target_count,
+    std::optional<SpareRendererDispatchResult> dispatch_result) {
+  if (spare_rphs_.size() <= target_count) {
+    return;
+  }
+  if (target_count == 0) {
+    CleanupSpares(dispatch_result);
     return;
   }
 
-  // Pop the front element, as we want to preserve it.
-  RenderProcessHost* first_spare = spare_rphs_.front();
+  std::vector<raw_ptr<RenderProcessHost>> spares_to_remove;
+  while (spare_rphs_.size() > target_count) {
+    spares_to_remove.push_back(spare_rphs_.back());
+    spare_rphs_.pop_back();
+  }
 
-  // Swap the front and back to efficient removal.
-  std::swap(spare_rphs_.front(), spare_rphs_.back());
-  spare_rphs_.pop_back();
+  for (RenderProcessHost* spare_rph : spares_to_remove) {
+    DestroySpare(spare_rph, dispatch_result);
+  }
+}
 
-  // Cleanup all remaining spares in the vector.
-  CleanupSpares(dispatch_result);
+size_t SpareRenderProcessHostManagerImpl::GetTargetSpareRPHCount() const {
+  const size_t baseline = GetSpareRPHCount();
 
-  // Re-add the spare to the vector.
-  spare_rphs_.push_back(first_spare);
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return baseline;
+  }
+
+  // If killing on memory pressure is disabled, keep full baseline.
+  if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
+    return baseline;
+  }
+
+  // Under critical-only mode, do not scale down under moderate/mild pressure.
+  if (base::FeatureList::IsEnabled(kSpareRPHUseCriticalMemoryPressure) &&
+      memory_limit() > base::MemoryLimit::CriticalPressureThreshold()) {
+    return baseline;
+  }
+
+  size_t target = memory_limit().Scale(baseline);
+
+  // Preserve 1 spare if keep-one-alive policy is active.
+  if (base::FeatureList::IsEnabled(kSpareRPHKeepOneAliveOnMemoryPressure) &&
+      memory_limit() > 0) {
+    target = std::max(size_t{1}, target);
+  }
+
+  return target;
 }
 
 void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
@@ -983,6 +1032,15 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 }
 
 void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // If memory limit improved and we have headroom, sequentially warm up extra
+    // spares:
+    if (spare_rphs_.size() < GetTargetSpareRPHCount()) {
+      MaybeCreateExtraSpare();
+    }
+    return;
+  }
+
   // If the system is no longer under memory pressure, check if we need
   // to start another spare.
   if (memory_limit() > GetMemoryLimitThreshold()) {
@@ -991,6 +1049,15 @@ void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
 }
 
 void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
+      return;
+    }
+    TrimSpares(GetTargetSpareRPHCount(),
+               SpareRendererDispatchResult::kMemoryPressure);
+    return;
+  }
+
   if (memory_limit() > GetMemoryLimitThreshold()) {
     return;
   }
@@ -1010,7 +1077,7 @@ void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
 bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
   // Check target spare count. This function has the side-effect of
   // activating the field trial.
-  if (spare_rphs_.size() >= GetSpareRPHCount()) {
+  if (spare_rphs_.size() >= GetTargetSpareRPHCount()) {
     return false;
   }
 
@@ -1040,9 +1107,11 @@ bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
     return false;
   }
 
-  // Don't create spares when under memory pressure.
-  if (memory_limit() < base::MemoryLimit::NoPressureThreshold()) {
-    return false;
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // Don't create spares when under memory pressure.
+    if (memory_limit() < base::MemoryLimit::NoPressureThreshold()) {
+      return false;
+    }
   }
 
   // A spare is already being initialized right now.

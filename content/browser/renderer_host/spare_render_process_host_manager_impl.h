@@ -227,6 +227,18 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   DoesEmbedderAllowSpareUsage(BrowserContext* browser_context,
                               SiteInstanceImpl* site_instance);
 
+  // Destroys an individual spare renderer and notifies observers.
+  void DestroySpare(RenderProcessHost* spare_rph,
+                    std::optional<SpareRendererDispatchResult> dispatch_result);
+
+  // Trims excess spare renderers from the tail down to `target_count`.
+  void TrimSpares(size_t target_count,
+                  std::optional<SpareRendererDispatchResult> dispatch_result);
+
+  // Calculates the target number of spares based on active feature flags and
+  // the current memory limit.
+  size_t GetTargetSpareRPHCount() const;
+
   base::MemoryConsumerRegistration memory_consumer_registration_;
 
   // The clients who want to know when the spare render process host has
