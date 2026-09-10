@@ -168,6 +168,10 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
 
+ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsViaBundleCapabilityName,
+                   IS_SUBJECT_TO_PARENTAL_CONTROLS_VIA_BUNDLE_CAPABILITY_NAME,
+                   "accountcapabilities/gm2dgmjnmnqxa")
+
 ACCOUNT_CAPABILITY(kIsSubjectToUniversalOptOutCapabilityName,
                    IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME,
                    "accountcapabilities/gmydemrnmnqxa")

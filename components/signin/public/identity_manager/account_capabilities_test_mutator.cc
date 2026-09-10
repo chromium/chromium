@@ -223,6 +223,13 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
       value;
 }
 
+void AccountCapabilitiesTestMutator::
+    set_is_subject_to_parental_controls_via_bundle(bool value) {
+  capabilities_
+      ->capabilities_map_[kIsSubjectToParentalControlsViaBundleCapabilityName] =
+      value;
+}
+
 void AccountCapabilitiesTestMutator::set_is_subject_to_universal_opt_out(
     bool value) {
   capabilities_->capabilities_map_[kIsSubjectToUniversalOptOutCapabilityName] =

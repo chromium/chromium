@@ -346,6 +346,21 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControlsViaBundle) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.is_subject_to_parental_controls_via_bundle(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_subject_to_parental_controls_via_bundle(true);
+  EXPECT_EQ(capabilities.is_subject_to_parental_controls_via_bundle(),
+            signin::Tribool::kTrue);
+
+  mutator.set_is_subject_to_parental_controls_via_bundle(false);
+  EXPECT_EQ(capabilities.is_subject_to_parental_controls_via_bundle(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanUseSpeakerLabelInRecorderApp) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),

@@ -173,6 +173,12 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
+  // Chrome applies parental controls via the Chrome supervision bundle to
+  // accounts with this capability.
+  // This should only be used for logging; use is_subject_to_parental_controls()
+  // for feature logic.
+  signin::Tribool is_subject_to_parental_controls_via_bundle() const;
+
   // Whether the user is subject to Universal Opt-Out.
   signin::Tribool is_subject_to_universal_opt_out() const;
 

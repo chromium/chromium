@@ -208,6 +208,15 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return isSubjectToParentalControlsViaBundle capability value.
+     */
+    public @Tribool int isSubjectToParentalControlsViaBundle() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants
+                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_VIA_BUNDLE_CAPABILITY_NAME);
+    }
+
+    /**
      * @return isSubjectToUniversalOptOut capability value.
      */
     public @Tribool int isSubjectToUniversalOptOut() {

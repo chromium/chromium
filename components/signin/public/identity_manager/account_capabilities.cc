@@ -282,6 +282,12 @@ signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
   return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
 }
 
+signin::Tribool
+AccountCapabilities::is_subject_to_parental_controls_via_bundle() const {
+  return GetCapabilityByName(
+      kIsSubjectToParentalControlsViaBundleCapabilityName);
+}
+
 signin::Tribool AccountCapabilities::is_subject_to_universal_opt_out() const {
   return GetCapabilityByName(kIsSubjectToUniversalOptOutCapabilityName);
 }
