@@ -71,3 +71,9 @@ def CheckPatchFormatted(input_api, output_api):
         result_factory=output_api.PresubmitError,
         bypass_warnings=False,
     )
+
+
+def CheckVPythonSpec(input_api, output_api):
+    return input_api.RunTests(
+        input_api.canned_checks.CheckVPythonSpec(input_api, output_api)
+    )
