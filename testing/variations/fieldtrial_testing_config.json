@@ -15293,6 +15293,28 @@
             ]
         }
     ],
+    "PasswordManualFallbackSecurityChecks": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordManualFallbackSecurityChecks"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordSaveInContextErrorResolution": [
         {
             "platforms": [
