@@ -53,7 +53,7 @@ DawnControlClientHolder::DawnControlClientHolder(
       api_channel_(context_provider_->ContextProvider()
                        .WebGPUInterface()
                        ->GetAPIChannel()),
-      shared_image_wrapper_cache_(GetContextProviderWeakPtr(), task_runner) {}
+      shared_image_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
 DawnControlClientHolder::~DawnControlClientHolder() {
   DestroyMappableBuffers();
@@ -114,14 +114,13 @@ bool DawnControlClientHolder::IsContextLost() const {
   return context_lost_;
 }
 
-std::unique_ptr<WebGpuSharedImageWrapperLease>
-DawnControlClientHolder::LeaseWebGpuSharedImageWrapper(
-    viz::SharedImageFormat format,
-    gfx::Size size,
-    const gfx::ColorSpace& color_space,
-    SkAlphaType alpha_type) {
-  return shared_image_wrapper_cache_.LeaseWebGpuSharedImageWrapper(
-      format, size, color_space, alpha_type);
+std::unique_ptr<WebGpuSharedImageLease>
+DawnControlClientHolder::LeaseSharedImage(viz::SharedImageFormat format,
+                                          gfx::Size size,
+                                          const gfx::ColorSpace& color_space,
+                                          SkAlphaType alpha_type) {
+  return shared_image_cache_.LeaseSharedImage(format, size, color_space,
+                                              alpha_type);
 }
 
 void DawnControlClientHolder::Flush() {

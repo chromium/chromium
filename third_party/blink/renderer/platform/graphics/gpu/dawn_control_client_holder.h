@@ -75,7 +75,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   wgpu::Instance GetWGPUInstance() const;
   void MarkContextLost();
   bool IsContextLost() const;
-  std::unique_ptr<WebGpuSharedImageWrapperLease> LeaseWebGpuSharedImageWrapper(
+  std::unique_ptr<WebGpuSharedImageLease> LeaseSharedImage(
       viz::SharedImageFormat format,
       gfx::Size size,
       const gfx::ColorSpace& color_space,
@@ -102,7 +102,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<gpu::webgpu::APIChannel> api_channel_;
-  WebGpuSharedImageWrapperCache shared_image_wrapper_cache_;
+  WebGpuSharedImageCache shared_image_cache_;
   Vector<base::WeakPtr<WebGPUMailboxTexture>> mailbox_textures_;
   HashSet<wgpu::Buffer> mappable_buffers_;
 

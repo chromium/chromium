@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -399,10 +400,10 @@ ExternalTexture CreateExternalTexture(
   // The recyclable resource's color space is the same as source color space
   // with the YUV to RGB transform stripped out since that's handled by the
   // PaintCanvasVideoRenderer.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease =
-      device->GetDawnControlClient()->LeaseWebGpuSharedImageWrapper(
+  std::unique_ptr<WebGpuSharedImageLease> lease =
+      device->GetDawnControlClient()->LeaseSharedImage(
           format, natural_size, resource_color_space, kPremul_SkAlphaType);
-  if (!wrapper_lease) {
+  if (!lease) {
     return external_texture;
   }
 
@@ -410,12 +411,12 @@ ExternalTexture CreateExternalTexture(
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
   if (use_copy_to_shared_image) {
-    // The size of the shared image wrapper here is the VideoFrame's natural
+    // The size of the shared image here is the VideoFrame's natural
     // size, which is guaranteed to be the same size as its visible rect since
     // `use_copy_to_shared_image` is true. Below we are going to copy the
-    // contents of that visible rect into the shared image wrapper's
+    // contents of that visible rect into the leased
     // SharedImage, completely overwriting the SharedImage.
-    wrapper_lease->WriteToBackingSharedImage(
+    lease->WriteToBackingSharedImage(
         [&](const scoped_refptr<gpu::ClientSharedImage>& client_si,
             const gpu::SyncToken& begin_sync_token) {
           // The returned sync token is from the SharedGpuContext.
@@ -439,26 +440,25 @@ ExternalTexture CreateExternalTexture(
     media_flags.setBlendMode(SkBlendMode::kSrc);
 
     media::PaintCanvasVideoRenderer::PaintParams params;
-    params.dest_rect = gfx::RectF(wrapper_lease->GetSharedImage()->size());
-    wrapper_lease->DrawToBackingSharedImage([&](cc::PaintCanvas& canvas) {
+    params.dest_rect = gfx::RectF(lease->GetSharedImage()->size());
+    lease->DrawToBackingSharedImage([&](cc::PaintCanvas& canvas) {
       video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
                             params, raster_context_provider);
     });
   }
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      wrapper_lease->GetSharedImage();
+  scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
   if (!shared_image) {
     return {};
   }
 
-  gpu::SyncToken sync_token = wrapper_lease->GetSyncToken();
+  gpu::SyncToken sync_token = lease->GetSyncToken();
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
           wgpu::TextureUsage::TextureBinding, std::move(shared_image),
-          sync_token, std::move(wrapper_lease));
+          sync_token, std::move(lease));
 
   wgpu::TextureViewDescriptor view_desc = {};
   wgpu::TextureView plane0 =

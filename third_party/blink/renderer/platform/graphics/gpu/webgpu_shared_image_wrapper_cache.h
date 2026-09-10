@@ -38,9 +38,9 @@ namespace blink {
 
 class MemoryManagedPaintRecorder;
 class WebGraphicsContext3DProviderWrapper;
-class WebGpuSharedImageWrapperLease;
+class WebGpuSharedImageLease;
 
-class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
+class PLATFORM_EXPORT WebGpuSharedImageCache final
     : public CanvasMemoryDumpClient {
  public:
   struct PLATFORM_EXPORT Resource {
@@ -62,23 +62,23 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
     unsigned int timer_id_ = 0;
     size_t resource_size_ = 0;
   };
-  explicit WebGpuSharedImageWrapperCache(
+  explicit WebGpuSharedImageCache(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  ~WebGpuSharedImageWrapperCache();
+  ~WebGpuSharedImageCache();
 
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> LeaseWebGpuSharedImageWrapper(
+  std::unique_ptr<WebGpuSharedImageLease> LeaseSharedImage(
       viz::SharedImageFormat format,
       gfx::Size size,
       const gfx::ColorSpace& color_space,
       SkAlphaType alpha_type);
 
   // When the lease is destroyed, move the shared image to
-  // |unused_wrappers_| if the cache is not full.
+  // |unused_resources_| if the cache is not full.
   void ReturnResource(Resource resource);
 
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
@@ -88,10 +88,10 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
   }
 
  private:
-  // The maximum number of unused WebGpuSharedImageWrappers size, 128 MB.
-  static constexpr int kMaxSharedImageWrapperCachesInKB = 128 * 1024;
-  static constexpr int kMaxSharedImageWrapperCachesInBytes =
-      kMaxSharedImageWrapperCachesInKB * 1024;
+  // The maximum size of unused shared images, 128 MB.
+  static constexpr int kMaxSharedImageCacheInKB = 128 * 1024;
+  static constexpr int kMaxSharedImageCacheInBytes =
+      kMaxSharedImageCacheInKB * 1024;
 
   // A resource is deleted from the cache if it's not reused after this delay.
   static constexpr int kCleanUpDelayInSeconds = 2;
@@ -108,11 +108,11 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
   static constexpr int kTimerIdDeltaForDeletion =
       kCleanUpDelayInSeconds / kTimerDurationInSeconds;
 
-  using DequeSharedImageWrapper = Deque<Resource>;
+  using DequeResource = Deque<Resource>;
 
-  // Search |unused_wrappers_| and acquire the WebGPU shared image wrapper
+  // Search |unused_resources_| and acquire the cached resource
   // with the same cache key for reuse.
-  std::optional<Resource> AcquireCachedWrapper(
+  std::optional<Resource> AcquireCachedResource(
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
@@ -124,9 +124,9 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
   // Start the clean-up function runs when there are unused resources.
   void StartResourceCleanUpTimer();
 
-  // This is the place to keep the unused WebGpuSharedImageWrappers.
+  // This is the place to keep the unused resources.
   // They are waiting to be used. MRU is in the front of the deque.
-  DequeSharedImageWrapper unused_wrappers_;
+  DequeResource unused_resources_;
 
   uint64_t total_unused_resources_in_bytes_ = 0;
 
@@ -144,20 +144,19 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
   unsigned int current_timer_id_ = 0;
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtr<WebGpuSharedImageWrapperCache> weak_ptr_;
-  base::WeakPtrFactory<WebGpuSharedImageWrapperCache> weak_ptr_factory_{this};
+  base::WeakPtr<WebGpuSharedImageCache> weak_ptr_;
+  base::WeakPtrFactory<WebGpuSharedImageCache> weak_ptr_factory_{this};
 };
 
-class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
+class PLATFORM_EXPORT WebGpuSharedImageLease final
     : public CanvasMemoryDumpClient {
  public:
-  using Resource = WebGpuSharedImageWrapperCache::Resource;
+  using Resource = WebGpuSharedImageCache::Resource;
 
-  WebGpuSharedImageWrapperLease(
-      Resource resource,
-      base::WeakPtr<WebGpuSharedImageWrapperCache> cache);
+  WebGpuSharedImageLease(Resource resource,
+                         base::WeakPtr<WebGpuSharedImageCache> cache);
 
-  ~WebGpuSharedImageWrapperLease();
+  ~WebGpuSharedImageLease();
 
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
@@ -197,7 +196,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
   bool IsGpuContextLost() const;
 
   Resource resource_;
-  base::WeakPtr<WebGpuSharedImageWrapperCache> cache_;
+  base::WeakPtr<WebGpuSharedImageCache> cache_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 };
 }  // namespace blink

@@ -34,9 +34,9 @@ bool IsGpuContextLost(
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
+WebGpuSharedImageLease::WebGpuSharedImageLease(
     Resource resource,
-    base::WeakPtr<WebGpuSharedImageWrapperCache> cache)
+    base::WeakPtr<WebGpuSharedImageCache> cache)
     : resource_(std::move(resource)),
       cache_(cache),
       recorder_for_external_draws_(std::make_unique<MemoryManagedPaintRecorder>(
@@ -45,38 +45,36 @@ WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
-WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
+WebGpuSharedImageLease::~WebGpuSharedImageLease() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   if (cache_ && resource_.shared_image_) {
     cache_->ReturnResource(std::move(resource_));
   }
 }
 
-void WebGpuSharedImageWrapperLease::WaitSyncToken(
-    const gpu::SyncToken& sync_token) {
+void WebGpuSharedImageLease::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
     resource_.sync_token_ = sync_token;
     resource_.shared_image_->UpdateDestructionSyncToken(resource_.sync_token_);
   }
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-WebGpuSharedImageWrapperLease::GetSharedImage() const {
+scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageLease::GetSharedImage()
+    const {
   if (IsGpuContextLost()) {
     return nullptr;
   }
   return resource_.shared_image_;
 }
 
-gpu::SyncToken WebGpuSharedImageWrapperLease::GetSyncToken() const {
+gpu::SyncToken WebGpuSharedImageLease::GetSyncToken() const {
   if (IsGpuContextLost()) {
     return gpu::SyncToken();
   }
   return resource_.sync_token_;
 }
 
-gpu::raster::RasterInterface* WebGpuSharedImageWrapperLease::RasterInterface()
-    const {
+gpu::raster::RasterInterface* WebGpuSharedImageLease::RasterInterface() const {
   if (!resource_.context_provider_wrapper_) {
     return nullptr;
   }
@@ -84,14 +82,13 @@ gpu::raster::RasterInterface* WebGpuSharedImageWrapperLease::RasterInterface()
       .RasterInterface();
 }
 
-bool WebGpuSharedImageWrapperLease::IsGpuContextLost() const {
+bool WebGpuSharedImageLease::IsGpuContextLost() const {
   return ::blink::IsGpuContextLost(resource_.context_provider_wrapper_.get());
 }
 
-bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
-    const SkPixmap& pixmap,
-    uint32_t src_x,
-    uint32_t src_y) {
+bool WebGpuSharedImageLease::UploadToBackingSharedImage(const SkPixmap& pixmap,
+                                                        uint32_t src_x,
+                                                        uint32_t src_y) {
   const int dest_width = resource_.shared_image_->size().width();
   const int dest_height = resource_.shared_image_->size().height();
 
@@ -104,7 +101,7 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
   }
 
   TRACE_EVENT0("blink",
-               "WebGpuSharedImageWrapperLease::"
+               "WebGpuSharedImageLease::"
                "UploadToBackingSharedImage");
   if (IsGpuContextLost()) {
     return false;
@@ -125,7 +122,7 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
   return true;
 }
 
-void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
+void WebGpuSharedImageLease::DrawToBackingSharedImage(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (IsGpuContextLost()) {
     return;
@@ -204,7 +201,7 @@ void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
   }
 }
 
-void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
+void WebGpuSharedImageLease::WriteToBackingSharedImage(
     base::FunctionRef<
         gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
                        const gpu::SyncToken&)> overwrite_callback) {
@@ -222,7 +219,7 @@ void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
   WaitSyncToken(external_write_sync_token);
 }
 
-bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
+bool WebGpuSharedImageLease::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     uint32_t src_x,
     uint32_t src_y,
@@ -259,7 +256,7 @@ bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
   return true;
 }
 
-void WebGpuSharedImageWrapperLease::OnMemoryDump(
+void WebGpuSharedImageLease::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
@@ -277,30 +274,30 @@ void WebGpuSharedImageWrapperLease::OnMemoryDump(
       static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
-size_t WebGpuSharedImageWrapperLease::GetSize() const {
+size_t WebGpuSharedImageLease::GetSize() const {
   return resource_.resource_size_;
 }
 
-WebGpuSharedImageWrapperCache::WebGpuSharedImageWrapperCache(
+WebGpuSharedImageCache::WebGpuSharedImageCache(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : context_provider_(std::move(context_provider)),
       task_runner_(std::move(task_runner)) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
   timer_func_ = blink::BindRepeating(
-      &WebGpuSharedImageWrapperCache::ReleaseStaleResources, weak_ptr_);
+      &WebGpuSharedImageCache::ReleaseStaleResources, weak_ptr_);
 
   DCHECK_LE(kTimerDurationInSeconds, kCleanUpDelayInSeconds);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
-WebGpuSharedImageWrapperCache::~WebGpuSharedImageWrapperCache() {
+WebGpuSharedImageCache::~WebGpuSharedImageCache() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
 }
 
-void WebGpuSharedImageWrapperCache::OnMemoryDump(
+void WebGpuSharedImageCache::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  for (const auto& unused_resource : unused_wrappers_) {
+  for (const auto& unused_resource : unused_resources_) {
     std::string path = base::StringPrintf(
         "canvas/ResourceProvider_0x%" PRIXPTR,
         reinterpret_cast<uintptr_t>(unused_resource.shared_image_.get()));
@@ -319,20 +316,19 @@ void WebGpuSharedImageWrapperCache::OnMemoryDump(
   }
 }
 
-size_t WebGpuSharedImageWrapperCache::GetSize() const {
+size_t WebGpuSharedImageCache::GetSize() const {
   return base::checked_cast<size_t>(total_unused_resources_in_bytes_);
 }
 
-std::unique_ptr<WebGpuSharedImageWrapperLease>
-WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
-    viz::SharedImageFormat format,
-    gfx::Size size,
-    const gfx::ColorSpace& color_space,
-    SkAlphaType alpha_type) {
+std::unique_ptr<WebGpuSharedImageLease>
+WebGpuSharedImageCache::LeaseSharedImage(viz::SharedImageFormat format,
+                                         gfx::Size size,
+                                         const gfx::ColorSpace& color_space,
+                                         SkAlphaType alpha_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::optional<Resource> resource =
-      AcquireCachedWrapper(size, format, alpha_type, color_space);
+      AcquireCachedResource(size, format, alpha_type, color_space);
   if (!resource) {
     auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
@@ -402,28 +398,27 @@ WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
                      std::move(context_provider_wrapper));
   }
 
-  return std::make_unique<WebGpuSharedImageWrapperLease>(std::move(*resource),
-                                                         weak_ptr_);
+  return std::make_unique<WebGpuSharedImageLease>(std::move(*resource),
+                                                  weak_ptr_);
 }
 
-void WebGpuSharedImageWrapperCache::ReturnResource(Resource resource) {
+void WebGpuSharedImageCache::ReturnResource(Resource resource) {
   if (context_provider_) {
     resource.timer_id_ = current_timer_id_;
     total_unused_resources_in_bytes_ += resource.resource_size_;
-    unused_wrappers_.push_front(std::move(resource));
+    unused_resources_.push_front(std::move(resource));
   }
 
   // If the cache is full, release LRU from the back.
-  while (total_unused_resources_in_bytes_ >
-         kMaxSharedImageWrapperCachesInBytes) {
-    total_unused_resources_in_bytes_ -= unused_wrappers_.back().resource_size_;
-    unused_wrappers_.pop_back();
+  while (total_unused_resources_in_bytes_ > kMaxSharedImageCacheInBytes) {
+    total_unused_resources_in_bytes_ -= unused_resources_.back().resource_size_;
+    unused_resources_.pop_back();
   }
 
   StartResourceCleanUpTimer();
 }
 
-WebGpuSharedImageWrapperCache::Resource::Resource(
+WebGpuSharedImageCache::Resource::Resource(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
@@ -434,24 +429,22 @@ WebGpuSharedImageWrapperCache::Resource::Resource(
           shared_image_->format().EstimatedSizeInBytes(shared_image_->size())) {
 }
 
-WebGpuSharedImageWrapperCache::Resource::Resource(Resource&& that) noexcept =
-    default;
+WebGpuSharedImageCache::Resource::Resource(Resource&& that) noexcept = default;
 
-WebGpuSharedImageWrapperCache::Resource&
-WebGpuSharedImageWrapperCache::Resource::operator=(Resource&& that) noexcept =
-    default;
+WebGpuSharedImageCache::Resource& WebGpuSharedImageCache::Resource::operator=(
+    Resource&& that) noexcept = default;
 
-WebGpuSharedImageWrapperCache::Resource::~Resource() = default;
+WebGpuSharedImageCache::Resource::~Resource() = default;
 
-std::optional<WebGpuSharedImageWrapperCache::Resource>
-WebGpuSharedImageWrapperCache::AcquireCachedWrapper(
+std::optional<WebGpuSharedImageCache::Resource>
+WebGpuSharedImageCache::AcquireCachedResource(
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space) {
   // Loop from MRU to LRU
-  DequeSharedImageWrapper::iterator it;
-  for (it = unused_wrappers_.begin(); it != unused_wrappers_.end(); ++it) {
+  DequeResource::iterator it;
+  for (it = unused_resources_.begin(); it != unused_resources_.end(); ++it) {
     if (it->shared_image_->size() == size &&
         it->shared_image_->format() == format &&
         it->shared_image_->alpha_type() == alpha_type &&
@@ -461,26 +454,26 @@ WebGpuSharedImageWrapperCache::AcquireCachedWrapper(
   }
 
   // Found one.
-  if (it != unused_wrappers_.end()) {
+  if (it != unused_resources_.end()) {
     Resource resource = std::move(*it);
     total_unused_resources_in_bytes_ -= resource.resource_size_;
     // TODO(magchen@): If the cache capacity increases a lot, will erase(it)
     // becomes inefficient?
-    // Remove the wrapper from the |unused_wrappers_|.
-    unused_wrappers_.erase(it);
+    // Remove the resource from |unused_resources_|.
+    unused_resources_.erase(it);
 
     return resource;
   }
   return std::nullopt;
 }
 
-void WebGpuSharedImageWrapperCache::ReleaseStaleResources() {
+void WebGpuSharedImageCache::ReleaseStaleResources() {
   timer_is_running_ = false;
 
   // Loop from LRU to MRU
   int stale_resource_count = 0;
-  for (const auto& unused_wrapper : base::Reversed(unused_wrappers_)) {
-    if ((current_timer_id_ - unused_wrapper.timer_id_) <
+  for (const auto& unused_resource : base::Reversed(unused_resources_)) {
+    if ((current_timer_id_ - unused_resource.timer_id_) <
         kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for
       // less than kCleanUpDelayInSeconds. They are not to be deleted this time.
@@ -491,25 +484,24 @@ void WebGpuSharedImageWrapperCache::ReleaseStaleResources() {
 
   // Delete all stale resources.
   for (int i = 0; i < stale_resource_count; ++i) {
-    total_unused_resources_in_bytes_ -= unused_wrappers_.back().resource_size_;
-    unused_wrappers_.pop_back();
+    total_unused_resources_in_bytes_ -= unused_resources_.back().resource_size_;
+    unused_resources_.pop_back();
   }
 
   current_timer_id_++;
   StartResourceCleanUpTimer();
 }
-void WebGpuSharedImageWrapperCache::StartResourceCleanUpTimer() {
-  if (unused_wrappers_.size() > 0 && !timer_is_running_) {
+void WebGpuSharedImageCache::StartResourceCleanUpTimer() {
+  if (unused_resources_.size() > 0 && !timer_is_running_) {
     task_runner_->PostDelayedTask(FROM_HERE, timer_func_,
                                   base::Seconds(kTimerDurationInSeconds));
     timer_is_running_ = true;
   }
 }
 
-wtf_size_t
-WebGpuSharedImageWrapperCache::CleanUpResourcesAndReturnSizeForTesting() {
+wtf_size_t WebGpuSharedImageCache::CleanUpResourcesAndReturnSizeForTesting() {
   ReleaseStaleResources();
-  return unused_wrappers_.size();
+  return unused_resources_.size();
 }
 
 }  // namespace blink

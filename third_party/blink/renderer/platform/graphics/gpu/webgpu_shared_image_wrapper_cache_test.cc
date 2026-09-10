@@ -20,10 +20,10 @@
 
 namespace blink {
 
-class WebGpuSharedImageWrapperCacheTest : public testing::Test {
+class WebGpuSharedImageCacheTest : public testing::Test {
  public:
-  WebGpuSharedImageWrapperCacheTest() = default;
-  ~WebGpuSharedImageWrapperCacheTest() override = default;
+  WebGpuSharedImageCacheTest() = default;
+  ~WebGpuSharedImageCacheTest() override = default;
 
   // Implements testing::Test
   void SetUp() override;
@@ -31,230 +31,213 @@ class WebGpuSharedImageWrapperCacheTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<WebGpuSharedImageWrapperCache> wrapper_cache_;
+  std::unique_ptr<WebGpuSharedImageCache> cache_;
   cc::StubDecodeCache image_decode_cache_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 
-void WebGpuSharedImageWrapperCacheTest::SetUp() {
+void WebGpuSharedImageCacheTest::SetUp() {
   Platform::SetMainThreadTaskRunnerForTesting();
   test_context_provider_ = viz::TestContextProvider::CreateRaster();
   InitializeSharedGpuContext(test_context_provider_.get(),
                              &image_decode_cache_);
 
-  wrapper_cache_ = std::make_unique<WebGpuSharedImageWrapperCache>(
+  cache_ = std::make_unique<WebGpuSharedImageCache>(
       SharedGpuContext::ContextProviderWrapper(),
       scheduler::GetSingleThreadTaskRunnerForTesting());
 }
 
-void WebGpuSharedImageWrapperCacheTest::TearDown() {
+void WebGpuSharedImageCacheTest::TearDown() {
   Platform::UnsetMainThreadTaskRunnerForTesting();
   SharedGpuContext::Reset();
 }
 
-TEST_F(WebGpuSharedImageWrapperCacheTest, MRUSameSize) {
+TEST_F(WebGpuSharedImageCacheTest, MRUSameSize) {
   auto size = gfx::Size(10, 10);
   Vector<gpu::ClientSharedImage*> returned_shared_images;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_0->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_0->GetSharedImage().get());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_1->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_1 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_1->GetSharedImage().get());
 
   // Now release the leases to recycle the shared images.
-  wrapper_lease_0.reset();
-  wrapper_lease_1.reset();  // MRU
+  lease_0.reset();
+  lease_1.reset();  // MRU
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_2 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_2->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_2 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_2->GetSharedImage().get());
 
-  // LeaseWebGpuSharedImageWrapper should return the MRU shared image, which
-  // is that of wrapper_lease_1, for wrapper_lease_2.
+  // LeaseSharedImage should return the MRU shared image, which
+  // is that of lease_1, for lease_2.
   EXPECT_EQ(returned_shared_images[1], returned_shared_images[2]);
 }
 
-TEST_F(WebGpuSharedImageWrapperCacheTest, DifferentSize) {
+TEST_F(WebGpuSharedImageCacheTest, DifferentSize) {
   auto size1 = gfx::Size(10, 10);
   auto size2 = gfx::Size(20, 20);
 
   Vector<gpu::ClientSharedImage*> returned_shared_images;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_0->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size1, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_0->GetSharedImage().get());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size2,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_1->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_1 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size2, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_1->GetSharedImage().get());
 
   // Now release the leases to recycle the shared images.
-  wrapper_lease_1.reset();
-  wrapper_lease_0.reset();
+  lease_1.reset();
+  lease_0.reset();
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_2 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_2->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_2 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size1, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_2->GetSharedImage().get());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_3 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size2,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_3->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_3 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size2, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_3->GetSharedImage().get());
 
-  // LeaseWebGpuSharedImageWrapper should return the same shared image
+  // LeaseSharedImage should return the same shared image
   // for the request with the same size.
   EXPECT_EQ(returned_shared_images[0], returned_shared_images[2]);
   EXPECT_EQ(returned_shared_images[1], returned_shared_images[3]);
 }
 
-TEST_F(WebGpuSharedImageWrapperCacheTest, CacheMissHit) {
+TEST_F(WebGpuSharedImageCacheTest, CacheMissHit) {
   auto size1 = gfx::Size(10, 10);
   auto size2 = gfx::Size(20, 20);
 
   Vector<gpu::ClientSharedImage*> returned_shared_images;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_0->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size1, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_0->GetSharedImage().get());
 
   // Now release the lease to recycle the shared image.
-  wrapper_lease_0.reset();
+  lease_0.reset();
 
   // (1) For different size.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size2,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_1->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_1 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size2, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_1->GetSharedImage().get());
 
   // Cache miss. A new shared image should be created.
   EXPECT_NE(returned_shared_images[0], returned_shared_images[1]);
 
   // (2) For different color space
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_2 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGBLinear(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_2->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_2 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size1,
+      gfx::ColorSpace::CreateSRGBLinear(), kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_2->GetSharedImage().get());
 
   // Cache miss. A new shared image should be created.
   EXPECT_NE(returned_shared_images[0], returned_shared_images[2]);
 
   // (3) For different format
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_3 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_F16, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_3->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_3 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_F16, size1, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_3->GetSharedImage().get());
 
   // Cache miss. A new shared image should be created.
   EXPECT_NE(returned_shared_images[0], returned_shared_images[3]);
 
   // (4) For different alpha type.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_4 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kOpaque_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_4->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_4 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size1, gfx::ColorSpace::CreateSRGB(),
+      kOpaque_SkAlphaType);
+  returned_shared_images.push_back(lease_4->GetSharedImage().get());
 
   // Cache miss. A new shared image should be created.
   EXPECT_NE(returned_shared_images[0], returned_shared_images[4]);
 
   // (5) For the same config again.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_5 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_5->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_5 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size1, gfx::ColorSpace::CreateSRGB(),
+      kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_5->GetSharedImage().get());
 
   // Should get the same shared image.
   EXPECT_EQ(returned_shared_images[0], returned_shared_images[5]);
 }
 
-TEST_F(WebGpuSharedImageWrapperCacheTest, StaleResourcesCleanUp) {
+TEST_F(WebGpuSharedImageCacheTest, StaleResourcesCleanUp) {
   auto resource_size = gfx::Size(10, 10);
   Vector<gpu::ClientSharedImage*> returned_shared_images;
   // The loop count for CleanUpResources before the resource gets cleaned up.
-  int wait_count = wrapper_cache_->GetWaitCountBeforeDeletionForTesting();
+  int wait_count = cache_->GetWaitCountBeforeDeletionForTesting();
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_0->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, resource_size,
+      gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_0->GetSharedImage().get());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_1->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_1 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, resource_size,
+      gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_1->GetSharedImage().get());
 
   // Now release the leases to recycle the shared images.
-  wrapper_lease_0.reset();
-  wrapper_lease_1.reset();
+  lease_0.reset();
+  lease_1.reset();
 
   // Before the intended delay, the recycled resources should not be released
   // from cache.
   for (int i = 0; i < wait_count; i++) {
-    wtf_size_t size = wrapper_cache_->CleanUpResourcesAndReturnSizeForTesting();
+    wtf_size_t size = cache_->CleanUpResourcesAndReturnSizeForTesting();
     EXPECT_EQ(2u, size);
   }
 
   // After the intended delay, all stale resources should be released now.
-  wtf_size_t size_after =
-      wrapper_cache_->CleanUpResourcesAndReturnSizeForTesting();
+  wtf_size_t size_after = cache_->CleanUpResourcesAndReturnSizeForTesting();
   EXPECT_EQ(0u, size_after);
 }
 
-TEST_F(WebGpuSharedImageWrapperCacheTest, ReuseBeforeCleanUp) {
+TEST_F(WebGpuSharedImageCacheTest, ReuseBeforeCleanUp) {
   auto resource_size = gfx::Size(10, 10);
   Vector<gpu::ClientSharedImage*> returned_shared_images;
   // The loop count for CleanUpResources before the resource gets cleaned up.
-  int wait_count = wrapper_cache_->GetWaitCountBeforeDeletionForTesting();
+  int wait_count = cache_->GetWaitCountBeforeDeletionForTesting();
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-  returned_shared_images.push_back(wrapper_lease_0->GetSharedImage().get());
+  std::unique_ptr<WebGpuSharedImageLease> lease_0 = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, resource_size,
+      gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+  returned_shared_images.push_back(lease_0->GetSharedImage().get());
 
   // Release the lease to recycle the shared image.
-  wrapper_lease_0.reset();
+  lease_0.reset();
 
   // Before the intended delay, the recycled resources should not be released
   // from cache.
   for (int i = 0; i < wait_count; i++) {
     if (i == 1) {
       // Now request a resource with the same configuration.
-      std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
-          wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-              viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-              gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
-      returned_shared_images.push_back(wrapper_lease_1->GetSharedImage().get());
+      std::unique_ptr<WebGpuSharedImageLease> lease_1 =
+          cache_->LeaseSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
+                                   resource_size, gfx::ColorSpace::CreateSRGB(),
+                                   kPremul_SkAlphaType);
+      returned_shared_images.push_back(lease_1->GetSharedImage().get());
 
       // Release the leases again to recycle the shared images.
-      wrapper_lease_1.reset();
+      lease_1.reset();
     }
 
-    wtf_size_t size = wrapper_cache_->CleanUpResourcesAndReturnSizeForTesting();
+    wtf_size_t size = cache_->CleanUpResourcesAndReturnSizeForTesting();
     EXPECT_EQ(1u, size);
   }
 
@@ -262,37 +245,36 @@ TEST_F(WebGpuSharedImageWrapperCacheTest, ReuseBeforeCleanUp) {
   // cleaned up on the next scheduled clean up. Instead, it will be cleaned up
   // with a new schedule.
   //
-  wtf_size_t size = wrapper_cache_->CleanUpResourcesAndReturnSizeForTesting();
+  wtf_size_t size = cache_->CleanUpResourcesAndReturnSizeForTesting();
   EXPECT_EQ(1u, size);
 
   // Now, the resource should be deleted.
-  size = wrapper_cache_->CleanUpResourcesAndReturnSizeForTesting();
+  size = cache_->CleanUpResourcesAndReturnSizeForTesting();
   EXPECT_EQ(0u, size);
 }
 
-TEST_F(WebGpuSharedImageWrapperCacheTest, WriteToBackingSharedImage) {
+TEST_F(WebGpuSharedImageCacheTest, WriteToBackingSharedImage) {
   auto resource_size = gfx::Size(10, 10);
-  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease =
-      wrapper_cache_->LeaseWebGpuSharedImageWrapper(
-          viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+  std::unique_ptr<WebGpuSharedImageLease> lease = cache_->LeaseSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, resource_size,
+      gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
 
-  gpu::SyncToken initial_token = wrapper_lease->GetSyncToken();
+  gpu::SyncToken initial_token = lease->GetSyncToken();
   gpu::SyncToken test_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(1), 42);
 
   bool callback_invoked = false;
-  wrapper_lease->WriteToBackingSharedImage(
+  lease->WriteToBackingSharedImage(
       [&](const scoped_refptr<gpu::ClientSharedImage>& client_si,
           const gpu::SyncToken& begin_sync_token) {
         callback_invoked = true;
-        EXPECT_EQ(client_si, wrapper_lease->GetSharedImage());
+        EXPECT_EQ(client_si, lease->GetSharedImage());
         EXPECT_EQ(begin_sync_token, initial_token);
         return test_token;
       });
 
   EXPECT_TRUE(callback_invoked);
-  EXPECT_EQ(wrapper_lease->GetSyncToken(), test_token);
+  EXPECT_EQ(lease->GetSyncToken(), test_token);
 }
 
 }  // namespace blink
