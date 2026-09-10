@@ -476,6 +476,25 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testIsServerSynthesizerEnabled_nativeEnabled() {
+        assertTrue(ReadAloudFeatures.isServerSynthesizerEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_SERVER_SYNTHESIZER)
+    public void testIsServerSynthesizerEnabled_synthesizerEnabled() {
+        assertTrue(ReadAloudFeatures.isServerSynthesizerEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    @DisableFeatures(ReadAloudFeatures.READ_ALOUD_SERVER_SYNTHESIZER)
+    public void testIsServerSynthesizerEnabled_explicitlyDisabled() {
+        assertFalse(ReadAloudFeatures.isServerSynthesizerEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testCreatePlayback_nativeEnabled_createsNativePlayback() {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);

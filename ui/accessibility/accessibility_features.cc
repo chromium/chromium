@@ -325,6 +325,17 @@ bool IsReadAloudNativeEnabled() {
   return base::FeatureList::IsEnabled(ax::mojom::features::kReadAloudNative);
 }
 
+bool IsReadAloudServerSynthesizerEnabled() {
+  std::optional<bool> override_state = base::FeatureList::GetStateIfOverridden(
+      ax::mojom::features::kReadAloudServerSynthesizer);
+  if (override_state.has_value() && !override_state.value()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+             ax::mojom::features::kReadAloudServerSynthesizer) ||
+         base::FeatureList::IsEnabled(ax::mojom::features::kReadAloudNative);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAXTreeFixing, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAXTreeFixingEnabled() {

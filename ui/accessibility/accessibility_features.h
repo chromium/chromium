@@ -276,6 +276,13 @@ AX_BASE_EXPORT bool IsAccessibilityAndroidMathEnabled();
 using ax::mojom::features::kReadAloudNative;
 AX_BASE_EXPORT bool IsReadAloudNativeEnabled();
 
+// Controls the server speech synthesis broker for Read Aloud. Returns true if
+// kReadAloudServerSynthesizer is enabled or if kReadAloudNative is enabled,
+// unless kReadAloudServerSynthesizer is explicitly disabled via command line or
+// Finch field trial overrides.
+using ax::mojom::features::kReadAloudServerSynthesizer;
+AX_BASE_EXPORT bool IsReadAloudServerSynthesizerEnabled();
+
 #if !BUILDFLAG(IS_ANDROID)
 // Use the AXTree fixing code, which may be an assortment of different
 // tools/methods to fix the AXTree. This is not available on Android.

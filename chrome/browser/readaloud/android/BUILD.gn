@@ -107,6 +107,7 @@ static_library("features") {
     "//chrome/browser:browser_process",
     "//chrome/browser/flags:flags_android",
     "//components/metrics",
+    "//ui/accessibility:ax_base",
   ]
 }
 

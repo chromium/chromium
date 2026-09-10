@@ -15,10 +15,11 @@ namespace {
 
 // Array of features exposed through the Java AccessibilityFeaturesMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-  &features::kAccessibilityAndroidMath,
-  &features::kAccessibilityHandleOccludingViews,
-  &features::kAccessibilityTextFormatting,
-  &features::kReadAloudNative,
+    &features::kAccessibilityAndroidMath,
+    &features::kAccessibilityHandleOccludingViews,
+    &features::kAccessibilityTextFormatting,
+    &features::kReadAloudNative,
+    &features::kReadAloudServerSynthesizer,
 };
 
 // static

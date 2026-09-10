@@ -31,3 +31,9 @@ feature kReadAloudNative {
   const string name = "ReadAloudNative";
   const bool default_state = false;
 };
+
+// Enables the server speech synthesis broker for Read Aloud.
+feature kReadAloudServerSynthesizer {
+  const string name = "ReadAloudServerSynthesizer";
+  const bool default_state = false;
+};

@@ -46,4 +46,40 @@ TEST_F(ReadAloudServiceFactoryTest, OffTheRecordProfile) {
   EXPECT_EQ(nullptr, ReadAloudServiceFactory::GetForProfile(otr_profile));
 }
 
+TEST_F(ReadAloudServiceFactoryTest, ServerSynthesizerBothDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kReadAloudNative,
+                             features::kReadAloudServerSynthesizer});
+
+  EXPECT_FALSE(features::IsReadAloudServerSynthesizerEnabled());
+}
+
+TEST_F(ReadAloudServiceFactoryTest, ServerSynthesizerDirectlyEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kReadAloudServerSynthesizer},
+      /*disabled_features=*/{features::kReadAloudNative});
+
+  EXPECT_TRUE(features::IsReadAloudServerSynthesizerEnabled());
+}
+
+TEST_F(ReadAloudServiceFactoryTest, NativeEnabledImplicitServerSynthesizer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kReadAloudNative);
+
+  EXPECT_TRUE(features::IsReadAloudServerSynthesizerEnabled());
+}
+
+TEST_F(ReadAloudServiceFactoryTest,
+       NativeEnabledServerSynthesizerExplicitlyDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kReadAloudNative},
+      /*disabled_features=*/{features::kReadAloudServerSynthesizer});
+
+  EXPECT_FALSE(features::IsReadAloudServerSynthesizerEnabled());
+}
+
 }  // namespace readaloud

@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableList;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -128,6 +130,30 @@ public final class ReadAloudFeatures {
         return sReadAloudNative.isEnabled();
     }
 
+    public static final String READ_ALOUD_SERVER_SYNTHESIZER = "ReadAloudServerSynthesizer";
+
+    public static final MutableFlagWithSafeDefault sReadAloudServerSynthesizer =
+            new MutableFlagWithSafeDefault(
+                    AccessibilityFeaturesMap.getInstance(),
+                    READ_ALOUD_SERVER_SYNTHESIZER,
+                    /* defaultValue= */ false);
+
+    /**
+     * Returns true if server speech synthesis is enabled. When native C++ is initialized, this
+     * delegates directly to C++ IsReadAloudServerSynthesizerEnabled() which evaluates
+     * kReadAloudNative as an implicit enabler while respecting explicit disable overrides.
+     */
+    public static boolean isServerSynthesizerEnabled() {
+        if (FeatureList.isNativeInitialized()) {
+            return ReadAloudFeaturesJni.get().isServerSynthesizerEnabled();
+        }
+        if (FeatureOverrides.hasTestFeature(READ_ALOUD_SERVER_SYNTHESIZER)
+                && !sReadAloudServerSynthesizer.isEnabled()) {
+            return false;
+        }
+        return sReadAloudServerSynthesizer.isEnabled() || isNativeEnabled();
+    }
+
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */
     public static boolean isIPHMenuButtonHighlightCctEnabled() {
         return ChromeFeatureList.isEnabled(
@@ -171,5 +197,8 @@ public final class ReadAloudFeatures {
         // Returns a string to include with requests to the Read Aloud service to activate
         // experimental features.
         String getServerExperimentFlag();
+
+        // Returns true if ReadAloudServerSynthesizer or ReadAloudNative is enabled.
+        boolean isServerSynthesizerEnabled();
     }
 }

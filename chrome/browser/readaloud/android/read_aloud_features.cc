@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/metrics/metrics_service.h"
+#include "ui/accessibility/accessibility_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/readaloud/android/features_jni_headers/ReadAloudFeatures_jni.h"
@@ -39,6 +40,10 @@ JNI_ReadAloudFeatures_GetServerExperimentFlag(JNIEnv* env) {
   }
   return ConvertUTF8ToJavaString(
       env, base::StrCat({trial->trial_name(), "_", trial->group_name()}));
+}
+
+static bool JNI_ReadAloudFeatures_IsServerSynthesizerEnabled(JNIEnv* env) {
+  return features::IsReadAloudServerSynthesizerEnabled();
 }
 
 }  // namespace readaloud
