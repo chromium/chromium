@@ -250,4 +250,17 @@ suite('<app-management-pwa-detail-view>', () => {
     checkToggleDisabled('kCamera');
     checkToggleDisabled('kMicrophone');
   });
+
+  test('Permission heading has heading role and level 2', async () => {
+    const app = await fakeHandler.addApp();
+    await selectPageFor(app.id);
+
+    const permissionHeading =
+        pwaDetailView.shadowRoot!.querySelector('#permissionHeading')!;
+    const headerText =
+        permissionHeading.shadowRoot!.querySelector('.header-text');
+    assertTrue(!!headerText);
+    assertEquals('heading', headerText.getAttribute('role'));
+    assertEquals('2', headerText.getAttribute('aria-level'));
+  });
 });

@@ -9,7 +9,9 @@
 </style>
 
 <div class="permission-heading">
-    <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
+  <div class="header-text" role="heading" aria-level="2">
+      $i18n{appManagementPermissionsLabel}
+  </div>
     <template is="dom-if" if="[[hasSubApps_]]">
         <div class="permission-text-row secondary-text" id="parentAppPermissionExplanation">
             [[getParentAppPermissionExplanationString_(app)]]

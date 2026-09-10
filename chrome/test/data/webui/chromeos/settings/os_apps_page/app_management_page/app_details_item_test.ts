@@ -54,6 +54,14 @@ suite('<app-management-app-details-item>', () => {
     flushTasks();
   }
 
+  test('App details heading has heading role and level 2', async () => {
+    await addApp({});
+    const heading = appDetailsItem.shadowRoot!.querySelector('#heading');
+    assertTrue(!!heading);
+    assertEquals('heading', heading.getAttribute('role'));
+    assertEquals('2', heading.getAttribute('aria-level'));
+  });
+
   test('PWA type from unknown source', async () => {
     await addApp({
       type: AppType.kWeb,
