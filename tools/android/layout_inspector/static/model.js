@@ -67,30 +67,90 @@ class VisOptions {
   }
 }
 
+/******** ViewNode ********/
+/**
+ * A single Android View parsed from the UI Dump, as a node in the View tree.
+ */
+class ViewNode {
+  constructor(xmlNode, index, parent, depth, isLastChild) {
+    this.xmlNode = xmlNode;
+    this.index = index;
+    this.parent = parent;
+    this.depth = depth;
+    this.isLastChild = isLastChild;
+    this.children = [];
+
+    this.className = xmlNode.getAttribute('class');
+    this.resourceId = xmlNode.getAttribute('resource-id');
+  }
+}
+
 /******** MainModel ********/
 /**
- * Global source of truth representing the device state. Owns data fetching from
- * the ADB server.
+ * Global source of truth representing the device state. Owns data fetching
+ * from the ADB server, XML parsing, and the View hierarchy model.
  */
 class MainModel {
   constructor() {
     this.visOpts = new VisOptions();
     this.imgScreenshot = null;
+    this.views = [];
+  }
+
+  /**
+   * Visits parsed Android UI dump XML hierarchy, instantiates {@link ViewNode}
+   * from its Element, and writes them into {@link MainModel#views}.
+   * @param {!Document} xmlDoc Parsed Android UI dump XML.
+   */
+  _populateViews(xmlDoc) {
+    this.views.length = 0;
+    const xmlRoot = xmlDoc.querySelector('hierarchy');
+    if (!xmlRoot) return;
+
+    const makeFrame = (viewParent, xmlNode) => ({
+      viewParent,
+      xmlChildrenElements:
+          Array.from(xmlNode.children).filter(n => n.nodeType === 1),
+      i: 0
+    });
+
+    // Recursion-free pre-order DFS traversal of `xmlRoot`'s Element children.
+    const stack = [makeFrame(null, xmlRoot)];
+    while (stack.length > 0) {
+      const fr = stack.at(-1);
+      if (fr.i < fr.xmlChildrenElements.length) {
+        const xmlChild = fr.xmlChildrenElements[fr.i++];
+        const depth = stack.length - 1;
+        const isLastChild = (fr.i === fr.xmlChildrenElements.length);
+        const view = new ViewNode(xmlChild, this.views.length, fr.viewParent,
+                                  depth, isLastChild);
+        if (fr.viewParent) fr.viewParent.children.push(view);
+        this.views.push(view);
+        stack.push(makeFrame(view, xmlChild));
+      } else {
+        stack.pop();
+      }
+    }
   }
 
   /** Fetches the latest device data from the ADB server. */
   async _fetchData() {
-    const screenshotResponse = await fetch('/api/screenshot.png');
+    const [screenshotResponse, uiDumpResponse] = await Promise.all(
+        [fetch('/api/screenshot.png'), fetch('/api/ui-dump.xml')]);
 
     if (!screenshotResponse.ok) throw new Error('Screenshot fetch failed');
+    if (!uiDumpResponse.ok) throw new Error('UI dump fetch failed');
 
     const screenshotBlob = await screenshotResponse.blob();
 
-    return {screenshotBlob};
+    const uiDumpData = await uiDumpResponse.json();
+    if (!uiDumpData.success) throw new Error(uiDumpData.error);
+
+    return {screenshotBlob, uiDumpData};
   }
 
   async load() {
-    const {screenshotBlob} = await this._fetchData();
+    const {screenshotBlob, uiDumpData} = await this._fetchData();
 
     this.imgScreenshot =
         await convertImageBlobToImage(screenshotBlob).catch((e) => {
@@ -98,9 +158,13 @@ class MainModel {
         });
     const {width, height} = this.imgScreenshot;
     this.visOpts.setWorldSize(width, height);
+
+    const xmlDoc = new DOMParser().parseFromString(uiDumpData.xml, 'text/xml');
+    this._populateViews(xmlDoc);
   }
 
   async unload() {
+    this.views.length = 0;
     this.imgScreenshot = null;
   }
 }

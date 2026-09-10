@@ -19,13 +19,14 @@ class MainElements {
     this.divOverlay = getById('div-overlay');
     this.divPaneScreenshot = getById('div-pane-screenshot');
     this.divScreenshot = getById('div-screenshot');
+    this.divViewTree = getById('div-view-tree');
   }
 }
 
 /******** MainVis ********/
 /**
- * Orchestrates top-level visual state spanning multiple visualizers. Modifies
- * the DOM but has no layout logic.
+ * Orchestrates top-level visual state spanning multiple visualizers (like the
+ * Screenshot, or View Tree). Modifies the DOM but has no layout logic.
  */
 class MainVis {
   constructor(el, model) {
@@ -34,12 +35,14 @@ class MainVis {
 
     this.screenshotVis =
         new ScreenshotVis(this.el.divScreenshot, this.model.visOpts);
+    this.treeVis = new TreeVis(this.el.divViewTree);
     this.infoBarVis = new InfoBarVis(this.el.divInfoBar);
     this.overlayVis = new OverlayVis(this.el.divOverlay);
   }
 
   clearUI() {
     this.screenshotVis.clear();
+    this.treeVis.clear();
   }
 }
 
@@ -59,6 +62,8 @@ class MainController {
     this.layoutCtrl = new LayoutController(
         this.model, this.el.divMain, this.el.divPaneScreenshot,
         this.el.divMainSplitter, this.hintCtrl);
+
+    this.treeCtrl = new TreeController(this.model, this.vis.treeVis);
   }
 
   // Event Handlers - File Operations/Markup
@@ -74,6 +79,9 @@ class MainController {
 
       const {wDims} = this.model.visOpts;
       this.layoutCtrl.setLayoutMode(LayoutMode.fromVector(-wDims.h, -wDims.w));
+
+      // The model is the source of truth for view data.
+      this.treeCtrl.populate();
 
     } catch (error) {
       console.error('Failed to load screen data:', error);
