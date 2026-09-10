@@ -20,6 +20,18 @@ class IdentityManager;
 
 namespace lens {
 
+// LINT.IfChange(LensIdentityDelegationFetchStatus)
+enum class LensIdentityDelegationFetchStatus {
+  kSuccess = 0,
+  kSignedOut = 1,
+  kAccountError = 2,
+  kNoSapisidCookie = 3,
+  kHashFailed = 4,
+  kNoCookieManager = 5,
+  kMaxValue = kNoCookieManager,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensIdentityDelegationFetchStatus)
+
 // Generates the SAPISIDHASH V2 header value.
 // Returns std::nullopt if the hash cannot be generated (e.g. empty input).
 std::optional<std::string> GenerateSapisidHash(

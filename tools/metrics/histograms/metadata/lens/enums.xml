@@ -54,6 +54,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensContextualTasksQueryEligibility) -->
 
+<!-- LINT.IfChange(LensIdentityDelegationFetchStatus) -->
+
+<enum name="LensIdentityDelegationFetchStatus">
+  <summary>
+    The status or resolution of an identity delegation header fetch.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Signed Out"/>
+  <int value="2" label="Account Error"/>
+  <int value="3" label="No SAPISID Cookie"/>
+  <int value="4" label="Hash Generation Failed"/>
+  <int value="5" label="No Cookie Manager"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/lens/lens_identity_delegation_helper.h:LensIdentityDelegationFetchStatus) -->
+
 <!-- LINT.IfChange(LensOverlayContextMenuOption) -->
 
 <enum name="LensOverlayContextMenuOption">
