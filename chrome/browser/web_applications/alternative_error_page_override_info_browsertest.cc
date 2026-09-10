@@ -207,5 +207,30 @@ IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
             "offlineIcon");
 }
 
+// Testing subframe navigation inside an installed app scope.
+IN_PROC_BROWSER_TEST_P(AlternativeErrorPageOverrideInfoBrowserTest,
+                       SubframeNavigation) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_short_name_only.json");
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), app_url);
+  web_app::test::InstallPwaForCurrentUrl(browser());
+  content::BrowserContext* context = browser()->GetProfile();
+
+  content::MockNavigationHandle navigation_handle(
+      app_url, /*render_frame_host=*/nullptr);
+  navigation_handle.set_is_in_primary_main_frame(false);
+  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
+      content::GetContentClientForTesting()
+          ->browser()
+          ->GetAlternativeErrorPageOverrideInfo(
+              navigation_handle, /*render_frame_host=*/nullptr, context,
+              net::ERR_INTERNET_DISCONNECTED);
+
+  // Subframes should not use web app alternative error pages.
+  EXPECT_FALSE(info);
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     AlternativeErrorPageOverrideInfoBrowserTest);

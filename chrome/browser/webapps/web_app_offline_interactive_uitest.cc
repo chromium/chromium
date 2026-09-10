@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/metrics/crc32.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -286,6 +288,58 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
       base::span(static_cast<const uint8_t*>(bitmap.pixmap().addr()),
                  bitmap.computeByteSize()));
   EXPECT_EQ(1504857296u, base::Crc32(0, image_bytes));
+
+  EXPECT_TRUE(
+      EvalJs(
+          web_contents,
+          "Object.getOwnPropertyDescriptor(globalThis, 'icon') !== undefined",
+          content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+          ISOLATED_WORLD_ID_CHROME_INTERNAL)
+          .ExtractBool());
+  EXPECT_FALSE(
+      EvalJs(
+          web_contents,
+          "Object.getOwnPropertyDescriptor(globalThis, 'icon') !== undefined",
+          content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, ISOLATED_WORLD_ID_EXTENSIONS)
+          .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
+                       SubframeErrorDoesNotAffectMainFrame) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  const GURL pwa_url =
+      embedded_test_server()->GetURL("/banners/no-sw-with-colors.html");
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), pwa_url);
+  webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+  WebAppIconWaiter(browser()->GetProfile(), app_id).Wait();
+
+  std::unique_ptr<content::URLLoaderInterceptor> interceptor =
+      content::URLLoaderInterceptor::SetupRequestFailForURL(
+          pwa_url, net::ERR_INTERNET_DISCONNECTED);
+
+  const GURL outer_url =
+      embedded_test_server()->GetURL("/banners/iframe_with_icon.html");
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), outer_url));
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
+            outer_url);
+
+  std::string img_src = content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                                        "document.getElementById('icon').src")
+                            .ExtractString();
+  EXPECT_FALSE(base::StartsWith(img_src, "data:image/png;base64,"));
+
+  const bool icon_own_prop =
+      content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                      "Object.getOwnPropertyDescriptor(globalThis, 'icon') "
+                      "!== undefined",
+                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                      ISOLATED_WORLD_ID_EXTENSIONS)
+          .ExtractBool();
+  EXPECT_FALSE(icon_own_prop);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {

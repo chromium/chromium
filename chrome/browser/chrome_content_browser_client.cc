@@ -8605,7 +8605,8 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (content::AreIsolatedWebAppsEnabled(browser_context) &&
+  if (navigation_handle.IsInPrimaryMainFrame() &&
+      content::AreIsolatedWebAppsEnabled(browser_context) &&
       IsIsolatedWebAppUrl(url)) {
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_override_info =
@@ -8620,7 +8621,8 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-  if (error_code == net::ERR_INTERNET_DISCONNECTED) {
+  if (navigation_handle.IsInPrimaryMainFrame() &&
+      error_code == net::ERR_INTERNET_DISCONNECTED) {
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_override_info = web_app::GetOfflinePageInfo(
             url, render_frame_host, browser_context);
