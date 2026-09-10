@@ -74,10 +74,10 @@ def CheckLucicfgGenOutput(input_api, output_api):
     input_api.canned_checks.CheckLucicfgGenOutput(
       input_api, output_api, 'main.star'
     )
-  ) + input_api.RunTests(
-    input_api.canned_checks.CheckLucicfgGenOutput(
+    + input_api.canned_checks.CheckLucicfgGenOutput(
       input_api, output_api, 'dev.star'
-    )
+    ),
+    parallel=False,
   )
 
 
