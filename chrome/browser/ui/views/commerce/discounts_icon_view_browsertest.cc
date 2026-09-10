@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/run_until.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -93,12 +92,11 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (test_name == "InvokeUi_show_discounts_icon_with_label") {
-      EXPECT_TRUE(base::test::RunUntil(
-          [&accessor]() { return accessor.IsChipVisible(); }));
+      EXPECT_TRUE(accessor.ShouldShowSuggestionChip());
       EXPECT_EQ(accessor.GetText(),
                 l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
     } else if (test_name == "InvokeUi_show_discounts_icon_only") {
-      EXPECT_FALSE(accessor.IsChipVisible());
+      EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
     }
     return true;
   }

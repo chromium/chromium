@@ -83,7 +83,7 @@ class OfferNotificationIconViewBrowserTest
 
     if (test_name.find("InvokeUi_show_offer_notification_icon_only") !=
         std::string::npos) {
-      EXPECT_FALSE(accessor.IsChipVisible());
+      EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
     }
 
     return true;

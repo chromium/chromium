@@ -15,7 +15,7 @@
 
 bool IntentChipButtonTestBase::IsIntentChipFullyCollapsed(
     BrowserWindowInterface* browser) {
-  return !GetIntentChip(browser).IsChipVisible();
+  return !GetIntentChip(browser).ShouldShowSuggestionChip();
 }
 
 page_actions::PageActionTestAccessor IntentChipButtonTestBase::GetIntentChip(

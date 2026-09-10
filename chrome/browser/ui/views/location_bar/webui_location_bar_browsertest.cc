@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -268,6 +269,47 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
 
   controller->Show(kActionAiMode);
   EXPECT_FALSE(control.GetPageActionStates().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       PageActionTestAccessorChipVisibility) {
+  WaitForInitialWebUIToolbar(browser());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  auto* controller = tab->GetTabFeatures()->page_action_controller();
+
+  actions::ActionId action_id = kActionAiMode;
+  page_actions::PageActionTestAccessor accessor(browser(), action_id);
+
+  // Initially, the page action is not visible.
+  EXPECT_FALSE(accessor.GetVisible());
+  EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
+  EXPECT_FALSE(accessor.IsIconVisible());
+
+  // Show as an icon (not a chip).
+  controller->Show(action_id);
+  EXPECT_TRUE(accessor.GetVisible());
+  EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
+  EXPECT_TRUE(accessor.IsIconVisible());
+
+  // Show suggestion chip.
+  controller->ShowSuggestionChip(action_id);
+  EXPECT_TRUE(accessor.GetVisible());
+  EXPECT_TRUE(accessor.ShouldShowSuggestionChip());
+  EXPECT_FALSE(accessor.IsIconVisible());
+
+  // Hide the suggestion chip back to icon mode.
+  controller->HideSuggestionChip(action_id);
+  EXPECT_TRUE(accessor.GetVisible());
+  EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
+  EXPECT_TRUE(accessor.IsIconVisible());
+
+  // Hide the page action completely.
+  controller->Hide(action_id);
+  EXPECT_FALSE(accessor.GetVisible());
+  EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
+  EXPECT_FALSE(accessor.IsIconVisible());
 }
 
 // Display all available page actions and check that a button is rendered.

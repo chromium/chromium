@@ -229,17 +229,20 @@ bool PageActionTestAccessor::GetVisible() const {
   return pav ? pav->GetVisible() : false;
 }
 
-bool PageActionTestAccessor::IsChipVisible() const {
+bool PageActionTestAccessor::ShouldShowSuggestionChip() const {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
-      return model->GetVisible() && model->IsChipShowing();
+      return model->GetVisible() && model->ShouldShowSuggestionChip();
     }
     return EvaluateWebUI(
         R"((el) => {
           if (el.hidden || window.getComputedStyle(el).display === 'none') {
             return false;
           }
-          return !!el.state?.shouldShowChip && !!el.state?.text;
+          const chipBtn = el.shadowRoot
+              ? el.shadowRoot.querySelector('#button')
+              : null;
+          return !!chipBtn && chipBtn.hasAttribute('has-label');
         })");
   }
   auto* pav = GetPageActionView();
@@ -249,17 +252,39 @@ bool PageActionTestAccessor::IsChipVisible() const {
   return pav->IsChipVisible();
 }
 
-bool PageActionTestAccessor::IsIconVisible() const {
+bool PageActionTestAccessor::IsChipShowing() const {
   if (features::IsWebUILocationBarEnabled()) {
     if (const auto* model = GetModel()) {
-      return model->GetVisible() && !model->IsChipShowing();
+      return model->GetVisible() && model->IsChipShowing();
     }
     return EvaluateWebUI(
         R"((el) => {
           if (el.hidden || window.getComputedStyle(el).display === 'none') {
             return false;
           }
-          return !el.state?.shouldShowChip || !el.state?.text;
+          const chipBtn = el.shadowRoot
+              ? el.shadowRoot.querySelector('#button')
+              : null;
+          return !!chipBtn && chipBtn.hasAttribute('has-label');
+        })");
+  }
+  return ShouldShowSuggestionChip() && !IsAnimating();
+}
+
+bool PageActionTestAccessor::IsIconVisible() const {
+  if (features::IsWebUILocationBarEnabled()) {
+    if (const auto* model = GetModel()) {
+      return model->GetVisible() && !model->ShouldShowSuggestionChip();
+    }
+    return EvaluateWebUI(
+        R"((el) => {
+          if (el.hidden || window.getComputedStyle(el).display === 'none') {
+            return false;
+          }
+          const chipBtn = el.shadowRoot
+              ? el.shadowRoot.querySelector('#button')
+              : null;
+          return !!chipBtn && !chipBtn.hasAttribute('has-label');
         })");
   }
   auto* pav = GetPageActionView();
@@ -285,7 +310,7 @@ bool PageActionTestAccessor::IsLabelVisible() const {
             return false;
           }
           const chipBtn = el.shadowRoot
-              ? el.shadowRoot.querySelector('toolbar-chip-button')
+              ? el.shadowRoot.querySelector('#button')
               : null;
           if (!chipBtn || !chipBtn.hasAttribute('has-label')) {
             return false;
@@ -309,7 +334,7 @@ bool PageActionTestAccessor::IsAtMinimumSize() const {
     return EvaluateWebUI(
         R"((el) => {
           const chipBtn = el.shadowRoot
-              ? el.shadowRoot.querySelector('toolbar-chip-button')
+              ? el.shadowRoot.querySelector('#button')
               : null;
           if (!chipBtn) return true;
           const btn = chipBtn.shadowRoot
@@ -331,7 +356,7 @@ bool PageActionTestAccessor::IsIconCentered() const {
     return EvaluateWebUI(
         R"((el) => {
           const chipBtn = el.shadowRoot
-              ? el.shadowRoot.querySelector('toolbar-chip-button')
+              ? el.shadowRoot.querySelector('#button')
               : null;
           if (!chipBtn) return true;
           const btn = chipBtn.shadowRoot
@@ -392,7 +417,7 @@ bool PageActionTestAccessor::HasIconHighlight() const {
 }
 
 std::u16string PageActionTestAccessor::GetText() const {
-  if (!IsChipVisible()) {
+  if (!ShouldShowSuggestionChip()) {
     return std::u16string();
   }
   if (features::IsWebUILocationBarEnabled()) {
@@ -410,7 +435,11 @@ std::u16string PageActionTestAccessor::GetText() const {
                 secondaryIdentifier: "%s"
               });
               if (!tracked || !tracked.element) return '';
-              return (tracked.element.state?.text || '').toString();
+              const el = tracked.element;
+              const textSpan = el.shadowRoot
+                  ? el.shadowRoot.querySelector('#text')
+                  : null;
+              return (textSpan ? (textSpan.textContent || '') : '').trim();
             })())",
             tracked_el->identifier().GetName().c_str(),
             tracked_el->GetSecondaryIdentifier().c_str());

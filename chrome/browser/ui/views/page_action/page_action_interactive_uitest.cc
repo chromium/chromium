@@ -427,6 +427,37 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   EXPECT_THAT(action, IsChipCollapsed());
 }
 
+// Tests that PageActionTestAccessor accurately reflects chip and icon
+// visibility when toggling suggestion chip state.
+IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
+                       PageActionTestAccessorChipVisibility) {
+  auto action = GetTestPageAction();
+
+  EXPECT_FALSE(action.GetVisible());
+  EXPECT_FALSE(action.ShouldShowSuggestionChip());
+  EXPECT_FALSE(action.IsIconVisible());
+
+  ShowTestPageActionIcon();
+  EXPECT_TRUE(action.GetVisible());
+  EXPECT_FALSE(action.ShouldShowSuggestionChip());
+  EXPECT_TRUE(action.IsIconVisible());
+
+  ShowTestSuggestionChip();
+  EXPECT_TRUE(action.GetVisible());
+  EXPECT_TRUE(action.ShouldShowSuggestionChip());
+  EXPECT_FALSE(action.IsIconVisible());
+
+  HideSuggestionChip(kActionShowTranslate);
+  EXPECT_TRUE(action.GetVisible());
+  EXPECT_FALSE(action.ShouldShowSuggestionChip());
+  EXPECT_TRUE(action.IsIconVisible());
+
+  HidePageAction(kActionShowTranslate);
+  EXPECT_FALSE(action.GetVisible());
+  EXPECT_FALSE(action.ShouldShowSuggestionChip());
+  EXPECT_FALSE(action.IsIconVisible());
+}
+
 // Tests that toggling the suggestion chip state for two actions reorders their
 // views appropriately.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,

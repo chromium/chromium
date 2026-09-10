@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return page_actions::PageActionTestAccessor(browser(),
                                                 kActionShowMemorySaverChip)
-        .IsChipVisible();
+        .ShouldShowSuggestionChip();
   }));
 
   SetTabDiscardState(0, true);
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return page_actions::PageActionTestAccessor(browser(),
                                                 kActionShowMemorySaverChip)
-        .IsChipVisible();
+        .ShouldShowSuggestionChip();
   }));
 
   ClickPageActionChip();
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return !page_actions::PageActionTestAccessor(browser(),
                                                  kActionShowMemorySaverChip)
-                .IsChipVisible();
+                .ShouldShowSuggestionChip();
   }));
 }
 
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverBubbleViewSavingsTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return page_actions::PageActionTestAccessor(browser(),
                                                 kActionShowMemorySaverChip)
-        .IsChipVisible();
+        .ShouldShowSuggestionChip();
   }));
 
   ClickPageActionChip();

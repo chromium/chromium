@@ -45,8 +45,22 @@ class PageActionTestAccessor {
   PageActionTestAccessor& operator=(const PageActionTestAccessor&) = default;
   ~PageActionTestAccessor();
 
+  // Returns true if the page action is visible.
   bool GetVisible() const;
-  bool IsChipVisible() const;
+
+  // Returns true if the page action is in suggestion chip mode (i.e. configured
+  // or requested to show as a suggestion chip with label + icon). This reflects
+  // the intended chip mode immediately (synchronously), including while
+  // expanding or collapsing animations are still in progress.
+  bool ShouldShowSuggestionChip() const;
+
+  // Returns true if the suggestion chip is currently expanded and showing on
+  // screen (i.e. chip mode is active and not currently animating or collapsed).
+  // In WebUI, this reflects the asynchronous state after frontend animations
+  // finish.
+  bool IsChipShowing() const;
+
+  // Returns true if the page action is visible as an icon only (not a chip).
   bool IsIconVisible() const;
   bool IsLabelVisible() const;
   bool IsAtMinimumSize() const;

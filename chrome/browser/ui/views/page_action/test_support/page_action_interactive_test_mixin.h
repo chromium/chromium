@@ -93,7 +93,7 @@ class PageActionInteractiveTestMixin : public T {
         action_id,
         base::BindRepeating(
             [](const page_actions::PageActionTestAccessor* accessor) {
-              return accessor->IsChipVisible() && !accessor->IsAnimating();
+              return accessor->IsChipShowing();
             }),
         "WaitForPageActionChipVisible()");
   }
@@ -115,7 +115,7 @@ class PageActionInteractiveTestMixin : public T {
         action_id,
         base::BindRepeating(
             [](const page_actions::PageActionTestAccessor* accessor) {
-              return !accessor->IsChipVisible() && !accessor->IsAnimating();
+              return !accessor->IsChipShowing();
             }),
         "WaitForPageActionChipNotVisible()");
   }
