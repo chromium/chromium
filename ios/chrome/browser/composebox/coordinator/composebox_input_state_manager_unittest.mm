@@ -35,6 +35,7 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 @interface ComposeboxInputStateManager (Testing)
 - (void)didUpdateInputState:(const contextual_search::InputState&)inputState;
@@ -375,6 +376,10 @@ TEST_F(ComposeboxInputStateManagerTest, ToolDisabled_ServerSideEnabled) {
 // server-side state is disabled and the user is eligible according to the AIM
 // eligibility service.
 TEST_F(ComposeboxInputStateManagerTest, ImageToolAllowed_ServerSideDisabled) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Server-side state is always enabled on phones.";
+  }
+
   // Disable server-side state for this test.
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(kComposeboxServerSideState);
@@ -393,6 +398,10 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolAllowed_ServerSideDisabled) {
 // Tests that the image tool is disabled in local fallback mode when there are
 // already tab or file attachments.
 TEST_F(ComposeboxInputStateManagerTest, ImageToolDisabled_HasTabOrFile) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Server-side state is always enabled on phones.";
+  }
+
   // Disable server-side state for this test.
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(kComposeboxServerSideState);
@@ -915,6 +924,10 @@ TEST_F(ComposeboxInputStateManagerTest,
 // model picker when the feature flag is off.
 TEST_F(ComposeboxInputStateManagerTest,
        ComputeUIInputState_ModelPickerDisabled) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Model picker is always enabled on phones.";
+  }
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kComposeboxAdditionalAdvancedTools);
 

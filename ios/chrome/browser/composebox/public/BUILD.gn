@@ -28,6 +28,7 @@ source_set("features") {
   deps = [
     "//base",
     "//components/omnibox/common",
+    "//ui/base",
   ]
 }
 

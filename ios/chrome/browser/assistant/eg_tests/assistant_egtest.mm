@@ -123,7 +123,8 @@ void OpenAssistantFromOmnibox() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kAssistantContainerAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionDown,
+                                                            0.5, 0.1)];
 
   // Verify the composebox is no longer the first responder (meaning the
   // keyboard is dismissed).

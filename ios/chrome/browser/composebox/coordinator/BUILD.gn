@@ -381,5 +381,6 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
