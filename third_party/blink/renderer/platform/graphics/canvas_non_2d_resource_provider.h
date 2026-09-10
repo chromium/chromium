@@ -62,7 +62,6 @@ class WebGraphicsSharedImageInterfaceProvider;
 
 class PLATFORM_EXPORT CanvasNon2DResourceProvider
     : public CanvasMemoryDumpClient,
-      public MemoryManagedPaintRecorder::Client,
       public CanvasResourceSharedImage::Client,
       public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
@@ -241,9 +240,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
-  // MemoryManagedPaintRecorder::Client implementation.
-  void RecordingCleared() override;
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
   SkSurfaceProps GetSkSurfaceProps() const;
 

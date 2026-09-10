@@ -961,14 +961,6 @@ SkSurface* CanvasNon2DResourceProvider::GetSkSurface() const {
   return surface_.get();
 }
 
-void CanvasNon2DResourceProvider::RecordingCleared() {}
-
-void CanvasNon2DResourceProvider::InitializeForRecording(
-    cc::PaintCanvas* canvas) const {
-  if (delegate_) {
-    delegate_->InitializeForRecording(canvas);
-  }
-}
 
 SkSurfaceProps CanvasNon2DResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
