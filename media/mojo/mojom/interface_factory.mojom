@@ -23,7 +23,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 //
 // This interface is intended to be implemented by the browser process and used
 // by the video decoder processes.
-[EnableIf=allow_oop_video_decoder]
+[EnableIf=enable_oop_video_decoder]
 interface VideoDecoderTracker {};
 
 // A factory for creating media mojo interfaces. Renderers can only access
@@ -49,7 +49,7 @@ interface InterfaceFactory {
   // implementation instance, e.g., if an error occurs that prevents |receiver|
   // from being bound to an implementation. This method is intended to be used
   // only for OOP-VD.
-  [EnableIf=allow_oop_video_decoder]
+  [EnableIf=enable_oop_video_decoder]
   CreateVideoDecoderWithTracker(
       pending_receiver<VideoDecoder> receiver,
       pending_remote<VideoDecoderTracker>? tracker);

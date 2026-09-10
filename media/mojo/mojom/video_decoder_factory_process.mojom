@@ -21,7 +21,7 @@ import "services/viz/public/mojom/gpu.mojom";
 //    connection to call InitializeVideoDecoderFactory() with the
 //    pending_receiver<InterfaceFactory> from (1).
 [ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoDecoding,
-    EnableIf=allow_oop_video_decoder]
+    EnableIf=enable_oop_video_decoder]
 interface VideoDecoderFactoryProcess {
   // Initializes an InterfaceFactory using |gpu_feature_info| to
   // restrict the supported video decode configurations.

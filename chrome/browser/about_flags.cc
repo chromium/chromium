@@ -8420,14 +8420,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(sandbox::policy::features::kNetworkServiceSandbox)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-    {"use-out-of-process-video-decoding",
-     flag_descriptions::kUseOutOfProcessVideoDecodingName,
-     flag_descriptions::kUseOutOfProcessVideoDecodingDescription,
-     kOsLinux | kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kUseOutOfProcessVideoDecoding)},
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
 #if BUILDFLAG(IS_ANDROID)
     {"no-pause-media-on-headphone-unplug",
      flag_descriptions::kNoPauseMediaOnHeadphoneUnplugName,

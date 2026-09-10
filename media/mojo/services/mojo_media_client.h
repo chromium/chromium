@@ -69,7 +69,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
 
   virtual VideoDecoderType GetDecoderImplementationType();
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   // Ensures that the video decoder supported configurations are known. When
   // they are, |cb| is called with a PendingRemote that corresponds to the same
   // connection as |oop_video_decoder| (which may be |oop_video_decoder|
@@ -83,7 +83,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual void NotifyDecoderSupportKnown(
       mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
       base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb);
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
   virtual std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner,

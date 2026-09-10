@@ -2675,7 +2675,7 @@ IN_PROC_BROWSER_TEST_P(PreEstablishGpuChannelRenderProcessHostTest,
   EXPECT_TRUE(WaitForGpuChannelEstablishment());
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 class FakeOOPVideoDecoderFactoryService
     : public media::mojom::InterfaceFactory {
  public:
@@ -2755,11 +2755,6 @@ class RenderProcessHostTestOOPVideoDecoderTest
   RenderProcessHostTestOOPVideoDecoderTest()
       : video_decoder_factory_receiver_(&oop_video_decoder_factory_service_) {}
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kUseOutOfProcessVideoDecoding);
-    RenderProcessHostTestBase::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     RenderProcessHostImpl::SetVideoDecoderFactoryCreationCBForTesting(
         video_decoder_factory_creation_cb_.Get());
@@ -2833,8 +2828,6 @@ class RenderProcessHostTestOOPVideoDecoderTest
         Mock::VerifyAndClearExpectations(&video_decoder_event_cb_) && result;
     return result;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   StrictMock<base::MockRepeatingCallback<
       RenderProcessHostImpl::VideoDecoderFactoryCreationCB::RunType>>
@@ -2948,6 +2941,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTestOOPVideoDecoderTest,
   run_loop_2.Run();
   ASSERT_TRUE(VerifyAndClearExpectations());
 }
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 // Asserts RenderProcessHosts are configured to reflect the embedder's policy
 // defined by `ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite()`.
@@ -3052,8 +3046,6 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForTopChromeWebUIAppliedToHosts) {
   ASSERT_TRUE(done.TimedWait(TestTimeouts::action_timeout()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, RendererCheckIsTest) {
   ASSERT_TRUE(embedded_test_server()->Start());

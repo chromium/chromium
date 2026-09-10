@@ -35,10 +35,6 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kUnknown;
   }
 
-  if (IsOutOfProcessVideoDecodingEnabled()) {
-    return VideoDecoderType::kOutOfProcess;
-  }
-
   return ActiveLinuxVideoDecoderType();
 }
 

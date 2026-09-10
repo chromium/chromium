@@ -63,7 +63,7 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryService
                     base::OnceClosure disconnect_cb);
 
   // mojom::InterfaceFactory implementation.
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   void CreateVideoDecoderWithTracker(
       mojo::PendingReceiver<mojom::VideoDecoder> receiver,
       mojo::PendingRemote<mojom::VideoDecoderTracker> tracker) override;

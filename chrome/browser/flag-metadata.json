@@ -10037,11 +10037,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "use-out-of-process-video-decoding",
-    "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "use-passthrough-command-decoder",
     "owners": [ "//third_party/angle/OWNERS" ],
     "expiry_milestone": 156

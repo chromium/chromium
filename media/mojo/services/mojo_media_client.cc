@@ -47,13 +47,13 @@ VideoDecoderType MojoMediaClient::GetDecoderImplementationType() {
   return VideoDecoderType::kUnknown;
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 void MojoMediaClient::NotifyDecoderSupportKnown(
     mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
     base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
   std::move(cb).Run(std::move(oop_video_decoder));
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 std::unique_ptr<VideoDecoder> MojoMediaClient::CreateVideoDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,

@@ -23,7 +23,7 @@
 
 namespace content {
 
-#if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 namespace {
 
@@ -168,12 +168,12 @@ class OOPVideoDecoderFactoryProcessLauncher final
 
 }  // namespace
 
-#endif  // BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 void LaunchOOPVideoDecoderFactory(
     mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
     mojo::PendingRemote<viz::mojom::Gpu> gpu_remote) {
-#if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   OOPVideoDecoderFactoryProcessLauncher::Instance()
       .LaunchWhenGpuFeatureInfoIsKnown(std::move(receiver),
                                        std::move(gpu_remote));

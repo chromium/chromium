@@ -11,6 +11,7 @@
 #include "media/base/decoder.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/simple_video_frame_converter.h"
@@ -36,15 +37,12 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     return VideoDecoderType::kUnknown;
   }
 
-  if (IsOutOfProcessVideoDecodingEnabled()) {
-    return VideoDecoderType::kOutOfProcess;
-  }
-
-#if !(BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  return VideoDecoderType::kOutOfProcess;
+#elif !(BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
   // See the TODO above: this branch will be reached once LaCrOS turns off both
   // BUILDFLAGs. Until then, ChromeOS builds always have one of them set.
   NOTREACHED();
-  return VideoDecoderType::kUnknown;
 #else
   return ActiveLinuxVideoDecoderType();
 #endif

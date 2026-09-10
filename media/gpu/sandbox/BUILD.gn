@@ -3,13 +3,18 @@
 # found in the LICENSE file.
 
 import("//media/gpu/args.gni")
+import("//media/media_options.gni")
 
 source_set("sandbox") {
   sources = []
-  if (use_linux_video_acceleration) {
+  if (enable_oop_video_decoder) {
     sources += [
       "hardware_video_decoding_sandbox_hook_linux.cc",
       "hardware_video_decoding_sandbox_hook_linux.h",
+    ]
+  }
+  if (use_linux_video_acceleration) {
+    sources += [
       "hardware_video_encoding_sandbox_hook_linux.cc",
       "hardware_video_encoding_sandbox_hook_linux.h",
     ]

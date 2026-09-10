@@ -198,7 +198,7 @@ component("services") {
     deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
-  if (allow_hosting_oop_video_decoder) {
+  if (enable_oop_video_decoder) {
     sources += [
       "oop_video_decoder_factory_process_service.cc",
       "oop_video_decoder_factory_process_service.h",
@@ -325,7 +325,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (allow_hosting_oop_video_decoder) {
+  if (enable_oop_video_decoder) {
     sources += [ "oop_video_decoder_service_unittest.cc" ]
     deps += [ "//gpu:test_support" ]
   }

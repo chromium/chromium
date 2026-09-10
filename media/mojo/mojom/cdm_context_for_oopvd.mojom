@@ -7,28 +7,28 @@ module media.mojom;
 import "media/mojo/mojom/media_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-[EnableIf=allow_oop_video_decoder]
+[EnableIf=enable_oop_video_decoder]
 enum DecryptStatus {
   kSuccess,
   kNoKey,
   kFailure,
 };
 
-[EnableIf=allow_oop_video_decoder]
+[EnableIf=enable_oop_video_decoder]
 enum CdmContextEvent {
   kHasAdditionalUsableKey,
   kHardwareContextReset,
 };
 
 // Interface for handling callbacks from the CdmContextForOOPVD interface below.
-[EnableIf=allow_oop_video_decoder]
+[EnableIf=enable_oop_video_decoder]
 interface CdmContextEventCallback {
   // Sends the event back to the registrar.
   EventCallback(CdmContextEvent event);
 };
 
 // Maps to the media::CdmContext interface for remoting it to another process.
-[EnableIf=allow_oop_video_decoder]
+[EnableIf=enable_oop_video_decoder]
 interface CdmContextForOOPVD {
   // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
   GetHwKeyData(DecryptConfig decrypt_config, array<uint8> hw_identifier) =>

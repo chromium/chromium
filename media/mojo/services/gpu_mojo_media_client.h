@@ -107,12 +107,12 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
       std::unique_ptr<MediaLog> media_log) final;
   std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner) final;
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   void NotifyDecoderSupportKnown(
       mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
       base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb)
       final;
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,

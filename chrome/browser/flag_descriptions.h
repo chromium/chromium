@@ -8638,11 +8638,6 @@ inline constexpr char kEnableNetworkServiceSandboxDescription[] =
     "Enables a sandbox around the network service to help mitigate exploits in "
     "its process. This may cause crashes if Kerberos is used.";
 
-inline constexpr char kUseOutOfProcessVideoDecodingName[] =
-    "Use out-of-process video decoding (OOP-VD)";
-inline constexpr char kUseOutOfProcessVideoDecodingDescription[] =
-    "Start utility processes to do hardware video decoding.";
-
 inline constexpr char kWebBluetoothConfirmPairingSupportName[] =
     "Web Bluetooth confirm pairing support";
 inline constexpr char kWebBluetoothConfirmPairingSupportDescription[] =

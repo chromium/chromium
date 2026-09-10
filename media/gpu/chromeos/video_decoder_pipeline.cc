@@ -30,7 +30,6 @@
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
-#include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/registered_frame_converter.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
@@ -41,6 +40,10 @@
 #include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 #endif  // BUILDFLAG(USE_VAAPI)
+
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+#include "media/gpu/chromeos/oop_video_decoder.h"
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
@@ -230,12 +233,15 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 
   CreateDecoderFunctionCB create_decoder_function_cb;
   bool uses_oop_video_decoder = false;
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   if (oop_video_decoder) {
     DCHECK(!frame_pool);
     create_decoder_function_cb =
         base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
     uses_oop_video_decoder = true;
-  } else {
+  } else
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  {
     DCHECK(frame_pool);
     switch (ActiveLinuxVideoDecoderType()) {
 #if BUILDFLAG(USE_VAAPI)
@@ -384,11 +390,13 @@ std::vector<Fourcc> VideoDecoderPipeline::DefaultPreferredRenderableFourccs() {
 void VideoDecoderPipeline::NotifySupportKnown(
     mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
     base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   if (oop_video_decoder) {
     OOPVideoDecoder::NotifySupportKnown(std::move(oop_video_decoder),
                                         std::move(cb));
     return;
   }
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   std::move(cb).Run(std::move(oop_video_decoder));
 }
 
@@ -399,9 +407,11 @@ VideoDecoderPipeline::GetSupportedConfigs(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
   std::optional<SupportedVideoDecoderConfigs> configs;
   switch (decoder_type) {
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
     case VideoDecoderType::kOutOfProcess:
       configs = OOPVideoDecoder::GetSupportedConfigs();
       break;
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #if BUILDFLAG(USE_VAAPI)
     case VideoDecoderType::kVaapi:
       configs = VaapiVideoDecoder::GetSupportedConfigs();
@@ -698,6 +708,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     FrameResourceConverter::GetOriginalFrameCB get_original_frame_cb;
 
     if (uses_oop_video_decoder_) {
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
       // Note: base::Unretained() is safe because either a) |decoder_| outlives
       // the |frame_converter_| or b) we call
       // |frame_converter_|->set_get_original_frame_cb() with a null
@@ -705,6 +716,9 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
       get_original_frame_cb = base::BindRepeating(
           &OOPVideoDecoder::GetOriginalFrame,
           base::Unretained(static_cast<OOPVideoDecoder*>(decoder_.get())));
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
     } else {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
       if (!main_frame_pool_) {

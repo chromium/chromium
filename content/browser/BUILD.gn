@@ -2510,7 +2510,7 @@ source_set("browser") {
     deps += [ "//components/services/font_data:lib" ]
   }
 
-  if (allow_oop_video_decoder) {
+  if (enable_oop_video_decoder) {
     sources += [ "media/oop_video_decoder_factory.cc" ]
     deps += [ "//media/mojo/mojom" ]
   }

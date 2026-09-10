@@ -144,7 +144,7 @@ void OOPVideoDecoderFactoryService::BindReceiver(
   receiver_.set_disconnect_handler(std::move(disconnect_cb));
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 void OOPVideoDecoderFactoryService::CreateVideoDecoderWithTracker(
     mojo::PendingReceiver<mojom::VideoDecoder> receiver,
     mojo::PendingRemote<mojom::VideoDecoderTracker> tracker) {
@@ -164,7 +164,7 @@ void OOPVideoDecoderFactoryService::CreateVideoDecoderWithTracker(
                           &cdm_service_context_),
                       std::move(receiver));
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 // The client of the OOPVideoDecoderFactoryService is the browser process which
 // is up the trust gradient. The browser process should never use this service

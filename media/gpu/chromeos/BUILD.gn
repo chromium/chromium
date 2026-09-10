@@ -4,6 +4,7 @@
 
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
+import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -18,9 +19,12 @@ source_set("chromeos") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "image_processor_factory.cc",
-    "oop_video_decoder.cc",
     "video_decoder_pipeline.cc",
   ]
+
+  if (enable_oop_video_decoder) {
+    sources += [ "oop_video_decoder.cc" ]
+  }
 
   public_deps = [ ":common" ]
 
@@ -82,7 +86,6 @@ source_set("common") {
     "mailbox_video_frame_converter.h",
     "native_pixmap_frame_resource.cc",
     "native_pixmap_frame_resource.h",
-    "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
     "registered_frame_converter.cc",
@@ -96,6 +99,10 @@ source_set("common") {
     "vda_video_frame_pool.h",
     "video_decoder_pipeline.h",
   ]
+
+  if (enable_oop_video_decoder) {
+    sources += [ "oop_video_decoder.h" ]
+  }
 
   # TODO(crbug.com/40652235): Merge :fourcc to :common.
   public_deps = [

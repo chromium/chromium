@@ -45,7 +45,7 @@ component("cdm_factory_daemon_gpu") {
     "//base",
     "//mojo/public/cpp/bindings",
   ]
-  if (allow_oop_video_decoder) {
+  if (enable_oop_video_decoder) {
     sources += [
       "cdm_context_for_oopvd_impl.cc",
       "cdm_context_for_oopvd_impl.h",

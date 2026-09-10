@@ -81,10 +81,10 @@
 #include "media/mojo/services/mojo_renderer_service.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 namespace content {
 
@@ -404,17 +404,15 @@ void MediaInterfaceProxy::CreateVideoDecoder(
     return;
 
   mojo::PendingRemote<media::mojom::VideoDecoder> oop_video_decoder;
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  if (media::IsOutOfProcessVideoDecodingEnabled()) {
-    render_frame_host().GetProcess()->CreateOOPVideoDecoder(
-        oop_video_decoder.InitWithNewPipeAndPassReceiver());
-  }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  render_frame_host().GetProcess()->CreateOOPVideoDecoder(
+      oop_video_decoder.InitWithNewPipeAndPassReceiver());
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   factory->CreateVideoDecoder(std::move(receiver),
                               std::move(oop_video_decoder));
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 void MediaInterfaceProxy::CreateVideoDecoderWithTracker(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
     mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) {
@@ -426,7 +424,7 @@ void MediaInterfaceProxy::CreateVideoDecoderWithTracker(
   CHECK(mojo::IsInMessageDispatch());
   mojo::ReportBadMessage("CreateVideoDecoderWithTracker() called unexpectedly");
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 void MediaInterfaceProxy::CreateAudioEncoder(
     mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {

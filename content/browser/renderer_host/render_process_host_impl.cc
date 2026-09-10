@@ -240,7 +240,7 @@
 #include "content/common/thread_type_switcher.mojom.h"
 #endif
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #include "content/public/browser/oop_video_decoder_factory.h"
 #endif
 
@@ -1251,7 +1251,7 @@ void LogDelayReasonForCleanup(
                             reason);
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 RenderProcessHostImpl::VideoDecoderFactoryCreationCB&
 GetVideoDecoderFactoryCreationCB() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
@@ -1276,7 +1276,7 @@ void InvokeVideoDecoderEventCB(RenderProcessHostImpl::VideoDecoderEvent event) {
     callback.Run(event);
   }
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables kUserVisible process priority. Otherwise when feature is disabled,
@@ -1735,11 +1735,11 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   TRACE_EVENT_BEGIN("shutdown", "Browser.RenderProcessHostImpl", tracing_track_,
                     ChromeTrackEvent::kRenderProcessHost, *this);
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   video_decoder_trackers_.set_disconnect_handler(
       base::BindRepeating(&RenderProcessHostImpl::OnVideoDecoderDisconnected,
                           instance_weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
   widget_helper_ = new RenderWidgetHelper();
 
@@ -2560,7 +2560,7 @@ void RenderProcessHostImpl::SetBatterySaverMode(
   child_process_->SetBatterySaverMode(battery_saver_mode_enabled);
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 void RenderProcessHostImpl::CreateOOPVideoDecoder(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
@@ -2662,7 +2662,7 @@ void RenderProcessHostImpl::SetVideoDecoderEventCBForTesting(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
   GetVideoDecoderEventCB() = callback;
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 base::ScopedClosureRunner RenderProcessHostImpl::DelayProcessShutdown(
     const base::TimeDelta& subframe_shutdown_timeout,
@@ -5765,9 +5765,9 @@ void RenderProcessHostImpl::ResetIPC() {
   coordinator_connector_receiver_.reset();
   tracing_registration_.reset();
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   ResetVideoDecoderFactory();
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
   // Destroy all embedded CompositorFrameSinks.
   embedded_frame_sink_provider_.reset();

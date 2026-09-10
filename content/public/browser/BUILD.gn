@@ -738,7 +738,7 @@ source_set("browser_sources") {
     sources += [ "zygote_host/zygote_host_linux.h" ]
   }
 
-  if (allow_oop_video_decoder) {
+  if (enable_oop_video_decoder) {
     sources += [ "oop_video_decoder_factory.h" ]
     public_deps += [ "//media/mojo/mojom" ]
   }

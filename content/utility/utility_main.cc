@@ -69,14 +69,16 @@
 
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #endif  // BUILDFLAG(USE_VAAPI)
 
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #include "media/gpu/sandbox/hardware_video_decoding_sandbox_hook_linux.h"
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/sandbox/print_backend_sandbox_hook_linux.h"
@@ -156,11 +158,13 @@ std::vector<std::string> GetNetworkContextsParentDirectories() {
 }
 
 bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) || \
-    BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  const bool obtain_gpu_info =
-      sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding ||
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+  bool obtain_gpu_info =
       sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoEncoding;
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  obtain_gpu_info |=
+      sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding;
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
   if (obtain_gpu_info) {
     // The kHardwareVideoDecoding and kHardwareVideoEncoding sandboxes need to
@@ -169,8 +173,7 @@ bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
     gpu::CollectBasicGraphicsInfo(&gpu_info);
     return angle::IsAMD(gpu_info.active_gpu().vendor_id);
   }
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) ||
-        // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   return false;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -295,14 +298,14 @@ int UtilityMain(MainFunctionParams parameters) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) && BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER) && BUILDFLAG(USE_VAAPI)
   // Regardless of the sandbox status, the VaapiWrapper needs to be initialized
   // for decoder utility processes on devices that use VA-API.
   if (utility_sub_type == media::mojom::VideoDecoderFactoryProcess::Name_) {
     media::VaapiWrapper::PreSandboxInitialization(
         /*allow_disabling_global_lock=*/true);
   }
-#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION) && BUILDFLAG(USE_VAAPI)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER) && BUILDFLAG(USE_VAAPI)
 
   // Thread type delegate of the process should be registered before first
   // thread type change in ChildProcess constructor. It also needs to be
@@ -363,12 +366,12 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook =
           base::BindOnce(&shape_detection::ShapeDetectionPreSandboxHook);
       break;
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       pre_sandbox_hook =
           base::BindOnce(&media::HardwareVideoDecodingPreSandboxHook);
       break;
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     case sandbox::mojom::Sandbox::kHardwareVideoEncoding:
       pre_sandbox_hook =

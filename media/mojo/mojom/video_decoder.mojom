@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 
-[EnableIf=allow_oop_video_decoder]
+[EnableIf=enable_oop_video_decoder]
 import "media/mojo/mojom/cdm_context_for_oopvd.mojom";
 
 // Serializable rule for matching VideoDecoderConfigs.
@@ -62,7 +62,7 @@ interface VideoFrameHandleReleaser {
 union Cdm {
   mojo_base.mojom.UnguessableToken cdm_id;
 
-  [EnableIf=allow_oop_video_decoder]
+  [EnableIf=enable_oop_video_decoder]
   pending_remote<CdmContextForOOPVD> cdm_context;
 };
 

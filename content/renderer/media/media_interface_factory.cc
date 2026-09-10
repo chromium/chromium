@@ -70,7 +70,7 @@ void MediaInterfaceFactory::CreateVideoDecoder(
                                                  /*dst_video_decoder=*/{});
 }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 void MediaInterfaceFactory::CreateVideoDecoderWithTracker(
     mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
     mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) {
@@ -78,7 +78,7 @@ void MediaInterfaceFactory::CreateVideoDecoderWithTracker(
   // process.
   NOTREACHED();
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 
 void MediaInterfaceFactory::CreateAudioEncoder(
     mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
