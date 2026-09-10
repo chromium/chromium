@@ -72,6 +72,8 @@ source_set("unit_tests") {
   deps = [
     ":actions",
     ":actions_headers",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
     "//testing/gmock",
     "//testing/gtest",
   ]

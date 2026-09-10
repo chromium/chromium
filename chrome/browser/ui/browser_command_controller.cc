@@ -2788,7 +2788,7 @@ void BrowserCommandController::UpdateCommandAndActionEnabled(
     actions::ActionId action_id,
     bool enabled) {
   command_updater_->UpdateCommandEnabled(command_id, enabled);
-  if (!base::FeatureList::IsEnabled(features::kUseActionsForBrowserCommands)) {
+  if (!features::ShouldUseActionsForBrowserCommands()) {
     if (auto* const action = FindAction(action_id, browser_)) {
       action->SetEnabled(enabled);
     }
@@ -2797,7 +2797,7 @@ void BrowserCommandController::UpdateCommandAndActionEnabled(
 
 std::unique_ptr<CommandUpdater>
 BrowserCommandController::CreateCommandUpdater() {
-  if (base::FeatureList::IsEnabled(features::kUseActionsForBrowserCommands)) {
+  if (features::ShouldUseActionsForBrowserCommands()) {
     return std::make_unique<CommandActionUpdater>(
         BrowserActions::From(browser_)->root_action_item());
   }

@@ -26,7 +26,7 @@ class ActionItem;
 namespace chrome {
 
 // Manages action mappings and command state tracking for experimental Action
-// API. Only used when features::kUseActionsForBrowserCommands is enabled.
+// API. Only used when features::ShouldUseActionsForBrowserCommands() is true.
 class CommandActionUpdater : public CommandUpdater {
  public:
   explicit CommandActionUpdater(actions::ActionItem* root_action_item);

@@ -343,3 +343,47 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
 
   dialog_controller->HideMediaRouterDialog();
 }
+
+class CommandActionUpdaterAppMenuGlowUpBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  CommandActionUpdaterAppMenuGlowUpBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kAppMenuGlowUp);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    actions::ActionItem* root =
+        BrowserActions::From(browser())->root_action_item();
+    ASSERT_TRUE(root);
+    action_item_ = actions::ActionManager::Get().FindAction(kActionBack, root);
+    ASSERT_TRUE(action_item_);
+  }
+
+  void TearDownOnMainThread() override {
+    action_item_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<actions::ActionItem> action_item_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(CommandActionUpdaterAppMenuGlowUpBrowserTest,
+                       CommandEnablementSyncsToActionWithAppMenuGlowUp) {
+  // When kAppMenuGlowUp is enabled, CommandActionUpdater is instantiated and
+  // command updates sync to the corresponding action item.
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_BACK, true);
+  EXPECT_TRUE(action_item_->GetEnabled());
+
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_BACK, false);
+  EXPECT_FALSE(action_item_->GetEnabled());
+
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_BACK, true);
+  EXPECT_TRUE(action_item_->GetEnabled());
+}
