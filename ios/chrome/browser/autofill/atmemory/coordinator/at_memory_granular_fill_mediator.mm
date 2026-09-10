@@ -47,8 +47,13 @@ using autofill::Suggestion;
 #pragma mark - AtMemoryGranularFillMutator
 
 - (void)didSelectGranularFillItem:(AtMemoryGranularFillItem*)item {
-  [self.fillHandler fillWithContent:item.attributeValue];
-  [self.atMemoryHandler dismissAtMemory];
+  if (!item || item.index < 0 || !_suggestion ||
+      static_cast<size_t>(item.index) >= _suggestion->children.size()) {
+    [self.atMemoryHandler dismissAtMemory];
+    return;
+  }
+
+  [self.fillHandler fillWithSuggestion:_suggestion->children[item.index]];
 }
 
 @end

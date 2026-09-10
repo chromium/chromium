@@ -101,8 +101,9 @@ class AtMemoryMediatorTest : public PlatformTest {
   AtMemoryMediator* mediator_;
 };
 
-// Tests that fillWithContent: forwards to the content injector.
-TEST_F(AtMemoryMediatorTest, FillWithContentCallsInjector) {
+// Tests that fillWithContent: forwards to the content injector and dismisses
+// AtMemory.
+TEST_F(AtMemoryMediatorTest, FillWithContentCallsInjectorAndDismisses) {
   OCMExpect([mock_injector_
       userDidPickContent:kTestContent
            passwordField:NO
@@ -110,10 +111,12 @@ TEST_F(AtMemoryMediatorTest, FillWithContentCallsInjector) {
          jumpToNextField:NO
               actionType:autofill::mojom::FieldActionType::
                              kReplaceSelectionForAtMemory]);
+  OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
 
   [mediator_ fillWithContent:kTestContent];
 
   EXPECT_OCMOCK_VERIFY(mock_injector_);
+  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler_);
 }
 
 // Tests that fillWithSuggestion: with a non-obfuscated suggestion uses simple
@@ -132,15 +135,17 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionNonObfuscatedFillsValue) {
          jumpToNextField:NO
               actionType:autofill::mojom::FieldActionType::
                              kReplaceSelectionForAtMemory]);
+  OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
 
   [mediator_ fillWithSuggestion:suggestion];
 
   EXPECT_OCMOCK_VERIFY(mock_injector_);
+  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler_);
 }
 
 // Tests that fillWithSuggestion: with an obfuscated suggestion delegates to
-// AtMemoryManager without simple injection.
-TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedFills) {
+// AtMemoryManager and dismisses AtMemory directly without simple injection.
+TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedFillsAndDismisses) {
   Suggestion suggestion(base::SysNSStringToUTF16(kObfuscatedContent),
                         SuggestionType::kAtMemorySearchResult);
   Suggestion::AtMemoryPayload payload(
@@ -149,6 +154,7 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedFills) {
   payload.is_personal_context_sourced = true;
   suggestion.payload = std::move(payload);
 
+  OCMExpect([mock_at_memory_handler_ dismissAtMemory]);
   [[mock_injector_ reject] userDidPickContent:[OCMArg any]
                                 passwordField:NO
                                 requiresHTTPS:YES
@@ -158,6 +164,7 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionObfuscatedFills) {
 
   [mediator_ fillWithSuggestion:suggestion];
 
+  EXPECT_OCMOCK_VERIFY(mock_at_memory_handler_);
   EXPECT_OCMOCK_VERIFY(mock_injector_);
 }
 

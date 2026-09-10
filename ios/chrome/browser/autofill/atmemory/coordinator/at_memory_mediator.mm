@@ -70,6 +70,7 @@ using autofill::Suggestion;
                        jumpToNextField:NO
                             actionType:autofill::mojom::FieldActionType::
                                            kReplaceSelectionForAtMemory];
+  [self.atMemoryHandler dismissAtMemory];
 }
 
 - (void)fillWithSuggestion:(const Suggestion&)suggestion {
@@ -103,6 +104,7 @@ using autofill::Suggestion;
       /*field_id=*/_fieldId,
       /*suggestion=*/suggestion,
       /*metadata=*/{});
+  [self.atMemoryHandler dismissAtMemory];
 }
 
 @end

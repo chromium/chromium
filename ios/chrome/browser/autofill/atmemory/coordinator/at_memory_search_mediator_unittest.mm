@@ -20,6 +20,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
+#import "ios/chrome/browser/autofill/atmemory/coordinator/fake_at_memory_fill_handler.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
@@ -44,6 +45,7 @@ using autofill::MemorySearchResult;
 using autofill::MemorySearchResults;
 using autofill::MemorySearchStatus;
 using autofill::Suggestion;
+using autofill::SuggestionType;
 using base::HistogramTester;
 
 namespace {
@@ -88,6 +90,22 @@ class FakePersonalContextFirstRunService
   // Whether the AtMemory notice has been acknowledged.
   bool acknowledged_ = false;
 };
+
+// Returns a fake passport `MemorySearchResult`.
+MemorySearchResult CreatePassportSearchResult() {
+  MemorySearchResult entry(MemoryDataType::kPassportNumber,
+                           base::SysNSStringToUTF16(kPassportTypeName),
+                           base::SysNSStringToUTF16(kPassportValue));
+  entry.sources.push_back(MemoryEntrySource{MemoryEntrySourceType::kAutofill});
+  return entry;
+}
+
+// Returns fake `MemorySearchResults` containing a single passport entry.
+MemorySearchResults CreatePassportSearchResults() {
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess);
+  results.entries.push_back(CreatePassportSearchResult());
+  return results;
+}
 
 }  // namespace
 
@@ -178,12 +196,7 @@ class AtMemorySearchMediatorTest : public PlatformTest {
 TEST_F(AtMemorySearchMediatorTest, StartsSearchWithQuerySubmitsToManager) {
   CreateMediator();
 
-  MemorySearchResults fake_results(MemorySearchStatus::kFinalResponseSuccess);
-  MemorySearchResult entry(MemoryDataType::kPassportNumber,
-                           base::SysNSStringToUTF16(kPassportTypeName),
-                           base::SysNSStringToUTF16(kPassportValue));
-  entry.sources.push_back(MemoryEntrySource{MemoryEntrySourceType::kAutofill});
-  fake_results.entries.push_back(std::move(entry));
+  MemorySearchResults fake_results = CreatePassportSearchResults();
 
   std::u16string query_string = base::SysNSStringToUTF16(kSearchQuery);
   EXPECT_CALL(*mock_query_service_, Query(std::u16string_view(query_string),
@@ -228,12 +241,7 @@ TEST_F(AtMemorySearchMediatorTest,
 TEST_F(AtMemorySearchMediatorTest, PushesSearchResultsToConsumer) {
   CreateMediator();
 
-  MemorySearchResults fake_results(MemorySearchStatus::kFinalResponseSuccess);
-  MemorySearchResult entry1(MemoryDataType::kPassportNumber,
-                            base::SysNSStringToUTF16(kPassportTypeName),
-                            base::SysNSStringToUTF16(kPassportValue));
-  entry1.sources.push_back(MemoryEntrySource{MemoryEntrySourceType::kAutofill});
-  fake_results.entries.push_back(std::move(entry1));
+  MemorySearchResults fake_results = CreatePassportSearchResults();
 
   MemorySearchResult entry2(MemoryDataType::kAddressFull, u"Address",
                             u"123 Main St");
@@ -262,33 +270,62 @@ TEST_F(AtMemorySearchMediatorTest, PushesSearchResultsToConsumer) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
-// Tests that selecting a search result item calls fillHandler with the item's
-// title and dismisses the UI.
+// Tests that selecting a search result item fills the form and dismisses the
+// UI.
 TEST_F(AtMemorySearchMediatorTest,
        SelectSearchResultItemFillsFormAndDismisses) {
   CreateMediator();
 
-  id mock_fill_handler = OCMProtocolMock(@protocol(AtMemoryFillCommands));
   id mock_at_memory_handler = OCMProtocolMock(@protocol(AtMemoryCommands));
-  mediator_.fillHandler = mock_fill_handler;
   mediator_.atMemoryHandler = mock_at_memory_handler;
 
-  Suggestion suggestion(base::SysNSStringToUTF16(kPassportValue),
-                        autofill::SuggestionType::kAtMemorySearchResult);
-  Suggestion::AtMemoryPayload payload(base::SysNSStringToUTF16(kPassportValue),
-                                      MemoryDataType::kPassportNumber);
-  payload.type_name = base::SysNSStringToUTF16(kPassportTypeName);
-  suggestion.payload = std::move(payload);
+  MemorySearchResults fake_results = CreatePassportSearchResults();
 
+  std::u16string query_string = base::SysNSStringToUTF16(kSearchQuery);
+  EXPECT_CALL(*mock_query_service_, Query(std::u16string_view(query_string),
+                                          testing::_, testing::_, testing::_))
+      .WillOnce(base::test::RunCallback<3>(fake_results));
+
+  __block NSArray<AtMemorySearchItem*>* received_items = nil;
+  OCMExpect([mock_consumer_
+      setSearchResults:[OCMArg checkWithBlock:^BOOL(
+                                   NSArray<AtMemorySearchItem*>* items) {
+        received_items = items;
+        return YES;
+      }]]);
+
+  [mediator_ startSearchWithQuery:kSearchQuery];
+
+  FakeAtMemoryFillHandler* fake_fill_handler =
+      [[FakeAtMemoryFillHandler alloc] init];
+  mediator_.fillHandler = fake_fill_handler;
+
+  [mediator_ didSelectSearchResultItem:received_items[0]];
+
+  EXPECT_TRUE(fake_fill_handler.fillWithSuggestionCalled);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that selecting an invalid search result item dismisses the UI.
+TEST_F(AtMemorySearchMediatorTest,
+       SelectSearchResultItemInvalidIndexDismisses) {
+  CreateMediator();
+
+  id mock_at_memory_handler = OCMProtocolMock(@protocol(AtMemoryCommands));
+  mediator_.atMemoryHandler = mock_at_memory_handler;
+
+  Suggestion suggestion(SuggestionType::kAtMemorySearchResult);
+  suggestion.main_text.value = base::SysNSStringToUTF16(kPassportValue);
+  suggestion.payload =
+      Suggestion::AtMemoryPayload(base::SysNSStringToUTF16(kPassportValue),
+                                  MemoryDataType::kPassportNumber);
   AtMemorySearchItem* item =
-      [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:0];
+      [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:-1];
 
-  OCMExpect([mock_fill_handler fillWithContent:kPassportValue]);
   OCMExpect([mock_at_memory_handler dismissAtMemory]);
 
   [mediator_ didSelectSearchResultItem:item];
 
-  EXPECT_OCMOCK_VERIFY(mock_fill_handler);
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
 }
 
@@ -301,11 +338,7 @@ TEST_F(AtMemorySearchMediatorTest, OpenGranularFillAtIndex) {
       [[FakeAtMemorySearchResultHandler alloc] init];
   mediator_.searchResultHandler = fake_handler;
 
-  MemorySearchResults fake_results(MemorySearchStatus::kFinalResponseSuccess);
-  fake_results.entries.push_back(
-      MemorySearchResult(MemoryDataType::kPassportNumber,
-                         base::SysNSStringToUTF16(kPassportTypeName),
-                         base::SysNSStringToUTF16(kPassportValue)));
+  MemorySearchResults fake_results = CreatePassportSearchResults();
 
   std::u16string query_string = base::SysNSStringToUTF16(kSearchQuery);
   EXPECT_CALL(*mock_query_service_, Query(std::u16string_view(query_string),

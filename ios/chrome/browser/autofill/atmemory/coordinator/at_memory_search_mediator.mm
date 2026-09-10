@@ -197,19 +197,13 @@ autofill::FieldGlobalId GetPlaceholderFieldId() {
 }
 
 - (void)didSelectSearchResultItem:(AtMemorySearchItem*)item {
-  if (!item || !_webState) {
+  if (!item || item.index < 0 ||
+      static_cast<size_t>(item.index) >= _suggestions.size()) {
+    [self.atMemoryHandler dismissAtMemory];
     return;
   }
 
-  if (_atMemoryManager && _autofillManager && item.index >= 0 &&
-      static_cast<size_t>(item.index) < _suggestions.size()) {
-    _atMemoryManager->FillSearchResult(
-        *_autofillManager, autofill::FormGlobalId(), GetPlaceholderFieldId(),
-        _suggestions[item.index], /*metadata=*/{});
-  }
-
-  [self.fillHandler fillWithContent:item.title];
-  [self.atMemoryHandler dismissAtMemory];
+  [self.fillHandler fillWithSuggestion:_suggestions[item.index]];
 }
 
 - (void)openGranularFillForSearchResultAtIndex:(NSInteger)index {
