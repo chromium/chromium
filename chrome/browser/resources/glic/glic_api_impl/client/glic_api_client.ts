@@ -156,7 +156,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.router = directPair.client.router;
     this.clientRemote = directPair.client.rootRemote;
 
-    this.actorClient = new GlicBrowserHostActor(this);
+    this.actorClient = new GlicBrowserHostActor();
     this.annotationClient = new GlicBrowserHostAnnotation();
     this.skillsClient = new GlicBrowserHostSkills();
     this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions(this);
@@ -205,6 +205,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   destroy() {
     this.pinCandidates?.setObsolete();
+    this.actorClient.destroyActor();
     this.skillsClient.destroySkills();
     this.toolsClient.destroyTools();
     this.annotationClient.destroyAnnotation();
@@ -224,8 +225,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         this.webClientReceiver.$.bindNewPipeAndPassRemote());
     const initialPipes =
         this.hostApi.setInitialState(initialState, clientCapabilities);
-    this.actorClient.initialize(
-        initialState, initialPipes.actorRemote, initialPipes.actorReceiver);
+    this.actorClient.initialize(initialState, this.handler);
     this.annotationClient.initialize(initialState, this.handler);
     this.skillsClient.initialize(initialState, this.handler);
     this.experimentalTriggeringClient.initialize(
