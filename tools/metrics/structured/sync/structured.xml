@@ -3699,7 +3699,7 @@
   <owner>wry@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <id>per-project</id>
-  <scope>profile</scope>
+  <scope>device</scope>
   <key-rotation>90</key-rotation>
   <summary>
     Metrics for tracking Gemini in Chrome (Glic) events, including invocations, features, and UI states.
