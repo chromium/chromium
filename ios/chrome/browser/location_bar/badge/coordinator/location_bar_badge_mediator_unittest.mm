@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -85,14 +84,12 @@ class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
  public:
   explicit FakeContextualPanelTabHelper(
       web::WebState* web_state,
-      std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel>> models)
+      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models)
       : ContextualPanelTabHelper(web_state, models) {}
 
   static void CreateForWebState(
       web::WebState* web_state,
-      std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel>> models) {
+      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models) {
     web_state->SetUserData(
         UserDataKey(),
         std::make_unique<FakeContextualPanelTabHelper>(web_state, models));
@@ -166,8 +163,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestTracker));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
-            std::make_unique<FakeAuthenticationServiceDelegate>()));
+        AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
                               GeminiServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
@@ -192,9 +188,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     web_state->WasShown();
 
     // Contextual Panel setup.
-    std::map<ContextualPanelItemType,
-             raw_ptr<ContextualPanelModel>>
-        models;
+    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
     FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
     InfoBarManagerImpl::CreateForWebState(web_state.get());
     InfobarBadgeTabHelper::CreateForWebState(web_state.get());
@@ -725,9 +719,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelWebStateListChanged) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
   web_state->WasShown();
-  std::map<ContextualPanelItemType,
-           raw_ptr<ContextualPanelModel>>
-      models;
+  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
   FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
   InfoBarManagerImpl::CreateForWebState(web_state.get());
   InfobarBadgeTabHelper::CreateForWebState(web_state.get());
