@@ -252,7 +252,7 @@ coverage_builder(
             "x86",
             "strip_debug_info",
             "android_fastbuild",
-            "webview_trichrome",
+            "webview_debug_package_name",
             "webview_shell",
             "use_java_coverage",
         ],

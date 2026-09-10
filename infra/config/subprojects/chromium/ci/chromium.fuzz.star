@@ -603,7 +603,7 @@ ci_builder(
         "asan",
         "minimal_symbols",
         "v8_heap",
-        "webview_trichrome",
+        "webview_debug_package_name",
         "webview_shell",
     ],
 )

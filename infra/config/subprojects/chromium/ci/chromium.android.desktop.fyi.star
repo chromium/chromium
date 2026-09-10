@@ -72,7 +72,7 @@ ci.builder(
             "minimal_symbols",
             "x64",
             "strip_debug_info",
-            "webview_trichrome",
+            "webview_debug_package_name",
             "webview_shell",
         ],
     ),

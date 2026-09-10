@@ -1565,7 +1565,7 @@ gn_args.config(
 
 # For Android >=Q, only userdebug/eng
 gn_args.config(
-    name = "webview_trichrome",
+    name = "webview_debug_package_name",
     args = {
         "system_webview_package_name": "com.google.android.webview.debug",
     },

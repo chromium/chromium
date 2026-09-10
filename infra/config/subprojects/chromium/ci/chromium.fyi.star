@@ -574,7 +574,7 @@ ci.builder(
             "x64",
             "strip_debug_info",
             "android_fastbuild",
-            "webview_trichrome",
+            "webview_debug_package_name",
             "webview_shell",
         ],
     ),
