@@ -552,16 +552,22 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
       static_cast<ImageContextImpl*>(image_context);
   images_in_current_paint_.push_back(image_context_impl);
 
-  const auto& sync_token = image_context->sync_token();
+  const auto& sync_tokens = image_context->sync_tokens();
 
   if (is_using_raw_draw_) {
     auto* sync_point_manager = dependency_->GetSyncPointManager();
-    if (sync_token.HasData() &&
-        !sync_point_manager->IsSyncTokenReleased(sync_token)) {
-      gpu_task_sync_tokens_.push_back(sync_token);
-      FlushGpuTasks(SyncMode::kWaitForTasksStarted);
-      image_context->mutable_sync_token()->Clear();
+
+    for (const auto& sync_token : sync_tokens) {
+      if (sync_token.HasData() &&
+          !sync_point_manager->IsSyncTokenReleased(sync_token)) {
+        gpu_task_sync_tokens_.push_back(sync_token);
+      }
     }
+    if (!gpu_task_sync_tokens_.empty()) {
+      FlushGpuTasks(SyncMode::kWaitForTasksStarted);
+    }
+    image_context->ClearSyncTokens();
+
     CHECK(representation_factory_);
     if (image_context_impl->BeginRasterAccess(representation_factory_.get())) {
       return;
@@ -580,10 +586,12 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     MakePromiseSkImageMultiPlane(image_context_impl);
   }
 
-  if (sync_token.HasData()) {
-    resource_sync_tokens_.push_back(sync_token);
-    image_context->mutable_sync_token()->Clear();
+  for (const auto& sync_token : sync_tokens) {
+    if (sync_token.HasData()) {
+      resource_sync_tokens_.push_back(sync_token);
+    }
   }
+  image_context->ClearSyncTokens();
 }
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(

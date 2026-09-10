@@ -168,7 +168,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   ASSERT_EQ(locked_image_context->mailbox(), gl_resource.mailbox());
-  ASSERT_EQ(locked_image_context->sync_token(), gl_resource.sync_token());
+  ASSERT_EQ(locked_image_context->sync_tokens()[0], gl_resource.sync_token());
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);
@@ -232,7 +232,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   ASSERT_EQ(gl_resource.mailbox(), locked_image_context->mailbox());
-  ASSERT_EQ(gl_resource.sync_token(), locked_image_context->sync_token());
+  ASSERT_EQ(gl_resource.sync_token(), locked_image_context->sync_tokens()[0]);
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);

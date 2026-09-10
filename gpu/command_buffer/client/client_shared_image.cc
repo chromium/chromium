@@ -644,6 +644,22 @@ bool ClientSharedImage::IsSyncTokenSignaled(
   return true;
 }
 
+std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
+    const SyncToken& sync_token) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    std::vector<SyncToken> sync_tokens;
+    sync_tokens.reserve(sync_token_map_.size());
+    base::AutoLock auto_lock(lock_);
+    for (const auto& [_, token] : sync_token_map_) {
+      sync_tokens.push_back(token);
+    }
+    return sync_tokens;
+  } else {
+    return {sync_token};
+  }
+}
+
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   TRACE_EVENT("gpu", "ClientSharedImage::Map", "format",
               metadata_.format.ToString(), "usage", metadata_.usage.ToString(),

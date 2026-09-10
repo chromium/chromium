@@ -62,12 +62,14 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     //
     const gpu::Mailbox& mailbox() const { return mailbox_; }
     uint32_t texture_target() const { return texture_target_; }
-    const gpu::SyncToken& sync_token() const { return sync_token_; }
-    gpu::SyncToken* mutable_sync_token() { return &sync_token_; }
+    const std::vector<gpu::SyncToken>& sync_tokens() const {
+      return sync_tokens_;
+    }
     const gfx::Size& size() const { return size_; }
     SharedImageFormat format() const { return format_; }
     const gfx::ColorSpace& color_space() { return color_space_; }
 
+    void ClearSyncTokens() { sync_tokens_.clear(); }
     sk_sp<SkColorSpace> GetSkColorSpace() const;
 
     SkAlphaType alpha_type() const { return alpha_type_; }
@@ -110,7 +112,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
    private:
     gpu::Mailbox mailbox_;
-    gpu::SyncToken sync_token_;
+    std::vector<gpu::SyncToken> sync_tokens_;
     uint32_t texture_target_;
 
     const gfx::Size size_;

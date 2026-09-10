@@ -26,7 +26,8 @@ ExternalUseClient::ImageContext::ImageContext(
 ExternalUseClient::ImageContext::ImageContext(
     const TransferableResource& resource)
     : mailbox_(resource.mailbox()),
-      sync_token_(resource.sync_token()),
+      sync_tokens_(resource.shared_image()->GetSyncTokensForDisplayCompositor(
+          resource.sync_token())),
       texture_target_(resource.texture_target()),
       size_(resource.GetSize()),
       format_(resource.GetFormat()),

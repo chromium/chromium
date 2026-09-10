@@ -312,6 +312,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   bool IsSyncTokenSignaled(ContextSupport* context_support,
                            const SyncToken& resource_sync_token);
 
+  // Returns all tracked SyncTokens for this SharedImage.
+  std::vector<SyncToken> GetSyncTokensForDisplayCompositor(
+      const SyncToken& sync_token);
+
   void UpdateDestructionSyncToken(const gpu::SyncToken& sync_token) {
     destruction_sync_token_ = sync_token;
   }
