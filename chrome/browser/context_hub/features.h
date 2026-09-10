@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAutoTodosTimeoutSeconds);
 // Overrides the inactivity threshold for tab-based todos generation.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabBasedTodosInactivityThreshold);
 
+// Overrides the timeout for waiting for a tab to finish loading before
+// extracting page content for tab-based todos.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabLoadTimeout);
+
 // The interval at which the first-party AutoTodos background job runs.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFirstPartyAutoTodosInterval);
 

@@ -23,6 +23,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Hours(1));
 
 BASE_FEATURE_PARAM(base::TimeDelta,
+                   kTabLoadTimeout,
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "tab_load_timeout",
+                   base::Seconds(7));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
                    kFirstPartyAutoTodosInterval,
                    &browser::context_hub::mojom::kAutoTodos,
                    "first_party_auto_todos_interval",
