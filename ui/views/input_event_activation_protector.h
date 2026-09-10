@@ -8,10 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/scoped_observation.h"
+#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "ui/views/views_export.h"
-#include "ui/views/windows_stationarity_monitor.h"
 
 namespace ui {
 class Event;
@@ -25,8 +24,7 @@ class View;
 // The goal of this class is to prevent potentially unintentional user
 // interaction with a UI element.
 // See switch kDisableInputEventActivationProtectionForTesting for disabling it.
-class VIEWS_EXPORT InputEventActivationProtector
-    : WindowsStationarityMonitor::Observer {
+class VIEWS_EXPORT InputEventActivationProtector {
  public:
   // Creates a protector with the default timing-based protection policy
   // (using `DefaultInputProtectionPolicy`).
@@ -37,7 +35,7 @@ class VIEWS_EXPORT InputEventActivationProtector
   // logic.
   explicit InputEventActivationProtector(
       std::unique_ptr<InputProtectionPolicy> policy);
-  ~InputEventActivationProtector() override;
+  virtual ~InputEventActivationProtector();
 
   InputEventActivationProtector(const InputEventActivationProtector&) = delete;
   InputEventActivationProtector& operator=(
@@ -78,8 +76,8 @@ class VIEWS_EXPORT InputEventActivationProtector
   // registered policies must agree.
   void AddPolicy(std::unique_ptr<InputProtectionPolicy> policy);
 
-  // Implements WindowsStationarityMonitor::Observer:
-  void OnWindowStationaryStateChanged() override;
+  // Subscription callback invoked when widget stationarity changes.
+  void OnWidgetStationaryStateChanged();
 
   // Resets the state for click tracking.
   void ResetForTesting();
@@ -89,7 +87,7 @@ class VIEWS_EXPORT InputEventActivationProtector
   // define their own.
   //
   // The protection period begins when trigger conditions defined by the
-  // policies are met. These include when the view becomes visible, window
+  // policies are met. These include when the view becomes visible, widget
   // stationarity or activation changes, occlusion by always-on-top windows
   // occurs, or a click event occurs (to prevent click-spam). During this
   // period, input events (such as mouse clicks, touches, or gestures) are
@@ -106,9 +104,8 @@ class VIEWS_EXPORT InputEventActivationProtector
   // Policies that evaluate if an interaction should be blocked.
   std::vector<std::unique_ptr<InputProtectionPolicy>> policies_;
 
-  base::ScopedObservation<WindowsStationarityMonitor,
-                          WindowsStationarityMonitor::Observer>
-      stationarity_observation_{this};
+  // Subscription to widget stationarity change events.
+  base::CallbackListSubscription stationarity_changed_subscription_;
 };
 
 }  // namespace views

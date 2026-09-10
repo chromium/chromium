@@ -60,10 +60,13 @@ class VIEWS_EXPORT InputProtectionPolicy {
   // state or stop active timers.
   virtual void OnProtectionStopped() {}
 
-  // Called when a change in the UI state (e.g., layout changes, window
+  // Called when a change in the UI state (e.g., layout changes, widget
   // stationarity changes) requires restarting the protection cooldown. Policies
   // should respond by restarting their protection cooldown (typically by
   // updating their stored protection timestamps to the current time).
+  //
+  // Implementations must not query or mutate widgets because this can be
+  // called during widget destruction.
   virtual void OnProtectionReset() {}
 };
 

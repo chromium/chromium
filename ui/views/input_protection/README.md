@@ -185,7 +185,7 @@ state:
 - `OnProtectionStarted()`: Called when the protected target becomes visible.
 - `OnProtectionStopped()`: Called when the protected target is hidden or
   destroyed.
-- `OnProtectionReset()`: Called when a UI change (e.g., layout or window
+- `OnProtectionReset()`: Called when a UI change (e.g., layout or widget
   stationarity change) requires restarting the cooldown.
 
 ### View-Defined Protected Bounds (InputProtectionSpecification)

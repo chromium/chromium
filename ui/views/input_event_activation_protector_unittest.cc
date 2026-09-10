@@ -109,7 +109,7 @@ TEST_F(InputEventActivationProtectorTest,
 }
 
 TEST_F(InputEventActivationProtectorTest,
-       WindowStationarityChangeRestartsProtectionPeriod) {
+       WidgetStationarityChangeRestartsProtectionPeriod) {
   InputEventActivationProtector protector;
 
   // Initially not protected before visibility changes are simulated.
@@ -118,7 +118,7 @@ TEST_F(InputEventActivationProtectorTest,
 
   // Stationarity changes before the view is visible should not restart
   // protection.
-  protector.OnWindowStationaryStateChanged();
+  protector.OnWidgetStationaryStateChanged();
   EXPECT_FALSE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
@@ -134,7 +134,7 @@ TEST_F(InputEventActivationProtectorTest,
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
   // Simulate a stationarity change, which should restart the protection period.
-  protector.OnWindowStationaryStateChanged();
+  protector.OnWidgetStationaryStateChanged();
 
   // Clicks immediately after a stationarity change should be blocked.
   EXPECT_TRUE(

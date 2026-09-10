@@ -40,6 +40,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/input_protection/widget_stationarity_monitor.h"
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -106,6 +107,7 @@ BrowserWidget::BrowserWidget(BrowserView* browser_view)
       browser_view_(browser_view) {
   // Don't focus anything on creation, selecting a tab will set the focus.
   set_focus_on_creation(false);
+  views::WidgetStationarityMonitor::GetInstance().TrackWidget(*this);
 }
 
 BrowserWidget::~BrowserWidget() {

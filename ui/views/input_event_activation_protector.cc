@@ -7,24 +7,41 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/types/pass_key.h"
 #include "ui/events/event.h"
 #include "ui/views/input_protection/default_input_protection_policy.h"
 #include "ui/views/input_protection/input_protection_policy.h"
+#include "ui/views/input_protection/widget_stationarity_monitor.h"
 #include "ui/views/metrics.h"
 #include "ui/views/views_switches.h"
 
 namespace views {
 
 InputEventActivationProtector::InputEventActivationProtector()
-    : cooldown_interval_(GetDoubleClickInterval()) {
-  stationarity_observation_.Observe(WindowsStationarityMonitor::GetInstance());
+    : cooldown_interval_(GetDoubleClickInterval()),
+      // `base::Unretained` is safe because `this` owns the subscription.
+      stationarity_changed_subscription_(
+          WidgetStationarityMonitor::GetInstance()
+              .RegisterStationarityChangedCallback(
+                  base::PassKey<InputEventActivationProtector>(),
+                  base::BindRepeating(&InputEventActivationProtector::
+                                          OnWidgetStationaryStateChanged,
+                                      base::Unretained(this)))) {
   AddPolicy(std::make_unique<DefaultInputProtectionPolicy>());
 }
 
 InputEventActivationProtector::InputEventActivationProtector(
     std::unique_ptr<InputProtectionPolicy> policy)
-    : cooldown_interval_(GetDoubleClickInterval()) {
-  stationarity_observation_.Observe(WindowsStationarityMonitor::GetInstance());
+    : cooldown_interval_(GetDoubleClickInterval()),
+      // `base::Unretained` is safe because `this` owns the subscription.
+      stationarity_changed_subscription_(
+          WidgetStationarityMonitor::GetInstance()
+              .RegisterStationarityChangedCallback(
+                  base::PassKey<InputEventActivationProtector>(),
+                  base::BindRepeating(&InputEventActivationProtector::
+                                          OnWidgetStationaryStateChanged,
+                                      base::Unretained(this)))) {
   AddPolicy(std::move(policy));
 }
 
@@ -84,7 +101,7 @@ void InputEventActivationProtector::AddPolicy(
   policies_.push_back(std::move(policy));
 }
 
-void InputEventActivationProtector::OnWindowStationaryStateChanged() {
+void InputEventActivationProtector::OnWidgetStationaryStateChanged() {
   for (const auto& policy : policies_) {
     policy->OnProtectionReset();
   }

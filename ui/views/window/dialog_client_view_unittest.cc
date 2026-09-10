@@ -30,6 +30,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/input_protection/widget_stationarity_monitor.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/metrics.h"
@@ -714,9 +715,10 @@ TEST_F(DesktopDialogClientViewTest,
   widget()->Show();
   task_environment()->FastForwardBy(GetDoubleClickInterval() * 2);
 
-  // Create another widget on top, change window's bounds, click event to the
+  // Create another widget on top, change widget's bounds, click event to the
   // old widget should be ignored.
   auto* widget1 = CreateTopLevelNativeWidget();
+  WidgetStationarityMonitor::GetInstance().TrackWidget(*widget1);
   widget1->SetBounds(gfx::Rect(50, 50, 100, 100));
   ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
@@ -744,9 +746,10 @@ TEST_F(DesktopDialogClientViewTest,
   widget()->Show();
   task_environment()->FastForwardBy(GetDoubleClickInterval() * 2);
 
-  // Create another widget on top, close the top window, click event to the old
+  // Create another widget on top, close the top widget, click event to the old
   // widget should be ignored.
   auto* widget1 = CreateTopLevelNativeWidget();
+  WidgetStationarityMonitor::GetInstance().TrackWidget(*widget1);
   widget1->CloseNow();
   ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), ui::EF_NONE,
