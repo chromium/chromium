@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/byte_conversions.h"
 #include "media/base/media_log.h"
+#include "media/gpu/mac/vt_config_util.h"
 
 namespace media {
 
@@ -85,13 +86,24 @@ bool VideoToolboxH265Accelerator::CreateFormat(scoped_refptr<H265Picture> pic) {
   // Create the format description.
   active_format_.reset();
 
+  // By specifying a color space here, VideoToolbox will create images
+  // defaulting to this color space as opposed to assuming BT.709 in the case
+  // that the bitstream does not specify it.
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> format_extensions;
+  if (pic->get_colorspace().IsSpecified()) {
+    // Which HEVC profile we pass here does not matter for this method call.
+    format_extensions = CreateFormatExtensions(
+        kCMVideoCodecType_HEVC, HEVCPROFILE_MAIN, frame_bit_depth_,
+        pic->get_colorspace(), std::nullopt);
+  }
+
   OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
       /*allocator=*/kCFAllocatorDefault,
       /*parameterSetCount=*/parameter_set_data.size(),
       /*parameterSetPointers=*/parameter_set_data.data(),
       /*parameterSetSizes=*/parameter_set_size.data(),
       /*NALUnitHeaderLength=*/kNALUHeaderLength,
-      /*extensions=*/nullptr,
+      /*extensions=*/format_extensions.get(),
       /*formatDescriptionOut=*/active_format_.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
