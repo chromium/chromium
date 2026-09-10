@@ -20,6 +20,10 @@ InitialWebUIProfileService::InitialWebUIProfileService(Profile* profile)
 
 InitialWebUIProfileService::~InitialWebUIProfileService() = default;
 
+void InitialWebUIProfileService::Shutdown() {
+  toolbar_web_contents_.reset();
+}
+
 std::unique_ptr<content::WebContents>
 InitialWebUIProfileService::TakeToolbarContents() {
   return std::move(toolbar_web_contents_);
