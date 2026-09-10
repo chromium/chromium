@@ -3271,6 +3271,7 @@
     {
       name: "FractionalScrollOffsets",
       implied_by: ["FractionalScrollOffsetsForWebAPI"],
+      status: "experimental",
     },
     {
       // https://crbug.com/40384509.
