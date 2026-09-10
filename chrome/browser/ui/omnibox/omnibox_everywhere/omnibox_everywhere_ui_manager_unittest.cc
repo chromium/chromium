@@ -2133,7 +2133,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   OmniboxEverywhereRegionSelectOverlay* overlay =
       ui_manager->region_select_overlay_for_testing();
   ASSERT_TRUE(overlay);
-  views::Widget* overlay_widget = overlay->widget();
+  views::Widget* overlay_widget = overlay->GetActiveWidgetForTesting();
   ASSERT_TRUE(overlay_widget);
   EXPECT_TRUE(overlay_widget->IsVisible());
 
@@ -2211,8 +2211,9 @@ TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
       bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback());
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
 
-  ui_manager->region_select_overlay_for_testing()->widget()->CloseWithReason(
-      views::Widget::ClosedReason::kEscKeyPressed);
+  ui_manager->region_select_overlay_for_testing()
+      ->GetActiveWidgetForTesting()
+      ->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 
@@ -2249,8 +2250,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_TRUE(widget->IsVisible());
 
   // Dismiss overlay and simulate deactivation after grace period.
-  ui_manager->region_select_overlay_for_testing()->widget()->CloseWithReason(
-      views::Widget::ClosedReason::kEscKeyPressed);
+  ui_manager->region_select_overlay_for_testing()
+      ->GetActiveWidgetForTesting()
+      ->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 

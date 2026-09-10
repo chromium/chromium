@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_filter.h"
@@ -57,6 +58,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/display/win/screen_win.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/wm/core/window_animations.h"
 #endif
@@ -82,10 +87,43 @@ SkColor4f ColorWithAlpha(SkColor color, float alpha) {
   return c;
 }
 
-gfx::Rect GetOverlayBoundsForSource(const RegionCaptureSource& source) {
+gfx::Rect GetDisplayPhysicalBounds(const display::Display& display) {
+#if BUILDFLAG(IS_WIN)
+  // Queries Windows's raw monitor pixel bounds to avoid layout drift
+  // and rounding seams when converting mixed-DPI displays to/from DIPs.
+  const display::win::ScreenWin* screen_win = display::win::GetScreenWin();
+  if (screen_win && display::Screen::Get() == screen_win) {
+    const auto sw_display =
+        screen_win->GetScreenWinDisplayWithDisplayId(display.id());
+    if (sw_display.display().id() == display.id() &&
+        !sw_display.pixel_bounds().IsEmpty()) {
+      return sw_display.pixel_bounds();
+    }
+  }
+#endif
+  return gfx::ScaleToEnclosingRect(display.bounds(),
+                                   display.device_scale_factor());
+}
+
+gfx::Rect GetVirtualDesktopPixelBounds(
+    const std::vector<display::Display>& displays) {
+  gfx::Rect total;
+  for (const auto& d : displays) {
+    total.Union(GetDisplayPhysicalBounds(d));
+  }
+  return total;
+}
+
+std::vector<display::Display> GetTargetDisplaysForSource(
+    const RegionCaptureSource& source) {
   auto* screen = display::Screen::Get();
   if (!screen) {
-    return gfx::Rect();
+    return {};
+  }
+
+  const auto all_displays = screen->GetAllDisplays();
+  if (all_displays.empty()) {
+    return {};
   }
 
   // Single display (e.g. macOS screen picker or display-specific capture).
@@ -93,23 +131,18 @@ gfx::Rect GetOverlayBoundsForSource(const RegionCaptureSource& source) {
       source.display_id) {
     display::Display display;
     if (screen->GetDisplayWithDisplayId(*source.display_id, &display)) {
-      return display.bounds();
+      return {display};
     }
     // Fall back to primary display if specified display was disconnected.
-    return screen->GetPrimaryDisplay().bounds();
+    return {screen->GetPrimaryDisplay()};
   }
 
   // Full virtual desktop (Windows / Linux full desktop capture).
   if (source.type == RegionCaptureSource::Type::kAllDisplays) {
-    gfx::Rect total_dip_bounds;
-    for (const auto& display : screen->GetAllDisplays()) {
-      total_dip_bounds.Union(display.bounds());
-    }
-    return total_dip_bounds;
+    return all_displays;
   }
 
-  return screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint())
-      .bounds();
+  return {screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint())};
 }
 
 class InstructionToastChipView : public views::View {
@@ -261,13 +294,11 @@ class RegionSelectOverlayView : public views::View {
   using ConfirmCallback = base::OnceCallback<void(const SkBitmap& cropped)>;
 
   RegionSelectOverlayView(const SkBitmap& screenshot,
-                          const RegionCaptureSource& source,
                           ConfirmCallback on_confirm,
                           base::OnceClosure on_cancel)
       : bitmap_(screenshot),
         image_(!bitmap_.empty() ? gfx::ImageSkia::CreateFromBitmap(bitmap_, 1.f)
                                 : gfx::ImageSkia()),
-        source_(source),
         on_confirm_(std::move(on_confirm)),
         on_cancel_(std::move(on_cancel)) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -288,6 +319,8 @@ class RegionSelectOverlayView : public views::View {
   ui::Cursor GetCursor(const ui::MouseEvent& event) override {
     return ui::Cursor(ui::mojom::CursorType::kCross);
   }
+
+  const SkBitmap& bitmap_for_testing() const { return bitmap_; }
 
   void AddedToWidget() override {
     views::View::AddedToWidget();
@@ -444,88 +477,8 @@ class RegionSelectOverlayView : public views::View {
 #else
     constexpr int kTopMargin = 28;
 #endif
-    auto* screen = display::Screen::Get();
-    if (!screen) {
-      toast_chip_->SetBounds((width() - toast_size.width()) / 2, kTopMargin,
-                             toast_size.width(), toast_size.height());
-      return;
-    }
-
-    display::Display target_display =
-        screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
-    if (!target_display.is_valid()) {
-      toast_chip_->SetBounds((width() - toast_size.width()) / 2, kTopMargin,
-                             toast_size.width(), toast_size.height());
-      return;
-    }
-
-    const gfx::Rect widget_screen_bounds =
-        GetWidget() ? GetWidget()->GetWindowBoundsInScreen()
-                    : gfx::Rect(0, 0, width(), height());
-    const gfx::Rect display_bounds = target_display.bounds();
-
-    // In mixed-DPI multi-display setups, display::Display bounds are reported
-    // in each monitor's native DIP scale. However, the top-level overlay window
-    // uses a single coordinate scale (the host window's scale). Convert the
-    // target monitor's physical dimensions to the host window's DIP space to
-    // ensure the toast is accurately centered on the target monitor.
-    float host_scale = 1.0f;
-    if (GetWidget() && GetWidget()->GetNativeWindow()) {
-      const float scale =
-          screen->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
-              .device_scale_factor();
-      if (scale > 0.0f) {
-        host_scale = scale;
-      }
-    }
-    const float target_scale = target_display.device_scale_factor();
-
-    const int view_display_width =
-        base::ClampRound((display_bounds.width() * target_scale) / host_scale);
-    const int view_display_height =
-        base::ClampRound((display_bounds.height() * target_scale) / host_scale);
-
-    const int local_display_x = display_bounds.x() - widget_screen_bounds.x();
-    const int local_display_y = display_bounds.y() - widget_screen_bounds.y();
-
-    const int toast_x =
-        local_display_x + (view_display_width - toast_size.width()) / 2;
-    const int toast_y = local_display_y + kTopMargin;
-
-    // In a single multi-monitor overlay window spanning mixed-DPI displays,
-    // scaling discrepancies and fractional DIP rounding can cause a display's
-    // calculated view bounds to extend beyond the canvas. Clamp to the
-    // intersection of the target display's view bounds and the overlay canvas
-    // bounds.
-    const gfx::Rect monitor_view_bounds(local_display_x, local_display_y,
-                                        view_display_width,
-                                        view_display_height);
-    const gfx::Rect canvas_bounds(0, 0, width(), height());
-    gfx::Rect allowed_bounds =
-        gfx::IntersectRects(monitor_view_bounds, canvas_bounds);
-    if (allowed_bounds.IsEmpty()) {
-      allowed_bounds = canvas_bounds;
-    }
-
-    const int min_x = allowed_bounds.x();
-    const int max_x =
-        std::max(min_x, allowed_bounds.right() - toast_size.width());
-    const int min_y = allowed_bounds.y();
-    const int max_y =
-        std::max(min_y, allowed_bounds.bottom() - toast_size.height());
-
-    int clamped_toast_x = std::clamp(toast_x, min_x, max_x);
-    int clamped_toast_y = std::clamp(toast_y, min_y, max_y);
-
-    // Final safety clamp against the canvas bounds to guarantee the toast is
-    // never placed outside the overlay view, even if the toast is wider/taller
-    // than the monitor's intersection area.
-    clamped_toast_x = std::clamp(clamped_toast_x, 0,
-                                 std::max(0, width() - toast_size.width()));
-    clamped_toast_y = std::clamp(clamped_toast_y, 0,
-                                 std::max(0, height() - toast_size.height()));
-
-    toast_chip_->SetBounds(clamped_toast_x, clamped_toast_y, toast_size.width(),
+    const int x = std::max(0, (width() - toast_size.width()) / 2);
+    toast_chip_->SetBounds(x, kTopMargin, toast_size.width(),
                            toast_size.height());
   }
 
@@ -663,7 +616,6 @@ class RegionSelectOverlayView : public views::View {
 
   SkBitmap bitmap_;
   gfx::ImageSkia image_;
-  RegionCaptureSource source_;
   ConfirmCallback on_confirm_;
   base::OnceClosure on_cancel_;
   raw_ptr<InstructionToastChipView> toast_chip_ = nullptr;
@@ -695,19 +647,137 @@ OmniboxEverywhereRegionSelectOverlay::OmniboxEverywhereRegionSelectOverlay(
     : callback_(std::move(callback)) {}
 
 OmniboxEverywhereRegionSelectOverlay::~OmniboxEverywhereRegionSelectOverlay() {
-  widget_observation_.Reset();
-  if (widget_) {
-    widget_->CloseNow();
-    widget_.reset();
+  widget_observations_.RemoveAllObservations();
+  for (auto& widget : widgets_) {
+    if (widget && !widget->IsClosed()) {
+      widget->CloseNow();
+    }
   }
+  widgets_.clear();
   if (callback_) {
     std::move(callback_).Run(SkBitmap());
   }
 }
 
+size_t OmniboxEverywhereRegionSelectOverlay::GetActiveWidgetIndex() const {
+  if (widgets_.empty()) {
+    return 0;
+  }
+  auto* screen = display::Screen::Get();
+  if (screen) {
+    const gfx::Point cursor = screen->GetCursorScreenPoint();
+    for (size_t i = 0; i < widgets_.size(); ++i) {
+      if (widgets_[i] &&
+          widgets_[i]->GetWindowBoundsInScreen().Contains(cursor)) {
+        return i;
+      }
+    }
+  }
+  return 0;
+}
+
+views::Widget*
+OmniboxEverywhereRegionSelectOverlay::GetActiveWidgetForTesting() {
+  return widgets_.empty() ? nullptr : widgets_[GetActiveWidgetIndex()].get();
+}
+
+const views::Widget*
+OmniboxEverywhereRegionSelectOverlay::GetActiveWidgetForTesting() const {
+  return widgets_.empty() ? nullptr : widgets_[GetActiveWidgetIndex()].get();
+}
+
+const SkBitmap&
+OmniboxEverywhereRegionSelectOverlay::GetBitmapForWidgetForTesting(
+    size_t widget_index) const {
+  CHECK_LT(widget_index, widgets_.size());
+  auto* view = static_cast<const RegionSelectOverlayView*>(
+      widgets_[widget_index]->GetContentsView());
+  return view->bitmap_for_testing();  // IN-TEST
+}
+
 void OmniboxEverywhereRegionSelectOverlay::Initialize(
     const SkBitmap& screenshot,
     const RegionCaptureSource& source,
+    gfx::NativeWindow context) {
+  std::vector<display::Display> target_displays =
+      GetTargetDisplaysForSource(source);
+  if (target_displays.empty()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&OmniboxEverywhereRegionSelectOverlay::Finish,
+                                  weak_factory_.GetWeakPtr(), SkBitmap()));
+    return;
+  }
+
+  const gfx::Rect total_pixel_bounds =
+      GetVirtualDesktopPixelBounds(target_displays);
+  const gfx::Point virtual_origin = total_pixel_bounds.origin();
+  const gfx::Rect screenshot_bounds(0, 0, screenshot.width(),
+                                    screenshot.height());
+
+  // Determine which display should be active/focused (display nearest cursor).
+  auto* screen = display::Screen::Get();
+  int64_t active_display_id =
+      screen
+          ? screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint()).id()
+          : target_displays[0].id();
+
+  views::Widget* active_widget = nullptr;
+
+  for (const auto& display : target_displays) {
+    gfx::Rect sub_rect;
+    if (target_displays.size() == 1) {
+      sub_rect = screenshot_bounds;
+    } else {
+      const gfx::Rect physical_bounds = GetDisplayPhysicalBounds(display);
+      sub_rect = physical_bounds - virtual_origin.OffsetFromOrigin();
+    }
+
+    gfx::Rect crop_rect = gfx::IntersectRects(sub_rect, screenshot_bounds);
+
+    SkBitmap display_bitmap;
+    if (!crop_rect.IsEmpty()) {
+      screenshot.extractSubset(
+          &display_bitmap,
+          SkIRect::MakeXYWH(crop_rect.x(), crop_rect.y(), crop_rect.width(),
+                            crop_rect.height()));
+    }
+
+    std::unique_ptr<views::Widget> widget =
+        CreateWidgetForDisplay(display, display_bitmap, context);
+
+    if (display.id() == active_display_id) {
+      active_widget = widget.get();
+    }
+
+    widgets_.push_back(std::move(widget));
+  }
+
+  // Fallback to the first display's widget if the cursor is not located within
+  // any target display.
+  if (!active_widget && !widgets_.empty()) {
+    active_widget = widgets_[0].get();
+  }
+
+  for (const auto& widget : widgets_) {
+    if (widget.get() == active_widget) {
+      widget->Show();
+    } else {
+      widget->ShowInactive();
+    }
+  }
+
+  if (active_widget) {
+    active_widget->Activate();
+    if (auto* contents = active_widget->GetContentsView()) {
+      contents->RequestFocus();
+    }
+  }
+}
+
+std::unique_ptr<views::Widget>
+OmniboxEverywhereRegionSelectOverlay::CreateWidgetForDisplay(
+    const display::Display& display,
+    const SkBitmap& display_bitmap,
     gfx::NativeWindow context) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -722,61 +792,66 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
 #endif
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.visible_on_all_workspaces = true;
-  params.bounds = GetOverlayBoundsForSource(source);
+  params.bounds = display.bounds();
   if (context) {
     params.context = context;
   }
 
-  widget_ = std::make_unique<views::Widget>();
-  widget_->Init(std::move(params));
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(params));
 #if BUILDFLAG(IS_MAC)
-  widget_->SetActivationIndependence(true);
-  widget_->SetCanAppearInExistingFullscreenSpaces(true);
+  widget->SetActivationIndependence(true);
+  widget->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
-  widget_observation_.Observe(widget_.get());
+  widget_observations_.AddObservation(widget.get());
 
 #if defined(USE_AURA)
-  wm::SetWindowVisibilityAnimationTransition(widget_->GetNativeView(),
+  wm::SetWindowVisibilityAnimationTransition(widget->GetNativeView(),
                                              wm::ANIMATE_NONE);
 #endif
 
   auto contents_view = std::make_unique<RegionSelectOverlayView>(
-      screenshot, source,
+      display_bitmap,
       base::BindOnce(&OmniboxEverywhereRegionSelectOverlay::Finish,
-                     base::Unretained(this)),
+                     weak_factory_.GetWeakPtr()),
       base::BindOnce(&OmniboxEverywhereRegionSelectOverlay::Finish,
-                     base::Unretained(this), SkBitmap()));
-  views::View* view = widget_->SetContentsView(std::move(contents_view));
-  widget_->Show();
-  widget_->Activate();
-  view->RequestFocus();
+                     weak_factory_.GetWeakPtr(), SkBitmap()));
+  widget->SetContentsView(std::move(contents_view));
+
+  return widget;
 }
 
 void OmniboxEverywhereRegionSelectOverlay::Finish(
     const SkBitmap& result_bitmap) {
+  if (!callback_) {
+    return;
+  }
   auto callback = std::move(callback_);
-  if (widget_) {
-    widget_observation_.Reset();
-    widget_->Hide();
+
+  widget_observations_.RemoveAllObservations();
+
+  for (auto& widget : widgets_) {
+    if (widget && !widget->IsClosed()) {
+      widget->Hide();
+      widget->Close();
+    }
   }
-  if (callback) {
-    std::move(callback).Run(result_bitmap);
-  }
+
+  std::move(callback).Run(result_bitmap);
 }
 
+// Closing or destroying any widget (via Escape, OS dismissal, or display
+// disconnect) cancels the entire selection overlay in unison.
+// TODO(crbug.com/532198850): If a display is unplugged mid-selection, aborting
+// capture is desirable since the desktop screenshot geometry is now stale.
 void OmniboxEverywhereRegionSelectOverlay::OnWidgetClosing(
     views::Widget* widget) {
-  if (callback_) {
-    std::move(callback_).Run(SkBitmap());
-  }
+  Finish(SkBitmap());
 }
 
 void OmniboxEverywhereRegionSelectOverlay::OnWidgetDestroying(
     views::Widget* widget) {
-  widget_observation_.Reset();
-  if (callback_) {
-    std::move(callback_).Run(SkBitmap());
-  }
+  Finish(SkBitmap());
 }
 
 }  // namespace omnibox_everywhere

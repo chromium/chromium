@@ -182,11 +182,11 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, CreateAndDismiss) {
       CreateTestBitmap(100, 100, SK_ColorRED),
       RegionCaptureSource::AllDisplays(), future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
-  EXPECT_TRUE(overlay->widget()->IsVisible());
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
+  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()->IsVisible());
 
   // Close the overlay widget (simulating Escape / dismiss).
-  overlay->widget()->CloseWithReason(
+  overlay->GetActiveWidgetForTesting()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
 
   EXPECT_TRUE(future.IsReady());
@@ -201,8 +201,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
 
-  SimulateMouseDrag(overlay->widget()->GetContentsView(), gfx::Point(10, 10),
-                    gfx::Point(60, 60));
+  SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                    gfx::Point(10, 10), gfx::Point(60, 60));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().empty());
@@ -220,7 +220,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, ClickWithoutDragCancels) {
 
   // Single click without dragging (< 10px selection size threshold) should
   // cancel.
-  SimulateMouseClick(overlay->widget()->GetContentsView(), gfx::Point(50, 50));
+  SimulateMouseClick(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                     gfx::Point(50, 50));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -235,8 +236,9 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, EscapeKeyPressedCancels) {
 
   // Trigger Escape key via FocusManager accelerator.
   ui::Accelerator escape_accel(ui::VKEY_ESCAPE, ui::EF_NONE);
-  EXPECT_TRUE(
-      overlay->widget()->GetFocusManager()->ProcessAccelerator(escape_accel));
+  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()
+                  ->GetFocusManager()
+                  ->ProcessAccelerator(escape_accel));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -251,7 +253,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
 
   // Synchronously closing native window directly.
-  overlay->widget()->CloseNow();
+  overlay->GetActiveWidgetForTesting()->CloseNow();
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
@@ -284,9 +286,11 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       CreateTestBitmap(1824, 768), RegionCaptureSource::AllDisplays(),
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
-  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
-            gfx::Rect(100, 100, 1824, 768));
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+  EXPECT_EQ(overlay->widgets_for_testing()[0]->GetWindowBoundsInScreen(),
+            gfx::Rect(100, 100, 800, 600));
+  EXPECT_EQ(overlay->widgets_for_testing()[1]->GetWindowBoundsInScreen(),
+            gfx::Rect(900, 100, 1024, 768));
 }
 
 // Verifies that when a specific display is requested but cannot be found (e.g.
@@ -303,8 +307,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       CreateTestBitmap(800, 600), RegionCaptureSource::ForDisplay(900),
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
-  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
+  EXPECT_EQ(overlay->GetActiveWidgetForTesting()->GetWindowBoundsInScreen(),
             gfx::Rect(100, 100, 800, 600));
 }
 
@@ -318,8 +322,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       CreateTestBitmap(1024, 768), RegionCaptureSource::ForDisplay(2),
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
-  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
+  EXPECT_EQ(overlay->GetActiveWidgetForTesting()->GetWindowBoundsInScreen(),
             gfx::Rect(900, 100, 1024, 768));
 }
 
@@ -334,8 +338,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       CreateTestBitmap(1080, 1920), RegionCaptureSource::ForDisplay(1),
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
-  EXPECT_EQ(overlay->widget()->GetWindowBoundsInScreen(),
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
+  EXPECT_EQ(overlay->GetActiveWidgetForTesting()->GetWindowBoundsInScreen(),
             gfx::Rect(100, 100, 1080, 1920));
 }
 
@@ -347,8 +351,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
 
-  SimulateGestureDrag(overlay->widget()->GetContentsView(), gfx::Point(10, 10),
-                      gfx::Point(70, 70));
+  SimulateGestureDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                      gfx::Point(10, 10), gfx::Point(70, 70));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().empty());
@@ -366,8 +370,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
 
   // Drag from (50, 50) to (150, 150) (crossing outer image boundary).
-  SimulateMouseDrag(overlay->widget()->GetContentsView(), gfx::Point(50, 50),
-                    gfx::Point(150, 150));
+  SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                    gfx::Point(50, 50), gfx::Point(150, 150));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().empty());
@@ -387,8 +391,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
 
   // Inverted drag: Press at bottom-right (60, 60), drag to top-left (10, 10).
-  SimulateMouseDrag(overlay->widget()->GetContentsView(), gfx::Point(60, 60),
-                    gfx::Point(10, 10));
+  SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                    gfx::Point(60, 60), gfx::Point(10, 10));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().empty());
@@ -406,8 +410,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
 
   // Drag from (50, 50) to negative coordinates (-50, -50).
-  SimulateMouseDrag(overlay->widget()->GetContentsView(), gfx::Point(50, 50),
-                    gfx::Point(-50, -50));
+  SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                    gfx::Point(50, 50), gfx::Point(-50, -50));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().empty());
@@ -428,8 +432,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   // Drag 14x14 rectangle (above 10px min size, below 20px default corner
   // radius).
-  SimulateMouseDrag(overlay->widget()->GetContentsView(), gfx::Point(10, 10),
-                    gfx::Point(24, 24));
+  SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                    gfx::Point(10, 10), gfx::Point(24, 24));
 
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().empty());
@@ -446,7 +450,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       future.GetCallback(), GetContext());
   ASSERT_TRUE(overlay);
 
-  views::View* contents_view = overlay->widget()->GetContentsView();
+  views::View* contents_view =
+      overlay->GetActiveWidgetForTesting()->GetContentsView();
   ASSERT_TRUE(contents_view);
 
   // Press at (10, 10), drag to (50, 50).
@@ -480,9 +485,10 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
       GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
 
-  views::View* contents_view = overlay->widget()->GetContentsView();
+  views::View* contents_view =
+      overlay->GetActiveWidgetForTesting()->GetContentsView();
   ASSERT_TRUE(contents_view);
 
   // Mouse move updates hover cursor position and triggers repaint.
@@ -492,8 +498,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   // Paint during hover state (rendering rainbow gradient wash and teardrop
   // chip).
-  SkBitmap hover_painted =
-      views::test::PaintViewToBitmap(overlay->widget()->GetRootView());
+  SkBitmap hover_painted = views::test::PaintViewToBitmap(
+      overlay->GetActiveWidgetForTesting()->GetRootView());
   EXPECT_FALSE(hover_painted.empty());
 
   // Mouse press and drag to create selection.
@@ -510,8 +516,8 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
 
   // Paint during drag selection state (rendering rounded punch-out and
   // continuous perimeter).
-  SkBitmap drag_painted =
-      views::test::PaintViewToBitmap(overlay->widget()->GetRootView());
+  SkBitmap drag_painted = views::test::PaintViewToBitmap(
+      overlay->GetActiveWidgetForTesting()->GetRootView());
   EXPECT_FALSE(drag_painted.empty());
 
   // Release mouse to complete selection.
@@ -540,9 +546,10 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
       GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
 
-  views::View* contents_view = overlay->widget()->GetContentsView();
+  views::View* contents_view =
+      overlay->GetActiveWidgetForTesting()->GetContentsView();
   ASSERT_TRUE(contents_view);
 
   // Contains toast chip and cursor chip child views.
@@ -558,10 +565,11 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   EXPECT_TRUE(toast_chip->GetVisible());
   EXPECT_GT(toast_chip->width(), 0);
   EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
-  EXPECT_EQ(toast_chip->x(),
-            (overlay->widget()->GetWindowBoundsInScreen().width() -
-             toast_chip->width()) /
-                2);
+  EXPECT_EQ(
+      toast_chip->x(),
+      (overlay->GetActiveWidgetForTesting()->GetWindowBoundsInScreen().width() -
+       toast_chip->width()) /
+          2);
 
   // Cursor chip is initially hidden before mouse enters.
   EXPECT_FALSE(cursor_chip->GetVisible());
@@ -616,23 +624,22 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
       bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
       GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
 
-  views::View* contents_view = overlay->widget()->GetContentsView();
-  ASSERT_TRUE(contents_view);
-  ASSERT_GE(contents_view->children().size(), 1u);
-  views::View* toast_chip = contents_view->children()[0];
-  ASSERT_TRUE(toast_chip);
-
-  // Re-trigger layout positioning on the display2 screen coordinates (-400,
-  // 300).
-  ui::MouseEvent move_display2(ui::EventType::kMouseMoved, gfx::Point(400, 300),
-                               gfx::Point(-400, 300), base::TimeTicks::Now(), 0,
-                               0);
-  contents_view->OnMouseMoved(move_display2);
-
-  EXPECT_TRUE(toast_chip->GetVisible());
-  EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
+  // Both widgets have an instruction toast chip visible and centered on its
+  // display.
+  for (const auto& w : overlay->widgets_for_testing()) {
+    ASSERT_TRUE(w);
+    views::View* contents_view = w->GetContentsView();
+    ASSERT_TRUE(contents_view);
+    ASSERT_GE(contents_view->children().size(), 1u);
+    views::View* toast_chip = contents_view->children()[0];
+    ASSERT_TRUE(toast_chip);
+    EXPECT_TRUE(toast_chip->GetVisible());
+    EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
+    EXPECT_EQ(toast_chip->x(),
+              (contents_view->width() - toast_chip->width()) / 2);
+  }
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -649,95 +656,167 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   bitmap.allocN32Pixels(4720, 3840);
   bitmap.eraseColor(SK_ColorBLUE);
 
-  // 1. When cursor is on primary portrait display (1.5x scale).
-  {
-    SetCursorScreenPoint(gfx::Point(700, 1000));
-    base::test::TestFuture<const SkBitmap&> future;
-    auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
-        bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
-        GetContext());
-    ASSERT_TRUE(overlay);
-    ASSERT_TRUE(overlay->widget());
-
-    views::View* contents_view = overlay->widget()->GetContentsView();
-    ASSERT_TRUE(contents_view);
-    ASSERT_GE(contents_view->children().size(), 1u);
-    views::View* toast_chip = contents_view->children()[0];
-    ASSERT_TRUE(toast_chip);
-
-    EXPECT_TRUE(toast_chip->GetVisible());
-    EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
-    EXPECT_EQ(toast_chip->x(), (1440 - toast_chip->width()) / 2);
-  }
-
-  // 2. When cursor is on secondary landscape display (1.25x scale).
-  {
-    SetCursorScreenPoint(gfx::Point(2000, 1000));
-    base::test::TestFuture<const SkBitmap&> future2;
-    auto overlay2 = OmniboxEverywhereRegionSelectOverlay::Create(
-        bitmap, RegionCaptureSource::AllDisplays(), future2.GetCallback(),
-        GetContext());
-    ASSERT_TRUE(overlay2);
-    ASSERT_TRUE(overlay2->widget());
-
-    views::View* contents_view2 = overlay2->widget()->GetContentsView();
-    ASSERT_TRUE(contents_view2);
-    ASSERT_GE(contents_view2->children().size(), 1u);
-    views::View* toast_chip2 = contents_view2->children()[0];
-    ASSERT_TRUE(toast_chip2);
-
-    EXPECT_TRUE(toast_chip2->GetVisible());
-    EXPECT_EQ(toast_chip2->y(), 864 + kExpectedTopMargin);
-
-    // Secondary display width in overlay window coordinates:
-    // base::ClampRound(2048 * 1.25 / 1.5) = 1707.
-    int expected_toast2_x = 1440 + (1707 - toast_chip2->width()) / 2;
-    EXPECT_EQ(toast_chip2->x(), expected_toast2_x);
-  }
-}
-
-TEST_F(
-    OmniboxEverywhereRegionSelectOverlayTest,
-    ToastPositioning_SecondaryDisplayExtendingPastCanvasEdgeClampedToCanvas) {
-  // Primary display: [0, 0, 1000, 1000] at 1.0x scale.
-  display::Display display1(1, gfx::Rect(0, 0, 1000, 1000));
-  display1.set_device_scale_factor(1.0f);
-
-  // Secondary display: [1000, 0, 1000, 1000] at 2.0x scale.
-  // In native DIP space, total overlay width = 2000.
-  // In host DIP space, display2's scaled view width = 1000 * 2.0 / 1.0 = 2000,
-  // meaning its right edge (1000 + 2000 = 3000) extends past the canvas width
-  // (2000).
-  display::Display display2(2, gfx::Rect(1000, 0, 1000, 1000));
-  display2.set_device_scale_factor(2.0f);
-
-  SetDisplays({display1, display2});
-
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3000, 1000);
-  bitmap.eraseColor(SK_ColorBLUE);
-
-  SetCursorScreenPoint(gfx::Point(1500, 500));
   base::test::TestFuture<const SkBitmap&> future;
   auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
       bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
       GetContext());
   ASSERT_TRUE(overlay);
-  ASSERT_TRUE(overlay->widget());
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
 
-  views::View* contents_view = overlay->widget()->GetContentsView();
-  ASSERT_TRUE(contents_view);
-  ASSERT_GE(contents_view->children().size(), 1u);
-  views::View* toast_chip = contents_view->children()[0];
-  ASSERT_TRUE(toast_chip);
+  // Widget 1 on portrait primary monitor.
+  views::View* contents_view1 =
+      overlay->widgets_for_testing()[0]->GetContentsView();
+  ASSERT_TRUE(contents_view1);
+  views::View* toast1 = contents_view1->children()[0];
+  ASSERT_TRUE(toast1);
+  EXPECT_TRUE(toast1->GetVisible());
+  EXPECT_EQ(toast1->y(), kExpectedTopMargin);
+  EXPECT_EQ(toast1->x(), (1440 - toast1->width()) / 2);
 
-  EXPECT_TRUE(toast_chip->GetVisible());
-  EXPECT_EQ(toast_chip->y(), kExpectedTopMargin);
-  // Allowed bounds are intersected with canvas [0, 0, 2000, 1000], giving
-  // [1000, 0, 1000, 1000]. Toast right edge must not exceed canvas width 2000.
-  EXPECT_LE(toast_chip->x() + toast_chip->width(), contents_view->width());
-  EXPECT_GE(toast_chip->x(), 1000);
-  EXPECT_EQ(toast_chip->x(), 2000 - toast_chip->width());
+  // Widget 2 on landscape secondary monitor.
+  views::View* contents_view2 =
+      overlay->widgets_for_testing()[1]->GetContentsView();
+  ASSERT_TRUE(contents_view2);
+  views::View* toast2 = contents_view2->children()[0];
+  ASSERT_TRUE(toast2);
+  EXPECT_TRUE(toast2->GetVisible());
+  EXPECT_EQ(toast2->y(), kExpectedTopMargin);
+  EXPECT_EQ(toast2->x(), (2048 - toast2->width()) / 2);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_CloseOnOneWidgetClosesAllInUnison) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      CreateTestBitmap(1600, 600), RegionCaptureSource::AllDisplays(),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Closing the first widget closes all widgets in unison.
+  overlay->widgets_for_testing()[0]->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(overlay->widgets_for_testing()[0]->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsClosed());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_DragSelectionOnSecondaryMonitorConfirmsAndClosesAll) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  // Create a 1600x600 bitmap: left half green, right half blue.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1600, 600);
+  bitmap.eraseColor(SK_ColorGREEN);
+  for (int x = 800; x < 1600; ++x) {
+    for (int y = 0; y < 600; ++y) {
+      *bitmap.getAddr32(x, y) = SK_ColorBLUE;
+    }
+  }
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Drag select a 50x50 box on the secondary monitor (widget 1).
+  views::View* contents_view1 =
+      overlay->widgets_for_testing()[1]->GetContentsView();
+  ASSERT_TRUE(contents_view1);
+
+  SimulateMouseDrag(contents_view1, gfx::Point(10, 10), gfx::Point(60, 60));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_EQ(future.Get().width(), 50);
+  EXPECT_EQ(future.Get().height(), 50);
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
+
+  // Both widgets closed in unison.
+  EXPECT_TRUE(overlay->widgets_for_testing()[0]->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsClosed());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_BitmapSliceVerifiedPerDisplay) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  // Create a 1600x600 bitmap: left half Red, right half Blue.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1600, 600);
+  bitmap.eraseColor(SK_ColorRED);
+  for (int x = 800; x < 1600; ++x) {
+    for (int y = 0; y < 600; ++y) {
+      *bitmap.getAddr32(x, y) = SK_ColorBLUE;
+    }
+  }
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      bitmap, RegionCaptureSource::AllDisplays(), future.GetCallback(),
+      GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Widget 0 received the 800x600 Red slice.
+  const SkBitmap& slice0 = overlay->GetBitmapForWidgetForTesting(0);
+  EXPECT_EQ(slice0.width(), 800);
+  EXPECT_EQ(slice0.height(), 600);
+  EXPECT_EQ(slice0.getColor(0, 0), SK_ColorRED);
+  EXPECT_EQ(slice0.getColor(799, 599), SK_ColorRED);
+
+  // Widget 1 received the 800x600 Blue slice.
+  const SkBitmap& slice1 = overlay->GetBitmapForWidgetForTesting(1);
+  EXPECT_EQ(slice1.width(), 800);
+  EXPECT_EQ(slice1.height(), 600);
+  EXPECT_EQ(slice1.getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(slice1.getColor(799, 599), SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       EmptyDisplays_EarlyExitDoesNotCrashOrLeak) {
+  SetDisplays({});
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      CreateTestBitmap(100, 100), RegionCaptureSource::AllDisplays(),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_OnlyWidgetWithCursorIsActive) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  // Position cursor on secondary display (Display 2).
+  SetCursorScreenPoint(gfx::Point(1000, 300));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      CreateTestBitmap(1600, 600), RegionCaptureSource::AllDisplays(),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Widget 1 (Display 2) contains the cursor and should be the active widget.
+  EXPECT_EQ(overlay->GetActiveWidgetForTesting(),
+            overlay->widgets_for_testing()[1].get());
+  EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsActive());
+  EXPECT_FALSE(overlay->widgets_for_testing()[0]->IsActive());
 }
 
 }  // namespace omnibox_everywhere
