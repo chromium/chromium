@@ -180,8 +180,7 @@ class BookmarkFolderPickerMediator {
         BookmarkItem parentItem = mBookmarkModel.getBookmarkById(parentId);
         assert parentItem != null;
         mCurrentParentItem = parentItem;
-        mBackPressStateSupplier.set(
-                !parentId.equals(mBookmarkModel.getRootFolderId()) || mIsFromBookmarkDialog);
+        mBackPressStateSupplier.set(!parentId.equals(mBookmarkModel.getRootFolderId()));
         updateToolbarTitleForCurrentParent();
         updateButtonsForCurrentParent();
         updateNavigationIconForCurrentParent();
