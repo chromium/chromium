@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
 // capturing the size properly even if we don't get a widget resize message.  We
 // sometimes don't on ChromeOS when the size is unspecified.  Other platforms
 // seem to get a resize either way.
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
                        UnsizedWindowResizesProperly) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP({}, kPictureInPictureDocumentPipPage,
                                            SizingMode::kUnsized));
@@ -765,35 +765,32 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   // Ignore the origin, since the window might be pushed around on the screen
   // when the child dialog causes it to become bigger.  We still want a rect
   // rather than size, since size doesn't support "approximately equal".
-  const auto initial_pip_bounds = gfx::Rect(
-      gfx::Point(),
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen().size());
+  const auto initial_pip_bounds =
+      gfx::Rect(gfx::Point(), GetPipWidget()->GetWindowBoundsInScreen().size());
   const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
                                     initial_pip_bounds.height() + 10);
   auto child_dialog =
       OpenChildDialog(child_dialog_size, ui::mojom::ModalType::kWindow);
   child_dialog->CloseNow();
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // The pip window should return to its original bounds.  Allow some
   // verification because wayland can be off by one and windows can be off by
   // four.  We're mostly concerned that it's not minimum sized at the origin, so
   // anything close is fine.
-  const auto final_pip_bounds = gfx::Rect(
-      gfx::Point(),
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen().size());
+  const auto final_pip_bounds =
+      gfx::Rect(gfx::Point(), GetPipWidget()->GetWindowBoundsInScreen().size());
   EXPECT_TRUE(initial_pip_bounds.ApproximatelyEqual(final_pip_bounds, 5));
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
                        RespectsUserLocationChangesAfterChildDialogCloses) {
   if (!PlatformSupportsScreenCoordinates()) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
   }
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  gfx::Rect initial_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect initial_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
 
   // Open a child dialog that is larger than the pip window.
   const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
@@ -802,8 +799,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       OpenChildDialog(child_dialog_size, ui::mojom::ModalType::kWindow);
 
   // The pip window should increase its size to contain the child dialog.
-  gfx::Rect new_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect new_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
   EXPECT_NE(initial_pip_bounds, new_pip_bounds);
   EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
   EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
@@ -812,27 +808,25 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   gfx::Rect moved_bounds = new_pip_bounds;
   moved_bounds.set_x(moved_bounds.x() - 10);
   moved_bounds.set_y(moved_bounds.y() - 10);
-  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+  GetPipWidget()->SetBounds(moved_bounds);
 
   // Close the dialog.
   child_dialog->CloseNow();
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // Since the user moved the window but did not resize, it should return to
   // its original size but keep the new position.
   gfx::Rect expected_final_bounds = moved_bounds;
   expected_final_bounds.set_width(initial_pip_bounds.width());
   expected_final_bounds.set_height(initial_pip_bounds.height());
-  EXPECT_EQ(expected_final_bounds,
-            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(expected_final_bounds, GetPipWidget()->GetWindowBoundsInScreen());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
                        RespectsUserBoundsChangesAfterChildDialogCloses) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  gfx::Rect initial_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect initial_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
 
   // Open a child dialog that is larger than the pip window.
   const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
@@ -841,8 +835,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       OpenChildDialog(child_dialog_size, ui::mojom::ModalType::kWindow);
 
   // The pip window should increase its size to contain the child dialog.
-  gfx::Rect new_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect new_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
   EXPECT_NE(initial_pip_bounds, new_pip_bounds);
   EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
   EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
@@ -856,17 +849,16 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
     moved_bounds.set_x(moved_bounds.x() - 10);
     moved_bounds.set_y(moved_bounds.y() - 10);
   }
-  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+  GetPipWidget()->SetBounds(moved_bounds);
 
   // Close the dialog.
   child_dialog->CloseNow();
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // Since the user both moved and resized the window, it should not change back
   // when the child dialog closes.  We allow a pixel either way because this
   // sometimes rounds from DIP to pixels (wayland).
-  const auto actual_final_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  const auto actual_final_bounds = GetPipWidget()->GetWindowBoundsInScreen();
   EXPECT_TRUE(actual_final_bounds.ApproximatelyEqual(moved_bounds, 1));
 }
 
