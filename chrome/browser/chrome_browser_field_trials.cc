@@ -381,6 +381,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       blink::features::kAndroidDesktopUASpoofAsChromeOS);
 
+  // Enable opening PDFs in iframe in standalone tabs on Android.
+  // TODO(crbug.com/556810751) Enable on non-AL form factors.
+  feature_overrides.EnableFeature(blink::features::kAndroidHandlePdfInIframe);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.

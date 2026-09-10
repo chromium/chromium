@@ -69,6 +69,9 @@ BASE_FEATURE(kAndroidDesktopUASpoofAsChromeOS,
 
 // Gated prewarming of system fonts on Android to background threads.
 BASE_FEATURE(kAndroidSystemFontPrewarming, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Opens PDFs in iframe in standalone tabs on Android.
+BASE_FEATURE(kAndroidHandlePdfInIframe, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Avoids copying ResourceRequest::TrustedParams when possible.
