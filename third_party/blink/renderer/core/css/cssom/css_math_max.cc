@@ -86,7 +86,7 @@ CSSMathExpressionNode* CSSMathMax::ToCalcExpressionNode() const {
       // overrides are implemented.
       NOTREACHED();
     }
-    operands.push_back(value->ToCalcExpressionNode());
+    operands.push_back(operand);
   }
   if (!operands.size()) {
     // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()

@@ -97,7 +97,7 @@ CSSMathExpressionNode* CSSMathClamp::ToCalcExpressionNode() const {
       // overrides are implemented.
       NOTREACHED();
     }
-    operands.push_back(value->ToCalcExpressionNode());
+    operands.push_back(operand);
   }
   return CSSMathExpressionOperation::CreateComparisonFunction(
       std::move(operands), CSSMathOperator::kClamp);
