@@ -145,12 +145,13 @@ public class ActorNotificationService {
                         /* isWarning= */ false,
                         /* isLive= */ false);
         mNotificationCache.put(taskId, nonLiveWrapper);
-        mNotificationManager.notify(nonLiveWrapper);
 
         ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
         if (manager != null) {
-            manager.onTaskDemoted(taskId);
+            manager.maybeStopServiceNow();
         }
+
+        mNotificationManager.notify(nonLiveWrapper);
     }
 
     /**
