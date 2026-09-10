@@ -61,7 +61,7 @@ source_set("renderers") {
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
-    "//ui/gl",
+    "//ui/gl:gl_enums",
   ]
 
   if (is_win) {

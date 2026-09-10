@@ -138,7 +138,6 @@ component("compositor") {
     "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
-    "//ui/gl",
   ]
 
   if (is_apple) {

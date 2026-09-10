@@ -121,7 +121,6 @@ target(link_target_type, "child") {
     "//ui/events/gestures/blink",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/gl",
     "//ui/native_theme",
     "//url",
     "//v8",

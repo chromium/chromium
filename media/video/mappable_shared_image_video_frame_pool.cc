@@ -59,7 +59,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"

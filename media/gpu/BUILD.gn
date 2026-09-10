@@ -482,7 +482,6 @@ source_set("command_buffer_helper") {
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
-    "//ui/gl",
   ]
 }
 

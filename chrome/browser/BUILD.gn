@@ -2482,7 +2482,6 @@ source_set("browser") {
     "//ui/events/devices",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/gl",
     "//ui/menus",
     "//ui/message_center",
     "//ui/message_center/public/cpp",

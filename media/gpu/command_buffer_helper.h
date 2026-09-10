@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace gpu {
 class CommandBufferStub;

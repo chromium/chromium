@@ -71,7 +71,6 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/switches.h"
-#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"

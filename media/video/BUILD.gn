@@ -29,8 +29,6 @@ source_set("video") {
     "picture.h",
     "renderable_mappable_shared_image_video_frame_pool.cc",
     "renderable_mappable_shared_image_video_frame_pool.h",
-    "trace_util.cc",
-    "trace_util.h",
     "video_decode_accelerator.cc",
     "video_decode_accelerator.h",
     "video_encode_accelerator.cc",
@@ -52,7 +50,6 @@ source_set("video") {
     "//media/base",
     "//third_party/libyuv",
     "//ui/gfx",
-    "//ui/gl",
   ]
 
   configs += [ "//media:subcomponent_config" ]

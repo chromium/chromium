@@ -40,7 +40,6 @@ source_set("gpu") {
     "//services/service_manager/public/cpp",
     "//services/viz/public/mojom",
     "//skia:buildflags",
-    "//ui/gl",
   ]
 }
 

@@ -56,7 +56,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_enums.h"
-#include "ui/gl/trace_util.h"
 
 namespace media {
 namespace {

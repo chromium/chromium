@@ -17,6 +17,5 @@ source_set("host") {
     "//net",
     "//ui/base:features",
     "//ui/gfx",
-    "//ui/gl",
   ]
 }
