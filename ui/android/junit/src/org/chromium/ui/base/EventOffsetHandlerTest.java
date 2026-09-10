@@ -39,16 +39,26 @@ public class EventOffsetHandlerTest {
                 }
 
                 @Override
-                public void setCurrentDragEventOffsets(float dx, float dy) {}
+                public void setCurrentDragEventOffsets(float dx, float dy) {
+                    mDragOffsetX = dx;
+                    mDragOffsetY = dy;
+                }
             };
 
     private RectF mViewport;
     private float mOffsetX;
     private float mOffsetY;
+    private float mDragOffsetX;
+    private float mDragOffsetY;
 
     private void assertOffsets(float x, float y) {
         assertEquals(x, mOffsetX, 0.0);
         assertEquals(y, mOffsetY, 0.0);
+    }
+
+    private void assertDragOffsets(float dx, float dy) {
+        assertEquals(dx, mDragOffsetX, 0.0);
+        assertEquals(dy, mDragOffsetY, 0.0);
     }
 
     @Before
@@ -56,6 +66,7 @@ public class EventOffsetHandlerTest {
         mHandler = new EventOffsetHandler(mDelegate);
         mViewport = new RectF(100, 200, 600, 800);
         assertOffsets(0, 0);
+        assertDragOffsets(0, 0);
     }
 
     @Test
@@ -103,5 +114,49 @@ public class EventOffsetHandlerTest {
         mHandler.onTouchEvent(actionUp);
         // Action up SHOULD clear the offset.
         assertOffsets(0, 0);
+    }
+
+    @Test
+    public void testDragEventOffsets_withHorizontalOffset() {
+        // Simulates layout with a horizontal offset (e.g. vertical tabs strip displayed).
+        mViewport = new RectF(360, 150, 1000, 800);
+
+        // Direct drag event without explicit offset.
+        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_STARTED, 0.f, 0.f);
+        assertOffsets(-360, -150);
+        assertDragOffsets(0, 0);
+
+        // Forwarded drag event with explicit horizontal offset (e.g. from context menu dialog).
+        // Touch offset X should be 0 to prevent double offset, while Y preserves top control
+        // offset.
+        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_LOCATION, -360.f, 0.f);
+        assertOffsets(0, -150);
+        assertDragOffsets(-360, 0);
+
+        // Drag ended clears both touch and drag offsets.
+        mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        assertOffsets(0, 0);
+        assertDragOffsets(0, 0);
+    }
+
+    @Test
+    public void testDragEventOffsets_withoutHorizontalOffset() {
+        // Simulates layout without a horizontal offset (e.g. vertical tabs hidden / phone layout).
+        mViewport = new RectF(0, 150, 800, 800);
+
+        // Direct drag event without explicit offset.
+        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_STARTED, 0.f, 0.f);
+        assertOffsets(0, -150);
+        assertDragOffsets(0, 0);
+
+        // Forwarded drag event with 0 offset.
+        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_LOCATION, 0.f, 0.f);
+        assertOffsets(0, -150);
+        assertDragOffsets(0, 0);
+
+        // Drag ended clears both touch and drag offsets.
+        mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        assertOffsets(0, 0);
+        assertDragOffsets(0, 0);
     }
 }

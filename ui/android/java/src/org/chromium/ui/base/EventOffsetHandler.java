@@ -42,7 +42,10 @@ public class EventOffsetHandler {
      * @param dy The offset on y-axis for the current drag event.
      */
     public void onPreDispatchDragEvent(int action, float dx, float dy) {
-        setTouchEventOffsets(-mDelegate.getLeft(), -mDelegate.getTop());
+        // TODO(crbug.com/555886423, jinsukkim): Revisit to see if an alternative approach can
+        // avoid this conditional logic.
+        float touchOffsetX = (dx == 0.f) ? -mDelegate.getLeft() : 0.f;
+        setTouchEventOffsets(touchOffsetX, -mDelegate.getTop());
         setDragEventOffsets(dx, dy);
     }
 
