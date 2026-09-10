@@ -420,4 +420,113 @@ public class ActorForegroundServiceManagerTest {
 
         verify(mNotificationService, never()).resendWorkingNotificationLoudly(anyInt());
     }
+
+    @Test
+    public void testOnNotificationDismissed_NoActiveTasks_StopsServiceImmediately() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        assertTrue(mManager.isServiceBoundForTesting());
+        ShadowLooper.idleMainLooper();
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mNotificationService.hasPendingDemotions()).thenReturn(true);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        when(mNotificationService.hasPendingDemotions()).thenReturn(false);
+        mManager.onNotificationDismissed(taskId);
+
+        verify(mNotificationService).clearTaskData(taskId);
+        assertFalse(mManager.isServiceBoundForTesting());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
+        verify(mServiceController).unbindService();
+    }
+
+    @Test
+    public void testOnNotificationDismissed_ActiveTasksRemain_DoesNotStopService() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        int taskId1 = 1;
+        int taskId2 = 2;
+
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(taskId2);
+        when(task2.isCompleted()).thenReturn(false);
+        when(task2.isUnderActorControl()).thenReturn(true);
+        when(mKeyedService.getTask(taskId2)).thenReturn(task2);
+
+        mManager.onTaskStateChanged(taskId1, ActorTaskState.ACTING);
+        mManager.onTaskStateChanged(taskId2, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(1);
+        mManager.onTaskStateChanged(taskId1, ActorTaskState.FINISHED);
+
+        mManager.onNotificationDismissed(taskId1);
+
+        verify(mNotificationService).clearTaskData(taskId1);
+        assertTrue(
+                "Service should remain bound because task 2 is still active.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController, never()).stopActorForegroundService(anyInt());
+        verify(mServiceController, never()).unbindService();
+    }
+
+    @Test
+    public void testOnTaskDemoted_NoActiveTasks_StopsService() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mNotificationService.hasPendingDemotions()).thenReturn(true);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+
+        assertTrue(mManager.isServiceBoundForTesting());
+
+        when(mNotificationService.hasPendingDemotions()).thenReturn(false);
+        mManager.onTaskDemoted(taskId);
+
+        assertFalse(
+                "Service should be unbound after task demoted.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_DETACH);
+        verify(mServiceController).unbindService();
+    }
+
+    @Test
+    public void testTaskCompleted_PendingDemotions_DelaysStopServiceForDemotionDelay() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        ActorNotificationService.setDemotionDelayMsForTesting(30000);
+        int taskId = 1;
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        ShadowLooper.idleMainLooper();
+
+        when(mTask.isCompleted()).thenReturn(true);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mNotificationService.hasPendingDemotions()).thenReturn(true);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+
+        // Service should still be bound at 10 seconds.
+        ShadowLooper.idleMainLooper(10, TimeUnit.SECONDS);
+        assertTrue(
+                "Service should still be bound before demotion delay passes.",
+                mManager.isServiceBoundForTesting());
+
+        // Advance by remaining 20 seconds; now demotion delay has passed.
+        when(mNotificationService.hasPendingDemotions()).thenReturn(false);
+        ShadowLooper.idleMainLooper(20, TimeUnit.SECONDS);
+        assertFalse(
+                "Service should be unbound after demotion delay.",
+                mManager.isServiceBoundForTesting());
+    }
 }
