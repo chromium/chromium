@@ -500,6 +500,9 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
 bool PasskeyTabHelper::CanPerformAutomaticPasskeyUpgrade(
     const RegistrationRequestParams& params,
     const std::vector<password_manager::StoredCredential>& logins) const {
+  if (!client_->IsAutomaticPasskeyUpgradeEnabled()) {
+    return false;
+  }
   std::string username = params.UserEntity().name;
   std::string domain_rp_id = GetDomainAndRegistryOrHost(params.RpId());
 
@@ -534,7 +537,8 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   bool is_conditional =
       request_type == PasskeyRequestParams::RequestType::kConditionalCreate;
 
-  if (is_conditional && !password_store_) {
+  if (is_conditional &&
+      (!password_store_ || !client_->IsAutomaticPasskeyUpgradeEnabled())) {
     // Automatic passkey upgrade is not allowed, defer to renderer.
     DeferToRenderer(std::move(request_info), request_type);
     return;

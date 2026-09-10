@@ -35,6 +35,7 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   void AllowPasskeyCreationInfobar(bool allowed) override;
   void CancelPasskeyRequest(RequestInfo request_info) override;
   bool IsGpmPasskeySavingEnabled() const override;
+  bool IsAutomaticPasskeyUpgradeEnabled() const override;
   bool IsBiometricsEnabled() const override;
   void OnPasskeyCreated() override;
 

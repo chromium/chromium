@@ -264,6 +264,11 @@ bool IOSChromePasskeyClient::IsGpmPasskeySavingEnabled() const {
   return true;
 }
 
+bool IOSChromePasskeyClient::IsAutomaticPasskeyUpgradeEnabled() const {
+  return profile_->GetPrefs()->GetBoolean(
+      password_manager::prefs::kAutomaticPasskeyUpgrades);
+}
+
 bool IOSChromePasskeyClient::IsBiometricsEnabled() const {
   id<ReauthenticationProtocol> reauth_module =
       ReauthenticationServiceFactory::GetForProfile(profile_)

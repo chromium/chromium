@@ -185,4 +185,18 @@ TEST_F(IOSChromePasskeyClientTest, DoNotShowPromoOnPasskeyCreated) {
   [mock_commands_handler verify];
 }
 
+// Tests that automatic passkey upgrade is enabled by default and follows the
+// pref value.
+TEST_F(IOSChromePasskeyClientTest, AutomaticPasskeyUpgradePref) {
+  EXPECT_TRUE(client_->IsAutomaticPasskeyUpgradeEnabled());
+
+  profile_->GetPrefs()->SetBoolean(
+      password_manager::prefs::kAutomaticPasskeyUpgrades, false);
+  EXPECT_FALSE(client_->IsAutomaticPasskeyUpgradeEnabled());
+
+  profile_->GetPrefs()->SetBoolean(
+      password_manager::prefs::kAutomaticPasskeyUpgrades, true);
+  EXPECT_TRUE(client_->IsAutomaticPasskeyUpgradeEnabled());
+}
+
 }  // namespace

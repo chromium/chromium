@@ -76,6 +76,14 @@ void FakeIOSPasskeyClient::SetGpmPasskeySavingEnabled(bool enabled) {
   gpm_passkey_saving_enabled_ = enabled;
 }
 
+bool FakeIOSPasskeyClient::IsAutomaticPasskeyUpgradeEnabled() const {
+  return automatic_passkey_upgrade_enabled_;
+}
+
+void FakeIOSPasskeyClient::SetAutomaticPasskeyUpgradeEnabled(bool enabled) {
+  automatic_passkey_upgrade_enabled_ = enabled;
+}
+
 bool FakeIOSPasskeyClient::IsBiometricsEnabled() const {
   return biometrics_enabled_;
 }

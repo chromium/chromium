@@ -78,6 +78,10 @@ class IOSPasskeyClient {
   // enterprise policies and sync status.
   virtual bool IsGpmPasskeySavingEnabled() const = 0;
 
+  // Returns whether automatic passkey upgrades are enabled based on user
+  // preferences.
+  virtual bool IsAutomaticPasskeyUpgradeEnabled() const = 0;
+
   // Returns whether biometric authentication is enabled.
   virtual bool IsBiometricsEnabled() const = 0;
 

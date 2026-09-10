@@ -27,11 +27,13 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
 
   void AllowPasskeyCreationInfobar(bool allowed) override;
   bool IsGpmPasskeySavingEnabled() const override;
+  bool IsAutomaticPasskeyUpgradeEnabled() const override;
   bool IsBiometricsEnabled() const override;
   void OnPasskeyCreated() override;
 
   bool DidShowSuggestionBottomSheet() const;
   void SetGpmPasskeySavingEnabled(bool enabled);
+  void SetAutomaticPasskeyUpgradeEnabled(bool enabled);
   void SetBiometricsEnabled(bool enabled);
   bool DidShowCreationBottomSheet() const;
   bool DidFetchKeys() const;
@@ -47,6 +49,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   bool show_interstitial_called_ = false;
   bool interstitial_proceeds_ = true;
   bool gpm_passkey_saving_enabled_ = true;
+  bool automatic_passkey_upgrade_enabled_ = true;
   bool biometrics_enabled_ = true;
   bool on_passkey_created_called_ = false;
   PasskeyUserVerificationStatus last_user_verification_status_ =
