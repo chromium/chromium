@@ -8,7 +8,10 @@
 
 #include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
@@ -50,6 +53,27 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead) {
       task_runner_.get());
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(kData, String(result.second).Utf8());
+}
+
+TEST_F(DataPipeBytesConsumerTest, CanBeGarbageCollectedWhileWaiting) {
+  base::test::TaskEnvironment task_environment;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+
+  DataPipeBytesConsumer::CompletionNotifier* notifier = nullptr;
+  Persistent<DataPipeBytesConsumer> consumer =
+      MakeGarbageCollected<DataPipeBytesConsumer>(
+          task_runner_, std::move(consumer_handle), &notifier);
+  WeakPersistent<DataPipeBytesConsumer> weak_consumer = consumer;
+
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
+
+  consumer = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_consumer);
 }
 
 TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {

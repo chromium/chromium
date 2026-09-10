@@ -50,7 +50,7 @@ DataPipeBytesConsumer::DataPipeBytesConsumer(
   watcher_.Watch(
       data_pipe_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      BindRepeating(&DataPipeBytesConsumer::Notify, WrapPersistent(this)));
+      BindRepeating(&DataPipeBytesConsumer::Notify, WrapWeakPersistent(this)));
 }
 
 DataPipeBytesConsumer::~DataPipeBytesConsumer() {}
