@@ -814,6 +814,55 @@ TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
             match.suggest_template->style());
 }
 
+TEST_F(BaseSearchProviderTest,
+       SuggestTemplateInfoSecondaryTextBoldingPopulatesMatch) {
+  TemplateURLData data;
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  auto template_url = std::make_unique<TemplateURL>(data);
+
+  TestBaseSearchProvider::MatchMap map;
+  std::u16string query = u"Washington Wizards";
+
+  omnibox::SuggestTemplateInfo suggest_template_info;
+  suggest_template_info.set_style(omnibox::SuggestTemplateInfo::DEFAULT);
+  suggest_template_info.mutable_primary_text()->set_text("Washington Wizards");
+  auto* secondary_text = suggest_template_info.mutable_secondary_text();
+  secondary_text->set_text("MIA Basketball");
+  auto* sec_frag1 = secondary_text->add_fragments();
+  sec_frag1->set_start_index(0);
+  sec_frag1->set_text("MIA ");
+  sec_frag1->set_is_bolded(true);
+  auto* sec_frag2 = secondary_text->add_fragments();
+  sec_frag2->set_start_index(4);
+  sec_frag2->set_text("Basketball");
+  sec_frag2->set_is_bolded(false);
+
+  SearchSuggestionParser::SuggestResult result(
+      query, AutocompleteMatchType::SEARCH_SUGGEST, omnibox::TYPE_NATIVE_CHROME,
+      /*subtypes=*/{}, query, /*match_contents_prefix=*/u"",
+      /*annotation=*/u"MIA Basketball", /*deletion_url=*/"",
+      /*from_keyword=*/false,
+      /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*should_prefetch=*/false, /*should_prerender=*/false,
+      /*input_text=*/query, suggest_template_info);
+
+  provider_->AddMatchToMap(
+      result, AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  ASSERT_EQ(1U, map.size());
+  AutocompleteMatch match = map.begin()->second;
+  EXPECT_EQ(u"MIA Basketball", match.description);
+  ASSERT_EQ(2U, match.description_class.size());
+  EXPECT_EQ(0U, match.description_class[0].offset);
+  EXPECT_EQ(ACMatchClassification::MATCH | ACMatchClassification::DIM,
+            match.description_class[0].style);
+  EXPECT_EQ(4U, match.description_class[1].offset);
+  EXPECT_EQ(ACMatchClassification::DIM, match.description_class[1].style);
+}
+
 TEST_F(BaseSearchProviderTest, SuggestTemplateInfoRichImagePopulatesMatch) {
   TemplateURLData data;
   data.SetURL("https://www.google.com/search?q={searchTerms}");

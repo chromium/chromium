@@ -1696,7 +1696,16 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
     frag2->set_start_index(11);
     frag2->set_text("Wizards");
     frag2->set_is_bolded(false);
-    suggest_template_info.mutable_secondary_text()->set_text("MIA");
+    auto* secondary_text = suggest_template_info.mutable_secondary_text();
+    secondary_text->set_text("MIA Basketball");
+    auto* sec_frag1 = secondary_text->add_fragments();
+    sec_frag1->set_start_index(0);
+    sec_frag1->set_text("MIA ");
+    sec_frag1->set_is_bolded(true);
+    auto* sec_frag2 = secondary_text->add_fragments();
+    sec_frag2->set_start_index(4);
+    sec_frag2->set_text("Basketball");
+    sec_frag2->set_is_bolded(false);
     omnibox::SuggestTemplateInfo::Image* image =
         suggest_template_info.mutable_image();
     image->set_url("http://example.com/a.png");
@@ -1770,7 +1779,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
     // of the SuggestTemplateInfo.
     ASSERT_EQ(u"Washington Wizards",
               results.suggest_results[1].match_contents());
-    ASSERT_EQ(u"MIA", results.suggest_results[1].annotation());
+    ASSERT_EQ(u"MIA Basketball", results.suggest_results[1].annotation());
 
     // Verify classifications derived from suggest template fragments.
     const auto& classifications =
@@ -1780,6 +1789,25 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
     EXPECT_EQ(ACMatchClassification::MATCH, classifications[0].style);
     EXPECT_EQ(11U, classifications[1].offset);
     EXPECT_EQ(ACMatchClassification::NONE, classifications[1].style);
+
+    const auto& sec_classifications =
+        results.suggest_results[1].annotation_class();
+    ASSERT_EQ(2U, sec_classifications.size());
+    EXPECT_EQ(0U, sec_classifications[0].offset);
+    EXPECT_EQ(ACMatchClassification::MATCH | ACMatchClassification::DIM,
+              sec_classifications[0].style);
+    EXPECT_EQ(4U, sec_classifications[1].offset);
+    EXPECT_EQ(ACMatchClassification::DIM, sec_classifications[1].style);
+
+    // If SetAnnotation is called with a new string, it should not use stale
+    // template fragments and instead fall back to {0, DIM}.
+    results.suggest_results[1].SetAnnotation(u"New Annotation");
+    EXPECT_EQ(u"New Annotation", results.suggest_results[1].annotation());
+    const auto& updated_sec_class =
+        results.suggest_results[1].annotation_class();
+    ASSERT_EQ(1U, updated_sec_class.size());
+    EXPECT_EQ(0U, updated_sec_class[0].offset);
+    EXPECT_EQ(ACMatchClassification::DIM, updated_sec_class[0].style);
   }
   // Parse EntityInfo data from garbled proto field.
   {

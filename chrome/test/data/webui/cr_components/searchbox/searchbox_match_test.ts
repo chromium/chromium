@@ -467,4 +467,24 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
+
+  test('DescriptionWithClassifications', async () => {
+    matchEl.match = createAutocompleteMatch({
+      description: 'MIA Basketball',
+      descriptionClass: [
+        {offset: 0, style: 2 | 4},  // MATCH | DIM
+        {offset: 4, style: 4},      // DIM
+      ],
+    });
+    await microtasksFinished();
+
+    const spans = matchEl.$.description.querySelectorAll('span');
+    assertEquals(2, spans.length);
+    assertEquals('MIA ', spans[0]!.textContent);
+    assertTrue(spans[0]!.classList.contains('match'));
+    assertTrue(spans[0]!.classList.contains('dim'));
+    assertEquals('Basketball', spans[1]!.textContent);
+    assertFalse(spans[1]!.classList.contains('match'));
+    assertTrue(spans[1]!.classList.contains('dim'));
+  });
 });

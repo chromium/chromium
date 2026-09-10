@@ -11,7 +11,8 @@
 // Translates a FormattedString into ACMatchClassifications based on the
 // fragments' bolding status.
 ACMatchClassifications ClassifyFormattedString(
-    const omnibox::FormattedString& formatted_string);
+    const omnibox::FormattedString& formatted_string,
+    int base_style = ACMatchClassification::NONE);
 
 // Finds the matches for |find_text| in |text|, classifies those matches,
 // merges those classifications with |original_class|, and returns the merged

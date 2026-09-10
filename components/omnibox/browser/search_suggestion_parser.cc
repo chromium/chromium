@@ -225,10 +225,6 @@ bool DecodeProtoFromBase64(const std::string* encoded_data, T& result_proto) {
   return true;
 }
 
-// Format template image URLs that do not contain a scheme.
-// The call to GetFormattedURL() will return the URL with a scheme added or
-// return the same URL if no formatting is necessary.
-
 std::u16string GetAnnotation(
     base::optional_ref<const omnibox::SuggestTemplateInfo>
         suggest_template_info) {
@@ -245,6 +241,14 @@ bool SuggestTemplateInfoHasPrimaryText(
   return suggest_template_info.has_value() &&
          suggest_template_info->has_primary_text() &&
          !suggest_template_info->primary_text().text().empty();
+}
+
+bool SuggestTemplateInfoHasSecondaryText(
+    base::optional_ref<const omnibox::SuggestTemplateInfo>
+        suggest_template_info) {
+  return suggest_template_info.has_value() &&
+         suggest_template_info->has_secondary_text() &&
+         !suggest_template_info->secondary_text().text().empty();
 }
 
 // Update `match_contents` if there is any input that has a higher precedence.
@@ -628,6 +632,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
   }
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
+  ClassifyAnnotation();
 }
 
 SearchSuggestionParser::SuggestResult::SuggestResult(
@@ -694,6 +699,29 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
       ClassifyAllMatchesInString(input_text, match_contents_, true);
 }
 
+void SearchSuggestionParser::SuggestResult::ClassifyAnnotation() {
+  // Only use the server-provided `suggest_template_info` formatting if the
+  // template's secondary text is non-empty, has fragments, and matches
+  // `annotation_`.
+  if (SuggestTemplateInfoHasSecondaryText(suggest_template_info_) &&
+      suggest_template_info_->secondary_text().fragments_size() > 0 &&
+      annotation_ ==
+          base::UTF8ToUTF16(suggest_template_info_->secondary_text().text())) {
+    auto classifications = ClassifyFormattedString(
+        suggest_template_info_->secondary_text(), ACMatchClassification::DIM);
+    if (!classifications.empty()) {
+      annotation_class_ = std::move(classifications);
+      return;
+    }
+  }
+
+  if (!annotation_.empty()) {
+    annotation_class_ = {ACMatchClassification(0, ACMatchClassification::DIM)};
+  } else {
+    annotation_class_.clear();
+  }
+}
+
 void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
     const omnibox::RichAnswerTemplate& answer_template) {
   answer_template_ = answer_template;
@@ -702,6 +730,7 @@ void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
 void SearchSuggestionParser::SuggestResult::SetSuggestTemplateInfo(
     const omnibox::SuggestTemplateInfo& suggest_template_info) {
   suggest_template_info_ = suggest_template_info;
+  ClassifyAnnotation();
 }
 
 void SearchSuggestionParser::SuggestResult::SetMatchContents(
@@ -712,6 +741,7 @@ void SearchSuggestionParser::SuggestResult::SetMatchContents(
 void SearchSuggestionParser::SuggestResult::SetAnnotation(
     const std::u16string& annotation) {
   annotation_ = annotation;
+  ClassifyAnnotation();
 }
 
 int SearchSuggestionParser::SuggestResult::CalculateRelevance(
