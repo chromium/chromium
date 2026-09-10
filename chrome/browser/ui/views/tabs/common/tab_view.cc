@@ -318,8 +318,10 @@ TabView::TabView(TabCollectionNode* collection_node)
       tab_styling_(TabStyleViews::Create(
           std::make_unique<TabStyleViewDelegateImpl>(this),
           orientation_)),
-      icon_(AddChildView(std::make_unique<TabIcon>())),
+      // Title must be below the favicon in the z-order as the title should be
+      // drawn under the favicon during the title animation for horizontal tabs.
       title_(AddChildView(std::make_unique<TabTitle>())),
+      icon_(AddChildView(std::make_unique<TabIcon>())),
       alert_indicator_(
           AddChildView(std::make_unique<AlertIndicatorButton>(this))),
       close_button_(AddChildView(std::make_unique<TabCloseButton>(
@@ -419,6 +421,10 @@ TabView::~TabView() = default;
 
 void TabView::LayoutManager::OnInstalled(views::View* host) {
   CHECK(IsViewClass<class TabView>(host));
+}
+
+TabView& TabView::LayoutManager::TabView() {
+  return static_cast<class TabView&>(*host_view());
 }
 
 const TabView& TabView::LayoutManager::TabView() const {
@@ -1007,7 +1013,7 @@ void TabView::ResetCollectionNode() {
   // needs the node.
   close_button_->SetCallback(base::RepeatingClosure(base::DoNothing()));
 
-  static_cast<TabView::LayoutManager*>(GetLayoutManager())->OnTabClosing();
+  layout_manager()->OnTabClosing();
 }
 
 void TabView::UpdateAccessibleName() {
@@ -1055,7 +1061,7 @@ void TabView::OnTabStateChanged() {
   pinned_ = tab->IsPinned();
 
   SetSelection(tab->IsSelected());
-  UpdateTabData(tab);
+  UpdateTabData(tab_data_observer_->tab_data());
 
   UpdateFocusFreezing();
 
@@ -1099,7 +1105,10 @@ void TabView::OnTabDataChanged(TabChangeType change_type,
     }
     return;
   }
-  UpdateTabData(GetTabInterface());
+  if (data.should_display_favicon != tab_data_.should_display_favicon) {
+    layout_manager()->OnShouldDisplayFaviconChanged();
+  }
+  UpdateTabData(data);
 }
 
 void TabView::SetSelection(bool selected) {
@@ -1111,9 +1120,11 @@ void TabView::SetSelection(bool selected) {
   GetViewAccessibility().SetIsSelected(selected_);
 }
 
-void TabView::UpdateTabData(const tabs::TabInterface* tab) {
+void TabView::UpdateTabData(const tabs::TabData& data) {
   tabs::TabData old_data = std::move(tab_data_);
-  tab_data_ = tab_data_observer_->tab_data();
+  tab_data_ = data;
+
+  tabs::TabInterface* tab = const_cast<tabs::TabInterface*>(GetTabInterface());
 
   if (tabs::ShouldUpdateAccessibleName(old_data, tab_data_)) {
     UpdateAccessibleName();
@@ -1130,20 +1141,8 @@ void TabView::UpdateTabData(const tabs::TabInterface* tab) {
   SetHoverCardDataFrom(tab_data_);
 }
 
-void TabView::SetDataForTesting(tabs::TabData data) {
-  tabs::TabData old_data = std::move(tab_data_);
-  tab_data_ = std::move(data);
-
-  if (tabs::ShouldUpdateAccessibleName(old_data, tab_data_)) {
-    UpdateAccessibleName();
-  }
-
-  icon_->SetData(tab_data_);
-  icon_->SetAttention(TabIcon::AttentionType::kTabWantsAttentionStatus,
-                      tab_data_.needs_attention);
-  UpdateTitle(tab_data_.title, tab_data_.should_render_loading_title);
-  alert_indicator_->TransitionToAlertState(tab_data_.alert_state);
-  SetHoverCardDataFrom(tab_data_);
+void TabView::SetDataForTesting(const tabs::TabData& data) {
+  OnTabDataChanged(TabChangeType::kAll, data);
 }
 
 void TabView::UpdateTitle(std::u16string title,
@@ -1359,6 +1358,10 @@ TabView::GetFreezingVote(FreezingVoteReason reason) {
       return focus_mode_freezing_vote_;
   }
   NOTREACHED();
+}
+
+TabView::LayoutManager* TabView::layout_manager() {
+  return static_cast<TabView::LayoutManager*>(GetLayoutManager());
 }
 
 BEGIN_METADATA(TabView)

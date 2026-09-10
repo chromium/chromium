@@ -7,7 +7,8 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 
-class TabViewHorizontalLayout : public TabView::LayoutManager {
+class TabViewHorizontalLayout : public TabView::LayoutManager,
+                                public gfx::AnimationDelegate {
  public:
   TabViewHorizontalLayout();
   TabViewHorizontalLayout(const TabViewHorizontalLayout&) = delete;
@@ -16,6 +17,14 @@ class TabViewHorizontalLayout : public TabView::LayoutManager {
 
   // TabView::LayoutManager:
   void OnTabClosing() override;
+  void OnShouldDisplayFaviconChanged() override;
+
+  // gfx::AnimationDelegate
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
+  bool is_title_animating_for_testing() const {
+    return title_animation_.is_animating();
+  }
 
  protected:
   // views::LayoutManagerBase:
@@ -33,6 +42,13 @@ class TabViewHorizontalLayout : public TabView::LayoutManager {
   };
   ChildVisibilities CalculateChildVisibilities(int width,
                                                int available_width) const;
+
+  // Returns the title bounds adjusted for the title animation, given
+  // the target bounds at the end of the animation.
+  gfx::Rect GetTitleBounds(const gfx::Rect& target_bounds) const;
+
+  gfx::LinearAnimation title_animation_;
+  gfx::Rect start_title_bounds_;
 
   // When a horizontal tab starts closing, preserve the initial center_icon_
   // state so that child views' relative positions within the tab stay constant
