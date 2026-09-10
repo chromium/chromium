@@ -62,7 +62,7 @@ bool MockTriggeredProfileResetter::has_reset_trigger_ = false;
 
 std::unique_ptr<KeyedService> BuildMockTriggeredProfileResetter(
     content::BrowserContext* context) {
-  return base::WrapUnique(new MockTriggeredProfileResetter);
+  return std::make_unique<MockTriggeredProfileResetter>();
 }
 
 GURL GetTriggeredResetSettingsURL() {

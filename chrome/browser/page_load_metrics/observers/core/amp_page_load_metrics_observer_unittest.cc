@@ -105,7 +105,7 @@ class AMPPageLoadMetricsObserverTest
   bool WithFencedFrames() { return GetParam(); }
 
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    tracker->AddObserver(base::WrapUnique(new AMPPageLoadMetricsObserver()));
+    tracker->AddObserver(std::make_unique<AMPPageLoadMetricsObserver>());
   }
 
   content::RenderFrameHost* AppendChildFrame(content::RenderFrameHost* parent,
