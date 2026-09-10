@@ -113,12 +113,12 @@ export class WebviewController {
   private glicRequestHeaderInjector?: GlicRequestHeaderInjector;
   private displayScaleMultiplier = 1.0;
   private webClientStateListenerId?: number;
-  private bootstrapIntervalId?: number;
+  private bootstrapTimeoutId?: number;
 
   private stopBootstrapPing() {
-    if (this.bootstrapIntervalId !== undefined) {
-      window.clearInterval(this.bootstrapIntervalId);
-      this.bootstrapIntervalId = undefined;
+    if (this.bootstrapTimeoutId !== undefined) {
+      window.clearTimeout(this.bootstrapTimeoutId);
+      this.bootstrapTimeoutId = undefined;
     }
   }
 
@@ -340,16 +340,26 @@ export class WebviewController {
       const contentWindow = this.webview.contentWindow;
       const origin = urlObj.origin;
       this.stopBootstrapPing();
+      let delayMs = 50;
+      const maxDelayMs = 1000;
       const sendBootstrap = () => {
-        contentWindow.postMessage(
-            {
-              type: 'glic-bootstrap',
-              glicApiSource: loadTimeData.getString('glicGuestAPISource'),
-            },
-            origin);
+        try {
+          contentWindow.postMessage(
+              {
+                type: 'glic-bootstrap',
+                glicApiSource: loadTimeData.getString('glicGuestAPISource'),
+              },
+              origin);
+        } catch (e) {
+          console.warn('Failed to postMessage glic-bootstrap to guest:', e);
+        }
+        if (this.bootstrapTimeoutId !== undefined) {
+          this.bootstrapTimeoutId = window.setTimeout(sendBootstrap, delayMs);
+          delayMs = Math.min(delayMs * 2, maxDelayMs);
+        }
       };
+      this.bootstrapTimeoutId = -1;
       sendBootstrap();
-      this.bootstrapIntervalId = window.setInterval(sendBootstrap, 50);
     }
 
     this.browserProxy.pageHandler.webviewCommitted(url);
