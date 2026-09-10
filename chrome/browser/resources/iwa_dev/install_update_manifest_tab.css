@@ -30,7 +30,7 @@
   flex-direction: column;
   justify-content: center;
   margin-top: 8px;
-  min-height: 60px;
+  min-height: 80px;
 }
 
 #dropdowns-row {
@@ -39,9 +39,8 @@
   width: 100%;
 }
 
-#dropdowns-row .dropdown-container {
+#dropdowns-row iwa-dev-combobox {
   flex: 1;
-  margin-bottom: 0;
 }
 
 .success-message {

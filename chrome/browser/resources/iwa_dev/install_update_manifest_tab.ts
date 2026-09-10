@@ -4,11 +4,19 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
+import './combobox.js';
 
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+
+import type {ComboboxOption} from './combobox.js';
 import {IwaDevInstallTabElement} from './install_tab.js';
 import {getCss} from './install_update_manifest_tab.css.js';
 import {getHtml} from './install_update_manifest_tab.html.js';
-import type {ChannelMetadata, UpdateManifest, VersionEntry} from './iwa_dev.mojom-webui.js';
+import type {UpdateManifest} from './iwa_dev.mojom-webui.js';
+
+export interface VersionComboboxOption extends ComboboxOption {
+  src: Url;
+}
 
 export const PLACEHOLDER_URL = 'https://example.com/update_manifest.json';
 
@@ -40,8 +48,8 @@ export class IwaDevInstallUpdateManifestTabElement extends
       isManifestFetched_: {type: Boolean, state: true},
       selectedVersion_: {type: String, state: true},
       selectedChannel_: {type: String, state: true},
-      versions_: {type: Array, state: true},
-      channels_: {type: Array, state: true},
+      versionOptions_: {type: Array, state: true},
+      channelOptions_: {type: Array, state: true},
     };
   }
 
@@ -52,8 +60,8 @@ export class IwaDevInstallUpdateManifestTabElement extends
   protected accessor isManifestFetched_: boolean = false;
   protected accessor selectedVersion_: string = '';
   protected accessor selectedChannel_: string = '';
-  protected accessor versions_: VersionEntry[] = [];
-  protected accessor channels_: ChannelMetadata[] = [];
+  protected accessor versionOptions_: VersionComboboxOption[] = [];
+  protected accessor channelOptions_: ComboboxOption[] = [];
 
   override isValid(): boolean {
     return this.isManifestFetched_;
@@ -63,10 +71,10 @@ export class IwaDevInstallUpdateManifestTabElement extends
     if (!this.isManifestFetched_) {
       return;
     }
-    const versionEntry =
-        this.versions_.find(v => v.version === this.selectedVersion_)!;
+    const versionOption =
+        this.versionOptions_.find(v => v.value === this.selectedVersion_)!;
     this.fire('request-install-from-update-manifest', {
-      webBundleUrl: versionEntry.src,
+      webBundleUrl: versionOption.src,
       updateInfo: {
         updateManifestUrl: this.url_,
         updateChannel: this.selectedChannel_,
@@ -82,15 +90,29 @@ export class IwaDevInstallUpdateManifestTabElement extends
     if (result.error) {
       this.urlError_ = result.error;
       this.isManifestFetched_ = false;
+      this.versionOptions_ = [];
+      this.channelOptions_ = [];
     } else if (!result.success?.versions.length) {
       this.urlError_ = 'No valid version entries found in update manifest.';
       this.isManifestFetched_ = false;
+      this.versionOptions_ = [];
+      this.channelOptions_ = [];
     } else {
-      this.versions_ = [...result.success.versions].sort(
-          (a, b) => this.compareVersions_(b.version, a.version));
-      this.channels_ = result.success.channels || [];
-      this.selectedVersion_ = this.versions_[0]!.version;
-      this.selectedChannel_ = this.channels_[0]?.channel || '';
+      this.versionOptions_ =
+          [...result.success.versions]
+              .sort((a, b) => this.compareVersions_(b.version, a.version))
+              .map((item, index) => ({
+                     value: item.version,
+                     label: `${item.version}${index === 0 ? ' (Latest)' : ''}`,
+                     src: item.src,
+                   }));
+      this.channelOptions_ = (result.success.channels ||
+                              []).map(item => ({
+                                        value: item.channel,
+                                        label: item.displayName || item.channel,
+                                      }));
+      this.selectedVersion_ = this.versionOptions_[0]!.value;
+      this.selectedChannel_ = this.channelOptions_[0]?.value || '';
       this.isManifestFetched_ = true;
     }
     this.notifyValidChanged();
@@ -144,12 +166,12 @@ export class IwaDevInstallUpdateManifestTabElement extends
     }
   }
 
-  protected onVersionChange_(e: Event) {
-    this.selectedVersion_ = (e.target as HTMLSelectElement).value;
+  protected onVersionValueChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedVersion_ = e.detail.value;
   }
 
-  protected onChannelChange_(e: Event) {
-    this.selectedChannel_ = (e.target as HTMLSelectElement).value;
+  protected onChannelValueChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedChannel_ = e.detail.value;
   }
 
   private compareVersions_(v1: string, v2: string): number {

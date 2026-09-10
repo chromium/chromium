@@ -4,15 +4,15 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import './combobox.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ChannelMetadata, IwaDevModeAppInfo, UpdateManifest, VersionEntry} from './iwa_dev.mojom-webui.js';
+import type {ComboboxOption, IwaDevComboboxElement} from './combobox.js';
+import type {IwaDevModeAppInfo, UpdateManifest} from './iwa_dev.mojom-webui.js';
 import {getCss as getSharedCss} from './shared_style.css.js';
 import {getCss} from './update_options_dialog.css.js';
 import {getHtml} from './update_options_dialog.html.js';
@@ -35,9 +35,9 @@ export function isValidUpdateChannel(channel: string): boolean {
 
 export interface IwaDevUpdateOptionsDialogElement {
   $: {
-    channelInput: HTMLInputElement,
     dialog: CrDialogElement,
-    pinnedVersionInput: HTMLInputElement,
+    channelCombobox: IwaDevComboboxElement,
+    pinnedVersionCombobox: IwaDevComboboxElement,
   };
 }
 
@@ -63,9 +63,9 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
       currentPinnedVersion: {type: String},
       currentAllowDowngrades: {type: Boolean},
       fetchError_: {type: String, state: true},
-      channels_: {type: Array, state: true},
+      channelOptions_: {type: Array, state: true},
       selectedChannel_: {type: String, state: true},
-      versions_: {type: Array, state: true},
+      versionOptions_: {type: Array, state: true},
       selectedPinnedVersion_: {type: String, state: true},
       selectedAllowDowngrades_: {type: Boolean, state: true},
       channelError_: {type: String, state: true},
@@ -85,9 +85,9 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
   accessor currentAllowDowngrades: boolean = false;
 
   protected accessor fetchError_: string = '';
-  protected accessor channels_: ChannelMetadata[] = [];
+  protected accessor channelOptions_: ComboboxOption[] = [];
   protected accessor selectedChannel_: string = '';
-  protected accessor versions_: VersionEntry[] = [];
+  protected accessor versionOptions_: ComboboxOption[] = [];
   protected accessor selectedPinnedVersion_: string = '';
   protected accessor selectedAllowDowngrades_: boolean = false;
   protected accessor channelError_: string = '';
@@ -109,21 +109,16 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     this.$.dialog.cancel();
   }
 
-  protected onChannelInput_(e: Event) {
-    this.selectedChannel_ = (e.target as HTMLInputElement).value;
+  protected onChannelValueChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedChannel_ = e.detail.value;
     this.channelError_ = '';
   }
 
-  protected onPinnedVersionInput_(e: Event) {
-    this.selectedPinnedVersion_ = (e.target as HTMLInputElement).value;
+  protected onPinnedVersionValueChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedPinnedVersion_ = e.detail.value;
     this.pinnedVersionError_ = '';
   }
 
-  protected onClearPinnedVersionClick_() {
-    this.selectedPinnedVersion_ = '';
-    this.pinnedVersionError_ = '';
-    this.$.pinnedVersionInput.focus();
-  }
 
   protected onAllowDowngradesChange_(e: CustomEvent<boolean>) {
     this.selectedAllowDowngrades_ = e.detail;
@@ -182,9 +177,9 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
 
     if (hasError) {
       if (this.channelError_) {
-        this.$.channelInput.focus();
+        this.$.channelCombobox.focus();
       } else if (this.pinnedVersionError_) {
-        this.$.pinnedVersionInput.focus();
+        this.$.pinnedVersionCombobox.focus();
       }
       return;
     }
@@ -209,9 +204,16 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
           this.fetchError_ =
               'Failed to fetch suggestions from update manifest.';
         } else if (result.success) {
-          this.channels_ = result.success.channels || [];
-          this.versions_ = [...(result.success.versions || [])].sort(
-              (a, b) => this.compareVersions_(b.version, a.version));
+          this.channelOptions_ =
+              (result.success.channels ||
+               []).map(item => ({
+                         value: item.channel,
+                         label: item.displayName || item.channel,
+                       }));
+          this.versionOptions_ =
+              [...(result.success.versions || [])]
+                  .sort((a, b) => this.compareVersions_(b.version, a.version))
+                  .map(v => ({value: v.version}));
         }
       },
     });

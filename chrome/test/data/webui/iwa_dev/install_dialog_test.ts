@@ -5,6 +5,7 @@
 import 'chrome://iwa-dev/install_dialog.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import type {IwaDevComboboxElement} from 'chrome://iwa-dev/combobox.js';
 import {PLACEHOLDER_URL as PROXY_PLACEHOLDER_URL} from 'chrome://iwa-dev/install_dev_proxy_tab.js';
 import type {IwaDevInstallDialogElement} from 'chrome://iwa-dev/install_dialog.js';
 import {TabIndex} from 'chrome://iwa-dev/install_dialog.js';
@@ -354,13 +355,13 @@ suite('<iwa-dev-install-dialog>', () => {
           successMsg.textContent?.trim());
 
       const versionSelect =
-          manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+          manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
               '#versionSelect');
       assertTrue(!!versionSelect);
       assertEquals('1.0.0', versionSelect.value);
 
       const channelSelect =
-          manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+          manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
               '#channelSelect');
       assertTrue(!!channelSelect);
       assertEquals('stable', channelSelect.value);
@@ -382,13 +383,13 @@ suite('<iwa-dev-install-dialog>', () => {
           });
 
           const versionSelect =
-              manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
                   '#versionSelect');
           assertTrue(!!versionSelect);
           assertEquals('1.0.0', versionSelect.value);
 
           const channelSelect =
-              manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
                   '#channelSelect');
           assertFalse(!!channelSelect);
         });
@@ -420,21 +421,21 @@ suite('<iwa-dev-install-dialog>', () => {
           });
 
           const versionSelect =
-              manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
                   '#versionSelect');
           assertTrue(!!versionSelect);
 
-          const options = Array.from(versionSelect.options);
+          const options = versionSelect.options;
           assertEquals(3, options.length);
 
           assertEquals('2.1.0', options[0]!.value);
-          assertEquals('2.1.0 (Latest)', options[0]!.text.trim());
+          assertEquals('2.1.0 (Latest)', options[0]!.label?.trim());
 
           assertEquals('1.5.0', options[1]!.value);
-          assertEquals('1.5.0', options[1]!.text.trim());
+          assertEquals('1.5.0', options[1]!.label?.trim());
 
           assertEquals('1.0.0', options[2]!.value);
-          assertEquals('1.0.0', options[2]!.text.trim());
+          assertEquals('1.0.0', options[2]!.label?.trim());
 
           assertEquals('2.1.0', versionSelect.value);
         });
@@ -519,7 +520,7 @@ suite('<iwa-dev-install-dialog>', () => {
           });
 
           const versionSelect =
-              manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
                   '#versionSelect');
           assertTrue(!!versionSelect);
 
@@ -554,7 +555,7 @@ suite('<iwa-dev-install-dialog>', () => {
           });
 
           const channelSelect =
-              manifestTab.shadowRoot!.querySelector<HTMLSelectElement>(
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
                   '#channelSelect');
           assertTrue(!!channelSelect);
 
@@ -607,6 +608,97 @@ suite('<iwa-dev-install-dialog>', () => {
                   '.action-button');
           assertTrue(!!installButton);
           assertTrue(installButton.disabled);
+        });
+
+    test(
+        'selects version and channel using combobox suggestions dropdown',
+        async () => {
+          const validUrl = 'http://localhost:8080/manifest.json';
+          await fetchUpdateManifest(validUrl, {
+            success: {
+              versions: [
+                {
+                  version: '1.0.0',
+                  src: 'http://localhost/app1.swbn',
+                  channels: ['stable', 'beta'],
+                },
+                {
+                  version: '2.0.0',
+                  src: 'http://localhost/app2.swbn',
+                  channels: ['stable', 'beta'],
+                },
+              ],
+              channels: [
+                {channel: 'stable', displayName: 'Stable'},
+                {channel: 'beta', displayName: 'Beta Channel'},
+              ],
+            },
+          });
+
+          const versionSelect =
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
+                  '#versionSelect')!;
+          assertTrue(!!versionSelect);
+
+          const channelSelect =
+              manifestTab.shadowRoot!.querySelector<IwaDevComboboxElement>(
+                  '#channelSelect')!;
+          assertTrue(!!channelSelect);
+
+          // Open version suggestions and select 1.0.0 (index 1).
+          const versionDropdownButton =
+              versionSelect.shadowRoot.querySelector<HTMLElement>(
+                  '#dropdownButton')!;
+          versionDropdownButton.dispatchEvent(
+              new PointerEvent('pointerdown', {bubbles: true}));
+          await microtasksFinished();
+
+          const versionItems =
+              versionSelect.shadowRoot.querySelectorAll<HTMLButtonElement>(
+                  '#suggestions .suggestion-item');
+          assertEquals(2, versionItems.length);
+          versionItems[1]!.dispatchEvent(
+              new PointerEvent('pointerdown', {bubbles: true}));
+          await microtasksFinished();
+
+          assertEquals('1.0.0', versionSelect.value);
+
+          // Open channel suggestions and select beta (index 1).
+          const channelDropdownButton =
+              channelSelect.shadowRoot.querySelector<HTMLElement>(
+                  '#dropdownButton')!;
+          channelDropdownButton.dispatchEvent(
+              new PointerEvent('pointerdown', {bubbles: true}));
+          await microtasksFinished();
+
+          const channelItems =
+              channelSelect.shadowRoot.querySelectorAll<HTMLButtonElement>(
+                  '#suggestions .suggestion-item');
+          assertEquals(2, channelItems.length);
+          channelItems[1]!.dispatchEvent(
+              new PointerEvent('pointerdown', {bubbles: true}));
+          await microtasksFinished();
+
+          assertEquals('beta', channelSelect.value);
+
+          // Submit install.
+          const installButton =
+              dialog.shadowRoot.querySelector<HTMLButtonElement>(
+                  '.action-button')!;
+          const installEventPromise =
+              eventToPromise('request-install-from-update-manifest', dialog);
+
+          installButton.click();
+
+          const installEvent =
+              await installEventPromise as CustomEvent<{
+                webBundleUrl: string,
+                updateInfo: {updateManifestUrl: string, updateChannel: string},
+              }>;
+
+          assertEquals(
+              'http://localhost/app1.swbn', installEvent.detail.webBundleUrl);
+          assertEquals('beta', installEvent.detail.updateInfo.updateChannel);
         });
   });
 });

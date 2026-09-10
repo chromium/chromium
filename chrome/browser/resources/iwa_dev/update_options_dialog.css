@@ -28,34 +28,12 @@
   min-height: 240px;
 }
 
-.input-container {
-  align-items: center;
-  display: flex;
-  position: relative;
-  width: 100%;
-}
-
-#clearPinnedVersionButton {
-  --cr-icon-button-size: 20px;
-  --cr-icon-button-icon-size: 14px;
-  inset-inline-end: 32px;
-  margin: 0;
-  position: absolute;
-  z-index: 1;
+iwa-dev-combobox {
+  --iwa-dev-combobox-margin-bottom: 28px;
 }
 
 .toggle-container {
   align-items: center;
   display: flex;
   gap: 12px;
-}
-
-.dropdown-container:has(#channelInput),
-.dropdown-container:has(#pinnedVersionInput) {
-  margin-bottom: 28px;
-}
-
-.dropdown-container:has(#channelError),
-.dropdown-container:has(#pinnedVersionError) {
-  margin-bottom: 0;
 }

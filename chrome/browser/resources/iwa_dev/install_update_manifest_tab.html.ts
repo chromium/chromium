@@ -32,8 +32,8 @@ export function getHtml(this: IwaDevInstallUpdateManifestTabElement) {
 </div>
 ${this.isManifestFetched_ && !this.urlError_ ? html`
   <div id="fetchSuccessMessage" class="success-message" aria-live="polite">
-    Manifest loaded successfully: ${this.versions_.length} version${
-        this.versions_.length === 1 ? '' : 's'} available.
+    Manifest loaded successfully: ${this.versionOptions_.length} version${
+        this.versionOptions_.length === 1 ? '' : 's'} available.
   </div>
 ` : ''}
 <div id="details">
@@ -43,37 +43,25 @@ ${this.isManifestFetched_ && !this.urlError_ ? html`
     </div>
   ` : html`
     <div id="dropdowns-row">
-      <div class="dropdown-container">
-        <label for="versionSelect">Version</label>
-        <select id="versionSelect"
-            class="dropdown-select"
-            .value="${this.selectedVersion_}"
-            @change="${this.onVersionChange_}"
+      <iwa-dev-combobox id="versionSelect"
+          label="Version"
+          readonly
+          .value="${this.selectedVersion_}"
+          .options="${this.versionOptions_}"
+          @value-changed="${this.onVersionValueChanged_}"
+          @keydown="${this.onSelectKeydown_}"
+          ?disabled="${this.disabled}">
+      </iwa-dev-combobox>
+      ${this.channelOptions_.length > 0 ? html`
+        <iwa-dev-combobox id="channelSelect"
+            label="Update Channel"
+            readonly
+            .value="${this.selectedChannel_}"
+            .options="${this.channelOptions_}"
+            @value-changed="${this.onChannelValueChanged_}"
             @keydown="${this.onSelectKeydown_}"
             ?disabled="${this.disabled}">
-          ${this.versions_.map((item, index) => html`
-            <option value="${item.version}">
-              ${item.version}${index === 0 ? ' (Latest)' : ''}
-            </option>
-          `)}
-        </select>
-      </div>
-      ${this.channels_.length > 0 ? html`
-        <div class="dropdown-container">
-          <label for="channelSelect">Update Channel</label>
-          <select id="channelSelect"
-              class="dropdown-select"
-              .value="${this.selectedChannel_}"
-              @change="${this.onChannelChange_}"
-              @keydown="${this.onSelectKeydown_}"
-              ?disabled="${this.disabled}">
-            ${this.channels_.map(item => html`
-              <option value="${item.channel}">
-                ${item.displayName || item.channel}
-              </option>
-            `)}
-          </select>
-        </div>
+        </iwa-dev-combobox>
       ` : ''}
     </div>
   `}
