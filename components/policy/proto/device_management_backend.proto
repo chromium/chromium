@@ -665,7 +665,6 @@ message PolicyFetchRequest {
   optional int64 timestamp = 2;
 
   // Tell server what kind of security signature is required.
-  // TODO(b/147782972): Move to toplevel in sync with Chrome OS client code.
   enum SignatureType {
     NONE = 0;
     SHA1_RSA = 1;
