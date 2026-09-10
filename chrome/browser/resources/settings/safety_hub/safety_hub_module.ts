@@ -11,20 +11,19 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../settings_shared.css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {TooltipMixin} from '../tooltip_mixin.js';
+import {TooltipMixinLit} from '../tooltip_mixin_lit.js';
 
-import {getTemplate} from './safety_hub_module.html.js';
+import {getCss} from './safety_hub_module.css.js';
+import {getHtml} from './safety_hub_module.html.js';
 
 /**
  * Corresponds to the animation-duration CSS parameter defined
@@ -44,8 +43,17 @@ export interface SiteInfoWithTarget extends SiteInfo {
   target: EventTarget;
 }
 
+export interface SettingsSafetyHubModuleElement {
+  $: {
+    header: HTMLElement,
+    headerTextWrapper: HTMLElement,
+    headerWrapper: HTMLElement,
+    subheader: HTMLElement,
+  };
+}
+
 const SettingsSafetyHubModuleElementBase =
-    TooltipMixin(I18nMixin(PolymerElement));
+    TooltipMixinLit(I18nMixinLit(CrLitElement));
 
 export class SettingsSafetyHubModuleElement extends
     SettingsSafetyHubModuleElementBase {
@@ -53,74 +61,87 @@ export class SettingsSafetyHubModuleElement extends
     return 'settings-safety-hub-module';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // List of domains in the list. Each site has origin and detail field.
-      sites: {
-        type: Array,
-        value: () => [],
-        observer: 'onSitesChanged_',
-      },
+      sites: {type: Array},
 
       // If set to true, users of this class MUST call animateShow() after
       // adding any items added to |sites|, otherwise these will not be
       // properly rendered. Users SHOULD also call animateHide() on any item
       // before removing it from |sites|, to apply the reverse animation.
-      animated: {type: Boolean, value: false},
+      animated: {
+        type: Boolean,
+        reflect: true,
+      },
 
       // The string for the header label.
-      header: String,
+      header: {type: String},
 
       // The string for the subheader label.
-      subheader: String,
+      subheader: {type: Object},
 
       // The icon for the module. Optional.
-      headerIcon: {
-        String,
-        observer: 'onHeaderIconChanged_',
-      },
+      headerIcon: {type: String},
 
       // The color of the header-icon. Optional.
-      headerIconColor: String,
+      headerIconColor: {type: String},
 
       // The icon for the button of the list item.
-      buttonIcon: String,
+      buttonIcon: {type: String},
 
       // The string ID for the aria label for the button of the list item.
-      buttonAriaLabelId: String,
+      buttonAriaLabelId: {type: String},
 
       // The string for the tooltip for the button of the list item.
-      buttonTooltipText: String,
+      buttonTooltipText: {type: String},
 
       // Whether the more action button is visible.
-      moreActionVisible: {
-        type: Boolean,
-        value: false,
-      },
+      moreActionVisible: {type: Boolean},
 
       // The string ID for the aria label for the more action button of the list
       // item.
-      moreButtonAriaLabelId: String,
+      moreButtonAriaLabelId: {type: String},
     };
   }
 
-  declare sites: SiteInfo[];
-  declare animated: boolean;
-  declare header: string;
-  declare subheader: string|TrustedHTML;
-  declare headerIcon: string;
-  declare headerIconColor: string;
-  declare buttonIcon: string;
-  declare buttonAriaLabelId: string;
-  declare buttonTooltipText: string;
-  declare moreButtonAriaLabelId: string;
-  declare moreActionVisible: boolean;
+  // Based on tests, some clients set this to null, even though it
+  // is initialized as an empty array.
+  accessor sites: SiteInfo[]|null = [];
+  accessor animated: boolean = false;
+  accessor header: string = '';
+  accessor subheader: string|TrustedHTML = '';
+  accessor headerIcon: string = '';
+  accessor headerIconColor: string = '';
+  accessor buttonIcon: string = '';
+  accessor buttonAriaLabelId: string = '';
+  accessor buttonTooltipText: string = '';
+  accessor moreButtonAriaLabelId: string = '';
+  accessor moreActionVisible: boolean = false;
 
   private modelUpdateDelayMsForTesting_: number|null = null;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('headerIcon')) {
+      this.onHeaderIconChanged_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('sites')) {
+      this.onSitesChanged_();
+    }
+  }
 
   setModelUpdateDelayMsForTesting(delayMs: number) {
     this.modelUpdateDelayMsForTesting_ = delayMs;
@@ -145,10 +166,8 @@ export class SettingsSafetyHubModuleElement extends
           link.setAttribute('aria-description', this.i18n('opensInNewTab'));
         }
 
-        link.addEventListener('click', function() {
-          this.dispatchEvent(new CustomEvent(
-              'sh-module-item-link-click',
-              {bubbles: true, composed: true, detail: item}));
+        link.addEventListener('click', () => {
+          this.fire('sh-module-item-link-click', item);
         });
       });
     }
@@ -156,7 +175,7 @@ export class SettingsSafetyHubModuleElement extends
 
   private onSitesChanged_() {
     const items =
-        this.shadowRoot!.querySelectorAll<HTMLElement>('#siteList .list-item');
+        this.shadowRoot.querySelectorAll<HTMLElement>('#siteList .list-item');
 
     // Polymer reuses the already rendered rows once |this.sites| changes,
     // some of which may have previously been made invisible at the end of the
@@ -184,11 +203,11 @@ export class SettingsSafetyHubModuleElement extends
    * the underlying model.
    */
   animateHide(origin: string|null, callback: Function) {
-    const items = this.shadowRoot!.querySelectorAll('#siteList .list-item');
+    const items = this.shadowRoot.querySelectorAll('#siteList .list-item');
 
     // There's a delay between when |this.sites| is set and when the items
     // are actually rendered. If they're not in sync, wait.
-    if (items.length !== this.sites.length) {
+    if (!this.sites || items.length !== this.sites.length) {
       setTimeout(this.animateHide.bind(this, origin, callback), 0);
       return;
     }
@@ -210,7 +229,10 @@ export class SettingsSafetyHubModuleElement extends
 
     // If all items are beign removed, also remove the line separator.
     if (removedAll) {
-      this.shadowRoot!.querySelector('#line')!.classList.add('hiding');
+      const line = this.shadowRoot.querySelector('#line');
+      if (line) {
+        line.classList.add('hiding');
+      }
     }
 
     // Call the callbacks once the animation is finished.
@@ -229,10 +251,10 @@ export class SettingsSafetyHubModuleElement extends
    * MUST be called once for each origin added, right after it is added.
    */
   animateShow(origins: string[], callback?: Function) {
-    const items = this.shadowRoot!.querySelectorAll('#siteList .list-item');
+    const items = this.shadowRoot.querySelectorAll('#siteList .list-item');
 
     // Ensure the DOM was updated to reflect |this.sites|. If not, wait.
-    if (items.length !== this.sites.length) {
+    if (!this.sites || items.length !== this.sites.length) {
       setTimeout(this.animateShow.bind(this, origins, callback), 0);
       return;
     }
@@ -251,7 +273,10 @@ export class SettingsSafetyHubModuleElement extends
     // Ensure the line separator is animated to show when the first item
     // is being added.
     if (wasEmpty) {
-      this.shadowRoot!.querySelector('#line')!.classList.add('showing');
+      const line = this.shadowRoot.querySelector('#line');
+      if (line) {
+        line.classList.add('showing');
+      }
     }
 
     // Call the callbacks once the animation is finished.
@@ -266,10 +291,11 @@ export class SettingsSafetyHubModuleElement extends
 
   /** Focus the main button for the given |origin|, if it exists. */
   focusOriginMainButton(origin: string) {
-    for (const item of this.shadowRoot!.querySelectorAll<HTMLElement>(
+    for (const item of this.shadowRoot.querySelectorAll<HTMLElement>(
              '#siteList .list-item')) {
       const siteRepresentation = item.querySelector('.site-representation');
-      if (siteRepresentation && siteRepresentation.innerHTML === origin) {
+      if (siteRepresentation &&
+          siteRepresentation.textContent.trim() === origin) {
         item.querySelector<HTMLElement>('#mainButton')!.focus();
         return;
       }
@@ -277,7 +303,7 @@ export class SettingsSafetyHubModuleElement extends
   }
 
   private finalizeAnimation_() {
-    const items = this.shadowRoot!.querySelectorAll<HTMLElement>(
+    const items = this.shadowRoot.querySelectorAll<HTMLElement>(
         '#siteList .list-item, #line');
 
     for (const item of items) {
@@ -295,20 +321,21 @@ export class SettingsSafetyHubModuleElement extends
     }
   }
 
-  private onItemButtonClick_(e: DomRepeatEvent<SiteInfo>) {
-    const item = e.model.item;
-    this.dispatchEvent(new CustomEvent(
-        'sh-module-item-button-click',
-        {bubbles: true, composed: true, detail: item}));
+  protected onItemButtonClick_(e: Event) {
+    assert(this.sites);
+    const target = e.currentTarget as HTMLElement;
+    const item = this.sites[Number(target.dataset['index'])];
+    this.fire('sh-module-item-button-click', item);
   }
 
-  private onMoreActionClick_(e: DomRepeatEvent<SiteInfo>) {
-    const item: SiteInfoWithTarget = {...e.model.item, target: e.target!};
-    this.dispatchEvent(new CustomEvent('sh-module-more-action-button-click', {
-      bubbles: true,
-      composed: true,
-      detail: item,
-    }));
+  protected onMoreActionClick_(e: Event) {
+    assert(this.sites);
+    const target = e.currentTarget as HTMLElement;
+    const item: SiteInfoWithTarget = {
+      ...this.sites[Number(target.dataset['index'])],
+      target,
+    };
+    this.fire('sh-module-more-action-button-click', item);
   }
 
   private onHeaderIconChanged_() {
@@ -321,23 +348,35 @@ export class SettingsSafetyHubModuleElement extends
     }
   }
 
-  private onShowTooltip_(e: DomRepeatEvent<SiteInfo>) {
+  protected onMainButtonFocus_(e: Event) {
+    this.showTooltip_(e);
+  }
+
+  protected onMainButtonMouseenter_(e: Event) {
+    this.showTooltip_(e);
+  }
+
+  private showTooltip_(e: Event) {
     e.stopPropagation();
-    const tooltip = this.shadowRoot!.querySelector('cr-tooltip');
+    const tooltip = this.shadowRoot.querySelector('cr-tooltip');
     assert(tooltip);
     this.showTooltipAtTarget(tooltip, e.target! as Element);
   }
 
-  private sanitizeInnerHtml_(rawString: string): TrustedHTML {
-    return sanitizeInnerHtml(rawString);
+  protected sanitizeInnerHtml_(rawString: string|TrustedHTML): TrustedHTML {
+    return typeof rawString === 'string' ? sanitizeInnerHtml(rawString) :
+                                           rawString;
   }
 
-  private getButtonAriaLabelForOrigin_(origin: string): string {
-    return this.i18n(this.buttonAriaLabelId, origin);
+  protected getButtonAriaLabelForOrigin_(origin: string): string {
+    return this.buttonAriaLabelId ? this.i18n(this.buttonAriaLabelId, origin) :
+                                    '';
   }
 
-  private getMoreButtonAriaLabelForOrigin_(origin: string): string {
-    return this.i18n(this.moreButtonAriaLabelId, origin);
+  protected getMoreButtonAriaLabelForOrigin_(origin: string): string {
+    return this.moreButtonAriaLabelId ?
+        this.i18n(this.moreButtonAriaLabelId, origin) :
+        '';
   }
 }
 
@@ -349,3 +388,5 @@ declare global {
 
 customElements.define(
     SettingsSafetyHubModuleElement.is, SettingsSafetyHubModuleElement);
+
+export type SafetyHubModuleElement = SettingsSafetyHubModuleElement;

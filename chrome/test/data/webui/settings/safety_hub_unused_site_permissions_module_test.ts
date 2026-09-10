@@ -140,7 +140,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   }
 
   function getSiteList(): NodeListOf<HTMLElement> {
-    return testElement.$.module.shadowRoot!.querySelectorAll('.site-entry');
+    return testElement.$.module.shadowRoot.querySelectorAll('.site-entry');
   }
 
   async function createPage() {
@@ -335,9 +335,9 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   });
 
   test('Undo Allow Again', async function() {
-    for (const [i, site] of getSiteList().entries()) {
+    for (let i = 0; i < getSiteList().length; i++) {
       // User clicks Allow Again and then Undo.
-      site.querySelector('cr-icon-button')!.click();
+      getSiteList()[i]!.querySelector('cr-icon-button')!.click();
       await assertAllowAgain(i);
       await flushTasks();
       assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', i);
@@ -355,9 +355,9 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
-      await waitFor(
-          () => getDeepActiveElement() === site.querySelector('#mainButton'));
-      assertEquals(getDeepActiveElement(), site.querySelector('#mainButton'));
+      const expectedMainButton = getSiteList()[i]!.querySelector('#mainButton');
+      await waitFor(() => getDeepActiveElement() === expectedMainButton);
+      assertEquals(getDeepActiveElement(), expectedMainButton);
 
       // Ensure the metric for 'Undo Allow Again' action is recorded. The
       // last site at index 4 includes revoked notifications, so the abusive
@@ -375,8 +375,9 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   });
 
   test('Undo Allow Again via Ctrl+Z', async function() {
-    for (const [i, site] of getSiteList().entries()) {
+    for (let i = 0; i < getSiteList().length; i++) {
       // User clicks Allow Again and then Ctrl+Z.
+      const site = getSiteList()[i]!;
       assertTrue(!!site);
       const allowAgainButton = site.querySelector('cr-icon-button');
       assertTrue(!!allowAgainButton);

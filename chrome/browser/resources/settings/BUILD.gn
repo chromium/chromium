@@ -555,6 +555,8 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "reset_page/reset_profile_banner.css",
     "reset_page/reset_profile_dialog.css",
+    "safety_hub/safety_hub_card.css",
+    "safety_hub/safety_hub_module.css",
     "search_page/extension_controlled_message.css",
     "search_page/feature_shortcuts_page.css",
     "search_page/keyboard_shortcut_page.css",

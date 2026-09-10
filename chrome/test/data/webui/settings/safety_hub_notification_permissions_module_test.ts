@@ -43,7 +43,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   ];
 
   function getEntries(): NodeListOf<HTMLElement> {
-    return testElement.$.module.shadowRoot!.querySelectorAll<HTMLElement>(
+    return testElement.$.module.shadowRoot.querySelectorAll<HTMLElement>(
         '.site-entry');
   }
 
@@ -614,6 +614,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewBlockedToastLabel');
     testElement.$.bulkUndoButton.click();
+    // Simulate the backend restoring the entry after undoing the block action.
+    await setupSingleEntry();
 
     // Check the header string for a completion case after Ignore action.
     openActionMenu();
@@ -621,6 +623,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewIgnoredToastLabel');
     testElement.$.bulkUndoButton.click();
+    // Simulate the backend restoring the entry after undoing the ignore action.
+    await setupSingleEntry();
 
     // Check the header string for a completion case after Reset action.
     openActionMenu();

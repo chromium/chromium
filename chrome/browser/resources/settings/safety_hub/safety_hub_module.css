@@ -1,0 +1,201 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+
+  --separator-line-height: 16px;
+  --cr-icon-button-margin-end: 0;
+}
+
+#headerWrapper {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  /* Always at least two lines tall (with 154% line-height). */
+  min-height: calc(2em * 1.54);
+}
+
+#headerTextWrapper {
+  flex-direction: column;
+  flex: 1;
+  margin-inline-end: 24px;
+}
+
+#header,
+#subheader,
+.display-name {
+  /* Should be 13px when html font-size is 16px */
+  font-size: 0.8125rem;
+}
+
+#header {
+  margin: 0;
+  font-weight: 500;
+}
+
+cr-icon {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+}
+
+cr-icon.green {
+  --iron-icon-fill-color: var(--google-green-700);
+}
+
+cr-icon.blue {
+  --iron-icon-fill-color: var(--google-blue-600);
+}
+
+
+@media (prefers-color-scheme: dark) {
+  cr-icon.green {
+    --iron-icon-fill-color: var(--google-green-300);
+  }
+
+  cr-icon.blue {
+    --iron-icon-fill-color: var(--google-blue-300);
+  }
+}
+
+.list-item {
+  /**
+   * As the animation decreases max-height of rows, it can push content out
+   * of the bounding box of the item, which will appear as a quick flash
+   * on top of a neighboring item. Prevent this by cropping everything outside
+   * the bounding box.
+   */
+  clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0);
+}
+
+.display-name {
+  flex: 1;
+  max-width: 100%;
+}
+
+site-favicon,
+#headerIcon,
+.item-icon {
+  padding-inline-end: 16px;
+}
+
+#line {
+  box-sizing: border-box;
+  height: var(--separator-line-height);
+  border-bottom: 1px solid var(--cr-separator-color);
+  flex: 1;
+}
+
+cr-tooltip {
+  --paper-tooltip-min-width: max-content;
+}
+
+:host-context([animated]) {
+  /**
+   * The |animation-duration| parameter corresponds to MODEL_UPDATE_DELAY_MS
+   * in the .ts file.
+   */
+  --animation-duration: 300ms;
+}
+
+:host-context([animated]) #headerWrapper {
+  /**
+   * Increase the header height to 3 lines. This is because the header
+   * currently isn't animated, only the rows under it are. When we animate
+   * the showing or hiding of rows, and at the end we update the header from
+   * little content to a lot of content or vice versa, this may change the
+   * header's height and appear as a "bump" at the beginning or end of the
+   * animation. 3 lines should be a sufficient buffer for headers with a lot
+   * of content.
+   *
+   * We also need to count with 154% line-height.
+   */
+  min-height: calc(3em * 1.54);
+}
+
+@keyframes line-hiding-animation {
+  0% {
+    height: var(--separator-line-height);
+    opacity: 1;
+  }
+  100% {
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/**
+ * Settings use a line height of 154%. Our items contain two lines (2em)
+ * plus a vertical padding on both sides. We slightly increase
+ * the coefficient to 160% to avoid that the height immediately contracts at
+ * the beginning of the animation in case of rounding error. Note that
+ * erring on the side of a slightly larger height is not a problem since
+ * this animation uses |max-height| and not |height| directly.
+ */
+@keyframes item-hiding-animation {
+  0% {
+    max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
+    opacity: 1;
+  }
+  100% {
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/**
+ * When new items are added to the list, they must immediately be set
+ * invisible. Otherwise, there flash on the screen for a moment before we
+ * have a chance to apply the ".showing" animation that is supposed to start
+ * with the item not being visible.
+ *
+ * At any other phase of the animation, while the item is shown or hidden,
+ * or when the item is in a steady state, this is overridden to make the item
+ * visible.
+ */
+:host-context([animated]) #siteList .list-item,
+:host-context([animated]) #line {
+  display: none;
+}
+
+:host-context([animated]) #siteList .list-item.hiding,
+:host-context([animated]) #siteList .list-item.showing,
+:host-context([animated]) #line.hiding,
+:host-context([animated]) #line.showing {
+  display: flex;
+}
+
+/**
+ * Showing and hiding animations are largely symmetrical. They only differ
+ * in the direction and timing.
+ */
+:host-context([animated]) .hiding,
+:host-context([animated]) .showing {
+  animation-duration: var(--animation-duration);
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+  animation-name: item-hiding-animation;
+  animation-timing-function: cubic-bezier(0, 0.8, 0, 1);
+  min-height: 0;
+}
+
+:host-context([animated]) .showing {
+  animation-direction: reverse;
+  animation-timing-function: cubic-bezier(1, 0, 1, 0.4);
+}
+
+:host-context([animated]) #line.hiding,
+:host-context([animated]) #line.showing {
+  animation-name: line-hiding-animation;
+}

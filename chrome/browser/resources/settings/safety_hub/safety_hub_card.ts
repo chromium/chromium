@@ -8,44 +8,53 @@
  * page.
  */
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../settings_shared.css.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CardInfo} from './safety_hub_browser_proxy.js';
 import {CardState} from './safety_hub_browser_proxy.js';
-import {getTemplate} from './safety_hub_card.html.js';
+import {getCss} from './safety_hub_card.css.js';
+import {getHtml} from './safety_hub_card.html.js';
 
 export interface SettingsSafetyHubCardElement {
   $: {
+    header: HTMLElement,
     icon: CrIconElement,
+    subheader: HTMLElement,
   };
 }
 
-export class SettingsSafetyHubCardElement extends PolymerElement {
+export class SettingsSafetyHubCardElement extends CrLitElement {
   static get is() {
     return 'settings-safety-hub-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // The object to hold Card Info.
-      data: Object,
+      data: {type: Object},
     };
   }
 
-  declare data: CardInfo;
+  accessor data: CardInfo = {
+    header: '',
+    subheader: '',
+    state: CardState.INFO,
+  };
 
   // Returns the icon for the card state.
-  private getStatusIcon(state: CardState): string {
-    switch (state) {
+  protected getStatusIcon_(): string {
+    switch (this.data.state) {
       case CardState.WARNING:
       case CardState.WEAK:
         return 'cr:error-filled';
@@ -59,8 +68,8 @@ export class SettingsSafetyHubCardElement extends PolymerElement {
   }
 
   // Returns the color class for the icon to paint it.
-  private getColorClass(state: CardState): string {
-    switch (state) {
+  protected getColorClass_(): string {
+    switch (this.data.state) {
       case CardState.WARNING:
         return 'red';
       case CardState.WEAK:
@@ -83,3 +92,5 @@ declare global {
 
 customElements.define(
     SettingsSafetyHubCardElement.is, SettingsSafetyHubCardElement);
+
+export type SafetyHubCardElement = SettingsSafetyHubCardElement;

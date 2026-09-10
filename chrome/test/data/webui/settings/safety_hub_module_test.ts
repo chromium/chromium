@@ -7,10 +7,8 @@ import 'chrome://settings/lazy_load.js';
 
 import type {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 function waitUntilVisible(element: HTMLElement, intervalMs: number = 10) {
@@ -34,7 +32,7 @@ suite('SafetyHubModule', function() {
                                     }));
 
   function getEntries() {
-    return testElement.shadowRoot!.querySelectorAll('.site-entry');
+    return testElement.shadowRoot.querySelectorAll('.site-entry');
   }
 
   function assignAndShowTestData() {
@@ -70,15 +68,15 @@ suite('SafetyHubModule', function() {
     testElement.remove();
   });
 
-  test('HeaderAndSubheaderText', function() {
+  test('HeaderAndSubheaderText', async function() {
     const headerText = 'Test header text';
     const subheaderText = 'Test subheader text';
     testElement.header = headerText;
     testElement.subheader = subheaderText;
-    flush();
+    await microtasksFinished();
 
     function assertTextContent(query: string, text: string) {
-      const element = testElement.shadowRoot!.querySelector(query);
+      const element = testElement.shadowRoot.querySelector(query);
       assertTrue(!!element);
       assertEquals(text, element.textContent.trim());
     }
@@ -92,7 +90,7 @@ suite('SafetyHubModule', function() {
     testElement.buttonIcon = 'cr20:block';
     testElement.buttonAriaLabelId =
         'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
-    flush();
+    await microtasksFinished();
 
     // User clicks the button of the 2nd item in the list.
     const item = getEntries()[1]!;
@@ -113,10 +111,10 @@ suite('SafetyHubModule', function() {
   test('ItemList', async function() {
     // Check the item list is filled with the data.
     await assignAndShowTestData();
-    flush();
+    await microtasksFinished();
 
-    assertTrue(isVisible(testElement.shadowRoot!.querySelector('#line')));
-    assertTrue(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
+    assertTrue(isVisible(testElement.shadowRoot.querySelector('#line')));
+    assertTrue(isVisible(testElement.shadowRoot.querySelector('#siteList')));
 
     const entries = getEntries();
     assertEquals(entries.length, mockData.length);
@@ -143,7 +141,7 @@ suite('SafetyHubModule', function() {
         detail: 'This detail has a <a href="#">link</a>.',
       },
     ];
-    flush();
+    await microtasksFinished();
     await new Promise(resolve => setTimeout(resolve, 0));
 
     let link = getEntries()[0]!.querySelector('a')!;
@@ -154,10 +152,10 @@ suite('SafetyHubModule', function() {
 
     // Check the item list and line is hidden when there is no item.
     testElement.sites = [];
-    flush();
+    await microtasksFinished();
 
-    assertFalse(isVisible(testElement.shadowRoot!.querySelector('#line')));
-    assertFalse(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
+    assertFalse(isVisible(testElement.shadowRoot.querySelector('#line')));
+    assertFalse(isVisible(testElement.shadowRoot.querySelector('#siteList')));
   });
 
   test('Tooltip', async function() {
@@ -168,10 +166,10 @@ suite('SafetyHubModule', function() {
     testElement.buttonAriaLabelId =
         'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
     testElement.buttonTooltipText = text;
-    flush();
+    await microtasksFinished();
 
     // Check that the tooltip is not visible.
-    let tooltip = testElement.shadowRoot!.querySelector('cr-tooltip');
+    let tooltip = testElement.shadowRoot.querySelector('cr-tooltip');
     assertTrue(!!tooltip);
     assertFalse(isVisible(tooltip));
 
@@ -182,7 +180,7 @@ suite('SafetyHubModule', function() {
     button.focus();
 
     // Check that the tooltip gets visible with the correct text.
-    tooltip = testElement.shadowRoot!.querySelector('cr-tooltip');
+    tooltip = testElement.shadowRoot.querySelector('cr-tooltip');
     assertTrue(!!tooltip);
     await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));

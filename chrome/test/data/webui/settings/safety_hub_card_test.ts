@@ -8,8 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsSafetyHubCardElement} from 'chrome://settings/lazy_load.js';
 import {CardState} from 'chrome://settings/lazy_load.js';
 import {assertEquals,assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('SafetyHubCard', function() {
@@ -29,13 +28,13 @@ suite('SafetyHubCard', function() {
     testElement.remove();
   });
 
-  test('HeaderAndSubheaderText', function() {
+  test('HeaderAndSubheaderText', async function() {
     const mockData = getMockDataForState(CardState.SAFE);
     testElement.data = mockData;
-    flush();
+    await microtasksFinished();
 
     function assertTextContent(query: string, text: string) {
-      const element = testElement.shadowRoot!.querySelector(query);
+      const element = testElement.shadowRoot.querySelector(query);
       assertTrue(!!element);
       assertEquals(text, element.textContent.trim());
     }
@@ -44,28 +43,28 @@ suite('SafetyHubCard', function() {
     assertTextContent('#subheader', mockData.subheader);
   });
 
-  test('Icon', function() {
+  test('Icon', async function() {
     // Check icon for SAFE state.
     testElement.data = getMockDataForState(CardState.SAFE);
-    flushTasks();
+    await microtasksFinished();
     assertEquals('cr:check-circle', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('green'));
 
     // Check icon for INFO state.
     testElement.data = getMockDataForState(CardState.INFO);
-    flushTasks();
+    await microtasksFinished();
     assertEquals('cr:info-filled', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('grey'));
 
     // Check icon for WEAK state.
     testElement.data = getMockDataForState(CardState.WEAK);
-    flushTasks();
+    await microtasksFinished();
     assertEquals('cr:error-filled', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('yellow'));
 
     // Check icon for WARNING state.
     testElement.data = getMockDataForState(CardState.WARNING);
-    flushTasks();
+    await microtasksFinished();
     assertEquals('cr:error-filled', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('red'));
   });
