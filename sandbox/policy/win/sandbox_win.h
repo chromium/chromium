@@ -165,7 +165,6 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SandboxWinTest, GetJobMemoryLimit);
-  FRIEND_TEST_ALL_PREFIXES(SandboxWinJobMemoryLimitTest, GetJobMemoryLimit);
 
   static void FinishStartSandboxedProcess(
       SandboxDelegate* delegate,

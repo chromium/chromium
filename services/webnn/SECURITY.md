@@ -31,4 +31,4 @@ process.
 | Dynamic code (ACG) | `MITIGATION_DYNAMIC_CODE_DISABLE` | Allowed |
 | Code Integrity Guard | Startup CIG via `ChromeContentBrowserClient::PreSpawnChild()`, plus the delayed `MITIGATION_FORCE_MS_SIGNED_BINS` | Delayed `MITIGATION_FORCE_MS_SIGNED_BINS` only |
 | Default DACL | `SetLockdownDefaultDacl()` | `SetLockdownDefaultDacl()` + `AddRestrictingRandomSid()` |
-| Job memory limit | 1 TB | 1 TB with `kWinSboxHighGPUJobMemoryLimits` |
+| Job memory limit | 1 TB | 1 TB |
