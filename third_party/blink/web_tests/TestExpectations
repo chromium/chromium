@@ -559,16 +559,11 @@ crbug.com/997202 external/wpt/density-size-correction/density-corrected-image-sv
 
 crbug.com/1159433 external/wpt/css/css-images/image-orientation/image-orientation-exif-png.html [ Failure ]
 
-# Minor rendering difference to the ref image because of filtering or positioning.
-# (Possibly because of the use of 'image-rendering: crisp-edges' in some cases.)
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001e.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001i.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001o.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001p.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002e.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002i.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002o.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002p.html [ Failure ]
+
 crbug.com/452250069 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-contain-png-002e.html [ Pass Timeout ]
 crbug.com/452127019 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-svg-004e.html [ Pass Timeout ]
 
