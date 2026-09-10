@@ -18,6 +18,7 @@
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -26,12 +27,10 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 namespace omnibox_everywhere {
 
@@ -158,14 +157,7 @@ void OmniboxEverywhereBackgroundModeManager::ShowStatusIcon() {
     return;
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const gfx::VectorIcon& icon_vector = vector_icons::kGoogleGLogoIcon;
-#else
-  const gfx::VectorIcon& icon_vector = vector_icons::kSearchIcon;
-#endif
-
-  gfx::ImageSkia icon_image =
-      gfx::CreateVectorIcon(icon_vector, 16, SK_ColorBLACK);
+  gfx::ImageSkia icon_image = GetOmniboxEverywhereIcon();
 
   std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP);

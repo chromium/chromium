@@ -22,13 +22,16 @@ source_set("omnibox_everywhere") {
     "//build:branding_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere:icon",
     "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
     "//chrome/common",
     "//components/keep_alive_registry",
+    "//components/vector_icons",
     "//ui/base",
   ]
 }

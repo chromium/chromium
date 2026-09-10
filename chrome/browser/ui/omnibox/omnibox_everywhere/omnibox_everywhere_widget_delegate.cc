@@ -4,23 +4,13 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 
-#include "build/branding_buildflags.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
 #include "chrome/grit/branded_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
 namespace omnibox_everywhere {
-
-// static
-const gfx::VectorIcon& OmniboxEverywhereWidgetDelegate::GetVectorIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kGoogleGLogoIcon;
-#else
-  return vector_icons::kSearchIcon;
-#endif
-}
 
 OmniboxEverywhereWidgetDelegate::OmniboxEverywhereWidgetDelegate() {
   SetCanActivate(true);
@@ -55,7 +45,7 @@ bool OmniboxEverywhereWidgetDelegate::ShouldDescendIntoChildForEventHandling(
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {
-  return ui::ImageModel::FromVectorIcon(GetVectorIcon());
+  return ui::ImageModel::FromImageSkia(GetOmniboxEverywhereIcon());
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowAppIcon() {

@@ -22,15 +22,31 @@ source_set("prefs") {
   ]
 }
 
+source_set("icon") {
+  sources = [ "omnibox_everywhere_icon.cc" ]
+  public = [ "omnibox_everywhere_icon.h" ]
+  public_deps = [
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//chrome/app/theme:theme_resources",
+    "//components/vector_icons",
+  ]
+}
+
 # Omnibox Everywhere public interface headers.
 source_set("omnibox_everywhere") {
   public = [
     "omnibox_everywhere_controller.h",
     "omnibox_everywhere_feature_promo_controller.h",
+    "omnibox_everywhere_icon.h",
     "omnibox_everywhere_region_select_overlay.h",
     "omnibox_everywhere_ui_manager.h",
   ]
   public_deps = [
+    ":icon",
     ":prefs",
     "//base",
     "//chrome/browser/profiles:profile_manager",
@@ -67,6 +83,7 @@ source_set("impl") {
     "//build:branding_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser:file_select_helper",
     "//chrome/browser/autocomplete",
     "//chrome/browser/background/omnibox_everywhere",
