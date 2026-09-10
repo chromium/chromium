@@ -1539,10 +1539,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Device lock UI canceled"/>
   <int value="4" label="New store error"/>
   <int value="5" label="Never save for this site"/>
-<!-- TODO(crbug.com/543028154): Add a value for key retrieval failed. -->
-
-<!-- TODO(crbug.com/543028154): Add a value for tab destruction. -->
-
+  <int value="6" label="Key retrieval failed or canceled"/>
+  <int value="7" label="Tab destroyed before resolution"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:SaveWithTrustedVaultErrorOutcome) -->

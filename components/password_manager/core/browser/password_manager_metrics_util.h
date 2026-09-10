@@ -418,10 +418,9 @@ enum class SaveWithTrustedVaultErrorOutcome {
   kDeviceLockCanceled = 3,
   kNewStoreError = 4,
   kNeverForThisSite = 5,
-  // TODO(crbug.com/543028154): Add a value for key retrieval failed once the
-  // failure signal is available.
-  // TODO(crbug.com/543028154): Add a value for tab destruction.
-  kMaxValue = kNeverForThisSite,
+  kKeyRetrievalFailedOrCanceled = 6,
+  kTabDestroyed = 7,
+  kMaxValue = kTabDestroyed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:SaveWithTrustedVaultErrorOutcome)
 

@@ -222,6 +222,10 @@ class SaveUpdatePasswordMessageDelegate
   std::optional<std::string> account_email_;
   bool update_password_ = false;
 
+  // True while DismissAllActiveUI() is executing, to ignore re-entrant
+  // dismissal callbacks from UI bridges (e.g. HandleDialogDismissed).
+  bool is_programmatic_dismissal_ = false;
+
   State state_ = State::kIdle;
 
   // ManagePasswordsState maintains the password form that is being

@@ -3916,8 +3916,15 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the outcome of the password save prompt when saving is blocked by a
     trusted vault error. Recorded when the message times out, when the user
     dismisses the prompt, when the user selects never save, when device lock UI
-    is canceled, when a new store error occurs, or when key retrieval completes
-    and the password is saved successfully. Logged on Android only.
+    is canceled, when key retrieval fails or is canceled, when the tab is
+    destroyed before resolution, when a new store error occurs, or when key
+    retrieval completes and the password is saved successfully.
+
+    Note: When key retrieval fails or is canceled, a reprompt is shown to allow
+    the user to retry. Therefore, 'Key retrieval failed or canceled' can be
+    recorded alongside a subsequent outcome (such as reprompt dismissal, tab
+    destruction, or successful save upon retry) if the flow continues. A single
+    dismissal event never logs multiple outcomes. Logged on Android only.
   </summary>
 </histogram>
 

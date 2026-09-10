@@ -818,6 +818,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SaveUIDismissalReason.TrustedVaultError",
       password_manager::metrics_util::CLICKED_ACCEPT, 2);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kKeyRetrievalFailedOrCanceled,
+      1);
 }
 
 // Tests that the dismissal reason is recorded to the trusted vault error metric
@@ -864,6 +869,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
 
   account_store_->ReturnErrorOnRequest(
       password_manager::PasswordStoreBackendError(
@@ -902,6 +908,19 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::GESTURE);
   EXPECT_EQ(nullptr, GetMessageWrapper());
   EXPECT_TRUE(IsDelegateStateCleared());
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kKeyRetrievalFailedOrCanceled,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kUserDismissedPrompt,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 2);
 }
 
 // Tests that the password is saved and the message dismissed when the error
@@ -1168,8 +1187,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   // unlock is in progress.
   DismissAllActiveUI();
 
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
 
   // Simulate that the trusted vault key was resolved *after* dismissal.
   account_store_->ReturnErrorOnRequest(std::nullopt);
@@ -2723,6 +2745,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
 
   account_store_->ReturnErrorOnRequest(
       password_manager::PasswordStoreBackendError(
@@ -2750,6 +2773,12 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   ExpectDismissMessageCall();
   delegate()->DismissAllActiveUI();
   EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
 
   // If vault key resolves afterwards, it should not save since it was
   // dismissed.
@@ -2959,4 +2988,183 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 
   DismissMessage(messages::DismissReason::UNKNOWN);
   EXPECT_FALSE(is_password_saved());
+}
+
+// Tests that destroying the tab while reprompt is showing logs key retrieval
+// failed and tab destroyed outcomes.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DismissAllActiveUIWhileRepromptShowingLogsTabDestroyed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  base::OnceClosure recovery_callback;
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
+      .WillOnce([&recovery_callback](
+                    content::WebContents*,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA,
+                    base::OnceClosure callback) {
+        recovery_callback = std::move(callback);
+      });
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  // Simulate completion of key retrieval flow while vault is still locked.
+  EXPECT_CALL(*message_dispatcher_bridge(),
+              EnqueueMessage(_, _, _, messages::MessagePriority::kUrgent))
+      .WillOnce(Return(true));
+  std::move(recovery_callback).Run();
+
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  // Destroying the tab while reprompt is showing.
+  ExpectDismissMessageCall();
+  delegate()->DismissAllActiveUI();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kKeyRetrievalFailedOrCanceled,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 2);
+}
+
+// Tests that destroying the tab while the initial save prompt is showing logs
+// tab destroyed outcome.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DismissAllActiveUIWhilePromptShowingLogsTabDestroyed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  // Destroying the tab while initial prompt is showing.
+  ExpectDismissMessageCall();
+  delegate()->DismissAllActiveUI();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
+}
+
+// Tests that destroying the tab while the password edit dialog is showing logs
+// tab destroyed outcome, and does not double-log user dismissed outcome.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DismissAllActiveUIWhileEditDialogShowingLogsTabDestroyed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*mock_dialog, ShowPasswordEditDialog);
+  TriggerPasswordEditDialog(/*update_password=*/false);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  // Simulate that when Dismiss() is called on the dialog bridge, the bridge
+  // notifies the delegate that the dialog was dismissed without being accepted.
+  EXPECT_CALL(*mock_dialog, Dismiss).WillOnce([this]() {
+    TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
+  });
+
+  // Destroying the tab while the edit dialog is showing.
+  delegate()->DismissAllActiveUI();
+
+  // Exactly one outcome should be recorded: kTabDestroyed.
+  // kUserDismissedPrompt should NOT be double-logged for the same dismissal.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
+}
+
+// Tests that destroying the tab while waiting for device lock logs tab
+// destroyed outcome when saving is blocked by a trusted vault error.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DismissAllActiveUIWhileWaitingForDeviceLockLogsTabDestroyed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ui::WindowAndroid* window_android = window->get();
+  window_android->AddChild(web_contents()->GetNativeView());
+
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+
+  ExpectDismissMessageCall();
+  delegate()->DismissAllActiveUI();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
 }

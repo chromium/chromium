@@ -534,6 +534,10 @@ TEST(PasswordManagerMetricsUtil, LogSaveWithTrustedVaultErrorOutcome) {
       SaveWithTrustedVaultErrorOutcome::kNewStoreError);
   LogSaveWithTrustedVaultErrorOutcome(
       SaveWithTrustedVaultErrorOutcome::kNeverForThisSite);
+  LogSaveWithTrustedVaultErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kKeyRetrievalFailedOrCanceled);
+  LogSaveWithTrustedVaultErrorOutcome(
+      SaveWithTrustedVaultErrorOutcome::kTabDestroyed);
 
   histogram_tester.ExpectBucketCount(
       "PasswordManager.SaveWithTrustedVaultError.Outcome",
@@ -553,6 +557,14 @@ TEST(PasswordManagerMetricsUtil, LogSaveWithTrustedVaultErrorOutcome) {
   histogram_tester.ExpectBucketCount(
       "PasswordManager.SaveWithTrustedVaultError.Outcome",
       SaveWithTrustedVaultErrorOutcome::kNeverForThisSite, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kKeyRetrievalFailedOrCanceled, 1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      SaveWithTrustedVaultErrorOutcome::kTabDestroyed, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 8);
 }
 
 }  // namespace
