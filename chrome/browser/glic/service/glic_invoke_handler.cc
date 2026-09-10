@@ -386,6 +386,8 @@ void GlicInvokeHandler::Invoke() {
   metrics_->RecordStarted(
       options_.feature_mode.value_or(mojom::FeatureMode::kUnspecified),
       target_embedder_type);
+  instance_->instance_metrics().SetActiveInvocationId(
+      metrics_->GetInvocationId());
   main_task_->Start(base::BindOnce(&GlicInvokeHandler::OnSuccess,
                                    weak_ptr_factory_.GetWeakPtr()));
 }
@@ -433,6 +435,7 @@ void GlicInvokeHandler::OnSuccess() {
   }
 
   metrics_->RecordSuccess(GetLastActiveTaskType());
+  instance_->instance_metrics().SetActiveInvocationId(std::nullopt);
 
   if (options_.on_success) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -451,6 +454,7 @@ void GlicInvokeHandler::OnError(GlicInvokeError error) {
   }
 
   metrics_->RecordError(error, GetLastActiveTaskType());
+  instance_->instance_metrics().SetActiveInvocationId(std::nullopt);
 
   if (options_.on_error) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

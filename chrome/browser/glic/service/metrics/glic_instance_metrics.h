@@ -238,6 +238,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   GlicMetricsSessionManager& session_manager() { return session_manager_; }
 
+  void SetActiveInvocationId(std::optional<uint64_t> invocation_id) {
+    active_invocation_id_ = invocation_id;
+  }
+
   std::optional<mojom::InvocationSource> initial_invocation_source() const {
     return initial_invocation_source_;
   }
@@ -318,6 +322,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The last invocation source that was used to show the panel.
   mojom::InvocationSource last_invocation_source_ =
       mojom::InvocationSource::kUnsupported;
+  std::optional<uint64_t> active_invocation_id_ = std::nullopt;
   std::optional<mojom::InvocationSource> initial_invocation_source_ =
       std::nullopt;
   bool did_open_ = false;
