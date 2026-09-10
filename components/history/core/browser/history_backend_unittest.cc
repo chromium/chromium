@@ -48,6 +48,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
+#include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
@@ -6710,7 +6711,7 @@ TEST_F(HistoryBackendTest, GetAnnotatedVisits_LongRedirectChain) {
 
 TEST_F(HistoryBackendTest, JourneysSyncDisabledByDefault) {
   ASSERT_TRUE(backend_);
-  EXPECT_EQ(nullptr, backend_->GetJourneysSyncControllerDelegate());
+  EXPECT_EQ(backend_->GetJourneysSyncControllerDelegate(), nullptr);
 }
 
 class HistoryBackendJourneysSyncTest : public HistoryBackendTest {
@@ -6722,36 +6723,89 @@ class HistoryBackendJourneysSyncTest : public HistoryBackendTest {
 
 TEST_F(HistoryBackendJourneysSyncTest, JourneysSyncBackendIntegration) {
   ASSERT_TRUE(backend_);
-  EXPECT_NE(nullptr, backend_->GetJourneysSyncControllerDelegate());
+  EXPECT_NE(backend_->GetJourneysSyncControllerDelegate(), nullptr);
 
-  journeys::JourneyRow journey1;
-  journey1.journey_id = "backend_journey_1";
-  journey1.title = "Trip to Tokyo";
-  journey1.creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-
-  journeys::JourneyRow journey2;
-  journey2.journey_id = "backend_journey_2";
-  journey2.title = "Trip to Kyoto";
-  journey2.creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  journeys::JourneyRow journey1(
+      "backend_journey_1", "Trip to Tokyo",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000)));
+  journeys::JourneyRow journey2(
+      "backend_journey_2", "Trip to Kyoto",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000)));
 
   EXPECT_TRUE(backend_->AddOrUpdateJourneyRows({journey1, journey2}));
-  EXPECT_EQ(2u, backend_->GetAllJourneyRows().size());
+  EXPECT_EQ(backend_->GetAllJourneyRows().size(), 2u);
 
   EXPECT_TRUE(backend_->DeleteJourneys({"backend_journey_1"}));
   std::vector<journeys::JourneyRow> remaining = backend_->GetAllJourneyRows();
-  ASSERT_EQ(1u, remaining.size());
-  EXPECT_EQ("backend_journey_2", remaining[0].journey_id);
+  ASSERT_EQ(remaining.size(), 1u);
+  EXPECT_EQ(remaining[0].journey_id, "backend_journey_2");
 
   EXPECT_TRUE(backend_->DeleteAllJourneys());
   EXPECT_TRUE(backend_->GetAllJourneyRows().empty());
 
   // DeleteAllHistory should also clear all journeys.
   EXPECT_TRUE(backend_->AddOrUpdateJourneyRows({journey1, journey2}));
-  EXPECT_EQ(2u, backend_->GetAllJourneyRows().size());
+  EXPECT_EQ(backend_->GetAllJourneyRows().size(), 2u);
   backend_->DeleteAllHistory();
   EXPECT_TRUE(backend_->GetAllJourneyRows().empty());
+}
+
+TEST_F(HistoryBackendJourneysSyncTest,
+       GetAllJourneysWithVisits_ResolvesVisits) {
+  ASSERT_TRUE(backend_);
+
+  base::Time visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  GURL visited_url("https://www.example.com/page1");
+  std::u16string page_title = u"Page 1";
+
+  // Add a visit to history.
+  backend_->AddPageVisit(
+      visited_url, visit_time, /*referring_visit=*/0,
+      /*external_referrer_url=*/GURL(), ui::PAGE_TRANSITION_TYPED,
+      /*hidden=*/false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+      /*should_increment_typed_count=*/true, /*opener_visit=*/0,
+      /*consider_for_ntp_most_visited=*/true,
+      VisitContextEphemerality::kNotEphemeral,
+      /*local_navigation_id=*/std::nullopt, page_title);
+
+  // Create:
+  // 1. One journey where all visits are in history.
+  journeys::JourneyRow valid_journey(
+      "test_journey_resolve", "Researching Chromium",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(visit_time)});
+
+  // 2. One journey where a visit timestamp is not present in history.
+  base::Time unknown_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  journeys::JourneyRow incomplete_journey(
+      "test_journey_incomplete", "Incomplete Journey",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6000)),
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(unknown_time)});
+
+  ASSERT_TRUE(
+      backend_->AddOrUpdateJourneyRows({valid_journey, incomplete_journey}));
+
+  // Verify GetAllJourneysWithVisits returns only journeys with all visits
+  // resolved.
+  journeys::Journey expected_journey(
+      "test_journey_resolve", "Researching Chromium",
+      /*creation_time=*/
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*visits=*/{journeys::JourneyVisit(visited_url, page_title)});
+  EXPECT_THAT(backend_->GetAllJourneysWithVisits(),
+              testing::ElementsAre(expected_journey));
 }
 
 }  // namespace history

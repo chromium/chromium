@@ -144,6 +144,8 @@ class FakeHistoryBackendForJourneysSync : public HistoryBackendForJourneysSync {
     return result;
   }
 
+  std::vector<Journey> GetAllJourneysWithVisits() override { return {}; }
+
   bool DeleteAllJourneys() override {
     if (fail_operations_) {
       return false;

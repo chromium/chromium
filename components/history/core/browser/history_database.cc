@@ -25,8 +25,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/backup_util.h"
