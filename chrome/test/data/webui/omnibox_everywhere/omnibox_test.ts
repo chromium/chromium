@@ -53,6 +53,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
+      isEnterpriseProfile: false,
       searchboxLayoutMode: 'TallBottomContext',
     });
     testProxy = new TestSearchboxBrowserProxy();
@@ -1852,6 +1853,7 @@ suite('OmniboxEverywhereProfileIconTest', () => {
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: profilePickerEnabled,
+      isEnterpriseProfile: false,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -1861,28 +1863,46 @@ suite('OmniboxEverywhereProfileIconTest', () => {
   }
 
   test(
-      'profile icon is not clickable or hoverable when profile picker ' +
-          'is disabled',
+      'profile icon is not clickable when profile picker is disabled',
       async () => {
         await createProfileIcon(false);
-        const img =
-            profileIcon.shadowRoot.querySelector<HTMLElement>('#profileIcon');
-        assertTrue(!!img);
-        assertFalse(img.classList.contains('clickable'));
-        assertEquals('none', window.getComputedStyle(img).pointerEvents);
+        const container = profileIcon.shadowRoot.querySelector<HTMLElement>(
+            '#profileContainer');
+        assertTrue(!!container);
+        assertFalse(container.classList.contains('clickable'));
         assertEquals(
-            'none', window.getComputedStyle(profileIcon).pointerEvents);
+            'Test Profile\ntest@example.com', container.getAttribute('title'));
       });
 
-  test(
-      'profile icon is clickable and hoverable when profile picker is enabled',
-      async () => {
-        await createProfileIcon(true);
-        const img =
-            profileIcon.shadowRoot.querySelector<HTMLElement>('#profileIcon');
-        assertTrue(!!img);
-        assertTrue(img.classList.contains('clickable'));
-        assertEquals('auto', window.getComputedStyle(img).pointerEvents);
-        assertEquals('pointer', window.getComputedStyle(img).cursor);
-      });
+  test('profile icon is clickable when profile picker is enabled', async () => {
+    await createProfileIcon(true);
+    const container =
+        profileIcon.shadowRoot.querySelector<HTMLElement>('#profileContainer');
+    assertTrue(!!container);
+    assertTrue(container.classList.contains('clickable'));
+    assertEquals('pointer', window.getComputedStyle(container).cursor);
+    assertEquals(
+        'Test Profile\ntest@example.com', container.getAttribute('title'));
+  });
+
+  test('renders enterprise badge when profile is enterprise', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileName: 'Test Profile',
+      profileEmail: 'test@example.com',
+      omniboxEverywhereProfilePickerEnabled: true,
+      isEnterpriseProfile: true,
+    });
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+    profileIcon = document.createElement('omnibox-everywhere-profile-icon');
+    document.body.appendChild(profileIcon);
+    await microtasksFinished();
+
+    assertTrue(profileIcon.hasAttribute('is-enterprise-profile'));
+    const enterpriseBadge =
+        profileIcon.shadowRoot.querySelector<HTMLElement>('#enterpriseBadge');
+    assertTrue(!!enterpriseBadge);
+  });
 });

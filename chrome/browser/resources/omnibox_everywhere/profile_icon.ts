@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -40,6 +42,11 @@ export class OmniboxEverywhereProfileIconElement extends
 
   static override get properties() {
     return {
+      isEnterpriseProfile_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-enterprise-profile',
+      },
       profileAvatarUrl_: {type: String},
       profileName_: {type: String},
       profileEmail_: {type: String},
@@ -47,6 +54,8 @@ export class OmniboxEverywhereProfileIconElement extends
     };
   }
 
+  protected accessor isEnterpriseProfile_: boolean =
+      loadTimeData.getBoolean('isEnterpriseProfile');
   protected accessor profileAvatarUrl_: string =
       loadTimeData.getString('profileAvatarUrl');
   protected accessor profileName_: string =
@@ -81,11 +90,20 @@ export class OmniboxEverywhereProfileIconElement extends
     }
   }
 
+  protected getProfileTooltip_(): string {
+    if (this.profileName_ && this.profileEmail_) {
+      return `${this.profileName_}\n${this.profileEmail_}`;
+    }
+    return this.profileName_ || this.profileEmail_ ||
+        this.i18n('profileButtonLabel');
+  }
+
   protected onProfileIconClick_() {
     if (!this.profilePickerEnabled_) {
       return;
     }
-    const anchor = this.shadowRoot?.querySelector<HTMLElement>('#profileIcon');
+    const anchor =
+        this.shadowRoot?.querySelector<HTMLElement>('#profileContainer');
     if (anchor && this.$.profileMenu) {
       this.$.profileMenu.showAt(anchor, {
         anchorAlignmentX: AnchorAlignment.BEFORE_END,

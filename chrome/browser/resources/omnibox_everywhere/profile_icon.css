@@ -9,28 +9,71 @@
 
 :host {
   display: inline-block;
-  pointer-events: none;
+  pointer-events: auto;
   position: absolute;
   right: 16px;
   top: var(--omnibox-everywhere-top-actions-top, 12px);
   z-index: 100;
 }
 
+#profileContainer {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  pointer-events: auto;
+  width: 36px;
+}
+
+#profileContainer.clickable {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 #profileIcon {
   border-radius: 50%;
   height: 36px;
+  object-fit: cover;
   pointer-events: none;
   width: 36px;
   -webkit-user-drag: none;
 }
 
-#profileIcon.clickable {
-  cursor: pointer;
-  pointer-events: auto;
+:host([is-enterprise-profile]) #profileContainer {
+  background-color: var(--color-sys-surface-container-high, #f2f2f2);
+  border-radius: 20px;
+  gap: 4px;
+  height: 28px;
+  margin-top: 4px;
+  padding-inline-end: 4px;
+  padding-inline-start: 4px;
+  width: auto;
+}
+
+:host([is-enterprise-profile]) #enterpriseBadge {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+:host([is-enterprise-profile]) #enterpriseBadge cr-icon {
+  color: var(--color-sys-on-surface-subtle);
+  height: 16px;
+  padding: 2px;
+  width: 16px;
+}
+
+:host([is-enterprise-profile]) #profileIcon {
+  height: 20px;
+  width: 20px;
+}
+
+#profileContainer.clickable #profileIcon {
   transition: opacity 150ms ease-in-out;
 }
 
-#profileIcon.clickable:hover {
+#profileContainer.clickable:hover #profileIcon {
   opacity: 0.85;
 }
 

@@ -10,6 +10,8 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -234,11 +236,14 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
           profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 48, 48);
       profile_avatar_url = webui::GetBitmapDataUrl(icon.AsBitmap());
 
-      std::u16string gaia_name = entry->GetGAIAName();
-      std::u16string profile_name = entry->GetName();
-      std::u16string display_name = profile_name;
-      if (!gaia_name.empty() && gaia_name != profile_name) {
-        display_name = gaia_name + u" • " + profile_name;
+      std::u16string gaia_name = entry->GetGAIANameToDisplay();
+      std::u16string local_name = entry->GetLocalProfileName();
+      std::u16string display_name;
+      if (!gaia_name.empty() && !local_name.empty() &&
+          gaia_name != local_name) {
+        display_name = gaia_name + u" (" + local_name + u")";
+      } else {
+        display_name = entry->GetName();
       }
       source->AddString("profileName", base::UTF16ToUTF8(display_name));
       source->AddString("profileEmail",
@@ -251,6 +256,9 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddString("profileAvatarUrl", profile_avatar_url);
   source->AddBoolean("omniboxEverywhereProfilePickerEnabled",
                      omnibox::kOmniboxEverywhereProfilePickerParam.Get());
+  bool is_enterprise_profile =
+      enterprise_util::CanShowEnterpriseBadgingForAvatar(profile_);
+  source->AddBoolean("isEnterpriseProfile", is_enterprise_profile);
   static constexpr webui::LocalizedString kStrings[] = {
       {"loomniboxFreAcceptHotkey", IDS_LOOMNIBOX_FRE_ACCEPT_HOTKEY},
       {"loomniboxFreCloseButtonAria", IDS_LOOMNIBOX_FRE_CLOSE_BUTTON_ARIA},
@@ -264,6 +272,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       {"loomniboxFreLensSecondary", IDS_LOOMNIBOX_FRE_LENS_SECONDARY},
       {"loomniboxFreOr", IDS_LOOMNIBOX_FRE_OR},
       {"loomniboxFreTitle", IDS_LOOMNIBOX_FRE_TITLE},
+      {"managedByYourOrganization", IDS_MANAGED},
       {"profileButtonLabel", IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE},
       {"screenshotEntireScreenLabel", IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN},
       {"screenshotRegionLabel", IDS_OMNIBOX_EVERYWHERE_REGION},
