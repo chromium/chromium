@@ -221,6 +221,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/contextual_tasks",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/extensions",
       "//chrome/browser/history",
       "//chrome/browser/profiles:profile",

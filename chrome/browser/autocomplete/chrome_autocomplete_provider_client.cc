@@ -816,9 +816,27 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 bool ChromeAutocompleteProviderClient::ShouldOpenCoBrowsePanel() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return contextual_tasks::IsContextualTasksUIEnabled() &&
-         (omnibox::kAskGCoBrowse.Get() ||
-          omnibox::kAskGCoBrowseWithVisualSelection.Get());
+  if (!lens::features::IsLensSidePanelUnificationEnabled() ||
+      !contextual_tasks::IsContextualTasksUIEnabled()) {
+    return false;
+  }
+
+  if (!omnibox::kAskGCoBrowse.Get() &&
+      !omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
+    return false;
+  }
+
+  if (!lens::features::IsLensSidePanelUnificationAllowSignedOut()) {
+    auto* ui_service =
+        contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+            profile_);
+    if (!ui_service || !ui_service->IsSignedInToBrowserWithValidCredentials() ||
+        !ui_service->CookieJarContainsPrimaryAccount()) {
+      return false;
+    }
+  }
+
+  return true;
 #else
   return false;
 #endif
