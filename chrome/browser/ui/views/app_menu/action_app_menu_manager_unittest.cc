@@ -107,9 +107,13 @@ TEST_F(ActionAppMenuManagerTest, MAYBE_ProfileSubmenu) {
       root->GetChildren().children()[1]->GetActionItem();
   ASSERT_NE(your_chrome_section, nullptr);
 
-  ASSERT_GE(your_chrome_section->GetChildren().children().size(), 1u);
-  actions::BaseAction* profile_submenu =
-      your_chrome_section->GetChildren().children()[0].get();
+  actions::BaseAction* profile_submenu = nullptr;
+  for (const auto& child : your_chrome_section->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() == kActionProfileSubmenu) {
+      profile_submenu = child.get();
+      break;
+    }
+  }
   ASSERT_NE(profile_submenu, nullptr);
   EXPECT_EQ(profile_submenu->GetActionItem()->GetActionId(),
             kActionProfileSubmenu);

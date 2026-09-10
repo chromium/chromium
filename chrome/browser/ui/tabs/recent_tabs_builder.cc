@@ -135,6 +135,7 @@ RecentTabItem BuildWindowItem(const sessions::tab_restore::Window& window) {
                                         : vector_icons::kLaunchOldIcon,
       ui::kColorMenuIcon, gfx::kFaviconSize));
   window_item.add_child(std::move(restore_cmd));
+  window_item.add_child(RecentTabItem(RecentTabItem::Type::kDivider, u""));
 
   for (const auto& tab : window.tabs) {
     window_item.add_child(BuildTabItem(*tab));
@@ -164,6 +165,7 @@ RecentTabItem BuildGroupItem(const sessions::tab_restore::Group& group) {
                                         : vector_icons::kLaunchOldIcon,
       ui::kColorMenuIcon, gfx::kFaviconSize));
   group_item.add_child(std::move(restore_cmd));
+  group_item.add_child(RecentTabItem(RecentTabItem::Type::kDivider, u""));
 
   for (const auto& tab : group.tabs) {
     group_item.add_child(BuildTabItem(*tab));
@@ -197,6 +199,7 @@ RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split) {
                                         : vector_icons::kLaunchOldIcon,
       ui::kColorMenuIcon, gfx::kFaviconSize));
   split_item.add_child(std::move(restore_cmd));
+  split_item.add_child(RecentTabItem(RecentTabItem::Type::kDivider, u""));
 
   for (const auto& tab : split.tabs) {
     split_item.add_child(BuildTabItem(*tab));
@@ -252,12 +255,18 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRecentTabs(
   }
 
   auto local_items = BuildLocalEntries(profile);
-  items.insert(items.end(), std::make_move_iterator(local_items.begin()),
-               std::make_move_iterator(local_items.end()));
+  if (!local_items.empty()) {
+    items.emplace_back(RecentTabItem::Type::kDivider, u"");
+    items.insert(items.end(), std::make_move_iterator(local_items.begin()),
+                 std::make_move_iterator(local_items.end()));
+  }
 
   auto remote_items = BuildRemoteEntries(profile);
-  items.insert(items.end(), std::make_move_iterator(remote_items.begin()),
-               std::make_move_iterator(remote_items.end()));
+  if (!remote_items.empty()) {
+    items.emplace_back(RecentTabItem::Type::kDivider, u"");
+    items.insert(items.end(), std::make_move_iterator(remote_items.begin()),
+                 std::make_move_iterator(remote_items.end()));
+  }
 
   return items;
 }

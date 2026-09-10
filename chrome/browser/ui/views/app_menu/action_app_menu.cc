@@ -51,9 +51,10 @@ bool ShouldRoundBottomCorners(size_t index,
   // An item rounds its bottom corners if it is the last non-divider item in
   // its list.
   for (size_t i = index + 1; i < items.size(); ++i) {
-    if (items[i]->GetActionItem()->GetProperty(
-            ActionAppMenuManager::kDisplayTypeKey) !=
-        ActionAppMenuManager::DisplayType::kDivider) {
+    const auto display_type = items[i]->GetActionItem()->GetProperty(
+        ActionAppMenuManager::kDisplayTypeKey);
+    if (display_type != ActionAppMenuManager::DisplayType::kDivider &&
+        display_type != ActionAppMenuManager::DisplayType::kHeader) {
       return false;
     }
   }
@@ -66,9 +67,10 @@ bool ShouldRoundTopCorners(size_t index,
   // preceding non-divider item rounded its bottom corners.
   for (size_t i = index; i > 0; --i) {
     size_t prev_index = i - 1;
-    if (items[prev_index]->GetActionItem()->GetProperty(
-            ActionAppMenuManager::kDisplayTypeKey) ==
-        ActionAppMenuManager::DisplayType::kDivider) {
+    const auto display_type = items[prev_index]->GetActionItem()->GetProperty(
+        ActionAppMenuManager::kDisplayTypeKey);
+    if (display_type == ActionAppMenuManager::DisplayType::kDivider ||
+        display_type == ActionAppMenuManager::DisplayType::kHeader) {
       continue;
     }
     return ShouldRoundBottomCorners(prev_index, items);
@@ -153,7 +155,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   search_bar_ = nullptr;
   action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
-  section_header_count_ = 0;
+  header_count_ = 0;
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
@@ -209,12 +211,13 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       PopulateBlockSection(view_parent, child_ptr);
     } else if (display_type == ActionAppMenuManager::DisplayType::kDivider) {
       PopulateDivider(view_parent, child_ptr);
-    } else if (display_type == ActionAppMenuManager::DisplayType::kSection) {
-      auto* header_menu_item =
+    } else if (display_type == ActionAppMenuManager::DisplayType::kHeader) {
+      auto* const header_menu_item =
           view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
-      ConfigureSectionHeader(header_menu_item);
+      ConfigureHeader(header_menu_item);
+    } else if (display_type == ActionAppMenuManager::DisplayType::kSection) {
       // Recursively call using the same parent to keep the children in
-      // the same menu section as the header.
+      // the same menu section.
       PopulateMenu(view_parent, child_base);
     } else {
       auto* const menu_item = AppendMenuItem(child_base, view_parent);
@@ -264,15 +267,14 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
   return menu_item;
 }
 
-void ActionAppMenu::ConfigureSectionHeader(
-    views::MenuItemView* header_menu_item) {
+void ActionAppMenu::ConfigureHeader(views::MenuItemView* header_menu_item) {
   const int default_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN);
   header_menu_item->set_vertical_margin(default_margin);
   header_menu_item->SetEnabled(false);
   if (header_menu_item->GetParentMenuItem() == root_) {
     header_menu_item->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
-    if (section_header_count_++ > 0) {
+    if (header_count_++ > 0) {
       header_menu_item->set_top_margin(default_margin * 2);
     }
   }
