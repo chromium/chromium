@@ -15,6 +15,7 @@
 class GURL;
 
 namespace content {
+class NavigationThrottleRegistry;
 class WebContents;
 }  // namespace content
 
@@ -80,6 +81,13 @@ class WebAppUrlLoader {
       UrlComparison url_comparison,
       ResultCallback callback);
 
+  // Registers a NavigationThrottle on `registry` if `registry`'s
+  // NavigationHandle is currently undergoing a WebAppUrlLoader load. This
+  // ensures redirects are constrained according to `UrlComparison` before
+  // network requests are sent.
+  static void MaybeCreateAndAddNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
+
   // Used by LoadUrl() to put `web_contents` into a clean state, will noop if
   // called redundantly. Useful for other uses of `web_contents` e.g.
   // downloading icons.
@@ -88,7 +96,7 @@ class WebAppUrlLoader {
 
  private:
   void LoadUrlInternal(
-      const content::NavigationController::LoadURLParams& load_url_params,
+      content::NavigationController::LoadURLParams load_url_params,
       base::WeakPtr<content::WebContents> web_contents,
       UrlComparison url_comparison,
       ResultCallback callback);

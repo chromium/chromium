@@ -5,11 +5,13 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -83,6 +85,37 @@ IN_PROC_BROWSER_TEST_F(InstallMigrateToAppCommandBrowserTest,
                   .registrar_unsafe()
                   .GetInstallState(GetTargetAppId())
                   .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(InstallMigrateToAppCommandBrowserTest,
+                       TargetNotInstalledWhenInstallUrlRedirects) {
+  // 1. Install the source app.
+  InstallWebAppFromPage(
+      browser(), embedded_https_test_server().GetURL(kMigrateFromSuggestUrl));
+
+  // 2. Schedule migration with an install_url that redirects.
+  GURL target_url = embedded_https_test_server().GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  GURL redirecting_install_url = embedded_https_test_server().GetURL(
+      "/server-redirect?" + target_url.spec());
+
+  webapps::ManifestId source_manifest_id(embedded_https_test_server().GetURL(
+      "/web_apps/migration/migrate_from/manifest_id"));
+  webapps::ManifestId target_manifest_id(
+      embedded_https_test_server().GetURL(kMigrateToManifestId));
+
+  base::test::TestFuture<InstallMigrateToAppResult> future;
+  provider().scheduler().ScheduleInstallMigrateToApp(
+      source_manifest_id, target_manifest_id, redirecting_install_url,
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get(), InstallMigrateToAppResult::kUrlLoadFailed);
+
+  // 3. Verify target app is NOT installed.
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetInstallState(GetTargetAppId())
+                   .has_value());
 }
 
 }  // namespace

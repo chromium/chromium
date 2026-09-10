@@ -204,6 +204,20 @@ TEST_F(FetchManifestAndUpdateTest, UrlLoadFailure) {
       FetchManifestAndUpdateResult::kUrlLoadingError, 1);
 }
 
+TEST_F(FetchManifestAndUpdateTest, UrlRedirectFailure) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+
+  web_contents_manager()
+      .GetOrCreatePageState(GURL(kInstallUrl))
+      .url_load_result = webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded;
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
+  EXPECT_EQ(result, FetchManifestAndUpdateResult::kUrlLoadingError);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kUrlLoadingError, 1);
+}
+
 TEST_F(FetchManifestAndUpdateTest, PrimaryPageChangedDuringIconFetch) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 

@@ -1530,6 +1530,66 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MigrateCrossOriginBadMessage_MigrateToInstallUrl) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Same site (127.0.0.1) but different port => cross-origin with id.
+  auto migrate_to = blink::mojom::ManifestMigrateTo::New();
+  migrate_to->id = embedded_test_server()->GetURL("/manifest/new");
+  migrate_to->install_url = GURL("http://127.0.0.1:9999/install");
+  bad_manifest->migrate_to = std::move(migrate_to);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest migrate_to install_url must be the same origin "
+                  "as the id."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MigrateCrossOriginBadMessage_MigrateFromInstallUrl) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Same site (127.0.0.1) but different port => cross-origin with id.
+  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
+  migrate_from->id = embedded_test_server()->GetURL("/manifest/old");
+  migrate_from->install_url = GURL("http://127.0.0.1:9999/install");
+  bad_manifest->migrate_from.push_back(std::move(migrate_from));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest migrate_from install_url must be the same origin "
+                  "as the id."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
                        ManifestShortcutUrlOutsideScopeBadMessage) {
   const GURL test_url =
       embedded_test_server()->GetURL("/manifest/empty-manifest.html");

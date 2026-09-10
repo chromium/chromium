@@ -146,25 +146,43 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
 
     net::SchemefulSite document_site(document_origin);
     for (const auto& migrate_from : manifest.migrate_from) {
-      if (!document_site.IsSameSiteWith(migrate_from->id)) {
+      if (!migrate_from->id.is_valid() ||
+          !document_site.IsSameSiteWith(migrate_from->id)) {
         return "Manifest migrate_from id must be the same site as the "
                "document.";
       }
-      if (migrate_from->install_url && migrate_from->install_url->is_valid() &&
-          !document_site.IsSameSiteWith(*migrate_from->install_url)) {
-        return "Manifest migrate_from install_url must be the same site as the "
-               "document.";
+      if (migrate_from->install_url) {
+        if (!migrate_from->install_url->is_valid()) {
+          return "Manifest migrate_from install_url must be valid.";
+        }
+        if (!document_site.IsSameSiteWith(*migrate_from->install_url)) {
+          return "Manifest migrate_from install_url must be the same site as "
+                 "the document.";
+        }
+        if (!url::IsSameOriginWith(migrate_from->id,
+                                   *migrate_from->install_url)) {
+          return "Manifest migrate_from install_url must be the same origin as "
+                 "the id.";
+        }
       }
     }
 
     if (manifest.migrate_to) {
-      if (!document_site.IsSameSiteWith(manifest.migrate_to->id)) {
+      if (!manifest.migrate_to->id.is_valid() ||
+          !document_site.IsSameSiteWith(manifest.migrate_to->id)) {
         return "Manifest migrate_to id must be the same site as the document.";
       }
-      if (manifest.migrate_to->install_url.is_valid() &&
-          !document_site.IsSameSiteWith(manifest.migrate_to->install_url)) {
+      if (!manifest.migrate_to->install_url.is_valid()) {
+        return "Manifest migrate_to install_url must be valid.";
+      }
+      if (!document_site.IsSameSiteWith(manifest.migrate_to->install_url)) {
         return "Manifest migrate_to install_url must be the same site as the "
                "document.";
+      }
+      if (!url::IsSameOriginWith(manifest.migrate_to->id,
+                                 manifest.migrate_to->install_url)) {
+        return "Manifest migrate_to install_url must be the same origin as "
+               "the id.";
       }
     }
 

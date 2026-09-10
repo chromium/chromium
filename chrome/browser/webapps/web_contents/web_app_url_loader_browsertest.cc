@@ -208,6 +208,52 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, 302FoundRedirect) {
                            "/server-redirect-302?" + final_url.spec()));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest,
+                       RedirectDisallowedDestinationBlockedBeforeFetch) {
+  bool destination_reached = false;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/destination") {
+          destination_reached = true;
+          auto resp = std::make_unique<net::test_server::BasicHttpResponse>();
+          resp->set_code(net::HTTP_OK);
+          return resp;
+        }
+        return nullptr;
+      }));
+  SetupRedirect("/test-redirect-blocked", "/destination");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_EQ(UrlResult::kRedirectedUrlLoaded,
+            LoadUrlAndWait(UrlComparison::kExact, "/test-redirect-blocked"));
+  EXPECT_FALSE(destination_reached);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest,
+                       CrossOriginRedirectBlockedBeforeFetch) {
+  bool destination_reached = false;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/destination") {
+          destination_reached = true;
+          auto resp = std::make_unique<net::test_server::BasicHttpResponse>();
+          resp->set_code(net::HTTP_OK);
+          return resp;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL destination_url =
+      embedded_test_server()->GetURL("foo.com", "/destination");
+  EXPECT_EQ(UrlResult::kRedirectedUrlLoaded,
+            LoadUrlAndWait(UrlComparison::kSameOrigin,
+                           "/server-redirect-302?" + destination_url.spec()));
+  EXPECT_FALSE(destination_reached);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Http404ErrorWithContent) {
   SetupHttpResponseWithContent(net::HTTP_NOT_FOUND, kGenericPageContent);
   ASSERT_TRUE(embedded_test_server()->Start());

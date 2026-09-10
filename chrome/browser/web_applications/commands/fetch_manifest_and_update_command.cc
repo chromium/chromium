@@ -82,8 +82,8 @@ void FetchManifestAndUpdateCommand::OnUrlLoaded(
     webapps::WebAppUrlLoaderResult result) {
   switch (result) {
     case webapps::WebAppUrlLoaderResult::kUrlLoaded:
-    case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
       break;
+    case webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded:
     case webapps::WebAppUrlLoaderResult::kFailedUnknownReason:
     case webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong:
     case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:

@@ -71,6 +71,7 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
@@ -626,6 +627,8 @@ void CreateAndAddChromeThrottlesForNavigation(
       registry);
 
   dom_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
+
+  webapps::WebAppUrlLoader::MaybeCreateAndAddNavigationThrottle(registry);
 
   glic::GlicNavigationThrottle::MaybeCreateAndAdd(registry);
   glic::GlicGuestNavigationThrottle::MaybeCreateAndAdd(registry);
