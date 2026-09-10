@@ -1,0 +1,5 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View supplementalDescription:"Find your account" focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++View supplementalDescription:"Container with button" focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++Button text:"Action" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]

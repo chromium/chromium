@@ -260,6 +260,7 @@ BrowserAccessibilityAndroid::~BrowserAccessibilityAndroid() {
   if (auto id = GetUniqueId()) {
     GetUniqueIdMap().erase(id);
   }
+  GetLeafMap().erase(this);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetLocalizedString(
@@ -898,10 +899,11 @@ bool BrowserAccessibilityAndroid::ComputeIsLeaf() const {
   }
 
   // Focusable nodes with name from attribute should never drop children, unless
-  // they only have static text children.
+  // they only have static text children or generic containers with text.
   if (HasState(ax::mojom::State::kFocusable) &&
       GetNameFrom() == ax::mojom::NameFrom::kAttribute) {
-    if (HasOnlyTextChildren() && !HasListMarkerChild()) {
+    if ((HasOnlyTextChildren() || HasOnlyTextAndGenericDescendants()) &&
+        !HasListMarkerChild()) {
       return true;
     }
     // We exclude options, menu items, and comboboxes to prevent double
@@ -2617,6 +2619,34 @@ bool BrowserAccessibilityAndroid::HasListMarkerChild() const {
     }
   }
   return false;
+}
+
+bool BrowserAccessibilityAndroid::HasOnlyTextAndGenericDescendants() const {
+  // This is called from `IsLeaf`, so don't call `PlatformChildCount` from
+  // within this!
+  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+    BrowserAccessibility* child = it.get();
+    if (child->IsFocusable() || child->HasState(ax::mojom::State::kFocusable)) {
+      return false;
+    }
+
+    const ax::mojom::Role role = child->GetRole();
+    if (ui::IsControl(role) || ui::IsLink(role) ||
+        role == ax::mojom::Role::kHeading || role == ax::mojom::Role::kTable ||
+        ui::IsTableLike(role)) {
+      return false;
+    }
+
+    if (role == ax::mojom::Role::kGenericContainer) {
+      if (!static_cast<const BrowserAccessibilityAndroid*>(child)
+               ->HasOnlyTextAndGenericDescendants()) {
+        return false;
+      }
+    } else if (!child->IsText()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool BrowserAccessibilityAndroid::ShouldPromoteValueToTextProperty(

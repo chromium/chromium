@@ -2183,6 +2183,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_containerWithGenericDescendantsAndName() {
+        performHtmlTest("container-with-generic-descendants-and-name.html");
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN)
     public void test_contenteditableDescendants_ExposeNonAtomicTextFieldChildrenFeatureDisabled() {
         performHtmlTest("contenteditable-descendants.html");

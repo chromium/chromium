@@ -2538,6 +2538,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContainerWithGenericDescendantsAndName) {
+  RunHtmlTest(
+      FILE_PATH_LITERAL("container-with-generic-descendants-and-name.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableBr) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
 }

@@ -126,6 +126,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool HasImage() const;
   bool HasLayoutBasedActions() const;
 
+  // Returns true if all descendant nodes consist solely of `kGenericContainer`
+  // and text (`IsText()`), and contain no interactive controls, links,
+  // headings, tables, or focusable descendants.
+  bool HasOnlyTextAndGenericDescendants() const;
+
   const char* GetClassName() const;
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;

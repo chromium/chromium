@@ -149,6 +149,7 @@ class BrowserAccessibilityAndroidTest : public ::testing::Test {
 
  private:
   void SetUp() override;
+  void TearDown() override;
   MockContentClient client_;
 
   // This is needed to prevent a DCHECK failure when OnAccessibilityApiUsage
@@ -166,6 +167,10 @@ void BrowserAccessibilityAndroidTest::SetUp() {
   test_browser_accessibility_delegate_->SetWebContentsAccessibility(
       &mock_web_contents_accessibility_android_);
   SetContentClient(&client_);
+}
+
+void BrowserAccessibilityAndroidTest::TearDown() {
+  BrowserAccessibilityAndroid::ResetLeafCache();
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
@@ -2430,6 +2435,224 @@ TEST_F(BrowserAccessibilityAndroidTest,
   ASSERT_NE(nullptr, node4);
   EXPECT_FALSE(node4->IsLeaf());
   EXPECT_EQ(2U, node4->PlatformChildCount());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestIsLeafFocusableWithNameFromAttributeAndGenericDescendants) {
+  // Case 1: Focusable container with aria-label (`NameFrom::kAttribute`) and
+  // nested generic containers wrapping static text. Should be a leaf.
+  ui::AXNodeData text1;
+  text1.id = 111;
+  text1.role = ax::mojom::Role::kStaticText;
+  text1.SetName("Find your account");
+
+  ui::AXNodeData inner_span1;
+  inner_span1.id = 11;
+  inner_span1.role = ax::mojom::Role::kGenericContainer;
+  inner_span1.child_ids = {text1.id};
+
+  ui::AXNodeData outer_div1;
+  outer_div1.id = 10;
+  outer_div1.role = ax::mojom::Role::kGenericContainer;
+  outer_div1.child_ids = {inner_span1.id};
+
+  ui::AXNodeData container1;
+  container1.id = 2;
+  container1.role = ax::mojom::Role::kGenericContainer;
+  container1.AddState(ax::mojom::State::kFocusable);
+  container1.SetName("Find your account");
+  container1.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container1.child_ids = {outer_div1.id};
+
+  // Case 2: Focusable container with aria-label wrapping a generic container
+  // that contains an interactive control (button). Should NOT be a leaf.
+  ui::AXNodeData button2;
+  button2.id = 21;
+  button2.role = ax::mojom::Role::kButton;
+  button2.SetName("Click");
+
+  ui::AXNodeData div2;
+  div2.id = 20;
+  div2.role = ax::mojom::Role::kGenericContainer;
+  div2.child_ids = {button2.id};
+
+  ui::AXNodeData container2;
+  container2.id = 3;
+  container2.role = ax::mojom::Role::kGenericContainer;
+  container2.AddState(ax::mojom::State::kFocusable);
+  container2.SetName("Container with Button");
+  container2.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container2.child_ids = {div2.id};
+
+  // Case 3: Focusable container with aria-label wrapping a generic container
+  // that contains a link. Should NOT be a leaf.
+  ui::AXNodeData link3;
+  link3.id = 31;
+  link3.role = ax::mojom::Role::kLink;
+  link3.SetName("Link");
+
+  ui::AXNodeData div3;
+  div3.id = 30;
+  div3.role = ax::mojom::Role::kGenericContainer;
+  div3.child_ids = {link3.id};
+
+  ui::AXNodeData container3;
+  container3.id = 4;
+  container3.role = ax::mojom::Role::kGenericContainer;
+  container3.AddState(ax::mojom::State::kFocusable);
+  container3.SetName("Container with Link");
+  container3.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container3.child_ids = {div3.id};
+
+  // Case 4: Focusable container with aria-label wrapping a generic container
+  // that contains a heading. Should NOT be a leaf.
+  ui::AXNodeData heading4;
+  heading4.id = 41;
+  heading4.role = ax::mojom::Role::kHeading;
+  heading4.SetName("Heading");
+
+  ui::AXNodeData div4;
+  div4.id = 40;
+  div4.role = ax::mojom::Role::kGenericContainer;
+  div4.child_ids = {heading4.id};
+
+  ui::AXNodeData container4;
+  container4.id = 5;
+  container4.role = ax::mojom::Role::kGenericContainer;
+  container4.AddState(ax::mojom::State::kFocusable);
+  container4.SetName("Container with Heading");
+  container4.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container4.child_ids = {div4.id};
+
+  // Case 5: Focusable container with aria-label wrapping a generic container
+  // that contains a table. Should NOT be a leaf.
+  ui::AXNodeData table5;
+  table5.id = 51;
+  table5.role = ax::mojom::Role::kTable;
+
+  ui::AXNodeData div5;
+  div5.id = 50;
+  div5.role = ax::mojom::Role::kGenericContainer;
+  div5.child_ids = {table5.id};
+
+  ui::AXNodeData container5;
+  container5.id = 6;
+  container5.role = ax::mojom::Role::kGenericContainer;
+  container5.AddState(ax::mojom::State::kFocusable);
+  container5.SetName("Container with Table");
+  container5.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container5.child_ids = {div5.id};
+
+  // Case 6: Focusable container with aria-label wrapping a generic container
+  // that contains a focusable element. Should NOT be a leaf.
+  ui::AXNodeData focusable_span6;
+  focusable_span6.id = 61;
+  focusable_span6.role = ax::mojom::Role::kGenericContainer;
+  focusable_span6.AddState(ax::mojom::State::kFocusable);
+
+  ui::AXNodeData div6;
+  div6.id = 60;
+  div6.role = ax::mojom::Role::kGenericContainer;
+  div6.child_ids = {focusable_span6.id};
+
+  ui::AXNodeData container6;
+  container6.id = 7;
+  container6.role = ax::mojom::Role::kGenericContainer;
+  container6.AddState(ax::mojom::State::kFocusable);
+  container6.SetName("Container with Focusable Child");
+  container6.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container6.child_ids = {div6.id};
+
+  // Case 7: Focusable container with aria-label wrapping a generic container
+  // that contains an image. Should NOT be a leaf.
+  ui::AXNodeData image7;
+  image7.id = 71;
+  image7.role = ax::mojom::Role::kImage;
+
+  ui::AXNodeData div7;
+  div7.id = 70;
+  div7.role = ax::mojom::Role::kGenericContainer;
+  div7.child_ids = {image7.id};
+
+  ui::AXNodeData container7;
+  container7.id = 8;
+  container7.role = ax::mojom::Role::kGenericContainer;
+  container7.AddState(ax::mojom::State::kFocusable);
+  container7.SetName("Container with Image");
+  container7.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container7.child_ids = {div7.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {container1.id, container2.id, container3.id, container4.id,
+                    container5.id, container6.id, container7.id};
+
+  ui::AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data.focused_tree_id = update.tree_data.tree_id;
+  update.tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+  update.root_id = root.id;
+  update.nodes = {
+      root, container1,      outer_div1, inner_span1, text1,  container2,
+      div2, button2,         container3, div3,        link3,  container4,
+      div4, heading4,        container5, div5,        table5, container6,
+      div6, focusable_span6, container7, div7,        image7};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  auto* node1 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container1.id));
+  ASSERT_NE(nullptr, node1);
+  EXPECT_TRUE(node1->HasOnlyTextAndGenericDescendants());
+  EXPECT_TRUE(node1->IsLeaf());
+  EXPECT_EQ(0U, node1->PlatformChildCount());
+
+  auto* node2 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container2.id));
+  ASSERT_NE(nullptr, node2);
+  EXPECT_FALSE(node2->HasOnlyTextAndGenericDescendants());
+  EXPECT_FALSE(node2->IsLeaf());
+  EXPECT_EQ(1U, node2->PlatformChildCount());
+
+  auto* node3 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container3.id));
+  ASSERT_NE(nullptr, node3);
+  EXPECT_FALSE(node3->HasOnlyTextAndGenericDescendants());
+  EXPECT_FALSE(node3->IsLeaf());
+  EXPECT_EQ(1U, node3->PlatformChildCount());
+
+  auto* node4 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container4.id));
+  ASSERT_NE(nullptr, node4);
+  EXPECT_FALSE(node4->HasOnlyTextAndGenericDescendants());
+  EXPECT_FALSE(node4->IsLeaf());
+  EXPECT_EQ(1U, node4->PlatformChildCount());
+
+  auto* node5 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container5.id));
+  ASSERT_NE(nullptr, node5);
+  EXPECT_FALSE(node5->HasOnlyTextAndGenericDescendants());
+  EXPECT_FALSE(node5->IsLeaf());
+  EXPECT_EQ(1U, node5->PlatformChildCount());
+
+  auto* node6 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container6.id));
+  ASSERT_NE(nullptr, node6);
+  EXPECT_FALSE(node6->HasOnlyTextAndGenericDescendants());
+  EXPECT_FALSE(node6->IsLeaf());
+  EXPECT_EQ(1U, node6->PlatformChildCount());
+
+  auto* node7 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container7.id));
+  ASSERT_NE(nullptr, node7);
+  EXPECT_FALSE(node7->HasOnlyTextAndGenericDescendants());
+  EXPECT_FALSE(node7->IsLeaf());
+  EXPECT_EQ(1U, node7->PlatformChildCount());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,

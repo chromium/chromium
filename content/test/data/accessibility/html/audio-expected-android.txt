@@ -7,4 +7,3 @@ android.webkit.WebView focusable focused
 ++++++++android.widget.TextView
 ++++++++android.widget.Button clickable focusable name='mute'
 ++++++android.widget.Button role_description='menu pop up button' clickable focusable name='show more media controls' hint='more options'
-++++++++android.widget.TextView

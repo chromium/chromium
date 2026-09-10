@@ -1,0 +1,22 @@
+<!--
+@BLINK-ALLOW:name*
+@ANDROID-ALLOW:*
+@ANDROID-EXTERNAL-ALLOW:*
+-->
+<html>
+<body>
+  <!-- Focusable container with aria-label and text wrapped in generic containers: should be a leaf -->
+  <div tabindex="0" aria-label="Find your account">
+    <div>
+      <span dir="auto">Find your account</span>
+    </div>
+  </div>
+
+  <!-- Focusable container with aria-label containing an interactive control: should NOT be a leaf -->
+  <div tabindex="0" aria-label="Container with button">
+    <div>
+      <button>Action</button>
+    </div>
+  </div>
+</body>
+</html>
