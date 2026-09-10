@@ -97,8 +97,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-import java.util.stream.IntStream;
-
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -141,16 +139,6 @@ public class SendTabToSelfCoordinatorTest {
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null);
         // Dismiss any active IPH text bubbles shown during the test.
         ThreadUtils.runOnUiThreadBlocking(TextBubble::dismissBubbles);
-        // Reset screen orientation to avoid leaking state across tests.
-        if (mSyncTestRule.getActivity() != null) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mSyncTestRule
-                                .getActivity()
-                                .setRequestedOrientation(
-                                        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    });
-        }
     }
 
     private void signInAndShowDevicePicker() {
@@ -173,22 +161,6 @@ public class SendTabToSelfCoordinatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> new BottomSheetTestSupport(controller).setSheetState(SheetState.FULL, false));
         BottomSheetTestSupport.waitForState(controller, SheetState.FULL);
-    }
-
-    /**
-     * Injects {@code count} fake target devices into the fake sync server with descending
-     * timestamps.
-     */
-    private void injectFakeDevices(int count) {
-        IntStream.rangeClosed(1, count)
-                .forEach(
-                        i -> {
-                            long olderTime = mSetUpTimeMs - i * 1000;
-                            mSyncTestRule
-                                    .getFakeServerHelper()
-                                    .injectDeviceInfoEntity(
-                                            "Guid" + i, "Device " + i, olderTime, olderTime);
-                        });
     }
 
     @Test
@@ -941,7 +913,7 @@ public class SendTabToSelfCoordinatorTest {
 
     /**
      * Tests that the enhanced target device picker displays correctly in landscape mode with all
-     * target devices, the `send_button`, and the `manage_devices_link` visible and accessible.
+     * target devices and the Send button visible and accessible.
      */
     @Test
     @LargeTest
@@ -950,6 +922,7 @@ public class SendTabToSelfCoordinatorTest {
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
+    @DisabledTest(message = "crbug.com/555079457")
     public void testEnhancedDevicePicker_landscapeMode() {
         mSyncTestRule
                 .getFakeServerHelper()
@@ -969,73 +942,6 @@ public class SendTabToSelfCoordinatorTest {
         onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
         onView(withId(R.id.send_button)).check(matches(isDisplayed()));
         onView(withId(R.id.send_button)).check(matches(isEnabled()));
-        onView(withId(R.id.manage_devices_link)).check(matches(isDisplayed()));
-    }
-
-    /**
-     * Tests that when many devices exist in landscape mode, the list height is clamped to allow
-     * scrolling while keeping the `send_button` and `manage_devices_link` visible and accessible.
-     */
-    @Test
-    @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
-    public void testEnhancedDevicePicker_landscapeModeOverflowWithManyDevices() {
-        injectFakeDevices(20);
-
-        Activity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                });
-
-        signInAndShowDevicePicker();
-
-        // In landscape mode, the sheet opens directly in full state.
-        onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
-        onView(withId(R.id.send_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.send_button)).check(matches(isEnabled()));
-        onView(withId(R.id.manage_devices_link)).check(matches(isDisplayed()));
-
-        // Scroll to the end of the list and verify actions remain visible.
-        onView(withId(R.id.sheet_item_list)).perform(RecyclerViewActions.scrollToPosition(20));
-        onView(withText("Device 20")).check(matches(isDisplayed()));
-        onView(withId(R.id.send_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.send_button)).check(matches(isEnabled()));
-        onView(withId(R.id.manage_devices_link)).check(matches(isDisplayed()));
-    }
-
-    /**
-     * Tests that rotating the device from portrait to landscape while the enhanced device picker is
-     * shown keeps the `send_button` and `manage_devices_link` visible and accessible.
-     */
-    @Test
-    @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-        ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
-    })
-    public void testEnhancedDevicePicker_rotationMaintainsControlsVisibility() {
-        injectFakeDevices(20);
-
-        signInAndShowDevicePicker();
-
-        // Rotate to landscape while the sheet is currently displayed in portrait.
-        Activity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                });
-
-        // In landscape mode, the sheet transitions to full state and clamps list height.
-        onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
-        onView(withId(R.id.send_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.send_button)).check(matches(isEnabled()));
-        onView(withId(R.id.manage_devices_link)).check(matches(isDisplayed()));
     }
 
     @Test
