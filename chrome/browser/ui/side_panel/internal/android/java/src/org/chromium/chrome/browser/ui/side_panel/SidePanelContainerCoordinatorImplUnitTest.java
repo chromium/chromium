@@ -61,24 +61,24 @@ public class SidePanelContainerCoordinatorImplUnitTest {
     }
 
     @Test
-    public void determineHeightType_calculatePerShowableWidthAndVerticalTabsState() {
+    public void determineHeightType_calculatePerShowableWidthAndTabStripState() {
         assertEquals(
                 HeightType.NOT_APPLICABLE,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
-                        /* showableWidthDp= */ 0, /* isVerticalTabsEnabled= */ false));
+                        /* showableWidthDp= */ 0, /* isTabStripShowing= */ true));
         assertEquals(
                 HeightType.NOT_APPLICABLE,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
-                        /* showableWidthDp= */ 0, /* isVerticalTabsEnabled= */ true));
+                        /* showableWidthDp= */ 0, /* isTabStripShowing= */ false));
         assertEquals(
                 HeightType.TOOLBAR,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
                         /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
-                        /* isVerticalTabsEnabled= */ false));
+                        /* isTabStripShowing= */ true));
         assertEquals(
                 HeightType.WEB_CONTENTS,
                 SidePanelContainerCoordinatorImpl.determineHeightType(
                         /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
-                        /* isVerticalTabsEnabled= */ true));
+                        /* isTabStripShowing= */ false));
     }
 }

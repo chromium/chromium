@@ -2418,7 +2418,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 SidePanelContainerCoordinatorFactory.create(
                         mWindowAndroid,
                         mSideUiCoordinator,
-                        mTabModelSelectorSupplier.asNonNull().get());
+                        mTabModelSelectorSupplier.asNonNull().get(),
+                        mTopControlsStacker);
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.init();
 

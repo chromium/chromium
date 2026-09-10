@@ -24,6 +24,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
@@ -33,7 +35,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -50,6 +51,7 @@ final class SidePanelContainerCoordinatorImpl
     private final LinearLayout mContainerView;
     private final SidePanelNativeBridgeSelector mNativeBridgeSelector;
     private final SideUiCoordinator mSideUiCoordinator;
+    private final TopControlsStacker mTopControlsStacker;
 
     private @Nullable SidePanelContent mCurrentContent;
 
@@ -89,7 +91,8 @@ final class SidePanelContainerCoordinatorImpl
     SidePanelContainerCoordinatorImpl(
             ActivityWindowAndroid windowAndroid,
             SideUiCoordinator sideUiCoordinator,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            TopControlsStacker topControlsStacker) {
         log(TAG, "constructor");
 
         var activity = assertNonNull(windowAndroid.getActivity().get());
@@ -102,6 +105,7 @@ final class SidePanelContainerCoordinatorImpl
                 new SidePanelNativeBridgeSelector(
                         windowAndroid, /* sidePanelContainerCoordinator= */ this, tabModelSelector);
         mSideUiCoordinator = sideUiCoordinator;
+        mTopControlsStacker = topControlsStacker;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -416,7 +420,9 @@ final class SidePanelContainerCoordinatorImpl
         @HeightType
         int heightType =
                 determineHeightType(
-                        showableWidthDp, VerticalTabUtils.isVerticalTabsEnabled(context));
+                        showableWidthDp,
+                        mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TABSTRIP)
+                                > 0);
 
         return new SideUiSize(ViewUtils.dpToPx(context, showableWidthDp), heightType);
     }
@@ -562,10 +568,10 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @VisibleForTesting
-    static @HeightType int determineHeightType(int showableWidthDp, boolean isVerticalTabsEnabled) {
+    static @HeightType int determineHeightType(int showableWidthDp, boolean isTabStripShowing) {
         @HeightType int heightType = HeightType.NOT_APPLICABLE;
         if (showableWidthDp != 0) {
-            heightType = isVerticalTabsEnabled ? HeightType.WEB_CONTENTS : HeightType.TOOLBAR;
+            heightType = isTabStripShowing ? HeightType.TOOLBAR : HeightType.WEB_CONTENTS;
         }
         return heightType;
     }

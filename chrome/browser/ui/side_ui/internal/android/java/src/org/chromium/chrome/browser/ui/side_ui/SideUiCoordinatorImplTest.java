@@ -206,6 +206,23 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
+    public void testCommitNewSideUiSpecs_SidePanelPositiveTopMarginCheck() {
+        doReturn(0)
+                .when(mTopControlsStacker)
+                .getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mHeightType = HeightType.TOOLBAR;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        UiUpdateRequest request =
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true);
+        assertThrows(IllegalStateException.class, () -> mCoordinator.updateUi(request));
+    }
+
+    @Test
     public void testRegisterSideUiContainer() {
         var sideUiContainer =
                 new TestSideUiContainer(
