@@ -195,6 +195,7 @@ struct CORE_EXPORT Timing {
     Phase phase = Phase::kPhaseNone;
     std::optional<double> current_iteration = 0;
     std::optional<double> progress = 0;
+    bool is_current_direction_forward = true;
     bool is_current = false;
     bool is_in_effect = false;
     bool is_in_play = false;

@@ -133,6 +133,12 @@ class CORE_EXPORT TimingCalculations {
       bool is_current_direction_forward,
       scoped_refptr<TimingFunction> timing_function);
 
+  // The "before flag" step in
+  // https://w3.org/TR/web-animations-1/#calculating-the-transformed-progress.
+  static TimingFunction::LimitDirection LimitDirectionForPhase(
+      Timing::Phase phase,
+      bool is_current_direction_forward);
+
   // Offsets the active time by how far into the animation we start (i.e. the
   // product of the iteration start and iteration duration). This is not part of
   // the Web Animations spec; it is used for calculating the time until the next

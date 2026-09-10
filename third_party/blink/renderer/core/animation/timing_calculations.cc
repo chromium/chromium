@@ -320,6 +320,17 @@ std::optional<double> TimingCalculations::CalculateDirectedProgress(
                                        : 1 - simple_iteration_progress.value();
 }
 
+// The "before flag" step in
+// https://w3.org/TR/web-animations-1/#calculating-the-transformed-progress.
+TimingFunction::LimitDirection TimingCalculations::LimitDirectionForPhase(
+    Timing::Phase phase,
+    bool is_current_direction_forward) {
+  bool before = is_current_direction_forward ? phase == Timing::kPhaseBefore
+                                             : phase == Timing::kPhaseAfter;
+  return before ? TimingFunction::LimitDirection::LEFT
+               : TimingFunction::LimitDirection::RIGHT;
+}
+
 // https://w3.org/TR/web-animations-1/#calculating-the-transformed-progress
 std::optional<double> TimingCalculations::CalculateTransformedProgress(
     Timing::Phase phase,
@@ -330,14 +341,8 @@ std::optional<double> TimingCalculations::CalculateTransformedProgress(
     return std::nullopt;
   }
 
-  // Set the before flag to indicate if at the leading edge of an iteration.
-  // This is used to determine if the left or right limit should be used if at a
-  // discontinuity in the timing function.
-  bool before = is_current_direction_forward ? phase == Timing::kPhaseBefore
-                                             : phase == Timing::kPhaseAfter;
   TimingFunction::LimitDirection limit_direction =
-      before ? TimingFunction::LimitDirection::LEFT
-             : TimingFunction::LimitDirection::RIGHT;
+      LimitDirectionForPhase(phase, is_current_direction_forward);
 
   // Snap boundaries to correctly render step timing functions at 0 and 1.
   // (crbug.com/949373)

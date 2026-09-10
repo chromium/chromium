@@ -92,6 +92,9 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   virtual bool Affects(const PropertyHandle&) const = 0;
 
   Timing::Phase GetPhase() const { return EnsureCalculated().phase; }
+  bool IsCurrentDirectionForward() const {
+    return EnsureCalculated().is_current_direction_forward;
+  }
   bool IsCurrent() const { return EnsureCalculated().is_current; }
   bool IsInEffect() const { return EnsureCalculated().is_in_effect; }
   bool IsInPlay() const { return EnsureCalculated().is_in_play; }

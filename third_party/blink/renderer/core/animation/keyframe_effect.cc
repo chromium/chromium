@@ -710,22 +710,9 @@ void KeyframeEffect::ApplyEffects() {
   DCHECK_GE(iteration.value(), 0);
   bool changed = false;
 
-  // Determine if the left or right limit is used when at a discontinuity in
-  // timing function.  The css-easing spec calls for using a "before flag", and
-  // instructions for setting the flag are in the web-animations-1 spec.
-  // The term "before" is somehwat convoluted since the before flag is to be set
-  // to true of in the before phase of the animation and playing forward, or in
-  // the after phase of the animation and playing backwards. Using limit
-  // direction in place of a "before" flag since the ultimate goal is to
-  // determine the one-sided limit to use.
-  // See https://drafts.csswg.org/css-easing/#step-easing-algo
-  // See
-  // https://www.w3.org/TR/web-animations-1/#calculating-the-transformed-progress
-  // TODO(crbug.com/347967022): Fix reversed animation in the after phase.
   TimingFunction::LimitDirection limit_direction =
-      (GetPhase() == Timing::kPhaseBefore)
-          ? TimingFunction::LimitDirection::LEFT
-          : TimingFunction::LimitDirection::RIGHT;
+      TimingCalculations::LimitDirectionForPhase(GetPhase(),
+                                                 IsCurrentDirectionForward());
 
   if (sampled_effect_) {
     changed =

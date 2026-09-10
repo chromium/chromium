@@ -255,6 +255,7 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   calculated.phase = current_phase;
   calculated.current_iteration = current_iteration;
   calculated.progress = progress;
+  calculated.is_current_direction_forward = current_direction_is_forwards;
   calculated.is_in_effect = active_time.has_value();
   // If active_time is not null then current_iteration and (transformed)
   // progress are also non-null).

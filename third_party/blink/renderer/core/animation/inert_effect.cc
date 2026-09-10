@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 
 #include "third_party/blink/renderer/core/animation/interpolation.h"
+#include "third_party/blink/renderer/core/animation/timing_calculations.h"
 
 namespace blink {
 
@@ -59,9 +60,8 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
   DCHECK_GE(iteration.value(), 0);
 
   TimingFunction::LimitDirection limit_direction =
-      (GetPhase() == Timing::kPhaseBefore)
-          ? TimingFunction::LimitDirection::LEFT
-          : TimingFunction::LimitDirection::RIGHT;
+      TimingCalculations::LimitDirectionForPhase(GetPhase(),
+                                                 IsCurrentDirectionForward());
 
   model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
                  limit_direction, NormalizedTiming().iteration_duration,
