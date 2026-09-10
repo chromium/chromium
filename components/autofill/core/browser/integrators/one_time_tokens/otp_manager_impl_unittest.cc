@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
@@ -1262,6 +1263,32 @@ TEST_F(OtpManagerImplTest,
 
   // Now an OTP field contains typed input, so it should return true.
   EXPECT_TRUE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
+}
+
+// Tests that UserOptedIntoGmailOtpFilling returns false when the user opt-in
+// preference is in its default state (disabled).
+TEST_F(OtpManagerImplTest, UserOptedIntoGmailOtpFilling_Default) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  EXPECT_FALSE(test_api(otp_manager).UserOptedIntoGmailOtpFilling());
+}
+
+// Tests that UserOptedIntoGmailOtpFilling returns true when the user opt-in
+// preference is enabled.
+TEST_F(OtpManagerImplTest, UserOptedIntoGmailOtpFilling_Enabled) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  EXPECT_TRUE(test_api(otp_manager).UserOptedIntoGmailOtpFilling());
+}
+
+// Tests that UserOptedIntoGmailOtpFilling returns false when the user opt-in
+// preference is disabled.
+TEST_F(OtpManagerImplTest, UserOptedIntoGmailOtpFilling_Disabled) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+  ASSERT_TRUE(test_api(otp_manager).UserOptedIntoGmailOtpFilling());
+
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+  EXPECT_FALSE(test_api(otp_manager).UserOptedIntoGmailOtpFilling());
 }
 
 }  // namespace autofill

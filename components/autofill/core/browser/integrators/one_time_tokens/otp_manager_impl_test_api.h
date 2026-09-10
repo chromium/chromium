@@ -30,6 +30,10 @@ class OtpManagerImplTestApi {
     return manager_->AnyOtpFieldContainsTypedInput();
   }
 
+  bool UserOptedIntoGmailOtpFilling() const {
+    return manager_->UserOptedIntoGmailOtpFilling();
+  }
+
  private:
   raw_ref<OtpManagerImpl> manager_;
 };

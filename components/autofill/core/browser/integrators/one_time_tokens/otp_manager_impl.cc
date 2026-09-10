@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
@@ -229,6 +230,13 @@ void OtpManagerImpl::OnTickleReceived(OneTimeTokenSource source) {
            "input. Skipping payload fetch.";
     return;
   }
+  if (!UserOptedIntoGmailOtpFilling()) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP tickle received but user consent preference is disabled. "
+           "Skipping payload fetch.";
+    return;
+  }
 }
 
 void OtpManagerImpl::OnOneTimeTokenReceived(
@@ -353,6 +361,11 @@ bool OtpManagerImpl::AnyOtpFieldContainsTypedInput() const {
     });
   });
   return has_typed_input;
+}
+
+bool OtpManagerImpl::UserOptedIntoGmailOtpFilling() const {
+  PrefService* prefs = owner_->client().GetPrefs();
+  return prefs && prefs::IsAutofillGmailOtpFillingEnabled(prefs);
 }
 
 std::optional<one_time_tokens::OneTimeToken>

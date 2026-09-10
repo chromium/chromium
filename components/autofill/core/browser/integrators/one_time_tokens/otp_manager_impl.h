@@ -126,6 +126,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // some user input. We will not fill the value in such case.
   bool AnyOtpFieldContainsTypedInput() const;
 
+  // Checks whether the user has opted into the GMail OTP filling.
+  // The consent is stored in prefs::IsAutofillGmailOtpFillingEnabled.
+  bool UserOptedIntoGmailOtpFilling() const;
+
   // The owning BrowserAutofillManager.
   raw_ref<BrowserAutofillManager> owner_;
 
