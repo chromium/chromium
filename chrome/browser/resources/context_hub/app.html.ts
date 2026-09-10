@@ -60,6 +60,13 @@ export function getHtml(this: ContextHubAppElement) {
             <cr-icon icon="context-hub:topic"></cr-icon>
             Topics
           </a>
+          <a role="menuitem"
+              href="#jumpstart"
+              data-route="jumpstart"
+              class="cr-nav-menu-item">
+            <cr-icon icon="cr:search"></cr-icon>
+            JumpStart
+          </a>
         </cr-menu-selector>
       </div>
     </aside>
@@ -78,6 +85,8 @@ export function getHtml(this: ContextHubAppElement) {
         return html`<tab-groups></tab-groups>`;
       case 'topics':
         return html`<topics-view></topics-view>`;
+      case 'jumpstart':
+        return html`<smart-search></smart-search>`;
       default:
         return '';
     }

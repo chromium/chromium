@@ -1,0 +1,88 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#smart-search-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+h1 {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  color: var(--cr-primary-text-color);
+  margin: 0 0 24px 0;
+}
+
+h2 {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--cr-primary-text-color);
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 28px;
+  padding: 6px 16px;
+  box-shadow: var(--cr-card-shadow);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar-wrapper:focus-within {
+  border-color: var(--cr-link-color);
+  box-shadow: 0 0 0 1px var(--cr-link-color), var(--cr-elevation-1);
+}
+
+.search-bar-wrapper cr-icon {
+  color: var(--cr-secondary-text-color);
+  --cr-icon-size: 20px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Google Sans', sans-serif;
+  font-size: 15px;
+  color: var(--cr-primary-text-color);
+  padding: 8px 4px;
+}
+
+.search-input::placeholder {
+  color: var(--cr-secondary-text-color);
+}
+
+.search-button {
+  border-radius: 20px;
+  font-weight: 500;
+}
+
