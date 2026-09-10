@@ -11268,7 +11268,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicMessageFirstFreForContextualCue)},
     {"glic-no-webview", flag_descriptions::kGlicNoWebviewName,
-     flag_descriptions::kGlicNoWebviewDescription, kOsDesktop,
+     flag_descriptions::kGlicNoWebviewDescription, kOsDesktop | kOsAndroid,
      ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(switches::kEnableFeatures,
                                          "GlicNoWebview,PrivilegedWebContents",
                                          switches::kDisableFeatures,
