@@ -1258,10 +1258,15 @@ FeatureList::MaybeGetRuntimeOverrideState(
   const bool is_runtime_mutable = FeatureIsRuntimeMutable(current_cached_value);
   if (is_runtime_mutable) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Runtime mutability is enabled, so we should use the override state if
+    // The feature is runtime-mutable, so we should use the override state if
     // it is set.
     auto it = runtime_mutable_overrides_.find(feature.name);
-    CHECK(it != runtime_mutable_overrides_.end());
+    CHECK(it != runtime_mutable_overrides_.end())
+        << "Feature " << feature.name << " is marked as runtime-mutable but "
+           "has no runtime override state. Has the runtime-mutability of the "
+           "feature been set using EnableRuntimeMutability(...)? Are we in "
+           "the browser process? Both must be true to query a runtime-mutable "
+           "feature's state.";
     const auto& override_entry = it->second;
     DCHECK_EQ(&override_entry.feature.get(), &feature);
     if (override_entry.override_state != OVERRIDE_USE_DEFAULT) {
