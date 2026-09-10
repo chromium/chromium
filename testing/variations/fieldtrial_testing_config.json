@@ -10676,6 +10676,22 @@
             ]
         }
     ],
+    "HeliosLive": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiLive",
+                        "GeminiLiveDormantReasons"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosMultiTabContext": [
         {
             "platforms": [
