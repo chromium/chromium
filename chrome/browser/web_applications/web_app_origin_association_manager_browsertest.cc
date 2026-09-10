@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,12 +15,14 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/update_validated_origin_associations_command.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -448,6 +451,30 @@ class WebAppOriginAssociationManagerRevocationTest
     return test::InstallWebApp(profile(), std::move(info));
   }
 
+  webapps::AppId InstallSuggestedFromMigrationWebApp(
+      const GURL& start_url,
+      const webapps::ManifestId& manifest_id,
+      const std::vector<MigrationSource>& migration_sources) {
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    info->title = u"Test Destination App";
+    info->SetManifestIdAndStartUrl(manifest_id, start_url);
+    info->migration_sources = migration_sources;
+
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        future;
+    WebAppInstallParams params;
+    params.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+    provider().scheduler().InstallFromInfoWithParams(
+        std::move(info), /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::MIGRATION, future.GetCallback(), params);
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+              future.Get<webapps::InstallResultCode>());
+    return future.Get<webapps::AppId>();
+  }
+
   raw_ptr<webapps::TestWebAppOriginAssociationFetcher> fetcher_ = nullptr;
 };
 
@@ -562,6 +589,104 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerRevocationTest,
   // successful!).
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(app->validated_migration_sources().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerRevocationTest,
+                       MigrationRevocationDetectedOnSourceAppLaunch) {
+  GURL source_start_url("https://migration.example.com/");
+  webapps::ManifestId source_manifest_id(
+      GURL("https://migration.example.com/manifest.json"));
+  url::Origin source_origin = url::Origin::Create(source_manifest_id.value());
+
+  GURL destination_start_url("https://example.com/");
+  webapps::ManifestId destination_manifest_id(
+      GURL("https://example.com/manifest.json"));
+
+  MigrationSource migration_source(source_manifest_id,
+                                   MigrationBehavior::kForce);
+
+  // 1. Mock the association file on the migration source origin.
+  // Key is the target PWA's manifest ID.
+  std::string association_content = base::StringPrintf(
+      R"({
+    "%s" : {
+      "allow_migration": true
+    }
+  })",
+      destination_manifest_id.value().spec().c_str());
+  fetcher_->SetData({{source_origin, association_content}});
+
+  // 2. Install the destination PWA in SUGGESTED_FROM_MIGRATION state.
+  webapps::AppId destination_app_id = InstallSuggestedFromMigrationWebApp(
+      destination_start_url, destination_manifest_id, {migration_source});
+
+  // Verify destination app has validated migration sources.
+  {
+    const WebApp* destination_app =
+        provider().registrar_unsafe().GetAppById(destination_app_id);
+    ASSERT_TRUE(destination_app);
+    EXPECT_FALSE(destination_app->validated_migration_sources().empty());
+    EXPECT_EQ(
+        destination_app->validated_migration_sources().begin()->manifest_id(),
+        source_manifest_id);
+  }
+
+  // 3. Install the source PWA.
+  auto source_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(source_start_url);
+  source_info->title = u"Source App";
+  source_info->SetManifestIdAndStartUrl(source_manifest_id, source_start_url);
+  webapps::AppId source_app_id =
+      test::InstallWebApp(profile(), std::move(source_info));
+
+  // Resolve pending migration info so source app gets pending_migration_info.
+  {
+    base::test::TestFuture<void> resolve_future;
+    provider().scheduler().ScheduleResolveWebAppPendingMigrationInfo(
+        resolve_future.GetCallback());
+    EXPECT_TRUE(resolve_future.Wait());
+  }
+
+  // Verify source app has pending_migration_info pointing to destination app.
+  {
+    const WebApp* source_app =
+        provider().registrar_unsafe().GetAppById(source_app_id);
+    ASSERT_TRUE(source_app);
+    ASSERT_TRUE(source_app->pending_migration_info().has_value());
+    EXPECT_EQ(source_app->pending_migration_info()->manifest_id(),
+              destination_manifest_id);
+  }
+
+  // 4. Simulate revocation by clearing the mock fetcher data.
+  fetcher_->SetData({});
+
+  // 5. Bypass the 1-day throttling on the destination app.
+  {
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
+    WebApp* app_to_update = update->UpdateApp(destination_app_id);
+    app_to_update->SetOriginAssociationLastValidationCheckTime(
+        base::Time::Now() - base::Days(2));
+  }
+
+  // 6. Launch the SOURCE web app. This should trigger revalidation of the
+  // destination app and clear pending migration info.
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(source_app_id);
+  ASSERT_TRUE(app_browser);
+
+  // Await completion of all scheduled commands.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // 7. Verify that destination app's validated migration sources are now empty,
+  // and source app's pending_migration_info is cleared.
+  const WebApp* destination_app =
+      provider().registrar_unsafe().GetAppById(destination_app_id);
+  ASSERT_TRUE(destination_app);
+  EXPECT_TRUE(destination_app->validated_migration_sources().empty());
+
+  const WebApp* source_app =
+      provider().registrar_unsafe().GetAppById(source_app_id);
+  ASSERT_TRUE(source_app);
+  EXPECT_FALSE(source_app->pending_migration_info().has_value());
 }
 
 }  // namespace web_app

@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -171,6 +172,13 @@ void LaunchWebAppCommand::OnAppLaunched(
 
   if (should_validate) {
     provider_->scheduler().UpdateValidatedOriginAssociations(app_id_,
+                                                             base::DoNothing());
+  }
+
+  if (app && app->pending_migration_info().has_value()) {
+    webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
+        app->pending_migration_info()->manifest_id());
+    provider_->scheduler().UpdateValidatedOriginAssociations(destination_app_id,
                                                              base::DoNothing());
   }
 

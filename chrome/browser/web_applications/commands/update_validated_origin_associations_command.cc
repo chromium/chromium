@@ -66,8 +66,9 @@ void UpdateValidatedOriginAssociationsCommand::StartWithLock(
   }
 
   const WebAppRegistrar& registrar = lock_->registrar();
-  const WebApp* app =
-      registrar.GetAppById(app_id_, WebAppFilter::InstalledInChrome());
+  const WebApp* app = registrar.GetAppById(
+      app_id_, WebAppFilter::InstalledInChrome() |
+                   WebAppFilter::IsAppSuggestedForMigration());
 
   if (!app) {
     CompleteAndSelfDestruct(
