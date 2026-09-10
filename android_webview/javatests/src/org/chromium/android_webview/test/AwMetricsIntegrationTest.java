@@ -330,20 +330,34 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @OnlyRunIn(MULTI_PROCESS)
     public void testMetadata_stability_rendererLaunchCount() throws Throwable {
         EmbeddedTestServer embeddedTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
-        // Load a page to ensure the renderer process is created.
+
+        // Load a regular page to ensure the initial (or spare) renderer process is used.
         mRule.loadUrlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
                 embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
-        assertEquals(
-                "Should have correct stability histogram kRendererLaunch count",
-                1,
+
+        int countBeforeWebUi =
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
+                        "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH);
+
+        // Load chrome://histograms. WebUI cannot share a process with web content, so this will
+        // launch a new renderer process.
+        mRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), "chrome://histograms");
+
+        int countAfterWebUi =
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH);
+        assertEquals(
+                "Should have incremented stability histogram kRendererLaunch count",
+                countBeforeWebUi + 1,
+                countAfterWebUi);
     }
 
     @Test
