@@ -73,7 +73,7 @@ void AwContentsLifecycleNotifier::OnWebViewCreated(
   DCHECK(!aw_contents_to_data_.contains(aw_contents));
 
   aw_contents_to_data_.emplace(aw_contents, AwContentsData());
-  UNSAFE_TODO(state_count_[ToIndex(AwContentsState::kDetached)])++;
+  state_count_[ToIndex(AwContentsState::kDetached)]++;
   UpdateAppState();
 
   if (first_created) {
@@ -88,8 +88,8 @@ void AwContentsLifecycleNotifier::OnWebViewDestroyed(
   const auto it = aw_contents_to_data_.find(aw_contents);
   CHECK(it != aw_contents_to_data_.end());
 
-  UNSAFE_TODO(state_count_[ToIndex(it->second.aw_content_state)])--;
-  UNSAFE_TODO(DCHECK(state_count_[ToIndex(it->second.aw_content_state)] >= 0));
+  state_count_[ToIndex(it->second.aw_content_state)]--;
+  DCHECK(state_count_[ToIndex(it->second.aw_content_state)] >= 0);
   aw_contents_to_data_.erase(it);
   UpdateAppState();
 
@@ -166,25 +166,24 @@ void AwContentsLifecycleNotifier::OnAwContentsStateChanged(
       CalculateState(data->attached_to_window, data->window_visible);
   if (data->aw_content_state == state)
     return;
-  UNSAFE_TODO(state_count_[ToIndex(data->aw_content_state)])--;
-  UNSAFE_TODO(DCHECK(state_count_[ToIndex(data->aw_content_state)] >= 0));
-  UNSAFE_TODO(state_count_[ToIndex(state)])++;
+  state_count_[ToIndex(data->aw_content_state)]--;
+  DCHECK(state_count_[ToIndex(data->aw_content_state)] >= 0);
+  state_count_[ToIndex(state)]++;
   data->aw_content_state = state;
   UpdateAppState();
 }
 
 void AwContentsLifecycleNotifier::UpdateAppState() {
   WebViewAppStateObserver::State state;
-  if (UNSAFE_TODO(state_count_[ToIndex(AwContentsState::kForeground)]) > 0) {
+  if (state_count_[ToIndex(AwContentsState::kForeground)] > 0) {
     state = WebViewAppStateObserver::State::kForeground;
-  } else if (UNSAFE_TODO(state_count_[ToIndex(AwContentsState::kBackground)]) >
-             0) {
+  } else if (state_count_[ToIndex(AwContentsState::kBackground)] > 0) {
     state = WebViewAppStateObserver::State::kBackground;
-  } else if (UNSAFE_TODO(state_count_[ToIndex(AwContentsState::kDetached)]) >
-             0) {
+  } else if (state_count_[ToIndex(AwContentsState::kDetached)] > 0) {
     state = WebViewAppStateObserver::State::kUnknown;
-  } else
+  } else {
     state = WebViewAppStateObserver::State::kDestroyed;
+  }
   if (state != app_state_) {
     bool previous_in_foreground =
         app_state_ == WebViewAppStateObserver::State::kForeground;
@@ -203,8 +202,8 @@ void AwContentsLifecycleNotifier::UpdateAppState() {
 }
 
 bool AwContentsLifecycleNotifier::HasAwContentsInstance() const {
-  for (size_t i = 0; i < std::size(state_count_); i++) {
-    if (UNSAFE_TODO(state_count_[i]) > 0) {
+  for (int count : state_count_) {
+    if (count > 0) {
       return true;
     }
   }

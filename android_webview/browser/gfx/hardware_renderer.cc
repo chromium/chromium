@@ -576,19 +576,6 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
   return pruned_frames;
 }
 
-bool HardwareRendererDrawParams::operator==(
-    const HardwareRendererDrawParams& other) const {
-  return clip_left == other.clip_left && clip_top == other.clip_top &&
-         clip_right == other.clip_right && clip_bottom == other.clip_bottom &&
-         width == other.width && height == other.height &&
-         color_space == other.color_space &&
-         UNSAFE_TODO(!memcmp(transform, other.transform, sizeof(transform)));
-}
-
-bool HardwareRendererDrawParams::operator!=(
-    const HardwareRendererDrawParams& other) const {
-  return !(*this == other);
-}
 
 HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
                                    RootFrameSinkGetter root_frame_sink_getter,

@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_H_
 
+#include <array>
 #include <memory>
 
 #include "android_webview/browser/gfx/child_frame.h"
@@ -38,8 +39,7 @@ struct OverlaysParams {
 
 // Lifetime: Temporary
 struct HardwareRendererDrawParams {
-  bool operator==(const HardwareRendererDrawParams& other) const;
-  bool operator!=(const HardwareRendererDrawParams& other) const;
+  bool operator==(const HardwareRendererDrawParams& other) const = default;
 
   int clip_left;
   int clip_top;
@@ -47,7 +47,7 @@ struct HardwareRendererDrawParams {
   int clip_bottom;
   int width;
   int height;
-  float transform[16];
+  std::array<float, 16> transform;
   gfx::ColorSpace color_space;
 };
 

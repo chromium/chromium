@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <queue>
@@ -476,41 +477,41 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
 
   std::unique_ptr<content::SynchronousCompositor::Frame> GetFrame(
       int frame_number) override {
-    static const FrameInfo infos[] = {
+    static const std::array infos = {
         // First output surface.
-        {0u, viz::ResourceId(1u)},
-        {0u, viz::ResourceId(1u)},
-        {0u, viz::ResourceId(2u)},
-        {0u, viz::ResourceId(2u)},
-        {0u, viz::ResourceId(3u)},
-        {0u, viz::ResourceId(3u)},
-        {0u, viz::ResourceId(4u)},
+        FrameInfo{0u, viz::ResourceId(1u)},
+        FrameInfo{0u, viz::ResourceId(1u)},
+        FrameInfo{0u, viz::ResourceId(2u)},
+        FrameInfo{0u, viz::ResourceId(2u)},
+        FrameInfo{0u, viz::ResourceId(3u)},
+        FrameInfo{0u, viz::ResourceId(3u)},
+        FrameInfo{0u, viz::ResourceId(4u)},
         // Second output surface.
-        {1u, viz::ResourceId(1u)},
-        {1u, viz::ResourceId(1u)},
-        {1u, viz::ResourceId(2u)},
-        {1u, viz::ResourceId(2u)},
-        {1u, viz::ResourceId(3u)},
-        {1u, viz::ResourceId(3u)},
-        {1u, viz::ResourceId(4u)},
+        FrameInfo{1u, viz::ResourceId(1u)},
+        FrameInfo{1u, viz::ResourceId(1u)},
+        FrameInfo{1u, viz::ResourceId(2u)},
+        FrameInfo{1u, viz::ResourceId(2u)},
+        FrameInfo{1u, viz::ResourceId(3u)},
+        FrameInfo{1u, viz::ResourceId(3u)},
+        FrameInfo{1u, viz::ResourceId(4u)},
     };
-    if (frame_number >= static_cast<int>(std::size(infos))) {
+    if (frame_number >= static_cast<int>(infos.size())) {
       return nullptr;
     }
 
     std::unique_ptr<content::SynchronousCompositor::Frame> frame(
         new content::SynchronousCompositor::Frame);
     frame->layer_tree_frame_sink_id =
-        UNSAFE_TODO(infos[frame_number]).layer_tree_frame_sink_id;
-    frame->frame = ConstructFrame(UNSAFE_TODO(infos[frame_number]).resource_id);
+        infos[frame_number].layer_tree_frame_sink_id;
+    frame->frame = ConstructFrame(infos[frame_number].resource_id);
 
     if (last_layer_tree_frame_sink_id_ !=
-        UNSAFE_TODO(infos[frame_number]).layer_tree_frame_sink_id) {
+        infos[frame_number].layer_tree_frame_sink_id) {
       expected_return_count_.clear();
       last_layer_tree_frame_sink_id_ =
-          UNSAFE_TODO(infos[frame_number]).layer_tree_frame_sink_id;
+          infos[frame_number].layer_tree_frame_sink_id;
     }
-    ++expected_return_count_[UNSAFE_TODO(infos[frame_number]).resource_id];
+    ++expected_return_count_[infos[frame_number].resource_id];
     return frame;
   }
 

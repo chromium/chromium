@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_LIFECYCLE_AW_CONTENTS_LIFECYCLE_NOTIFIER_H_
 #define ANDROID_WEBVIEW_BROWSER_LIFECYCLE_AW_CONTENTS_LIFECYCLE_NOTIFIER_H_
 
+#include <array>
 #include <map>
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
@@ -97,7 +98,7 @@ class AwContentsLifecycleNotifier {
       aw_contents_to_data_;
 
   // The number of AwContents instances in each AwContentsState.
-  int state_count_[3]{};
+  std::array<int, 3> state_count_ = {};
 
   bool has_aw_contents_ever_created_ = false;
 
