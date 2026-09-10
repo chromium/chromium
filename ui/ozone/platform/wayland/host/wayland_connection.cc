@@ -440,7 +440,8 @@ std::vector<TouchscreenDevice> WaylandConnection::CreateTouchscreenDevices()
 }
 
 void WaylandConnection::UpdateCursor() {
-  if (auto* pointer = seat_->pointer()) {
+  // The compositor may not have announced a wl_seat (see Initialize()).
+  if (auto* pointer = seat_ ? seat_->pointer() : nullptr) {
     cursor_ = std::make_unique<WaylandCursor>(pointer, this);
     cursor_->set_listener(listener_);
     cursor_position_ = std::make_unique<WaylandCursorPosition>();
