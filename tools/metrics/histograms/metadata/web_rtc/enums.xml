@@ -277,9 +277,16 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="IceCandidateCount"/>
   <int value="33" label="Bundle"/>
   <int value="34" label="Bandwidth"/>
+  <int value="35" label="Sframe"/>
+  <int value="36" label="MsidStream"/>
+  <int value="37" label="MsidTrack"/>
+  <int value="38" label="IceOptionsRemoved"/>
+  <int value="39" label="Rejected"/>
   <int value="40" label="RtpHeaderExtensionsRemoved"/>
   <int value="41" label="RtpHeaderExtensionsAdded"/>
   <int value="42" label="RtpHeaderExtensionsModified"/>
+  <int value="43" label="Cryptex"/>
+  <int value="44" label="RtcpXrRcvrRtt"/>
   <int value="60" label="AudioCodecsRemoved"/>
   <int value="61" label="AudioCodecsAdded"/>
   <int value="62" label="AudioCodecsReordered"/>

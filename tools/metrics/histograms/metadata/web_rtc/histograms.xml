@@ -1788,17 +1788,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.ValidIceChars" enum="Boolean"
+<histogram name="WebRTC.PeerConnection.ValidIceChars.{Field}" enum="Boolean"
     expires_after="2027-02-28">
   <owner>danilchap@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
   <summary>
-    Measures whether the ice-ufrag/ice-pwd consists of characters allowed by the
-    specification. Currently some characters outside the range are allowed for
-    backward compability with deployed software. Recorded during the first DTLS
-    connection establishment.
+    Measures whether the {Field} of the remote description consists of
+    characters allowed by the specification. Currently some characters outside
+    the range are allowed for backward compability with deployed software.
+    Recorded during the first DTLS connection establishment.
   </summary>
+  <token key="Field">
+    <variant name="IceOptions" summary="ice-options"/>
+    <variant name="Pwd" summary="ice-pwd"/>
+    <variant name="Ufrag" summary="ice-ufrag"/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.{ServerType}.ServerAddressType"
