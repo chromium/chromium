@@ -836,13 +836,24 @@ main() {
   # installed above. The ${VERSIONS_DIR_NEW}/Current symbolic link is updated
   # or created in this step, however.
   note "rsyncing app directory"
-  if ! rsync ${RSYNC_FLAGS} --delete-after \
-       --include="/${VERSIONS_DIR_NEW}/Current" \
-       --exclude="/${VERSIONS_DIR_NEW}/*" --exclude="/${VERSIONS_DIR_OLD}/*" \
-       "${update_app}/" "${installed_app}"; then
-    err "rsync of app directory failed, status ${PIPESTATUS[0]}"
-    exit 8
-  fi
+
+  # Defer "please exit" signals while performing the stage of copying that, if
+  # performed incompletely, prevents Chrome from launching. We would still be
+  # sad to lose the remaining install steps, but it would have less impact
+  # on the user. The OS sends SIGTERM during shutdown, but it follows up with
+  # SIGKILL if the process does not terminate quickly enough, so this script
+  # obeys the "please exit" signals as soon as it is safe to do so.
+  (
+    trap '' "${exit_signals[@]}"
+    if ! rsync ${RSYNC_FLAGS} --delete-after \
+          --include="/${VERSIONS_DIR_NEW}/Current" \
+          --exclude="/${VERSIONS_DIR_NEW}/*" \
+          --exclude="/${VERSIONS_DIR_OLD}/*" \
+          "${update_app}/" "${installed_app}"; then
+      err "rsync of app directory failed, status ${PIPESTATUS[0]}"
+      exit 8
+    fi
+  )
 
   note "rsyncs complete"
 
