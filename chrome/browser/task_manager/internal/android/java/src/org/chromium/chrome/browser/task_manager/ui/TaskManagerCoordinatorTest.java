@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.Category;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.RowType;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -156,25 +157,22 @@ public class TaskManagerCoordinatorTest {
 
         mRecyclerView.layout(0, 0, 1024, 640);
 
+        View itemView = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
+        assertNotNull(itemView.getBackground());
+        assertFalse(itemView.isSelected());
+
+        ColorDrawable unselectedDrawable = (ColorDrawable) itemView.getBackground().getCurrent();
         assertEquals(
-                0,
-                ((ColorDrawable)
-                                mRecyclerView
-                                        .findViewHolderForAdapterPosition(0)
-                                        .itemView
-                                        .getBackground())
-                        .getColor());
+                SemanticColorUtils.getColorSurfaceContainer(mActivity),
+                unselectedDrawable.getColor());
 
         mTasksModel.get(0).model.set(IS_SELECTED, true);
 
-        assertNotEquals(
-                0,
-                ((ColorDrawable)
-                                mRecyclerView
-                                        .findViewHolderForAdapterPosition(0)
-                                        .itemView
-                                        .getBackground())
-                        .getColor());
+        assertTrue(itemView.isSelected());
+        ColorDrawable selectedDrawable = (ColorDrawable) itemView.getBackground().getCurrent();
+        assertEquals(
+                SemanticColorUtils.getColorSecondaryContainer(mActivity),
+                selectedDrawable.getColor());
     }
 
     @Test

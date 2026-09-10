@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.Category;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -192,12 +191,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
 
     private static void bindTask(PropertyModel model, View view, PropertyKey key) {
         if (key == TaskManagerProperties.IS_SELECTED) {
-            if (model.get(TaskManagerProperties.IS_SELECTED)) {
-                view.setBackgroundColor(
-                        SemanticColorUtils.getColorPrimaryContainer(view.getContext()));
-            } else {
-                view.setBackgroundColor(0);
-            }
+            view.setSelected(model.get(TaskManagerProperties.IS_SELECTED));
             return;
         } else if (key == TaskManagerProperties.TASK_ICON) {
             Bitmap bitmap = model.get(TaskManagerProperties.TASK_ICON);
