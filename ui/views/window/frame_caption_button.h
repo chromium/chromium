@@ -6,12 +6,14 @@
 #define UI_VIEWS_WINDOW_FRAME_CAPTION_BUTTON_H_
 
 #include <memory>
+#include <optional>
 #include <variant>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -72,11 +74,20 @@ class VIEWS_EXPORT FrameCaptionButton : public Button {
   void OnGestureEvent(ui::GestureEvent* event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
 
-  // TODO(b/292154873): Replace them to set and get the foreground color.
+  // The icon color comes from whichever of these two setters ran last.
+  // SetBackgroundColor() derives a contrasting light or dark icon color from
+  // the frame color behind the button (see GetButtonColor()).
+  // SetIconColor() paints the icon with the given color as is; the caller is
+  // responsible for contrast with the frame.
+  // TODO(b/292154873): Replace SetBackgroundColor() with SetIconColor().
   void SetBackgroundColor(SkColor background_color);
   SkColor GetBackgroundColor() const;
+  void SetIconColor(ui::ColorVariant icon_color);
 
-  void SetIconColorId(ui::ColorId icon_color_id);
+  // Returns the color the icon is painted with. Returns
+  // gfx::kPlaceholderColor while a ui::ColorId is set and the button has no
+  // ColorProvider yet.
+  SkColor GetIconColor() const;
 
   void SetPaintAsActive(bool paint_as_active);
   bool GetPaintAsActive() const;
@@ -114,8 +125,8 @@ class VIEWS_EXPORT FrameCaptionButton : public Button {
   // GetInkDropSize().
   gfx::Insets GetInkdropInsets(const gfx::Size& button_size) const;
 
-  // Called when the `background_color_` or `icon_color_id_` is updated to
-  // reflect the color change on icon and inkdrop.
+  // Called when `color_` is updated to reflect the color change on icon and
+  // inkdrop.
   void MaybeRefreshIconAndInkdropBaseColor();
 
  private:
@@ -130,13 +141,15 @@ class VIEWS_EXPORT FrameCaptionButton : public Button {
   // The button's current icon.
   CaptionButtonIcon icon_;
 
-  // The color used to compute the icon's color. If it's SkColor type, it's the
-  // background color of the container view, call `GetButtonColor` to get
-  // contrast color. If it's ColorId type, directly resolve the color from color
-  // id.
-  // TODO(b/292154873): Store the foreground color instead of the background
-  // color for the SkColor type.
-  std::variant<ui::ColorId, SkColor> color_ = gfx::kPlaceholderColor;
+  // The frame color behind the button, from SetBackgroundColor(); the icon
+  // color is derived from it with GetButtonColor().
+  using BackgroundColor = SkColor;
+
+  // What the icon color is computed from: the frame background, or the icon
+  // color itself from SetIconColor().
+  // TODO(b/292154873): Store only the icon color.
+  std::variant<BackgroundColor, ui::ColorVariant> color_ =
+      gfx::kPlaceholderColor;
 
   // Whether the button should be painted as active.
   bool paint_as_active_ = false;

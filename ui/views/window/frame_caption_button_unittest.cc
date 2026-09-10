@@ -7,6 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/view.h"
@@ -31,6 +33,26 @@ TEST(FrameCaptionButtonTest, ThemedColorContrast) {
     SkColor button_color = FrameCaptionButton::GetButtonColor(background_color);
     EXPECT_GE(color_utils::GetContrastRatio(button_color, background_color), 3);
   }
+}
+
+TEST(FrameCaptionButtonTest, IconColor) {
+  FrameCaptionButton button(Button::PressedCallback(),
+                            CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
+  // Derived from the frame background.
+  button.SetBackgroundColor(SK_ColorBLACK);
+  EXPECT_EQ(FrameCaptionButton::GetButtonColor(SK_ColorBLACK),
+            button.GetIconColor());
+
+  // An explicit color is used as is, and the last setter wins.
+  button.SetIconColor(SK_ColorRED);
+  EXPECT_EQ(SK_ColorRED, button.GetIconColor());
+  button.SetBackgroundColor(SK_ColorWHITE);
+  EXPECT_EQ(FrameCaptionButton::GetButtonColor(SK_ColorWHITE),
+            button.GetIconColor());
+
+  // A color id cannot be resolved without a ColorProvider.
+  button.SetIconColor(ui::kColorSysPrimary);
+  EXPECT_EQ(gfx::kPlaceholderColor, button.GetIconColor());
 }
 
 TEST(FrameCaptionButtonTest, DefaultAccessibilityFocus) {

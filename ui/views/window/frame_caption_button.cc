@@ -14,6 +14,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -137,12 +138,7 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
                                   std::optional<int> icon_size) {
   // If the button is not yet in a widget, OnThemeChanged() will call back
   // here once it is, updating the color as needed.
-  SkColor icon_color = gfx::kPlaceholderColor;
-  if (std::holds_alternative<SkColor>(color_)) {
-    icon_color = GetButtonColor(std::get<SkColor>(color_));
-  } else if (const auto* color_provider = GetColorProvider()) {
-    icon_color = color_provider->GetColor(std::get<ui::ColorId>(color_));
-  }
+  const SkColor icon_color = GetIconColor();
 
   gfx::ImageSkia new_icon_image =
       icon_size.has_value()
@@ -222,8 +218,8 @@ views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
 }
 
 void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
-  if (std::holds_alternative<SkColor>(color_) &&
-      std::get<SkColor>(color_) == background_color) {
+  if (std::holds_alternative<BackgroundColor>(color_) &&
+      std::get<BackgroundColor>(color_) == background_color) {
     return;
   }
 
@@ -231,18 +227,29 @@ void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
   MaybeRefreshIconAndInkdropBaseColor();
 }
 
-void FrameCaptionButton::SetIconColorId(ui::ColorId icon_color_id) {
-  if (std::holds_alternative<ui::ColorId>(color_) &&
-      std::get<ui::ColorId>(color_) == icon_color_id) {
+SkColor FrameCaptionButton::GetBackgroundColor() const {
+  return std::get<BackgroundColor>(color_);
+}
+
+void FrameCaptionButton::SetIconColor(ui::ColorVariant icon_color) {
+  if (std::holds_alternative<ui::ColorVariant>(color_) &&
+      std::get<ui::ColorVariant>(color_) == icon_color) {
     return;
   }
 
-  color_ = icon_color_id;
+  color_ = icon_color;
   MaybeRefreshIconAndInkdropBaseColor();
 }
 
-SkColor FrameCaptionButton::GetBackgroundColor() const {
-  return std::get<SkColor>(color_);
+SkColor FrameCaptionButton::GetIconColor() const {
+  if (std::holds_alternative<BackgroundColor>(color_)) {
+    return GetButtonColor(std::get<BackgroundColor>(color_));
+  }
+  const ui::ColorVariant& icon_color = std::get<ui::ColorVariant>(color_);
+  if (icon_color.IsLogical() && !GetColorProvider()) {
+    return gfx::kPlaceholderColor;
+  }
+  return icon_color.ResolveToSkColor(GetColorProvider());
 }
 
 void FrameCaptionButton::SetInkDropCornerRadius(int ink_drop_corner_radius) {
@@ -406,11 +413,7 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   // glyph color.
   // TODO(pkasting): It would likely be better to make the button glyph always
   // be an alpha-blended version of GetColorWithMaxContrast(background_color_).
-  const SkColor button_color =
-      std::holds_alternative<ui::ColorId>(color_)
-          ? GetColorProvider()->GetColor(std::get<ui::ColorId>(color_))
-          : GetButtonColor(std::get<SkColor>(color_));
-
+  const SkColor button_color = GetIconColor();
   InkDrop::Get(this)->SetBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }

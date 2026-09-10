@@ -424,10 +424,10 @@ void FrameHeader::UpdateCaptionButtonColors(
   if (icon_color_id.has_value()) {
     caption_button_container_->SetButtonIconColor(*icon_color_id);
     if (back_button_) {
-      back_button_->SetIconColorId(*icon_color_id);
+      back_button_->SetIconColor(*icon_color_id);
     }
     if (center_button_) {
-      center_button_->SetIconColorId(*icon_color_id);
+      center_button_->SetIconColor(*icon_color_id);
     }
     return;
   }

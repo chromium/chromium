@@ -377,15 +377,15 @@ void FrameCaptionButtonContainerView::SetButtonBackgroundColor(
 void FrameCaptionButtonContainerView::SetButtonIconColor(
     ui::ColorId icon_color_id) {
   if (custom_button_) {
-    custom_button_->SetIconColorId(icon_color_id);
+    custom_button_->SetIconColor(icon_color_id);
   }
   if (float_button_) {
-    float_button_->SetIconColorId(icon_color_id);
+    float_button_->SetIconColor(icon_color_id);
   }
-  menu_button_->SetIconColorId(icon_color_id);
-  minimize_button_->SetIconColorId(icon_color_id);
-  size_button_->SetIconColorId(icon_color_id);
-  close_button_->SetIconColorId(icon_color_id);
+  menu_button_->SetIconColor(icon_color_id);
+  minimize_button_->SetIconColor(icon_color_id);
+  size_button_->SetIconColor(icon_color_id);
+  close_button_->SetIconColor(icon_color_id);
 }
 
 void FrameCaptionButtonContainerView::ResetWindowControls() {
