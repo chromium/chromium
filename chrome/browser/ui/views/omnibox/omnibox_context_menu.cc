@@ -238,6 +238,15 @@ std::optional<SkColor> OmniboxContextMenu::GetLabelColor(int command_id) const {
              : std::nullopt;
 }
 
+std::u16string OmniboxContextMenu::GetTooltipText(int command_id,
+                                                  const gfx::Point& p) const {
+  if (!omnibox::IsContextMenuTooltipsInComposeboxEnabled()) {
+    return std::u16string();
+  }
+  return controller_ ? controller_->GetTooltipForCommandId(command_id)
+                     : std::u16string();
+}
+
 bool OmniboxContextMenu::IsCommandEnabled(int command_id) const {
   return controller_->IsCommandIdEnabled(command_id);
 }

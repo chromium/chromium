@@ -131,6 +131,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       int max_num_files,
       OmniboxPopupState popup_state) const;
   bool IsCommandIdVisible(int command_id) const override;
+  std::u16string GetTooltipForCommandId(int command_id) const;
   void AddTabContext(const TabInfo& tab_info);
   static void UpdateSearchboxContext(
       content::WebContents* web_contents,
@@ -211,6 +212,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
     bool enabled = false;
     std::u16string menu_label;
     ui::ImageModel menu_icon;
+    std::u16string tooltip;
   };
 
   // Initializes the various data structures needed to dynamically render the
@@ -243,6 +245,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   // Gets the most recent tabs.
   virtual std::vector<OmniboxContextMenuController::TabInfo> GetRecentTabs()
       const;
+  std::u16string GetShareTabsTooltip() const;
   // Adds the tabs favicon to the menu.
   void AddTabFavicon(int command_id,
                      const GURL& url,
@@ -278,6 +281,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   bool IsToolEnabled(omnibox::ToolMode tool) const;
   std::u16string GetMenuLabelForTool(omnibox::ToolMode tool) const;
   ui::ImageModel GetIconForTool(omnibox::ToolMode tool) const;
+  std::u16string GetTooltipForTool(omnibox::ToolMode tool) const;
 
   /* Helpers for ModelMode input_state fields. */
   const omnibox::ModelConfig* GetModelConfig(omnibox::ModelMode model) const;
@@ -285,6 +289,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   bool IsModelEnabled(omnibox::ModelMode model) const;
   std::u16string GetMenuLabelForModel(omnibox::ModelMode model) const;
   ui::ImageModel GetIconForModel(omnibox::ModelMode model) const;
+  std::u16string GetTooltipForModel(omnibox::ModelMode model) const;
 
   OmniboxController* GetOmniboxController() const;
   OmniboxEditModel* GetEditModel();

@@ -311,14 +311,16 @@ void OmniboxContextMenuController::InitializeMenuItemInfo() {
     tool_info_.insert({tool,
                        {/*enabled=*/IsToolEnabled(tool),
                         /*menu_label=*/GetMenuLabelForTool(tool),
-                        /*menu_icon=*/GetIconForTool(tool)}});
+                        /*menu_icon=*/GetIconForTool(tool),
+                        /*tooltip=*/GetTooltipForTool(tool)}});
   }
 
   for (omnibox::ModelMode model : input_state_.allowed_models) {
     model_info_.insert({model,
                         {/*enabled=*/IsModelEnabled(model),
                          /*menu_label=*/GetMenuLabelForModel(model),
-                         /*menu_icon=*/GetIconForModel(model)}});
+                         /*menu_icon=*/GetIconForModel(model),
+                         /*tooltip=*/GetTooltipForModel(model)}});
   }
 }
 
@@ -765,6 +767,19 @@ OmniboxContextMenuController::GetRecentTabs() const {
   tabs.resize(max_tab_suggestions);
   cached_recent_tabs_ = tabs;
   return tabs;
+}
+
+std::u16string OmniboxContextMenuController::GetShareTabsTooltip() const {
+  if (!omnibox::IsContextMenuTooltipsInComposeboxEnabled()) {
+    return std::u16string();
+  }
+  int checked_count =
+      cached_recent_tabs_.has_value()
+          ? std::ranges::count_if(*cached_recent_tabs_, &TabInfo::is_checked)
+          : 0;
+  return l10n_util::GetStringUTF16(
+      checked_count > 0 ? IDS_COMPOSE_SHARING_TABS_WITH_GOOGLE
+                        : IDS_COMPOSE_ADD_OPEN_TABS_TO_ASK_ANYTHING);
 }
 
 bool OmniboxContextMenuController::IsTabContextEnabled() const {
@@ -1361,6 +1376,18 @@ ui::ImageModel OmniboxContextMenuController::GetIconForTool(
   }
 }
 
+std::u16string OmniboxContextMenuController::GetTooltipForTool(
+    omnibox::ToolMode tool) const {
+  if (!omnibox::IsContextMenuTooltipsInComposeboxEnabled()) {
+    return std::u16string();
+  }
+  const auto* tool_config = GetToolConfig(tool);
+  if (tool_config && !tool_config->menu_tooltip().empty()) {
+    return base::UTF8ToUTF16(tool_config->menu_tooltip());
+  }
+  return std::u16string();
+}
+
 const omnibox::ModelConfig* OmniboxContextMenuController::GetModelConfig(
     omnibox::ModelMode model) const {
   auto it = std::find_if(input_state_.model_configs.begin(),
@@ -1441,6 +1468,18 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
     default:
       return ui::ImageModel();
   }
+}
+
+std::u16string OmniboxContextMenuController::GetTooltipForModel(
+    omnibox::ModelMode model) const {
+  if (!omnibox::IsContextMenuTooltipsInComposeboxEnabled()) {
+    return std::u16string();
+  }
+  const auto* model_config = GetModelConfig(model);
+  if (model_config && !model_config->menu_tooltip().empty()) {
+    return base::UTF8ToUTF16(model_config->menu_tooltip());
+  }
+  return std::u16string();
 }
 
 // static
@@ -2052,6 +2091,31 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   }
 
   return true;
+}
+
+std::u16string OmniboxContextMenuController::GetTooltipForCommandId(
+    int command_id) const {
+  if (!omnibox::IsContextMenuTooltipsInComposeboxEnabled()) {
+    return std::u16string();
+  }
+  if (command_id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+    return GetShareTabsTooltip();
+  }
+  auto tool_it = tool_for_command_id_.find(command_id);
+  if (tool_it != tool_for_command_id_.end()) {
+    auto info_it = tool_info_.find(tool_it->second);
+    if (info_it != tool_info_.end()) {
+      return info_it->second.tooltip;
+    }
+  }
+  auto model_it = model_for_command_id_.find(command_id);
+  if (model_it != model_for_command_id_.end()) {
+    auto info_it = model_info_.find(model_it->second);
+    if (info_it != model_info_.end()) {
+      return info_it->second.tooltip;
+    }
+  }
+  return std::u16string();
 }
 
 // static

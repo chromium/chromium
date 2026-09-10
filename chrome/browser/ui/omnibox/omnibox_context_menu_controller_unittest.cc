@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/features.h"
@@ -40,7 +41,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/model_config.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 
@@ -80,6 +85,9 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
   using OmniboxContextMenuController::GetIconForInputType;
   using OmniboxContextMenuController::GetIconForModel;
   using OmniboxContextMenuController::GetIconForTool;
+  using OmniboxContextMenuController::GetShareTabsTooltip;
+  using OmniboxContextMenuController::GetTooltipForModel;
+  using OmniboxContextMenuController::GetTooltipForTool;
   using OmniboxContextMenuController::input_type_for_command_id_;
   using OmniboxContextMenuController::IsInputTypeEnabled;
   using OmniboxContextMenuController::OmniboxContextMenuController;
@@ -98,11 +106,13 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
 
   std::vector<OmniboxContextMenuController::TabInfo> GetRecentTabs()
       const override {
+    cached_recent_tabs_ = mock_tabs_;
     return mock_tabs_;
   }
 
   void SetMockTabs(std::vector<OmniboxContextMenuController::TabInfo> tabs) {
     mock_tabs_ = std::move(tabs);
+    cached_recent_tabs_ = mock_tabs_;
   }
 
   void RebuildMenu() { BuildMenu(); }
@@ -1070,4 +1080,176 @@ TEST_F(OmniboxContextMenuControllerTest,
 
   test_controller.BuildMenu();
   EXPECT_EQ(test_controller.menu_model()->GetItemCount(), count);
+}
+
+TEST_F(OmniboxContextMenuControllerTest, ToolAndModelTooltips_ParamEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kContextManagementInComposebox,
+        {{omnibox::kContextManagementInComposeboxTooltips.name, "true"}}},
+       {omnibox::kContextManagementInOmnibox, {}},
+       {omnibox::kAimUsePecApi, {}}},
+      {});
+
+  omnibox::InputState state;
+  state.allowed_tools = {omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH};
+  omnibox::ToolConfig tool_config;
+  tool_config.set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  tool_config.set_menu_label("Deep search");
+  tool_config.set_menu_tooltip("Research a topic in depth");
+  state.tool_configs.push_back(tool_config);
+
+  state.allowed_models = {omnibox::ModelMode::MODEL_MODE_GEMINI_PRO};
+  omnibox::ModelConfig model_config;
+  model_config.set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  model_config.set_menu_label("Thinking");
+  model_config.set_menu_tooltip("Best for complex reasoning");
+  state.model_configs.push_back(model_config);
+
+  controller()->OnGetInputState(state);
+
+  EXPECT_EQ(
+      controller()->GetTooltipForTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH),
+      u"Research a topic in depth");
+  EXPECT_EQ(controller()->GetTooltipForModel(
+                omnibox::ModelMode::MODEL_MODE_GEMINI_PRO),
+            u"Best for complex reasoning");
+
+  ui::SimpleMenuModel* menu_model = controller()->menu_model();
+  ASSERT_TRUE(menu_model);
+  bool found_tool = false;
+  bool found_model = false;
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    int cmd_id = menu_model->GetCommandIdAt(i);
+    std::u16string tooltip = controller()->GetTooltipForCommandId(cmd_id);
+    if (tooltip == u"Research a topic in depth") {
+      found_tool = true;
+    } else if (tooltip == u"Best for complex reasoning") {
+      found_model = true;
+    }
+  }
+  EXPECT_TRUE(found_tool);
+  EXPECT_TRUE(found_model);
+}
+
+TEST_F(OmniboxContextMenuControllerTest, ToolAndModelTooltips_ParamDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kContextManagementInComposebox,
+        {{omnibox::kContextManagementInComposeboxTooltips.name, "false"}}},
+       {omnibox::kContextManagementInOmnibox, {}},
+       {omnibox::kAimUsePecApi, {}}},
+      {});
+
+  omnibox::InputState state;
+  state.allowed_tools = {omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH};
+  omnibox::ToolConfig tool_config;
+  tool_config.set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  tool_config.set_menu_label("Deep search");
+  tool_config.set_menu_tooltip("Research a topic in depth");
+  state.tool_configs.push_back(tool_config);
+
+  state.allowed_models = {omnibox::ModelMode::MODEL_MODE_GEMINI_PRO};
+  omnibox::ModelConfig model_config;
+  model_config.set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  model_config.set_menu_label("Thinking");
+  model_config.set_menu_tooltip("Best for complex reasoning");
+  state.model_configs.push_back(model_config);
+
+  controller()->OnGetInputState(state);
+
+  EXPECT_EQ(
+      controller()->GetTooltipForTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH),
+      u"");
+  EXPECT_EQ(controller()->GetTooltipForModel(
+                omnibox::ModelMode::MODEL_MODE_GEMINI_PRO),
+            u"");
+
+  ui::SimpleMenuModel* menu_model = controller()->menu_model();
+  ASSERT_TRUE(menu_model);
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    int cmd_id = menu_model->GetCommandIdAt(i);
+    EXPECT_EQ(controller()->GetTooltipForCommandId(cmd_id), u"");
+  }
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       ShareTabsTooltip_TabsChecked_ParamEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kContextManagementInComposebox,
+        {{omnibox::kContextManagementInComposeboxTooltips.name, "true"}}},
+       {omnibox::kContextManagementInOmnibox, {}},
+       {omnibox::kAimUsePecApi, {}}},
+      {});
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  tab.is_checked = true;
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+  controller()->RebuildMenu();
+
+  EXPECT_EQ(controller()->GetShareTabsTooltip(),
+            l10n_util::GetStringUTF16(IDS_COMPOSE_SHARING_TABS_WITH_GOOGLE));
+  EXPECT_EQ(controller()->GetTooltipForCommandId(
+                IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU),
+            l10n_util::GetStringUTF16(IDS_COMPOSE_SHARING_TABS_WITH_GOOGLE));
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       ShareTabsTooltip_NoTabsChecked_ParamEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kContextManagementInComposebox,
+        {{omnibox::kContextManagementInComposeboxTooltips.name, "true"}}},
+       {omnibox::kContextManagementInOmnibox, {}},
+       {omnibox::kAimUsePecApi, {}}},
+      {});
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  tab.is_checked = false;
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+  controller()->RebuildMenu();
+
+  EXPECT_EQ(
+      controller()->GetShareTabsTooltip(),
+      l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_OPEN_TABS_TO_ASK_ANYTHING));
+  EXPECT_EQ(
+      controller()->GetTooltipForCommandId(
+          IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU),
+      l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_OPEN_TABS_TO_ASK_ANYTHING));
+}
+
+TEST_F(OmniboxContextMenuControllerTest, ShareTabsTooltip_ParamDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kContextManagementInComposebox,
+        {{omnibox::kContextManagementInComposeboxTooltips.name, "false"}}},
+       {omnibox::kContextManagementInOmnibox, {}},
+       {omnibox::kAimUsePecApi, {}}},
+      {});
+
+  std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
+  OmniboxContextMenuController::TabInfo tab;
+  tab.tab_id = 1;
+  tab.title = u"Tab 1";
+  tab.url = GURL("https://example.com");
+  tab.is_checked = true;
+  mock_tabs.push_back(tab);
+  controller()->SetMockTabs(mock_tabs);
+  controller()->RebuildMenu();
+
+  EXPECT_EQ(controller()->GetShareTabsTooltip(), u"");
+  EXPECT_EQ(controller()->GetTooltipForCommandId(
+                IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU),
+            u"");
 }
