@@ -93,99 +93,103 @@ ${this.showPlainLinksUi_ ? html`
         $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
       </cr-chip>
     </div>
-  </div>` : this.showChipsV2_ ? html`
-  <div id="sectionHeaderContainer">
-    $i18nRaw{extensionsZeroStateChipsIphDesc}
-  </div>
-  <div id='labelContainer'>
-    <div class="v2Chip">
-      <cr-chip id="aiButton"
-          @click="${this.onAiButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-          ? 'zero-state-promo:spark'
-          : 'zero-state-promo:ai-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
-      </cr-chip>
-    </div>
-    <div class="v2Chip">
-      <cr-chip id="couponsButton" chip-role="link"
-          @click="${this.onCouponsButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-          ? 'zero-state-promo:shopping-bag'
-          : 'zero-state-promo:coupons-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphShoppingCategoryLabel}
-      </cr-chip>
-    </div>
-    <div class="v2Chip">
-      <cr-chip id="productivityButton"
-          @click="${this.onProductivityButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-          ? 'zero-state-promo:pace'
-          : 'zero-state-promo:productivity-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphProductivityCategoryLabel}
-      </cr-chip>
-    </div>
-    <div class="v2Chip">
-      <cr-chip id="webStoreButton" chip-role="link"
-          @click="${this.onChromeWebStoreButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-          ? 'zero-state-promo:chrome-webstore'
-          : 'zero-state-promo:webstore-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphWebStoreLink}
-      </cr-chip>
-    </div>
   </div>` : html`
-  <div id="sectionHeaderContainer">
-    <a class="extensionIphLink" href="https://chromewebstore.google.com/">$i18nRaw{extensionsZeroStateChipsWithLinkIphLinkLabel}</a>
-    $i18nRaw{extensionsZeroStateChipsWithLinkIphDesc}
-  </div>
-  <div id='labelContainer'>
-    <div class="v3Chip">
-      <cr-chip id="aiButton"
-          @click="${this.onAiButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-            ? 'zero-state-promo:spark'
-            : 'zero-state-promo:ai-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
-      </cr-chip>
-    </div>
-    <div class="v3Chip">
-      <cr-chip id="couponsButton" chip-role="link"
-          @click="${this.onCouponsButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-            ? 'zero-state-promo:shopping-bag'
-            : 'zero-state-promo:coupons-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphShoppingCategoryLabel}
-      </cr-chip>
-    </div>
-    <div class="v3Chip">
-      <cr-chip id="writingButton" chip-role="link"
-          @click="${this.onWritingButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-            ? 'zero-state-promo:draw-auto'
-            : 'zero-state-promo:writing-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphWritingHelpCollectionLabel}
-      </cr-chip>
-    </div>
-    <div class="v3Chip">
-      <cr-chip id="productivityButton"
-          @click="${this.onProductivityButtonClick_}">
-        <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-            ? 'zero-state-promo:pace'
-            : 'zero-state-promo:productivity-old'}"></cr-icon>
-        $i18n{extensionsZeroStateIphProductivityCategoryLabel}
-      </cr-chip>
-    </div>
-  </div>` }
-  ` }
+    ${this.showChipsV2_ ? html`
+      <div id="sectionHeaderContainer">
+        $i18nRaw{extensionsZeroStateChipsIphDesc}
+      </div>
+      <div id='labelContainer'>
+        <div class="v2Chip">
+          <cr-chip id="aiButton"
+              @click="${this.onAiButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+              ? 'zero-state-promo:spark'
+              : 'zero-state-promo:ai-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
+          </cr-chip>
+        </div>
+        <div class="v2Chip">
+          <cr-chip id="couponsButton" chip-role="link"
+              @click="${this.onCouponsButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+              ? 'zero-state-promo:shopping-bag'
+              : 'zero-state-promo:coupons-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphShoppingCategoryLabel}
+          </cr-chip>
+        </div>
+        <div class="v2Chip">
+          <cr-chip id="productivityButton"
+              @click="${this.onProductivityButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+              ? 'zero-state-promo:pace'
+              : 'zero-state-promo:productivity-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphProductivityCategoryLabel}
+          </cr-chip>
+        </div>
+        <div class="v2Chip">
+          <cr-chip id="webStoreButton" chip-role="link"
+              @click="${this.onChromeWebStoreButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+              ? 'zero-state-promo:chrome-webstore'
+              : 'zero-state-promo:webstore-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphWebStoreLink}
+          </cr-chip>
+        </div>
+      </div>
+    ` : html`
+      <div id="sectionHeaderContainer">
+        <a class="extensionIphLink" href="https://chromewebstore.google.com/">$i18nRaw{extensionsZeroStateChipsWithLinkIphLinkLabel}</a>
+        $i18nRaw{extensionsZeroStateChipsWithLinkIphDesc}
+      </div>
+      <div id='labelContainer'>
+        <div class="v3Chip">
+          <cr-chip id="aiButton"
+              @click="${this.onAiButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+                ? 'zero-state-promo:spark'
+                : 'zero-state-promo:ai-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
+          </cr-chip>
+        </div>
+        <div class="v3Chip">
+          <cr-chip id="couponsButton" chip-role="link"
+              @click="${this.onCouponsButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+                ? 'zero-state-promo:shopping-bag'
+                : 'zero-state-promo:coupons-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphShoppingCategoryLabel}
+          </cr-chip>
+        </div>
+        <div class="v3Chip">
+          <cr-chip id="writingButton" chip-role="link"
+              @click="${this.onWritingButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+                ? 'zero-state-promo:draw-auto'
+                : 'zero-state-promo:writing-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphWritingHelpCollectionLabel}
+          </cr-chip>
+        </div>
+        <div class="v3Chip">
+          <cr-chip id="productivityButton"
+              @click="${this.onProductivityButtonClick_}">
+            <cr-icon
+                icon="${this.webuiRoundedIconsEnabled_
+                ? 'zero-state-promo:pace'
+                : 'zero-state-promo:productivity-old'}"></cr-icon>
+            $i18n{extensionsZeroStateIphProductivityCategoryLabel}
+          </cr-chip>
+        </div>
+      </div>
+    `}
+  `}
+`}
 <!--_html_template_end_-->`;
   // clang-format on
 }

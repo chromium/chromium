@@ -12,14 +12,17 @@ export function getHtml(this: IconFromTableElement) {
   return html`<!--_html_template_start_-->
 <div id="container" style="${this.getIconColorCss_() ?? nothing}">
   ${this.iconInfo_.type === IconType.kIconSet ?
-      html`<cr-icon .icon="${this.iconInfo_.urlOrName}"></cr-icon>` :
-    this.iconInfo_.type === IconType.kMaskUrl ?
-      html`<div id="maskIconContainer"
-            style="mask-image: url(${this.iconInfo_.urlOrName});">
-         </div>` :
-    html`<div id="colorfulIconContainer"
+      html`<cr-icon .icon="${this.iconInfo_.urlOrName}"></cr-icon>` : html`
+    ${this.iconInfo_.type === IconType.kMaskUrl ? html`
+      <div id="maskIconContainer"
+          style="mask-image: url(${this.iconInfo_.urlOrName});">
+      </div>
+    ` : html`
+      <div id="colorfulIconContainer"
           style="background-image: url(${this.iconInfo_.urlOrName});">
-         </div>`}
+      </div>
+    `}
+  `}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

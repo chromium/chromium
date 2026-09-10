@@ -55,8 +55,9 @@ export function getHtml(this: TabGroupsElement) {
                         <div class="spinner"></div>
                         <span>Clustering tabs with Gemini...</span>
                     </div>
-                ` : (this.isGrouped_ ? html`
-                    <div class="unconfirmed-groups-section">
+                ` : html`
+                    ${this.isGrouped_ ? html`
+                      <div class="unconfirmed-groups-section">
                         <div class="unconfirmed-groups-header-row">
                             <h2>Suggested Groups</h2>
                         </div>
@@ -101,24 +102,24 @@ export function getHtml(this: TabGroupsElement) {
                                 @click="${this.onCanvasThumbsDownClick_}">
                             </cr-icon-button>
                         </div>
-                    </div>
+                      </div>
 
-                    ${this.ungroupedTabs_.length > 0 ? html`
-                        <div class="ungrouped-section">
-                            <h2>Ungrouped tabs</h2>
-                            <div class="grid">
-                                ${this.ungroupedTabs_.map(tab => html`
-                                    <div class="tab-card"
-                                        data-id="${tab.id}"
-                                        @click="${this.onTabClick_}">
-                                        <div class="tab-title">${tab.title}</div>
-                                    </div>
-                                `)}
-                            </div>
-                        </div>
-                    ` : ''}
-                ` : html`
-                    <div class="grid">
+                      ${this.ungroupedTabs_.length > 0 ? html`
+                          <div class="ungrouped-section">
+                              <h2>Ungrouped tabs</h2>
+                              <div class="grid">
+                                  ${this.ungroupedTabs_.map(tab => html`
+                                      <div class="tab-card"
+                                          data-id="${tab.id}"
+                                          @click="${this.onTabClick_}">
+                                          <div class="tab-title">${tab.title}</div>
+                                      </div>
+                                  `)}
+                              </div>
+                          </div>
+                      ` : ''}
+                    ` : html`
+                      <div class="grid">
                         ${this.tabs_.map(tab => html`
                             <div class="tab-card"
                                         data-id="${tab.id}"
@@ -126,8 +127,9 @@ export function getHtml(this: TabGroupsElement) {
                                 <div class="tab-title">${tab.title}</div>
                             </div>
                         `)}
-                    </div>
-                `)}
+                      </div>
+                    `}
+                `}
                 ${this.confirmedGroupSummaries_.length > 0 ? html`
                     <div class="saved-groups-section">
                         <div class="saved-groups-header-row">

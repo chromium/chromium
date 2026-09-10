@@ -24,9 +24,8 @@ ${this.showingReadingList_ ? html`
       </section>
 
       <div class="todo-list">
-        ${
-      this.readingListTodos ?
-          repeat(
+        ${this.readingListTodos ? html`
+          ${repeat(
               this.readingListTodos, todo => todo.id,
               todo => html`
                     <todo-item
@@ -42,8 +41,8 @@ ${this.showingReadingList_ ? html`
                         .liked="${this.feedbacks_.get(todo.id) ?? null}"
                         .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                     </todo-item>
-                  `) :
-          ''}
+          `)}
+        ` : ''}
       </div>
     </main>
   ` : html`
@@ -98,11 +97,8 @@ ${this.showingReadingList_ ? html`
                 </div>
 
                 <div class="todo-list">
-                    ${
-      this.todos && this.todos.length > 0 ?
-          repeat(
-              this.todos, todo => todo.id,
-              todo => html`
+                  ${this.todos && this.todos.length > 0 ? html`
+                    ${repeat(this.todos, todo => todo.id, todo => html`
                       <todo-item
                           .id="${todo.id}"
                           .heading="${todo.title}"
@@ -116,22 +112,24 @@ ${this.showingReadingList_ ? html`
                           .liked="${this.feedbacks_.get(todo.id) ?? null}"
                           .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
                       </todo-item>
-                    `) :
-          this.hasGmailGenerationError_ ? html`
+                    `)}
+                  ` : html`
+                    ${this.hasGmailGenerationError_ ? html`
                       <div class="placeholder-card">
                         <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
                       </div>
-                    ` :
-          this.hasGeneratedGmail_       ? html`
-                      <div class="placeholder-card">
-                        <p class="placeholder-text">You're all caught up!</p>
-                      </div>
-                    ` :
-                                          html`
-                      <div class="placeholder-card">
-                        <p class="placeholder-text">No Workspace Todos yet.</p>
-                      </div>
+                    ` : html`
+                      ${this.hasGeneratedGmail_ ? html`
+                        <div class="placeholder-card">
+                          <p class="placeholder-text">You're all caught up!</p>
+                        </div>
+                      ` : html`
+                        <div class="placeholder-card">
+                          <p class="placeholder-text">No Workspace Todos yet.</p>
+                        </div>
+                      `}
                     `}
+                  `}
                 </div>
 
                 <!-- Completed Workspace Todos Section -->
@@ -147,9 +145,9 @@ ${this.showingReadingList_ ? html`
 
                     <cr-collapse ?opened="${this.isCompletedExpanded_ && (this.completedTodos?.length || 0) > 0}">
                         <div class="todo-list completed-todo-list">
-                            ${
-      this.completedTodos &&
-      this.completedTodos.length > 0 ? repeat(this.completedTodos, todo => todo.id, todo => html`
+                          ${this.completedTodos &&
+                                  this.completedTodos.length > 0 ? html`
+                            ${repeat(this.completedTodos, todo => todo.id, todo => html`
                               <todo-item
                                   .id="${todo.id}"
                                   .heading="${todo.title}"
@@ -163,7 +161,8 @@ ${this.showingReadingList_ ? html`
                                   .liked="${this.feedbacks_.get(todo.id) ?? null}"
                                   .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
                               </todo-item>
-                            `) : ''}
+                            `)}
+                          ` : ''}
                         </div>
                     </cr-collapse>
                 </div>
@@ -324,16 +323,16 @@ ${this.showingReadingList_ ? html`
                       <div class="placeholder-card">
                         <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
                       </div>
-                    ` :
-          this.hasGeneratedTab_       ? html`
-                      <div class="placeholder-card">
-                        <p class="placeholder-text">You're all caught up!</p>
-                      </div>
-                    ` :
-                                        html`
-                      <div class="placeholder-card">
-                        <p class="placeholder-text">No Browser Todos yet.</p>
-                      </div>
+                    ` : html`
+                      ${this.hasGeneratedTab_ ? html`
+                        <div class="placeholder-card">
+                          <p class="placeholder-text">You're all caught up!</p>
+                        </div>
+                      ` : html`
+                        <div class="placeholder-card">
+                          <p class="placeholder-text">No Browser Todos yet.</p>
+                        </div>
+                      `}
                     `}
                   </div>
                 `}
@@ -351,9 +350,8 @@ ${this.showingReadingList_ ? html`
 
                     <cr-collapse ?opened="${this.isCompletedTabExpanded_ && (this.completedTabTodos?.length || 0) > 0}">
                         <div class="todo-list completed-todo-list">
-                            ${
-      this.completedTabTodos &&
-      this.completedTabTodos.length > 0 ? repeat(this.completedTabTodos, todo => todo.id, todo => html`
+                          ${this.completedTabTodos && this.completedTabTodos.length > 0 ? html`
+                            ${repeat(this.completedTabTodos, todo => todo.id, todo => html`
                               <todo-item
                                   .id="${todo.id}"
                                   .heading="${todo.title}"
@@ -367,7 +365,8 @@ ${this.showingReadingList_ ? html`
                                   .liked="${this.feedbacks_.get(todo.id) ?? null}"
                                   .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                               </todo-item>
-                            `) : ''}
+                            `)}
+                          ` : ''}
                         </div>
                     </cr-collapse>
                 </div>

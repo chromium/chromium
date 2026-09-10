@@ -20,17 +20,19 @@ export function getHtml(this: FeatureShowcaseStepperElement) {
     <div class="step">
       <img src="/images/product-logo.svg" alt="">
     </div>
-  ` : this.steps.map((_item, index) => html`
+  ` : html`${this.steps.map((_item, index) => html`
     <div class="step">
       ${index < this.activeIndex ? html`
         <cr-icon icon="cr:check"></cr-icon>
-      ` : index === this.activeIndex ? html`
-        <img src="/images/product-logo.svg" alt="">
       ` : html`
-        <div class="dot"></div>
+        ${index === this.activeIndex ? html`
+          <img src="/images/product-logo.svg" alt="">
+        ` : html`
+          <div class="dot"></div>
+        `}
       `}
     </div>
-  `)}
+  `)}`}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

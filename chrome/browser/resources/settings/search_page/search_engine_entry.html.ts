@@ -47,10 +47,12 @@ export function getHtml(this: SettingsSearchEngineEntryElement) {
       ${this.engine.isManaged ? html`
         <cr-policy-indicator indicator-type="userPolicy">
         </cr-policy-indicator>
-      ` : (this.engine.isRecommendedFromPolicy ? html`
-        <cr-policy-indicator indicator-type="recommended">
-        </cr-policy-indicator>
-      ` : '')}
+      ` : html`
+        ${this.engine.isRecommendedFromPolicy ? html`
+          <cr-policy-indicator indicator-type="recommended">
+          </cr-policy-indicator>
+        ` : ''}
+      `}
       <cr-icon-button class="icon-more-vert" @click="${this.onDotsClick_}"
           ?disabled="${this.shouldDisableDots_()}"
           title="$i18n{moreActions}"

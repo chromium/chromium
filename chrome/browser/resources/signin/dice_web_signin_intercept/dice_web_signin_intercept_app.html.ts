@@ -29,51 +29,53 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
         </div>
       </div>
     </div>
-  ` : this.interceptionParameters_.useV2Design ? html`
-    <div id="headerV2">
-      <svg>
-        <use href="images/split_header.svg#EXPORT_primary"
-            id="headerImagePrimary" >
-        </use>
-        <use href="images/split_header.svg#EXPORT_intercepted"
-            id="headerImageIntercepted">
-        </use>
-      </svg>
-      <div class="avatar-container-v2" id="avatarPrimary">
-        <img class="avatar" alt=""
-            src="${this.interceptionParameters_.primaryAccount.pictureUrl}">
-        <div class="work-badge"
-            ?hidden="${!this.interceptionParameters_.primaryAccount.avatarBadge.length}">
-          <cr-icon class="icon"
-              icon="${this.interceptionParameters_.primaryAccount.avatarBadge}">
-          </cr-icon>
-        </div>
-      </div>
-      <div class="avatar-container-v2" id="avatarIntercepted">
-        <img class="avatar" alt=""
-            src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
-        <div class="work-badge"
-            ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
-          <cr-icon class="icon"
-              icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
-          </cr-icon>
-        </div>
-      </div>
-    </div>
   ` : html`
-    <div id="header">
-      <div id="headerText">${this.interceptionParameters_.headerText}</div>
-      <div id="avatarContainer">
-        <img class="avatar" alt="${this.interceptionParameters_.interceptedAccount.userBadgeAltText}"
-            src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
-        <div class="work-badge" id="badge"
-            ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
-          <cr-icon class="icon" aria-hidden="true"
-              icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
-          </cr-icon>
+    ${this.interceptionParameters_.useV2Design ? html`
+      <div id="headerV2">
+        <svg>
+          <use href="images/split_header.svg#EXPORT_primary"
+              id="headerImagePrimary" >
+          </use>
+          <use href="images/split_header.svg#EXPORT_intercepted"
+              id="headerImageIntercepted">
+          </use>
+        </svg>
+        <div class="avatar-container-v2" id="avatarPrimary">
+          <img class="avatar" alt=""
+              src="${this.interceptionParameters_.primaryAccount.pictureUrl}">
+          <div class="work-badge"
+              ?hidden="${!this.interceptionParameters_.primaryAccount.avatarBadge.length}">
+            <cr-icon class="icon"
+                icon="${this.interceptionParameters_.primaryAccount.avatarBadge}">
+            </cr-icon>
+          </div>
+        </div>
+        <div class="avatar-container-v2" id="avatarIntercepted">
+          <img class="avatar" alt=""
+              src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
+          <div class="work-badge"
+              ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
+            <cr-icon class="icon"
+                icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
+            </cr-icon>
+          </div>
         </div>
       </div>
-    </div>
+    ` : html`
+      <div id="header">
+        <div id="headerText">${this.interceptionParameters_.headerText}</div>
+        <div id="avatarContainer">
+          <img class="avatar" alt="${this.interceptionParameters_.interceptedAccount.userBadgeAltText}"
+              src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
+          <div class="work-badge" id="badge"
+              ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
+            <cr-icon class="icon" aria-hidden="true"
+                icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
+            </cr-icon>
+          </div>
+        </div>
+      </div>
+    `}
   `}
 
   <div id="body">
