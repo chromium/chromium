@@ -44,7 +44,7 @@ class ReverbAccumulationBuffer final {
   DISALLOW_NEW();
 
  public:
-  ReverbAccumulationBuffer();
+  ReverbAccumulationBuffer() = default;
   ReverbAccumulationBuffer(const ReverbAccumulationBuffer&) = delete;
   ReverbAccumulationBuffer& operator=(const ReverbAccumulationBuffer&) = delete;
 
@@ -69,7 +69,7 @@ class ReverbAccumulationBuffer final {
 
  private:
   AudioFloatArray buffer_;
-  uint32_t read_index_;
+  uint32_t read_index_ = 0;
 };
 
 }  // namespace blink

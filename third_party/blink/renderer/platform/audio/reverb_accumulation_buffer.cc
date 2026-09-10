@@ -36,8 +36,6 @@
 
 namespace blink {
 
-ReverbAccumulationBuffer::ReverbAccumulationBuffer() : read_index_(0) {}
-
 bool ReverbAccumulationBuffer::TryAllocate(uint32_t length) {
   return buffer_.TryAllocate(length);
 }

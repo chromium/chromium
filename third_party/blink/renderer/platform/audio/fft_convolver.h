@@ -60,7 +60,7 @@ class FFTConvolver final {
   FFTFrame frame_;
 
   // Buffer input until we get fftSize / 2 samples then do an FFT
-  size_t read_write_index_;
+  size_t read_write_index_ = 0;
   AudioFloatArray input_buffer_;
 
   // Stores output which we read a little at a time

@@ -87,7 +87,7 @@ scoped_refptr<AudioBus> AudioBus::TryCreate(unsigned number_of_channels,
 }
 
 AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
-    : length_(length), sample_rate_(0) {
+    : length_(length) {
   channels_.ReserveInitialCapacity(number_of_channels);
 
   for (unsigned i = 0; i < number_of_channels; ++i) {

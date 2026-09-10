@@ -49,12 +49,10 @@ class PLATFORM_EXPORT AudioChannel final {
   // AudioFloatArray.
 
   // Manage storage for us.
-  explicit AudioChannel(uint32_t length) : silent_(true) {
-    CHECK(TryAllocate(length));
-  }
+  explicit AudioChannel(uint32_t length) { CHECK(TryAllocate(length)); }
 
   // A "blank" audio channel -- must call Set() before it's useful...
-  AudioChannel() : silent_(true) {}
+  AudioChannel() = default;
 
   // Methods for internal allocation.
   bool TryAllocate(uint32_t length);
@@ -115,7 +113,7 @@ class PLATFORM_EXPORT AudioChannel final {
  private:
   std::unique_ptr<AudioFloatArray> mem_buffer_;
   base::raw_span<float> data_span_;
-  bool silent_;
+  bool silent_ = true;
 };
 
 }  // namespace blink

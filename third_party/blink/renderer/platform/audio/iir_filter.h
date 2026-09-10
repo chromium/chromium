@@ -58,7 +58,7 @@ class PLATFORM_EXPORT IIRFilter final {
   // values should be stored.  xBuffer[bufferIndex] corresponds to x[n], the
   // current x input value and yBuffer[bufferIndex] is where y[n], the current
   // output value.
-  int buffer_index_;
+  int buffer_index_ = 0;
 
   // Coefficients of the IIR filter.  To minimize storage, these point to the
   // arrays given in the constructor.

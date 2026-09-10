@@ -37,7 +37,6 @@ namespace blink {
 
 FFTConvolver::FFTConvolver(unsigned fft_size)
     : frame_(fft_size),
-      read_write_index_(0),
       input_buffer_(fft_size),  // 2nd half of buffer is always zeroed
       output_buffer_(fft_size),
       last_overlap_buffer_(fft_size / 2) {}

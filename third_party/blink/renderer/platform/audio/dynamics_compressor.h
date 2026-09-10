@@ -82,7 +82,7 @@ class PLATFORM_EXPORT DynamicsCompressor final {
 
   bool RequiresTailProcessing() const;
 
- protected:
+ private:
   void InitializeParameters();
 
   void SetPreDelayTime(float);

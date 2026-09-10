@@ -56,8 +56,7 @@ static double pow10(double x) {
   return fdlibm::expf(x * 2.30258509299404568402);
 }
 
-Biquad::Biquad(unsigned render_quantum_frames)
-    : has_sample_accurate_values_(false) {
+Biquad::Biquad(unsigned render_quantum_frames) {
 #if BUILDFLAG(IS_MAC)
   // Allocate two samples more for filter history
   input_buffer_.Allocate(kBiquadBufferSize + 2);

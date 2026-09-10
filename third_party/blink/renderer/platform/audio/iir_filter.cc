@@ -45,7 +45,7 @@ std::complex<double> EvaluatePolynomial(base::span<const double> coef,
 
 IIRFilter::IIRFilter(const AudioDoubleArray* feedforward,
                      const AudioDoubleArray* feedback)
-    : buffer_index_(0), feedback_(feedback), feedforward_(feedforward) {
+    : feedback_(feedback), feedforward_(feedforward) {
   // These are guaranteed to be zero-initialized.
   x_buffer_.Allocate(kBufferLength);
   y_buffer_.Allocate(kBufferLength);

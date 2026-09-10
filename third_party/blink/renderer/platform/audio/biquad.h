@@ -97,7 +97,7 @@ class PLATFORM_EXPORT Biquad final {
 
   // If true, the filter coefficients are (possibly) time-varying due to a
   // timeline automation on at least one filter parameter.
-  bool has_sample_accurate_values_;
+  bool has_sample_accurate_values_ = false;
 
   // Filter coefficients. The filter is defined as
   //
@@ -120,10 +120,10 @@ class PLATFORM_EXPORT Biquad final {
 
 #endif
   // Filter memory
-  double x1_;  // input delayed by 1 sample
-  double x2_;  // input delayed by 2 samples
-  double y1_;  // output delayed by 1 sample
-  double y2_;  // output delayed by 2 samples
+  double x1_ = 0.0;  // input delayed by 1 sample
+  double x2_ = 0.0;  // input delayed by 2 samples
+  double y1_ = 0.0;  // output delayed by 1 sample
+  double y2_ = 0.0;  // output delayed by 2 samples
 };
 
 }  // namespace blink

@@ -193,7 +193,7 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
 
   uint32_t length_;
   Vector<AudioChannel, 2> channels_;
-  float sample_rate_;  // 0.0 if unknown or N/A
+  float sample_rate_ = 0.0f;  // 0.0 if unknown or N/A
 };
 
 }  // namespace blink

@@ -33,9 +33,6 @@
 
 namespace blink {
 
-ConeEffect::ConeEffect()
-    : inner_angle_(360.0), outer_angle_(360.0), outer_gain_(0.0) {}
-
 double ConeEffect::Gain(gfx::Point3F source_position,
                         gfx::Vector3dF source_orientation,
                         gfx::Point3F listener_position) {

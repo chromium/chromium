@@ -36,12 +36,6 @@
 
 namespace blink {
 
-DistanceEffect::DistanceEffect()
-    : model_(kModelInverse),
-      ref_distance_(1.0),
-      max_distance_(10000.0),
-      rolloff_factor_(1.0) {}
-
 double DistanceEffect::Gain(double distance) {
   switch (model_) {
     case kModelLinear:
