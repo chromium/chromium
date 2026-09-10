@@ -145,9 +145,9 @@ class CombinedTabRestorer {
 
             if (mRegularState.isLoadFinished() && mIncognitoState.isLoadFinished()) {
                 if (mLoadStartTime != INVALID_TIME) {
-                long duration = SystemClock.elapsedRealtime() - mLoadStartTime;
-                RecordHistogram.recordTimesHistogram(
-                        "Tabs.TabStateStore.LoadAllTabsDuration", duration);
+                    long duration = SystemClock.elapsedRealtime() - mLoadStartTime;
+                    RecordHistogram.recordTimesHistogram(
+                            "Tabs.TabStateStore.LoadAllTabsDuration", duration);
                 }
                 mOrchestratorDelegate.onLoadFinished(mRestoredTabCount);
             }
@@ -231,6 +231,7 @@ class CombinedTabRestorer {
      * @param tabModelSelector The tab model selector.
      * @param logRestoreDuration Whether to log the restore duration.
      * @param isFromRecreating Whether the current activity is launched from recreating.
+     * @param isAuthoritative Whether this restorer is authoritative.
      */
     CombinedTabRestorer(
             @TabOrchestratorType int orchestratorType,
@@ -241,7 +242,8 @@ class CombinedTabRestorer {
             Supplier<ScopedStorageBatch> batchFactory,
             TabModelSelector tabModelSelector,
             boolean logRestoreDuration,
-            boolean isFromRecreating) {
+            boolean isFromRecreating,
+            boolean isAuthoritative) {
         mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs, restoreRegularTabs);
         mRegularTabRestorer =
                 restoreRegularTabs
@@ -252,7 +254,8 @@ class CombinedTabRestorer {
                                 tabCreatorManager.getTabCreator(/* incognito= */ false),
                                 batchFactory,
                                 tabModelSelector,
-                                isFromRecreating)
+                                isFromRecreating,
+                                isAuthoritative)
                         : null;
         mIncognitoTabRestorer =
                 restoreIncognitoTabs
@@ -263,7 +266,8 @@ class CombinedTabRestorer {
                                 tabCreatorManager.getTabCreator(/* incognito= */ true),
                                 batchFactory,
                                 tabModelSelector,
-                                isFromRecreating)
+                                isFromRecreating,
+                                isAuthoritative)
                         : null;
         mLoadStartTime = logRestoreDuration ? SystemClock.elapsedRealtime() : INVALID_TIME;
     }

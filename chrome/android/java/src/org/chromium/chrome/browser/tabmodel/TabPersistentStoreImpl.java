@@ -530,7 +530,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         mBackgroundTabIds =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mOrchestratorType, mTabModelSelector, ignoreRegularFiles);
+                        mOrchestratorType, mTabModelSelector, ignoreRegularFiles, mIsAuthoritative);
 
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
@@ -634,7 +634,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mBackgroundTabIds.isEmpty()) {
             mBackgroundTabIds =
                     BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                            mOrchestratorType, mTabModelSelector, mCancelNormalTabLoads);
+                            mOrchestratorType,
+                            mTabModelSelector,
+                            mCancelNormalTabLoads,
+                            mIsAuthoritative);
         }
         if (setActiveTab) {
             // Restore and select the active tab, which is first in the restore list.
@@ -783,7 +786,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             // TODO(ltian): need to figure out a way to add merged tabs before Browser Actions tabs
             // when tab restore and Browser Actions tab merging happen at the same time.
             restoredIndex = model.getCount();
-        } else if (restoredTabs != null && restoredTabs.size() > 0
+        } else if (restoredTabs != null
+                && restoredTabs.size() > 0
                 && tabToRestore.originalIndex > restoredTabs.keyAt(restoredTabs.size() - 1)) {
             // If the tab's index is too large, restore it at the end of the list.
             restoredIndex = Math.min(model.getCount(), restoredTabs.size());
@@ -1025,7 +1029,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             @Nullable TabState tabState,
             boolean isIncognito,
             boolean setAsActive) {
-        if (!BackgroundTabRestorationHelper.shouldIntercept(mOrchestratorType, isIncognito)
+        if (!BackgroundTabRestorationHelper.shouldIntercept(
+                        mOrchestratorType, isIncognito, mIsAuthoritative)
                 || !mBackgroundTabIds.contains(tabToRestore.id)) {
             return false;
         }
@@ -1036,7 +1041,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                         mTabModelSelector,
                         tabToRestore.id,
                         restoredIndex,
-                        tabState);
+                        tabState,
+                        mIsAuthoritative);
         if (tab == null) return false;
 
         if (setAsActive) {
@@ -1533,17 +1539,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             // TabPersistentStore and delete the metadata file for the other instance, then notify
             // observers.
             if (mPersistencePolicy.isMergeInProgress()) {
-                PostTask.postTask(
-                        TaskTraits.UI_DEFAULT,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                // This eventually calls saveTabModelSelectorMetadata() which much
-                                // be called from the UI thread. #mergeState() starts an async task
-                                // in the background that goes through this code path.
-                                saveTabListAsynchronously();
-                            }
-                        });
+                // This eventually calls saveTabModelSelectorMetadata() which must
+                // be called from the UI thread. #mergeState() starts an async task
+                // in the background that goes through this code path.
+                PostTask.postTask(TaskTraits.UI_DEFAULT, this::saveTabListAsynchronously);
                 for (String mergedFileName : new HashSet<>(mMergedFileNames)) {
                     deleteFileAsync(mergedFileName);
                 }

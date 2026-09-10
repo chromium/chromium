@@ -314,7 +314,8 @@ public class TabStateStore implements TabPersistentStore {
                         mTabStateStorageService::createBatch,
                         mTabModelSelector,
                         /* logRestoreDuration= */ true,
-                        mIsFromRecreating);
+                        mIsFromRecreating,
+                        mIsAuthoritative);
 
         boolean[] restoreOrder =
                 mTabModelSelector.isIncognitoSelected()
@@ -378,7 +379,8 @@ public class TabStateStore implements TabPersistentStore {
                         mTabStateStorageService::createBatch,
                         mTabModelSelector,
                         /* logRestoreDuration= */ false,
-                        mIsFromRecreating);
+                        mIsFromRecreating,
+                        mIsAuthoritative);
 
         for (boolean incognito : new boolean[] {false, true}) {
             final boolean incognitoFinal = incognito;
@@ -731,7 +733,7 @@ public class TabStateStore implements TabPersistentStore {
         assertInitialized();
         mTabCountTracker.clearTabCount(incognito);
         mTabStateStorageService.clearUnusedNodesForWindow(
-            mWindowTag, incognito, /* tabStripCollection= */ null);
+                mWindowTag, incognito, /* tabStripCollection= */ null);
         mActiveTabCache.clearActiveTab(incognito);
     }
 
