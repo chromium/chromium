@@ -9,6 +9,8 @@
 
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
+typedef NS_ENUM(NSInteger, GeminiCancelType);
+
 // Delegate protocol for handling view state changes.
 @protocol GeminiViewStateDelegate <NSObject>
 
@@ -45,6 +47,9 @@
 
 // Called when the user taps the New Chat button in Gemini UI.
 - (void)didTapNewChatButton;
+
+// Called when the Gemini response is cancelled with a reason.
+- (void)responseCancelledWithReason:(GeminiCancelType)reason;
 
 @end
 

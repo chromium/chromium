@@ -508,6 +508,22 @@ TEST_F(GeminiSessionHandlerTest, TestNewChatButtonNotifiesViewStateDelegate) {
   [mock_delegate verify];
 }
 
+// Tests that responseCancelledWithReason notifies geminiViewStateDelegate.
+TEST_F(GeminiSessionHandlerTest,
+       TestResponseCancelledNotifiesViewStateDelegate) {
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
+  session_handler_.geminiViewStateDelegate = mock_delegate;
+
+  OCMExpect([mock_delegate
+      responseCancelledWithReason:GeminiCancelTypeStopButtonTapped]);
+
+  [session_handler_ responseCancelledWithReason:GeminiCancelTypeStopButtonTapped
+                                      sessionID:@"session_123"
+                                 conversationID:@"conv_123"];
+
+  [mock_delegate verify];
+}
+
 // Tests that didTapFeedbackButton records the correct metrics.
 TEST_F(GeminiSessionHandlerTest, TestFeedbackMetricsRecorded) {
   // Test Thumbs Up.

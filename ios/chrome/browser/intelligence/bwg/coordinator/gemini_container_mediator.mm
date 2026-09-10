@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
@@ -34,13 +35,21 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using enum AssistantContainerDetent;
+using ios::provider::GeminiClientMode;
+using ios::provider::GeminiDormantReason;
+using ios::provider::GeminiViewMode;
+using ios::provider::GeminiViewState;
+
+@interface GeminiContainerMediator () <GeminiContainerUIStateManagerDelegate>
+@end
 
 @implementation GeminiContainerMediator {
   // WebStateList for the browser.
@@ -51,6 +60,8 @@
   // Badge.
   BOOL _hasTriggeredGeminiLiveIPH;
   BOOL _hasTriggeredGeminiLiveNewBadge;
+  // State manager for container UI state transitions.
+  GeminiContainerUIStateManager* _stateManager;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -65,11 +76,13 @@
     }
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
                                                   viewStateDelegate:self];
+    _stateManager = [[GeminiContainerUIStateManager alloc] init];
+    _stateManager.delegate = self;
   }
   return self;
 }
 
-#pragma mark - Property Getters
+#pragma mark - Property Getters and Setters
 
 - (id<BWGGatewayProtocol>)gateway {
   return _gatewayManager.gateway;
@@ -218,16 +231,16 @@
   _profile = nullptr;
   [_gatewayManager disconnect];
   _gatewayManager = nil;
+  [_stateManager reset];
+  _stateManager.delegate = nil;
 }
 
 #pragma mark - AssistantContainerDelegate
 
 - (void)assistantContainerDidUpdateDetentHeights:
     (AssistantContainerViewController*)container {
-  NSInteger collapsedHeight =
-      [container heightForDetent:AssistantContainerDetent::kMinimized];
-  NSInteger extendedHeight =
-      [container heightForDetent:AssistantContainerDetent::kMedium];
+  NSInteger collapsedHeight = [container heightForDetent:kMinimized];
+  NSInteger extendedHeight = [container heightForDetent:kMedium];
 
   if (collapsedHeight > 0 && extendedHeight > 0) {
     ios::provider::UpdateDetentHeights(collapsedHeight, extendedHeight);
@@ -236,16 +249,8 @@
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent {
-  // Ignore delegate notifications for detent changes that were triggered
-  // programmatically. We should not dismiss if the container was minimized
-  // programmatically.
-  if (newDetent == self.detentSize) {
-    return;
-  }
-
-  self.detentSize = newDetent;
-  if (newDetent == AssistantContainerDetent::kMinimized &&
-      self.isZeroStateVisible && IsChromeNextIaEnabled()) {
+  [_stateManager updateDetent:newDetent];
+  if ([_stateManager shouldBeDismissed]) {
     [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
   }
 }
@@ -257,45 +262,35 @@
 
 #pragma mark - GeminiViewStateDelegate
 
-- (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState {
+- (void)didSwitchToViewState:(GeminiViewState)viewState {
   if (_eventHandler) {
     _eventHandler->OnViewStateChanged(viewState);
     _eventHandler->SetLastShownViewState(viewState);
   }
 }
 
-- (void)didUpdateProcessingStatus:
-            (ios::provider::GeminiClientMode)processingStatus
+- (void)didUpdateProcessingStatus:(GeminiClientMode)processingStatus
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
-  if (_eventHandler) {
-    _eventHandler->OnProcessingStatusChanged(
-        processingStatus, ios::provider::GeminiDormantReason::kUnknown);
-  }
-
-  if (!IsIOSGeminiBottomSheetMigrationEnabled() ||
-      _processingStatus == processingStatus) {
-    return;
-  }
-  _processingStatus = processingStatus;
-  [self updateUIState];
+  [self didUpdateProcessingStatus:processingStatus
+                    dormantReason:GeminiDormantReason::kUnknown
+                        sessionID:sessionID
+                   conversationID:conversationID];
 }
 
-- (void)
-    didUpdateProcessingStatus:(ios::provider::GeminiClientMode)processingStatus
-                dormantReason:(ios::provider::GeminiDormantReason)dormantReason
-                    sessionID:(NSString*)sessionID
-               conversationID:(NSString*)conversationID {
+- (void)didUpdateProcessingStatus:(GeminiClientMode)processingStatus
+                    dormantReason:(GeminiDormantReason)dormantReason
+                        sessionID:(NSString*)sessionID
+                   conversationID:(NSString*)conversationID {
   if (_eventHandler) {
     _eventHandler->OnProcessingStatusChanged(processingStatus, dormantReason);
   }
 
-  if (!IsIOSGeminiBottomSheetMigrationEnabled() ||
-      _processingStatus == processingStatus) {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;
   }
-  _processingStatus = processingStatus;
-  [self updateUIState];
+
+  [_stateManager transitionToProcessingStatus:processingStatus];
 }
 
 - (void)geminiLiveUserDidTapLiveButton {
@@ -316,16 +311,16 @@
   }
 }
 
-- (void)didSwitchToMode:(ios::provider::GeminiViewMode)mode {
+- (void)didSwitchToMode:(GeminiViewMode)mode {
   if (_eventHandler) {
     _eventHandler->OnModeChanged(mode);
   }
 
-  if (!IsIOSGeminiBottomSheetMigrationEnabled() || _viewMode == mode) {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;
   }
-  _viewMode = mode;
-  [self updateUIState];
+
+  [_stateManager transitionToMode:mode];
 }
 
 - (void)geminiUIDidAppear {
@@ -339,40 +334,16 @@
     return;
   }
 
-  // Preserve the detent size that the container already has.
-  self.hasGrabber = YES;
-  self.zeroStateVisible = YES;
+  [self fetchZeroStateSuggestions:_startupState];
+  [_stateManager handleNewChat];
 }
 
-#pragma mark - Property Setters
-
-- (void)setHasGrabber:(BOOL)hasGrabber {
-  if (_hasGrabber == hasGrabber) {
+- (void)responseCancelledWithReason:(GeminiCancelType)reason {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;
   }
-  _hasGrabber = hasGrabber;
-  [self.containerHandler setAssistantContainerGrabberHidden:!hasGrabber
-                                                   animated:YES];
-}
 
-- (void)setDetentSize:(AssistantContainerDetent)detentSize {
-  if (_detentSize == detentSize) {
-    return;
-  }
-  _detentSize = detentSize;
-  [self.containerHandler animateAssistantContainerToDetent:detentSize];
-}
-
-- (void)setZeroStateVisible:(BOOL)zeroStateVisible {
-  if (_zeroStateVisible == zeroStateVisible) {
-    return;
-  }
-  _zeroStateVisible = zeroStateVisible;
-
-  if (zeroStateVisible) {
-    [self fetchZeroStateSuggestions:_startupState];
-  }
-  [self.consumer updateZeroStateVisibility:_zeroStateVisible];
+  [_stateManager handleResponseCancellationWithReason:reason];
 }
 
 #pragma mark - GeminiZeroStateMutator
@@ -474,52 +445,27 @@
   return config;
 }
 
+#pragma mark - GeminiContainerUIStateManagerDelegate
+
+- (void)didChangeUIState:(GeminiContainerUIState)containerUIState {
+  [self.containerHandler
+      animateAssistantContainerToDetent:containerUIState.detent];
+  [self.containerHandler
+      setAssistantContainerGrabberHidden:!containerUIState.hasGrabber
+                                animated:YES];
+  [self.consumer updateZeroStateVisibility:containerUIState.zeroStateVisible];
+}
+
+#pragma mark - Private
+
 // Sets up the initial UI state for the container.
 - (void)setupInitialUIState {
-  // Default values for mode and processing status. Actual values driven by SDK.
-  _viewMode = ios::provider::GeminiViewMode::kFloaty;
-  _processingStatus = ios::provider::GeminiClientMode::kDormant;
+  [self fetchZeroStateSuggestions:_startupState];
 
-  // Default values for container UI properties. Driven by
-  // `GeminiContainerMediator` based on mode and processing status.
-  self.detentSize = AssistantContainerDetent::kMedium;
-  self.hasGrabber = YES;
-
-  // TODO(crbug.com/545204121): Load previous conversion instead if applicable.
-  self.zeroStateVisible = YES;
+  [_stateManager setupInitialUIState];
 
   // In initial zero state the view shouldn't be focused for input.
   [self.consumer dismissKeyboard];
-}
-
-// Decides on container UI properties based on the current Gemini view mode and
-// processing status.
-- (void)updateUIState {
-  if (_viewMode == ios::provider::GeminiViewMode::kLive) {
-    self.detentSize = AssistantContainerDetent::kMinimized;
-    self.hasGrabber = NO;
-    self.zeroStateVisible = NO;
-    return;
-  }
-
-  switch (_processingStatus) {
-    case ios::provider::GeminiClientMode::kThinking:
-      self.detentSize = AssistantContainerDetent::kMinimized;
-      self.hasGrabber = NO;
-      self.zeroStateVisible = NO;
-      break;
-    case ios::provider::GeminiClientMode::kResponding:
-    case ios::provider::GeminiClientMode::kDormant:
-    case ios::provider::GeminiClientMode::kPreviousConversationLoading:
-      self.detentSize = AssistantContainerDetent::kMedium;
-      self.hasGrabber = YES;
-      self.zeroStateVisible = NO;
-      break;
-    case ios::provider::GeminiClientMode::kListening:
-    case ios::provider::GeminiClientMode::kTranscribing:
-    case ios::provider::GeminiClientMode::kUnknown:
-      NOTREACHED();
-  }
 }
 
 @end

@@ -7,6 +7,8 @@ source_set("container_mediator") {
     "gemini_container_mediator.h",
     "gemini_container_mediator.mm",
     "gemini_container_mediator_event_handler.h",
+    "gemini_container_ui_state_manager.h",
+    "gemini_container_ui_state_manager.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/assistant/coordinator:commands",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "gemini_container_mediator_unittest.mm",
+    "gemini_container_ui_state_manager_unittest.mm",
     "gemini_entry_flow_coordinator_unittest.mm",
     "gemini_first_run_coordinator_unittest.mm",
     "gemini_first_run_mediator_unittest.mm",

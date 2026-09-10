@@ -362,6 +362,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                           sessionID:(NSString*)sessionID
                      conversationID:(NSString*)conversationID {
   RecordGeminiSessionCancellation(HistogramEnumFromGeminiCancelType(reason));
+  [self.geminiViewStateDelegate responseCancelledWithReason:reason];
 }
 
 // Called when the user taps on the photo, gallery, CreateImageSelected or

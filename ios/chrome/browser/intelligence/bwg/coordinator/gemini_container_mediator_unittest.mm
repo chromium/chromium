@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -173,7 +174,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
     return web_state_ptr;
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
@@ -465,16 +467,6 @@ TEST_F(GeminiContainerMediatorTest, TestGeminiLiveUserDidPressStopButton) {
   EXPECT_TRUE(delegate_.stop_button_pressed_called_);
 }
 
-// Tests that initial state properties are correctly set upon initialization.
-TEST_F(GeminiContainerMediatorTest, TestInitialUIStateProperties) {
-  EXPECT_EQ(ios::provider::GeminiViewMode::kUnknown, mediator_.viewMode);
-  EXPECT_EQ(ios::provider::GeminiClientMode::kUnknown,
-            mediator_.processingStatus);
-  EXPECT_FALSE(mediator_.hasGrabber);
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-}
-
 // Tests that setConsumer configures initial UI state and notifies
 // containerHandler.
 TEST_F(GeminiContainerMediatorTest, TestSetConsumerTriggersInitialUIState) {
@@ -491,167 +483,10 @@ TEST_F(GeminiContainerMediatorTest, TestSetConsumerTriggersInitialUIState) {
 
   mediator_.consumer = consumer;
 
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
   EXPECT_TRUE(consumer.isZeroState);
   EXPECT_EQ(1, consumer.zeroStateChangeCount);
   EXPECT_TRUE(consumer.dismissKeyboardCalled);
-  EXPECT_TRUE(mediator_.hasGrabber);
-  EXPECT_EQ(AssistantContainerDetent::kMedium, mediator_.detentSize);
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
-}
-
-// Tests that setting mediator properties updates values and notifies
-// containerHandler/consumer.
-TEST_F(GeminiContainerMediatorTest, TestPropertySettersNotifyContainerHandler) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
-
-  FakeGeminiContainerConsumer* consumer =
-      [[FakeGeminiContainerConsumer alloc] init];
-  mediator_.consumer = consumer;
-
-  OCMExpect([mock_container_handler_
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
-  mediator_.detentSize = AssistantContainerDetent::kMinimized;
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
-
-  OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:YES
-                                                               animated:YES]);
-  mediator_.hasGrabber = NO;
-  EXPECT_FALSE(mediator_.hasGrabber);
-  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
-
-  mediator_.zeroStateVisible = NO;
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-  EXPECT_FALSE(consumer.isZeroState);
-
-  // Duplicate calls to same values should be ignored.
-  [[mock_container_handler_ reject]
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
-  mediator_.detentSize = AssistantContainerDetent::kMinimized;
-
-  [[mock_container_handler_ reject] setAssistantContainerGrabberHidden:YES
-                                                              animated:YES];
-  mediator_.hasGrabber = NO;
-
-  NSInteger zeroStateCount = consumer.zeroStateChangeCount;
-  mediator_.zeroStateVisible = NO;
-  EXPECT_EQ(zeroStateCount, consumer.zeroStateChangeCount);
-  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
-}
-
-// Tests that updateUIState correctly transitions state based on
-// processingStatus.
-TEST_F(GeminiContainerMediatorTest, TestUpdateUIStateFromProcessingStatus) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
-
-  FakeGeminiContainerConsumer* consumer =
-      [[FakeGeminiContainerConsumer alloc] init];
-  mediator_.consumer = consumer;
-
-  [mediator_
-      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
-                      sessionID:@"session"
-                 conversationID:@"conv"];
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_FALSE(mediator_.hasGrabber);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-
-  [mediator_
-      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
-                      sessionID:@"session"
-                 conversationID:@"conv"];
-  EXPECT_EQ(AssistantContainerDetent::kMedium, mediator_.detentSize);
-  EXPECT_TRUE(mediator_.hasGrabber);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-
-  [mediator_ didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
-                             sessionID:@"session"
-                        conversationID:@"conv"];
-  EXPECT_EQ(AssistantContainerDetent::kMedium, mediator_.detentSize);
-  EXPECT_TRUE(mediator_.hasGrabber);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-}
-
-// Tests that updateUIState transitions to minimized and hides grabber when mode
-// is kLive, and subsequent processing status changes do not override live mode.
-TEST_F(GeminiContainerMediatorTest, TestUpdateUIStateFromLiveMode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
-
-  FakeGeminiContainerConsumer* consumer =
-      [[FakeGeminiContainerConsumer alloc] init];
-  mediator_.consumer = consumer;
-
-  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_FALSE(mediator_.hasGrabber);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-
-  // Subsequent processing status changes should not override live mode state.
-  [mediator_
-      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
-                      sessionID:@"session"
-                 conversationID:@"conv"];
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_FALSE(mediator_.hasGrabber);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-}
-
-// Tests that didSwitchToMode with kFloaty does not change the default container
-// UI state values.
-TEST_F(GeminiContainerMediatorTest,
-       TestDidSwitchToModeFloatyPreservesDefaultUIState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
-
-  FakeGeminiContainerConsumer* consumer =
-      [[FakeGeminiContainerConsumer alloc] init];
-  mediator_.consumer = consumer;
-
-  EXPECT_EQ(AssistantContainerDetent::kMedium, mediator_.detentSize);
-  EXPECT_TRUE(mediator_.hasGrabber);
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
-
-  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
-  EXPECT_EQ(AssistantContainerDetent::kMedium, mediator_.detentSize);
-  EXPECT_TRUE(mediator_.hasGrabber);
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
-}
-
-// Tests that didTapNewChatButton sets hasGrabber and isZeroState to YES without
-// changing detentSize or dismissing the keyboard.
-TEST_F(GeminiContainerMediatorTest, TestDidTapNewChatButtonResetsZeroState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
-
-  FakeGeminiContainerConsumer* consumer =
-      [[FakeGeminiContainerConsumer alloc] init];
-  mediator_.consumer = consumer;
-
-  // Reset the flag that was set during initial setConsumer:.
-  consumer.dismissKeyboardCalled = NO;
-
-  [mediator_
-      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
-                      sessionID:@"session"
-                 conversationID:@"conv"];
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_FALSE(mediator_.hasGrabber);
-  EXPECT_FALSE(mediator_.isZeroStateVisible);
-
-  [mediator_ didTapNewChatButton];
-  EXPECT_TRUE(mediator_.hasGrabber);
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
-  EXPECT_EQ(AssistantContainerDetent::kMinimized, mediator_.detentSize);
-  EXPECT_FALSE(consumer.dismissKeyboardCalled);
 }
 
 // Tests that blockQuerySubmissionWhileLoading and
@@ -751,15 +586,18 @@ TEST_F(GeminiContainerMediatorTest,
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
 
   OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMinimized];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 
-  // When zeroState is NO, changing detent to minimized should not dismiss.
-  mediator_.zeroStateVisible = NO;
+  // When there is an active conversation, changing detent to minimized should
+  // not dismiss.
+  [mediator_ didUpdateProcessingStatus:ios::provider::GeminiClientMode::
+                                           kPreviousConversationLoading
+                             sessionID:@"session"
+                        conversationID:@"conv"];
   [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMinimized];
@@ -776,7 +614,6 @@ TEST_F(GeminiContainerMediatorTest, TestDidChangeDetentNextIaDisabled) {
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
 
   [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
   [mediator_ assistantContainer:nil
@@ -803,7 +640,6 @@ TEST_F(GeminiContainerMediatorTest,
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
-  EXPECT_TRUE(mediator_.isZeroStateVisible);
 
   OCMStub([mock_container_handler_ animateAssistantContainerToDetent:
                                        AssistantContainerDetent::kMinimized])

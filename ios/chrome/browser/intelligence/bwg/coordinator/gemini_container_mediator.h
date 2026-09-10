@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_mutator.h"
 
 namespace gemini {
@@ -26,10 +29,6 @@ class WebStateList;
 @protocol GeminiCommands;
 @protocol GeminiZeroStateConsumer;
 
-#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
-#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
-
 // Mediator for the Gemini container.
 @interface GeminiContainerMediator : NSObject <AssistantContainerDelegate,
                                                GeminiViewStateDelegate,
@@ -47,21 +46,6 @@ class WebStateList;
 
 // Consumer interface for handling UI updates from the coordinator.
 @property(nonatomic, weak) id<GeminiContainerConsumer> consumer;
-
-// Whether the container grabber is visible.
-@property(nonatomic, assign) BOOL hasGrabber;
-
-// Current detent size of the container.
-@property(nonatomic, assign) AssistantContainerDetent detentSize;
-
-// Whether the container should display the zero state UI.
-@property(nonatomic, assign, getter=isZeroStateVisible) BOOL zeroStateVisible;
-
-// Current processing status of the Gemini client.
-@property(nonatomic, readonly) ios::provider::GeminiClientMode processingStatus;
-
-// Current view mode of the Gemini UI (e.g. chat or live).
-@property(nonatomic, readonly) ios::provider::GeminiViewMode viewMode;
 
 // The gateway for bridging internal protocols.
 @property(nonatomic, readonly) id<BWGGatewayProtocol> gateway;
