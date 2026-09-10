@@ -19,15 +19,12 @@ ______________________________________________________________________
 When given a Figma design URL (e.g.,
 `https://www.figma.com/design/:fileKey/:fileName?node-id=:nodeId`):
 
-1. **Extract Parameters**: Extract the `fileKey` and the `nodeId` (replace
-   hyphens with colons, e.g., `128-1951` becomes `128:1951`).
-2. **Retrieve Design Context**: Call `get_design_context` with `fileKey` and
-   `nodeId` to fetch the metadata, layout hierarchy, layer styles, and text
-   annotations of the frame.
-3. **Reference Existing Component Specs**: Look up component spec files for
+1. **Read the Figma design**: Extract information from the Figma design using
+   the `figma-context` skill.
+2. **Reference Existing Component Specs**: Look up component spec files for
    relevant components using the `chrome-components` skill to map Figma
    components to Chromium C++ Views components.
-4. **Reference Token Mapping**: Consult the Chrome Design System token mapping
+3. **Reference Token Mapping**: Consult the Chrome Design System token mapping
    using the `chrome-tokens` skill to translate the variables from the Figma
    design (e.g., `desktop/sys/base-colors/base`) to equivalent C++ identifiers
    (`ui::kColorSysBase`).
