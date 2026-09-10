@@ -64,7 +64,16 @@ void ClampBoundsToFinite(gfx::RectF& bounds) {
 // Returns true if the stroke style would make this object have relative
 // lengths i.e. lengths as percentage of the viewport.
 bool ComputeStrokeHasRelativeLengths(const ComputedStyle& style) {
-  return style.StrokeWidth().length().HasPercent();
+  if (style.StrokeWidth().length().HasPercent()) {
+    return true;
+  }
+  if (auto* dash_array = style.StrokeDashArray();
+      dash_array && std::ranges::any_of(*dash_array, [](const Length& dash) {
+        return dash.HasPercent();
+      })) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -125,6 +134,7 @@ void LayoutSVGShape::StyleDidChange(
       SetNeedsShapeUpdate();
     }
   }
+  stroke_depends_on_viewport_ = ComputeStrokeHasRelativeLengths(new_style);
 
   const bool has_non_scaling_stroke = HasNonScalingStroke();
   SetTransformAffectsVectorEffect(has_non_scaling_stroke);
@@ -357,7 +367,7 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
   if (layout_info.viewport_changed) {
     if (geometry_depends_on_viewport_) {
       SetNeedsShapeUpdate();
-    } else if (ComputeStrokeHasRelativeLengths(StyleRef())) {
+    } else if (stroke_depends_on_viewport_) {
       needs_boundaries_update_ = true;
     }
   }
@@ -391,8 +401,7 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
   }
 
   const bool has_viewport_dependence =
-      geometry_depends_on_viewport_ ||
-      ComputeStrokeHasRelativeLengths(StyleRef()) ||
+      geometry_depends_on_viewport_ || stroke_depends_on_viewport_ ||
       (transform_uses_reference_box_ &&
        StyleRef().TransformBox() == ETransformBox::kViewBox);
 
@@ -416,8 +425,7 @@ bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
       resource_invalidator.InvalidatePaints();
     }
   } else if (layout_info.viewport_changed) {
-    if (geometry_depends_on_viewport_ ||
-        ComputeStrokeHasRelativeLengths(StyleRef())) {
+    if (geometry_depends_on_viewport_ || stroke_depends_on_viewport_) {
       needs_paint_invalidation = true;
     }
   }

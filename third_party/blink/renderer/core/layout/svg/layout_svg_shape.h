@@ -254,6 +254,8 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   // True if the geometry represented by this object depends on the size of the
   // viewport.
   bool geometry_depends_on_viewport_ : 1 = false;
+  // True if the stroke of this object depends on the size of the viewport.
+  bool stroke_depends_on_viewport_ : 1 = false;
   // True if the bounds of this object are not up-to-date.
   bool needs_boundaries_update_ : 1 = false;
   // True if the associated shape data (`path_` et al) is not up-to-date.
