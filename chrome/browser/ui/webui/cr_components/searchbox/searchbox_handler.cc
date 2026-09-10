@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -37,6 +38,7 @@
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -76,6 +78,9 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_client.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1170,6 +1175,11 @@ SearchboxHandler::SearchboxHandler(
             base::Unretained(this)));
     OnKeywordSpaceTriggeringPrefChanged();
   }
+
+  if (auto* template_url_service = GetTemplateURLService()) {
+    template_url_service_observation_.Observe(template_url_service);
+  }
+  SendAvailableKeywordModels();
 }
 
 SearchboxHandler::~SearchboxHandler() {
@@ -1180,6 +1190,85 @@ SearchboxHandler::~SearchboxHandler() {
       observer->RemoveObserver(this);
     }
   }
+  template_url_service_observation_.Reset();
+}
+
+void SearchboxHandler::OnTemplateURLServiceChanged() {
+  SendAvailableKeywordModels();
+}
+
+void SearchboxHandler::OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
+}
+
+TemplateURLService* SearchboxHandler::GetTemplateURLService() const {
+  if (client()) {
+    return client()->GetTemplateURLService();
+  }
+  if (profile_) {
+    return TemplateURLServiceFactory::GetForProfile(profile_);
+  }
+  return nullptr;
+}
+
+void SearchboxHandler::SendAvailableKeywordModels() {
+  if (!page_) {
+    return;
+  }
+
+  TemplateURLService* template_url_service = GetTemplateURLService();
+  if (!template_url_service) {
+    page_->SetAvailableKeywordModels({});
+    return;
+  }
+
+  std::vector<searchbox::mojom::InputKeywordModelPtr> models;
+  const bool is_off_the_record = profile_ && profile_->IsOffTheRecord();
+
+  std::unordered_set<std::u16string> seen_keywords;
+  for (TemplateURL* turl : template_url_service->GetTemplateURLs()) {
+    if (!turl || turl->keyword().empty()) {
+      continue;
+    }
+
+    // Must be eligible for keyword matching in omnibox autocomplete.
+    if (!turl->CanBeUsedForKeywordMatching()) {
+      continue;
+    }
+
+    // Must support replacement of search terms.
+    if (!turl->SupportsReplacement(template_url_service->search_terms_data())) {
+      continue;
+    }
+
+    // The built-in history keyword mode is disabled in incognito mode.
+    if (is_off_the_record &&
+        turl->starter_pack_id() ==
+            template_url_starter_pack_data::StarterPackId::kHistory) {
+      continue;
+    }
+
+    if (!seen_keywords.insert(base::ToLowerASCII(turl->keyword())).second) {
+      continue;
+    }
+
+    auto keyword_model = searchbox::mojom::InputKeywordModel::New();
+    keyword_model->type =
+        (turl->starter_pack_id() !=
+             template_url_starter_pack_data::StarterPackId::kNone ||
+         turl->featured_by_policy())
+            ? searchbox::mojom::KeywordType::kInstant
+            : searchbox::mojom::KeywordType::kChip;
+    keyword_model->keyword = base::UTF16ToUTF8(turl->keyword());
+    const auto names =
+        searchbox::GetKeywordLabelNames(turl->keyword(), template_url_service);
+    keyword_model->display_text = names.full_name.empty()
+                                      ? base::UTF16ToUTF8(turl->keyword())
+                                      : base::UTF16ToUTF8(names.full_name);
+    models.push_back(std::move(keyword_model));
+  }
+
+  page_->SetAvailableKeywordModels(std::move(models));
 }
 
 void SearchboxHandler::OnKeywordSpaceTriggeringPrefChanged() {
@@ -1240,8 +1329,7 @@ void SearchboxHandler::QueryAutocomplete(
   bool is_keyword_selected = false;
   const TemplateURL* template_url = nullptr;
   if (!keyword.empty()) {
-    TemplateURLService* service =
-        client() ? client()->GetTemplateURLService() : nullptr;
+    TemplateURLService* service = GetTemplateURLService();
     if (service) {
       std::u16string keyword16;
       // TODO(b:504669216): There may actually exist a `TemplateURL` with
@@ -1724,8 +1812,7 @@ void SearchboxHandler::GetInputState(GetInputStateCallback callback) {
 
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
-  TemplateURLService* template_url_service =
-      client() ? client()->GetTemplateURLService() : nullptr;
+  TemplateURLService* template_url_service = GetTemplateURLService();
 
   std::u16string input_text = controller->input().text();
   if (controller->input().in_keyword_mode() && template_url_service) {

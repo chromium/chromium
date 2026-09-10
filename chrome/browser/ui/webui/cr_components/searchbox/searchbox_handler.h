@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -40,6 +41,7 @@ class OmniboxController;
 class OmniboxClient;
 class Profile;
 class OmniboxEditModel;
+class TemplateURLService;
 
 namespace content {
 class WebContents;
@@ -64,7 +66,8 @@ class Size;
 
 class SearchboxHandler : public searchbox::mojom::PageHandler,
                          public AutocompleteController::Observer,
-                         public PermissionPromptObserver::Observer {
+                         public PermissionPromptObserver::Observer,
+                         public TemplateURLServiceObserver {
  public:
   class Delegate {
    public:
@@ -120,6 +123,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // PermissionPromptObserver::Observer:
   void OnPermissionPromptChanged(bool is_showing,
                                  const gfx::Size& prompt_size) override;
+
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
 
   // searchbox::mojom::PageHandler:
   void OnFocusChanged(bool focused) override;
@@ -265,12 +272,16 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   base::ScopedObservation<AutocompleteController,
                           AutocompleteController::Observer>
       autocomplete_controller_observation_{this};
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      template_url_service_observation_{this};
 
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 
+  TemplateURLService* GetTemplateURLService() const;
+  void SendAvailableKeywordModels();
   void OnKeywordSpaceTriggeringPrefChanged();
 
   void OpenMatch(OmniboxPopupSelection selection,

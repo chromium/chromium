@@ -661,6 +661,9 @@ interface Page {
   // Sets whether keyword space triggering is enabled.
   SetKeywordSpaceTriggeringEnabled(bool enabled);
 
+  // Sets the list of available input keyword models for keyword mode.
+  SetAvailableKeywordModels(array<InputKeywordModel> models);
+
   // Sets searchbox thumbnail.
   SetThumbnail(string thumbnail_url, bool is_deletable);
 

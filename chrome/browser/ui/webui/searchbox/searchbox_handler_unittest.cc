@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -265,6 +266,129 @@ TEST_F(SearchboxHandlerTest, KeywordSpaceTriggeringDynamicPrefChange) {
   profile()->GetPrefs()->SetBoolean(omnibox::kKeywordSpaceTriggeringEnabled,
                                     true);
   page_.FlushForTesting();
+}
+
+TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(template_url_service);
+  template_url_service->Load();
+
+  // Add an active prepopulated engine.
+  TemplateURLData active_data;
+  active_data.SetShortName(u"Google");
+  active_data.SetKeyword(u"google.com");
+  active_data.SetURL("https://www.google.com/search?q={searchTerms}");
+  active_data.prepopulate_id = 1;
+  template_url_service->Add(std::make_unique<TemplateURL>(active_data));
+
+  // Add a custom inactive engine (prepopulate_id == 0, is_active == kFalse).
+  TemplateURLData inactive_data;
+  inactive_data.SetShortName(u"Inactive");
+  inactive_data.SetKeyword(u"inactive.com");
+  inactive_data.SetURL("https://inactive.com/search?q={searchTerms}");
+  inactive_data.is_active = TemplateURLData::ActiveStatus::kFalse;
+  TemplateURL* inactive_engine =
+      template_url_service->Add(std::make_unique<TemplateURL>(inactive_data));
+
+  // Add an engine without search terms replacement.
+  TemplateURLData no_replacement_data;
+  no_replacement_data.SetShortName(u"NoReplacement");
+  no_replacement_data.SetKeyword(u"noreplace.com");
+  no_replacement_data.SetURL("https://noreplace.com/search");
+  no_replacement_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  template_url_service->Add(std::make_unique<TemplateURL>(no_replacement_data));
+
+  // Add an engine with duplicate keyword differing only by case (GOOGLE.COM).
+  TemplateURLData duplicate_case_data;
+  duplicate_case_data.SetShortName(u"Google Upper");
+  duplicate_case_data.SetKeyword(u"GOOGLE.COM");
+  duplicate_case_data.SetURL("https://www.google.com/search?q={searchTerms}");
+  duplicate_case_data.prepopulate_id = 2;
+  template_url_service->Add(std::make_unique<TemplateURL>(duplicate_case_data));
+
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface;
+  ui::UnownedUserDataHost unowned_user_data_host;
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowFeatures browser_window_features;
+  SetupMockBrowserWindowInterface(browser_window_interface, profile(),
+                                  browser_window_features,
+                                  unowned_user_data_host);
+#else
+  ON_CALL(browser_window_interface, GetProfile())
+      .WillByDefault(testing::Return(profile()));
+  ON_CALL(browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+#endif
+  webui::SetBrowserWindowInterface(web_contents.get(),
+                                   &browser_window_interface);
+
+  std::vector<searchbox::mojom::InputKeywordModelPtr> initial_models;
+  EXPECT_CALL(page_, SetAvailableKeywordModels(_))
+      .WillOnce(
+          [&](std::vector<searchbox::mojom::InputKeywordModelPtr> models) {
+            initial_models = std::move(models);
+          });
+
+  auto handler = std::make_unique<RealboxHandlerPublic>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      page_.BindAndGetRemote(), profile(), web_contents.get(),
+      base::BindLambdaForTesting(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }));
+  page_.FlushForTesting();
+
+  auto has_keyword =
+      [](const std::vector<searchbox::mojom::InputKeywordModelPtr>& list,
+         const std::string& kw) {
+        return std::ranges::any_of(
+            list, [&](const auto& m) { return m->keyword == kw; });
+      };
+  auto count_keywords =
+      [](const std::vector<searchbox::mojom::InputKeywordModelPtr>& list,
+         const std::string& kw) {
+        return std::ranges::count_if(list, [&](const auto& m) {
+          return base::EqualsCaseInsensitiveASCII(m->keyword, kw);
+        });
+      };
+
+  // Initial models should contain google.com, but NOT inactive.com or
+  // noreplace.com, and duplicate case keywords should be deduplicated to 1.
+  EXPECT_TRUE(has_keyword(initial_models, "google.com"));
+  EXPECT_EQ(count_keywords(initial_models, "google.com"), 1);
+  EXPECT_FALSE(has_keyword(initial_models, "inactive.com"));
+  EXPECT_FALSE(has_keyword(initial_models, "noreplace.com"));
+
+  // Now activate the inactive engine via TemplateURLService.
+  std::vector<searchbox::mojom::InputKeywordModelPtr> updated_models;
+  EXPECT_CALL(page_, SetAvailableKeywordModels(_))
+      .WillOnce(
+          [&](std::vector<searchbox::mojom::InputKeywordModelPtr> models) {
+            updated_models = std::move(models);
+          });
+
+  template_url_service->SetIsActiveTemplateURL(inactive_engine, true);
+  page_.FlushForTesting();
+
+  // Updated models should now contain inactive.com!
+  EXPECT_TRUE(has_keyword(updated_models, "inactive.com"));
+
+  // Now deactivate the engine again.
+  std::vector<searchbox::mojom::InputKeywordModelPtr> deactivated_models;
+  EXPECT_CALL(page_, SetAvailableKeywordModels(_))
+      .WillOnce(
+          [&](std::vector<searchbox::mojom::InputKeywordModelPtr> models) {
+            deactivated_models = std::move(models);
+          });
+
+  template_url_service->SetIsActiveTemplateURL(inactive_engine, false);
+  page_.FlushForTesting();
+
+  // Deactivated models should no longer contain inactive.com!
+  EXPECT_FALSE(has_keyword(deactivated_models, "inactive.com"));
 }
 
 TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictLensSearchHint) {

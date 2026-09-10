@@ -76,6 +76,8 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       searchbox::mojom::OmniboxPopupSelectionPtr selection) override {}
   void SetInputText(const std::string& input_text) override {}
   void SetKeywordSpaceTriggeringEnabled(bool enabled) override {}
+  void SetAvailableKeywordModels(
+      std::vector<searchbox::mojom::InputKeywordModelPtr> models) override {}
   void SetThumbnail(const std::string& thumbnail_url,
                     bool is_deletable) override {}
   void OnContextualInputStatusChanged(

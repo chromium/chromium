@@ -18,6 +18,7 @@ export enum KeywordModeEntryMethod {
   QUESTION_MARK = 3,
   KEYBOARD_SHORTCUT = 4,
   CLICK = 5,
+  SPACE_IN_MIDDLE = 6,
 }
 
 export interface KeywordClearedEvent {
@@ -47,12 +48,31 @@ export class KeywordModeManager {
       loadTimeData.getBoolean('keywordSpaceTriggeringEnabled') :
       true;
 
+  private availableKeywordModels_: Map<string, InputKeywordModel> = new Map();
   private inputKeywordModel_: InputKeywordModel|null = null;
   private entryMethod_: KeywordModeEntryMethod = KeywordModeEntryMethod.NONE;
   private delegate_: KeywordModeManagerDelegate;
+  private lastInput_: string = '';
 
   constructor(delegate: KeywordModeManagerDelegate) {
     this.delegate_ = delegate;
+  }
+
+  get entryMethod(): KeywordModeEntryMethod {
+    return this.entryMethod_;
+  }
+
+  get availableKeywordModels(): InputKeywordModel[] {
+    return Array.from(this.availableKeywordModels_.values());
+  }
+
+  set availableKeywordModels(models: InputKeywordModel[]) {
+    this.availableKeywordModels_ =
+        new Map(models.map(model => [model.keyword.toLowerCase(), model]));
+  }
+
+  get lastInput(): string {
+    return this.lastInput_;
   }
 
   get inputKeywordModel(): InputKeywordModel|null {
@@ -171,10 +191,14 @@ export class KeywordModeManager {
    */
   acceptInputTrigger(input: string, cursorPosition: number|null): boolean {
     if (cursorPosition === null) {
+      this.lastInput_ = input;
       return false;
     }
-    return this.acceptSpaceAtEnd_(input, cursorPosition) ||
+    const triggered = this.acceptSpaceAtEnd_(input, cursorPosition) ||
+        this.acceptSpaceInMiddle_(input, cursorPosition) ||
         this.acceptQuestionMark_(input, cursorPosition);
+    this.lastInput_ = input;
+    return triggered;
   }
 
   private acceptSpaceAtEnd_(input: string, cursorPosition: number): boolean {
@@ -195,7 +219,8 @@ export class KeywordModeManager {
 
     // Input must match keyword.
     const keyword = this.inputKeywordModel_.keyword;
-    if (!keyword || input.slice(0, -1) !== keyword) {
+    if (!keyword ||
+        input.slice(0, -1).toLowerCase() !== keyword.toLowerCase()) {
       return false;
     }
 
@@ -214,6 +239,73 @@ export class KeywordModeManager {
     this.enter(
         keyword, this.inputKeywordModel_.displayText,
         KeywordModeEntryMethod.SPACE_AT_END);
+    return true;
+  }
+
+  private acceptSpaceInMiddle_(input: string, cursorPosition: number): boolean {
+    // Space triggering must be enabled.
+    if (!this.keywordSpaceTriggeringEnabled) {
+      return false;
+    }
+
+    // Must not already be in keyword mode.
+    if (this.isInKeywordMode) {
+      return false;
+    }
+
+    // Cursor must be after at least 1 keyword character and the typed space,
+    // with at least 1 character after the space.
+    const spacePosition = cursorPosition - 1;
+    if (spacePosition <= 0 || cursorPosition >= input.length) {
+      return false;
+    }
+
+    // Character at spacePosition must be a space.
+    const spaceChar = input[spacePosition];
+    if (spaceChar !== ' ' && spaceChar !== '　') {
+      return false;
+    }
+
+    // Character preceding the space must not be whitespace.
+    const charBeforeSpace = input[spacePosition - 1];
+    if (charBeforeSpace === ' ' || charBeforeSpace === '　') {
+      return false;
+    }
+
+    // Keyword candidate is the single word preceding the space.
+    const candidate = input.slice(0, spacePosition);
+    if (candidate.includes(' ') || candidate.includes('　')) {
+      return false;
+    }
+
+    // Must match an available keyword.
+    const lowerCandidate = candidate.toLowerCase();
+    const model = this.availableKeywordModels_.get(lowerCandidate) ||
+        (this.inputKeywordModel_?.keyword.toLowerCase() === lowerCandidate ?
+             this.inputKeywordModel_ :
+             null);
+    if (!model) {
+      return false;
+    }
+
+    // Text after the space must not be empty or start with whitespace.
+    const textAfter = input.slice(cursorPosition);
+    if (!textAfter.trim() || textAfter.startsWith(' ') ||
+        textAfter.startsWith('　')) {
+      return false;
+    }
+
+    // Space must have been typed in the middle between the keyword and text
+    // after the space, meaning the previous input was `candidate + textAfter`.
+    if (this.lastInput_.toLowerCase() !==
+        (candidate + textAfter).toLowerCase()) {
+      return false;
+    }
+
+    const keyword = model.keyword;
+    const displayText = model.displayText || keyword;
+
+    this.enter(keyword, displayText, KeywordModeEntryMethod.SPACE_IN_MIDDLE);
     return true;
   }
 
@@ -255,12 +347,14 @@ export class KeywordModeManager {
     if (this.isInKeywordMode) {
       const keyword = this.inputKeywordModel_?.keyword;
       if (keyword) {
-        if (match.fillIntoEdit.startsWith(keyword + ' ')) {
+        const lowerKeyword = keyword.toLowerCase();
+        const lowerFill = match.fillIntoEdit.toLowerCase();
+        if (lowerFill.startsWith(lowerKeyword + ' ')) {
           return match.fillIntoEdit.substring(keyword.length + 1);
         }
-        if (match.fillIntoEdit === keyword ||
+        if (lowerFill === lowerKeyword ||
             (match.keywordModel?.type !== KeywordType.kInKeyword &&
-             match.keywordModel?.keyword === keyword)) {
+             match.keywordModel?.keyword.toLowerCase() === lowerKeyword)) {
           return '';
         }
       }
@@ -292,7 +386,8 @@ export class KeywordModeManager {
 
     if (isKeywordChipSelected && selectedMatch.keywordModel) {
       if (!this.isInKeywordMode ||
-          this.activeKeyword !== selectedMatch.keywordModel.keyword) {
+          this.activeKeyword.toLowerCase() !==
+              selectedMatch.keywordModel.keyword.toLowerCase()) {
         this.enter(
             selectedMatch.keywordModel.keyword,
             selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB);

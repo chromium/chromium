@@ -3113,4 +3113,107 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(element.keywordModeManager.keywordSpaceTriggeringEnabled);
   });
+
+  test('dynamic available keyword models update', async () => {
+    assertEquals(0, element.keywordModeManager.availableKeywordModels.length);
+
+    testProxy.callbackRouterRemote.setAvailableKeywordModels([
+      {
+        type: KeywordType.kChip,
+        keyword: 'google.com',
+        displayText: 'Search Google',
+      },
+      {
+        type: KeywordType.kInstant,
+        keyword: '@history',
+        displayText: '@history',
+      },
+    ]);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertEquals(2, element.keywordModeManager.availableKeywordModels.length);
+    assertEquals(
+        'google.com',
+        element.keywordModeManager.availableKeywordModels[0]?.keyword);
+    assertEquals(
+        '@history',
+        element.keywordModeManager.availableKeywordModels[1]?.keyword);
+
+    testProxy.callbackRouterRemote.setAvailableKeywordModels([]);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertEquals(0, element.keywordModeManager.availableKeywordModels.length);
+  });
+
+  test(
+      'space in middle enters keyword mode and queries remainder', async () => {
+        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
+          type: KeywordType.kChip,
+          keyword: 'youtube.com',
+          displayText: 'Search YouTube',
+        }]);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'youtube.comquery');
+
+        testProxy.handler.reset();
+
+        // Type space at cursor index 12 -> 'youtube.com query'
+        mockInput.inputElement.value = 'youtube.com query';
+        mockInput.inputElement.selectionStart = 12;
+        mockInput.inputElement.selectionEnd = 12;
+        mockInput.inputElement.dispatchEvent(new InputEvent('input'));
+        await microtasksFinished();
+
+        assertTrue(element.keywordModeManager.isInKeywordMode);
+        assertEquals('youtube.com', element.keywordModeManager.activeKeyword);
+        assertEquals('query', mockInput.inputElement.value);
+
+        // Verify cursor is placed before the remaining query (at 0), not after.
+        assertEquals(0, mockInput.inputElement.selectionStart);
+        assertEquals(0, mockInput.inputElement.selectionEnd);
+
+        // Verify queryAutocomplete was called with remainder 'query',
+        // keyword 'youtube.com', cursor position 0, and
+        // preventInlineAutocomplete true.
+        const args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals('query', args.input);
+        assertEquals('youtube.com', args.keyword);
+        assertEquals(0, args.cursorPosition);
+        assertTrue(args.preventInlineAutocomplete);
+      });
+
+  test(
+      'space in middle with case-insensitive keyword enters keyword mode',
+      async () => {
+        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
+          type: KeywordType.kChip,
+          keyword: 'youtube.com',
+          displayText: 'Search YouTube',
+        }]);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'YOUTUBE.COMquery');
+
+        testProxy.handler.reset();
+
+        // Type space at cursor index 12 -> 'YOUTUBE.COM query'
+        mockInput.inputElement.value = 'YOUTUBE.COM query';
+        mockInput.inputElement.selectionStart = 12;
+        mockInput.inputElement.selectionEnd = 12;
+        mockInput.inputElement.dispatchEvent(new InputEvent('input'));
+        await microtasksFinished();
+
+        assertTrue(element.keywordModeManager.isInKeywordMode);
+        assertEquals('youtube.com', element.keywordModeManager.activeKeyword);
+        assertEquals('query', mockInput.inputElement.value);
+        assertEquals(0, mockInput.inputElement.selectionStart);
+        assertEquals(0, mockInput.inputElement.selectionEnd);
+
+        const args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals('query', args.input);
+        assertEquals('youtube.com', args.keyword);
+        assertEquals(0, args.cursorPosition);
+        assertTrue(args.preventInlineAutocomplete);
+      });
 });
