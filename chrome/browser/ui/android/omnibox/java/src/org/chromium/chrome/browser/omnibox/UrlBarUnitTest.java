@@ -2202,4 +2202,14 @@ public class UrlBarUnitTest {
         mUrlBar.bringPointIntoView(5);
         verify(mUrlBar).bringPointIntoView(5);
     }
+
+    @Test
+    public void testBringPointIntoView_focused_emptyText_allowed() {
+        mUrlBar.onFocusChanged(true, 0, null);
+        mUrlBar.setText("");
+        mUrlBar.setSelection(0, 0);
+
+        mUrlBar.bringPointIntoView(0);
+        verify(mUrlBar).bringPointIntoView(0);
+    }
 }

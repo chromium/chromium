@@ -1597,7 +1597,7 @@ public class UrlBar extends AutocompleteEditText {
             }
             // Suppress framework driven auto-scrolling if we're focused and currently selecting all
             // text so that the beginning of the url remains visible.
-        } else if (getText() != null
+        } else if (!TextUtils.isEmpty(getText())
                 && getSelectionStart() == 0
                 && getSelectionEnd() == getText().length()) {
             return false;
