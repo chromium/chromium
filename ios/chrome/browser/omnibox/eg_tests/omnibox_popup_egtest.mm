@@ -546,8 +546,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Test when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
-// TODO(crbug.com/522179934): Flaky. Fix and re-enable.
-- (void)DISABLED_testScrollingDismissesKeyboard {
+- (void)testScrollingDismissesKeyboard {
   [ChromeEarlGrey loadURL:GURL("about:blank")];
 
   // Clears the url and replace it with local url host.

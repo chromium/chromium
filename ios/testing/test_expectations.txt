@@ -139,3 +139,6 @@ crbug.com/559198907 [ iOS26 Device ] SnapshotGeneratorWithOverlaysTest/GenerateU
 crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/GenerateSnapshot [ Pass Failure ]
 crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/GenerateSnapshotWithoutOverlaysWithCallback [ Pass Failure ]
 crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/UpdateSnapshotWithCallback [ Pass Failure ]
+
+# Gardening suppression 2026-09-10
+crbug.com/521844463 OmniboxPopupWithFakeSuggestionTestCase/testScrollingDismissesKeyboard [ Pass Failure ]
