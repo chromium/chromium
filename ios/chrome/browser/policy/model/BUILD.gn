@@ -56,6 +56,8 @@ source_set("model") {
     "reporting/reporting_delegate_factory_ios.mm",
     "reporting/reporting_util.h",
     "reporting/reporting_util.mm",
+    "reporting/saas_usage/saas_usage_reporting_controller_factory_ios.h",
+    "reporting/saas_usage/saas_usage_reporting_controller_factory_ios.mm",
     "restrict_accounts_policy_handler.cc",
     "restrict_accounts_policy_handler.h",
     "schema_registry_factory.h",

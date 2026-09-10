@@ -148,6 +148,7 @@
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_controller_factory_ios.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
@@ -266,6 +267,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   DataProtectionUrlLookupServiceFactory::GetInstance();
   enterprise::ProfileIdServiceFactoryIOS::GetInstance();
   enterprise_reporting::CloudProfileReportingServiceFactoryIOS::GetInstance();
+  enterprise_reporting::SaasUsageReportingControllerFactoryIOS::GetInstance();
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
   enterprise_connectors::BackgroundCloudScannerManagerFactory::GetInstance();
   enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetInstance();
