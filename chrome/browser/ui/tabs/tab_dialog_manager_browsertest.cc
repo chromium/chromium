@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
   std::unique_ptr<views::Widget> widget;
   // `kInitialSize` is the same as the size defined in CreateAutoresizeWidget().
   const gfx::Size kInitialSize(500, 500);
-  gfx::Point initial_origin;
+  gfx::Rect initial_bounds;
 
   RunTestSequence(
       Do([&, this]() {
@@ -320,13 +320,13 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
             prefs::kPinSplitTabButton, true);
       }),
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      Do([&]() { initial_bounds = widget->GetClientAreaBoundsInScreen(); }),
+      PollState(kWidgetBoundsState,
+                [&widget]() { return widget->GetClientAreaBoundsInScreen(); }),
       PressButton(kToolbarSplitTabsToolbarButtonElementId),
-      Check(
-          [&]() {
-            return widget->GetClientAreaBoundsInScreen().origin() !=
-                   initial_origin;
-          },
-          "Verify origin is updated"));
+      WaitForState(kWidgetBoundsState,
+                   testing::Property(&gfx::Rect::origin,
+                                     testing::Ne(initial_bounds.origin()))));
 }
 
 // Tests that the widget is repositioned after its preferred size is changed

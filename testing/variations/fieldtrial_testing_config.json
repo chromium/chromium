@@ -21718,16 +21718,14 @@
                         "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
+                        "WebUIBackForwardButton",
                         "WebUIBundledCodeCache",
+                        "WebUIHomeButton",
                         "WebUIInProcessResourceLoadingV2",
                         "WebUIReloadButton",
+                        "WebUISplitTabsButton",
                         "WebUIToolbarFrameEvictionOptOut",
                         "WebiumMetricsMapping"
-                    ],
-                    "disable_features": [
-                        "WebUIBackForwardButton",
-                        "WebUIHomeButton",
-                        "WebUISplitTabsButton"
                     ]
                 }
             ]
