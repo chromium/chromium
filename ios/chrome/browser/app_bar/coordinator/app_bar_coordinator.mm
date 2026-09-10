@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_container_mediator.h"
@@ -36,12 +38,15 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface AppBarCoordinator () <AccountMenuCoordinatorDelegate,
                                  AppBarCommands,
@@ -226,7 +231,7 @@
   _signinCoordinator = nil;
 }
 
-#pragma mark AppBarMediatorDelegate
+#pragma mark - AppBarMediatorDelegate
 
 - (void)showAccountMenu:(UIView*)anchorView {
   if (_accountMenuCoordinator) {
@@ -267,6 +272,39 @@
                                               browser:_regularBrowser
                                    baseViewController:self.baseViewController];
   [_signinCoordinator start];
+}
+
+- (void)appBarMediatorDidTapAssistantInIncognito {
+  base::RecordAction(
+      base::UserMetricsAction("MobileToolbarAssistantIncognitoTapped"));
+  CommandDispatcher* incognitoDispatcher =
+      _incognitoBrowser ? _incognitoBrowser->GetCommandDispatcher() : nil;
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(incognitoDispatcher, SnackbarCommands);
+  CommandDispatcher* regularDispatcher =
+      _regularBrowser->GetCommandDispatcher();
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(regularDispatcher, SceneCommands);
+  id<TabGridCommands> tabGridHandler =
+      HandlerForProtocol(regularDispatcher, TabGridCommands);
+  SceneState* sceneState = _regularBrowser->GetSceneState();
+  [snackbarHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(IDS_IOS_APP_BAR_GEMINI_NOT_AVAILABLE_INCOGNITO)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_IOS_APP_BAR_SWITCH_MODES)
+                messageAction:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileToolbarAssistantIncognitoSwitchModesTapped"));
+                  if (sceneState.tabGridState.tabGridVisible) {
+                    [tabGridHandler showPage:TabGridPageRegularTabs
+                                    animated:YES];
+                  } else {
+                    [sceneHandler
+                        displayTabGridInMode:TabGridOpeningMode::kRegular];
+                  }
+                }
+             completionAction:nil];
 }
 
 #pragma mark - Properties

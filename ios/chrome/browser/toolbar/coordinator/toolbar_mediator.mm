@@ -72,6 +72,7 @@
   ToolbarButtonMenuFactory* _buttonMenuFactory;
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<ProfileIOS> _profile;
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Pref tracking if bottom omnibox is enabled.
@@ -89,11 +90,13 @@
   raw_ptr<GeminiService> _geminiService;
   raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
   std::unique_ptr<GeminiBrowserAgentObserverBridge> _geminiObserver;
+  BOOL _isIncognito;
 }
 
 - (instancetype)initWithIncognito:(BOOL)incognito
                      webStateList:(WebStateList*)webStateList
                     actionFactory:(BrowserActionFactory*)actionFactory
+                          profile:(ProfileIOS*)profile
                       prefService:(PrefService*)prefService
              fullscreenController:(FullscreenController*)fullscreenController
            fullscreenBrowserAgent:
@@ -106,6 +109,8 @@
                geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent {
   self = [super init];
   if (self) {
+    _isIncognito = incognito;
+    _profile = profile;
     _webStateList = webStateList;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
@@ -237,6 +242,8 @@
   _prefObserverBridge.reset();
   _prefService = nullptr;
   _authenticationService = nullptr;
+  _profile = nullptr;
+  _delegate = nil;
 }
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
@@ -313,6 +320,10 @@
 }
 
 - (void)assistantButtonTapped {
+  if (_isIncognito) {
+    [self.delegate toolbarMediatorDidTapAssistantInIncognito:self];
+    return;
+  }
   if (_geminiBrowserAgent && _geminiBrowserAgent->is_floaty_invoked()) {
     // Gemini floaty already started.
     [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
@@ -597,7 +608,7 @@
       _webStateList ? _webStateList->GetActiveWebState() : nullptr;
 
   gemini::GeminiAvailabilityResult result = gemini::IsGeminiAvailable(
-      gemini::EntryPoint::Toolbar, /*profile=*/nullptr, activeWebState,
+      gemini::EntryPoint::Toolbar, _profile, activeWebState,
       _authenticationService, _prefService);
 
   [self.consumer setAssistantButtonVisible:result.visible

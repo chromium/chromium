@@ -24647,6 +24647,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarAssistantIncognitoSwitchModesTapped">
+  <owner>gambard@chromium.org</owner>
+  <owner>meridian@google.com</owner>
+  <description>
+    The user tapped on the 'Switch modes' snackbar action after tapping the
+    Assistant button in Incognito mode.
+  </description>
+</action>
+
+<action name="MobileToolbarAssistantIncognitoTapped">
+  <owner>gambard@chromium.org</owner>
+  <owner>meridian@google.com</owner>
+  <description>
+    The user tapped on the Assistant button in the AppBar or Toolbar while in
+    Incognito mode.
+  </description>
+</action>
+
 <action name="MobileToolbarBack">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -571,9 +571,9 @@ TEST_F(AppBarViewControllerTestManual, TestIncognitoInitially) {
   EXPECT_TRUE(backgroundView.incognito);
 
   UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
-  EXPECT_FALSE(assistantButton.enabled);
-  EXPECT_TRUE(assistantButton.accessibilityTraits &
-              UIAccessibilityTraitNotEnabled);
+  EXPECT_TRUE(assistantButton.enabled);
+  EXPECT_FALSE(assistantButton.accessibilityTraits &
+               UIAccessibilityTraitNotEnabled);
 }
 
 // Tests that the open new tab button only logs shortcut user action metrics
@@ -647,6 +647,35 @@ TEST_F(AppBarViewControllerTest,
   NSNumber* buttonsTitleAlpha =
       [view_controller_ valueForKey:@"buttonsTitleAlpha"];
   EXPECT_EQ(buttonsTitleAlpha.doubleValue, 1.0);
+}
+
+// Tests that the assistant button reflects the enabled state passed to
+// setAssistantButtonState.
+TEST_F(AppBarViewControllerTest, TestAssistantButtonEnabledState) {
+  UIButton* button = assistantButton();
+  ASSERT_NE(button, nil);
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  EXPECT_TRUE(button.enabled);
+  EXPECT_FALSE(button.accessibilityTraits & UIAccessibilityTraitNotEnabled);
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                                highlighted:NO
+                                    enabled:NO
+                                     avatar:nil
+                                   signedIn:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  EXPECT_FALSE(button.enabled);
+  EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitNotEnabled);
 }
 
 }  // namespace

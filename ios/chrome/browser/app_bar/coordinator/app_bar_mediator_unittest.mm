@@ -10,6 +10,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -282,6 +283,8 @@ class AppBarMediatorTest : public PlatformTest {
     mock_tab_groups_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
     mediator_.regularTabGroupsCommands = mock_tab_groups_handler_;
     mediator_.incognitoTabGroupsCommands = mock_tab_groups_handler_;
+    mock_delegate_ = OCMProtocolMock(@protocol(AppBarMediatorDelegate));
+    mediator_.delegate = mock_delegate_;
   }
 
   ~AppBarMediatorTest() override {
@@ -419,6 +422,7 @@ class AppBarMediatorTest : public PlatformTest {
     mediator.geminiHandler = mock_gemini_handler_;
     mediator.regularTabGroupsCommands = mock_tab_groups_handler_;
     mediator.incognitoTabGroupsCommands = mock_tab_groups_handler_;
+    mediator.delegate = mock_delegate_;
     return mediator;
   }
 
@@ -453,6 +457,7 @@ class AppBarMediatorTest : public PlatformTest {
   id mock_gemini_handler_;
   id mock_tab_groups_handler_;
   id mock_lens_overlay_handler_;
+  id mock_delegate_;
 };
 
 // Tests that the consumer is updated when a web state is added.
@@ -546,6 +551,31 @@ TEST_F(AppBarMediatorTest, TestSwitchToRegularTabGrid) {
   OCMExpect([consumer_ setButtonsEnabled:YES]);
   OCMExpect([consumer_ updateTabCount:1]);
   tab_grid_state_.currentPage = TabGridPageRegularTabs;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the consumer tab count is updated when entering the regular tab
+// grid from incognito.
+TEST_F(AppBarMediatorTest, TestEnterTabGridCrossModeFromIncognitoToRegular) {
+  tab_grid_state_.tabGridVisible = NO;
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+  incognito_state_.incognitoContentVisible = YES;
+
+  // 1 tab in incognito, 2 tabs in regular.
+  auto incognito_web_state = std::make_unique<web::FakeWebState>();
+  incognito_web_state_list_->InsertWebState(std::move(incognito_web_state));
+
+  auto regular_web_state1 = std::make_unique<web::FakeWebState>();
+  regular_web_state_list_->InsertWebState(std::move(regular_web_state1));
+  auto regular_web_state2 = std::make_unique<web::FakeWebState>();
+  regular_web_state_list_->InsertWebState(std::move(regular_web_state2));
+
+  // The active page transitions to regular before tabGridVisible becomes YES.
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+
+  // Entering tab grid should update the consumer with regular tab count (2).
+  OCMExpect([consumer_ updateTabCount:2]);
+  tab_grid_state_.tabGridVisible = YES;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
@@ -1202,6 +1232,103 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
   histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
                                        AppBarAssistantButtonState::kAsk, 1);
+}
+
+// Tests that tapping the assistant button in an incognito tab notifies the
+// delegate.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedInIncognitoTab) {
+  SignInAndSetCapability(true);
+  [mediator_ updateAssistantButton];
+
+  incognito_state_.incognitoContentVisible = YES;
+
+  OCMExpect([mock_delegate_ appBarMediatorDidTapAssistantInIncognito]);
+
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk
+                                   fromView:nil];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAsk, 1);
+}
+
+// Tests that tapping the assistant button in incognito tab grid notifies the
+// delegate.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedInIncognitoTabGrid) {
+  SignInAndSetCapability(true);
+  [mediator_ updateAssistantButton];
+
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+
+  OCMExpect([mock_delegate_ appBarMediatorDidTapAssistantInIncognito]);
+
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk
+                                   fromView:nil];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAsk, 1);
+}
+
+// Tests that the assistant button is enabled in incognito tab when state is
+// kAsk.
+TEST_F(AppBarMediatorTest, TestAssistantButtonEnabledInIncognitoForAskState) {
+  SignInAndSetCapability(true);
+  incognito_state_.incognitoContentVisible = YES;
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is disabled in incognito tab when state is
+// not kAsk.
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonDisabledInIncognitoForAccountState) {
+  SetLocationEligible(true);
+  SignInWithTriboolCapability(signin::Tribool::kTrue);
+
+  gemini::IneligibilityReasons reasons;
+  reasons.workspace = true;
+  fake_gemini_service_->SetIneligibilityReasons(reasons);
+
+  incognito_state_.incognitoContentVisible = YES;
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:NO
+                       avatar:[OCMArg any]
+                     signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is disabled in incognito tab grid when state
+// is not kAsk.
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonDisabledInIncognitoTabGridForAccountState) {
+  SetLocationEligible(true);
+  SignInWithTriboolCapability(signin::Tribool::kTrue);
+
+  gemini::IneligibilityReasons reasons;
+  reasons.workspace = true;
+  fake_gemini_service_->SetIneligibilityReasons(reasons);
+
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:NO
+                       avatar:[OCMArg any]
+                     signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests that the assistant button is in the kAIM state when the correct

@@ -15,7 +15,7 @@
 class WebStateList;
 
 /// Delegate for events in `LegacyToolbarMediator`.
-@protocol ToolbarMediatorDelegate <NSObject>
+@protocol LegacyToolbarMediatorDelegate <NSObject>
 
 /// Updates toolbar appearance.
 - (void)updateToolbar;
@@ -35,7 +35,7 @@ class WebStateList;
 @interface LegacyToolbarMediator : NSObject
 
 /// Delegate for events in `LegacyToolbarMediator`.
-@property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
+@property(nonatomic, weak) id<LegacyToolbarMediatorDelegate> delegate;
 /// The omnibox consumer for this object.
 @property(nonatomic, weak) id<ToolbarOmniboxConsumer> omniboxConsumer;
 

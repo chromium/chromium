@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
@@ -47,13 +48,16 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -62,10 +66,13 @@
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
-// Exposes `ToolbarMediatorDelegate` in order to invoke
-// `transitionOmniboxToToolbarType:`.
-@interface MainToolbarCoordinator (Testing) <ToolbarMediatorDelegate>
+// Exposes `LegacyToolbarMediatorDelegate` and `ToolbarMediatorDelegate` in
+// order to invoke delegate methods in tests.
+@interface MainToolbarCoordinator (Testing) <LegacyToolbarMediatorDelegate,
+                                             ToolbarMediatorDelegate>
 @property(nonatomic, strong, readonly)
     LegacyToolbarMediator* legacyToolbarMediator;
 @end
@@ -132,9 +139,9 @@ class MainToolbarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mock_lens_handler
                      forProtocol:@protocol(LensCommands)];
 
-    id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [browser->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_handler
+        startDispatchingToTarget:mock_scene_handler_
                      forProtocol:@protocol(SceneCommands)];
 
     id mock_QR_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
@@ -257,6 +264,7 @@ class MainToolbarCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   MainToolbarCoordinator* coordinator_;
   FakeSceneState* scene_state_;
+  id mock_scene_handler_ = nil;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -338,4 +346,45 @@ TEST_F(MainToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
 
   // The snapshot should be nil because the view is not in the hierarchy.
   EXPECT_EQ(snapshot, nil);
+}
+
+// Tests that tapping the assistant button in incognito displays the
+// incognito snackbar and switches to regular mode when tapped.
+TEST_F(MainToolbarCoordinatorTest, TestAssistantButtonTappedInIncognito) {
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
+  [coordinator_ start];
+
+  id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
+  [browser()->GetCommandDispatcher()
+      startDispatchingToTarget:mock_snackbar_handler
+                   forProtocol:@protocol(SnackbarCommands)];
+
+  base::UserActionTester user_action_tester;
+  __block void (^snackbar_action)(void) = nil;
+  OCMExpect([mock_snackbar_handler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(IDS_IOS_APP_BAR_GEMINI_NOT_AVAILABLE_INCOGNITO)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_IOS_APP_BAR_SWITCH_MODES)
+                messageAction:[OCMArg checkWithBlock:^BOOL(id value) {
+                  snackbar_action = [value copy];
+                  return YES;
+                }]
+             completionAction:[OCMArg any]]);
+
+  [coordinator_ toolbarMediatorDidTapAssistantInIncognito:nil];
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarAssistantIncognitoTapped"),
+            1);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler);
+
+  ASSERT_NE(snackbar_action, nil);
+  OCMExpect(
+      [mock_scene_handler_ displayTabGridInMode:TabGridOpeningMode::kRegular]);
+  snackbar_action();
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarAssistantIncognitoSwitchModesTapped"),
+            1);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 }

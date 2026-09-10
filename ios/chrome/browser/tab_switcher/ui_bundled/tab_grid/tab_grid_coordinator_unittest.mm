@@ -13,6 +13,7 @@
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/fake_browser_view_controller.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
@@ -97,6 +98,11 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
+    builder.AddTestingFactory(
+        BringAndroidTabsToIOSServiceFactory::GetInstance(),
+        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return nullptr;
+        }));
     profile_ = std::move(builder).Build();
 
     scene_state_ = [[SceneState alloc] init];
@@ -409,6 +415,25 @@ TEST_F(TabGridCoordinatorTest, ActivityReporting) {
 
   [coordinator_ setValue:nil forKey:@"activityReporter"];
   [mockInstance stopMocking];
+}
+
+// Tests that transitioning to the regular tab grid from an active incognito
+// browser layout view controller completes cleanly without issues.
+TEST_F(TabGridCoordinatorTest, CrossModeTransitionFromIncognitoToRegular) {
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
+  incognito_layout_view_controller_.browserViewController =
+      incognito_tab_view_controller_;
+  [coordinator_
+      showBrowserLayoutViewController:incognito_layout_view_controller_
+                            incognito:YES
+                           completion:nil];
+  EXPECT_FALSE(coordinator_.tabGridActive);
+
+  [coordinator_ showTabGridPage:TabGridPageRegularTabs];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        return coordinator_.tabGridActive;
+      }));
 }
 
 }  // namespace

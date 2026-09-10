@@ -23,6 +23,7 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/variations/service",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/aim/model:util",
     "//ios/chrome/browser/app_bar/ui",
@@ -78,6 +79,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/web/model",
     "//ios/web/public",
     "//net",
+    "//ui/base",
   ]
 }
 
@@ -90,6 +92,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/application_locale_storage",
     "//components/lens:lens_url_utils",
     "//components/omnibox/browser",
@@ -101,6 +104,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/tab_groups",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/ui",
     "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/browsing_data/model",
@@ -152,5 +156,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//third_party/omnibox_proto",
+    "//ui/base",
   ]
 }

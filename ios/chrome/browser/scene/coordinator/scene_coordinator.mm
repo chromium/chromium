@@ -854,15 +854,18 @@ inline LayoutStateScenePassKey PassKey() {
   BOOL incognito = self.currentBrowser->type() == Browser::Type::kIncognito;
   TabGridPage page =
       incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
-  if (mode == TabGridOpeningMode::kRegular && incognito) {
-    [self.UIHandler setCurrentInterfaceForMode:ApplicationMode::NORMAL];
-    page = TabGridPageRegularTabs;
-  } else if (mode == TabGridOpeningMode::kIncognito && !incognito) {
-    [self.UIHandler setCurrentInterfaceForMode:ApplicationMode::INCOGNITO];
-    page = TabGridPageIncognitoTabs;
-  } else if (mode == TabGridOpeningMode::kTabGroups) {
-    [self.UIHandler setCurrentInterfaceForMode:ApplicationMode::NORMAL];
-    page = TabGridPageTabGroups;
+  switch (mode) {
+    case TabGridOpeningMode::kRegular:
+      page = TabGridPageRegularTabs;
+      break;
+    case TabGridOpeningMode::kIncognito:
+      page = TabGridPageIncognitoTabs;
+      break;
+    case TabGridOpeningMode::kTabGroups:
+      page = TabGridPageTabGroups;
+      break;
+    case TabGridOpeningMode::kDefault:
+      break;
   }
 
   [self showTabSwitcherAtPage:page];

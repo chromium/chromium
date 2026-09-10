@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
@@ -150,6 +151,7 @@ class ToolbarMediatorTest : public PlatformTest,
                    initWithIncognito:NO
                         webStateList:browser_->GetWebStateList()
                        actionFactory:action_factory_
+                             profile:profile_.get()
                          prefService:profile_->GetTestingPrefService()
                 fullscreenController:TestFullscreenController::FromBrowser(
                                          browser_.get())
@@ -546,6 +548,7 @@ TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
                  initWithIncognito:NO
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
+                           profile:profile_.get()
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
@@ -584,6 +587,7 @@ TEST_P(ToolbarMediatorTest, TestHidePromo) {
                  initWithIncognito:NO
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
+                           profile:profile_.get()
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
@@ -674,6 +678,39 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler);
 }
 
+// Tests that assistantButtonTapped: in incognito delegates to the coordinator.
+TEST_P(ToolbarMediatorTest, TestAssistantButtonTappedInIncognito) {
+  BrowserActionFactory* action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
+                                           scenario:kTestMenuScenario];
+  ToolbarMediator* incognito_mediator = [[ToolbarMediator alloc]
+                 initWithIncognito:YES
+                      webStateList:browser_->GetWebStateList()
+                     actionFactory:action_factory
+                           profile:profile_.get()
+                       prefService:profile_->GetTestingPrefService()
+              fullscreenController:TestFullscreenController::FromBrowser(
+                                       browser_.get())
+            fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                       browser_.get())
+                       topPosition:GetParam()
+      defaultBrowserBannerAppAgent:GetParam() ? mock_app_agent_ : nil
+             authenticationService:auth_service_
+                     geminiService:gemini_service_ptr_.get()
+                geminiBrowserAgent:gemini_browser_agent_];
+  id mock_delegate = OCMProtocolMock(@protocol(ToolbarMediatorDelegate));
+  incognito_mediator.delegate = mock_delegate;
+
+  OCMExpect([mock_delegate
+      toolbarMediatorDidTapAssistantInIncognito:incognito_mediator]);
+
+  [incognito_mediator assistantButtonTapped];
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+
+  [incognito_mediator disconnect];
+}
+
 // Tests that the TabGrid button menu's "New Incognito Tab" action is disabled
 // when incognito mode is disabled by policy.
 TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
@@ -691,6 +728,7 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
                  initWithIncognito:NO
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
+                           profile:profile_.get()
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
@@ -752,6 +790,7 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoEnabled) {
                  initWithIncognito:NO
                       webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
+                           profile:profile_.get()
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
                                        browser_.get())
@@ -890,6 +929,27 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonNotVisible_JapanCountryGated) {
   SignInAndSetCapability(true);
 
   OCMExpect([consumer_ setAssistantButtonVisible:NO enabled:NO]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is visible and enabled in incognito when
+// Gemini is eligible for the original profile.
+TEST_P(ToolbarMediatorTest, TestAssistantButtonVisibleInIncognito) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+
+  SetLocationEligible(true);
+  ProfileIOS* otr_profile =
+      profile_->CreateOffTheRecordProfileWithTestingFactories();
+  std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
+  web_state->SetBrowserState(otr_profile);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  SignInAndSetCapability(true);
+
+  OCMExpect([consumer_ setAssistantButtonVisible:YES enabled:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

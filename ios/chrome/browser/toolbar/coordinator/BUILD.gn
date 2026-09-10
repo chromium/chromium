@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//components/prefs/ios",
     "//components/signin/public/base",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/banner_promo/model",
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/composebox/public:animation",
@@ -80,6 +81,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/util",
     "//ios/components/webui:url_constants",
     "//ios/web/public",
+    "//ui/base",
   ]
 }
 
@@ -163,5 +165,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }

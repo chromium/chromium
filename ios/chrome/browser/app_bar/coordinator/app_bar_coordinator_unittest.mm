@@ -6,9 +6,11 @@
 
 #import <memory>
 
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -28,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -36,13 +40,17 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 class AppBarCoordinatorTest : public PlatformTest {
  protected:
@@ -148,6 +156,11 @@ class AppBarCoordinatorTest : public PlatformTest {
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:fullscreen_handler_
                      forProtocol:@protocol(FullscreenCommands)];
+
+    snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:snackbar_handler_
+                     forProtocol:@protocol(SnackbarCommands)];
   }
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
@@ -170,6 +183,7 @@ class AppBarCoordinatorTest : public PlatformTest {
   id qr_scanner_handler_;
   id lens_handler_;
   id fullscreen_handler_;
+  id snackbar_handler_;
 };
 
 // Tests that the coordinator creates a view controller when started.
@@ -178,4 +192,79 @@ TEST_F(AppBarCoordinatorTest, TestStart) {
   EXPECT_TRUE(coordinator_.viewController);
   EXPECT_TRUE([coordinator_.viewController
       isKindOfClass:[AppBarContainerViewController class]]);
+}
+
+// Tests that tapping the assistant button in incognito tab shows a snackbar and
+// switches to regular tab grid mode when the snackbar action is triggered.
+TEST_F(AppBarCoordinatorTest, TestAssistantButtonTappedInIncognitoTab) {
+  [coordinator_ start];
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  __block void (^capturedMessageAction)();
+  OCMExpect([snackbar_handler_
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(IDS_IOS_APP_BAR_GEMINI_NOT_AVAILABLE_INCOGNITO)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_IOS_APP_BAR_SWITCH_MODES)
+                messageAction:[OCMArg checkWithBlock:^BOOL(void (^action)()) {
+                  capturedMessageAction = [action copy];
+                  return YES;
+                }]
+             completionAction:[OCMArg any]]);
+
+  base::UserActionTester user_action_tester;
+  [(id<AppBarMediatorDelegate>)
+          coordinator_ appBarMediatorDidTapAssistantInIncognito];
+
+  EXPECT_OCMOCK_VERIFY(snackbar_handler_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarAssistantIncognitoTapped"),
+            1);
+
+  OCMExpect([scene_handler_ displayTabGridInMode:TabGridOpeningMode::kRegular]);
+  ASSERT_TRUE(capturedMessageAction != nil);
+  capturedMessageAction();
+  EXPECT_OCMOCK_VERIFY(scene_handler_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarAssistantIncognitoSwitchModesTapped"),
+            1);
+}
+
+// Tests that tapping the assistant button in incognito tab grid shows a
+// snackbar and switches to the regular tabs page when the snackbar action is
+// triggered.
+TEST_F(AppBarCoordinatorTest, TestAssistantButtonTappedInIncognitoTabGrid) {
+  [coordinator_ start];
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  __block void (^capturedMessageAction)();
+  OCMExpect([snackbar_handler_
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(IDS_IOS_APP_BAR_GEMINI_NOT_AVAILABLE_INCOGNITO)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_IOS_APP_BAR_SWITCH_MODES)
+                messageAction:[OCMArg checkWithBlock:^BOOL(void (^action)()) {
+                  capturedMessageAction = [action copy];
+                  return YES;
+                }]
+             completionAction:[OCMArg any]]);
+
+  base::UserActionTester user_action_tester;
+  [(id<AppBarMediatorDelegate>)
+          coordinator_ appBarMediatorDidTapAssistantInIncognito];
+
+  EXPECT_OCMOCK_VERIFY(snackbar_handler_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarAssistantIncognitoTapped"),
+            1);
+
+  OCMExpect([tab_grid_handler_ showPage:TabGridPageRegularTabs animated:YES]);
+  ASSERT_TRUE(capturedMessageAction != nil);
+  capturedMessageAction();
+  EXPECT_OCMOCK_VERIFY(tab_grid_handler_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarAssistantIncognitoSwitchModesTapped"),
+            1);
 }

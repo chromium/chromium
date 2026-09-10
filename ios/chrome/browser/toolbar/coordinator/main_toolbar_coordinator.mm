@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
@@ -53,6 +55,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -82,8 +85,10 @@
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace layout_state {
 class MainToolbarCoordinatorPassKeyFactory {
@@ -179,6 +184,7 @@ inline LayoutStateToolbarPassKey PassKey() {
                                       PageActionMenuEntryPointCommands,
                                       PrimaryToolbarViewControllerDelegate,
                                       ReaderModeChipCommands,
+                                      LegacyToolbarMediatorDelegate,
                                       ToolbarCommands,
                                       ToolbarMediatorDelegate>
 
@@ -1199,9 +1205,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   }
 }
 
-
-
-#pragma mark - ToolbarMediatorDelegate
+#pragma mark - LegacyToolbarMediatorDelegate
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
   if (IsChromeNextIaEnabled()) {
@@ -1231,6 +1235,29 @@ inline LayoutStateToolbarPassKey PassKey() {
     }
   }
   return 0;
+}
+
+#pragma mark - ToolbarMediatorDelegate
+
+- (void)toolbarMediatorDidTapAssistantInIncognito:(ToolbarMediator*)mediator {
+  base::RecordAction(
+      base::UserMetricsAction("MobileToolbarAssistantIncognitoTapped"));
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [snackbarHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(IDS_IOS_APP_BAR_GEMINI_NOT_AVAILABLE_INCOGNITO)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_IOS_APP_BAR_SWITCH_MODES)
+                messageAction:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileToolbarAssistantIncognitoSwitchModesTapped"));
+                  [sceneHandler
+                      displayTabGridInMode:TabGridOpeningMode::kRegular];
+                }
+             completionAction:nil];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
@@ -1444,10 +1471,11 @@ inline LayoutStateToolbarPassKey PassKey() {
         agentFromApp:browser->GetSceneState().profileState.appState];
   }
 
-  ProfileIOS* profile = self.profile;
+  ProfileIOS* regularProfile = self.profile->GetOriginalProfile();
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  GeminiService* geminiService = GeminiServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForProfile(regularProfile);
+  GeminiService* geminiService =
+      GeminiServiceFactory::GetForProfile(regularProfile);
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(browser);
 
@@ -1455,7 +1483,8 @@ inline LayoutStateToolbarPassKey PassKey() {
                  initWithIncognito:isIncognito
                       webStateList:browser->GetWebStateList()
                      actionFactory:actionFactory
-                       prefService:profile->GetPrefs()
+                           profile:regularProfile
+                       prefService:regularProfile->GetPrefs()
               fullscreenController:FullscreenController::FromBrowser(browser)
             fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser)
                        topPosition:topPosition
@@ -1478,6 +1507,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   toolbarMediator.baseViewController = self.baseViewController;
   toolbarMediator.sceneHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+  toolbarMediator.delegate = self;
 
   return toolbarMediator;
 }

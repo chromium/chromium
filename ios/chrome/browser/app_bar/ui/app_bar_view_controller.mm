@@ -966,8 +966,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     [NSLayoutConstraint activateConstraints:_assistantHighlightConstraints];
   }
 
-  _assistantButton.enabled =
-      _buttonsEnabled && _assistantButtonEnabled && !_incognito;
+  _assistantButton.enabled = _buttonsEnabled && _assistantButtonEnabled;
   [self updateAssistantButtonAccessibilityLabel];
   // Force a configuration update to refresh accessibility traits.
   [_assistantButton setNeedsUpdateConfiguration];

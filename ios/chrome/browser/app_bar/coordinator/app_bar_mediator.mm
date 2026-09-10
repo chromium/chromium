@@ -452,6 +452,18 @@ inline LayoutStateAssistantPassKey PassKey() {
   _identityManager = nullptr;
 }
 
+#pragma mark - Properties
+
+- (BOOL)isIncognitoActive {
+  if (_tabGridState.tabGridVisible) {
+    TabGridPage page = _tabGridState.currentPage == TabGridPageTabGroups
+                           ? _tabGridState.originPage
+                           : _tabGridState.currentPage;
+    return page == TabGridPageIncognitoTabs;
+  }
+  return _incognitoState.incognitoContentVisible;
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
@@ -547,7 +559,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 #pragma mark - TabGridStateObserving
 
 - (void)willEnterTabGrid {
-  _currentPage = _tabGridState.currentPage;
+  [self updateForTabGridPage:_tabGridState.currentPage];
   self.currentTabGroup = _tabGridState.visibleTabGroup;
 
   if (IsFullscreenRefactoringEnabled()) {
@@ -658,6 +670,10 @@ inline LayoutStateAssistantPassKey PassKey() {
   UmaHistogramEnumeration(kAppBarAssistantButtonTappedHistogram, state);
   switch (state) {
     case AppBarAssistantButtonState::kAsk: {
+      if ([self isIncognitoActive]) {
+        [self.delegate appBarMediatorDidTapAssistantInIncognito];
+        break;
+      }
       if (_geminiBrowserAgent && _geminiBrowserAgent->is_floaty_invoked()) {
         [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
       } else {
@@ -877,6 +893,7 @@ inline LayoutStateAssistantPassKey PassKey() {
       break;
   }
   [self updateButtonsForCurrentTabGridPage];
+  [self updateAssistantButton];
 }
 
 // Updates the buttons in the tab grid.
@@ -1014,6 +1031,10 @@ inline LayoutStateAssistantPassKey PassKey() {
   BOOL signedIn = _authenticationService->HasPrimaryIdentity();
   if (state == AppBarAssistantButtonState::kAccount) {
     enabled = signedIn || _authenticationService->SigninEnabled();
+  }
+
+  if ([self isIncognitoActive] && state != AppBarAssistantButtonState::kAsk) {
+    enabled = NO;
   }
   [self.consumer setAssistantButtonState:state
                              highlighted:highlighted

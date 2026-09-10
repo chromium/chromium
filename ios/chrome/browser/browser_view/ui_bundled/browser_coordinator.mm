@@ -46,6 +46,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
@@ -292,6 +293,13 @@
 #import "ios/chrome/browser/print/coordinator/swift_coordinator.h"
 #import "ios/chrome/common/swift/features.h"
 #endif  // BUILDFLAG(ENABLE_SWIFT_CXX_INTEROP)
+
+namespace {
+
+// Spacing between the snackbar and bottom bar (App Bar or bottom toolbar).
+constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
+
+}  // namespace
 
 @interface BrowserCoordinator () <
     AppLauncherTabHelperBrowserPresentationProvider,
@@ -576,14 +584,27 @@
   UIView* bottomToolbar = [LayoutGuideCenterForBrowser(self.browser)
       referencedViewUnderName:kSecondaryToolbarGuide];
   if (IsChromeNextIaEnabled()) {
-    // On iPad, or if the bottom toolbar view is not yet installed in the active
-    // window hierarchy (e.g. when bottom omnibox is disabled), return 0 offset.
-    if (!IsSplitToolbarMode(self.viewController) || !bottomToolbar.window) {
+    // On iPad, or if not in split toolbar mode, return 0 offset.
+    if (!IsSplitToolbarMode(self.viewController)) {
       return 0;
     }
-    CGPoint originOfBottomToolbar = [bottomToolbar convertPoint:CGPointZero
-                                                         toView:nil];
-    return windowHeight - originOfBottomToolbar.y;
+    if (bottomToolbar.window) {
+      CGPoint originOfBottomToolbar = [bottomToolbar convertPoint:CGPointZero
+                                                           toView:nil];
+      return windowHeight - originOfBottomToolbar.y -
+             window.safeAreaInsets.bottom + kSnackbarFloatingBottomMargin;
+    }
+    if (self.sceneState.layoutState.appBarPosition == AppBarPosition::kBottom) {
+      UIView* appBar = [LayoutGuideCenterForBrowser(self.browser)
+          referencedViewUnderName:kAppBarGuide];
+      if (appBar.window) {
+        CGPoint originOfAppBar = [appBar convertPoint:CGPointZero toView:nil];
+        return windowHeight - originOfAppBar.y - window.safeAreaInsets.bottom +
+               kSnackbarFloatingBottomMargin;
+      }
+      return AppBarHeightPortrait() + kSnackbarFloatingBottomMargin;
+    }
+    return 0;
   } else {
     return CGRectGetHeight(bottomToolbar.bounds);
   }

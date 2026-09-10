@@ -593,11 +593,17 @@
       <message name="IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP" desc="The text for the button opening a new tab group from the app bar's context menu in the tab groups page of the tab grid.">
         New Tab Group...
       </message>
+      <message name="IDS_IOS_APP_BAR_GEMINI_NOT_AVAILABLE_INCOGNITO" desc="Snackbar message informing the user that Gemini is not available in Incognito mode.">
+        Gemini isn't available in Incognito mode
+      </message>
       <message name="IDS_IOS_APP_BAR_NEW" desc="Title of the button that is either creating a new tab or a new tab group. [CHAR_LIMIT=14]" meaning="Tap this button to create a new entity based on your current context">
           New
           </message>
       <message name="IDS_IOS_APP_BAR_SIGN_IN" desc="Title of the button opening the sign-in flow. [CHAR_LIMIT=14]" meaning="Tap this button to sign in.">
         Sign in
+      </message>
+      <message name="IDS_IOS_APP_BAR_SWITCH_MODES" desc="Title of the button on the snackbar allowing the user to switch modes from Incognito to regular tabs. [CHAR_LIMIT=15]">
+        Switch modes
       </message>
       <message name="IDS_IOS_APP_BAR_TABS" desc="Title of the button opening the TabGrid where all the tabs are visible, used when the text is too long to fit in one line. [CHAR_LIMIT=14]" meaning="Tap this button to see all your tabs.">
           Tabs
