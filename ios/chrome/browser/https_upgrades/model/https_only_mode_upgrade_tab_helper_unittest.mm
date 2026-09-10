@@ -266,6 +266,36 @@ TEST_P(HttpsOnlyModeUpgradeTabHelperTest, ShouldAllowRequest) {
   }
 }
 
+// Tests that when a POST navigation redirects to HTTP, ShouldAllowRequest
+// cancels the HTTP redirect when HTTPS-Only Mode or HTTPS-Upgrades is enabled.
+TEST_P(HttpsOnlyModeUpgradeTabHelperTest,
+       ShouldAllowRequestPostRedirectToHttp) {
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  std::unique_ptr<web::NavigationItem> pending_item =
+      web::NavigationItem::Create();
+  fake_navigation_manager->SetPendingItem(pending_item.release());
+  web_state_.SetNavigationManager(std::move(fake_navigation_manager));
+
+  GURL https_url("https://example.com/");
+  GURL http_url("http://example.com/");
+
+  // Start an HTTPS POST navigation.
+  web::FakeNavigationContext context;
+  context.SetUrl(https_url);
+  context.SetIsPost(true);
+  web_state_.OnNavigationStarted(&context);
+
+  // If either HTTPS-Only Mode or HTTPS-Upgrades is enabled, redirects to HTTP
+  // in the main frame should be cancelled before the request is sent.
+  if (GetParam() != HttpsUpgradesTestType::kNone) {
+    EXPECT_FALSE(ShouldAllowRequestUrl(http_url, /*main_frame=*/true)
+                     .ShouldAllowNavigation());
+  } else {
+    EXPECT_TRUE(ShouldAllowRequestUrl(http_url, /*main_frame=*/true)
+                    .ShouldAllowNavigation());
+  }
+}
+
 TEST_P(HttpsOnlyModeUpgradeTabHelperTest, GetUpgradedHttpsUrl) {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_.GetBrowserState());

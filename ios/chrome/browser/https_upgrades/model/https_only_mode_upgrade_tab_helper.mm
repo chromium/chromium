@@ -159,6 +159,8 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowRequest(
     return;
   }
 
+  navigation_is_post_ = [request.HTTPMethod isEqualToString:@"POST"];
+
   if ((!base::FeatureList::IsEnabled(
            security_interstitials::features::kHttpsUpgrades) &&
        !(prefs_ && prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled))) ||
