@@ -644,6 +644,214 @@ TEST_F(H265DecoderTest, ConfigChangeOnNonIRAP) {
   EXPECT_TRUE(decoder_->Flush());
 }
 
+TEST_F(H265DecoderTest, EndOfSequenceRequiresIRAP) {
+  // 1. Initialize and decode 8-bit IDR frame 0.
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+
+  // 2. Prepend EOS_NUT followed by non-IRAP frames (kFrame1, kFrame2) and then
+  // an IRAP frame (kFrame0).
+  constexpr uint8_t kEosNutNalu[] = {0x00, 0x00, 0x00, 0x01, 0x48, 0x01};
+  std::vector<uint8_t> eos_stream(std::begin(kEosNutNalu),
+                                  std::end(kEosNutNalu));
+
+  std::vector<uint8_t> frame1_data;
+  CHECK(base::OptionalUnwrapTo(
+      base::ReadFileToBytes(GetTestDataFilePath(kFrame1)), frame1_data));
+  base::Extend(eos_stream, frame1_data);
+
+  std::vector<uint8_t> frame2_data;
+  CHECK(base::OptionalUnwrapTo(
+      base::ReadFileToBytes(GetTestDataFilePath(kFrame2)), frame2_data));
+  base::Extend(eos_stream, frame2_data);
+
+  std::vector<uint8_t> frame0_data;
+  CHECK(base::OptionalUnwrapTo(
+      base::ReadFileToBytes(GetTestDataFilePath(kFrame0)), frame0_data));
+  base::Extend(eos_stream, frame0_data);
+
+  auto buffer = DecoderBuffer::CopyFrom(eos_stream);
+  EXPECT_CALL(*accelerator_, SetStream(_, _));
+  decoder_->SetStream(1, buffer);
+
+  // Non-IRAP frames after EOS_NUT should be skipped; only the IRAP frame
+  // (kFrame0) should be decoded.
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H265DecoderTest, ConfigChangeOnNonIRAPAfterEndOfSequence) {
+  // 1. Initialize with 8-bit stream.
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+
+  // Decode the first frame to establish state.
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+
+  std::vector<uint8_t> p_frame_data;
+  auto p_frame_file = GetTestDataFilePath(kFrame1);
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(p_frame_file),
+                               p_frame_data));
+
+  // 2. Inject EOS_NUT followed by 10-bit SPS/PPS (bit-depth config change) and
+  // a non-IRAP P-frame.
+  std::vector<uint8_t> ten_bit_sps_pps;
+  auto ten_bit_file = GetTestDataFilePath(k10BitFrame0);
+  std::vector<uint8_t> ten_bit_data;
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(ten_bit_file),
+                               ten_bit_data));
+  base::Extend(ten_bit_sps_pps, base::span(ten_bit_data).first(84u));
+
+  constexpr uint8_t kEosNutNalu[] = {0x00, 0x00, 0x00, 0x01, 0x48, 0x01};
+  std::vector<uint8_t> eos_bit_depth_bitstream(std::begin(kEosNutNalu),
+                                               std::end(kEosNutNalu));
+  base::Extend(eos_bit_depth_bitstream, ten_bit_sps_pps);
+  base::Extend(eos_bit_depth_bitstream, p_frame_data);
+
+  auto buffer = DecoderBuffer::CopyFrom(eos_bit_depth_bitstream);
+  EXPECT_CALL(*accelerator_, SetStream(_, _));
+  decoder_->SetStream(1, buffer);
+
+  // Per HEVC spec, a picture following EOS_NUT must be an IRAP picture.
+  // The non-IRAP picture is dropped without applying configuration changes.
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+
+  EXPECT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H265DecoderTest, ConfigChangeOnNonIRAPAfterEndOfBitstream) {
+  // 1. Initialize with 8-bit stream.
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+
+  // Decode the first frame to establish state.
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+
+  std::vector<uint8_t> p_frame_data;
+  auto p_frame_file = GetTestDataFilePath(kFrame1);
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(p_frame_file),
+                               p_frame_data));
+
+  // 2. Inject EOB_NUT followed by 10-bit SPS/PPS (bit-depth config change) and
+  // a non-IRAP P-frame.
+  std::vector<uint8_t> ten_bit_sps_pps;
+  auto ten_bit_file = GetTestDataFilePath(k10BitFrame0);
+  std::vector<uint8_t> ten_bit_data;
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(ten_bit_file),
+                               ten_bit_data));
+  base::Extend(ten_bit_sps_pps, base::span(ten_bit_data).first(84u));
+
+  constexpr uint8_t kEobNutNalu[] = {0x00, 0x00, 0x00, 0x01, 0x4a, 0x01};
+  std::vector<uint8_t> eob_bit_depth_bitstream(std::begin(kEobNutNalu),
+                                               std::end(kEobNutNalu));
+  base::Extend(eob_bit_depth_bitstream, ten_bit_sps_pps);
+  base::Extend(eob_bit_depth_bitstream, p_frame_data);
+
+  auto buffer = DecoderBuffer::CopyFrom(eob_bit_depth_bitstream);
+  EXPECT_CALL(*accelerator_, SetStream(_, _));
+  decoder_->SetStream(1, buffer);
+
+  // Per HEVC spec, a picture following EOB_NUT must be an IRAP picture.
+  // The non-IRAP picture is dropped without applying configuration changes.
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+
+  EXPECT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H265DecoderTest, ConfigChangeOnIRAPAfterEndOfSequence) {
+  // 1. Initialize with 8-bit stream.
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+
+  // Decode the first frame to establish state.
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+
+  // 2. Inject EOS_NUT followed by 10-bit IDR frame (which includes 10-bit
+  // VPS/SPS/PPS).
+  auto ten_bit_file = GetTestDataFilePath(k10BitFrame0);
+  std::vector<uint8_t> ten_bit_data;
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(ten_bit_file),
+                               ten_bit_data));
+
+  constexpr uint8_t kEosNutNalu[] = {0x00, 0x00, 0x00, 0x01, 0x48, 0x01};
+  std::vector<uint8_t> eos_10bit_stream(std::begin(kEosNutNalu),
+                                        std::end(kEosNutNalu));
+  base::Extend(eos_10bit_stream, ten_bit_data);
+
+  auto buffer = DecoderBuffer::CopyFrom(eos_10bit_stream);
+  EXPECT_CALL(*accelerator_, SetStream(_, _));
+  decoder_->SetStream(1, buffer);
+
+  // Configuration change should be accepted on the IRAP frame following
+  // EOS_NUT.
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(10u, decoder_->GetBitDepth());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(HEVCPROFILE_MAIN10, decoder_->GetProfile());
+
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 // This test verifies that dependent slices crossing layer boundaries
 // (different nuh_layer_id) are correctly rejected by the parser,
 // preventing unvalidated slice header state from being propagated.

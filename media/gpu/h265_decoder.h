@@ -333,9 +333,11 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Picture currently being processed/decoded.
   scoped_refptr<H265Picture> curr_pic_;
 
-  // Used to identify first picture in decoding order or first picture that
-  // follows an EOS NALU.
+  // Used to identify first picture in decoding order.
   bool first_picture_ = true;
+
+  // Used to identify the first picture that follows an EOS or EOB NALU.
+  bool first_picture_after_eos_ = false;
 
   // Used to keep NoRaslOutputFlag state since last IRAP, to decide if we
   // drop a RASL picture.

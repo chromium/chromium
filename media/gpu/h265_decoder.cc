@@ -180,6 +180,7 @@ void H265Decoder::SetStream(int32_t id,
 
 void H265Decoder::Reset() {
   first_picture_ = true;
+  first_picture_after_eos_ = false;
   no_rasl_output_flag_ = true;
 
   curr_pic_ = nullptr;
@@ -485,9 +486,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
 
         break;
       case H265NALU::EOS_NUT:
-        first_picture_ = true;
-        [[fallthrough]];
-      case H265NALU::EOB_NUT:  // fallthrough
+      case H265NALU::EOB_NUT:
+        CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
+        first_picture_after_eos_ = true;
+        state_ = kAfterReset;
+        break;
       case H265NALU::AUD_NUT:
       case H265NALU::RSV_NVCL41:
       case H265NALU::RSV_NVCL42:
@@ -667,7 +670,7 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
 
   if (is_config_change) {
     // Only color space changes are allowed on non-IRAP pictures.
-    if (curr_slice_hdr_ && !curr_slice_hdr_->irap_pic && !first_picture_) {
+    if (curr_slice_hdr_ && !curr_slice_hdr_->irap_pic) {
       DVLOG(1)
           << "A configuration change on a non-IRAP picture is not allowed.";
       return false;
@@ -744,7 +747,8 @@ void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
     curr_pic_->no_rasl_output_flag_ =
         (curr_nalu_->nal_unit_type >= H265NALU::BLA_W_LP &&
          curr_nalu_->nal_unit_type <= H265NALU::IDR_N_LP) ||
-        curr_pic_->first_picture_;
+        curr_pic_->first_picture_ || first_picture_after_eos_;
+    first_picture_after_eos_ = false;
     no_rasl_output_flag_ = curr_pic_->no_rasl_output_flag_;
   } else {
     curr_pic_->no_rasl_output_flag_ = no_rasl_output_flag_;
