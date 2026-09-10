@@ -233,7 +233,7 @@ void Shadow::UpdateShadowAppearance() {
 
   // The ninebox assumption breaks down when the content is too small for the
   // desired elevation. The height/width of |blur_region| will be 4 * elevation
-  // (see ShadowDetails::Get), so cap elevation at the most we can handle.
+  // (see Shadow::MakeShadowValues), so cap elevation at the most we can handle.
   const bool is_pill_shaped =
       (max_radius == size_adjusted_rounded_corners.upper_left() ||
        max_radius == size_adjusted_rounded_corners.upper_right() ||

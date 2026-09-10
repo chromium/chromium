@@ -60,8 +60,8 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   ~Shadow() override;
 
   // Initialize for the the given shadow |elevation|. This is passed to
-  // gfx::ShadowValue::MakeMdShadowValues() and controls the y-offset and blur
-  // for the shadow style.
+  // ui::Shadow::MakeShadowValues() and controls the y-offset and blur for the
+  // shadow style.
   void Init(int elevation);
 
   // Exposed to allow setting animation parameters for bounds and opacity

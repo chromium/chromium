@@ -17,6 +17,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/decoration/decoration_util.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -96,7 +97,7 @@ MessageView::MessageView(const Notification& notification)
   // If Aero is enabled, set shadow border.
   if (ShouldShowAeroShadowBorder()) {
     const auto& shadow = ui::decoration::ShadowDetails::Get(
-        /*elevation=*/2, gfx::RoundedCornersF());
+        gfx::RoundedCornersF(), ui::Shadow::MakeShadowValues(/*elevation=*/2));
     gfx::Insets ninebox_insets = gfx::ShadowValue::GetBlurRegion(shadow.values);
     SetBorder(views::CreateBorderPainter(
         views::Painter::CreateImagePainter(shadow.nine_patch_image,

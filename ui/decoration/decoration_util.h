@@ -31,12 +31,6 @@ struct ShadowDetails {
 
   bool operator==(const ShadowDetails& other) const;
 
-  // Returns a cached ShadowDetails for the given elevation and rounded corners.
-  // Creates the ShadowDetails first if necessary.
-  static const ShadowDetails& Get(int elevation,
-                                  const gfx::RoundedCornersF& rounded_corners,
-                                  bool is_pill_shaped = false);
-
   // Returns a cached ShadowDetails for given corner radius and shadow values.
   static const ShadowDetails& Get(const gfx::RoundedCornersF& rounded_corners,
                                   const gfx::ShadowValues& values);

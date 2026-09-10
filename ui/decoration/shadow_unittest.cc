@@ -33,8 +33,8 @@ gfx::Insets InsetsForElevation(int elevation) {
 gfx::Size GetNineboxImageSize(int elevation,
                               const gfx::RoundedCornersF& rounded_corners,
                               bool is_pill_shaped = false) {
-  auto values = gfx::ShadowValue::MakeMdShadowValues(elevation, SK_ColorBLACK,
-                                                     is_pill_shaped);
+  auto values = Shadow::MakeShadowValues(
+      elevation, Shadow::Style::kMaterialDesign, std::nullopt, is_pill_shaped);
   gfx::Rect bounds(0, 0, 1, 1);
   bounds.Inset(
       -decoration::GetNineboxApertureInsetsForShadows(values, rounded_corners));
@@ -47,8 +47,8 @@ gfx::Size GetMinContentSize(
     int elevation,
     const gfx::RoundedCornersF& rounded_corners = gfx::RoundedCornersF(),
     bool is_pill_shaped = false) {
-  auto values = gfx::ShadowValue::MakeMdShadowValues(elevation, SK_ColorBLACK,
-                                                     is_pill_shaped);
+  auto values = Shadow::MakeShadowValues(
+      elevation, Shadow::Style::kMaterialDesign, std::nullopt, is_pill_shaped);
   gfx::Insets insets =
       decoration::GetNineboxApertureInsetsForShadows(values, rounded_corners);
   return gfx::Size(insets.width(), insets.height());
@@ -360,7 +360,8 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
     EXPECT_EQ(1u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Creating a new uniquely owned detail will increase the cache size.
-    decoration::ShadowDetails::Get(kElevationUnique, gfx::RoundedCornersF(3));
+    decoration::ShadowDetails::Get(gfx::RoundedCornersF(3),
+                                   Shadow::MakeShadowValues(kElevationUnique));
     EXPECT_EQ(2u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Creating a shadow with different details will replace the uniquely owned

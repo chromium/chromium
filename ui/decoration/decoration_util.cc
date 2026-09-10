@@ -128,14 +128,6 @@ bool ShadowDetails::operator==(const ShadowDetails& other) const {
 }
 
 const ShadowDetails& ShadowDetails::Get(
-    int elevation,
-    const gfx::RoundedCornersF& rounded_corners,
-    bool is_pill_shaped) {
-  return Get(rounded_corners, gfx::ShadowValue::MakeMdShadowValues(
-                                  elevation, SK_ColorBLACK, is_pill_shaped));
-}
-
-const ShadowDetails& ShadowDetails::Get(
     const gfx::RoundedCornersF& rounded_corners,
     const gfx::ShadowValues& values) {
   ShadowDetailsKey key{rounded_corners, values};
