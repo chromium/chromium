@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module shadowing_unittest_enum.mojom;
+
+// Tests that an enum named `Context` does not collide with the generic
+// context type parameter in PrimitiveEnum derive macros.
+enum Context {
+  kBrowser = 0,
+  kPrivilegedUtility = 1,
+  kLowest = 2,
+};

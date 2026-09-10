@@ -1,0 +1,12 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module shadowing_unittest_union.mojom;
+
+// Tests that a union named `Context` does not collide with the generic
+// context type parameter in MojomParse derive macros.
+union Context {
+  int32 int_val;
+  bool bool_val;
+};

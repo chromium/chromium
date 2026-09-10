@@ -12,3 +12,7 @@ struct StructWithContextAndValueFields {
   int32 context;
   int32 value;
 };
+
+struct Context {
+  int32 value;
+};

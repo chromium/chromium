@@ -60,7 +60,11 @@ mojom("parser_unittests") {
 
 mojom("shadowing_unittest") {
   testonly = true
-  sources = [ "test_util/shadowing_unittest.test-mojom" ]
+  sources = [
+    "test_util/shadowing_unittest.test-mojom",
+    "test_util/shadowing_unittest_enum.test-mojom",
+    "test_util/shadowing_unittest_union.test-mojom",
+  ]
   generate_rust = true
   visibility = [ "//mojo/public/rust/*" ]
 }
@@ -89,6 +93,7 @@ rust_static_library("mojom_value_parser_unittests") {
     ":mojom_value_parser",
     ":mojom_value_parser_core",
     ":parser_unittests_rust",
+    ":shadowing_unittest_rust",
     ":validation_parser",
     "../bindings",
     "../system",

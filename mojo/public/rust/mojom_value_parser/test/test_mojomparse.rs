@@ -23,6 +23,7 @@ chromium::import! {
     "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
     "//mojo/public/rust/mojom_value_parser:parser_unittests_rust";
     "//mojo/public/rust/mojom_value_parser:dup_enum_unittest_rust";
+    "//mojo/public/rust/mojom_value_parser:shadowing_unittest_rust";
     "//mojo/public/rust/bindings";
 }
 
@@ -2843,4 +2844,40 @@ fn test_mutually_recursive_types() {
     let mojom_val = into_mojom_value(a.clone());
     let parsed: MutuallyRecursiveA = try_from_mojom_value(mojom_val).unwrap();
     assert_eq!(a, parsed);
+}
+
+#[gtest(MojomParseTest, ContextShadowing)]
+fn test_context_shadowing() {
+    use shadowing_unittest_rust::shadowing_unittest::{
+        Context as StructContext, StructWithContextAndValueFields,
+    };
+    use shadowing_unittest_rust::shadowing_unittest_enum::Context as EnumContext;
+    use shadowing_unittest_rust::shadowing_unittest_union::Context as UnionContext;
+
+    let registrar = DummyRegistrarForTesting::new(false);
+
+    // 1. Struct named Context
+    let struct_val = StructContext { value: 42 };
+    let mojom_val = struct_val.clone().into_mojom_value(&registrar);
+    let parsed_struct = StructContext::try_from_mojom_value(mojom_val, &registrar).unwrap();
+    assert_eq!(struct_val, parsed_struct);
+
+    // 2. Struct with fields named context and value
+    let struct_fields = StructWithContextAndValueFields { context: 1, value: 2 };
+    let mojom_val = struct_fields.clone().into_mojom_value(&registrar);
+    let parsed_fields =
+        StructWithContextAndValueFields::try_from_mojom_value(mojom_val, &registrar).unwrap();
+    assert_eq!(struct_fields, parsed_fields);
+
+    // 3. Enum named Context
+    let enum_val = EnumContext::kPrivilegedUtility;
+    let mojom_val = enum_val.clone().into_mojom_value(&registrar);
+    let parsed_enum = EnumContext::try_from_mojom_value(mojom_val, &registrar).unwrap();
+    assert_eq!(enum_val, parsed_enum);
+
+    // 4. Union named Context
+    let union_val = UnionContext::int_val(99);
+    let mojom_val = union_val.clone().into_mojom_value(&registrar);
+    let parsed_union = UnionContext::try_from_mojom_value(mojom_val, &registrar).unwrap();
+    assert_eq!(union_val, parsed_union);
 }
