@@ -221,4 +221,53 @@ TEST_F(TextChunkerTest, QualityMultipleSentencesAccumulateExceedingThreshold) {
   EXPECT_EQ(chunks[1].start_code_unit_offset, 251u);
 }
 
+TEST_F(TextChunkerTest, SpeedModeWithBaseOffset) {
+  std::u16string text = u"First sentence. Second sentence! Third sentence?";
+  constexpr size_t kBaseOffset = 100;
+  std::vector<TextChunk> chunks =
+      ChunkText(text, ChunkingMode::kSpeed, /*locale_tag=*/std::nullopt,
+                /*base_offset=*/kBaseOffset);
+
+  ASSERT_EQ(chunks.size(), 3u);
+  EXPECT_EQ(chunks[0].text, u"First sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, kBaseOffset + 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Second sentence!");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, kBaseOffset + 16u);
+
+  EXPECT_EQ(chunks[2].text, u"Third sentence?");
+  EXPECT_EQ(chunks[2].start_code_unit_offset, kBaseOffset + 33u);
+}
+
+TEST_F(TextChunkerTest, QualityModeWithBaseOffset) {
+  std::u16string input =
+      u"First sentence. Second sentence!\nThird paragraph sentence.";
+  constexpr size_t kBaseOffset = 200;
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"),
+      /*base_offset=*/kBaseOffset);
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, u"First sentence. Second sentence!");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, kBaseOffset + 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Third paragraph sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, kBaseOffset + 33u);
+}
+
+TEST_F(TextChunkerTest, WhitespaceWithBaseOffset) {
+  std::u16string text = u"   Hello   .   World   ";
+  constexpr size_t kBaseOffset = 50;
+  std::vector<TextChunk> chunks =
+      ChunkText(text, ChunkingMode::kSpeed, /*locale_tag=*/std::nullopt,
+                /*base_offset=*/kBaseOffset);
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, u"Hello   .");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, kBaseOffset + 3u);
+
+  EXPECT_EQ(chunks[1].text, u"World");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, kBaseOffset + 15u);
+}
+
 }  // namespace readaloud

@@ -51,6 +51,7 @@ void PrefetchManager::SetTextContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetSession();
 
+  size_t document_offset = 0;
   for (const read_aloud::mojom::TextSegmentPtr& segment : segments) {
     if (!segment || segment->text.empty()) {
       continue;
@@ -60,8 +61,9 @@ void PrefetchManager::SetTextContent(
     // are not sent as standalone network synthesis requests. In
     // ChunkingMode::kQuality, retain them within paragraph groupings for
     // natural prosody and pauses.
-    std::vector<TextChunk> sentence_chunks =
-        ChunkText(segment->text, GetChunkingMode(), locale_tag);
+    std::vector<TextChunk> sentence_chunks = ChunkText(
+        segment->text, GetChunkingMode(), locale_tag, document_offset);
+    document_offset += segment->text.size();
     timeline_.insert(timeline_.end(),
                      std::make_move_iterator(sentence_chunks.begin()),
                      std::make_move_iterator(sentence_chunks.end()));

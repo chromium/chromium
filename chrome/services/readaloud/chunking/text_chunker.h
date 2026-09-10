@@ -38,11 +38,15 @@ struct TextChunk {
 // Leading and trailing whitespace is trimmed from each resulting chunk.
 // `locale_tag` specifies the optional BCP-47 LanguageTag for sentence
 // breaking. If omitted, defaults to the system ICU locale.
+// `base_offset` specifies an offset in 16-bit code units (char16_t) added to
+// each chunk's `start_code_unit_offset` (e.g. for document-wide character
+// offsets).
 // Returns an empty vector if `text` is empty or contains only whitespace.
 std::vector<TextChunk> ChunkText(
     std::u16string_view text,
     ChunkingMode mode = ChunkingMode::kSpeed,
-    std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt);
+    std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt,
+    size_t base_offset = 0);
 
 }  // namespace readaloud
 

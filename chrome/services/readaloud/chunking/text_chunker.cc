@@ -43,12 +43,14 @@ std::unique_ptr<base::i18n::BreakIterator> CreateSentenceBreakIterator(
   return iter;
 }
 
-// Trims leading/trailing whitespace from the sentence boundary range [start, end)
-// and appends a TextChunk with its absolute character offset to `chunks` if non-empty.
+// Trims leading/trailing whitespace from the sentence boundary range [start,
+// end) and appends a TextChunk with its base_offset-adjusted character offset
+// to `chunks` if non-empty.
 void ProcessNextSentence(std::u16string_view text,
                          size_t start,
                          size_t end,
-                         std::vector<TextChunk>& chunks) {
+                         std::vector<TextChunk>& chunks,
+                         size_t base_offset) {
   DCHECK_LE(start, end);
   DCHECK_LE(end, text.size());
   std::u16string_view sentence = text.substr(start, end - start);
@@ -59,11 +61,11 @@ void ProcessNextSentence(std::u16string_view text,
   }
 
   CHECK_GE(trimmed_sentence.data(), text.data());
-  size_t absolute_start =
+  size_t relative_start =
       static_cast<size_t>(std::distance(text.data(), trimmed_sentence.data()));
-  CHECK_LE(absolute_start + trimmed_sentence.size(), text.size());
+  CHECK_LE(relative_start + trimmed_sentence.size(), text.size());
 
-  chunks.emplace_back(trimmed_sentence, absolute_start);
+  chunks.emplace_back(trimmed_sentence, base_offset + relative_start);
 }
 
 void GetSurroundingWhitespace(std::u16string_view sentence,
@@ -92,7 +94,8 @@ bool ShouldFlushBeforeSentence(size_t accum_start,
 
 std::vector<TextChunk> ChunkTextSpeedMode(
     std::u16string_view text,
-    std::optional<base::i18n::LanguageTag> locale_tag) {
+    std::optional<base::i18n::LanguageTag> locale_tag,
+    size_t base_offset) {
   std::vector<TextChunk> chunks;
   std::unique_ptr<base::i18n::BreakIterator> bi =
       CreateSentenceBreakIterator(text, locale_tag);
@@ -101,7 +104,7 @@ std::vector<TextChunk> ChunkTextSpeedMode(
   }
 
   while (bi->Advance()) {
-    ProcessNextSentence(text, bi->prev(), bi->pos(), chunks);
+    ProcessNextSentence(text, bi->prev(), bi->pos(), chunks, base_offset);
   }
 
   return chunks;
@@ -109,7 +112,8 @@ std::vector<TextChunk> ChunkTextSpeedMode(
 
 std::vector<TextChunk> ChunkTextQualityMode(
     std::u16string_view text,
-    std::optional<base::i18n::LanguageTag> locale_tag) {
+    std::optional<base::i18n::LanguageTag> locale_tag,
+    size_t base_offset) {
   std::vector<TextChunk> chunks;
   std::unique_ptr<base::i18n::BreakIterator> bi =
       CreateSentenceBreakIterator(text, locale_tag);
@@ -120,9 +124,10 @@ std::vector<TextChunk> ChunkTextQualityMode(
   size_t accum_start = std::u16string_view::npos;
   size_t accum_end = std::u16string_view::npos;
 
-  auto flush_accumulator = [&accum_start, &accum_end, &text, &chunks]() {
+  auto flush_accumulator = [&accum_start, &accum_end, &text, &chunks,
+                            base_offset]() {
     if (accum_start != std::u16string_view::npos) {
-      ProcessNextSentence(text, accum_start, accum_end, chunks);
+      ProcessNextSentence(text, accum_start, accum_end, chunks, base_offset);
       accum_start = std::u16string_view::npos;
       accum_end = std::u16string_view::npos;
     }
@@ -176,12 +181,13 @@ std::vector<TextChunk> ChunkTextQualityMode(
 std::vector<TextChunk> ChunkText(
     std::u16string_view text,
     ChunkingMode mode,
-    std::optional<base::i18n::LanguageTag> locale_tag) {
+    std::optional<base::i18n::LanguageTag> locale_tag,
+    size_t base_offset) {
   switch (mode) {
     case ChunkingMode::kSpeed:
-      return ChunkTextSpeedMode(text, locale_tag);
+      return ChunkTextSpeedMode(text, locale_tag, base_offset);
     case ChunkingMode::kQuality:
-      return ChunkTextQualityMode(text, locale_tag);
+      return ChunkTextQualityMode(text, locale_tag, base_offset);
   }
 }
 

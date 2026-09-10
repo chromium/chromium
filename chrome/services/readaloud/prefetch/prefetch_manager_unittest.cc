@@ -625,4 +625,142 @@ TEST_F(PrefetchManagerTest, GetRequiredPrefetchChunksRespectsTimelineBounds) {
               testing::ElementsAre(8, 9));
 }
 
+TEST_F(PrefetchManagerTest,
+       SetTextContentMultiSegmentMonotonicDocumentOffsets) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+
+  read_aloud::mojom::TextSegmentPtr seg0 =
+      read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First sentence. Second sentence!";
+  segments.push_back(std::move(seg0));
+
+  read_aloud::mojom::TextSegmentPtr seg1 =
+      read_aloud::mojom::TextSegment::New();
+  seg1->segment_index = 1;
+  seg1->text = u"Third sentence? Fourth sentence.";
+  segments.push_back(std::move(seg1));
+
+  manager.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  const std::vector<TextChunk>& chunks = manager.GetTimelineChunks();
+  ASSERT_EQ(chunks.size(), 4u);
+
+  EXPECT_EQ(chunks[0].text, u"First sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Second sentence!");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 16u);
+
+  // Segment 1 chunks must have base_offset equal to segment 0 length (32).
+  EXPECT_EQ(chunks[2].text, u"Third sentence?");
+  EXPECT_EQ(chunks[2].start_code_unit_offset, 32u);
+
+  EXPECT_EQ(chunks[3].text, u"Fourth sentence.");
+  EXPECT_EQ(chunks[3].start_code_unit_offset, 48u);
+}
+
+TEST_F(PrefetchManagerTest, SetTextContentInterleavedNullSegment) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+
+  read_aloud::mojom::TextSegmentPtr seg0 =
+      read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First sentence.";  // Length 15
+  segments.push_back(std::move(seg0));
+
+  // Interleaved null segment should be safely skipped.
+  segments.push_back(nullptr);
+
+  read_aloud::mojom::TextSegmentPtr seg1 =
+      read_aloud::mojom::TextSegment::New();
+  seg1->segment_index = 1;
+  seg1->text = u"Second sentence.";  // Length 16
+  segments.push_back(std::move(seg1));
+
+  manager.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  const std::vector<TextChunk>& chunks = manager.GetTimelineChunks();
+  ASSERT_EQ(chunks.size(), 2u);
+
+  EXPECT_EQ(chunks[0].text, u"First sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Second sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 15u);
+}
+
+TEST_F(PrefetchManagerTest, SetTextContentInterleavedEmptySegment) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+
+  read_aloud::mojom::TextSegmentPtr seg0 =
+      read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First sentence.";  // Length 15
+  segments.push_back(std::move(seg0));
+
+  // Interleaved empty segment should be safely skipped without accumulating.
+  read_aloud::mojom::TextSegmentPtr seg_empty =
+      read_aloud::mojom::TextSegment::New();
+  seg_empty->segment_index = 1;
+  seg_empty->text = u"";
+  segments.push_back(std::move(seg_empty));
+
+  read_aloud::mojom::TextSegmentPtr seg1 =
+      read_aloud::mojom::TextSegment::New();
+  seg1->segment_index = 2;
+  seg1->text = u"Second sentence.";  // Length 16
+  segments.push_back(std::move(seg1));
+
+  manager.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  const std::vector<TextChunk>& chunks = manager.GetTimelineChunks();
+  ASSERT_EQ(chunks.size(), 2u);
+
+  EXPECT_EQ(chunks[0].text, u"First sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Second sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 15u);
+}
+
+TEST_F(PrefetchManagerTest, SetTextContentInterleavedWhitespaceSegment) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+
+  read_aloud::mojom::TextSegmentPtr seg0 =
+      read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First sentence.";  // Length 15
+  segments.push_back(std::move(seg0));
+
+  read_aloud::mojom::TextSegmentPtr seg_ws =
+      read_aloud::mojom::TextSegment::New();
+  seg_ws->segment_index = 1;
+  seg_ws->text = u"   \t\n   ";  // Length 8, whitespace only -> yields 0 chunks
+  segments.push_back(std::move(seg_ws));
+
+  read_aloud::mojom::TextSegmentPtr seg1 =
+      read_aloud::mojom::TextSegment::New();
+  seg1->segment_index = 2;
+  seg1->text = u"Second sentence.";  // Length 16
+  segments.push_back(std::move(seg1));
+
+  manager.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  const std::vector<TextChunk>& chunks = manager.GetTimelineChunks();
+  ASSERT_EQ(chunks.size(), 2u);
+
+  EXPECT_EQ(chunks[0].text, u"First sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  // Segment 1 (whitespace, 8 code units) accumulates into document_offset,
+  // even though it yields 0 chunks. seg0 length (15) + seg_ws length (8) = 23.
+  EXPECT_EQ(chunks[1].text, u"Second sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 23u);
+}
+
 }  // namespace readaloud
