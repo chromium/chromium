@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import android.content.Context;
-import android.icu.text.NumberFormat;
 
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
 import org.chromium.ui.base.BytesFormatting;
 
+import java.text.NumberFormat;
 import java.util.Locale;
 
 /** Provides methods to stringify task properties. */
@@ -24,9 +24,9 @@ class PropertyStringifier {
         if (usageBytes == -1) {
             return naString(context);
         }
-        long usageKb = usageBytes / 1024;
-        String number = NumberFormat.getInstance(Locale.getDefault()).format(usageKb).toString();
-        return context.getString(R.string.task_manager_mem_cell_text).replace("$1", number);
+        long usageMb = usageBytes / (1024L * 1024L);
+        String number = NumberFormat.getInstance(Locale.getDefault()).format(usageMb);
+        return context.getString(R.string.task_manager_mem_cell_mb_text, number);
     }
 
     static String getMemoryUsageText(Context context, GpuMemoryUsage memoryUsage) {
@@ -43,7 +43,7 @@ class PropertyStringifier {
         if (Float.isNaN(cpuUsage)) {
             return naString(context);
         }
-        return String.format(Locale.getDefault(), "%.1f", cpuUsage);
+        return percentageForUi(cpuUsage);
     }
 
     static String getNetworkUsageText(Context context, long networkUsage) {
@@ -58,5 +58,12 @@ class PropertyStringifier {
 
     private static String naString(Context context) {
         return context.getString(R.string.task_manager_na_cell_text);
+    }
+
+    private static String percentageForUi(float percentage) {
+        NumberFormat formatter = NumberFormat.getPercentInstance(Locale.getDefault());
+        formatter.setMinimumFractionDigits(1);
+        formatter.setMaximumFractionDigits(1);
+        return formatter.format(percentage / 100.0);
     }
 }

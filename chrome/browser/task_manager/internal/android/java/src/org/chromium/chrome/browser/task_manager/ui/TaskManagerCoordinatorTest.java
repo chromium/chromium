@@ -111,8 +111,8 @@ public class TaskManagerCoordinatorTest {
                 new PropertyModel.Builder(mTaskModelKeys)
                         .with(TASK_ID, 1)
                         .with(TASK_NAME, "foo")
-                        .with(MEMORY_FOOTPRINT, 1024_000)
-                        .with(CPU, 0.5F)
+                        .with(MEMORY_FOOTPRINT, 100L * 1024L * 1024L)
+                        .with(CPU, 10F)
                         .with(NETWORK_USAGE, 0)
                         .with(PROCESS_ID, 1234)
                         .with(IS_SELECTED, false)
@@ -132,8 +132,8 @@ public class TaskManagerCoordinatorTest {
         TextView processId = taskView.findViewById(R.id.process_id);
 
         assertEquals("foo", taskName.getText().toString());
-        assertEquals("1,000K", memoryFootprint.getText().toString());
-        assertEquals("0.5", cpu.getText().toString());
+        assertEquals("100 MB", memoryFootprint.getText().toString());
+        assertEquals("10.0%", cpu.getText().toString());
         assertEquals("0", networkUsage.getText().toString());
         assertEquals("1234", processId.getText().toString());
 

@@ -5024,8 +5024,11 @@ are declared in tools/grit/grit_args.gni.
           Keepalive Count
         </message>
       </if>
-      <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells." formatter_data="android_java">
+      <message name="IDS_TASK_MANAGER_MEM_CELL_TEXT" desc="The value displayed in the memory usage cells.">
         <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K
+      </message>
+      <message name="IDS_TASK_MANAGER_MEM_CELL_MB_TEXT" desc="The value displayed in the memory usage cells in megabytes." formatter_data="android_java">
+        <ph name="NUM_MEGABYTES">%1$s<ex>50</ex></ph> MB
       </message>
       <message name="IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT" desc="The value displayed in the cache size cells.">
         <ph name="NUM_KILOBYTES">$1<ex>5,000</ex></ph>K (<ph name="NUM_KILOBYTES_LIVE">$2<ex>5,000</ex></ph>K live)
