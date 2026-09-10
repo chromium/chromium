@@ -25,8 +25,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 
@@ -36,20 +36,20 @@ uint32_t FontSelectionRequest::GetHash() const {
       width.RawValue(),
       slope.RawValue(),
   };
-  return StringHasher::HashMemory32(base::as_byte_span(val));
+  return HashMemory32(base::as_byte_span(val));
 }
 
 uint32_t FontSelectionRequestKeyHashTraits::GetHash(
     const FontSelectionRequestKey& key) {
   uint32_t val[] = {key.request.GetHash(), key.isDeletedValue};
-  return StringHasher::HashMemory32(base::as_byte_span(val));
+  return HashMemory32(base::as_byte_span(val));
 }
 
 uint32_t FontSelectionCapabilitiesHashTraits::GetHash(
     const FontSelectionCapabilities& key) {
   uint32_t val[] = {key.width.UniqueValue(), key.slope.UniqueValue(),
                     key.weight.UniqueValue(), key.IsHashTableDeletedValue()};
-  return StringHasher::HashMemory32(base::as_byte_span(val));
+  return HashMemory32(base::as_byte_span(val));
 }
 
 String FontSelectionValue::ToString() const {

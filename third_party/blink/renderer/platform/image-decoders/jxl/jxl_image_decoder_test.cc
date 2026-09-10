@@ -1125,7 +1125,7 @@ TEST_F(JXLImageDecoderTest, IncrementalStillDecodeMatchesOneShot) {
   ImageFrame* one_shot_frame = one_shot->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(one_shot_frame);
   ASSERT_EQ(ImageFrame::kFrameComplete, one_shot_frame->GetStatus());
-  const unsigned one_shot_hash = HashBitmap(one_shot_frame->Bitmap());
+  const uint32_t one_shot_hash = HashBitmap(one_shot_frame->Bitmap());
 
   Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
   auto incremental = CreateJXLDecoder();
@@ -1167,7 +1167,7 @@ TEST_F(JXLImageDecoderTest, IncrementalAnimationDecodeMatchesOneShot) {
   const wtf_size_t frame_count = one_shot->FrameCount();
   ASSERT_EQ(5u, frame_count);
 
-  Vector<unsigned> one_shot_hashes;
+  Vector<uint32_t> one_shot_hashes;
   one_shot_hashes.ReserveInitialCapacity(frame_count);
   for (wtf_size_t i = 0; i < frame_count; ++i) {
     ImageFrame* frame = one_shot->DecodeFrameBufferAtIndex(i);
@@ -1359,10 +1359,10 @@ TEST_F(JXLImageDecoderTest, BppHistogramGrayscale) {
 namespace {
 
 // Decodes all frames of `data` and returns one hash per frame.
-Vector<unsigned> DecodeAllFrameHashes(scoped_refptr<SharedBuffer> data) {
+Vector<uint32_t> DecodeAllFrameHashes(scoped_refptr<SharedBuffer> data) {
   auto decoder = CreateJXLDecoder();
   decoder->SetData(data.get(), true);
-  Vector<unsigned> hashes;
+  Vector<uint32_t> hashes;
   const wtf_size_t frame_count = decoder->FrameCount();
   EXPECT_GT(frame_count, 0u);
   for (wtf_size_t i = 0; i < frame_count; ++i) {
@@ -1419,7 +1419,7 @@ TEST_F(JXLImageDecoderTest, ParallelIncrementalDecode) {
       ReadFileToSharedBuffer(kJxlTestDir, "green_queen_vardct_e3.jxl");
   ASSERT_TRUE(full_data);
 
-  Vector<unsigned> one_shot_hashes = DecodeAllFrameHashes(full_data);
+  Vector<uint32_t> one_shot_hashes = DecodeAllFrameHashes(full_data);
   ASSERT_EQ(1u, one_shot_hashes.size());
 
   auto decoder = CreateJXLDecoder();

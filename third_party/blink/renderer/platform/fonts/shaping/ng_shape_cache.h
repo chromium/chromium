@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -98,8 +99,7 @@ struct ShapeCacheKey {
     AddIntToHash(hash, start_offset_);
     AddIntToHash(hash, end_offset_);
     AddIntToHash(hash, locale_ ? blink::GetHash(locale_) : 0);
-    AddIntToHash(
-        hash, StringHasher::HashMemory32(base::as_byte_span(font_features_)));
+    AddIntToHash(hash, HashMemory32(base::as_byte_span(font_features_)));
     AddIntToHash(hash, static_cast<unsigned>(direction_));
     return hash;
   }

@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -67,7 +67,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       "d875dfc2-4505-461b-98fe-0cf6cc5eaf44", "path", "text/plain"));
 
   // Used to control what kind of extra data is provided to the deserializer.
-  unsigned hash = StringHasher::HashMemory32(data_span);
+  uint32_t hash = HashMemory32(data_span);
 
   SerializedScriptValue::DeserializeOptions options;
   MessagePortArray message_ports;

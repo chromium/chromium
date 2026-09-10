@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
+
 namespace blink {
 
 void CSSUnparsedDeclarationValue::TraceAfterDispatch(
@@ -19,7 +21,7 @@ String CSSUnparsedDeclarationValue::CustomCSSText() const {
 }
 
 uint32_t CSSUnparsedDeclarationValue::CustomHash() const {
-  return StringHasher::HashMemory32(data_->OriginalText().RawByteSpan());
+  return HashMemory32(data_->OriginalText().RawByteSpan());
 }
 
 }  // namespace blink

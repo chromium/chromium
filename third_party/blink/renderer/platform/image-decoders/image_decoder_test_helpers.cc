@@ -10,9 +10,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 
 namespace blink {
@@ -53,15 +53,15 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
   return SharedBuffer::Create(ReadFile(dir, file_name));
 }
 
-unsigned HashBitmap(const SkBitmap& bitmap) {
-  return StringHasher::HashMemory32(
+uint32_t HashBitmap(const SkBitmap& bitmap) {
+  return HashMemory32(
       UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
                                 bitmap.computeByteSize())));
 }
 
 void CreateDecodingBaseline(DecoderCreator create_decoder,
                             SharedBuffer* data,
-                            Vector<unsigned>* baseline_hashes) {
+                            Vector<uint32_t>* baseline_hashes) {
   std::unique_ptr<ImageDecoder> decoder = create_decoder();
   decoder->SetData(data, true);
   size_t frame_count = decoder->FrameCount();
@@ -77,7 +77,7 @@ void TestByteByByteDecode(DecoderCreator create_decoder,
                           int expected_repetition_count) {
   const Vector<char> data = shared_data->CopyAs<Vector<char>>();
 
-  Vector<unsigned> baseline_hashes;
+  Vector<uint32_t> baseline_hashes;
   CreateDecodingBaseline(create_decoder, shared_data, &baseline_hashes);
 
   std::unique_ptr<ImageDecoder> decoder = create_decoder();
@@ -136,7 +136,7 @@ void TestByteByByteDecode(DecoderCreator create_decoder,
 static void TestRandomFrameDecode(DecoderCreator create_decoder,
                                   SharedBuffer* full_data,
                                   size_t skipping_step) {
-  Vector<unsigned> baseline_hashes;
+  Vector<uint32_t> baseline_hashes;
   CreateDecodingBaseline(create_decoder, full_data, &baseline_hashes);
   size_t frame_count = baseline_hashes.size();
 
@@ -165,7 +165,7 @@ static void TestRandomDecodeAfterClearFrameBufferCache(
     DecoderCreator create_decoder,
     SharedBuffer* data,
     size_t skipping_step) {
-  Vector<unsigned> baseline_hashes;
+  Vector<uint32_t> baseline_hashes;
   CreateDecodingBaseline(create_decoder, data, &baseline_hashes);
   size_t frame_count = baseline_hashes.size();
 
@@ -253,8 +253,8 @@ static void TestProgressiveDecoding(DecoderCreator create_decoder,
 
   std::unique_ptr<ImageDecoder> decoder;
 
-  Vector<unsigned> truncated_hashes;
-  Vector<unsigned> progressive_hashes;
+  Vector<uint32_t> truncated_hashes;
+  Vector<uint32_t> progressive_hashes;
 
   // Compute hashes when the file is truncated.
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();

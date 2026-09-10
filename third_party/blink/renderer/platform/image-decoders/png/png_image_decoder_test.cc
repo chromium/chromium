@@ -251,7 +251,7 @@ void TestProgressiveDecodingContinuesAfterFullData(
   const ImageFrame* const frame_upfront =
       decoder_upfront->DecodeFrameBufferAtIndex(0);
   ASSERT_EQ(ImageFrame::kFrameComplete, frame_upfront->GetStatus());
-  const unsigned hash_upfront = HashBitmap(frame_upfront->Bitmap());
+  const uint32_t hash_upfront = HashBitmap(frame_upfront->Bitmap());
 
   auto decoder = CreatePNGDecoder();
   scoped_refptr<SharedBuffer> partial_data =
@@ -261,12 +261,12 @@ void TestProgressiveDecodingContinuesAfterFullData(
   EXPECT_EQ(1u, decoder->FrameCount());
   const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_EQ(frame->GetStatus(), ImageFrame::kFramePartial);
-  const unsigned hash_partial = HashBitmap(frame->Bitmap());
+  const uint32_t hash_partial = HashBitmap(frame->Bitmap());
 
   decoder->SetData(SharedBuffer::Create(full_data), true);
   frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
-  const unsigned hash_full = HashBitmap(frame->Bitmap());
+  const uint32_t hash_full = HashBitmap(frame->Bitmap());
 
   EXPECT_FALSE(decoder->Failed());
   EXPECT_NE(hash_full, hash_partial);
@@ -1159,7 +1159,7 @@ TEST(AnimatedPNGTests, Offset) {
   Vector<char> original_data = ReadFile(png_file);
   ASSERT_FALSE(original_data.empty());
 
-  Vector<unsigned> baseline_hashes;
+  Vector<uint32_t> baseline_hashes;
   scoped_refptr<SharedBuffer> original_data_buffer =
       SharedBuffer::Create(original_data);
   CreateDecodingBaseline(CreatePNGDecoder, original_data_buffer.get(),
@@ -1192,7 +1192,7 @@ TEST(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
   Vector<char> original_data = ReadFile(png_file);
   ASSERT_FALSE(original_data.empty());
 
-  Vector<unsigned> baseline_hashes;
+  Vector<uint32_t> baseline_hashes;
   scoped_refptr<SharedBuffer> original_data_buffer =
       SharedBuffer::Create(original_data);
   CreateDecodingBaseline(CreatePNGDecoder, original_data_buffer.get(),

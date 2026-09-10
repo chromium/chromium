@@ -34,9 +34,9 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 
@@ -106,11 +106,10 @@ class FontFaceCreationParams {
         int index;
         int id;
         uint64_t filename_hash;
-      } hash_data = {ttc_index_, fontconfig_interface_id_,
-                     HasFilename() ? StringHasher::HashMemory64(
-                                         base::as_byte_span(Filename()))
-                                   : 0};
-      return StringHasher::HashMemory32(base::byte_span_from_ref(hash_data));
+      } hash_data = {
+          ttc_index_, fontconfig_interface_id_,
+          HasFilename() ? HashMemory64(base::as_byte_span(Filename())) : 0};
+      return HashMemory32(base::byte_span_from_ref(hash_data));
     }
     return DeprecatedCaseFoldingHash::GetHash(family_.empty() ? g_empty_atom
                                                               : family_);

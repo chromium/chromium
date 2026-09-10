@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
@@ -194,7 +195,7 @@ struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
             : 0,
         cross_origin_isolation_mode,
     };
-    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
+    return HashMemory32(base::as_byte_span(hash_codes));
   }
 
   static AgentClusterKey& EmptyValue() {

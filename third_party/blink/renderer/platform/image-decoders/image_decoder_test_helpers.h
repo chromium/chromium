@@ -41,10 +41,10 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(StringView file_name);
 scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
                                                    const char* file_name);
 
-unsigned HashBitmap(const SkBitmap&);
+uint32_t HashBitmap(const SkBitmap&);
 void CreateDecodingBaseline(DecoderCreator,
                             SharedBuffer*,
-                            Vector<unsigned>* baseline_hashes);
+                            Vector<uint32_t>* baseline_hashes);
 
 void TestByteByByteDecode(DecoderCreator create_decoder,
                           SharedBuffer* data,

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -103,7 +104,7 @@ struct FontCacheKey {
         palette_ ? palette_->GetHash() : 0,
         font_variant_alternates_ ? font_variant_alternates_->GetHash() : 0,
         is_unique_match_};
-    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
+    return HashMemory32(base::as_byte_span(hash_codes));
   }
 
   bool operator==(const FontCacheKey& other) const {

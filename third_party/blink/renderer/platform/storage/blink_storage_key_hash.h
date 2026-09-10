@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 
 namespace blink {
 
@@ -29,7 +30,7 @@ struct BlinkStorageKeyHashTraits
 #error "Unknown bits"
 #endif
     };
-    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
+    return HashMemory32(base::as_byte_span(hash_codes));
   }
 
   static uint32_t GetHash(

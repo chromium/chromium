@@ -116,23 +116,6 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
           base::as_byte_span(uchars)));
 }
 
-TEST(StringHasherTest, StringHasher_HashMemory) {
-  EXPECT_EQ(kEmptyStringHash,
-            StringHasher::HashMemory64(base::span<const uint8_t>()));
-  EXPECT_EQ(kEmptyStringHash,
-            StringHasher::HashMemory64(base::span<const uint8_t, 0>()));
-  EXPECT_EQ(kEmptyStringHash, StringHasher::HashMemory64(
-                                  base::as_byte_span(kNullUChars).first(0u)));
-
-  EXPECT_EQ(
-      kSingleNullCharacterHash,
-      StringHasher::HashMemory64(base::as_byte_span(kNullUChars).first(1u)));
-
-  EXPECT_EQ(kTestAHash, StringHasher::HashMemory64(kTestALChars));
-  EXPECT_EQ(kTestBHash,
-            StringHasher::HashMemory64(base::as_byte_span(kTestBUChars)));
-}
-
 TEST(StringHasherTest, DeprecatedCaseFoldingHash) {
   EXPECT_FALSE(EqualCaseFoldingHash("foo", "bar"));
   EXPECT_TRUE(EqualCaseFoldingHash("foo", "FOO"));

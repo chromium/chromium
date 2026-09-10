@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -90,9 +91,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
     }
   }
 
-  uint32_t Hash() const {
-    return StringHasher::HashMemory32(OriginalText().RawByteSpan());
-  }
+  uint32_t Hash() const { return HashMemory32(OriginalText().RawByteSpan()); }
 
   String Serialize() const;
 

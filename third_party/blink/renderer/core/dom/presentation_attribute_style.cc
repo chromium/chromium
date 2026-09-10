@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
@@ -92,7 +93,7 @@ static uint32_t ComputePresentationAttributeCacheHash(
   DCHECK(key.tag_name);
   DCHECK(key.attributes_and_values.size());
   uint32_t attribute_hash =
-      StringHasher::HashMemory32(base::as_byte_span(key.attributes_and_values));
+      HashMemory32(base::as_byte_span(key.attributes_and_values));
   return EnsureValidHash(
       HashInts(key.tag_name->ExistingHash(), attribute_hash));
 }

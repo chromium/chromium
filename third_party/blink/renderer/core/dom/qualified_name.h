@@ -24,6 +24,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -262,7 +263,7 @@ inline bool operator==(const QualifiedName& q, const AtomicString& a) {
 }
 
 inline uint32_t HashComponents(const QualifiedNameComponents& buf) {
-  return StringHasher::HashMemory32(base::byte_span_from_ref(buf));
+  return HashMemory32(base::byte_span_from_ref(buf));
 }
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const QualifiedName&);

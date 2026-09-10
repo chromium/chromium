@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -527,7 +528,7 @@ struct HashTraits<scoped_refptr<const SecurityOrigin>>
 #error "Unknown bits"
 #endif
     };
-    return StringHasher::HashMemory32(base::as_byte_span(hash_codes));
+    return HashMemory32(base::as_byte_span(hash_codes));
   }
   static uint32_t GetHash(const scoped_refptr<const SecurityOrigin>& origin) {
     return GetHash(origin.get());
