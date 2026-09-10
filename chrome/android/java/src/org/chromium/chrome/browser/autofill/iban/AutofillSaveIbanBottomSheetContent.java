@@ -14,10 +14,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 
 /** This class is responsible for rendering the content for the Autofill save IBAN bottomsheet. */
 @NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.AUTOFILL_SAVE_IBAN)
+                    .build();
+
     private final ScrollView mScrollView;
     private final View mContentView;
 
@@ -53,6 +60,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public int getVerticalScrollOffset() {
         return mScrollView.getScrollY();
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override

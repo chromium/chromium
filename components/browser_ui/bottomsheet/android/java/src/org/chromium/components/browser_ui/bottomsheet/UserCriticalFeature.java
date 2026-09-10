@@ -40,6 +40,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.TOUCH_TO_FILL_PAYMENT_METHOD,
     UserCriticalFeature.FACILITATED_PAYMENTS_PAYMENT_METHODS,
     UserCriticalFeature.AUTOFILL_SAVE_CARD,
+    UserCriticalFeature.AUTOFILL_SAVE_IBAN,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -57,4 +58,5 @@ public @interface UserCriticalFeature {
     int TOUCH_TO_FILL_PAYMENT_METHOD = 11;
     int FACILITATED_PAYMENTS_PAYMENT_METHODS = 12;
     int AUTOFILL_SAVE_CARD = 13;
+    int AUTOFILL_SAVE_IBAN = 14;
 }
