@@ -4141,6 +4141,21 @@ ci.builder(
                 ],
                 ci_only = True,
                 swarming = targets.swarming(
+                    optional_dimensions = {
+                        # TODO(crrev.com/541675870): Remove x86-64-n4 when migration is done.
+                        # Wait 30 seconds for n4 cpu with cache, wait 30 seconds for n4 cpu
+                        # wait 60 seconds for any bot with a cache.
+                        30: {
+                            "cpu": "x86-64-n4",
+                            "caches": "android_36_google_apis_x64",
+                        },
+                        60: {
+                            "cpu": "x86-64-n4",
+                        },
+                        120: {
+                            "caches": "android_36_google_apis_x64",
+                        },
+                    },
                     shards = 40,
                 ),
             ),
