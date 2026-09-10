@@ -15,11 +15,10 @@
             "builder_spec": {
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
-                "archive_name_prefix": "asan-brp-v2",
                 "archive_path": "linux-release/asan-brp-v2-linux-release",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": false
+                "use_archive_path": true
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

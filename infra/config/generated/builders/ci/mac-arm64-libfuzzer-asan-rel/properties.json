@@ -65,6 +65,5 @@
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
   "upload_bucket": "chromium-browser-libfuzzer",
-  "upload_directory": "asan",
   "use_archive_path": true
 }

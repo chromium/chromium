@@ -15,12 +15,10 @@
             "builder_spec": {
               "builder_group": "chromium.memory",
               "clusterfuzz_archive": {
-                "archive_name_prefix": "ios-asan",
                 "archive_path": "mac-release-ios-asan/ios-asan-mac-release",
-                "archive_subdir": "ios-asan",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": false
+                "use_archive_path": true
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {

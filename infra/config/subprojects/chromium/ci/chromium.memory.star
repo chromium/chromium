@@ -1539,13 +1539,13 @@ ci.builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            # TODO(https://crbug.com/527836546): Flip `use_archive_path` to True
-            # then remove `archive_name_prefix` and `archive_subdir`.
-            archive_name_prefix = "ios-asan",
+            # TODO(https://crbug.com/527836546): Allow omitting and remove.
+            archive_name_prefix = None,
             archive_path = "mac-release-ios-asan/ios-asan-mac-release",
-            archive_subdir = "ios-asan",
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-asan",
+            # TODO(https://crbug.com/527836546): Flip default to true and remove.
+            use_archive_path = True,
         ),
     ),
     gn_args = gn_args.config(
