@@ -97,80 +97,87 @@ std::optional<viz::HitTestRegionList> HitTestDataBuilder::Build() && {
   float device_scale_factor = active_tree_->device_scale_factor();
 
   for (const auto* layer : base::Reversed(*active_tree_)) {
-    if (layer->is_surface_layer()) {
-      const auto* surface_layer = static_cast<const SurfaceLayerImpl*>(layer);
-      // We should not skip a non-hit-testable surface layer if
-      // - it has pointer-events: none because viz hit test needs to know the
-      //   information to ensure all descendant OOPIFs to ignore hit tests; or
-      // - it draws content to track overlaps.
-      if (!layer->HitTestable() && !layer->draws_content() &&
-          !surface_layer->has_pointer_events_none()) {
-        continue;
-      }
-      // If a surface layer is created not by child frame compositor or the
-      // frame owner has pointer-events: none property, the surface layer
-      // becomes not hit testable. We should not generate data for it.
-      if (!surface_layer->surface_hit_testable() ||
-          !surface_layer->range().IsValid()) {
-        // We collect any overlapped regions that does not have
-        // pointer-events: none.
-        if (!surface_layer->has_pointer_events_none()) {
-          TrackNonEmittedSurface(surface_layer);
-        }
-        continue;
-      }
+    const SurfaceLayerImpl* surface_layer = EvaluateLayerAndTrackOverlap(layer);
+    if (!surface_layer) {
+      continue;
+    }
 
-      // Using the enclosing rect to ensure antialiased boundary pixels cause
-      // pointer input to be routed to this layer.
-      gfx::Rect content_rect(gfx::ScaleToEnclosingRect(
-          gfx::Rect(surface_layer->bounds()), device_scale_factor));
+    // Using the enclosing rect to ensure antialiased boundary pixels cause
+    // pointer input to be routed to this layer.
+    gfx::Rect content_rect(gfx::ScaleToEnclosingRect(
+        gfx::Rect(surface_layer->bounds()), device_scale_factor));
 
-      auto flag = GetFlagsForSurfaceLayer(surface_layer);
-      uint32_t async_hit_test_reasons =
-          viz::AsyncHitTestReasons::kNotAsyncHitTest;
-      if (surface_layer->has_pointer_events_none()) {
-        flag |= viz::HitTestRegionFlags::kHitTestIgnore;
-      }
-      if (IsSurfaceOverlapped(surface_layer)) {
-        flag |= viz::HitTestRegionFlags::kHitTestAsk;
-        async_hit_test_reasons |= viz::AsyncHitTestReasons::kOverlappedRegion;
-      }
-      bool layer_hit_test_region_is_masked =
+    auto flag = GetFlagsForSurfaceLayer(surface_layer);
+    uint32_t async_hit_test_reasons =
+        viz::AsyncHitTestReasons::kNotAsyncHitTest;
+    if (surface_layer->has_pointer_events_none()) {
+      flag |= viz::HitTestRegionFlags::kHitTestIgnore;
+    }
+    if (IsSurfaceOverlapped(surface_layer)) {
+      flag |= viz::HitTestRegionFlags::kHitTestAsk;
+      async_hit_test_reasons |= viz::AsyncHitTestReasons::kOverlappedRegion;
+    }
+    bool layer_hit_test_region_is_masked =
+        active_tree_->property_trees()
+            ->effect_tree()
+            .HitTestMayBeAffectedByMask(surface_layer->effect_tree_index());
+    if (surface_layer->is_clipped() || layer_hit_test_region_is_masked) {
+      bool layer_hit_test_region_is_rectangle =
+          !layer_hit_test_region_is_masked &&
+          surface_layer->ScreenSpaceTransform().Preserves2dAxisAlignment() &&
           active_tree_->property_trees()
               ->effect_tree()
-              .HitTestMayBeAffectedByMask(surface_layer->effect_tree_index());
-      if (surface_layer->is_clipped() || layer_hit_test_region_is_masked) {
-        bool layer_hit_test_region_is_rectangle =
-            !layer_hit_test_region_is_masked &&
-            surface_layer->ScreenSpaceTransform().Preserves2dAxisAlignment() &&
-            active_tree_->property_trees()
-                ->effect_tree()
-                .ClippedHitTestRegionIsRectangle(
-                    surface_layer->effect_tree_index());
-        content_rect =
-            gfx::ScaleToEnclosingRect(surface_layer->visible_layer_rect(),
-                                      device_scale_factor, device_scale_factor);
-        if (!layer_hit_test_region_is_rectangle) {
-          flag |= viz::HitTestRegionFlags::kHitTestAsk;
-          async_hit_test_reasons |= viz::AsyncHitTestReasons::kIrregularClip;
-        }
+              .ClippedHitTestRegionIsRectangle(
+                  surface_layer->effect_tree_index());
+      content_rect =
+          gfx::ScaleToEnclosingRect(surface_layer->visible_layer_rect(),
+                                    device_scale_factor, device_scale_factor);
+      if (!layer_hit_test_region_is_rectangle) {
+        flag |= viz::HitTestRegionFlags::kHitTestAsk;
+        async_hit_test_reasons |= viz::AsyncHitTestReasons::kIrregularClip;
       }
-      const auto& surface_id = surface_layer->range().end();
-      hit_test_region_list->regions.emplace_back();
-      PopulateHitTestRegion(&hit_test_region_list->regions.back(), layer, flag,
-                            async_hit_test_reasons, gfx::RRectF(content_rect),
-                            surface_id, device_scale_factor);
-      continue;
     }
-
-    if (!layer->HitTestable()) {
-      continue;
-    }
-
-    TrackHitTestableNonSurfaceLayer(layer);
+    const auto& surface_id = surface_layer->range().end();
+    hit_test_region_list->regions.emplace_back();
+    PopulateHitTestRegion(&hit_test_region_list->regions.back(), layer, flag,
+                          async_hit_test_reasons, gfx::RRectF(content_rect),
+                          surface_id, device_scale_factor);
   }
 
   return hit_test_region_list;
+}
+
+const SurfaceLayerImpl* HitTestDataBuilder::EvaluateLayerAndTrackOverlap(
+    const LayerImpl* layer) {
+  if (!layer->is_surface_layer()) {
+    if (layer->HitTestable()) {
+      TrackHitTestableNonSurfaceLayer(layer);
+    }
+    return nullptr;
+  }
+
+  const auto* surface_layer = static_cast<const SurfaceLayerImpl*>(layer);
+  // We should not skip a non-hit-testable surface layer if
+  // - it has pointer-events: none because viz hit test needs to know the
+  //   information to ensure all descendant OOPIFs to ignore hit tests; or
+  // - it draws content to track overlaps.
+  if (!layer->HitTestable() && !layer->draws_content() &&
+      !surface_layer->has_pointer_events_none()) {
+    return nullptr;
+  }
+  // If a surface layer is created not by child frame compositor or the frame
+  // owner has pointer-events: none property, the surface layer becomes not
+  // hit testable. We should not generate data for it.
+  if (!surface_layer->surface_hit_testable() ||
+      !surface_layer->range().IsValid()) {
+    // Track overlapping regions that do not have pointer-events: none.
+    if (!surface_layer->has_pointer_events_none()) {
+      TrackNonEmittedSurface(surface_layer);
+    }
+    return nullptr;
+  }
+
+  return surface_layer;
 }
 
 void HitTestDataBuilder::TrackHitTestableNonSurfaceLayer(

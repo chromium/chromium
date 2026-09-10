@@ -27,6 +27,11 @@ class HitTestDataBuilder {
   std::optional<viz::HitTestRegionList> Build() &&;
 
  private:
+  // Determines whether `layer` should emit hit test data, indicated by a
+  // non-null return value. Also tracks non-emitted layers that may obscure
+  // surfaces encountered later.
+  const SurfaceLayerImpl* EvaluateLayerAndTrackOverlap(const LayerImpl* layer);
+
   void TrackHitTestableNonSurfaceLayer(const LayerImpl* layer);
   void TrackNonEmittedSurface(const SurfaceLayerImpl* surface_layer);
   bool IsSurfaceOverlapped(const SurfaceLayerImpl* surface_layer) const;
