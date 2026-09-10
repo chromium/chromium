@@ -115,11 +115,6 @@ export enum UserAction {
   SAVE_FIRST = 13,
   SAVE = 14,
 
-  // Recorded when the user triggers a save of the document and the document
-  // has been modified by annotations.
-  SAVE_WITH_ANNOTATION_FIRST = 15,
-  SAVE_WITH_ANNOTATION = 16,
-
   PRINT_FIRST = 17,
   PRINT = 18,
 

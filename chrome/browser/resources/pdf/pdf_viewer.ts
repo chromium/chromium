@@ -1979,7 +1979,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     record(UserAction.SAVE);
     switch (requestType) {
       case SaveRequestType.ANNOTATION:
-        record(UserAction.SAVE_WITH_ANNOTATION);
         // <if expr="enable_pdf_ink2">
         record(UserAction.SAVE_WITH_INK2_ANNOTATION);
         break;

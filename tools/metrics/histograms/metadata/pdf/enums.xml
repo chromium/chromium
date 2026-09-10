@@ -42,8 +42,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="PageSelectorNavigate"/>
   <int value="13" label="SaveFirst"/>
   <int value="14" label="Save"/>
-  <int value="15" label="SaveWithAnnotationFirst"/>
-  <int value="16" label="SaveWithAnnotation"/>
+  <int value="15" label="SaveWithAnnotationFirst (deprecated)"/>
+  <int value="16" label="SaveWithAnnotation (deprecated)"/>
   <int value="17" label="PrintFirst"/>
   <int value="18" label="Print"/>
   <int value="19" label="EnterAnnotationModeFirst"/>
