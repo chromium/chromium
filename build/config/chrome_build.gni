@@ -49,6 +49,13 @@ declare_args() {
   }
 }
 
+declare_args() {
+  # Allow migration from trichrome related config
+  if (is_android) {
+    use_stable_package_name = use_stable_package_name_for_trichrome
+  }
+}
+
 # Use this for is_chrome_branded things that live in src-internal.
 # See: b/452971335
 is_internal_chrome_branded = enable_src_internal && is_chrome_branded
