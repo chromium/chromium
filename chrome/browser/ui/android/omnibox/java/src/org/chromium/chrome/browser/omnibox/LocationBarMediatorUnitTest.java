@@ -3139,6 +3139,29 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testMicButtonToolbarWidthConsumer_suggestionsPopover() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        mTabletMediator.onFinishNativeInitialization();
+        mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(true);
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        mTabletMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        ToolbarWidthConsumer micButtonConsumer = mTabletMediator.getMicButtonToolbarWidthConsumer();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        clearInvocations(mLocationBarTablet);
+
+        assertTrue(micButtonConsumer.hasSpaceToShow());
+        assertEquals(buttonWidth, micButtonConsumer.updateVisibility(0));
+        verify(mLocationBarTablet).setMicButtonVisibility(true);
+    }
+
+    @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateButtonVisibility_SearchMode_noQuery_showMic() {
         mMediator.onFinishNativeInitialization();
@@ -5233,8 +5256,7 @@ public class LocationBarMediatorUnitTest {
 
         assertEquals(TextSelection.SELECT_ALL, mSessionState.getAutocompleteInput().getSelection());
         verify(mUrlCoordinator)
-                .setUrlBarData(
-                        any(), eq(UrlBar.ScrollType.NO_SCROLL), eq(TextSelection.SELECT_ALL));
+                .setUrlBarData(any(), eq(ScrollType.NO_SCROLL), eq(TextSelection.SELECT_ALL));
     }
 
     @Test
@@ -5271,9 +5293,7 @@ public class LocationBarMediatorUnitTest {
         assertFalse(mSessionState.isSessionActive());
         verify(mUrlCoordinator, atLeastOnce())
                 .setUrlBarData(
-                        eq(newUrlData),
-                        eq(UrlBar.ScrollType.SCROLL_TO_TLD),
-                        eq(TextSelection.SELECT_ALL));
+                        eq(newUrlData), eq(ScrollType.SCROLL_TO_TLD), eq(TextSelection.SELECT_ALL));
     }
 
     @Test
