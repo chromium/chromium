@@ -761,10 +761,6 @@ void OfflinePageURLLoaderBuilder::OnReceiveResponse(
 }
 
 void OfflinePageURLLoaderBuilder::OnComplete() {
-  if (client_->completion_status().error_code != net::OK) {
-    mime_type_.clear();
-    body_.clear();
-  }
   ReadCompleted(
       ResponseInfo(client_->completion_status().error_code, mime_type_, body_));
   // Clear intermediate data in preparation for next potential page loading.
@@ -1366,10 +1362,7 @@ TEST_F(OfflinePageRequestHandlerTest, IntentFileModifiedInTheMiddle) {
   EXPECT_EQ(net::ERR_FAILED, request_status());
   EXPECT_NE("multipart/related", mime_type());
   EXPECT_EQ(0, bytes_read());
-  // Note that the offline bit is not cleared on purpose due to the fact that
-  // other flag, like request status, should already indicate that the offline
-  // page fails to load.
-  EXPECT_TRUE(is_offline_page_set_in_navigation_data());
+  EXPECT_FALSE(is_offline_page_set_in_navigation_data());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 }
 
@@ -1404,10 +1397,42 @@ TEST_F(OfflinePageRequestHandlerTest, IntentFileModifiedWithMoreDataAppended) {
   EXPECT_EQ(net::ERR_FAILED, request_status());
   EXPECT_NE("multipart/related", mime_type());
   EXPECT_EQ(0, bytes_read());
-  // Note that the offline bit is not cleared on purpose due to the fact that
-  // other flag, like request status, should already indicate that the offline
-  // page fails to load.
-  EXPECT_TRUE(is_offline_page_set_in_navigation_data());
+  EXPECT_FALSE(is_offline_page_set_in_navigation_data());
+  EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
+}
+
+TEST_F(OfflinePageRequestHandlerTest, FailOnIntentFileMismatchForInternalPage) {
+  SimulateHasNetworkConnectivity(true);
+
+  std::string expected_data(MakeContentOfSize(2 * 1024));
+  ArchiveValidator archive_validator;
+  archive_validator.Update(expected_data);
+  std::string expected_digest = archive_validator.Finish();
+  int expected_size = expected_data.length();
+
+  // Save an offline page whose archive lives in the internal directory.
+  const GURL test_url(kTestUrl);
+  int64_t offline_id =
+      SaveInternalPage(test_url, GURL(), base::FilePath(kFilename1),
+                       expected_size, expected_digest);
+
+  // Create a file with unrelated content. The path to this file will be fed
+  // into "intent_url" of extra headers.
+  std::string unrelated_data(MakeContentOfSize(3 * 1024));
+  base::FilePath unrelated_file_path = CreateFileWithContent(unrelated_data);
+
+  // Load an URL with custom header that contains "intent_url" pointing to the
+  // unrelated file. Expect the request fails without serving any data.
+  net::HttpRequestHeaders extra_headers;
+  extra_headers.AddHeaderFromString(UseOfflinePageHeaderForIntent(
+      OfflinePageHeader::Reason::FILE_URL_INTENT, offline_id,
+      net::FilePathToFileURL(unrelated_file_path)));
+  LoadPageWithHeaders(test_url, extra_headers);
+
+  EXPECT_EQ(net::ERR_FAILED, request_status());
+  EXPECT_NE("multipart/related", mime_type());
+  EXPECT_EQ(0, bytes_read());
+  EXPECT_FALSE(is_offline_page_set_in_navigation_data());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
 }
 

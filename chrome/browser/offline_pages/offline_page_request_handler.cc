@@ -269,22 +269,7 @@ void VisitTrustedOfflinePageOnUI(
           OfflinePageRequestHandler::NetworkState::PROHIBITIVELY_SLOW_NETWORK);
 }
 
-void ClearOfflinePageData(content::WebContents::Getter web_contents_getter) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // |web_contents_getter| is passed from IO thread. We need to check if
-  // web contents is still valid.
-  content::WebContents* web_contents = web_contents_getter.Run();
-  if (!web_contents)
-    return;
-
-  // Save an cached copy of OfflinePageItem such that Tab code can get
-  // the loaded offline page immediately.
-  OfflinePageTabHelper* tab_helper =
-      OfflinePageTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
-  tab_helper->ClearOfflinePage();
-}
 
 }  // namespace
 
@@ -424,27 +409,15 @@ void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
   }
 
   // No need to open the file if it has already been opened for the validation.
+  // This is always the case when a file or content URL intent is being
+  // processed since the intent file is opened during validation.
   if (stream_) {
     DidOpenForServing(net::OK);
     return;
   }
+  DCHECK(!IsProcessingFileOrContentUrlIntent());
 
-  // If a file:// or content:// intent is being processed, open the file:// or
-  // content:// denoted in the intent instead. Otherwise, open the archive file
-  // associated with the offline page.
-  base::FilePath file_path;
-  if (IsProcessingFileUrlIntent()) {
-    bool valid = net::FileURLToFilePath(offline_header_.intent_url, &file_path);
-    DCHECK(valid);
-#if BUILDFLAG(IS_ANDROID)
-  } else if (IsProcessingContentUrlIntent()) {
-    file_path = base::FilePath(offline_header_.intent_url.spec());
-    DCHECK(file_path.IsContentUri());
-#endif  // BUILDFLAG(IS_ANDROID)
-  } else {
-    file_path = GetCurrentOfflinePage().file_path;
-  }
-  OpenFile(file_path,
+  OpenFile(GetCurrentOfflinePage().file_path,
            base::BindRepeating(&OfflinePageRequestHandler::DidOpenForServing,
                                weak_ptr_factory_.GetWeakPtr()));
 }
@@ -495,6 +468,26 @@ bool OfflinePageRequestHandler::IsProcessingContentUrlIntent() const {
 
 bool OfflinePageRequestHandler::IsProcessingFileOrContentUrlIntent() const {
   return IsProcessingFileUrlIntent() || IsProcessingContentUrlIntent();
+}
+
+base::FilePath OfflinePageRequestHandler::GetIntentFilePath() const {
+  if (!IsProcessingFileOrContentUrlIntent()) {
+    return base::FilePath();
+  }
+  base::FilePath file_path;
+  if (IsProcessingFileUrlIntent()) {
+    if (!net::FileURLToFilePath(offline_header_.intent_url, &file_path)) {
+      return base::FilePath();
+    }
+#if BUILDFLAG(IS_ANDROID)
+  } else if (IsProcessingContentUrlIntent()) {
+    file_path = base::FilePath(offline_header_.intent_url.spec());
+    if (!file_path.IsContentUri()) {
+      return base::FilePath();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+  return file_path;
 }
 
 void OfflinePageRequestHandler::OpenFile(
@@ -549,6 +542,23 @@ void OfflinePageRequestHandler::FinalizeDigestOnBackground(
 }
 
 void OfflinePageRequestHandler::ValidateFile() {
+  // If a file or content URL intent is being processed, the file denoted in the
+  // intent will be served instead of the archive associated with the offline
+  // page, so the intent file is the one that must be validated. This is done
+  // regardless of where the offline page's own archive lives since that archive
+  // is not used.
+  if (IsProcessingFileOrContentUrlIntent()) {
+    if (GetCurrentOfflinePage().digest.empty() || GetIntentFilePath().empty()) {
+      OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
+      return;
+    }
+    OpenFile(
+        GetIntentFilePath(),
+        base::BindRepeating(&OfflinePageRequestHandler::DidOpenForValidation,
+                            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // If the archive file is in internal directory, the offline page can be
   // deemed as trusted without going through valication.
   if (candidates_[candidate_index_].archive_is_in_internal_dir) {
@@ -560,18 +570,6 @@ void OfflinePageRequestHandler::ValidateFile() {
   // the validation can fail immediately.
   if (GetCurrentOfflinePage().digest.empty()) {
     OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
-    return;
-  }
-
-  // If a file:// or content:// URL intent is being viewed, skip the validation.
-  // The digest for the file:// or content:// denoted in the intent was computed
-  // and used to find the offline page. However, we will not validate and read
-  // from the archive archive file assoicated with the offline page since it may
-  // not exist or even got modified. We will read from the file:// or content://
-  // denoted in the intent  and compute the digest of the read data to make sure
-  // it does not get changed.
-  if (IsProcessingFileOrContentUrlIntent()) {
-    OnFileValidationDone(FileValidationResult::FILE_VALIDATION_SUCCEEDED);
     return;
   }
 
@@ -660,6 +658,11 @@ void OfflinePageRequestHandler::DidComputeActualDigestForValidation(
 
 void OfflinePageRequestHandler::OnFileValidationDone(
     FileValidationResult result) {
+  // The validator has been finalized and cannot be reused. Reset it so that a
+  // fresh instance is allocated if another digest needs to be computed (e.g.
+  // when moving to another candidate on validation failure).
+  archive_validator_ = nullptr;
+
   if (result == FileValidationResult::FILE_VALIDATION_SUCCEEDED) {
     OnTrustedOfflinePageFound();
     return;
@@ -675,7 +678,7 @@ void OfflinePageRequestHandler::OnFileValidationDone(
     return;
   }
 
-  // Otherwise, no trusted offline page can be found so we fall back to the
+  // No trusted offline page can be found so we fall back to the
   // default handling.
   delegate_->FallbackToDefault();
 }
@@ -698,6 +701,11 @@ void OfflinePageRequestHandler::DidOpenForServing(int result) {
 
   // Note that we always seek to the beginning of the file because the file may
   // have already been read for validation purpose.
+  // Seeking to 0 is safe for file and content URL intents because any intent
+  // stream was already read to EOF during intent dispatch in
+  // OfflinePageBridge::GetSizeAndComputeDigest() to match against
+  // OfflinePageModel; a non-reopenable, one-shot stream would not have
+  // survived that initial dispatch step.
   int seek_result = stream_->Seek(
       0, base::BindOnce(&OfflinePageRequestHandler::DidSeekForServing,
                         weak_ptr_factory_.GetWeakPtr()));
@@ -720,61 +728,12 @@ void OfflinePageRequestHandler::DidSeekForServing(
 void OfflinePageRequestHandler::DidReadForServing(
     scoped_refptr<net::IOBuffer> buf,
     base::expected<base::ByteSize, net::Error> result) {
-  if (!result.has_value() || !IsProcessingFileOrContentUrlIntent()) {
-    buf = nullptr;
-    // TODO(hjanuschka): Update NotifyReadRawDataComplete to accept
-    // base::expected<base::ByteSize, net::Error> directly.
-    NotifyReadRawDataComplete(!result.has_value()
-                                  ? result.error()
-                                  : base::checked_cast<int>(result->InBytes()));
-    return;
-  }
-
-  // At this point, we have a successful read &&
-  // IsProcessingFileOrContentUrlIntent() which means the read succeeds for
-  // processing the file:// or content:// URL intent. We need to compute the
-  // digest to ensure that the file:// or content:// we read is not modified
-  // since the time we received the intent, validated the data provided by
-  // file:// or content:// URL, and decided to turn it into the corresponding
-  // http/https URL and let OfflinePageRequestHandler handle it.
-  if (result->is_positive()) {
-    int bytes_read = base::checked_cast<int>(result->InBytes());
-    UpdateDigestOnBackground(
-        buf, result->InBytes(),
-        base::BindOnce(&OfflinePageRequestHandler::NotifyReadRawDataComplete,
-                       weak_ptr_factory_.GetWeakPtr(), bytes_read));
-
-  } else {
-    // When bytes read is 0, it indicates EOF. We need to finalize the hash
-    // to get the actual digest.
-    FinalizeDigestOnBackground(base::BindOnce(
-        &OfflinePageRequestHandler::DidComputeActualDigestForServing,
-        weak_ptr_factory_.GetWeakPtr(), 0));
-  }
-}
-
-void OfflinePageRequestHandler::NotifyReadRawDataComplete(int result) {
-  delegate_->NotifyReadRawDataComplete(result);
-}
-
-void OfflinePageRequestHandler::DidComputeActualDigestForServing(
-    int result,
-    const std::string& actual_digest) {
-  // If the actual digest does not match, fail the request job.
-  bool mismatch = actual_digest != GetCurrentOfflinePage().digest;
-  if (mismatch) {
-    // Note: Do not call delegate_->SetOfflinePageNavigationUIData to clear
-    // the offline bit since SetOfflinePageNavigationUIData is supposed to
-    // be called before the response is being received. Furthermore, there is
-    // no need to clear the offline bit since the error code should already
-    // indicate that the offline page is not loaded.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ClearOfflinePageData,
-                                  delegate_->GetWebContentsGetter()));
-    result = net::ERR_FAILED;
-  }
-
-  NotifyReadRawDataComplete(result);
+  buf = nullptr;
+  // TODO(hjanuschka): Update NotifyReadRawDataComplete to accept
+  // base::expected<base::ByteSize, net::Error> directly.
+  delegate_->NotifyReadRawDataComplete(
+      result.has_value() ? base::checked_cast<int>(result->InBytes())
+                         : result.error());
 }
 
 }  // namespace offline_pages
