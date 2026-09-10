@@ -565,7 +565,7 @@ UIImage* GetManualFillSymbol() {
               isTabletFormFactor:isTabletFormFactor];
   [formInputAccessoryView setIsCompact:[self isCompact]];
 
-  if (IsIOSKeyboardAccessoryDefaultViewEnabled() && !isTabletFormFactor) {
+  if (!isTabletFormFactor) {
     [formInputAccessoryView
         showGroup:FormInputAccessoryViewSubitemGroup::kNavigationButtons];
   }

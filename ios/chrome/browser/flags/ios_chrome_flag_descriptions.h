@@ -1088,12 +1088,6 @@ inline constexpr char kIOSGeminiBottomSheetMigrationDescription[] =
     " of a overlay view. This feature requires both 'Gemini Copresence'"
     " and 'Assistant Container' features to be enabled.";
 
-inline constexpr char kIOSKeyboardAccessoryDefaultViewName[] =
-    "Default Input Accessory View";
-inline constexpr char kIOSKeyboardAccessoryDefaultViewDescription[] =
-    "When enabled, a default Keyboard Accessory view with navigation buttons "
-    "is provided for a <select> HTML element.";
-
 inline constexpr char kIOSLevelUpName[] = "Level Up";
 inline constexpr char kIOSLevelUpDescription[] =
     "Enables the 'Level Up' feature on iOS.";

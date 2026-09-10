@@ -319,13 +319,6 @@ bool IsLiquidGlassEffectEnabled() {
   return false;
 }
 
-BASE_FEATURE(kIOSKeyboardAccessoryDefaultView,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsIOSKeyboardAccessoryDefaultViewEnabled() {
-  return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryDefaultView);
-}
-
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);

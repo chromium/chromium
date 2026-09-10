@@ -310,12 +310,6 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly();
 // false otherwise.
 bool IsLiquidGlassEffectEnabled();
 
-// Feature flag to enable the default input accessory view.
-BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryDefaultView);
-
-// Returns true if the default input accessory view is enabled.
-bool IsIOSKeyboardAccessoryDefaultViewEnabled();
-
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);

@@ -59,7 +59,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/credential_provider/net_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
@@ -564,7 +563,6 @@ bool IsStateless() {
   }
 
   BOOL isDefaultViewEnabled =
-      IsIOSKeyboardAccessoryDefaultViewEnabled() &&
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
   BOOL isSelectOne =
       params.field_type == autofill::FormActivityParams::FieldType::kSelectOne;
