@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.base;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
@@ -15,6 +17,7 @@ import android.util.ArraySet;
 
 import org.jni_zero.JniZero;
 
+import org.chromium.base.ActivityLifecycleCallbacksAdapter;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
@@ -78,6 +81,37 @@ public class SplitChromeApplication extends SplitCompatApplication {
     public void onCreate() {
         finishPreload(CHROME_SPLIT_NAME);
         super.onCreate();
+        // setClassLoader() must be called before any values are queried for it to be used for
+        // nested Parcelables & Bundles. The framework queries the bundle before
+        // Activity.onCreate(), but not before onActivityPreCreated().
+        // https://crbug.com/40877199, https://crbug.com/549795122
+        registerActivityLifecycleCallbacks(
+                new ActivityLifecycleCallbacksAdapter() {
+                    @Override
+                    public void onActivityPreCreated(
+                            Activity activity, @Nullable Bundle savedInstanceState) {
+                        if (savedInstanceState == null) {
+                            return;
+                        }
+                        ClassLoader splitClassLoader = BundleUtils.getSplitCompatClassLoader();
+                        savedInstanceState.setClassLoader(splitClassLoader);
+                        BundleUtils.restoreLoadedSplits(savedInstanceState);
+                        // https://cs.android.com/search?q=Activity.java%20symbol:onRestoreInstanceState
+                        Bundle windowState =
+                                savedInstanceState.getBundle("android:viewHierarchyState");
+                        if (windowState != null) {
+                            windowState.setClassLoader(splitClassLoader);
+                        }
+                        // Eager unmarshalling is required for classes using AndroidX's
+                        // SavedState, since it overrides the ClassLoader that we set here.
+                        // https://crbug.com/527604007#comment17
+                        Bundle fragmentsState =
+                                savedInstanceState.getBundle("android:support:fragments");
+                        if (fragmentsState != null) {
+                            forceInflateBundleValues(fragmentsState, splitClassLoader);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -310,5 +344,28 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
+    }
+
+    /**
+     * Sets the ClassLoader on the given bundle and all nested bundles.
+     *
+     * <p>Iterates all values, and so also triggers unmarshalling of all values.
+     */
+    private static void forceInflateBundleValues(Bundle bundle, ClassLoader classLoader) {
+        bundle.setClassLoader(classLoader);
+        for (String key : bundle.keySet()) {
+            Object value;
+            try {
+                value = bundle.get(key);
+            } catch (Exception e) {
+                // Ignore unmarshalling errors.
+                continue;
+            }
+            // Bundles could also be nested in: Bundle[], List<?>, SparseArray<?>, but that has so
+            // far not come up.
+            if (value instanceof Bundle b) {
+                forceInflateBundleValues(b, classLoader);
+            }
+        }
     }
 }
