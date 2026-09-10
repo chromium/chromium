@@ -1349,6 +1349,7 @@ if (!limit_android_deps) {
       ":androidx_ink_ink_geometry_java",
       ":androidx_ink_ink_strokes_java",
       ":androidx_input_input_motionprediction_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_pdf_pdf_viewer_fragment_java",
       ":androidx_recyclerview_recyclerview_java",
       "//third_party/android_deps:material_design_java",
@@ -1386,6 +1387,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_core_core_java",
       ":androidx_fragment_fragment_ktx_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_pdf_pdf_document_service_java",
       ":androidx_window_window_java",
       "//third_party/android_deps:material_design_java",
@@ -1406,6 +1408,7 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_ktx_java",
       ":androidx_fragment_fragment_ktx_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_recyclerview_recyclerview_java",
       ":androidx_slidingpanelayout_slidingpanelayout_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
@@ -2339,6 +2342,7 @@ if (!limit_android_deps) {
       ":androidx_compose_ui_ui_util_java",
       ":androidx_graphics_graphics_shapes_java",
       ":androidx_lifecycle_lifecycle_common_java8_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -2373,6 +2377,7 @@ if (!limit_android_deps) {
       ":androidx_compose_foundation_foundation_java",
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_ui_ui_util_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -3728,6 +3733,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_ui_ui_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_navigationevent_navigationevent_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -3800,6 +3806,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_ui_ui_java",
+      ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_paging_paging_common_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
