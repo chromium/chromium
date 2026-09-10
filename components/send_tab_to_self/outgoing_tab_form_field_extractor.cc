@@ -9,8 +9,6 @@
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/logging.h"
-#include "base/notreached.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"

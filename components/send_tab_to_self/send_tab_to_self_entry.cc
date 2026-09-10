@@ -12,9 +12,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
