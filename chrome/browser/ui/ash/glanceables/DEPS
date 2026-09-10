@@ -13,12 +13,14 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/api/tasks",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
 ]
 
 specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/prefs",
+  ],
   ".*browsertest\\.cc": [
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
