@@ -344,6 +344,21 @@ message ChromeExtensionId {
   optional uint32 pseudonymized_extension_id = 2;
 }
 
+// Describes the JavaScript world an extension script is injected into.
+message ChromeExtensionScriptInjection {
+  enum ExecutionWorld {
+    EXECUTION_WORLD_UNSPECIFIED = 0;
+    EXECUTION_WORLD_ISOLATED = 1;
+    EXECUTION_WORLD_MAIN = 2;
+    EXECUTION_WORLD_USER_SCRIPT = 3;
+  }
+  optional ExecutionWorld execution_world = 1;
+
+  // The extension-chosen `worldId` of a USER_SCRIPT world (see
+  // chrome.userScripts). Unset for the default user script world.
+  optional string user_script_world_id = 2;
+}
+
 message SiteInstance {
   // The ID of the SiteInstance.
   optional int32 site_instance_id = 1;
@@ -3148,7 +3163,7 @@ message ChromeTrackEvent {
   reserved 1045;
 
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1086
+  // Next ID: 1087
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -3333,5 +3348,8 @@ message ChromeTrackEvent {
         [deprecated = true];
 
     optional FrameDeadlineDecider frame_deadline_decider = 1085;
+
+    optional ChromeExtensionScriptInjection chrome_extension_script_injection =
+        1086;
   }
 }

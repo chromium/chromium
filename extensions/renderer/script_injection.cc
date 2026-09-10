@@ -5,6 +5,8 @@
 #include "extensions/renderer/script_injection.h"
 
 #include <map>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -41,6 +43,38 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 namespace extensions {
 
 namespace {
+
+// Writes the world an injection targets into a trace event.
+class ScriptInjectionForTracing {
+ public:
+  ScriptInjectionForTracing(mojom::ExecutionWorld execution_world,
+                            const std::optional<std::string>& world_id)
+      : execution_world_(execution_world), world_id_(world_id) {}
+
+  void WriteIntoTrace(perfetto::TracedProto<
+                      perfetto::protos::pbzero::ChromeExtensionScriptInjection>
+                          proto) const {
+    using ProtoWorld = perfetto::protos::pbzero::ChromeExtensionScriptInjection;
+    switch (execution_world_) {
+      case mojom::ExecutionWorld::kIsolated:
+        proto->set_execution_world(ProtoWorld::EXECUTION_WORLD_ISOLATED);
+        break;
+      case mojom::ExecutionWorld::kMain:
+        proto->set_execution_world(ProtoWorld::EXECUTION_WORLD_MAIN);
+        break;
+      case mojom::ExecutionWorld::kUserScript:
+        proto->set_execution_world(ProtoWorld::EXECUTION_WORLD_USER_SCRIPT);
+        break;
+    }
+    if (world_id_) {
+      proto->set_user_script_world_id(*world_id_);
+    }
+  }
+
+ private:
+  const mojom::ExecutionWorld execution_world_;
+  const std::optional<std::string> world_id_;
+};
 
 const int64_t kInvalidRequestId = -1;
 
@@ -321,6 +355,10 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   if (injection_host_->id().type == mojom::HostID::HostType::kExtensions) {
     script_injector_id = blink::WebString::FromUtf8(host_string_id);
   }
+
+  TRACE_EVENT_INSTANT("extensions", "ScriptInjection execution world",
+                      ChromeTrackEvent::kChromeExtensionScriptInjection,
+                      ScriptInjectionForTracing(execution_world, world_id));
 
   render_frame_->GetWebFrame()->RequestExecuteScript(
       blink_world_id, sources, injector_->IsUserGesture(), execution_option,
