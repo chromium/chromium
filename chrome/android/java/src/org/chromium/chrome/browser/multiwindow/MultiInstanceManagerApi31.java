@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate.StartupMode;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -390,6 +391,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             Log.i(
                     TAG_MULTI_INSTANCE,
                     "Existing Instance - selected Id allocated: " + preferredInstanceId);
+            TabbedStartupWindowPolicyDelegate.getInstance()
+                    .claimStartupPolicy(isIncognitoIntent, StartupMode.EXPLICIT_INSTANCE);
             profileType = getProfileType(preferredInstanceId, isIncognitoIntent);
             return new AllocatedIdInfo(
                     preferredInstanceId,
@@ -404,6 +407,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             Log.i(
                     TAG_MULTI_INSTANCE,
                     "Existing Instance - mapped Id allocated: " + instanceIdForTask);
+            TabbedStartupWindowPolicyDelegate.getInstance()
+                    .claimStartupPolicy(isIncognitoIntent, StartupMode.MAPPED_TASK);
             profileType = getProfileType(instanceIdForTask, isIncognitoIntent);
             return new AllocatedIdInfo(
                     instanceIdForTask,
@@ -422,6 +427,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 for (int i = 0; i < TabWindowManager.MAX_SELECTORS_1000; ++i) {
                     if (!ChromeMultiInstancePersistentStore.hasInstance(i)) {
                         logNewInstanceId(i);
+                        TabbedStartupWindowPolicyDelegate.getInstance()
+                                .claimStartupPolicy(isIncognitoIntent, StartupMode.NEW_WINDOW);
                         profileType = getProfileType(i, isIncognitoIntent);
                         return new AllocatedIdInfo(
                                 i,
@@ -450,7 +457,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                         : getMaxInstances();
         boolean allocNewIdOnStartup =
                 TabbedStartupWindowPolicyDelegate.getInstance()
-                        .claimForceNewInstancePolicy(isIncognitoIntent);
+                        .shouldForceNewInstancePolicy(isIncognitoIntent);
 
         for (int i = 0; i < maxRange; ++i) {
             int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(i);
@@ -497,6 +504,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             Log.i(
                     TAG_MULTI_INSTANCE,
                     "Existing Instance - persisted and unmapped Id allocated: " + id);
+        }
+
+        if (id != INVALID_WINDOW_ID) {
+            TabbedStartupWindowPolicyDelegate.getInstance()
+                    .claimStartupPolicy(isIncognitoIntent, StartupMode.UNMAPPED_TASK);
         }
         profileType = getProfileType(id, isIncognitoIntent);
         return new AllocatedIdInfo(id, allocationType, profileType);

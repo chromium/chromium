@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
@@ -29,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -38,12 +36,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -53,14 +49,11 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -453,156 +446,6 @@ public class MultiInstanceManagerApi31Test {
                 });
         Assert.assertFalse(
                 "Target activity should not be Incognito", targetActivity.isIncognitoWindow());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ON_STARTUP_WINDOW_POLICY,
-        ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF
-    })
-    public void testNewWindow_RestoreOnStartup_NewTabPref() throws Exception {
-        // Setup.
-        DeviceInfo.setIsDesktopForTesting(true);
-        // Note: Reset policy so that newActivity (Window 1) acts as the first window to claim
-        // NEW_TAB, since Window 0 already initialized during setUp().
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
-                            SessionStartupPref.NEW_TAB);
-                });
-
-        // Act.
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ChromeTabbedActivity newActivity =
-                createNewWindow(
-                        context,
-                        /* instanceId= */ -1,
-                        /* addIncognitoExtras= */ false,
-                        /* loadCustomUrl= */ false,
-                        /* createMultipleTabs= */ false);
-
-        // Verify.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(newActivity.getTabModelSelector().getTotalTabCount(), is(1));
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = newActivity.getTabModelSelector().getModel(false);
-                    assertTrue(UrlUtilities.isNtpUrl(model.getTabAt(0).getOriginalUrl()));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ON_STARTUP_WINDOW_POLICY,
-        ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF
-    })
-    public void testNewWindow_RestoreOnStartup_UrlsPref() throws Exception {
-        // Setup.
-        DeviceInfo.setIsDesktopForTesting(true);
-        List<String> startupUrls = List.of(UrlConstants.GOOGLE_URL, "https://www.yahoo.com/");
-        // Note: Reset policy so that newActivity (Window 1) acts as the first window to claim and
-        // evaluate URLS, since Window 0 already initialized during setUp().
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
-                            SessionStartupPref.URLS);
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(startupUrls);
-                });
-
-        // Act.
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ChromeTabbedActivity newActivity =
-                createNewWindow(
-                        context,
-                        /* instanceId= */ -1,
-                        /* addIncognitoExtras= */ false,
-                        /* loadCustomUrl= */ false,
-                        /* createMultipleTabs= */ false);
-
-        // Verify.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(newActivity.getTabModelSelector().getTotalTabCount(), is(2));
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = newActivity.getTabModelSelector().getModel(false);
-                    assertEquals(
-                            UrlConstants.GOOGLE_URL, model.getTabAt(0).getOriginalUrl().getSpec());
-                    assertEquals(
-                            "https://www.yahoo.com/", model.getTabAt(1).getOriginalUrl().getSpec());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ON_STARTUP_WINDOW_POLICY,
-        ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF
-    })
-    public void testNewWindow_RestoreOnStartup_UrlsPref_WithUrlIntent() throws Exception {
-        // Setup.
-        DeviceInfo.setIsDesktopForTesting(true);
-        List<String> startupUrls = List.of(UrlConstants.GOOGLE_URL, "https://www.yahoo.com/");
-        // Note: Reset policy so that newActivity (Window 1) acts as the first window to claim and
-        // evaluate URLS, since Window 0 already initialized during setUp().
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabbedStartupWindowPolicyDelegate.getInstance().resetPolicy();
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
-                            SessionStartupPref.URLS);
-                    ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(startupUrls);
-                });
-
-        // Act.
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        context,
-                        /* windowId= */ -1,
-                        /* preferNew= */ true,
-                        /* openAdjacently= */ false,
-                        NewWindowAppSource.UNKNOWN);
-        intent.setData(Uri.parse("https://www.youtube.com/"));
-        intent.setAction(Intent.ACTION_VIEW);
-        // Explicitly set the launch type to FROM_EXTERNAL_APP to simulate an intent from an
-        // external application.
-        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_EXTERNAL_APP);
-        ChromeTabbedActivity newActivity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () -> ContextUtils.getApplicationContext().startActivity(intent));
-        mExtraActivities.add(newActivity);
-
-        // Verify.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(newActivity.getTabModelSelector().getTotalTabCount(), is(3));
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = newActivity.getTabModelSelector().getModel(false);
-                    assertEquals(
-                            UrlConstants.GOOGLE_URL, model.getTabAt(0).getOriginalUrl().getSpec());
-                    assertEquals(
-                            "https://www.yahoo.com/", model.getTabAt(1).getOriginalUrl().getSpec());
-                    assertEquals(
-                            "https://www.youtube.com/",
-                            model.getTabAt(2).getOriginalUrl().getSpec());
-                    assertEquals(
-                            "https://www.youtube.com/",
-                            newActivity.getActivityTab().getOriginalUrl().getSpec());
-                });
     }
 
     private ChromeTabbedActivity openUrlsInOtherWindowForTesting(

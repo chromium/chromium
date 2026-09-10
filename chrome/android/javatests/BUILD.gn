@@ -1755,6 +1755,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31Test.java",
     "src/org/chromium/chrome/browser/multiwindow/MultiWindowIntegrationTest.java",
     "src/org/chromium/chrome/browser/multiwindow/MultiWindowUtilsTest.java",
+    "src/org/chromium/chrome/browser/multiwindow/TabbedStartupWindowPolicyDelegateTest.java",
     "src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorDelegateStub.java",
     "src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorTest.java",
     "src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelperTest.java",

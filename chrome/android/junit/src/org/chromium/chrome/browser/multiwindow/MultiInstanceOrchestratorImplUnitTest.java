@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate.StartupMode;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1206,6 +1207,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.RESTORE_ALL);
+        TabbedStartupWindowPolicyDelegate.getInstance()
+                .claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
         ActivityManager activityManager = mock(ActivityManager.class);
         doReturn(activityManager).when(mTabbedActivity1).getSystemService(Context.ACTIVITY_SERVICE);

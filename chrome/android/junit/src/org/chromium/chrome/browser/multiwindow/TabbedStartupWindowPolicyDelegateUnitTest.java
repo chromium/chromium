@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate.StartupMode;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -110,6 +111,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_restoreAll_restoresWindows() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
@@ -129,6 +131,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         // Setup: 2 instances with Window 1 recoverable, RESTORE_ALL session startup policy,
         // and non-crash exit reason.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(
                 ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON,
@@ -155,6 +158,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_defaultPolicy_doesNotRestoreWindows() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.DEFAULT);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
@@ -171,6 +175,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_featureDisabled_doesNotRestoreWindows() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
@@ -186,6 +191,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_restoreAll_aliveTaskNonMultiWindowMode_doesNotRestoreWindow() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         setupAppTasks(1);
         doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
 
@@ -203,6 +209,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_restoreAll_aliveTaskMultiWindowMode_restoresWindow() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         List<AppTask> appTasks = setupAppTasks(1);
         doReturn(true).when(mTabbedActivity).isInMultiWindowMode();
 
@@ -221,6 +228,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_restoreAll_killedTask_restoresWindow() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
         // Do not add app task ID 1 so it is treated as killed/not alive.
         doReturn(false).when(mTabbedActivity).isInMultiWindowMode();
 
@@ -245,6 +253,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.RESTORE_ALL);
         doReturn(0).when(mTabbedActivity).getWindowId();
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
@@ -275,12 +284,12 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     public void testApplyPolicy_incognitoWindow_clearsStartupPolicyWithoutRestoration() {
         // Setup.
         setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
-        doReturn(true).when(mTabbedActivity).isIncognitoWindow();
+        mDelegate.claimStartupPolicy(/* isIncognito= */ true, StartupMode.UNMAPPED_TASK);
 
         // Act.
         mDelegate.applyPolicy(mTabbedActivity);
 
-        // Verify: Window restoration is skipped on the incognito host, and startup policy is
+        // Verify: Window restoration is skipped for an incognito launch, and startup policy is
         // cleared.
         verify(mTabbedActivity, never()).startActivity(any());
         assertEquals(
@@ -289,6 +298,56 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertTrue(
                 "isRecoverable should remain true when incognito window initializes.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+    }
+
+    @Test
+    public void testApplyPolicy_cannotRestoreWindows_clearsStartupPolicyWithoutRestoration() {
+        // Setup.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.NEW_WINDOW);
+
+        // Act.
+        mDelegate.applyPolicy(mTabbedActivity);
+
+        // Verify: Window restoration is skipped when window restoration is disallowed, and
+        // startup policy is cleared.
+        verify(mTabbedActivity, never()).startActivity(any());
+        assertEquals(
+                SessionStartupPolicy.DEFAULT,
+                ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
+    }
+
+    @Test
+    public void testApplyPolicy_explicitInstance_disallowsRestoration() {
+        // Setup.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.EXPLICIT_INSTANCE);
+
+        // Act.
+        mDelegate.applyPolicy(mTabbedActivity);
+
+        // Verify: Window restoration is skipped for explicit instance selection.
+        verify(mTabbedActivity, never()).startActivity(any());
+        assertEquals(
+                SessionStartupPolicy.DEFAULT,
+                ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
+    }
+
+    @Test
+    public void testApplyPolicy_policyNotClaimed_doesNotRestoreWindows() {
+        // Setup: Recoverable instance with RESTORE_ALL policy, but startup policy has not been
+        // claimed.
+        setupRecoverableInstances(SessionStartupPolicy.RESTORE_ALL);
+
+        // Act.
+        mDelegate.applyPolicy(mTabbedActivity);
+
+        // Verify: Window restoration is skipped when startup policy has not been claimed, as
+        // window restoration is disallowed by default.
+        verify(mTabbedActivity, never()).startActivity(any());
+        assertEquals(
+                SessionStartupPolicy.DEFAULT,
+                ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
     }
 
     @Test
@@ -616,13 +675,13 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_createNew_startupPrefIsUnset_returnsTrue() {
+    public void testShouldForceNewInstancePolicy_createNew_startupPrefIsUnset_returnsTrue() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.CREATE_NEW);
 
         // Act & Verify.
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
         // Verify startup policy is preserved until onTabbedActivityInitialized is called.
         assertEquals(
                 SessionStartupPolicy.CREATE_NEW,
@@ -631,92 +690,85 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testClaimForceNewInstancePolicy_createNew_featureDisabled_returnsFalse() {
+    public void testShouldForceNewInstancePolicy_createNew_featureDisabled_returnsFalse() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.CREATE_NEW);
 
         // Act & Verify.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_newTab_returnsTrueOnce() {
+    public void testShouldForceNewInstancePolicy_newTab_returnsTrue() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                 SessionStartupPref.NEW_TAB);
 
         // Act & Verify.
-        // First allocation in browser process should honor NEW_TAB startup policy.
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
-
-        // Subsequent allocations in the same browser process should not honor startup policy.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_isIncognito_returnsFalseAndClaimsPolicy() {
+    public void testShouldForceNewInstancePolicy_isIncognito_returnsFalse() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                 SessionStartupPref.NEW_TAB);
 
-        // Act & Verify: Incognito returns false.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(true));
-
-        // Subsequent allocations in the same browser process should observe claimed policy.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        // Act & Verify.
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(true));
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_otherPolicy_returnsFalse() {
+    public void testShouldForceNewInstancePolicy_otherPolicy_returnsFalse() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
 
         // Act & Verify.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
-    public void testClaimForceNewInstancePolicy_restoreOnStartupFeatureDisabled_returnsFalse() {
+    public void testShouldForceNewInstancePolicy_restoreOnStartupFeatureDisabled_returnsFalse() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                 SessionStartupPref.NEW_TAB);
 
         // Act & Verify.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_createNew_startupPrefIsLast_returnsTrue() {
+    public void testShouldForceNewInstancePolicy_createNew_startupPrefIsLast_returnsTrue() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.CREATE_NEW);
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
 
         // Act & Verify.
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
         assertEquals(
                 SessionStartupPolicy.CREATE_NEW,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_createNew_startupPrefIsUrls_returnsTrue() {
+    public void testShouldForceNewInstancePolicy_createNew_startupPrefIsUrls_returnsTrue() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.CREATE_NEW);
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
 
         // Act & Verify.
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
         assertEquals(
                 SessionStartupPolicy.CREATE_NEW,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
     }
 
     @Test
-    public void testClaimForceNewInstancePolicy_createNew_startupPrefIsNewTab_returnsTrue() {
+    public void testShouldForceNewInstancePolicy_createNew_startupPrefIsNewTab_returnsTrue() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
                 SessionStartupPolicy.CREATE_NEW);
@@ -724,11 +776,50 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
                 SessionStartupPref.NEW_TAB);
 
         // Act & Verify.
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
         assertEquals(
                 SessionStartupPolicy.CREATE_NEW,
                 ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
         assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testShouldForceNewInstancePolicy_startupPolicyClaimed_returnsFalse() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+
+        // Act & Verify: Once claimed, shouldForceNewInstancePolicy returns false.
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
+    }
+
+    @Test
+    public void testClaimStartupPolicy_newWindow_claimsLatchAndSuppressesStartupUrls() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
+                List.of("https://www.google.com"));
+
+        // Act.
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.NEW_WINDOW);
+
+        // Verify: Startup URLs are marked as evaluated (suppressed), and query returns false.
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testClaimStartupPolicy_mappedTask_subsequentQueriesReturnFalse() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+
+        // Act: Reviving a dead task in Tier 2 claims the startup policy.
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.MAPPED_TASK);
+
+        // Verify: Subsequent Tier 4 query does not force a new instance.
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
     }
 
     @Test
@@ -807,14 +898,15 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         // Setup.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
                 SessionStartupPref.NEW_TAB);
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
+        mDelegate.claimStartupPolicy(/* isIncognito= */ false, StartupMode.UNMAPPED_TASK);
+        assertFalse(mDelegate.shouldForceNewInstancePolicy(false));
 
         // Act.
         mDelegate.resetPolicy();
 
         // Verify.
-        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.shouldForceNewInstancePolicy(false));
     }
 
     private void setupRecoverableInstances(@SessionStartupPolicy int startupPolicy) {

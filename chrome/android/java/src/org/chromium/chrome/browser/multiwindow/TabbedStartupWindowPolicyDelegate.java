@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -31,6 +33,8 @@ import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,39 @@ import java.util.Set;
 @NullMarked
 public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListener {
     /* package */ static final int PREF_UNSET = -1;
+
+    /**
+     * Launch allocation modes for the primary window during browser startup that determine how
+     * session startup policies (window restoration, startup URLs) are applied.
+     */
+    @IntDef({
+        StartupMode.EXPLICIT_INSTANCE,
+        StartupMode.MAPPED_TASK,
+        StartupMode.NEW_WINDOW,
+        StartupMode.UNMAPPED_TASK
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    /* package */ @interface StartupMode {
+        /**
+         * Tier 1: Launch targeting a specific, pre-selected window instance. Although explicit
+         * instance selection typically occurs while the browser is already running, this mode is
+         * supported defensively to disallow multi-window restoration if such a launch cold-starts
+         * the process.
+         */
+        int EXPLICIT_INSTANCE = 0;
+
+        /**
+         * Tier 2: Launch reconnecting an existing task with a destroyed activity to its mapped
+         * window instance.
+         */
+        int MAPPED_TASK = 1;
+
+        /** Tier 3: Launch explicitly requesting a fresh, standalone new window. */
+        int NEW_WINDOW = 2;
+
+        /** Tier 4: Launch for an unmapped task allocating an available or unassigned instance. */
+        int UNMAPPED_TASK = 3;
+    }
 
     private static @Nullable TabbedStartupWindowPolicyDelegate sInstance;
 
@@ -63,6 +100,9 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
     // TODO (crbug.com/548199511): Potentially remove this state and leverage single state to claim
     // and apply startup policies.
     private boolean mHasEvaluatedStartupUrls;
+
+    /** Tracks whether window restoration is permitted for the current browser process session. */
+    private boolean mCanRestoreWindows;
 
     private TabbedStartupWindowPolicyDelegate() {}
 
@@ -163,10 +203,12 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
     }
 
     /**
-     * Claims and evaluates whether default instance ID allocation should force allocating a
-     * brand-new instance ID instead of adopting an existing persisted instance.
+     * Evaluates whether default instance ID allocation should force allocating a brand-new instance
+     * ID instead of adopting an existing persisted instance.
      *
-     * <p>This occurs when:
+     * <p>This is a pure query method that does not modify the startup policy claim state.
+     *
+     * <p>Forcing a fresh instance ID (returning {@code true}) occurs when:
      *
      * <ul>
      *   <li>The previous session was closed by the application (clean shutdown with single window)
@@ -180,7 +222,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
      * @return {@code true} if a fresh window instance ID should be forced on startup; {@code false}
      *     otherwise.
      */
-    /* package */ boolean claimForceNewInstancePolicy(boolean isIncognito) {
+    /* package */ boolean shouldForceNewInstancePolicy(boolean isIncognito) {
         assert MultiWindowUtils.isMultiInstanceApi31Enabled();
 
         boolean isStartupPolicyEnabled = MultiWindowUtils.isNewStartupWindowPolicyEnabled();
@@ -189,15 +231,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
             return false;
         }
 
-        if (mStartupPolicyClaimed) {
-            return false;
-        }
-        mStartupPolicyClaimed = true;
-
-        // Incognito windows do not apply startup policies or evaluate user preferences, but
-        // a cold-started incognito window marks the browser session as active and claims the
-        // startup policy for the current process.
-        if (isIncognito) {
+        if (mStartupPolicyClaimed || isIncognito) {
             return false;
         }
 
@@ -216,6 +250,52 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
                         || startupPref == SessionStartupPref.URLS);
     }
 
+    /**
+     * Claims the one-time session startup policy for the browser process.
+     *
+     * <p>This latch is claimed during pre-inflation window allocation once a valid instance ID is
+     * determined for the primary launching window:
+     *
+     * <ul>
+     *   <li>Tier 1 ({@link StartupMode#EXPLICIT_INSTANCE}): Multi-window restoration is disallowed.
+     *   <li>Tier 2 ({@link StartupMode#MAPPED_TASK}): Multi-window restoration is permitted under
+     *       {@link SessionStartupPolicy#RESTORE_ALL}.
+     *   <li>Tier 3 ({@link StartupMode#NEW_WINDOW}): Multi-window restoration is disallowed and
+     *       startup URLs are marked as evaluated to open a single NTP.
+     *   <li>Tier 4 ({@link StartupMode#UNMAPPED_TASK}): Multi-window restoration is permitted under
+     *       {@link SessionStartupPolicy#RESTORE_ALL}.
+     * </ul>
+     *
+     * <p>Subsequent invocations in the same browser process are no-ops.
+     *
+     * @param isIncognito Whether the primary launching window is incognito.
+     * @param startupMode The {@link StartupMode} specifying the launch allocation context.
+     */
+    /* package */ void claimStartupPolicy(boolean isIncognito, @StartupMode int startupMode) {
+        assert MultiWindowUtils.isMultiInstanceApi31Enabled();
+
+        boolean isStartupPolicyEnabled = MultiWindowUtils.isNewStartupWindowPolicyEnabled();
+        boolean isPrefSyncEnabled = MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled();
+        if (!isStartupPolicyEnabled && !isPrefSyncEnabled) {
+            return;
+        }
+
+        if (mStartupPolicyClaimed) {
+            return;
+        }
+        mStartupPolicyClaimed = true;
+        mCanRestoreWindows =
+                !isIncognito
+                        && (startupMode == StartupMode.MAPPED_TASK
+                                || startupMode == StartupMode.UNMAPPED_TASK);
+
+        // When a fresh new window or incognito is launched, mark startup URLs as evaluated so that
+        // a single NTP is opened instead of startup URLs.
+        if (isIncognito || startupMode == StartupMode.NEW_WINDOW) {
+            mHasEvaluatedStartupUrls = true;
+        }
+    }
+
     /* package */ void applyPolicy(ChromeTabbedActivity activity) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()
                 || !MultiWindowUtils.isNewStartupWindowPolicyEnabled()) {
@@ -225,12 +305,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
         int startupPolicy = ChromeMultiInstancePersistentStore.readSessionStartupPolicy();
         ChromeMultiInstancePersistentStore.clearSessionStartupPolicy();
 
-        // Do not attempt to restore previous session windows from an incognito host.
-        if (activity.isIncognitoWindow()) {
-            return;
-        }
-
-        if (startupPolicy == SessionStartupPolicy.RESTORE_ALL) {
+        if (mCanRestoreWindows && startupPolicy == SessionStartupPolicy.RESTORE_ALL) {
             maybeRestoreWindowsAfterLaunch(activity);
         }
     }
@@ -238,6 +313,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
     /* package */ void resetPolicy() {
         mStartupPolicyClaimed = false;
         mHasEvaluatedStartupUrls = false;
+        mCanRestoreWindows = false;
     }
 
     private void maybeRestoreWindowsAfterLaunch(ChromeTabbedActivity activity) {
@@ -330,8 +406,7 @@ public class TabbedStartupWindowPolicyDelegate implements SyncStateChangedListen
             mSyncService = null;
         }
         mPrefService = null;
-        mStartupPolicyClaimed = false;
-        mHasEvaluatedStartupUrls = false;
+        resetPolicy();
     }
 
     /* package */ static void setInstanceForTesting(
