@@ -1189,16 +1189,16 @@
   <message name="IDS_AUTOFILL_BNPL_KLARNA" desc="Name of Buy Now Pay Later provider Klarna." formatter_data="android_java">
     Klarna
   </message>
-  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_AFFIRM_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Affirm logo." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_AFFIRM_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Affirm logo.">
     Google Pay, Affirm logo
   </message>
-  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_ZIP_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Zip logo." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_ZIP_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Zip logo.">
     Google Pay, Zip logo
   </message>
   <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_AFTERPAY_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and AfterPay logo.">
     Google Pay, AfterPay logo
   </message>
-  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_KLARNA_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Klarna logo." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_KLARNA_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Klarna logo.">
     Google Pay, Klarna logo
   </message>
   <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_TITLE" desc="Title for the Autofill filled card information bubble for the Buy Now Pay Later flow.">
@@ -1230,7 +1230,7 @@
       <message name="IDS_AUTOFILL_BNPL_TOS_LINKED_TITLE" desc="The title of the Buy-Now-Pay-Later Terms of Service dialog. This dialog is shown to users after they have selected a new linked BNPL issuer to use. If the user accepts this dialog, a new window will be shown to the user to complete the transaction on the BNPL issuer's website. If the user cancels this dialog, they will return back to the BNPL issuer selection dialog." formatter_data="android_java">
         Continue to pay with <ph name="BNPL_ISSUER_NAME">%1$s</ph>?
       </message>
-      <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog." formatter_data="android_java">
+      <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog.">
         After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">%1$s</ph>. This account will be automatically linked to Google Pay.
       </message>
       <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_WALLET_BRANDING" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog with Google Wallet branding." formatter_data="android_java">

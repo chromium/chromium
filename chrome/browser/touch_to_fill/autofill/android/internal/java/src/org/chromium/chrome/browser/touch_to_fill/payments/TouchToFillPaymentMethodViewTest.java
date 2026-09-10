@@ -1523,7 +1523,6 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
     public void testBnplIssuerTosHeader() {
         runOnUiThreadBlocking(
                 () -> {
@@ -1542,33 +1541,6 @@ public class TouchToFillPaymentMethodViewTest {
 
         int expectedHeight =
                 getDimensionPixelSize(R.dimen.bnpl_tos_header_item_icon_wallet_branding_height);
-        assertThat(bnplTosBrandingIcon.getLayoutParams().height, is(expectedHeight));
-
-        TextView bnplTosTitle =
-                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_tos_title);
-        assertThat(bnplTosTitle.getText().toString(), is(ISSUER_TITLE_TEXT));
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void testBnplIssuerTosHeader_walletBrandingDisabled() {
-        runOnUiThreadBlocking(
-                () -> {
-                    mTouchToFillPaymentMethodModel
-                            .get(SHEET_ITEMS)
-                            .add(new ListItem(TOS_HEADER, createTosHeaderModel()));
-                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
-                });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-
-        ImageView bnplTosBrandingIcon =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.bnpl_tos_branding_icon);
-        assertThat(bnplTosBrandingIcon.isShown(), is(true));
-
-        int expectedHeight = getDimensionPixelSize(R.dimen.bnpl_tos_header_item_icon_height);
         assertThat(bnplTosBrandingIcon.getLayoutParams().height, is(expectedHeight));
 
         TextView bnplTosTitle =

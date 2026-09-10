@@ -86,7 +86,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.R;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -391,18 +390,17 @@ final class TouchToFillPaymentMethodViewBinder {
         TextView sheetHeaderTitle = view.findViewById(R.id.bnpl_tos_title);
 
         if (propertyKey == ISSUER_IMAGE_DRAWABLE_ID) {
-            // When AUTOFILL_ENABLE_WALLET_BRANDING is enabled, GPay gets removed from the BNPL
-            // issuer icon and the resulting icon appears larger. Because of this, when
-            // AUTOFILL_ENABLE_WALLET_BRANDING is enabled the icon height is reduced.
-            if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING)) {
-                Resources res = view.getContext().getResources();
-                int newHeight =
-                        res.getDimensionPixelSize(
-                                R.dimen.bnpl_tos_header_item_icon_wallet_branding_height);
-                ViewGroup.LayoutParams params = sheetHeaderImage.getLayoutParams();
-                params.height = newHeight;
-                sheetHeaderImage.setLayoutParams(params);
-            }
+            // TODO(crbug.com/558896152): Changes from the Wallet Branding project resulted in
+            //     reducing the icon height of this resource after fetching it. Instead, we should
+            //     reduce the resource itself to the desired final height and remove this
+            //     modification.
+            Resources res = view.getContext().getResources();
+            int newHeight =
+                    res.getDimensionPixelSize(
+                            R.dimen.bnpl_tos_header_item_icon_wallet_branding_height);
+            ViewGroup.LayoutParams params = sheetHeaderImage.getLayoutParams();
+            params.height = newHeight;
+            sheetHeaderImage.setLayoutParams(params);
             sheetHeaderImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(ISSUER_IMAGE_DRAWABLE_ID)));

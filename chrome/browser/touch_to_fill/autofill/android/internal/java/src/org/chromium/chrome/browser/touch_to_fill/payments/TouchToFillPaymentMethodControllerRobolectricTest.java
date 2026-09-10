@@ -248,7 +248,6 @@ import java.util.stream.StreamSupport;
 @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_FOP_DISPLAY_ANDROID})
 @DisableFeatures({
     AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID,
-    AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING,
     AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION,
     AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS
 })
@@ -2197,6 +2196,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         List<PropertyModel> headerModel = getModelsOfType(itemList, TOS_HEADER);
         assertThat(headerModel.size(), is(1));
         assertThat(
+                headerModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_affirm));
+        assertThat(
                 headerModel.get(0).get(ISSUER_TITLE_STRING),
                 is(
                         mActivity.getString(
@@ -2207,6 +2209,12 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(bnplTosItemModel.size(), is(3));
         assertThat(bnplTosItemModel.get(0).get(BNPL_TOS_ICON_ID), is(R.drawable.checklist));
+        assertThat(
+                bnplTosItemModel.get(0).get(DESCRIPTION_TEXT),
+                is(
+                        mActivity.getString(
+                                R.string.autofill_bnpl_tos_review_text_wallet_branding,
+                                BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
         assertThat(
                 bnplTosItemModel.get(1).get(DESCRIPTION_TEXT),
                 is(
@@ -2229,51 +2237,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         List<LegalMessageLine> legalMessageLines = footerModel.get(0).get(LEGAL_MESSAGE_LINES);
         assertThat(legalMessageLines.size(), is(1));
         assertThat(legalMessageLines.get(0).text, is(LEGAL_MESSAGE_LINE));
-    }
-
-    @Test
-    // Move the asserts in this test back to testShowBnplIssuerTos() when the flag is cleaned up.
-    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void testShowBnplIssuerTos_WalletBrandingEnabled() {
-        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
-
-        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
-        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-
-        List<PropertyModel> bnplTosHeaderModel = getModelsOfType(itemList, TOS_HEADER);
-        assertThat(
-                bnplTosHeaderModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_bnpl_affirm));
-
-        List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
-        assertThat(
-                bnplTosItemModel.get(0).get(DESCRIPTION_TEXT),
-                is(
-                        mActivity.getString(
-                                R.string.autofill_bnpl_tos_review_text_wallet_branding,
-                                BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
-    }
-
-    @Test
-    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void testShowBnplIssuerTos_WalletBrandingDisabled() {
-        mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
-
-        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
-        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-
-        List<PropertyModel> bnplTosHeaderModel = getModelsOfType(itemList, TOS_HEADER);
-        assertThat(
-                bnplTosHeaderModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_google_pay_and_affirm_logo_accessible_name));
-
-        List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
-        assertThat(
-                bnplTosItemModel.get(0).get(DESCRIPTION_TEXT),
-                is(
-                        mActivity.getString(
-                                R.string.autofill_bnpl_tos_review_text,
-                                BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
     }
 
     @Test
