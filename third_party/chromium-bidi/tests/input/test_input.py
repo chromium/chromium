@@ -113,6 +113,33 @@ DBL_CLICK_SCRIPT = """
 </script>
 """
 
+CLICK_COUNTS_SCRIPT = """
+<style>
+  body {
+    overflow: hidden;
+  }
+</style>
+<script>
+    var allEvents = [];
+    for (const name of [
+        "mousedown",
+        "mousemove",
+        "mouseup",
+    ]) {
+        window.addEventListener(name, (event) => {
+            allEvents.push({
+                event: name,
+                button: event.button,
+                buttons: event.buttons,
+                clientX: event.clientX,
+                clientY: event.clientY,
+                clickCount: event.detail,
+            });
+        });
+    }
+</script>
+"""
+
 DRAG_SCRIPT = """
 <div
   style="height: 100px; width: 100px; background-color: red"
@@ -800,7 +827,7 @@ async def test_click_iframe_context(
 async def test_input_performActionsEmitsClickCountsByButton(
     websocket, context_id, html, activate_main_tab, snapshot
 ):
-    await goto_url(websocket, context_id, html(SCRIPT))
+    await goto_url(websocket, context_id, html(CLICK_COUNTS_SCRIPT))
     await activate_main_tab()
     await reset_mouse(websocket, context_id)
 
