@@ -156,6 +156,17 @@ public class ProfileKeyedMap<T> {
     }
 
     /**
+     * Gets the mapped object for a given Profile if it exists, without creating it.
+     *
+     * @param profile The Profile the object is associated with.
+     * @return The object associated with the passed in Profile, or null if none exists.
+     */
+    public @Nullable T getForProfile(Profile profile) {
+        profile = getProfileToUse(profile, mProfileSelection);
+        return mData.get(profile);
+    }
+
+    /**
      * Removes and returns the mapped value for the profile without invoking the destroy action.
      *
      * @param profile The Profile the object is associated with.

@@ -159,14 +159,14 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         public final int originalIndex;
         public final String url;
         public final @TriState int isIncognito;
-        public final Boolean fromMerge;
+        public final boolean fromMerge;
 
         public TabRestoreDetails(
                 int id,
                 int originalIndex,
                 @TriState int isIncognito,
                 String url,
-                Boolean fromMerge) {
+                boolean fromMerge) {
             this.id = id;
             this.originalIndex = originalIndex;
             this.url = url;
@@ -2032,12 +2032,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         // worry about Tab duplication because the tab details are processed only on the UI Thread.
         if (tabsBeingRestored != null) {
             for (TabRestoreDetails details : tabsBeingRestored) {
-                // isIncognito was added in M61 (see https://crbug.com/40417122), so it is extremely
-                // unlikely that isIncognito will be null. But if it is, assume that the tab is
-                // incognito so that #restoreTab() will require a tab state file on disk to
-                // restore. If a tab state file exists and the tab is not actually incognito, it
-                // will be restored in the normal tab model. If a tab state file does not exist,
-                // the tab will not be restored.
+                // isIncognito was added in M61 (see https://crbug.com/40417122), so it is
+                // extremely unlikely that isIncognito will be TriState.NOT_SET. But if it is,
+                // assume that the tab is incognito so that #restoreTab() will require a tab
+                // state file on disk to restore. If a tab state file exists and the tab is not
+                // actually incognito, it will be restored in the normal tab model. If a tab state
+                // file does not exist, the tab will not be restored.
                 if (details.isIncognito != TriState.FALSE) {
                     incognitoInfo.ids.add(details.id);
                     incognitoInfo.urls.add(details.url);

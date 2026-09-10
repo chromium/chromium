@@ -45,7 +45,9 @@ public class ProfileKeyedMapTest {
         ProfileKeyedMap<Object> map = new ProfileKeyedMap<>(noRequiredCleanupAction());
 
         Object obj1 = new Object();
+        Assert.assertNull(map.getForProfile(mProfile1));
         Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
+        Assert.assertEquals(obj1, map.getForProfile(mProfile1));
         Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> new Object()));
     }
 

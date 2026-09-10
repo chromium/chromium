@@ -108,8 +108,8 @@ public class TabMetadataFileManager {
          * @param index The index out of all tabs for the current tab read.
          * @param id The id for the current tab read.
          * @param url The url for the current tab read.
-         * @param isIncognito Whether the Tab is definitely Incognito, or null if it couldn't be
-         *     determined because we didn't know how many Incognito tabs were saved out.
+         * @param isIncognito Whether the Tab is definitely Incognito, or TriState.NOT_SET if it
+         *     couldn't be determined because we didn't know how many Incognito tabs were saved out.
          * @param isStandardActiveIndex Whether the current tab read is the normal active tab.
          * @param isIncognitoActiveIndex Whether the current tab read is the incognito active tab.
          */

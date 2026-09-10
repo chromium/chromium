@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -32,10 +34,12 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
@@ -279,5 +283,103 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         orchestrator.destroy();
         verify(mArchivedTabModelOrchestrator)
                 .removeHistoricalTabModelObserver(mSupplierCaptor.getValue());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testDeclutterPassCompletionReleasesLease() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.requestSelector(
+                        any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+                .thenReturn(new Pair<>(0, mTabModelSelector));
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+
+        TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
+        orchestrator.createTabModels(
+                mChromeActivity,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                0,
+                SupportedProfileType.MIXED);
+
+        orchestrator.onNativeLibraryReady(mTabContentManager);
+        verify(mDeferredStartupHandler).addDeferredTask(mRunnableCaptor.capture());
+
+        mRunnableCaptor.getValue().run();
+        assertNotNull(orchestrator.getDeclutterLeaseForTesting());
+
+        orchestrator.onDeclutterPassCompleted();
+        assertNull(orchestrator.getDeclutterLeaseForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testRescuePassCompletionReleasesLease() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.requestSelector(
+                        any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+                .thenReturn(new Pair<>(0, mTabModelSelector));
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+
+        TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
+        orchestrator.createTabModels(
+                mChromeActivity,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                0,
+                SupportedProfileType.MIXED);
+
+        orchestrator.onNativeLibraryReady(mTabContentManager);
+        verify(mDeferredStartupHandler).addDeferredTask(mRunnableCaptor.capture());
+
+        mRunnableCaptor.getValue().run();
+        assertNotNull(orchestrator.getDeclutterLeaseForTesting());
+
+        orchestrator.onRescueArchivedTabsCompleted();
+        assertNull(orchestrator.getDeclutterLeaseForTesting());
+    }
+
+    @Test
+    public void testDeclutterLeaseDisabledWhenFlagDisabled() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.requestSelector(
+                        any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
+                .thenReturn(new Pair<>(0, mTabModelSelector));
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+
+        TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
+        orchestrator.createTabModels(
+                mChromeActivity,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                0,
+                SupportedProfileType.MIXED);
+
+        orchestrator.onNativeLibraryReady(mTabContentManager);
+        verify(mDeferredStartupHandler).addDeferredTask(mRunnableCaptor.capture());
+
+        mRunnableCaptor.getValue().run();
+        assertNull(orchestrator.getDeclutterLeaseForTesting());
     }
 }
