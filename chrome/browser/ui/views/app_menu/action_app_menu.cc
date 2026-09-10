@@ -18,6 +18,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -49,7 +51,10 @@ ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon) {
 bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
   // An item rounds its bottom corners if it is the last non-divider item in
-  // its list.
+  // its list OR if its the zoom submenu.
+  if (items[index]->GetActionItem()->GetActionId() == kActionZoomSubmenu) {
+    return true;
+  }
   for (size_t i = index + 1; i < items.size(); ++i) {
     const auto display_type = items[i]->GetActionItem()->GetProperty(
         ActionAppMenuManager::kDisplayTypeKey);
@@ -408,5 +413,6 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
 
 void ActionAppMenu::PopulateDivider(views::MenuItemView* view_parent,
                                     actions::ActionItem* divider_action_item) {
-  view_parent->AppendSeparator();
+  view_parent->AppendSeparator(
+      divider_action_item->GetProperty(ActionAppMenuManager::kSeparatorKey));
 }

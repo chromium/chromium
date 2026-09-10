@@ -15,6 +15,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
 
 class RecentTabsDynamicMenu;
@@ -41,6 +42,7 @@ class ActionAppMenuManager {
   static const ui::ClassProperty<ui::ColorId>* const kContainerColorKey;
   static const ui::ClassProperty<std::u16string*>* const kTextOverrideKey;
   static const ui::ClassProperty<ui::ImageModel*>* const kIconOverrideKey;
+  static const ui::ClassProperty<ui::MenuSeparatorType>* const kSeparatorKey;
 
   static std::unique_ptr<actions::IndirectActionItem> CreateIndirectActionItem(
       actions::ActionId action_id,
@@ -57,7 +59,9 @@ class ActionAppMenuManager {
       std::u16string text,
       std::optional<ui::ColorId> container_color = std::nullopt);
 
-  static std::unique_ptr<actions::ActionItem> CreateDividerActionItem();
+  static std::unique_ptr<actions::ActionItem> CreateDividerActionItem(
+      ui::MenuSeparatorType separator_type =
+          ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   static actions::ActionItem* GetAppMenuRoot(
       BrowserWindowInterface* browser_window_interface);
@@ -89,5 +93,6 @@ class ActionAppMenuManager {
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
+DECLARE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -30,6 +31,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "ui/base/class_property.h"
+#include "ui/base/models/menu_separator_types.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -81,6 +84,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(ActionAppMenuManager::DisplayType,
                              kAppMenuDisplayTypeInternal,
@@ -89,6 +93,10 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ActionAppMenuManager::DisplayType,
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ColorId,
                              kAppMenuContainerColorInternal,
                              ui::kColorMenuBackground)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(ui::MenuSeparatorType,
+                             kAppMenuSeparatorInternal,
+                             ui::NORMAL_SEPARATOR)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
@@ -104,6 +112,9 @@ const ui::ClassProperty<std::u16string*>* const
 
 const ui::ClassProperty<ui::ImageModel*>* const
     ActionAppMenuManager::kIconOverrideKey = kAppMenuIconOverrideInternal;
+
+const ui::ClassProperty<ui::MenuSeparatorType>* const
+    ActionAppMenuManager::kSeparatorKey = kAppMenuSeparatorInternal;
 
 namespace {
 
@@ -209,8 +220,9 @@ class AppMenuBuilder {
     return *this;
   }
 
-  AppMenuBuilder& AddDivider() {
-    auto item = ActionAppMenuManager::CreateDividerActionItem();
+  AppMenuBuilder& AddDivider(
+      ui::MenuSeparatorType type = ui::NORMAL_SEPARATOR) {
+    auto item = ActionAppMenuManager::CreateDividerActionItem(type);
     if (parent_) {
       parent_->AddChild(std::move(item));
     }
@@ -353,9 +365,11 @@ ActionAppMenuManager::CreateHeaderActionItem(
 }
 
 std::unique_ptr<actions::ActionItem>
-ActionAppMenuManager::CreateDividerActionItem() {
+ActionAppMenuManager::CreateDividerActionItem(
+    ui::MenuSeparatorType separator_type) {
   auto item = actions::ActionItem::Builder().Build();
   item->SetProperty(kDisplayTypeKey, DisplayType::kDivider);
+  item->SetProperty(kSeparatorKey, separator_type);
   return item;
 }
 
@@ -593,6 +607,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
                       .AddAction(kActionFullscreen);
                 },
                 DisplayType::kCustom)
+            .AddDivider(ui::MenuSeparatorType::SPACING_SEPARATOR)
             .AddAction(kActionPrint);
 
         Profile* profile = browser_window_interface_->GetProfile();
