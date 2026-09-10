@@ -12,14 +12,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -76,30 +74,12 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 /** Creates a new Tab or retrieves an existing Tab for the CustomTabActivity, and initializes it. */
 @NullMarked
 public class CustomTabActivityTabController implements PauseResumeWithNativeObserver, Destroyable {
-    // For CustomTabs.WebContentsStateOnLaunch, see histograms.xml. Append only.
-    @IntDef({
-        WebContentsState.NO_WEBCONTENTS,
-        WebContentsState.PRERENDERED_WEBCONTENTS,
-        WebContentsState.SPARE_WEBCONTENTS,
-        WebContentsState.TRANSFERRED_WEBCONTENTS
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface WebContentsState {
-        int NO_WEBCONTENTS = 0;
-
-        int PRERENDERED_WEBCONTENTS = 1;
-        int SPARE_WEBCONTENTS = 2;
-        int TRANSFERRED_WEBCONTENTS = 3;
-        int NUM_ENTRIES = 4;
-    }
 
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final CustomTabDelegateFactory mCustomTabDelegateFactory;
@@ -432,10 +412,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         HiddenTab hiddenTab =
                 CustomTabsConnection.getInstance().takeHiddenTab(token, url, intentDataProvider);
         if (hiddenTab == null) return null;
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.WebContentsStateOnLaunch",
-                WebContentsState.PRERENDERED_WEBCONTENTS,
-                WebContentsState.NUM_ENTRIES);
         String appId = CustomTabsConnection.getInstance().getClientPackageNameForSession(token);
         assumeNonNull(appId);
         TabAssociatedApp.from(hiddenTab.tab).setAppId(appId);
@@ -518,22 +494,12 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         return tab;
     }
 
-    private void recordWebContentsStateOnLaunch(int webContentsStateOnLaunch) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.WebContentsStateOnLaunch",
-                webContentsStateOnLaunch,
-                WebContentsState.NUM_ENTRIES);
-    }
-
     private WebContents takeWebContents() {
         WebContents webContents = takeAsyncWebContents();
         if (webContents != null) {
-            recordWebContentsStateOnLaunch(WebContentsState.TRANSFERRED_WEBCONTENTS);
             webContents.resumeLoadingCreatedWebContents();
             return webContents;
         }
-
-        recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);
 
         ProfileProvider profileProvider = mProfileProviderSupplier.get();
         assert profileProvider != null;

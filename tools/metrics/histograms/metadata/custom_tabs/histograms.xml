@@ -1048,18 +1048,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.WebContentsStateOnLaunch" enum="WebContentsState"
-    expires_after="2026-08-23">
-  <owner>lizeb@chromium.org</owner>
-  <owner>mthiesse@chromium.org</owner>
-  <summary>
-    Android: When a CustomTabActivity creates its Tab, whether we use a
-    prerendered WebContents, a spare renderer or create a new WebContents.
-
-    Note: Expired from April 13-25, 2025.
-  </summary>
-</histogram>
-
 <histogram name="TrustedWebActivity.ExtraCommandSuccess.{command}"
     enum="BooleanSuccess" expires_after="2025-10-01">
   <owner>peconn@chromium.org</owner>
