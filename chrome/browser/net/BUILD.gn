@@ -321,6 +321,13 @@ source_set("impl") {
     }
     configs += [ "//build/config/linux/nss" ]
   }
+
+  if (is_android) {
+    deps += [
+      "//components/enterprise/net/content",
+      "//components/tabs:public",
+    ]
+  }
 }
 
 if (is_android) {

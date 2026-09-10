@@ -303,7 +303,7 @@ void NetErrorHelper::DiagnoseError(const GURL& page_url) {
 }
 
 void NetErrorHelper::PortalSignin() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   GetRemoteNetErrorPageSupport()->ShowPortalSignin();
 #endif
 }

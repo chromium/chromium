@@ -15,9 +15,11 @@ DEFINE_USER_DATA(EnterpriseProxyTabHelper);
 EnterpriseProxyTabHelper::EnterpriseProxyTabHelper(
     tabs::TabInterface& tab,
     content::WebContents* web_contents,
-    EnterpriseProxyErrorService* error_service)
+    EnterpriseProxyErrorService* error_service,
+    std::unique_ptr<Delegate> delegate)
     : content::WebContentsObserver(web_contents),
       error_service_(error_service),
+      delegate_(std::move(delegate)),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 EnterpriseProxyTabHelper::~EnterpriseProxyTabHelper() = default;
@@ -47,6 +49,12 @@ void EnterpriseProxyTabHelper::DidFinishNavigation(
     if (active_navigation_id_ == navigation_handle->GetNavigationId()) {
       active_navigation_id_ = 0;
     }
+  }
+}
+
+void EnterpriseProxyTabHelper::SignIn() {
+  if (delegate_ && web_contents()) {
+    delegate_->SignIn(web_contents());
   }
 }
 

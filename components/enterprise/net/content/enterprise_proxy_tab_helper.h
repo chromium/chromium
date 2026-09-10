@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -36,9 +38,16 @@ class EnterpriseProxyTabHelper : public content::WebContentsObserver {
  public:
   DECLARE_USER_DATA(EnterpriseProxyTabHelper);
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void SignIn(content::WebContents* web_contents) = 0;
+  };
+
   EnterpriseProxyTabHelper(tabs::TabInterface& tab,
                            content::WebContents* web_contents,
-                           EnterpriseProxyErrorService* error_service);
+                           EnterpriseProxyErrorService* error_service,
+                           std::unique_ptr<Delegate> delegate = nullptr);
   ~EnterpriseProxyTabHelper() override;
 
   EnterpriseProxyTabHelper(const EnterpriseProxyTabHelper&) = delete;
@@ -48,6 +57,12 @@ class EnterpriseProxyTabHelper : public content::WebContentsObserver {
 
   int64_t active_navigation_id() const { return active_navigation_id_; }
 
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
+
+  void SignIn();
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -56,6 +71,7 @@ class EnterpriseProxyTabHelper : public content::WebContentsObserver {
 
  private:
   raw_ptr<EnterpriseProxyErrorService> error_service_ = nullptr;
+  std::unique_ptr<Delegate> delegate_;
   int64_t active_navigation_id_ = 0;
   ui::ScopedUnownedUserData<EnterpriseProxyTabHelper> scoped_unowned_user_data_;
 };

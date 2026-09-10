@@ -15,7 +15,8 @@ interface NetErrorPageSupport {
   [EnableIf=enable_offline_pages]
   SetIsShowingDownloadButtonInErrorPage(bool showing_download_button);
 
-  // Called to show the captive portal signin page.
-  [EnableIf=is_chromeos]
+  // Called to show the captive portal signin page on ChromeOS or initiate
+  // enterprise proxy signin on Android.
+  [EnableIf=is_chromeos|is_android]
   ShowPortalSignin();
 };

@@ -93,7 +93,7 @@ class NetErrorTabHelper
   void SetIsShowingDownloadButtonInErrorPage(
       bool showing_download_button) override;
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   void ShowPortalSignin() override;
 #endif
 

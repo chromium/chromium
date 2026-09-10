@@ -37,6 +37,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
+#elif BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 using content::BrowserContext;
@@ -176,10 +179,17 @@ void NetErrorTabHelper::SetIsShowingDownloadButtonInErrorPage(
 }
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 void NetErrorTabHelper::ShowPortalSignin() {
+#if BUILDFLAG(IS_CHROMEOS)
   ash::NetworkPortalSigninController::Get()->ShowSignin(
       ash::NetworkPortalSigninController::SigninSource::kErrorPage);
+#elif BUILDFLAG(IS_ANDROID)
+  if (auto* helper = enterprise_net::EnterpriseProxyTabHelper::From(
+          tabs::TabInterface::MaybeGetFromContents(web_contents()))) {
+    helper->SignIn();
+  }
+#endif
 }
 #endif
 

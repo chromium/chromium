@@ -6,19 +6,31 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/enterprise/net/core/mock_enterprise_proxy_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace enterprise_net {
 
+namespace {
+
+class MockTabHelperDelegate : public EnterpriseProxyTabHelper::Delegate {
+ public:
+  ~MockTabHelperDelegate() override = default;
+
+  MOCK_METHOD(void, SignIn, (content::WebContents*), (override));
+};
+
+}  // namespace
 class EnterpriseProxyTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -110,6 +122,16 @@ TEST_F(EnterpriseProxyTabHelperTest, IgnoresSameDocumentNavigations) {
           GURL("https://target.example.com#hash"), main_rfh());
   same_doc_simulator->CommitSameDocument();
   EXPECT_EQ(tab_helper_->active_navigation_id(), 0);
+}
+
+TEST_F(EnterpriseProxyTabHelperTest, SignIn_InvokesDelegate) {
+  ASSERT_TRUE(tab_helper_);
+
+  auto delegate = std::make_unique<MockTabHelperDelegate>();
+  EXPECT_CALL(*delegate, SignIn(web_contents()));
+  tab_helper_->SetDelegateForTesting(std::move(delegate));
+
+  tab_helper_->SignIn();
 }
 
 }  // namespace enterprise_net
