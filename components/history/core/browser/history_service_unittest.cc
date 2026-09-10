@@ -46,6 +46,8 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/journeys/journey.h"
+#include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/history/core/test/database_test_utils.h"
@@ -1463,6 +1465,83 @@ TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
                                  testing::Field(&VisitRow::visit_id, 5)),
                   testing::AllOf(testing::Field(&VisitRow::url_id, 1),
                                  testing::Field(&VisitRow::visit_id, 4))));
+}
+
+namespace {
+
+class AddJourneysDBTask : public HistoryDBTask {
+ public:
+  explicit AddJourneysDBTask(std::vector<journeys::JourneyRow> journeys)
+      : journeys_(std::move(journeys)) {}
+
+  bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
+    backend->AddOrUpdateJourneyRows(journeys_);
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {}
+
+ private:
+  std::vector<journeys::JourneyRow> journeys_;
+};
+
+}  // namespace
+
+TEST_F(HistoryServiceTest, GetAllJourneys) {
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  // When no journeys exist, GetAllJourneys returns an empty vector.
+  {
+    base::test::TestFuture<std::vector<journeys::Journey>> future;
+    history->GetAllJourneys(future.GetCallback(), &tracker_);
+    EXPECT_THAT(future.Take(), testing::IsEmpty());
+  }
+
+  const GURL visited_url("https://www.example.com/test");
+  const base::Time visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  const std::u16string page_title = u"Example Title";
+
+  history->AddPage(visited_url, visit_time, /*context_id=*/0,
+                   /*nav_entry_id=*/0, GURL(), history::RedirectList(),
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                   VisitResponseCodeCategory::kNot404,
+                   /*did_replace_entry=*/false);
+  history->SetPageTitle(visited_url, page_title);
+
+  const base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  journeys::JourneyRow journey_row(
+      "test_journey", "Example Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(visit_time)});
+
+  // A journey with an unresolvable visit timestamp must be excluded.
+  const base::Time unvisited_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  journeys::JourneyRow unresolved_journey_row(
+      "unresolved_journey", "Unresolved Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(unvisited_time)});
+
+  history->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<AddJourneysDBTask>(std::vector<journeys::JourneyRow>{
+          journey_row, unresolved_journey_row}),
+      &tracker_);
+
+  base::test::TestFuture<std::vector<journeys::Journey>> future;
+  history->GetAllJourneys(future.GetCallback(), &tracker_);
+
+  journeys::Journey expected_journey(
+      "test_journey", "Example Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*visits=*/{journeys::JourneyVisit(visited_url, page_title)});
+  EXPECT_THAT(future.Take(), testing::ElementsAre(expected_journey));
 }
 
 // This class mocks the VisitDelegate in HistoryService to ensure that

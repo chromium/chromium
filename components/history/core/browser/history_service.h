@@ -38,6 +38,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -710,6 +711,18 @@ class HistoryService : public KeyedService,
       size_t max_visits_soft_cap,
       base::OnceCallback<void(std::vector<Cluster>)> callback,
       bool include_keywords_and_duplicates,
+      base::CancelableTaskTracker* tracker);
+
+  // Journeys ------------------------------------------------------------------
+
+  using GetAllJourneysCallback =
+      base::OnceCallback<void(std::vector<journeys::Journey>)>;
+  // Retrieves all stored journeys with history entries resolved to URLs and
+  // titles. Excludes journeys containing unresolved visits. `callback` is
+  // invoked on the calling sequence with the resulting journeys.
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId GetAllJourneys(
+      GetAllJourneysCallback callback,
       base::CancelableTaskTracker* tracker);
 
   // Observers -----------------------------------------------------------------
