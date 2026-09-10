@@ -446,8 +446,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kFontPalette:
       return base::ValuesEquivalent(a.GetFontPalette(), b.GetFontPalette());
     case CSSPropertyID::kFontFeatureSettings:
-      return a.GetFontDescription().FeatureSettings() ==
-             b.GetFontDescription().FeatureSettings();
+      return base::ValuesEquivalent(a.GetFontDescription().FeatureSettings(),
+                                    b.GetFontDescription().FeatureSettings());
     case CSSPropertyID::kFontSize:
       // CSSPropertyID::kFontSize: Must pass a specified size to setFontSize if
       // Text Autosizing is enabled, but a computed size if text zoom is enabled
@@ -497,8 +497,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetFontDescription().GetFontSynthesisWeight() ==
              b.GetFontDescription().GetFontSynthesisWeight();
     case CSSPropertyID::kFontVariantAlternates:
-      return a.GetFontDescription().GetFontVariantAlternates() ==
-             b.GetFontDescription().GetFontVariantAlternates();
+      return base::ValuesEquivalent(
+          a.GetFontDescription().GetFontVariantAlternates(),
+          b.GetFontDescription().GetFontVariantAlternates());
     case CSSPropertyID::kFontVariantCaps:
       return a.GetFontDescription().VariantCaps() ==
              b.GetFontDescription().VariantCaps();
@@ -613,7 +614,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kListStylePosition:
       return a.ListStylePosition() == b.ListStylePosition();
     case CSSPropertyID::kListStyleType:
-      return a.ListStyleType() == b.ListStyleType();
+      return base::ValuesEquivalent(a.ListStyleType(), b.ListStyleType());
     case CSSPropertyID::kMarginBottom:
       return a.MarginBottom() == b.MarginBottom();
     case CSSPropertyID::kMarginLeft:
@@ -625,11 +626,14 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMarginTrim:
       return a.MarginTrim() == b.MarginTrim();
     case CSSPropertyID::kMarkerEnd:
-      return a.MarkerEndResource() == b.MarkerEndResource();
+      return base::ValuesEquivalent(a.MarkerEndResource(),
+                                    b.MarkerEndResource());
     case CSSPropertyID::kMarkerMid:
-      return a.MarkerMidResource() == b.MarkerMidResource();
+      return base::ValuesEquivalent(a.MarkerMidResource(),
+                                    b.MarkerMidResource());
     case CSSPropertyID::kMarkerStart:
-      return a.MarkerStartResource() == b.MarkerStartResource();
+      return base::ValuesEquivalent(a.MarkerStartResource(),
+                                    b.MarkerStartResource());
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
     case CSSPropertyID::kMaxLines:
@@ -720,7 +724,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPosition:
       return a.GetPosition() == b.GetPosition();
     case CSSPropertyID::kQuotes:
-      return a.Quotes() == b.Quotes();
+      return base::ValuesEquivalent(a.Quotes(), b.Quotes());
     case CSSPropertyID::kReadingFlow:
       return a.ReadingFlow() == b.ReadingFlow();
     case CSSPropertyID::kReadingOrder:
@@ -741,7 +745,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return base::ValuesEquivalent(a.GetScrollMarkerGroup(),
                                     b.GetScrollMarkerGroup());
     case CSSPropertyID::kScrollbarColor:
-      return a.ScrollbarColor() == b.ScrollbarColor();
+      return base::ValuesEquivalent(a.ScrollbarColor(), b.ScrollbarColor());
     case CSSPropertyID::kScrollbarGutter:
       return a.ScrollbarGutter() == b.ScrollbarGutter();
     case CSSPropertyID::kScrollbarWidth:
@@ -895,11 +899,13 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
              (a.VerticalAlign() != EVerticalAlign::kLength ||
               a.GetVerticalAlignLength() == b.GetVerticalAlignLength());
     case CSSPropertyID::kViewTransitionClass:
-      return a.ViewTransitionClass() == b.ViewTransitionClass();
+      return base::ValuesEquivalent(a.ViewTransitionClass(),
+                                    b.ViewTransitionClass());
     case CSSPropertyID::kViewTransitionGroup:
       return a.ViewTransitionGroup() == b.ViewTransitionGroup();
     case CSSPropertyID::kViewTransitionName:
-      return a.ViewTransitionName() == b.ViewTransitionName();
+      return base::ValuesEquivalent(a.ViewTransitionName(),
+                                    b.ViewTransitionName());
     case CSSPropertyID::kViewTransitionScope:
       return a.ViewTransitionScope() == b.ViewTransitionScope();
     case CSSPropertyID::kVisibility:

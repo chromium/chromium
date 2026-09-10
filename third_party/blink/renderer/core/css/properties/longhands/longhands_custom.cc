@@ -6670,6 +6670,10 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
   // NOTE: Keep in sync with ConsumeCounterStyleNameInPrelude().
   //
   // https://drafts.csswg.org/css-counter-styles/#the-counter-style-rule
+  //
+  // The non-overridable names resolve the same way in every tree scope, and
+  // the initial value and UA rules have no tree scope, so store none for them.
+  const TreeScope* tree_scope = nullptr;
   if (custom_ident_value.Value() != keywords::kDecimal &&
       custom_ident_value.Value() != keywords::kDisc &&
       custom_ident_value.Value() != keywords::kSquare &&
@@ -6677,9 +6681,10 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
       custom_ident_value.Value() != keywords::kDisclosureOpen &&
       custom_ident_value.Value() != keywords::kDisclosureClosed) {
     state.SetHasTreeScopedReference();
+    tree_scope = custom_ident_value.GetPopulatedTreeScope();
   }
   builder.SetListStyleType(ListStyleTypeData::CreateCounterStyle(
-      custom_ident_value.Value(), custom_ident_value.GetPopulatedTreeScope()));
+      custom_ident_value.Value(), tree_scope));
 }
 
 bool MarginBlockEnd::IsLayoutDependent(const ComputedStyle* style,

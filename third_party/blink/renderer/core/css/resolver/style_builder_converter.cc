@@ -676,14 +676,15 @@ scoped_refptr<FontFeatureSettings>
 StyleBuilderConverterBase::ConvertFontFeatureSettings(
     const CSSLengthResolver& length_resolver,
     const CSSValue& value) {
+  // 'normal' is the initial value, which FontBuilder represents as nullptr.
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {
-    return FontFeatureSettings::Create();
+    return nullptr;
   }
 
   if (value.IsPendingSystemFontValue()) {
-    return FontFeatureSettings::Create();
+    return nullptr;
   }
 
   const auto& list = To<CSSValueList>(value);

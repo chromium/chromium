@@ -16,8 +16,10 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -675,6 +677,69 @@ TEST_P(CSSAnimationsTest, UpdateAnimationFlags_AnimatingElement) {
 
   // ... but the pseudo-element should not.
   EXPECT_FALSE(before->ComputedStyleRef().HasCurrentTransformAnimation());
+}
+
+// Properties stored as pointers must compare by value for transitions. Two
+// resolves of the same declarations give distinct objects.
+TEST_P(CSSAnimationsTest, PointerValuedPropertiesCompareByValue) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        scrollbar-color: red blue;
+        quotes: "<" ">";
+        marker-start: url(#m);
+        marker-mid: url(#m);
+        marker-end: url(#m);
+        list-style-type: square;
+        view-transition-name: vt;
+        view-transition-class: cls;
+        font-feature-settings: "liga" 0;
+        font-variant-alternates: historical-forms;
+      }
+    </style>
+    <div id="a"></div>
+    <div id="b"></div>
+  )HTML");
+  const ComputedStyle& a = GetElementById("a")->ComputedStyleRef();
+  const ComputedStyle& b = GetElementById("b")->ComputedStyleRef();
+  ASSERT_TRUE(a.ScrollbarColor());
+  EXPECT_NE(a.ScrollbarColor(), b.ScrollbarColor());
+  for (CSSPropertyID id :
+       {CSSPropertyID::kScrollbarColor, CSSPropertyID::kQuotes,
+        CSSPropertyID::kMarkerStart, CSSPropertyID::kMarkerMid,
+        CSSPropertyID::kMarkerEnd, CSSPropertyID::kListStyleType,
+        CSSPropertyID::kViewTransitionName, CSSPropertyID::kViewTransitionClass,
+        CSSPropertyID::kFontFeatureSettings,
+        CSSPropertyID::kFontVariantAlternates}) {
+    EXPECT_TRUE(CSSPropertyEquality::PropertiesEqual(
+        PropertyHandle(CSSProperty::Get(id)), a, b))
+        << CSSProperty::Get(id).GetPropertyNameString();
+  }
+}
+
+// Values that are equal to the initial value must compare equal to it, also
+// when they come from an author declaration.
+TEST_P(CSSAnimationsTest, DeclaredInitialValuesCompareEqualToInitial) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #declared {
+        list-style-type: disc;
+        font: 16px sans-serif;  /* Sets font-feature-settings: normal. */
+      }
+      #initial { font-size: 16px; font-family: sans-serif; }
+    </style>
+    <div id="declared"></div>
+    <div id="initial"></div>
+  )HTML");
+  const ComputedStyle& declared =
+      GetElementById("declared")->ComputedStyleRef();
+  const ComputedStyle& initial = GetElementById("initial")->ComputedStyleRef();
+  for (CSSPropertyID id :
+       {CSSPropertyID::kListStyleType, CSSPropertyID::kFontFeatureSettings}) {
+    EXPECT_TRUE(CSSPropertyEquality::PropertiesEqual(
+        PropertyHandle(CSSProperty::Get(id)), declared, initial))
+        << CSSProperty::Get(id).GetPropertyNameString();
+  }
 }
 
 TEST_P(CSSAnimationsTest, CSSTransitionBlockedByAnimationUseCounter) {
