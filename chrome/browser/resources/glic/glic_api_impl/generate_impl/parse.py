@@ -51,6 +51,7 @@ MOJOM_PRIMITIVE_TYPES = {
 }
 
 INPUT_MOJOM_FILES = [
+    'chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom',
     'chrome/browser/glic/host/glic.mojom',
     'chrome/common/actor_webui.mojom',
     'chrome/common/glic_enums.mojom',

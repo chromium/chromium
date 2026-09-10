@@ -1,0 +1,62 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.mojom;
+
+import "url/mojom/url.mojom";
+
+// Result of attempting to open the sign-in tab.
+// @generate glic_api
+[Extensible]
+enum OpenSignInTabResult {
+  [Default] kUnknown = 0,
+  // The sign-in tab was opened (or an existing one reactivated).
+  kSuccess = 1,
+  // No sign-in URL was provided in options.
+  kErrorNoUrl = 2,
+  // The provided sign-in URL was disallowed.
+  kErrorDisallowedUrl = 3,
+  // Failed to open the tab (e.g. off-the-record profile, no browser window).
+  kErrorFailure = 4,
+};
+
+// Result of attempting to close the sign-in tab.
+// @generate glic_api
+[Extensible]
+enum CloseSignInTabResult {
+  [Default] kUnknown = 0,
+  // The sign-in tab was found and closed.
+  kSuccess = 1,
+  // A sign-in tab was previously opened, but had already been closed.
+  kAlreadyClosed = 2,
+  // No sign-in tab was open or tracked.
+  kNoSignInTab = 3,
+};
+
+// @generate glic_api
+// Options for opening the sign-in tab.
+struct OpenSignInTabOptions {
+  // The URL to navigate to for sign-in.
+  url.mojom.Url? signin_url;
+};
+
+// @generate glic_api
+// Options for closing the sign-in tab.
+struct CloseSignInTabOptions {};
+
+// Interface for Gemini Enterprise functionality, used by the web client.
+interface GeminiEnterpriseHandler {
+  // Opens the authentication endpoint in a new top-level browser tab
+  // and captures the originating tab for focus restoration.
+  // Returns the status of the operation.
+  // The `signin_url` in `options` is enforced browser-side to require HTTPS
+  // and match the component's configured guest or authentication origin.
+  OpenSignInTab(OpenSignInTabOptions? options)
+      => (OpenSignInTabResult result);
+
+  // Closes the active sign-in tab (if open) and restores focus to the
+  // user's originating tab. Returns the status of the operation.
+  CloseSignInTab(CloseSignInTabOptions? options)
+      => (CloseSignInTabResult result);
+};

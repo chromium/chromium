@@ -38,6 +38,7 @@ export import AutofillSuggestion = generated.AutofillSuggestion;
 export import CaptureRegionParams = generated.CaptureRegionParams;
 export import CaptureRegionResult = generated.CaptureRegionResult;
 export import CapturedRegion = generated.CapturedRegion;
+export import CloseSignInTabOptions = generated.CloseSignInTabOptions;
 export import ConversationInfo = generated.ConversationInfo;
 export import CounterAbuseVerdict = generated.CounterAbuseVerdict;
 export import CreateActorTabOptions = generated.CreateActorTabOptions;
@@ -65,6 +66,7 @@ export import MetaTag = generated.MetaTag;
 export import OnResponseStoppedDetails = generated.OnResponseStoppedDetails;
 export import OpenPinnedTabPickerOptions = generated.OpenPinnedTabPickerOptions;
 export import OpenSettingsOptions = generated.OpenSettingsOptions;
+export import OpenSignInTabOptions = generated.OpenSignInTabOptions;
 export import PageMetadata = generated.PageMetadata;
 export import PanelOpeningData = generated.PanelOpeningData;
 export import PanelState = generated.PanelState;
@@ -119,6 +121,7 @@ export import CaptureScreenshotErrorReason =
     generated.CaptureScreenshotErrorReason;
 export import ClientCapabilities = generated.ClientCapabilities;
 export import ClientErrorDialogType = generated.ClientErrorDialogType;
+export import CloseSignInTabResult = generated.CloseSignInTabResult;
 export import CreateTaskErrorReason = generated.CreateTaskErrorReason;
 export import CredentialType = generated.CredentialType;
 export import ExperimentalTriggeringUpdateType =
@@ -133,6 +136,7 @@ export import LightweightPageFeature = generated.LightweightPageFeature;
 export import MetricUserInputReactionType =
     generated.MetricUserInputReactionType;
 export import MicrophoneStatus = generated.MicrophoneStatus;
+export import OpenSignInTabResult = generated.OpenSignInTabResult;
 export import PanelStateKind = generated.PanelStateKind;
 export import PerformActionsErrorReason = generated.PerformActionsErrorReason;
 export import PinTrigger = generated.PinTrigger;
@@ -160,6 +164,9 @@ export import WebClientModel = generated.WebClientModel;
 export import WebUseCounter = generated.WebUseCounter;
 
 /// END_GENERATED - DO NOT MODIFY ABOVE
+
+export * from './geic_api.js';
+import type {GeicBrowserHost} from './geic_api.js';
 
 /** Allows the Glic web client to register with the host WebUI. */
 export declare interface GlicHostRegistry {
@@ -350,6 +357,11 @@ export declare interface GlicBrowserHost {
    * experimental triggering is disabled.
    */
   experimentalTriggering?(): GlicExperimentalTriggeringBrowserHost;
+
+  /**
+   * Returns the Gemini Enterprise in Chrome host interface.
+   */
+  getGeicClient?(): GeicBrowserHost;
 
   /** Return the platform glic is running on. */
   getPlatform?(): Platform;

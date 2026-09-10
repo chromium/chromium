@@ -126,6 +126,7 @@ if (optimize_webui) {
 }
 
 glic_api_ts_files = [
+  "glic_api/geic_api.ts",
   "glic_api/glic_api.ts",
   "glic_api/glic_api_generated.ts",
   "glic_api_impl/actor/actor_client.ts",
@@ -140,6 +141,7 @@ glic_api_ts_files = [
   "glic_api_impl/experimental_triggering/experimental_triggering_client.ts",
   "glic_api_impl/experimental_triggering/experimental_triggering_host.ts",
   "glic_api_impl/experimental_triggering/experimental_triggering_types.ts",
+  "glic_api_impl/geic/geic_client.ts",
   "glic_api_impl/glic_api_injected_client.ts",
   "glic_api_impl/guest_load_time_data.ts",
   "glic_api_impl/host/conversions.ts",
@@ -172,6 +174,7 @@ copy("copy_glic_api_mojo") {
     "//third_party/blink/public/mojom/content_extraction:content_extraction_ts__generator",
   ]
   sources = [
+    "$root_gen_dir/chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom-webui.ts",
@@ -207,6 +210,7 @@ webui_ts_library("build_glic_api_ts") {
                "task_queue.ts",
                "timer.ts",
                "enum_conversions.ts",
+               "gemini_enterprise.mojom-webui.ts",
                "glic.mojom-webui.ts",
                "tools.mojom-webui.ts",
                "dom_node_id.mojom-webui.ts",

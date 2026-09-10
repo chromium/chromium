@@ -8,6 +8,28 @@
 
 import type {AdditionalContextPart, ImageOriginAnnotations, InvocationPayload, Point, Rect, ResponseStopCause} from './glic_api.js';
 
+export enum OpenSignInTabResult {
+  UNKNOWN = 0,
+  // The sign-in tab was opened (or an existing one reactivated).
+  SUCCESS = 1,
+  // No sign-in URL was provided in options.
+  ERROR_NO_URL = 2,
+  // The provided sign-in URL was disallowed.
+  ERROR_DISALLOWED_URL = 3,
+  // Failed to open the tab (e.g. off-the-record profile, no browser window).
+  ERROR_FAILURE = 4,
+}
+
+export enum CloseSignInTabResult {
+  UNKNOWN = 0,
+  // The sign-in tab was found and closed.
+  SUCCESS = 1,
+  // A sign-in tab was previously opened, but had already been closed.
+  ALREADY_CLOSED = 2,
+  // No sign-in tab was open or tracked.
+  NO_SIGN_IN_TAB = 3,
+}
+
 export enum FileUploadPolicyState {
   ENABLED = 0,
   DISABLED = 1,
@@ -667,6 +689,16 @@ export enum ActuationTarget {
   // surface is not the foregrounded tab. This option has no effect if the
   // surface does not resolve to a valid tab.
   TARGET_SURFACE = 4,
+}
+
+// Options for opening the sign-in tab.
+export declare interface OpenSignInTabOptions {
+  // The URL to navigate to for sign-in.
+  signinUrl?: string;
+}
+
+// Options for closing the sign-in tab.
+export declare interface CloseSignInTabOptions {
 }
 
 // Settings for Gemini Enterprise.

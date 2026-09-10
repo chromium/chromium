@@ -2,3 +2,5 @@ file://chrome/browser/glic/host/OWNERS
 
 musalmaan@chromium.org
 dewittj@chromium.org #{LAST_RESORT_SUGGESTION} # Only if others are unavailable
+
+per-file glic_api/geic_api.ts=file://chrome/browser/glic/gemini_enterprise/OWNERS

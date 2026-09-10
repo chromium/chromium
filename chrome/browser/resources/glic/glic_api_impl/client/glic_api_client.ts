@@ -8,11 +8,12 @@ import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, WebClientReceiver} from '../../glic.mojom-webui.js';
 import type {AdditionalContext as AdditionalContextMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, TabData as TabDataMojo, WebClientHandlerRemote, WebClientInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, ClientCapabilities, HostCapability} from '../../glic_api/glic_api.js';
-import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeicBrowserHost, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
+import {GlicBrowserHostGeic} from '../geic/geic_client.js';
 import {additionalContextToClient, conversionSettings, createTabOptionsFromClient, fileUploadPolicyStateToClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, idFromClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, pinCandidateToClient, tabDataToClient, timeDeltaFromClient, urlFromClient, webClientModeToMojo} from '../host/conversions.js';
 import type {GlicApiHost} from '../host/glic_api_host.js';
 import {PanelOpenState} from '../host/types.js';
@@ -93,6 +94,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   readonly experimentalTriggeringClient =
       new GlicBrowserHostExperimentalTriggering();
   readonly suggestionsClient: GlicBrowserHostZeroStateSuggestions;
+  readonly geicClient: GlicBrowserHostGeic;
 
   private chromeVersion?: ChromeVersion;
   private platform?: Platform;
@@ -159,6 +161,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.skillsClient = new GlicBrowserHostSkills();
     this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions(this);
     this.toolsClient = new GlicBrowserHostTools();
+    this.geicClient = new GlicBrowserHostGeic();
 
     this.getTabByIdObservableSet =
         new ObservableSetByTabId<TabData, WebClientTabDataObserver>(
@@ -205,6 +208,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.skillsClient.destroySkills();
     this.toolsClient.destroyTools();
     this.annotationClient.destroyAnnotation();
+    this.geicClient.destroy();
     if (this.webClientReceiver) {
       this.webClientReceiver.$.close();
       this.webClientReceiver = undefined;
@@ -230,6 +234,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.suggestionsClient.initialize(
         initialState, initialPipes.zeroStateSuggestionsRemote);
     this.toolsClient.initialize(initialState, this.handler);
+    this.geicClient.initialize(initialState, this.handler);
 
     const state = initialState;
     this.geminiEnterpriseSettings.assignAndSignal(
@@ -924,6 +929,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   getMetrics(): GlicBrowserHostMetrics {
     return this.metrics;
+  }
+
+  getGeicClient(): GeicBrowserHost {
+    return this.geicClient;
   }
 
 

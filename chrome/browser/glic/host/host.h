@@ -108,6 +108,9 @@ class Host : public GlicSharingManagerProvider {
     virtual void CreateZeroStateSuggestionsHandler(
         mojo::PendingReceiver<mojom::ZeroStateSuggestionsHandler> receiver) = 0;
 
+    virtual void CreateGeminiEnterpriseHandler(
+        mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) = 0;
+
     virtual void RegisterConversation(
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::RegisterConversationCallback callback) = 0;

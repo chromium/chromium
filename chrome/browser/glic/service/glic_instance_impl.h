@@ -54,6 +54,7 @@ namespace glic {
 class ContextualCueingService;
 class EmptyEmbedderDelegate;
 class GlicExperimentalTriggeringManager;
+class GlicGeminiEnterpriseManager;
 class GlicMetrics;
 class GlicSkillsManagerImpl;
 class GlicUiEmbedder;
@@ -284,6 +285,8 @@ class GlicInstanceImpl : public GlicInstance,
   void CreateZeroStateSuggestionsHandler(
       mojo::PendingReceiver<mojom::ZeroStateSuggestionsHandler> receiver)
       override;
+  void CreateGeminiEnterpriseHandler(
+      mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) override;
   // GlicUiEmbedder::Delegate:
 
   void OnEmbedderWindowActivationChanged(bool has_focus) override;
@@ -484,6 +487,7 @@ class GlicInstanceImpl : public GlicInstance,
       zero_state_suggestions_manager_;
   std::unique_ptr<GlicSkillsManagerImpl> skills_manager_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
+  std::unique_ptr<GlicGeminiEnterpriseManager> gemini_enterprise_manager_;
   std::unique_ptr<GlicExperimentalTriggeringManager>
       experimental_triggering_manager_;
   base::CallbackListSubscription pinned_tabs_change_subscription_;

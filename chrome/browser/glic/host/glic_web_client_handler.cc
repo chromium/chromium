@@ -1018,6 +1018,15 @@ class GlicWebClientHandler
 #endif
   }
 
+  void CreateGeminiEnterpriseHandler(
+      mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) override {
+    if (!GlicEnabling::GetGeminiEnterpriseSettings(profile_).has_value()) {
+      return;
+    }
+    host().instance_delegate().CreateGeminiEnterpriseHandler(
+        std::move(receiver));
+  }
+
   void ActivateTab(int32_t tab_id) override {
     tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
     if (!tab) {

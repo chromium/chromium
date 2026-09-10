@@ -39,6 +39,7 @@ function generateConversions(convertedEnums: Array<[string, string]>): string {
     'glic': 'mojomGlic',
     'actor': 'mojomActor',
     'glic_enums': 'mojomGlicEnums',
+    'gemini_enterprise': 'mojomGeminiEnterprise',
   };
 
   const w = new CodeWriter();
@@ -61,6 +62,9 @@ function generateConversions(convertedEnums: Array<[string, string]>): string {
       'import type * as mojomActor from \'./actor_webui.mojom-webui.js\';');
   w.writeLine(
       'import type * as mojomGlicEnums from \'./glic_enums.mojom-webui.js\';');
+  w.writeLine(
+      'import type * as mojomGeminiEnterprise from ' +
+      '\'./gemini_enterprise.mojom-webui.js\';');
   w.writeLine('import type * as glicApi from \'./glic_api/glic_api.js\';');
   w.writeLine();
 

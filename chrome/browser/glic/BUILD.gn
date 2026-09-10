@@ -501,6 +501,7 @@ source_set("impl") {
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/common",
+    "//chrome/browser/glic/gemini_enterprise",
     "//chrome/browser/glic/media",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/lifetime",
@@ -724,6 +725,7 @@ mojom("mojo_bindings") {
 
   sources = [
     "experimental_opt_in/glic_experimental_opt_in.mojom",
+    "gemini_enterprise/gemini_enterprise.mojom",
     "host/glic.mojom",
     "host/glic_features.mojom",
     "host/glic_internals.mojom",
@@ -804,6 +806,7 @@ source_set("unit_tests") {
     "//chrome/browser/background/glic",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic/actor",
+    "//chrome/browser/glic/gemini_enterprise:unit_tests",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/pwc:features_shared_cpp_sources",
     "//chrome/browser/sync",
@@ -929,6 +932,7 @@ source_set("browser_tests") {
     "//chrome/browser/glic/actor:test_support",
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/common:browser_tests",
+    "//chrome/browser/glic/gemini_enterprise:browser_tests",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/performance_manager",
     "//chrome/browser/permissions:test_support",

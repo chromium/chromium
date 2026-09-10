@@ -4,6 +4,7 @@
 
 module glic.mojom;
 
+import "chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom";
 import "chrome/browser/glic/host/glic_features.mojom";
 import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "chrome/common/actor_webui.mojom";
@@ -1132,6 +1133,7 @@ enum GlicRequestEvent {
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
 // WebClientHandler is created.
+// Next version: 2
 interface WebClientHandler {
   // Reports API request count metrics from the web client.
   ReportApiRequestCount(int32 request_type_id, GlicRequestEvent event);
@@ -1481,6 +1483,10 @@ interface WebClientHandler {
   // closed, or if the tab is not found.
   SubscribeToTabFavicon(
       int32 tab_id, pending_remote<TabFaviconHandler> receiver);
+
+  // Creates the Gemini Enterprise handler.
+  CreateGeminiEnterpriseHandler(
+      pending_receiver<GeminiEnterpriseHandler> receiver);
 };
 
 // Accesses zero state suggestions from the web client.

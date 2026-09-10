@@ -23,6 +23,7 @@ ts_library("build_extra_ts") {
   out_dir = out_dir
   in_files = [
     "browser_tests/browser_test_base.ts",
+    "browser_tests/geic_api_browsertest.ts",
     "browser_tests/glic_api_browsertest.ts",
     "browser_tests/glic_chrome_tools_browsertest.ts",
     "browser_tests/glic_api_skills_browsertest.ts",
@@ -105,6 +106,7 @@ copy("test_client_external_files") {
 
 copy("test_client_api_deps") {
   sources = [
+    "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api/geic_api.js",
     "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api/glic_api.js",
     "$root_gen_dir/chrome/browser/resources/glic/glic_api_tsc/glic_api/glic_api_generated.js",
   ]

@@ -165,6 +165,8 @@ export class MojomModel {
         source = 'actor';
       } else if (module.filename.includes('glic_enums.mojom')) {
         source = 'glic_enums';
+      } else if (module.filename.includes('gemini_enterprise.mojom')) {
+        source = 'gemini_enterprise';
       }
       for (const e of module.enums) {
         const parsed = parseComments(e.comments);

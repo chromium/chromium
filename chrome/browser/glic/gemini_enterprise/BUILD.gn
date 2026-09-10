@@ -1,0 +1,72 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("gemini_enterprise") {
+  sources = [
+    "glic_gemini_enterprise_manager.cc",
+    "glic_gemini_enterprise_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/common",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
+    "//chrome/common:constants",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_gemini_enterprise_manager_unittest.cc" ]
+
+  deps = [
+    ":gemini_enterprise",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "geic_api_browsertest.cc",
+    "glic_gemini_enterprise_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":gemini_enterprise",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
+#include "chrome/browser/glic/gemini_enterprise/glic_gemini_enterprise_manager.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
@@ -784,6 +785,18 @@ void GlicInstanceImpl::CreateZeroStateSuggestionsHandler(
   if (zero_state_suggestions_manager_) {
     zero_state_suggestions_manager_->Bind(std::move(receiver));
   }
+}
+
+void GlicInstanceImpl::CreateGeminiEnterpriseHandler(
+    mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) {
+  if (!GlicEnabling::GetGeminiEnterpriseSettings(profile_).has_value()) {
+    return;
+  }
+  if (!gemini_enterprise_manager_) {
+    gemini_enterprise_manager_ =
+        std::make_unique<GlicGeminiEnterpriseManager>(profile_);
+  }
+  gemini_enterprise_manager_->Bind(std::move(receiver));
 }
 
 void GlicInstanceImpl::PrepareForOpen() {
