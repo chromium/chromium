@@ -1687,6 +1687,9 @@ source_set("views_interactive_ui_tests") {
   testonly = true
 
   sources = [
+    "input_protection/input_protection_interactive_test.cc",
+    "input_protection/input_protection_interactive_test.h",
+    "input_protection/input_protection_interactive_uitest.cc",
     "widget/any_widget_observer_interactive_uitest.cc",
     "widget/widget_interactive_uitest.cc",
   ]
@@ -1707,6 +1710,7 @@ source_set("views_interactive_ui_tests") {
     "//ui/resources",
     "//ui/resources:ui_test_pak",
     "//ui/strings",
+    "//ui/views/interaction:test_support",
   ]
 
   public_deps = [ "//ui/base/mojom" ]
