@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -393,7 +394,7 @@ class ToolbarViewContextualTasksInteriorMarginBrowserTest
                                    kContextualTasksEphemeralBrandedEntryPoint,
                                {{contextual_tasks::kShowEntryPoint.name,
                                  "toolbar-ephemeral-branded"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kWebUIBackForwardButton});
   }
 
  private:
@@ -508,7 +509,8 @@ class ToolbarViewDefaultInteriorMarginBrowserTest
             contextual_tasks::kContextualTasks,
             contextual_tasks::kContextualTasksSidePanel,
             contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint});
+            contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+            features::kWebUIBackForwardButton});
   }
 
  private:
