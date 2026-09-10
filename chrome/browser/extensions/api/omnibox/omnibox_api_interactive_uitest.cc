@@ -626,28 +626,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
             result.match_at(3).provider->type());
   EXPECT_FALSE(result.match_at(3).deletable);
 
-  // This test portion is excluded from Mac because the Mac key combination
-  // FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
-  // This is because the FN key is not supported in interactive_test_util.h.
-  // On (some?) platforms, there is also a navigable "x" in the suggestion that
-  // we could use instead. However, this is more prone to UI churn, and mostly
-  // tests functionality that should instead be tested as part of the omnibox
-  // view. We should have sufficient Mac coverage here by ensuring the result
-  // matches are marked as deletable (verified above).
-#if !BUILDFLAG(IS_MAC)
   ExtensionTestMessageListener delete_suggestion_listener;
 
-  // Skip the first (accept current input) and second (first extension-provided
-  // suggestion) omnibox results.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-
-  // Delete the second suggestion result. On non-Mac, this is done via
-  // SHIFT+DEL.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DELETE, false,
-                                              true, false, false));
+  LocationBar* location_bar = GetLocationBar(browser());
+  location_bar->GetOmniboxController()->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(2));
+  location_bar->GetOmniboxController()->edit_model()->TryDeletingPopupLine(2);
 
   // Verify that the onDeleteSuggestion event was fired. When this happens, the
   // extension sends us a message.
@@ -662,7 +646,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
   EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
   EXPECT_EQ(u"alpha input third", result.match_at(2).fill_into_edit);
-#endif
 }
 
 // Tests that if the user hits "backspace" (leaving the extension keyword mode),
@@ -1236,31 +1219,15 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
   // Second suggestion is deletable.
   {
     EXPECT_EQ(u"second", result.match_at(2).fill_into_edit);
-    EXPECT_FALSE(result.match_at(1).deletable);
+    EXPECT_TRUE(result.match_at(2).deletable);
   }
 
-  // This test portion is excluded from Mac because the Mac key combination
-  // FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
-  // This is because the FN key is not supported in interactive_test_util.h.
-  // On (some?) platforms, there is also a navigable "x" in the suggestion that
-  // we could use instead. However, this is more prone to UI churn, and mostly
-  // tests functionality that should instead be tested as part of the omnibox
-  // view. We should have sufficient Mac coverage here by ensuring the result
-  // matches are marked as deletable (verified above).
-#if !BUILDFLAG(IS_MAC)
   ExtensionTestMessageListener delete_suggestion_listener;
 
-  // Skip the first (accept current input) and second (first extension-provided
-  // suggestion) omnibox results.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-
-  // Delete the second suggestion result. On non-Mac, this is done via
-  // SHIFT+DEL.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DELETE, false,
-                                              true, false, false));
+  LocationBar* location_bar = GetLocationBar(browser());
+  location_bar->GetOmniboxController()->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(2));
+  location_bar->GetOmniboxController()->edit_model()->TryDeletingPopupLine(2);
 
   // Verify that the onDeleteSuggestion event was fired. When this happens, the
   // extension sends us a message.
@@ -1269,12 +1236,11 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
             delete_suggestion_listener.message());
 
   // Verify that the second suggestion result was deleted. There should be one
-  // less suggestion result, 3 now instead of 4 (accept current input and two
-  // extension-provided suggestions).
+  // less suggestion result, 2 now instead of 3 (accept current input and one
+  // extension-provided suggestion).
   ASSERT_EQ(2u, result.size());
   EXPECT_EQ(u"input", result.match_at(0).fill_into_edit);
   EXPECT_EQ(u"first", result.match_at(1).fill_into_edit);
-#endif
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
