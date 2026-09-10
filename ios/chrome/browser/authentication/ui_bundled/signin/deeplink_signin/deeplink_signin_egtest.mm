@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -36,6 +37,9 @@ namespace {
 
 constexpr char kCrossDeviceSigninUrl[] =
     "https://www.google.com/chrome/go-mobile";
+// URL prefix typed into the omnibox to trigger inline autocompletion.
+// Omnibox URL formatting strips the default scheme ("https://") and "www.".
+constexpr char kCrossDeviceSigninUrlPrefix[] = "google.com/chrome/go-mobile";
 
 // Returns the deep link URL for the given `email`.
 NSURL* GetDeepLinkURLForEmail(NSString* email) {
@@ -167,6 +171,7 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
   config.features_enabled_and_params.push_back(
       {switches::kCrossDeviceSignin,
        {{switches::kCrossDeviceSigninUrl.name, kCrossDeviceSigninUrl}}});
+  config.features_enabled.push_back(switches::kCrossDeviceSigninDismissModals);
   return config;
 }
 
@@ -204,6 +209,75 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
   [ChromeEarlGrey
       simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
                                                fakeIdentity.userEmail)];
+
+  CheckAccountSignin(fakeIdentity, 1,
+                     CrossDeviceInitialState::kSignedOutTargetAccountOnDevice);
+}
+
+// Tests that navigating to a cross-device sign-in deep link from the omnibox
+// for an account that is not signed in shows the sign-in flow.
+- (void)testCrossDeviceSigninFromOmnibox {
+  // Add a fake identity to the device, but keep the user signed out.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
+
+  // Load a blank page so that the location bar is visible.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+
+  // Navigate to the deep link via the omnibox.
+  NSURL* url = GetDeepLinkURLForEmail(fakeIdentity.userEmail);
+  [ChromeEarlGreyUI
+      typeTextInOmnibox:base::SysNSStringToUTF8(url.absoluteString)
+          andPressEnter:YES];
+
+  CheckAccountSignin(fakeIdentity, 1,
+                     CrossDeviceInitialState::kSignedOutTargetAccountOnDevice);
+}
+
+// Tests that typing a prefix of the cross-device sign-in deep link into the
+// omnibox (which triggers inline autocompletion and pre-rendering from history
+// suggestions) does not prematurely trigger the sign-in flow while the user is
+// still typing, and only shows the sign-in flow once navigation is committed.
+- (void)testCrossDeviceSigninTypingInOmniboxDoesNotTriggerSignin {
+  // Add a fake identity to the device, but keep the user signed out.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
+
+  // Add the deep link URL to the History service with multiple typed visits so
+  // that it is eligible for inline autocompletion (non-host URLs require
+  // typed_count > 1).
+  NSURL* url = GetDeepLinkURLForEmail(fakeIdentity.userEmail);
+  GURL gurl(base::SysNSStringToUTF8(url.absoluteString));
+  [ChromeEarlGrey addHistoryServiceTypedURL:gurl];
+  [ChromeEarlGrey addHistoryServiceTypedURL:gurl];
+
+  // Load a blank page so that the location bar is visible.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+
+  // Type a prefix of the URL in the omnibox to trigger inline autocompletion
+  // from history suggestions without pressing Enter.
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@(kCrossDeviceSigninUrlPrefix)];
+
+  // Verify that the omnibox displays inline autocompletion for the deep link.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:YES]];
+
+  // Verify that the sign-in promo is not shown while typing in the omnibox even
+  // when an inline autocomplete suggestion is available.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_nil()];
+  // Accept the inline autocompletion by tapping the omnibox.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:NO]];
+
+  // Commit the navigation by pressing Enter.
+  [ChromeEarlGreyUI pressEnter];
 
   CheckAccountSignin(fakeIdentity, 1,
                      CrossDeviceInitialState::kSignedOutTargetAccountOnDevice);

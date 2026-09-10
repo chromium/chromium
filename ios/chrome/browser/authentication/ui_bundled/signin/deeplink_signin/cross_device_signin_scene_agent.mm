@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin/cross_device_signin_scene_agent.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_deep_link_metrics.h"
@@ -85,13 +86,23 @@
                              PROMO_ACTION_NO_SIGNIN_PROMO
       externalEntryPoint:externalEntryPoint];
 
-  // Defer the presentation of the sign-in UI to the next run loop turn.
-  // This ensures that the view hierarchy is fully loaded, navigation action is
-  // completed, and the base view controller is attached to the window.
   __weak id<SceneCommands> weakSceneHandler = _sceneHandler;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSceneHandler showSignin:command baseViewController:nil];
-  });
+  if (base::FeatureList::IsEnabled(switches::kCrossDeviceSigninDismissModals)) {
+    // Dismiss any existing modal dialogs, or omnibox before presenting the
+    // sign-in UI. This ensures that any in-flight modal or keyboard dismissals
+    // from navigation are completed and the base view controller is ready to
+    // present.
+    [_sceneHandler dismissModalDialogsWithCompletion:^{
+      [weakSceneHandler showSignin:command baseViewController:nil];
+    }];
+  } else {
+    // Defer the presentation of the sign-in UI to the next run loop turn.
+    // This ensures that the view hierarchy is fully loaded, navigation action
+    // is completed, and the base view controller is attached to the window.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSceneHandler showSignin:command baseViewController:nil];
+    });
+  }
 }
 
 @end
