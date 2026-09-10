@@ -2664,7 +2664,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     const Document& document = state.animating_element.GetDocument();
     CSSPropertyName property_name = property.GetCSSPropertyName();
     CSSPropertyRef custom_ref(&property_name, document);
-    CSSVariableData* old_data = state.old_style.GetVariableData(
+    CSSVariableData* old_data = before_change_style.GetVariableData(
         property.CustomPropertyName(), custom_ref.GetProperty().IsInherited());
     CSSVariableData* new_data = after_change_style.GetVariableData(
         property.CustomPropertyName(), custom_ref.GetProperty().IsInherited());
