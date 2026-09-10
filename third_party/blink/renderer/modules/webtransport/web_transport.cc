@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
@@ -92,6 +93,12 @@ namespace {
 // The incoming max age to to be used when datagrams.incomingMaxAge is set to
 // null.
 constexpr base::TimeDelta kDefaultIncomingMaxAge = base::Seconds(60);
+
+// The default datagrams.readable stream is created with a high water mark of
+// zero so that it never buffers datagrams itself. Buffering and expiration stay
+// in DatagramQueue, where incomingMaxBufferedDatagrams and incomingMaxAge keep
+// applying to datagrams that have already arrived.
+constexpr size_t kDatagramsReadableHighWaterMark = 0;
 
 // Converts the Blink congestion control enum to its Mojo equivalent for
 // renderer-to-browser IPC.
@@ -627,210 +634,77 @@ class WebTransport::DatagramUnderlyingSink final
       pending_writable_receiver_;
 };
 
-// Passes incoming datagrams to the datagrams.readable stream. It maintains its
-// own internal queue of datagrams so that stale datagrams won't remain in
-// ReadableStream's queue.
-class WebTransport::DatagramUnderlyingSource final
-    : public UnderlyingByteSourceBase {
+// Keeps incoming datagrams outside ReadableStream's internal queue so they can
+// expire or be discarded when the configured buffer limit changes.
+class WebTransport::DatagramQueue final
+    : public GarbageCollected<DatagramQueue> {
  public:
-  DatagramUnderlyingSource(ScriptState* script_state,
-                           DatagramDuplexStream* datagram_duplex_stream)
-      : UnderlyingByteSourceBase(),
-        script_state_(script_state),
+  DatagramQueue(ScriptState* script_state,
+                DatagramDuplexStream* datagram_duplex_stream)
+      : script_state_(script_state),
         datagram_duplex_stream_(datagram_duplex_stream),
         expiry_timer_(ExecutionContext::From(script_state)
                           ->GetTaskRunner(TaskType::kNetworking),
                       this,
-                      &DatagramUnderlyingSource::ExpiryTimerFired) {}
+                      &DatagramQueue::ExpiryTimerFired) {}
 
-  // Implementation of UnderlyingByteSourceBase.
-  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
-                                   ExceptionState& exception_state) override {
-    DVLOG(1) << "DatagramUnderlyingSource::pull()";
-
-    if (waiting_for_datagrams_) {
-      // This can happen if a second read is issued while a read is already
-      // pending.
-      DCHECK(queue_.empty());
-      return ToResolvedUndefinedPromise(script_state_.Get());
-    }
-
-    // If high water mark is reset to 0 and then read() is called, it should
-    // block waiting for a new datagram. So we may need to discard datagrams
-    // here.
+  DOMUint8Array* TakeNextDatagram() {
+    // incomingMaxBufferedDatagrams and incomingMaxAge can change at any time,
+    // and the expiry timer only fires when it is scheduled, so both limits are
+    // re-applied on every read.
     DiscardExcessDatagrams();
-
     MaybeExpireDatagrams();
 
     if (queue_.empty()) {
-      if (close_when_queue_empty_) {
-        controller->close(script_state_, exception_state);
-        return ToResolvedUndefinedPromise(script_state_.Get());
-      }
-
-      waiting_for_datagrams_ = true;
-      return ToResolvedUndefinedPromise(script_state_.Get());
+      return nullptr;
     }
 
-    const QueueEntry* entry = queue_.front();
+    DOMUint8Array* datagram = queue_.front()->datagram;
     queue_.pop_front();
-
     if (queue_.empty()) {
       expiry_timer_.Stop();
     }
-
-    // This has to go after any mutations as it may run JavaScript, leading to
-    // re-entry.
-    controller->enqueue(script_state_,
-                        NotShared<DOMUint8Array>(entry->datagram),
-                        exception_state);
-    if (exception_state.HadException()) {
-      return ToResolvedUndefinedPromise(script_state_.Get());
-    }
-
-    // JavaScript could have called some other method at this point.
-    // However, this is safe, because |close_when_queue_empty_| only ever
-    // changes from false to true, and once it is true no more datagrams will
-    // be added to |queue_|.
-    if (close_when_queue_empty_ && queue_.empty()) {
-      controller->close(script_state_, exception_state);
-    }
-
-    return ToResolvedUndefinedPromise(script_state_.Get());
+    return datagram;
   }
 
-  ScriptPromise<IDLUndefined> Cancel() override {
-    return Cancel(v8::Undefined(script_state_->GetIsolate()));
-  }
-
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
-    uint32_t code = 0;
-    WebTransportError* exception =
-        V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
-    if (exception) {
-      code = exception->streamErrorCode().value_or(0);
-    }
-    VLOG(1) << "DatagramUnderlyingSource::Cancel() with code " << code;
-
-    waiting_for_datagrams_ = false;
-    canceled_ = true;
-    DiscardQueue();
-
-    return ToResolvedUndefinedPromise(script_state_.Get());
-  }
-
-  ScriptState* GetScriptState() override { return script_state_.Get(); }
-
-  // Interface for use by WebTransport.
-  void Close(ReadableByteStreamController* controller,
-             ExceptionState& exception_state) {
-    DVLOG(1) << "DatagramUnderlyingSource::Close()";
-
-    if (queue_.empty()) {
-      controller->close(script_state_, exception_state);
-    } else {
-      close_when_queue_empty_ = true;
-    }
-  }
-
-  void Error(ReadableByteStreamController* controller,
-             v8::Local<v8::Value> error) {
-    DVLOG(1) << "DatagramUnderlyingSource::Error()";
-
-    waiting_for_datagrams_ = false;
-    DiscardQueue();
-    controller->error(script_state_,
-                      ScriptValue(script_state_->GetIsolate(), error));
-  }
-
-  void OnDatagramReceived(ReadableByteStreamController* controller,
-                          base::span<const uint8_t> data) {
-    DVLOG(1) << "DatagramUnderlyingSource::OnDatagramReceived() size="
-             << data.size();
-
-    // We should not receive any datagrams after Close() was called.
-    DCHECK(!close_when_queue_empty_);
-
-    if (canceled_) {
-      return;
-    }
-
-    DCHECK_GT(data.size(), 0u);
-
-    // This fast path is expected to be hit frequently. Avoid the queue.
-    if (waiting_for_datagrams_) {
-      DCHECK(queue_.empty());
-      waiting_for_datagrams_ = false;
-      // This may run JavaScript, so it has to be called immediately before
-      // returning to avoid confusion caused by re-entrant usage.
-      ScriptState::Scope scope(script_state_);
-      // |enqueue| and |respond| throw if close has been requested, stream state
-      // is not readable, or buffer is invalid. We checked
-      // |close_when_queue_empty_| and data.size() so stream is readable and
-      // buffer size is not 0.
-      // |respond| also throws if controller is undefined or destination's
-      // buffer size is not large enough. Controller is defined because
-      // the BYOB request is a property of the given controller. If
-      // destination's buffer size is not large enough, stream is errored before
-      // respond.
-      NonThrowableExceptionState exception_state;
-
-      if (ReadableStreamBYOBRequest* request = controller->byobRequest()) {
-        DOMArrayPiece view(request->view().Get());
-        // If the view supplied is not large enough, error the stream to avoid
-        // splitting a datagram.
-        if (view.ByteLength() < data.size()) {
-          controller->error(
-              script_state_,
-              ScriptValue(script_state_->GetIsolate(),
-                          V8ThrowException::CreateRangeError(
-                              script_state_->GetIsolate(),
-                              "supplied view is not large enough.")));
-          return;
-        }
-        view.ByteSpan().copy_prefix_from(data);
-        request->respond(script_state_, data.size(), exception_state);
-        return;
-      }
-
-      auto* datagram = DOMUint8Array::Create(data);
-      controller->enqueue(script_state_, NotShared(datagram), exception_state);
-      return;
-    }
-
+  void Push(base::span<const uint8_t> data) {
     DiscardExcessDatagrams();
 
-    auto max_buffered_datagrams = MaxBufferedDatagrams();
-
-    // A max buffered datagram count of 0 has the semantics that all datagrams
-    // are discarded unless there is read pending. This might be useful to
-    // someone, so support it.
+    const wtf_size_t max_buffered_datagrams = MaxBufferedDatagrams();
+    // A maximum of zero means datagrams are never buffered: they are only
+    // delivered if a read is already waiting for them, which is handled by
+    // DatagramSource before it reaches the queue.
     if (max_buffered_datagrams == 0) {
       DCHECK(queue_.empty());
       return;
     }
 
     if (queue_.size() == max_buffered_datagrams) {
-      // Need to get rid of an entry for the new one to replace.
       queue_.pop_front();
       ++dropped_datagram_count_;
     }
 
-    auto* datagram = DOMUint8Array::Create(data);
     auto now = base::TimeTicks::Now();
-    queue_.push_back(MakeGarbageCollected<QueueEntry>(datagram, now));
+    queue_.push_back(
+        MakeGarbageCollected<QueueEntry>(DOMUint8Array::Create(data), now));
     MaybeExpireDatagrams(now);
   }
 
-  void Trace(Visitor* visitor) const override {
+  bool empty() const { return queue_.empty(); }
+
+  void Clear() {
+    queue_.clear();
+    expiry_timer_.Stop();
+  }
+
+  uint64_t dropped_datagram_count() const { return dropped_datagram_count_; }
+
+  void Trace(Visitor* visitor) const {
     visitor->Trace(script_state_);
     visitor->Trace(queue_);
     visitor->Trace(datagram_duplex_stream_);
     visitor->Trace(expiry_timer_);
-    UnderlyingByteSourceBase::Trace(visitor);
   }
-
-  uint64_t dropped_datagram_count() const { return dropped_datagram_count_; }
 
  private:
   struct QueueEntry : GarbageCollected<QueueEntry> {
@@ -844,42 +718,30 @@ class WebTransport::DatagramUnderlyingSource final
   };
 
   void DiscardExcessDatagrams() {
-    DVLOG(1)
-        << "DatagramUnderlyingSource::DiscardExcessDatagrams() queue_.size="
-        << queue_.size();
+    DVLOG(1) << "DatagramQueue::DiscardExcessDatagrams() queue_.size="
+             << queue_.size();
 
-    wtf_size_t max_buffered_datagrams = MaxBufferedDatagrams();
-
-    // The max buffered datagram count may have been set to a lower value, so
-    // the size can be greater.
+    const wtf_size_t max_buffered_datagrams = MaxBufferedDatagrams();
     while (queue_.size() > max_buffered_datagrams) {
-      // TODO(ricea): Maybe free the memory associated with the array
-      // buffer?
       queue_.pop_front();
       ++dropped_datagram_count_;
     }
 
     if (queue_.empty()) {
-      DVLOG(1) << "DiscardExcessDatagrams: queue size now zero";
+      DVLOG(1) << "DatagramQueue::DiscardExcessDatagrams() queue size now zero";
       expiry_timer_.Stop();
     }
   }
 
-  void DiscardQueue() {
-    queue_.clear();
-    expiry_timer_.Stop();
-  }
-
   void ExpiryTimerFired(TimerBase*) {
-    DVLOG(1) << "DatagramUnderlyingSource::ExpiryTimerFired()";
-
+    DVLOG(1) << "DatagramQueue::ExpiryTimerFired()";
     MaybeExpireDatagrams();
   }
 
   void MaybeExpireDatagrams() { MaybeExpireDatagrams(base::TimeTicks::Now()); }
 
   void MaybeExpireDatagrams(base::TimeTicks now) {
-    DVLOG(1) << "DatagramUnderlyingSource::MaybeExpireDatagrams() now=" << now
+    DVLOG(1) << "DatagramQueue::MaybeExpireDatagrams() now=" << now
              << " queue_.size=" << queue_.size();
 
     std::optional<double> optional_max_age =
@@ -893,11 +755,10 @@ class WebTransport::DatagramUnderlyingSource final
       max_age = kDefaultIncomingMaxAge;
     }
 
+    // base::TimeTicks::Now() is far away from the origin of the monotonic
+    // clock, so subtracting `max_age` cannot produce a bogus (saturated) value.
     DCHECK_GT(now, base::TimeTicks());
-
-    // base::TimeTicks can take negative values, so this subtraction won't
-    // underflow even if MaxAge() is huge.
-    base::TimeTicks older_than = now - max_age;
+    const base::TimeTicks older_than = now - max_age;
 
     bool discarded = false;
     while (!queue_.empty() && queue_.front()->received_time < older_than) {
@@ -918,21 +779,23 @@ class WebTransport::DatagramUnderlyingSource final
     }
 
     if (queue_.empty()) {
-      DVLOG(1) << "MaybeExpireDatagrams queue is now empty";
+      DVLOG(1) << "DatagramQueue::MaybeExpireDatagrams() queue is now empty";
       expiry_timer_.Stop();
       return;
     }
 
-    base::TimeDelta age = now - queue_.front()->received_time;
+    const base::TimeDelta age = now - queue_.front()->received_time;
     DCHECK_GE(max_age, age);
     base::TimeDelta time_until_next_expiry = max_age - age;
-
-    // To reduce the number of wakeups, don't try to expire any more datagrams
-    // for at least a second.
+    // Waking up more often than once a second would waste power, and expiring
+    // datagrams slightly late is harmless: reads discard expired datagrams
+    // before returning them.
     if (time_until_next_expiry < base::Seconds(1)) {
       time_until_next_expiry = base::Seconds(1);
     }
 
+    // An earlier wakeup is already scheduled, and it will reschedule the timer
+    // for whatever remains in the queue.
     if (expiry_timer_.IsActive() &&
         expiry_timer_.NextFireInterval() <= time_until_next_expiry) {
       return;
@@ -949,11 +812,222 @@ class WebTransport::DatagramUnderlyingSource final
   const Member<ScriptState> script_state_;
   HeapDeque<Member<const QueueEntry>> queue_;
   const Member<DatagramDuplexStream> datagram_duplex_stream_;
-  HeapTaskRunnerTimer<DatagramUnderlyingSource> expiry_timer_;
+  HeapTaskRunnerTimer<DatagramQueue> expiry_timer_;
+  uint64_t dropped_datagram_count_ = 0;
+};
+
+// Owns the receive state machine shared by the default and byte
+// datagrams.readable implementations.
+class WebTransport::DatagramSource : public GarbageCollectedMixin {
+ public:
+  DatagramSource(ScriptState* script_state, DatagramQueue* queue)
+      : script_state_(script_state), queue_(queue) {}
+  virtual ~DatagramSource() = default;
+
+  ScriptPromise<IDLUndefined> PullDatagram(ExceptionState& exception_state) {
+    DVLOG(1) << "DatagramSource::PullDatagram()";
+
+    if (waiting_for_datagrams_) {
+      // This can happen if a second read is issued while a read is already
+      // pending.
+      DCHECK(queue_->empty());
+      return ToResolvedUndefinedPromise(script_state_.Get());
+    }
+
+    DOMUint8Array* datagram = queue_->TakeNextDatagram();
+    if (!datagram) {
+      waiting_for_datagrams_ = true;
+      return ToResolvedUndefinedPromise(script_state_.Get());
+    }
+
+    // The datagram has already been removed from the queue, because Enqueue()
+    // runs script which can re-enter this object, for example by starting
+    // another read.
+    Enqueue(datagram, exception_state);
+
+    return ToResolvedUndefinedPromise(script_state_.Get());
+  }
+
+  ScriptPromise<IDLUndefined> CancelDatagrams(v8::Local<v8::Value> reason) {
+    uint32_t code = 0;
+    WebTransportError* exception =
+        V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
+    if (exception) {
+      code = exception->streamErrorCode().value_or(0);
+    }
+    VLOG(1) << "DatagramSource::CancelDatagrams() with code " << code;
+
+    waiting_for_datagrams_ = false;
+    canceled_ = true;
+    queue_->Clear();
+
+    return ToResolvedUndefinedPromise(script_state_.Get());
+  }
+
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
+
+  void Error(v8::Local<v8::Value> error) {
+    DVLOG(1) << "DatagramSource::Error()";
+
+    waiting_for_datagrams_ = false;
+    queue_->Clear();
+    ErrorController(error);
+  }
+
+  void OnDatagramReceived(base::span<const uint8_t> data) {
+    DVLOG(1) << "DatagramSource::OnDatagramReceived() size=" << data.size();
+
+    if (canceled_) {
+      return;
+    }
+
+    DCHECK_GT(data.size(), 0u);
+
+    if (waiting_for_datagrams_) {
+      DCHECK(queue_->empty());
+      waiting_for_datagrams_ = false;
+      // The datagram is delivered directly to the stream, bypassing the queue,
+      // so that a zero incomingMaxBufferedDatagrams still permits reads that
+      // are already waiting to complete.
+      NonThrowableExceptionState exception_state;
+      EnqueueReceivedData(data, exception_state);
+      return;
+    }
+
+    queue_->Push(data);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
+    visitor->Trace(queue_);
+  }
+
+ protected:
+  virtual void Enqueue(DOMUint8Array*, ExceptionState&) = 0;
+  virtual void EnqueueReceivedData(base::span<const uint8_t>,
+                                   ExceptionState&) = 0;
+  virtual void ErrorController(v8::Local<v8::Value>) = 0;
+
+ private:
+  const Member<ScriptState> script_state_;
+  const Member<DatagramQueue> queue_;
   bool waiting_for_datagrams_ = false;
   bool canceled_ = false;
-  bool close_when_queue_empty_ = false;
-  uint64_t dropped_datagram_count_ = 0;
+};
+
+// Implements the default, non-byte datagrams.readable stream.
+class WebTransport::DatagramUnderlyingSource final
+    : public UnderlyingSourceBase,
+      public DatagramSource {
+ public:
+  DatagramUnderlyingSource(ScriptState* script_state, DatagramQueue* queue)
+      : UnderlyingSourceBase(script_state),
+        DatagramSource(script_state, queue) {}
+
+  ScriptPromise<IDLUndefined> Pull(ScriptState*,
+                                   ExceptionState& exception_state) override {
+    return PullDatagram(exception_state);
+  }
+
+  ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                     ScriptValue reason,
+                                     ExceptionState&) override {
+    return CancelDatagrams(reason.V8Value());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    UnderlyingSourceBase::Trace(visitor);
+    DatagramSource::Trace(visitor);
+  }
+
+ private:
+  void Enqueue(DOMUint8Array* datagram, ExceptionState&) override {
+    Controller()->Enqueue(datagram);
+  }
+
+  void EnqueueReceivedData(base::span<const uint8_t> data,
+                           ExceptionState&) override {
+    Controller()->Enqueue(DOMUint8Array::Create(data));
+  }
+
+  void ErrorController(v8::Local<v8::Value> error) override {
+    Controller()->Error(error);
+  }
+};
+
+// Implements the byte datagrams.readable stream, including BYOB reads.
+class WebTransport::DatagramUnderlyingByteSource final
+    : public UnderlyingByteSourceBase,
+      public DatagramSource {
+ public:
+  DatagramUnderlyingByteSource(ScriptState* script_state, DatagramQueue* queue)
+      : DatagramSource(script_state, queue) {}
+
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState& exception_state) override {
+    DCHECK_EQ(controller_, controller);
+    return PullDatagram(exception_state);
+  }
+
+  ScriptPromise<IDLUndefined> Cancel() override {
+    return CancelDatagrams(v8::Undefined(GetScriptState()->GetIsolate()));
+  }
+
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
+    return CancelDatagrams(reason);
+  }
+
+  ScriptState* GetScriptState() override {
+    return DatagramSource::GetScriptState();
+  }
+
+  void SetController(ReadableByteStreamController* controller) {
+    controller_ = controller;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(controller_);
+    UnderlyingByteSourceBase::Trace(visitor);
+    DatagramSource::Trace(visitor);
+  }
+
+ private:
+  void Enqueue(DOMUint8Array* datagram,
+               ExceptionState& exception_state) override {
+    controller_->enqueue(GetScriptState(), NotShared(datagram),
+                         exception_state);
+  }
+
+  void EnqueueReceivedData(base::span<const uint8_t> data,
+                           ExceptionState& exception_state) override {
+    ScriptState::Scope scope(GetScriptState());
+    if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
+      DOMArrayPiece view(request->view().Get());
+      if (view.ByteLength() < data.size()) {
+        controller_->error(
+            GetScriptState(),
+            ScriptValue(GetScriptState()->GetIsolate(),
+                        V8ThrowException::CreateRangeError(
+                            GetScriptState()->GetIsolate(),
+                            "supplied view is not large enough.")));
+        return;
+      }
+      view.ByteSpan().copy_prefix_from(data);
+      request->respond(GetScriptState(), data.size(), exception_state);
+      return;
+    }
+
+    controller_->enqueue(GetScriptState(),
+                         NotShared(DOMUint8Array::Create(data)),
+                         exception_state);
+  }
+
+  void ErrorController(v8::Local<v8::Value> error) override {
+    controller_->error(GetScriptState(),
+                       ScriptValue(GetScriptState()->GetIsolate(), error));
+  }
+
+  Member<ReadableByteStreamController> controller_;
 };
 
 class WebTransport::StreamVendingUnderlyingSource final
@@ -1559,8 +1633,7 @@ void WebTransport::OnHandshakeFailed(
 }
 
 void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
-  datagram_underlying_source_->OnDatagramReceived(
-      received_datagrams_controller_, data);
+  datagram_source_->OnDatagramReceived(data);
 }
 
 void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
@@ -1868,8 +1941,8 @@ void WebTransport::OnReceiveStreamStatsResponse(
 void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(datagrams_);
   visitor->Trace(received_datagrams_);
-  visitor->Trace(received_datagrams_controller_);
-  visitor->Trace(datagram_underlying_source_);
+  visitor->Trace(datagram_queue_);
+  visitor->Trace(datagram_source_);
   visitor->Trace(outgoing_datagrams_);
   visitor->Trace(datagram_underlying_sinks_);
   visitor->Trace(datagram_underlying_sinks_with_pending_writes_);
@@ -2100,12 +2173,32 @@ void WebTransport::Init(const String& url_for_diagnostics,
   datagrams_ = MakeGarbageCollected<DatagramDuplexStream>(
       this, outgoing_max_buffered_datagrams);
 
-  datagram_underlying_source_ =
-      MakeGarbageCollected<DatagramUnderlyingSource>(script_state_, datagrams_);
-  received_datagrams_ = ReadableStream::CreateByteStream(
-      script_state_, datagram_underlying_source_);
-  received_datagrams_controller_ =
-      To<ReadableByteStreamController>(received_datagrams_->GetController());
+  datagram_queue_ =
+      MakeGarbageCollected<DatagramQueue>(script_state_, datagrams_);
+  // datagrams.readable was a byte stream before `datagramsReadableType` was
+  // added, so keep that behavior when the feature is disabled. With the feature
+  // enabled it is a default stream unless "bytes" is explicitly requested.
+  const bool use_byte_stream =
+      !RuntimeEnabledFeatures::WebTransportDatagramsReadableTypeEnabled(
+          execution_context) ||
+      (options.hasDatagramsReadableType() &&
+       options.datagramsReadableType().AsEnum() ==
+           V8ReadableStreamType::Enum::kBytes);
+  if (use_byte_stream) {
+    auto* byte_source = MakeGarbageCollected<DatagramUnderlyingByteSource>(
+        script_state_, datagram_queue_);
+    datagram_source_ = byte_source;
+    received_datagrams_ =
+        ReadableStream::CreateByteStream(script_state_, byte_source);
+    byte_source->SetController(
+        To<ReadableByteStreamController>(received_datagrams_->GetController()));
+  } else {
+    auto* source = MakeGarbageCollected<DatagramUnderlyingSource>(
+        script_state_, datagram_queue_);
+    datagram_source_ = source;
+    received_datagrams_ = ReadableStream::CreateWithCountQueueingStrategy(
+        script_state_, source, kDatagramsReadableHighWaterMark);
+  }
 
   // We create a WritableStream with high water mark 1 and try to mimic the
   // given max buffered datagram count in the Sink, for two reasons:
@@ -2184,7 +2277,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   HandlePendingGetStatsResolvers(error);
   RunPendingReceiveStreamStatsCallbacks();
   ScriptValue error_value(isolate, error);
-  datagram_underlying_source_->Error(received_datagrams_controller_, error);
+  datagram_source_->Error(error);
   // Error() enters V8 and may trigger GC. Keep strong references so every sink
   // registered when cleanup starts is processed and its pending write promises
   // are rejected. A WeakMember-only snapshot could lose a later sink during
@@ -2453,9 +2546,9 @@ WebTransportConnectionStats* WebTransport::ConvertStatsFromMojom(
   auto* datagram_stats = MakeGarbageCollected<WebTransportDatagramStats>();
   datagram_stats->setExpiredOutgoing(in->datagrams_expired_outgoing);
   datagram_stats->setLostOutgoing(in->datagrams_lost_outgoing);
-  if (datagram_underlying_source_) {
+  if (datagram_queue_) {
     datagram_stats->setDroppedIncoming(
-        datagram_underlying_source_->dropped_datagram_count());
+        datagram_queue_->dropped_datagram_count());
   }
   out->setDatagrams(datagram_stats);
   return out;

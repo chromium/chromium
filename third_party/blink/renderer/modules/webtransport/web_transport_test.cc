@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_byob_reader_read_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_bytestringbytestringrecord_bytestringsequencesequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
@@ -328,6 +329,13 @@ class WebTransportTest : public ::testing::Test {
 
   static WebTransportOptions* EmptyOptions() {
     return MakeGarbageCollected<WebTransportOptions>();
+  }
+
+  static WebTransportOptions* ByteDatagramOptions() {
+    auto* options = MakeGarbageCollected<WebTransportOptions>();
+    options->setDatagramsReadableType(
+        V8ReadableStreamType(V8ReadableStreamType::Enum::kBytes));
+    return options;
   }
 
   static WebTransportSendStreamOptions* EmptySendStreamOptions() {
@@ -2001,7 +2009,8 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   return result;
 }
 
-TEST_F(WebTransportTest, ReceiveDatagramBeforeRead) {
+TEST_F(WebTransportTest, DefaultDatagramReadableReceivesBeforeRead) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
@@ -2023,7 +2032,8 @@ TEST_F(WebTransportTest, ReceiveDatagramBeforeRead) {
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
 }
 
-TEST_F(WebTransportTest, ReceiveDatagramDuringRead) {
+TEST_F(WebTransportTest, DefaultDatagramReadableReceivesDuringRead) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
@@ -2043,10 +2053,68 @@ TEST_F(WebTransportTest, ReceiveDatagramDuringRead) {
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
 }
 
-TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
+TEST_F(WebTransportTest, DefaultDatagramReadableDoesNotSupportBYOB) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto& exception_state = scope.GetExceptionState();
+  EXPECT_FALSE(web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+      scope.GetScriptState(), exception_state));
+  EXPECT_TRUE(exception_state.HadException());
+}
+
+TEST_F(WebTransportTest,
+       DisabledReadableTypeFeaturePreservesLegacyByteStreamBehavior) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(false);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      web_transport->datagrams()->readable()->GetBYOBReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+
+  const std::array<uint8_t, 1> chunk = {'A'};
+  client_remote_->OnDatagramReceived(chunk);
+  test::RunPendingTasks();
+
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  auto* read_options =
+      MakeGarbageCollected<ReadableStreamBYOBReaderReadOptions>();
+  ScriptPromiseTester tester(
+      script_state,
+      reader->read(script_state, view, read_options, ASSERT_NO_EXCEPTION));
+  tester.WaitUntilSettled();
+
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
+
+  // A datagram arriving while a BYOB read is pending is written into the
+  // supplied view too.
+  NotShared<DOMArrayBufferView> pending_view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester pending_tester(
+      script_state, reader->read(script_state, pending_view, read_options,
+                                 ASSERT_NO_EXCEPTION));
+
+  const std::array<uint8_t, 1> pending_chunk = {'B'};
+  client_remote_->OnDatagramReceived(pending_chunk);
+  pending_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(pending_tester.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, pending_tester.Value()),
+              ElementsAre('B'));
+}
+
+TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  V8TestingScope scope;
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
 
   auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
@@ -2073,10 +2141,11 @@ TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReader) {
 }
 
 TEST_F(WebTransportTest, ReceiveDatagramWithBYOBReaderMinOption) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
-  auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
 
   auto* readable = web_transport->datagrams()->readable();
   auto* reader =
@@ -2137,9 +2206,10 @@ bool IsRangeError(ScriptState* script_state,
 }
 
 TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
-  auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* web_transport = CreateAndConnectSuccessfully(
+      scope, "https://example.com", ByteDatagramOptions());
 
   auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
@@ -2167,15 +2237,34 @@ TEST_F(WebTransportTest, ReceiveDatagramWithoutEnoughBuffer) {
                            "supplied view is not large enough."));
 }
 
-TEST_F(WebTransportTest, CancelDatagramReadableWorks) {
+// The default and byte datagrams.readable implementations share DatagramQueue
+// and DatagramSource, so the lifecycle and queueing behavior exercised by the
+// helpers below has to hold for both. `kBytes` selects the byte stream, which
+// is what `datagramsReadableType: "bytes"` produces, and also what the disabled
+// feature falls back to.
+enum class DatagramReadableType { kBytes, kDefault };
+
+WebTransport* CreateAndConnectWithDatagramReadableType(
+    WebTransportTest& fixture,
+    const V8TestingScope& scope,
+    DatagramReadableType readable_type) {
+  return fixture.CreateAndConnectSuccessfully(
+      scope, "https://example.com",
+      readable_type == DatagramReadableType::kBytes
+          ? WebTransportTest::ByteDatagramOptions()
+          : WebTransportTest::EmptyOptions());
+}
+
+void RunCancelDiscardsDatagramsTest(WebTransportTest& fixture,
+                                    DatagramReadableType readable_type) {
   V8TestingScope scope;
   auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
+      CreateAndConnectWithDatagramReadableType(fixture, scope, readable_type);
   auto* readable = web_transport->datagrams()->readable();
 
   // This datagram should be discarded.
   const std::array<uint8_t, 1> chunk1 = {'A'};
-  client_remote_->OnDatagramReceived(chunk1);
+  fixture.client_remote_->OnDatagramReceived(chunk1);
 
   test::RunPendingTasks();
 
@@ -2183,19 +2272,20 @@ TEST_F(WebTransportTest, CancelDatagramReadableWorks) {
 
   // This datagram should also be discarded.
   const std::array<uint8_t, 1> chunk2 = {'B'};
-  client_remote_->OnDatagramReceived(chunk2);
+  fixture.client_remote_->OnDatagramReceived(chunk2);
 
   test::RunPendingTasks();
 }
 
-TEST_F(WebTransportTest, DatagramsShouldBeErroredAfterClose) {
+void RunCloseErrorsDatagramsTest(WebTransportTest& fixture,
+                                 DatagramReadableType readable_type) {
   V8TestingScope scope;
   auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
-  EXPECT_CALL(*mock_web_transport_, Close());
+      CreateAndConnectWithDatagramReadableType(fixture, scope, readable_type);
+  EXPECT_CALL(*fixture.mock_web_transport_, Close());
 
   const std::array<uint8_t, 1> chunk1 = {'A'};
-  client_remote_->OnDatagramReceived(chunk1);
+  fixture.client_remote_->OnDatagramReceived(chunk1);
 
   test::RunPendingTasks();
 
@@ -2205,10 +2295,172 @@ TEST_F(WebTransportTest, DatagramsShouldBeErroredAfterClose) {
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state,
+                             reader->read(script_state, ASSERT_NO_EXCEPTION));
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+}
+
+void RunMaxBufferedDatagramsTest(WebTransportTest& fixture,
+                                 DatagramReadableType readable_type) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectWithDatagramReadableType(fixture, scope, readable_type);
+
+  constexpr uint32_t kMaxBufferedDatagrams = 5;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kMaxBufferedDatagrams);
+
+  // One datagram more than fits is sent, so the oldest one is dropped.
+  for (uint32_t i = 0; i < kMaxBufferedDatagrams + 1; ++i) {
+    const std::array<uint8_t, 1> chunk = {static_cast<uint8_t>('0' + i)};
+    fixture.client_remote_->OnDatagramReceived(chunk);
+  }
+
+  // Make sure that the calls have run.
+  test::RunPendingTasks();
+
+  auto* readable = web_transport->datagrams()->readable();
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
+  for (uint32_t i = 0; i < kMaxBufferedDatagrams; ++i) {
+    ScriptPromiseTester tester(script_state,
+                               reader->read(script_state, ASSERT_NO_EXCEPTION));
+    tester.WaitUntilSettled();
+
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_THAT(GetValueAsVector(script_state, tester.Value()),
+                ElementsAre('0' + i + 1));
+  }
+}
+
+// We only do an extremely basic test for incomingMaxAge as overriding
+// base::TimeTicks::Now() doesn't work well in Blink and passing in a mock clock
+// would add a lot of complexity for little benefit.
+void RunIncomingMaxAgeTest(WebTransportTest& fixture,
+                           DatagramReadableType readable_type) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectWithDatagramReadableType(fixture, scope, readable_type);
+
+  constexpr uint32_t kMaxBufferedDatagrams = 2;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kMaxBufferedDatagrams);
+
+  const std::array<uint8_t, 1> chunk1 = {'A'};
+  fixture.client_remote_->OnDatagramReceived(chunk1);
+
+  const std::array<uint8_t, 1> chunk2 = {'B'};
+  fixture.client_remote_->OnDatagramReceived(chunk2);
+
+  test::RunPendingTasks();
+
+  constexpr base::TimeDelta kMaxAge = base::Microseconds(1);
+  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF(),
+                                                ASSERT_NO_EXCEPTION);
+
+  test::RunDelayedTasks(kMaxAge);
+
+  auto* readable = web_transport->datagrams()->readable();
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
+  // The queue should be empty so the read should not complete.
+  ScriptPromiseTester tester(script_state,
+                             reader->read(script_state, ASSERT_NO_EXCEPTION));
+
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(tester.IsFulfilled());
+  EXPECT_FALSE(tester.IsRejected());
+}
+
+// This is a regression test for https://crbug.com/1246335
+void RunTwoSimultaneousReadsTest(WebTransportTest& fixture,
+                                 DatagramReadableType readable_type) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectWithDatagramReadableType(fixture, scope, readable_type);
+  auto* readable = web_transport->datagrams()->readable();
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
   auto result1 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto result2 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+
+  const std::array<uint8_t, 1> chunk1 = {'A'};
+  fixture.client_remote_->OnDatagramReceived(chunk1);
+
+  const std::array<uint8_t, 1> chunk2 = {'B'};
+  fixture.client_remote_->OnDatagramReceived(chunk2);
+
   ScriptPromiseTester tester1(script_state, result1);
   tester1.WaitUntilSettled();
-  EXPECT_TRUE(tester1.IsRejected());
+  EXPECT_TRUE(tester1.IsFulfilled());
+
+  EXPECT_THAT(GetValueAsVector(script_state, tester1.Value()),
+              ElementsAre('A'));
+
+  ScriptPromiseTester tester2(script_state, result2);
+  tester2.WaitUntilSettled();
+  EXPECT_TRUE(tester2.IsFulfilled());
+
+  EXPECT_THAT(GetValueAsVector(script_state, tester2.Value()),
+              ElementsAre('B'));
+}
+
+TEST_F(WebTransportTest, ByteDatagramReadableCancelWorks) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunCancelDiscardsDatagramsTest(*this, DatagramReadableType::kBytes);
+}
+
+TEST_F(WebTransportTest, DefaultDatagramReadableCancelWorks) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunCancelDiscardsDatagramsTest(*this, DatagramReadableType::kDefault);
+}
+
+TEST_F(WebTransportTest, DatagramsShouldBeErroredAfterClose) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunCloseErrorsDatagramsTest(*this, DatagramReadableType::kBytes);
+}
+
+TEST_F(WebTransportTest, DefaultDatagramReadableErroredAfterClose) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunCloseErrorsDatagramsTest(*this, DatagramReadableType::kDefault);
+}
+
+TEST_F(WebTransportTest, IncomingMaxBufferedDatagramsIsObeyed) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunMaxBufferedDatagramsTest(*this, DatagramReadableType::kBytes);
+}
+
+TEST_F(WebTransportTest, DefaultDatagramReadableObeysMaxBufferedDatagrams) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunMaxBufferedDatagramsTest(*this, DatagramReadableType::kDefault);
+}
+
+TEST_F(WebTransportTest, IncomingMaxAgeIsObeyed) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunIncomingMaxAgeTest(*this, DatagramReadableType::kBytes);
+}
+
+TEST_F(WebTransportTest, DefaultDatagramReadableObeysIncomingMaxAge) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunIncomingMaxAgeTest(*this, DatagramReadableType::kDefault);
+}
+
+TEST_F(WebTransportTest, TwoSimultaneousReadsWork) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunTwoSimultaneousReadsTest(*this, DatagramReadableType::kBytes);
+}
+
+TEST_F(WebTransportTest, DefaultDatagramReadableTwoSimultaneousReadsWork) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
+  RunTwoSimultaneousReadsTest(*this, DatagramReadableType::kDefault);
 }
 
 TEST_F(WebTransportTest, ResettingIncomingMaxBufferedDatagramsWorksAfterClose) {
@@ -2239,7 +2491,8 @@ TEST_F(WebTransportTest, ResettingIncomingMaxBufferedDatagramsWorksAfterClose) {
   EXPECT_TRUE(tester.IsRejected());
 }
 
-TEST_F(WebTransportTest, TransportErrorErrorsReadableStream) {
+TEST_F(WebTransportTest, DefaultDatagramReadableTransportErrorErrorsStream) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
@@ -2267,7 +2520,8 @@ TEST_F(WebTransportTest, TransportErrorErrorsReadableStream) {
   EXPECT_TRUE(tester.IsRejected());
 }
 
-TEST_F(WebTransportTest, DatagramsAreDropped) {
+TEST_F(WebTransportTest, DefaultDatagramReadableDropsOldestDatagram) {
+  ScopedWebTransportDatagramsReadableTypeForTest readable_type_enabled(true);
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
@@ -2308,40 +2562,6 @@ TEST_F(WebTransportTest, DatagramsAreDropped) {
 
   EXPECT_THAT(GetValueAsVector(script_state, tester2.Value()),
               ElementsAre('C'));
-}
-
-TEST_F(WebTransportTest, IncomingMaxBufferedDatagramsIsObeyed) {
-  V8TestingScope scope;
-  auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
-
-  constexpr uint32_t kMaxBufferedDatagrams = 5;
-  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
-      kMaxBufferedDatagrams);
-
-  for (uint32_t i = 0; i < kMaxBufferedDatagrams + 1; ++i) {
-    const std::array<uint8_t, 1> chunk = {static_cast<uint8_t>('0' + i)};
-    client_remote_->OnDatagramReceived(chunk);
-  }
-
-  // Make sure that the calls have run.
-  test::RunPendingTasks();
-
-  auto* readable = web_transport->datagrams()->readable();
-  auto* script_state = scope.GetScriptState();
-  auto* reader =
-      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-
-  for (uint32_t i = 0; i < kMaxBufferedDatagrams; ++i) {
-    auto result = reader->read(script_state, ASSERT_NO_EXCEPTION);
-
-    ScriptPromiseTester tester(script_state, result);
-    tester.WaitUntilSettled();
-
-    EXPECT_TRUE(tester.IsFulfilled());
-    EXPECT_THAT(GetValueAsVector(script_state, tester.Value()),
-                ElementsAre('0' + i + 1));
-  }
 }
 
 TEST_F(WebTransportTest, ResettingMaxBufferedDatagramsClearsQueue) {
@@ -2418,83 +2638,6 @@ TEST_F(WebTransportTest,
   EXPECT_TRUE(tester.IsFulfilled());
 
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
-}
-
-// We only do an extremely basic test for incomingMaxAge as overriding
-// base::TimeTicks::Now() doesn't work well in Blink and passing in a mock clock
-// would add a lot of complexity for little benefit.
-TEST_F(WebTransportTest, IncomingMaxAgeIsObeyed) {
-  V8TestingScope scope;
-
-  auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
-
-  constexpr uint32_t kMaxBufferedDatagrams = 2;
-  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
-      kMaxBufferedDatagrams);
-
-  const std::array<uint8_t, 1> chunk1 = {'A'};
-  client_remote_->OnDatagramReceived(chunk1);
-
-  const std::array<uint8_t, 1> chunk2 = {'B'};
-  client_remote_->OnDatagramReceived(chunk2);
-
-  test::RunPendingTasks();
-
-  constexpr base::TimeDelta kMaxAge = base::Microseconds(1);
-  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF(),
-                                                ASSERT_NO_EXCEPTION);
-
-  test::RunDelayedTasks(kMaxAge);
-
-  auto* readable = web_transport->datagrams()->readable();
-  auto* script_state = scope.GetScriptState();
-  auto* reader =
-      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-
-  // The queue should be empty so the read should not complete.
-  auto result = reader->read(script_state, ASSERT_NO_EXCEPTION);
-
-  ScriptPromiseTester tester(script_state, result);
-
-  test::RunPendingTasks();
-
-  EXPECT_FALSE(tester.IsFulfilled());
-  EXPECT_FALSE(tester.IsRejected());
-}
-
-// This is a regression test for https://crbug.com/1246335
-TEST_F(WebTransportTest, TwoSimultaneousReadsWork) {
-  V8TestingScope scope;
-  auto* web_transport =
-      CreateAndConnectSuccessfully(scope, "https://example.com");
-  auto* readable = web_transport->datagrams()->readable();
-  auto* script_state = scope.GetScriptState();
-  auto* reader =
-      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
-
-  auto result1 = reader->read(script_state, ASSERT_NO_EXCEPTION);
-  auto result2 = reader->read(script_state, ASSERT_NO_EXCEPTION);
-
-  const std::array<uint8_t, 1> chunk1 = {'A'};
-  client_remote_->OnDatagramReceived(chunk1);
-
-  const std::array<uint8_t, 1> chunk2 = {'B'};
-  client_remote_->OnDatagramReceived(chunk2);
-
-  ScriptPromiseTester tester1(script_state, result1);
-  tester1.WaitUntilSettled();
-  EXPECT_TRUE(tester1.IsFulfilled());
-
-  EXPECT_THAT(GetValueAsVector(script_state, tester1.Value()),
-              ElementsAre('A'));
-
-  ScriptPromiseTester tester2(script_state, result2);
-  tester2.WaitUntilSettled();
-  EXPECT_TRUE(tester2.IsFulfilled());
-
-  EXPECT_THAT(GetValueAsVector(script_state, tester2.Value()),
-              ElementsAre('B'));
 }
 
 bool ValidProducerHandle(const mojo::ScopedDataPipeProducerHandle& handle) {

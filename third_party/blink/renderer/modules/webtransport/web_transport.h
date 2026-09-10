@@ -49,7 +49,6 @@ class ExceptionState;
 class IncomingStream;
 class OutgoingStream;
 class ReadableStream;
-class ReadableByteStreamController;
 class ScriptState;
 class WebTransportCloseInfo;
 class WebTransportDatagramsWritable;
@@ -228,7 +227,10 @@ class MODULES_EXPORT WebTransport final
   };
 
   class DatagramUnderlyingSink;
+  class DatagramQueue;
+  class DatagramSource;
   class DatagramUnderlyingSource;
+  class DatagramUnderlyingByteSource;
   class StreamVendingUnderlyingSource;
   class ReceiveStreamVendor;
   class BidirectionalStreamVendor;
@@ -303,8 +305,8 @@ class MODULES_EXPORT WebTransport final
   Member<DatagramDuplexStream> datagrams_;
 
   Member<ReadableStream> received_datagrams_;
-  Member<ReadableByteStreamController> received_datagrams_controller_;
-  Member<DatagramUnderlyingSource> datagram_underlying_source_;
+  Member<DatagramQueue> datagram_queue_;
+  Member<DatagramSource> datagram_source_;
 
   // This corresponds to the [[SentDatagrams]] internal slot in the standard.
   Member<WritableStream> outgoing_datagrams_;

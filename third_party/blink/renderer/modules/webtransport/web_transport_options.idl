@@ -11,4 +11,5 @@ dictionary WebTransportOptions {
   [RuntimeEnabled=WebTransportAnticipatedConcurrentIncomingStreams, EnforceRange] unsigned short? anticipatedConcurrentIncomingUnidirectionalStreams = null;
   [RuntimeEnabled=WebTransportAnticipatedConcurrentIncomingStreams, EnforceRange] unsigned short? anticipatedConcurrentIncomingBidirectionalStreams = null;
   [RuntimeEnabled=WebTransportHeaders] HeadersInit headers;
+  [RuntimeEnabled=WebTransportDatagramsReadableType] ReadableStreamType datagramsReadableType;
 };
