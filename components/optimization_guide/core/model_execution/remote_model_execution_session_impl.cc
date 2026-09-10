@@ -42,7 +42,8 @@ using ModelExecutionError =
 constexpr char kModelExecutionStreamingRPCName[] = "v1:StreamExecute";
 
 GURL GetModelExecutionServiceStreamURL(ModelBasedCapabilityKey feature) {
-  GURL url = GetModelExecutionServiceFullURL(kModelExecutionStreamingRPCName);
+  GURL url =
+      GetModelExecutionServiceFullURLWebSocket(kModelExecutionStreamingRPCName);
   if (!IsAccessTokenRequiredForFeature(feature)) {
     return net::AppendOrReplaceQueryParameter(
         url, "key", features::GetOptimizationGuideServiceAPIKey());

@@ -14,6 +14,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "url/url_constants.h"
 
 namespace optimization_guide {
 
@@ -646,6 +647,25 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
   }
 }
 
+namespace {
+
+GURL ConvertToWebSocketURL(const GURL& url) {
+  if (url.SchemeIsWSOrWSS()) {
+    return url;
+  }
+  GURL::Replacements replacements;
+  if (url.SchemeIs(url::kHttpsScheme)) {
+    replacements.SetSchemeStr(url::kWssScheme);
+  } else if (url.SchemeIs(url::kHttpScheme)) {
+    replacements.SetSchemeStr(url::kWsScheme);
+  } else {
+    NOTREACHED();
+  }
+  return url.ReplaceComponents(replacements);
+}
+
+}  // namespace
+
 GURL GetModelExecutionServiceBaseURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(
@@ -660,6 +680,10 @@ GURL GetModelExecutionServiceFullURL(std::string_view rpc_name) {
   GURL base_url = GetModelExecutionServiceBaseURL();
   CHECK(base_url.spec().ends_with('/'));
   return GURL(base::StrCat({base_url.spec(), rpc_name}));
+}
+
+GURL GetModelExecutionServiceFullURLWebSocket(std::string_view rpc_name) {
+  return ConvertToWebSocketURL(GetModelExecutionServiceFullURL(rpc_name));
 }
 
 }  // namespace optimization_guide

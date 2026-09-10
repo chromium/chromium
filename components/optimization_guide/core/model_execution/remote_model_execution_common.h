@@ -40,6 +40,10 @@ GURL GetModelExecutionServiceBaseURL();
 // appending `rpc_name` to the base URL.
 GURL GetModelExecutionServiceFullURL(std::string_view rpc_name);
 
+// Same as `GetModelExecutionServiceFullURL` except that the returned URL uses
+// ws/wss instead of http/https.
+GURL GetModelExecutionServiceFullURLWebSocket(std::string_view rpc_name);
+
 // The name of the model execution debug logs header.
 inline constexpr char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =
     "X-Model-Execution-Debug-Logs";

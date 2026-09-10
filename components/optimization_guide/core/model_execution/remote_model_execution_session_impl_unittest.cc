@@ -570,4 +570,37 @@ TEST_F(RemoteModelExecutionSessionImplTest,
               testing::Eq(std::nullopt));
 }
 
+TEST(RemoteModelExecutionCommonTest, GetModelExecutionServiceWebSocketURL) {
+  EXPECT_EQ(
+      GetModelExecutionServiceFullURLWebSocket("v1:StreamExecute"),
+      GURL("wss://chromemodelexecution-pa.googleapis.com/v1:StreamExecute"));
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        kOptimizationGuideServiceModelExecutionURLSwitch,
+        "http://127.0.0.1:8080/");
+    EXPECT_EQ(GetModelExecutionServiceFullURLWebSocket("v1:StreamExecute"),
+              GURL("ws://127.0.0.1:8080/v1:StreamExecute"));
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        kOptimizationGuideServiceModelExecutionURLSwitch,
+        "https://127.0.0.1:8080/");
+    EXPECT_EQ(GetModelExecutionServiceFullURLWebSocket("v1:StreamExecute"),
+              GURL("wss://127.0.0.1:8080/v1:StreamExecute"));
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        kOptimizationGuideServiceModelExecutionURLSwitch,
+        "wss://127.0.0.1:8080/");
+    EXPECT_EQ(GetModelExecutionServiceFullURLWebSocket("v1:StreamExecute"),
+              GURL("wss://127.0.0.1:8080/v1:StreamExecute"));
+  }
+}
+
 }  // namespace optimization_guide
