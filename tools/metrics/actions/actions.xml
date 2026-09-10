@@ -30940,6 +30940,36 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ScheduledRestart_BubbleShown">
+  <owner>anunoy@chromium.org</owner>
+  <description>
+    Recorded when the Scheduled Restart reminder bubble is shown.
+  </description>
+</action>
+
+<action name="ScheduledRestart_Close">
+  <owner>anunoy@chromium.org</owner>
+  <description>
+    Recorded when the Scheduled Restart reminder bubble is dismissed or closed.
+  </description>
+</action>
+
+<action name="ScheduledRestart_RestartNow">
+  <owner>anunoy@chromium.org</owner>
+  <description>
+    Recorded when the user clicks the Restart Now button in the Scheduled
+    Restart reminder bubble.
+  </description>
+</action>
+
+<action name="ScheduledRestart_Scheduled">
+  <owner>anunoy@chromium.org</owner>
+  <description>
+    Recorded when the user selects a scheduled restart mode in the reminder
+    bubble.
+  </description>
+</action>
+
 <action name="ScreenLocker_OnLoginFailure">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

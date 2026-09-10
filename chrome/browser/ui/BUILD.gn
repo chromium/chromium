@@ -991,7 +991,12 @@ static_library("ui") {
   }
 
   if (is_win || is_mac || is_linux) {
-    public_deps += [ "//chrome/browser/ui/views/scheduled_restart" ]
+    public_deps += [
+      "//chrome/browser/ui/views/scheduled_restart",
+      "//chrome/browser/ui/views/scheduled_restart:impl",
+    ]
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views/scheduled_restart:impl" ]
   }
 
   # //chrome/browser/ui/views/relaunch_notification:impl sources include

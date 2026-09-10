@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
+#include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
@@ -82,21 +82,16 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
   // 1. Tab & WebContents Checks:
   // Must be visible foreground tab.
   if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
-    VLOG(1) << "ScheduledRestartBubbleController: Ignored non-visible tab.";
     return;
   }
 
   // Ignore tabs opened with openers (e.g. popups, script-initiated tabs).
   if (web_contents->HasOpener()) {
-    VLOG(1) << "ScheduledRestartBubbleController: Ignored tab insertion with "
-               "opener.";
     return;
   }
 
   // Must be a fresh new tab without prior history.
   if (web_contents->GetController().GetEntryCount() > 1) {
-    VLOG(1) << "ScheduledRestartBubbleController: Ignored navigated tab with "
-               "history.";
     return;
   }
 
@@ -104,15 +99,12 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (profile && SessionRestore::IsRestoring(profile)) {
-    VLOG(1) << "ScheduledRestartBubbleController: Ignored tab during session "
-               "restore.";
     return;
   }
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
   if (entry && entry->IsRestored()) {
-    VLOG(1) << "ScheduledRestartBubbleController: Ignored restored tab.";
     return;
   }
 
@@ -123,8 +115,6 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
 
   auto* srm = GetScheduledRestartManager();
   if (!srm || srm->is_scheduled()) {
-    VLOG(1) << "ScheduledRestartBubbleController: Ignored - Restart already "
-               "scheduled or manager unavailable.";
     return;
   }
 
@@ -133,7 +123,6 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
   }
 
   if (is_bubble_showing()) {
-    VLOG(1) << "ScheduledRestartBubbleController: Bubble already showing.";
     return;
   }
 
@@ -141,37 +130,33 @@ void ScheduledRestartBubbleController::MaybeShowNudgeForWebContents(
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_contents);
   if (!browser) {
-    VLOG(1) << "ScheduledRestartBubbleController: No valid browser window "
-               "found.";
     return;
   }
 
-  views::Widget* widget = ShowBubble(browser);
-  if (widget) {
-    bubble_widget_observation_.Observe(widget);
+  bubble_widget_ = ShowBubble(
+      browser, base::BindOnce(&ScheduledRestartBubbleController::OnBubbleClosed,
+                              base::Unretained(this)));
+  if (bubble_widget_) {
     srm->RecordNudgeShown();
-    VLOG(1) << "ScheduledRestartBubbleController: Showing Scheduled Restart "
-               "bubble.";
   }
 }
 
-// Shows the restart nudge bubble. Uses RelaunchRecommendedBubbleView as an
-// interim prompt until ScheduledRestartBubbleView is landed in follow-up CL.
-views::Widget* ScheduledRestartBubbleController::ShowBubble(
-    BrowserWindowInterface* browser) {
+// Shows the restart nudge bubble anchored to the browser's App Menu.
+std::unique_ptr<views::Widget> ScheduledRestartBubbleController::ShowBubble(
+    BrowserWindowInterface* browser,
+    views::Widget::ClosedCallback on_close) {
   if (!browser) {
     return nullptr;
   }
-  auto* srm = GetScheduledRestartManager();
-  UpgradeDetector* detector = srm ? srm->upgrade_detector() : nullptr;
-  return RelaunchRecommendedBubbleView::ShowBubble(
-      browser, detector ? detector->upgrade_detected_time() : base::Time::Now(),
-      /*on_accept=*/base::BindRepeating(&chrome::AttemptRelaunch));
+  return ScheduledRestartBubbleView::ShowBubble(browser, std::move(on_close));
 }
 
-void ScheduledRestartBubbleController::OnWidgetDestroying(
-    views::Widget* widget) {
-  bubble_widget_observation_.Reset();
+void ScheduledRestartBubbleController::OnBubbleClosed(
+    views::Widget::ClosedReason reason) {
+  if (bubble_widget_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(bubble_widget_));
+  }
 }
 
 ScheduledRestartManager*

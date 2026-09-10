@@ -63,9 +63,17 @@ class TestScheduledRestartBubbleController
   }
 
  protected:
-  views::Widget* ShowBubble(BrowserWindowInterface* browser) override {
+  std::unique_ptr<views::Widget> ShowBubble(
+      BrowserWindowInterface* browser,
+      views::Widget::ClosedCallback on_close) override {
     ++bubble_shown_count_;
-    return should_fail_show_bubble_ ? nullptr : widget_.get();
+    if (should_fail_show_bubble_) {
+      return nullptr;
+    }
+    if (widget_ && on_close) {
+      widget_->MakeCloseSynchronous(std::move(on_close));
+    }
+    return std::move(widget_);
   }
 
  private:

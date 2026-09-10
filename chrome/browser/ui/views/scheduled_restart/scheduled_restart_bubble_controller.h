@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SCHEDULED_RESTART_SCHEDULED_RESTART_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_SCHEDULED_RESTART_SCHEDULED_RESTART_BUBBLE_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 class BrowserProcess;
 class BrowserWindowInterface;
@@ -26,7 +25,7 @@ class ScheduledRestartManager;
 
 // Controller managing the Scheduled Restart reminder bubble presentation on
 // active New Tab Page (NTP) creations.
-class ScheduledRestartBubbleController : public views::WidgetObserver {
+class ScheduledRestartBubbleController {
  public:
   DECLARE_USER_DATA(ScheduledRestartBubbleController);
 
@@ -45,35 +44,32 @@ class ScheduledRestartBubbleController : public views::WidgetObserver {
       delete;
   ScheduledRestartBubbleController& operator=(
       const ScheduledRestartBubbleController&) = delete;
-  ~ScheduledRestartBubbleController() override;
+  virtual ~ScheduledRestartBubbleController();
 
   // Evaluates tab context and scheduled restart policy, and displays the bubble
   // if eligible.
   void MaybeShowNudgeForWebContents(content::WebContents* web_contents);
 
   // Returns true if a scheduled restart reminder bubble is currently showing.
-  bool is_bubble_showing() const {
-    return bubble_widget_observation_.IsObserving();
-  }
+  bool is_bubble_showing() const { return bubble_widget_ != nullptr; }
 
   void set_scheduled_restart_manager_for_testing(
       ScheduledRestartManager* manager) {
     scheduled_restart_manager_for_testing_ = manager;
   }
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
  protected:
-  virtual views::Widget* ShowBubble(BrowserWindowInterface* browser);
+  virtual std::unique_ptr<views::Widget> ShowBubble(
+      BrowserWindowInterface* browser,
+      views::Widget::ClosedCallback on_close);
 
  private:
   ScheduledRestartManager* GetScheduledRestartManager() const;
+  void OnBubbleClosed(views::Widget::ClosedReason reason);
 
   raw_ptr<ScheduledRestartManager> scheduled_restart_manager_for_testing_ =
       nullptr;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      bubble_widget_observation_{this};
+  std::unique_ptr<views::Widget> bubble_widget_;
   std::optional<ui::ScopedUnownedUserData<ScheduledRestartBubbleController>>
       scoped_unowned_user_data_;
 };

@@ -36,9 +36,12 @@ class TestScheduledRestartBubbleController
   int bubble_shown_count() const { return bubble_shown_count_; }
 
  protected:
-  views::Widget* ShowBubble(BrowserWindowInterface* browser) override {
+  std::unique_ptr<views::Widget> ShowBubble(
+      BrowserWindowInterface* browser,
+      views::Widget::ClosedCallback on_close) override {
     ++bubble_shown_count_;
-    return ScheduledRestartBubbleController::ShowBubble(browser);
+    return ScheduledRestartBubbleController::ShowBubble(browser,
+                                                        std::move(on_close));
   }
 
  private:

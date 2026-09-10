@@ -4,27 +4,48 @@
 
 if (is_win || is_mac || is_linux) {
   source_set("scheduled_restart") {
-    public = [ "scheduled_restart_bubble_controller.h" ]
-
-    sources = [ "scheduled_restart_bubble_controller.cc" ]
+    public = [
+      "scheduled_restart_bubble_controller.h",
+      "scheduled_restart_bubble_view.h",
+    ]
 
     public_deps = [
       "//base",
+      "//chrome/browser/lifetime",
+      "//ui/base",
+      "//ui/base/unowned_user_data",
       "//ui/views",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [
+      "scheduled_restart_bubble_controller.cc",
+      "scheduled_restart_bubble_view.cc",
+    ]
+
+    public_deps = [
+      ":scheduled_restart",
+      "//chrome/browser:browser_public_dependencies",
     ]
 
     deps = [
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
       "//chrome/browser:browser_process",
       "//chrome/browser:global_features",
       "//chrome/browser/enterprise",
       "//chrome/browser/lifetime",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/views/relaunch_notification",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
       "//chrome/browser/upgrade_detector",
       "//chrome/common:constants",
       "//components/policy/core/common",
       "//content/public/browser",
+      "//ui/base",
     ]
   }
 
@@ -56,7 +77,10 @@ if (is_win || is_mac || is_linux) {
   source_set("browser_tests") {
     testonly = true
 
-    sources = [ "scheduled_restart_bubble_controller_browsertest.cc" ]
+    sources = [
+      "scheduled_restart_bubble_controller_browsertest.cc",
+      "scheduled_restart_bubble_view_browsertest.cc",
+    ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
