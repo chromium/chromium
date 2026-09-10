@@ -19,6 +19,7 @@ import android.app.ActivityManager;
 import android.app.ComponentCaller;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
@@ -610,6 +611,7 @@ public class LaunchIntentDispatcherTest {
         PackageManager pm = mActivity.getPackageManager();
         android.content.pm.PackageInfo packageInfo = new android.content.pm.PackageInfo();
         packageInfo.packageName = mActivity.getPackageName();
+        packageInfo.applicationInfo = new ApplicationInfo(mActivity.getApplicationInfo());
 
         ProviderInfo providerInfo = new ProviderInfo();
         providerInfo.packageName = mActivity.getPackageName();

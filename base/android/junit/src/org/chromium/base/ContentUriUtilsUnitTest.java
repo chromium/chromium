@@ -12,9 +12,13 @@ import static org.mockito.Mockito.when;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Process;
 import android.provider.OpenableColumns;
 
 import org.junit.After;
@@ -36,6 +40,7 @@ public class ContentUriUtilsUnitTest {
 
     @Mock private Context mMockContext;
     @Mock private ContentResolver mMockContentResolver;
+    @Mock private PackageManager mMockPackageManager;
     @Mock private Cursor mMockCursor;
     @Mock private AssetFileDescriptor mMockAfd;
 
@@ -45,6 +50,8 @@ public class ContentUriUtilsUnitTest {
     public void setUp() {
         mCloseable = MockitoAnnotations.openMocks(this);
         when(mMockContext.getContentResolver()).thenReturn(mMockContentResolver);
+        when(mMockContext.getPackageName()).thenReturn("org.chromium.test");
+        when(mMockContext.getPackageManager()).thenReturn(mMockPackageManager);
         ContextUtils.initApplicationContextForTests(mMockContext);
     }
 
@@ -113,5 +120,60 @@ public class ContentUriUtilsUnitTest {
                 .thenReturn(new String[] {actualType});
 
         assertNull(ContentUriUtils.readTextFromUri(uri, requestedType));
+    }
+
+    private void mockProvider(String authority, String packageName, int uid) {
+        ProviderInfo provider = new ProviderInfo();
+        provider.packageName = packageName;
+        provider.applicationInfo = new ApplicationInfo();
+        provider.applicationInfo.uid = uid;
+        when(mMockPackageManager.resolveContentProvider(authority, 0)).thenReturn(provider);
+    }
+
+    @Test
+    public void testIsUriFromThisApp_UsesProcessUidNotContextApplicationUid() {
+        ApplicationInfo contextApplication = new ApplicationInfo();
+        contextApplication.uid = Process.myUid() + 1;
+        when(mMockContext.getApplicationInfo()).thenReturn(contextApplication);
+        mockProvider("shared.uid", "org.chromium.other_package", Process.myUid());
+
+        assertTrue(
+                ContentUriUtils.isUriFromThisApp(
+                        Uri.parse("content://shared.uid/path"), mMockContext));
+    }
+
+    @Test
+    public void testIsUriFromThisApp_RejectsSamePackageWithDifferentUid() {
+        mockProvider("different.uid", "org.chromium.test", Process.myUid() + 1);
+
+        assertFalse(
+                ContentUriUtils.isUriFromThisApp(
+                        Uri.parse("content://different.uid/path"), mMockContext));
+    }
+
+    @Test
+    public void testIsUriFromThisApp_ReturnsFalseWithoutProviderApplicationInfo() {
+        ProviderInfo provider = new ProviderInfo();
+        provider.packageName = "org.chromium.test";
+        when(mMockPackageManager.resolveContentProvider("missing.info", 0)).thenReturn(provider);
+
+        assertFalse(
+                ContentUriUtils.isUriFromThisApp(
+                        Uri.parse("content://missing.info/path"), mMockContext));
+        assertFalse(
+                ContentUriUtils.isUriFromThisApp(
+                        Uri.parse("content://unresolved/path"), mMockContext));
+    }
+
+    @Test
+    public void testIsUriFromThisApp_UserQualifiedAuthorityUsesBareAuthority() {
+        mockProvider("shared.uid", "org.chromium.other_package", Process.myUid());
+
+        assertTrue(
+                ContentUriUtils.isUriFromThisApp(
+                        Uri.parse("content://10@shared.uid/path"), mMockContext));
+        assertTrue(
+                ContentUriUtils.isUriFromThisApp(
+                        Uri.parse("content://10@work@shared.uid/path"), mMockContext));
     }
 }

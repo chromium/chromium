@@ -18,10 +18,12 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -936,6 +938,8 @@ public class ShareDelegateImplUnitTest {
         // Setup mock package manager to identify this URI as coming from this app.
         ProviderInfo providerInfo = new ProviderInfo();
         providerInfo.packageName = "org.chromium.chrome";
+        providerInfo.applicationInfo = new ApplicationInfo();
+        providerInfo.applicationInfo.uid = Process.myUid();
         doReturn(providerInfo)
                 .when(mPackageManager)
                 .resolveContentProvider("org.chromium.chrome.FileProvider", 0);

@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.app.ComponentCaller;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -114,6 +115,7 @@ public class WebAppLaunchHandlerTest {
 
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.packageName = packageName;
+        packageInfo.applicationInfo = new ApplicationInfo(context.getApplicationInfo());
 
         ProviderInfo fileProvider = new ProviderInfo();
         fileProvider.packageName = packageName;

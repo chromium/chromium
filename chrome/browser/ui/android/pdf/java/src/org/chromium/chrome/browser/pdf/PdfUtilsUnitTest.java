@@ -13,11 +13,13 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
+import android.os.Process;
 import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
 
@@ -394,11 +396,9 @@ public class PdfUtilsUnitTest {
     @Test
     public void testIsUriSafeForSharing_ExternalProvider() {
         Uri contentUri = Uri.parse("content://com.external.provider/sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "com.external.app";
+        ProviderInfo providerInfo = createProviderInfo("com.external.app", Process.myUid() + 1);
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("com.external.provider", 0))
                 .thenReturn(providerInfo);
 
@@ -408,11 +408,9 @@ public class PdfUtilsUnitTest {
     @Test
     public void testIsUriSafeForSharing_InternalFileProvider_PdfsAllowed() {
         Uri contentUri = Uri.parse("content://org.chromium.chrome.FileProvider/pdfs/sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.FileProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -423,11 +421,9 @@ public class PdfUtilsUnitTest {
     public void testIsUriSafeForSharing_InternalFileProvider_DownloadsAllowed() {
         Uri contentUri =
                 Uri.parse("content://org.chromium.chrome.FileProvider/downloads/sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.FileProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -438,11 +434,9 @@ public class PdfUtilsUnitTest {
     public void testIsUriSafeForSharing_InternalFileProvider_PasswordsBlocked() {
         Uri contentUri =
                 Uri.parse("content://org.chromium.chrome.FileProvider/passwords/ChromePass.csv");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.FileProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -452,11 +446,9 @@ public class PdfUtilsUnitTest {
     @Test
     public void testIsUriSafeForSharing_InternalPdfContentProvider_Allowed() {
         Uri contentUri = Uri.parse("content://org.chromium.chrome.PdfContentProvider/12345678");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.PdfContentProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -466,11 +458,9 @@ public class PdfUtilsUnitTest {
     @Test
     public void testIsUriSafeForSharing_OtherInternalProvider_Blocked() {
         Uri contentUri = Uri.parse("content://org.chromium.chrome.ChromeBrowserProvider/bookmarks");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.ChromeBrowserProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -482,11 +472,9 @@ public class PdfUtilsUnitTest {
         Uri contentUri =
                 Uri.parse(
                         "content://org.chromium.chrome.DownloadFileProvider/download?file=sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -498,11 +486,9 @@ public class PdfUtilsUnitTest {
         Uri contentUri =
                 Uri.parse(
                         "content://org.chromium.chrome.DownloadFileProvider/download_external?file=sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -514,11 +500,9 @@ public class PdfUtilsUnitTest {
         Uri contentUri =
                 Uri.parse(
                         "content://org.chromium.chrome.DownloadFileProvider/external_volume?file=sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
                 .thenReturn(providerInfo);
 
@@ -530,15 +514,21 @@ public class PdfUtilsUnitTest {
         Uri contentUri =
                 Uri.parse(
                         "content://org.chromium.chrome.DownloadFileProvider/invalid_path?file=sample.pdf");
-        ProviderInfo providerInfo = new ProviderInfo();
-        providerInfo.packageName = "org.chromium.chrome";
+        ProviderInfo providerInfo = createProviderInfo("org.chromium.chrome", Process.myUid());
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
         when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
                 .thenReturn(providerInfo);
 
         Assert.assertFalse(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    private static ProviderInfo createProviderInfo(String packageName, int uid) {
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = packageName;
+        providerInfo.applicationInfo = new ApplicationInfo();
+        providerInfo.applicationInfo.uid = uid;
+        return providerInfo;
     }
 
     @Implements(SdkExtensions.class)

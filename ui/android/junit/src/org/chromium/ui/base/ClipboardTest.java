@@ -25,12 +25,14 @@ import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.os.Process;
 import android.os.TransactionTooLargeException;
 import android.provider.OpenableColumns;
 import android.text.SpannableString;
@@ -109,8 +111,7 @@ public class ClipboardTest {
                 .thenAnswer(inv -> mRealContext.getString((Integer) inv.getArgument(0)));
         ContextUtils.initApplicationContextForTests(mMockContext);
 
-        ProviderInfo info = new ProviderInfo();
-        info.packageName = mPackageName;
+        ProviderInfo info = createProviderInfo(mPackageName, Process.myUid());
         when(mMockPm.resolveContentProvider(eq(mPackageName), anyInt())).thenReturn(info);
     }
 
@@ -268,18 +269,24 @@ public class ClipboardTest {
         when(mMockClipboardManager.getPrimaryClip()).thenReturn(clipData);
 
         // Allowed.
-        ProviderInfo otherAppInfo = new ProviderInfo();
-        otherAppInfo.packageName = "com.other.app";
+        ProviderInfo otherAppInfo = createProviderInfo("com.other.app", Process.myUid() + 1);
         when(mMockPm.resolveContentProvider(eq("tmp"), anyInt())).thenReturn(otherAppInfo);
         assertTrue(clipboard.hasFilenames());
         assertTwoFilesReturned(clipboard.getFilenames());
 
         // Rejected.
-        ProviderInfo ownAppInfo = new ProviderInfo();
-        ownAppInfo.packageName = mPackageName;
+        ProviderInfo ownAppInfo = createProviderInfo(mPackageName, Process.myUid());
         when(mMockPm.resolveContentProvider(eq("tmp"), anyInt())).thenReturn(ownAppInfo);
         assertFalse(clipboard.hasFilenames());
         assertEquals(0, clipboard.getFilenames().length);
+    }
+
+    private static ProviderInfo createProviderInfo(String packageName, int uid) {
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = packageName;
+        providerInfo.applicationInfo = new ApplicationInfo();
+        providerInfo.applicationInfo.uid = uid;
+        return providerInfo;
     }
 
     @Test

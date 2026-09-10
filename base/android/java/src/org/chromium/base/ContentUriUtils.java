@@ -15,6 +15,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
+import android.os.Process;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -729,23 +730,27 @@ public abstract class ContentUriUtils {
     }
 
     /**
-     * Returns whether the content URI is served by a ContentProvider belonging to the current
-     * application (i.e. running under the same UID).
+     * Returns whether the content URI is served by a ContentProvider with the same Android UID as
+     * the current process.
      *
      * @param uri The URI to check.
-     * @param context The context to retrieve package and provider info.
-     * @return True if the URI is from the current application, false otherwise.
+     * @param context The context used to resolve the provider info.
+     * @return Whether the URI's provider has the same Android UID as the current process.
      */
     public static boolean isUriFromThisApp(Uri uri, Context context) {
         String authority = uri.getAuthority();
         if (TextUtils.isEmpty(authority)) return false;
 
-        // Remove userId prefix in the authority.
+        // Preserve existing behavior for user-qualified authorities: discard the user prefix and
+        // resolve the bare authority for the context's user. This does not identify the provider in
+        // the user named by the URI.
         authority = authority.substring(authority.lastIndexOf('@') + 1);
 
         PackageManager pm = context.getPackageManager();
         ProviderInfo info = pm.resolveContentProvider(authority, 0);
-        return info != null && TextUtils.equals(info.packageName, context.getPackageName());
+        return info != null
+                && info.applicationInfo != null
+                && info.applicationInfo.uid == Process.myUid();
     }
 
     @NativeMethods

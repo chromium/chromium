@@ -327,6 +327,7 @@ public class ClipboardAndroidTest {
 
         ProviderInfo info = new ProviderInfo();
         info.packageName = appContext.getPackageName();
+        info.applicationInfo = appContext.getApplicationInfo();
         when(mMockPm.resolveContentProvider(any(), anyInt())).thenReturn(info);
         when(mMockContext.getPackageManager()).thenReturn(mMockPm);
 
