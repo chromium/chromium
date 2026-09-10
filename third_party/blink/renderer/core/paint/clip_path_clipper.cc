@@ -400,6 +400,19 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   return CalcLocalReferenceBox(object, clip_path->GetType(), geometry_box);
 }
 
+static Path GetPathWithObjectZoom(const ShapeClipPathOperation& shape,
+                                  const gfx::RectF& reference_box,
+                                  const LayoutObject& reference_box_object) {
+  bool uses_zoomed_reference_box =
+      ClipPathClipper::UsesZoomedReferenceBox(reference_box_object);
+  float zoom = reference_box_object.StyleRef().EffectiveZoom();
+  const gfx::RectF zoomed_reference_box =
+      uses_zoomed_reference_box ? reference_box
+                                : gfx::ScaleRect(reference_box, zoom);
+  const float path_scale = uses_zoomed_reference_box ? 1.f : 1.f / zoom;
+  return shape.GetPath(zoomed_reference_box, zoom, path_scale);
+}
+
 std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
   if (object.IsText() || !object.StyleRef().HasClipPath() ||
@@ -409,19 +422,9 @@ std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
 
   gfx::RectF reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
-  if (clip_path.GetType() == ClipPathOperation::kShape) {
-    auto zoom = object.StyleRef().EffectiveZoom();
-
-    bool uses_zoomed_reference_box = UsesZoomedReferenceBox(object);
-    const gfx::RectF adjusted_reference_box =
-        uses_zoomed_reference_box ? reference_box
-                                  : gfx::ScaleRect(reference_box, zoom);
-    const float path_scale = uses_zoomed_reference_box ? 1.f : 1.f / zoom;
-
-    auto& shape = To<ShapeClipPathOperation>(clip_path);
+  if (auto* shape = DynamicTo<ShapeClipPathOperation>(clip_path)) {
     gfx::RectF bounding_box =
-        shape.GetPath(adjusted_reference_box, zoom, path_scale).BoundingRect();
-
+        GetPathWithObjectZoom(*shape, reference_box, object).BoundingRect();
     bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
     return bounding_box;
   }
@@ -472,20 +475,6 @@ static AffineTransform UserSpaceToClipPathTransform(
     clip_path_transform.Scale(reference_box_object.StyleRef().EffectiveZoom());
   }
   return clip_path_transform;
-}
-
-static Path GetPathWithObjectZoom(const ShapeClipPathOperation& shape,
-                                  const gfx::RectF& reference_box,
-                                  const LayoutObject& reference_box_object) {
-  bool uses_zoomed_reference_box =
-      ClipPathClipper::UsesZoomedReferenceBox(reference_box_object);
-  float zoom = reference_box_object.StyleRef().EffectiveZoom();
-  const gfx::RectF zoomed_reference_box =
-      uses_zoomed_reference_box ? reference_box
-                                : gfx::ScaleRect(reference_box, zoom);
-  const float path_scale = uses_zoomed_reference_box ? 1.f : 1.f / zoom;
-
-  return shape.GetPath(zoomed_reference_box, zoom, path_scale);
 }
 
 bool ClipPathClipper::HitTest(const LayoutObject& object,
