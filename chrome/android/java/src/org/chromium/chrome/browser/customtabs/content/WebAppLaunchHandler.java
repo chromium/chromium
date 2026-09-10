@@ -501,16 +501,20 @@ public class WebAppLaunchHandler {
 
         List<Uri> filteredUris = new ArrayList<>();
         for (Uri uri : fileHandlingData.uris) {
-            if (doesCallerHavePermissionForUri(
+            if (!isValidLaunchUri(uri)) {
+                Log.w(TAG, "Invalid launch URI: " + uri);
+                continue;
+            }
+            if (!doesCallerHavePermissionForUri(
                     mActivity,
                     caller,
                     intentDataProvider.getSession(),
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
-                filteredUris.add(uri);
-            } else {
                 Log.w(TAG, "Caller does not have read permission for URI: " + uri);
+                continue;
             }
+            filteredUris.add(uri);
         }
 
         if (filteredUris.isEmpty()) {
@@ -588,7 +592,7 @@ public class WebAppLaunchHandler {
     public static void copyFilePermissions(
             Activity activity, Intent sourceIntent, Intent targetIntent) {
         // Strip EXTRA_VERIFIED_FILE_HANDLING_DATA/EXTRA_VERIFIED_FILE_CAN_WRITE if present on
-        // targetIntent so that they cannot be spoofed by CCT client apps.
+        // targetIntent so that they cannot be set by external client apps.
         IntentUtils.safeRemoveExtra(
                 targetIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_HANDLING_DATA);
         IntentUtils.safeRemoveExtra(
@@ -624,8 +628,13 @@ public class WebAppLaunchHandler {
         List<Uri> verifiedUris = new ArrayList<>();
         List<Boolean> canWriteList = new ArrayList<>();
         for (Uri uri : fileHandlingData.uris) {
+            if (!isValidLaunchUri(uri)) {
+                Log.w(TAG, "Invalid launch URI: " + uri);
+                continue;
+            }
             if (!doesCallerHavePermissionForUri(
                     activity, caller, session, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
+                Log.w(TAG, "Caller does not have read permission for URI: " + uri);
                 continue;
             }
             verifiedUris.add(uri);
@@ -666,8 +675,8 @@ public class WebAppLaunchHandler {
      */
     public static void copyShareDataPermissions(
             Activity activity, Intent sourceIntent, Intent targetIntent) {
-        // Strip EXTRA_VERIFIED_SHARE_DATA if present on targetIntent so that it cannot be spoofed
-        // by CCT client apps.
+        // Strip EXTRA_VERIFIED_SHARE_DATA if present on targetIntent so that it cannot be set
+        // by external client apps.
         IntentUtils.safeRemoveExtra(
                 targetIntent, CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
 
@@ -704,17 +713,16 @@ public class WebAppLaunchHandler {
         SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(sourceIntent);
         List<Uri> verifiedUris = new ArrayList<>();
         for (Uri uri : shareData.uris) {
-            if (isValidLaunchUri(uri)
-                    && doesCallerHavePermissionForUri(
-                            activity,
-                            caller,
-                            session,
-                            uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
-                verifiedUris.add(uri);
-            } else {
-                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+            if (!isValidLaunchUri(uri)) {
+                Log.w(TAG, "Invalid launch URI: " + uri);
+                continue;
             }
+            if (!doesCallerHavePermissionForUri(
+                    activity, caller, session, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
+                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+                continue;
+            }
+            verifiedUris.add(uri);
         }
 
         ShareData verifiedShareData = new ShareData(shareData.title, shareData.text, verifiedUris);
@@ -761,17 +769,20 @@ public class WebAppLaunchHandler {
 
         List<Uri> filteredUris = new ArrayList<>();
         for (Uri uri : shareData.uris) {
-            if (isValidLaunchUri(uri)
-                    && doesCallerHavePermissionForUri(
-                            activity,
-                            caller,
-                            intentDataProvider.getSession(),
-                            uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
-                filteredUris.add(uri);
-            } else {
-                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+            if (!isValidLaunchUri(uri)) {
+                Log.w(TAG, "Invalid launch URI: " + uri);
+                continue;
             }
+            if (!doesCallerHavePermissionForUri(
+                    activity,
+                    caller,
+                    intentDataProvider.getSession(),
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
+                Log.w(TAG, "Caller does not have read permission for share URI: " + uri);
+                continue;
+            }
+            filteredUris.add(uri);
         }
 
         return new ShareData(shareData.title, shareData.text, filteredUris);

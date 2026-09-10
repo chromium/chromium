@@ -2807,4 +2807,12 @@ public class CustomTabIntentDataProviderTest {
         assertEquals("title", result.title);
         assertEquals(fileUri, result.uris.get(0));
     }
+
+    @Test
+    public void testGetShareData_NullWhenMissing() {
+        Intent intent = new Intent();
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertNull(dataProvider.getShareData());
+    }
 }

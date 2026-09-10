@@ -9,12 +9,14 @@ import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTest
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.spoofVerification;
 
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,6 +60,19 @@ public class TrustedWebActivityShareTargetTest {
                     "POST",
                     null,
                     new ShareTarget.Params("received_title", "received_text", null));
+
+    private static final ShareTarget POST_MULTIPART_FILE_SHARE_TARGET =
+            new ShareTarget(
+                    "https://pwa.rocks/share.html",
+                    "POST",
+                    "multipart/form-data",
+                    new ShareTarget.Params(
+                            "received_title",
+                            "received_text",
+                            Collections.singletonList(
+                                    new ShareTarget.FileFormField(
+                                            "received_file",
+                                            Collections.singletonList("text/plain")))));
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -172,7 +187,44 @@ public class TrustedWebActivityShareTargetTest {
                 () -> mCustomTabActivityTestRule.getActivity().onNewIntent(intent));
     }
 
+    @Test
+    @MediumTest
+    public void sharesDataWithPost_FiltersUnauthorizedFileUris() throws Exception {
+        Uri internalUri =
+                Uri.parse("content://" + PACKAGE_NAME + ".FileProvider/net_export/sample.txt");
+        ShareData shareData =
+                new ShareData("test_title", "test_text", Collections.singletonList(internalUri));
+        mIntent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
+        mIntent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_SHARE_TARGET,
+                POST_MULTIPART_FILE_SHARE_TARGET.toBundle());
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntentNotWaitingForFirstFrame(mIntent);
+        assertPostNavigatorCalled();
+
+        Assert.assertNotNull(mPostNavigatorNatives.mIsValueFileUris);
+        for (boolean isFileUri : mPostNavigatorNatives.mIsValueFileUris) {
+            Assert.assertFalse(isFileUri);
+        }
+        Assert.assertNotNull(mPostNavigatorNatives.mValues);
+        for (String value : mPostNavigatorNatives.mValues) {
+            Assert.assertFalse(value.contains("sample.txt"));
+            Assert.assertFalse(value.contains("FileProvider"));
+        }
+        if (mPostNavigatorNatives.mFilenames != null) {
+            for (String filename : mPostNavigatorNatives.mFilenames) {
+                Assert.assertFalse(filename.contains("sample.txt"));
+            }
+        }
+    }
+
     private class MockPostNavigatorNatives implements WebApkPostShareTargetNavigator.Natives {
+        public String[] mNames;
+        public String[] mValues;
+        public boolean[] mIsValueFileUris;
+        public String[] mFilenames;
+        public String[] mTypes;
+
         @Override
         public void nativeLoadViewForShareTargetPost(
                 boolean isMultipartEncoding,
@@ -183,6 +235,11 @@ public class TrustedWebActivityShareTargetTest {
                 String[] types,
                 String startUrl,
                 WebContents webContents) {
+            mNames = names;
+            mValues = values;
+            mIsValueFileUris = isValueFileUris;
+            mFilenames = filenames;
+            mTypes = types;
             mPostNavigatorCallback.notifyCalled();
         }
     }
