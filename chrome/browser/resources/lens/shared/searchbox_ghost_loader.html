@@ -25,7 +25,7 @@
   display: none;
   align-items: center;
   color: var(--color-searchbox-placeholder);
-  height: 48px;
+  min-height: 48px;
   padding-inline-start: 14px;
   padding-inline-end: 14px;
   padding-top: 4px;
@@ -177,9 +177,6 @@
   display: none;
 }
 
-#errorState {
-  height: 48px;
-}
 
 #errorIconContainer {
   background-color: var(--color-searchbox-results-icon-container-background);
@@ -187,6 +184,7 @@
   height: 28px;
   width: 28px;
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
 }
