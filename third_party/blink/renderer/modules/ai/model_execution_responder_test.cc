@@ -128,6 +128,10 @@ TEST(CreateModelExecutionResponder, Simple) {
       AIMetrics::GetAISessionCrashedMetricName(
           AIMetrics::AISessionType::kLanguageModel),
       false, 1);
+  histogram_tester.ExpectUniqueSample(
+      AIMetrics::GetAISessionResponseSizeMetricName(
+          AIMetrics::AISessionType::kLanguageModel),
+      2, 1);
 }
 
 TEST(CreateModelExecutionResponder, NonStreaming) {
@@ -417,6 +421,10 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
       AIMetrics::GetAISessionCrashedMetricName(
           AIMetrics::AISessionType::kLanguageModel),
       false, 1);
+  histogram_tester.ExpectUniqueSample(
+      AIMetrics::GetAISessionResponseSizeMetricName(
+          AIMetrics::AISessionType::kLanguageModel),
+      6, 1);
 }
 
 TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {

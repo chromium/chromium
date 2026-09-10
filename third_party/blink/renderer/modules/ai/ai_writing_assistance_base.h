@@ -250,7 +250,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(metric_session_type_),
-        static_cast<int>(input.CharactersSizeInBytes()));
+        static_cast<int>(input.length()));
 
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
@@ -304,7 +304,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionRequestSizeMetricName(metric_session_type_),
-        static_cast<int>(input.CharactersSizeInBytes()));
+        static_cast<int>(input.length()));
 
     String trimmed_input = input.StripWhiteSpace();
     if (trimmed_input.empty()) {

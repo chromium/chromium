@@ -908,10 +908,9 @@ bool LanguageModel::ValidateInput(ScriptState* script_state,
 
   // TODO(crbug.com/411470034): Aggregate other input type sizes for UMA.
   if (input->IsString()) {
-    base::UmaHistogramCounts1M(
-        AIMetrics::GetAISessionRequestSizeMetricName(
-            AIMetrics::AISessionType::kLanguageModel),
-        static_cast<int>(input->GetAsString().CharactersSizeInBytes()));
+    base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                   AIMetrics::AISessionType::kLanguageModel),
+                               static_cast<int>(input->GetAsString().length()));
   }
 
   return true;

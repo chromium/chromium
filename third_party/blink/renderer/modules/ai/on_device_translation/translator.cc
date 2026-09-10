@@ -204,7 +204,7 @@ ScriptPromise<IDLString> Translator::translate(
 
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kTranslator),
-                             static_cast<int>(input.CharactersSizeInBytes()));
+                             static_cast<int>(input.length()));
 
   CHECK(options);
   ScriptPromiseResolver<IDLString>* resolver =

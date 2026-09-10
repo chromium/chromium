@@ -436,7 +436,7 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
 
   base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
                                  AIMetrics::AISessionType::kProofreader),
-                             static_cast<int>(input.CharactersSizeInBytes()));
+                             static_cast<int>(input.length()));
 
   // Resolver and Promise for the final proofread() result.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<ProofreadResult>>(

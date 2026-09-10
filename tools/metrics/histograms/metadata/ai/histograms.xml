@@ -406,15 +406,15 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
+<histogram name="AI.Session.{SessionType}.PromptRequestSize" units="characters"
     expires_after="2027-03-16">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
-    Measures the size of the prompt request in bytes. This is recorded each time
-    when the model is executed.
+    Measures the size of the prompt request in characters. This is recorded each
+    time input is provided to the session (e.g. prompt, execute, or append).
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>
@@ -432,15 +432,15 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.Session.{SessionType}.PromptResponseSize" units="bytes"
-    expires_after="2027-03-16">
+<histogram name="AI.Session.{SessionType}.PromptResponseSize"
+    units="characters" expires_after="2027-03-16">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
-    Measures the size of the prompt response in bytes. This is recorded each
-    time when the model execution completes.
+    Measures the size of the prompt response in characters. This is recorded
+    each time when the model execution completes.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>

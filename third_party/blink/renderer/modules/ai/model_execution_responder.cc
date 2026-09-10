@@ -210,7 +210,7 @@ class Responder final : public GarbageCollected<Responder>,
   void RecordResponseMetrics() {
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionResponseSizeMetricName(session_type_),
-        static_cast<int>(response_.CharactersSizeInBytes()));
+        static_cast<int>(response_.length()));
     base::UmaHistogramCounts1M(
         AIMetrics::GetAISessionResponseCallbackCountMetricName(session_type_),
         response_callback_count_);
@@ -330,7 +330,7 @@ class StreamingResponder final
           AIMetrics::GetAISessionFirstResponseTimeMetricName(session_type_),
           base::TimeTicks::Now() - start_time_);
     }
-    response_size_ = static_cast<int>(text.CharactersSizeInBytes());
+    response_size_ += static_cast<int>(text.length());
     v8::HandleScope handle_scope(script_state_->GetIsolate());
     Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
   }

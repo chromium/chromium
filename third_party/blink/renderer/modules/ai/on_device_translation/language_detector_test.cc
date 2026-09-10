@@ -26,7 +26,10 @@ TEST(LanguageDetectorTest, PromptRequestSizeMetric) {
       /*expected_input_languages=*/std::nullopt, task_runner);
 
   DummyExceptionStateForTesting exception_state;
-  const String kInput = "Hello, world!";
+  // Use a 16-bit string where CharactersSizeInBytes() != length().
+  const String kInput = String::FromUtf8("こんにちは");
+  ASSERT_FALSE(kInput.Is8Bit());
+  EXPECT_NE(kInput.CharactersSizeInBytes(), kInput.length());
   detector->detect(scope.GetScriptState(), kInput,
                    LanguageDetectorDetectOptions::Create(), exception_state);
 

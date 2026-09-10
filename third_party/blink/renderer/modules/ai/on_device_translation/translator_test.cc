@@ -29,7 +29,10 @@ TEST(TranslatorTest, PromptRequestSizeMetric) {
       "ja", /*abort_signal=*/nullptr);
 
   DummyExceptionStateForTesting exception_state;
-  const String kInput = "Hello, world!";
+  // Use a 16-bit string where CharactersSizeInBytes() != length().
+  const String kInput = String::FromUtf8("こんにちは");
+  ASSERT_FALSE(kInput.Is8Bit());
+  EXPECT_NE(kInput.CharactersSizeInBytes(), kInput.length());
   translator->translate(scope.GetScriptState(), kInput,
                         TranslatorTranslateOptions::Create(), exception_state);
 
