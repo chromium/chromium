@@ -33,10 +33,10 @@
 
 #profileIcon {
   border-radius: 50%;
-  height: 36px;
+  height: 20px;
   object-fit: cover;
   pointer-events: none;
-  width: 36px;
+  width: 20px;
   -webkit-user-drag: none;
 }
 

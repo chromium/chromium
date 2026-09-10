@@ -1476,6 +1476,15 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         'Test Profile\ntest@example.com', container.getAttribute('title'));
   });
 
+  test('profile icon image has correct size', async () => {
+    await createProfileIcon(false);
+    const img =
+        profileIcon.shadowRoot.querySelector<HTMLElement>('#profileIcon');
+    assertTrue(!!img);
+    assertEquals('20px', window.getComputedStyle(img).width);
+    assertEquals('20px', window.getComputedStyle(img).height);
+  });
+
   test('renders enterprise badge when profile is enterprise', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
