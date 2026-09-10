@@ -476,26 +476,27 @@ BUILDERS = {
     'pinpoint_additional_compile_targets': [],
   },
   'linux-arm-builder-perf': {
-      'additional_compile_targets': [
-          'chromedriver_group',
-          'chrome/installer/linux',
-      ],
-      'pinpoint_additional_compile_targets': [],
-      'tests': [{
-          'name': 'chrome_sizes',
-          'isolate': 'chrome_sizes',
-          'type': TEST_TYPES.GENERIC,
-          'resultdb': {
-              'has_native_resultdb_integration': True,
-          },
-      }],
-      'dimension': {
-          'cpu': 'x86-64',
-          'os': 'Ubuntu-22.04',
-          'pool': 'chrome.tests',
-      },
-      'perf_trigger':
-      False,
+    'additional_compile_targets': [
+      'chromedriver_group',
+      'chrome/installer/linux',
+    ],
+    'pinpoint_additional_compile_targets': [],
+    'tests': [
+      {
+        'name': 'chrome_sizes',
+        'isolate': 'chrome_sizes',
+        'type': TEST_TYPES.GENERIC,
+        'resultdb': {
+          'has_native_resultdb_integration': True,
+        },
+      }
+    ],
+    'dimension': {
+      'cpu': 'x86-64',
+      'os': 'Ubuntu-22.04',
+      'pool': 'chrome.tests',
+    },
+    'perf_trigger': False,
   },
   'linux-builder-perf': {
     'additional_compile_targets': [
@@ -1030,8 +1031,7 @@ BUILDERS = {
         ],
       },
     ],
-    'platform':
-    'linux',
+    'platform': 'linux',
     'dimension': {
       'cpu': 'arm64',
       'os': 'Ubuntu-24.04.4',
