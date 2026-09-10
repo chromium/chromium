@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/scheduler/tips_agent_android.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
@@ -13,8 +15,10 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tips/core/tips_prefs.h"
+#include "chrome/browser/tips/core/tips_service.h"
 #include "chrome/browser/tips/core/tips_types.h"
 #include "chrome/browser/tips/core/tips_utils.h"
+#include "chrome/browser/tips/tips_service_factory.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -107,6 +111,26 @@ void TipsAgentAndroid::ScheduleNewNotification(
     Profile* profile,
     bool is_bottom_omnibox,
     notifications::NotificationScheduleService* service) {
+  if (!service) {
+    return;
+  }
+
+  // Self-service approach: query TipsService to determine the best tip.
+  if (base::FeatureList::IsEnabled(chrome::android::kTipsSelfService)) {
+    tips::TipsService* tips_service =
+        tips::TipsServiceFactory::GetForProfile(profile);
+    if (!tips_service) {
+      return;
+    }
+    // `service` and `tips_service` are KeyedServices scoped to `profile`.
+    // The callback is owned by `tips_service` and guarded by its WeakPtr, so
+    // it will be dropped if the Profile or services are destroyed, ensuring
+    // `service` is never called after destruction.
+    tips_service->DetermineBestTip(base::BindOnce(
+        &TipsAgentAndroid::OnBestTipChosen, base::Unretained(service)));
+    return;
+  }
+
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);
@@ -251,6 +275,23 @@ void TipsAgentAndroid::OnGetClientOverview(
     TipsAgentAndroid::ScheduleNewNotification(profile, is_bottom_omnibox,
                                               service);
   }
+}
+
+// static
+void TipsAgentAndroid::OnBestTipChosen(
+    notifications::NotificationScheduleService* service,
+    std::optional<tips::TipsNotificationsFeatureType> best_tip) {
+  if (!best_tip.has_value() || !service) {
+    return;
+  }
+
+  notifications::ScheduleParams schedule_params = GetCurrentScheduleParams();
+
+  notifications::NotificationData data =
+      tips::GetTipsNotificationData(*best_tip);
+  service->Schedule(std::make_unique<notifications::NotificationParams>(
+      notifications::SchedulerClientType::kTips, std::move(data),
+      std::move(schedule_params)));
 }
 
 TipsAgentAndroid::TipsAgentAndroid() = default;

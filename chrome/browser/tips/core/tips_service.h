@@ -48,7 +48,7 @@ class TipsService : public KeyedService, public base::SupportsUserData {
 
   // Queries database signals for all registered features via the segmentation
   // platform and determines the best eligible tip to display.
-  void DetermineBestTip(OnBestTipChosen callback);
+  virtual void DetermineBestTip(OnBestTipChosen callback);
 
  private:
   void OnFeaturesProcessed(

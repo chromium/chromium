@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_TIPS_AGENT_ANDROID_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_TIPS_AGENT_ANDROID_H_
 
+#include <optional>
+
 #include "base/android/jni_android.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
@@ -38,6 +40,10 @@ class TipsAgentAndroid : public notifications::TipsAgent {
       bool is_bottom_omnibox,
       notifications::NotificationScheduleService* service,
       notifications::ClientOverview overview);
+
+  static void OnBestTipChosen(
+      notifications::NotificationScheduleService* service,
+      std::optional<tips::TipsNotificationsFeatureType> best_tip);
 
   TipsAgentAndroid();
   ~TipsAgentAndroid() override;
