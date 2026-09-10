@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -36,6 +37,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -49,12 +51,14 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_frame_util.h"
 #include "components/security_interstitials/core/insecure_form_util.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -161,6 +165,35 @@ bool IsFormMixedContent(const AutofillClient& client,
                         const FormStructure& form) {
   return client.IsContextSecure() && form.target_url().is_valid() &&
          security_interstitials::IsInsecureFormAction(form.target_url());
+}
+
+bool HasCrossOriginAncestor(content::RenderFrameHost* rfh) {
+  content::RenderFrameHost* parent = rfh->GetParentOrOuterDocument();
+  const url::Origin& target_origin = rfh->GetLastCommittedOrigin();
+  while (parent) {
+    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(target_origin)) {
+      return true;
+    }
+    parent = parent->GetParentOrOuterDocument();
+  }
+  return false;
+}
+
+bool IsValidFrameAndOriginToFill(content::RenderFrameHost* rfh,
+                                 const url::Origin& main_frame_origin) {
+  if (!rfh) {
+    return false;
+  }
+  // Note: `IsInPrimaryMainFrame()` returns true only for the primary main frame
+  // document itself (it returns false if GetParent() is non-null). Therefore,
+  // `rfh->GetParent()->IsInPrimaryMainFrame()` correctly identifies whether
+  // `rfh` is a direct child of the primary main frame.
+  bool is_direct_child =
+      rfh->GetParent() && rfh->GetParent()->IsInPrimaryMainFrame();
+  return actor_login::IsValidFrameAndOriginToFill(
+      rfh->GetLastCommittedOrigin(), main_frame_origin,
+      rfh->IsNestedWithinFencedFrame(), rfh->IsInPrimaryMainFrame(),
+      is_direct_child, HasCrossOriginAncestor(rfh));
 }
 
 }  // namespace
@@ -563,7 +596,9 @@ FormFillingContextStatus
 ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
     tabs::TabHandle tab_handle,
     base::span<const FieldGlobalId> trigger_field_ids) const {
-  CHECK(!trigger_field_ids.empty());
+  if (trigger_field_ids.empty()) {
+    return FormFillingContextStatus::kFormNotFound;
+  }
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
     return FormFillingContextStatus::kTabNotAvailable;
@@ -598,10 +633,42 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
     return FormFillingContextStatus::kFormNotFound;
   }
 
+  const AutofillField* const trigger_field =
+      form_structure->GetFieldById(trigger_field_ids.front());
+  if (!trigger_field) {
+    return FormFillingContextStatus::kFormNotFound;
+  }
+
   // Ensure `form_structure` does not submit to an insecure mixed content
   // action.
   if (IsFormMixedContent(autofill_manager.client(), *form_structure)) {
     return FormFillingContextStatus::kInsecureContext;
+  }
+
+  // Ensure all OTP fields in a multi-field OTP form share the same origin.
+  if (std::ranges::any_of(form_structure->fields(), [&](const auto& field) {
+        return field->Type().GetTypes().contains(ONE_TIME_CODE) &&
+               field->origin() != trigger_field->origin();
+      })) {
+    return FormFillingContextStatus::kInsecureContext;
+  }
+
+  // Validate frame and origin security for all trigger fields.
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  if (!main_rfh) {
+    return FormFillingContextStatus::kTabNotAvailable;
+  }
+  const url::Origin& main_frame_origin = main_rfh->GetLastCommittedOrigin();
+
+  for (const FieldGlobalId& field_id : trigger_field_ids) {
+    content::RenderFrameHost* rfh = autofill::FindRenderFrameHostByToken(
+        *web_contents, field_id.frame_token);
+    if (!rfh) {
+      return FormFillingContextStatus::kFormNotFound;
+    }
+    if (!IsValidFrameAndOriginToFill(rfh, main_frame_origin)) {
+      return FormFillingContextStatus::kInsecureContext;
+    }
   }
 
   return FormFillingContextStatus::kSecure;

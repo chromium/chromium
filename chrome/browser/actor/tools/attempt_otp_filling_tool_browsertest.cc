@@ -944,8 +944,8 @@ IN_PROC_BROWSER_TEST_F(
     IsActorLoginFlow_OtpFrameOriginMismatch_RequiresConfirmation) {
   const GURL main_url = embedded_https_test_server().GetURL(
       "example.com", "/actor/positioned_iframe.html");
-  const GURL iframe_url =
-      embedded_https_test_server().GetURL("a.com", "/actor/otp_page.html");
+  const GURL iframe_url = embedded_https_test_server().GetURL(
+      "sub.example.com", "/actor/otp_page.html");
 
   // 1. Navigate to the main application page.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_url));
@@ -964,21 +964,21 @@ IN_PROC_BROWSER_TEST_F(
       *web_contents()->GetPrimaryMainFrame(), *iframe_host, "#iframe", "#otp");
   ASSERT_TRUE(otp_field.has_value());
 
-  // 4. Start login tracking on example.com.
+  // 4. Start login tracking on example.com with strong matching required.
   int iframe_id = iframe_host->GetFrameTreeNodeId().value();
   actor_task()
       .GetExecutionEngine()
       .GetActorOneTimeTokenFillingService()
       .OnPasswordFillingStarted(
           active_tab()->GetHandle(), url::Origin::Create(main_url),
-          /*should_use_strong_matching=*/false, {iframe_id});
+          /*should_use_strong_matching=*/true, {iframe_id});
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{*otp_field},
           /*for_signin=*/true);
-  SeedTestServerAffiliation("a.com");
-  SetExpectedOtp("1234", "sender@a.com");
+  SeedTestServerAffiliation("sub.example.com");
+  SetExpectedOtp("1234", "sender@sub.example.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());

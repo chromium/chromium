@@ -50,6 +50,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/cert/cert_status_flags.h"
@@ -277,7 +278,33 @@ class ActorOneTimeTokenFillingServiceImplTest
         driver().GetAutofillManager());
   }
 
+  void SetupSecureSslState() {
+    content::NavigationEntry* entry =
+        tab().GetContents()->GetController().GetVisibleEntry();
+    ASSERT_TRUE(entry);
+    content::SSLStatus& ssl = entry->GetSSL();
+    ssl.initialized = true;
+    ssl.certificate =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+    ssl.cert_status = net::OK;
+    net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
+                                       &ssl.connection_status);
+  }
+
+  void SetupSecureMainFrame(const GURL& url = GURL("https://example.com")) {
+    NavigateAndCommit(url);
+    client().set_last_committed_primary_main_frame_url(url);
+    SetupSecureSslState();
+  }
+
   FormData SeeForm(test::FormDescription form_description) {
+    if (!form_description.host_frame) {
+      form_description.host_frame =
+          LocalFrameToken(main_rfh()->GetFrameToken().value());
+    }
+    if (!form_description.main_frame_origin) {
+      form_description.main_frame_origin = main_rfh_origin();
+    }
     FormData form = test::GetFormData(form_description);
     manager().AddSeenForm(form, test::GetHeuristicTypes(form_description),
                           test::GetServerTypes(form_description));
@@ -901,6 +928,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
                                      &ssl.connection_status);
 
   FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  ASSERT_FALSE(form.fields().empty());
   FieldGlobalId field_id = form.fields()[0].global_id();
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
             FormFillingContextStatus::kSecure);
@@ -1028,11 +1056,236 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
             FormFillingContextStatus::kFormNotFound);
 }
 
+// Tests that a direct child iframe with a same-site origin relative to the
+// primary main frame is allowed for OTP form filling.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_DirectChildSameSiteIframe_Success) {
+  SetupSecureMainFrame();
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://sub.example.com"), child_rfh);
+
+  LocalFrameToken child_token(child_rfh->GetFrameToken().value());
+  url::Origin child_origin =
+      url::Origin::Create(GURL("https://sub.example.com"));
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .host_frame = child_token,
+                  .origin = child_origin}},
+      .host_frame = child_token,
+      .main_frame_origin = main_rfh_origin(),
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kSecure);
+}
+
+// Tests that a child iframe with a cross-origin (non-same-site) origin
+// relative to the primary main frame is rejected.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_CrossOriginIframe_InsecureContext) {
+  SetupSecureMainFrame();
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://unrelated.com"), child_rfh);
+
+  LocalFrameToken child_token(child_rfh->GetFrameToken().value());
+  url::Origin child_origin = url::Origin::Create(GURL("https://unrelated.com"));
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .host_frame = child_token,
+                  .origin = child_origin}},
+      .host_frame = child_token,
+      .main_frame_origin = main_rfh_origin(),
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
+}
+
+// Tests that an OTP form nested inside a fenced frame is rejected as an
+// insecure context.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_FencedFrame_InsecureContext) {
+  SetupSecureMainFrame();
+
+  content::RenderFrameHost* fenced_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+  fenced_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), fenced_rfh);
+
+  LocalFrameToken fenced_token(fenced_rfh->GetFrameToken().value());
+  url::Origin fenced_origin = url::Origin::Create(GURL("https://example.com"));
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .host_frame = fenced_token,
+                  .origin = fenced_origin}},
+      .host_frame = fenced_token,
+      .main_frame_origin = main_rfh_origin(),
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
+}
+
+// Tests that a nested iframe (depth >= 2) that is same-origin with the main
+// frame and has no cross-origin ancestors is allowed for filling.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_NestedIframeSameOrigin_Success) {
+  SetupSecureMainFrame();
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), child_rfh);
+
+  content::RenderFrameHost* grandchild_rfh =
+      content::RenderFrameHostTester::For(child_rfh)->AppendChild("nested");
+  grandchild_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), grandchild_rfh);
+
+  LocalFrameToken grandchild_token(grandchild_rfh->GetFrameToken().value());
+  url::Origin grandchild_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .host_frame = grandchild_token,
+                  .origin = grandchild_origin}},
+      .host_frame = grandchild_token,
+      .main_frame_origin = main_rfh_origin(),
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kSecure);
+}
+
+// Tests that a nested iframe (depth >= 2) that has a cross-origin ancestor is
+// rejected as an insecure context even if same-origin with the main frame.
+TEST_F(
+    ActorOneTimeTokenFillingServiceImplTest,
+    ValidateFormFillingContext_NestedIframeWithCrossOriginAncestor_InsecureContext) {
+  SetupSecureMainFrame();
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://sub.example.com"), child_rfh);
+
+  content::RenderFrameHost* grandchild_rfh =
+      content::RenderFrameHostTester::For(child_rfh)->AppendChild("nested");
+  grandchild_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com"), grandchild_rfh);
+
+  LocalFrameToken grandchild_token(grandchild_rfh->GetFrameToken().value());
+  url::Origin grandchild_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .host_frame = grandchild_token,
+                  .origin = grandchild_origin}},
+      .host_frame = grandchild_token,
+      .main_frame_origin = main_rfh_origin(),
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
+}
+
+// Tests that a multi-field OTP form containing fields with differing origins
+// is rejected as an insecure context.
+TEST_F(
+    ActorOneTimeTokenFillingServiceImplTest,
+    ValidateFormFillingContext_MultiFieldFormDifferentOrigins_InsecureContext) {
+  SetupSecureMainFrame();
+
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .origin = url::Origin::Create(GURL("https://example.com"))},
+                 {.server_type = ONE_TIME_CODE,
+                  .origin = url::Origin::Create(GURL("https://attacker.com"))}},
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId trigger_field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(),
+                                                 {trigger_field_id}),
+            FormFillingContextStatus::kInsecureContext);
+}
+
+// Tests that a sandboxed iframe with an opaque origin is rejected as an
+// insecure context.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_SandboxedOpaqueIframe_InsecureContext) {
+  SetupSecureMainFrame();
+
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("data:text/html,<html></html>"), child_rfh);
+
+  LocalFrameToken child_token(child_rfh->GetFrameToken().value());
+  url::Origin child_origin = child_rfh->GetLastCommittedOrigin();
+  FormData form = SeeForm({
+      .fields = {{.server_type = ONE_TIME_CODE,
+                  .host_frame = child_token,
+                  .origin = child_origin}},
+      .host_frame = child_token,
+      .main_frame_origin = main_rfh_origin(),
+  });
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId field_id = form.fields()[0].global_id();
+
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
+            FormFillingContextStatus::kInsecureContext);
+}
+
+// Tests that if a trigger field belongs to a frame that is not found,
+// `ValidateFormFillingContext` returns `kFormNotFound`.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_FrameNotFound) {
+  SetupSecureMainFrame();
+
+  FormData form = SeeForm({.fields = {{.server_type = ONE_TIME_CODE}}});
+  ASSERT_FALSE(form.fields().empty());
+  FieldGlobalId valid_field_id = form.fields()[0].global_id();
+  FieldGlobalId non_existent_frame_field_id(
+      LocalFrameToken(base::UnguessableToken::Create()),
+      form.fields()[0].renderer_id());
+
+  EXPECT_EQ(
+      service().ValidateFormFillingContext(
+          tab().GetHandle(), {valid_field_id, non_existent_frame_field_id}),
+      FormFillingContextStatus::kFormNotFound);
+}
+
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,
        ValidateFormFillingContext_InvalidTabHandle) {
   EXPECT_EQ(service().ValidateFormFillingContext(tabs::TabHandle::Null(),
                                                  {test::MakeFieldGlobalId()}),
             FormFillingContextStatus::kTabNotAvailable);
+}
+
+// Tests that validating form filling context with empty trigger field IDs
+// returns `kFormNotFound`.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       ValidateFormFillingContext_EmptyTriggerFieldIds) {
+  SetupSecureMainFrame();
+  EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {}),
+            FormFillingContextStatus::kFormNotFound);
 }
 
 TEST_F(ActorOneTimeTokenFillingServiceImplTest,

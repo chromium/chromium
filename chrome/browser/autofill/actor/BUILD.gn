@@ -27,6 +27,7 @@ static_library("actor") {
     "//components/autofill/content/browser",
     "//components/one_time_tokens/core/browser",
     "//components/one_time_tokens/core/common:features",
+    "//components/password_manager/core/browser/actor_login:frame_util",
     "//components/security_interstitials/core:insecure_form_util",
     "//components/security_state/content",
     "//components/tabs:public",
@@ -65,6 +66,8 @@ source_set("unit_tests") {
     "//components/security_state/content",
     "//components/tabs:test_support",
     "//content/test:test_support",
+    "//net",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
