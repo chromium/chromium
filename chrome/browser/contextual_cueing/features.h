@@ -19,6 +19,10 @@ BASE_DECLARE_FEATURE(kContextualCueingV2EnforceAgeRestriction);
 // the single-source Glic annotation-driven path.
 BASE_DECLARE_FEATURE(kContextualCueingV2MultiSource);
 
+// When enabled, a target returning true for OverridesUcbScoring() will bypass
+// the standard UCB scoring and automatically win the cue evaluation.
+BASE_DECLARE_FEATURE(kContextualCueingV2AllowOverridingUcbScoring);
+
 extern const base::FeatureParam<double> kEduClassifierThreshold;
 extern const base::FeatureParam<double> kShoppingClassifierThreshold;
 

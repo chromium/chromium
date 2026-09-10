@@ -2437,7 +2437,8 @@ class ContextualCueingControllerMultiSourceBrowserTest
           {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
            {"ContextualCueingV2TabListVisibility", "always"},
            {"ContextualCueingV2EnablePrivateInsightsLogging", "true"}}},
-         {kContextualCueingV2MultiSource, {}}},
+         {kContextualCueingV2MultiSource, {}},
+         {kContextualCueingV2AllowOverridingUcbScoring, {}}},
         /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
   }
 };
@@ -2749,6 +2750,36 @@ IN_PROC_BROWSER_TEST_F(
       &histogram_tester, "ContextualCueing.V2.Decision", 3);
   histogram_tester.ExpectBucketCount("ContextualCueing.V2.Decision",
                                      ContextualCueingDecision::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       MultiSourceOverridesUcbScoring) {
+  base::HistogramTester histogram_tester;
+
+  auto low_priority_target = std::make_unique<TestCueTarget>();
+  low_priority_target->eligible = true;
+  low_priority_target->generate_result =
+      MakeCompleteResponse().contextual_cues(0);
+
+  auto override_target = std::make_unique<TestCueTarget>();
+  override_target->eligible = true;
+  override_target->overrides_ucb_scoring = true;
+  override_target->generate_result = MakeCompleteResponse().contextual_cues(0);
+  auto* override_target_ptr = override_target.get();
+
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kGlic, std::move(low_priority_target));
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kIndigo,
+                                                    std::move(override_target));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  EXPECT_TRUE(override_target_ptr->chip_shown ||
+              override_target_ptr->anchored_message_shown_priority.has_value());
 }
 
 class ContextualCueingControllerMultiSourceWithAgeRestrictionBrowserTest

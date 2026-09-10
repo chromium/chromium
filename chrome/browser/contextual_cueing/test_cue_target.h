@@ -12,6 +12,7 @@ namespace contextual_cueing {
 class TestCueTarget : public CueTarget {
  public:
   bool eligible = true;
+  bool overrides_ucb_scoring = false;
   bool requires_model_execution = false;
   std::optional<CueIntrusiveness> eligible_intrusiveness;
   std::set<CueIntrusiveness> supported_intrusiveness = {
@@ -33,6 +34,7 @@ class TestCueTarget : public CueTarget {
   // CueTarget:
   CueTargetType GetType() const override;
   bool RequiresModelExecution() const override;
+  bool OverridesUcbScoring() const override;
   bool IsEligible() const override;
   void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
                         CueIntrusiveness intrusiveness,

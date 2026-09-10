@@ -85,6 +85,12 @@ class CueTarget {
   // to generate cue content rather than generating content locally.
   virtual bool RequiresModelExecution() const = 0;
 
+  // Whether this target should bypass UCB scoring and take absolute precedence
+  // when eligible. NOTE: This is a highly privileged override that is strictly
+  // intended for Indigo temporarily to ensure it always wins. It should not be
+  // used by other targets.
+  virtual bool OverridesUcbScoring() const;
+
   // Returns true if this target supports the given intrusiveness level.
   // Targets requiring MES are restricted to kLoud only. Non-MES targets
   // can override SupportsIntrusivenessImpl() to declare supported levels.

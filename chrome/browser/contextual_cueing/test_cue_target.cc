@@ -27,6 +27,10 @@ bool TestCueTarget::RequiresModelExecution() const {
   return requires_model_execution || !generate_result.has_value();
 }
 
+bool TestCueTarget::OverridesUcbScoring() const {
+  return overrides_ucb_scoring;
+}
+
 bool TestCueTarget::SupportsIntrusivenessImpl(
     CueIntrusiveness intrusiveness) const {
   return supported_intrusiveness.contains(intrusiveness);
