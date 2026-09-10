@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 
+#include "base/feature_list.h"
 #include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -29,6 +30,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+// Controls a fix to avoid dropping in-flight error messages when the browser
+// disconnects the PaymentRequest provider pipe before the client receiver.
+MODULES_EXPORT BASE_DECLARE_FEATURE(kPaymentRequestAvoidConnectionErrorRace);
 
 class ExceptionState;
 class ExecutionContext;
@@ -135,6 +140,9 @@ class MODULES_EXPORT PaymentRequest final
   };
 
  private:
+  // Called when the PaymentRequest provider connection is lost.
+  void OnPaymentProviderConnectionError();
+
   // Called when the renderer loses the IPC connection to the browser.
   void OnConnectionError();
 
@@ -200,9 +208,23 @@ class MODULES_EXPORT PaymentRequest final
   // hasEnrolledInstrument() with false.
   String not_supported_for_invalid_origin_or_ssl_error_;
 
+  // We use two Mojo pipes to communicate with the browser process:
+  //
+  //   - `payment_provider_` carries renderer-to-browser calls (e.g. show,
+  //     abort).
+  //   - `client_receiver_` receives browser-to-renderer callbacks (e.g.
+  //      OnError, OnPaymentResponse).
+  //
+  // `client_receiver_` is the source of truth for the request lifecycle:
+  // cleanup only occurs once `client_receiver_` either receives a terminal
+  // callback (success/error) or disconnects.
+  //
+  // If the browser disconnects from `payment_provider_` first, full teardown is
+  // deferred so `client_receiver_` can finish draining in-flight messages.
   HeapMojoRemote<payments::mojom::blink::PaymentRequest> payment_provider_;
   HeapMojoReceiver<payments::mojom::blink::PaymentRequestClient, PaymentRequest>
       client_receiver_;
+
   HeapTaskRunnerTimer<PaymentRequest> complete_timer_;
   HeapTaskRunnerTimer<PaymentRequest> update_payment_details_timer_;
   bool is_waiting_for_show_promise_to_resolve_;
