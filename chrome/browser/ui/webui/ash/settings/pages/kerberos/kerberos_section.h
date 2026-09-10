@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_KERBEROS_KERBEROS_SECTION_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 
+class PrefService;
 class Profile;
 
 namespace content {
@@ -25,7 +27,9 @@ class SearchTagRegistry;
 class KerberosSection : public OsSettingsSection,
                         public KerberosCredentialsManager::Observer {
  public:
-  KerberosSection(Profile* profile,
+  // `local_state` must be non-null and must outlive `this`.
+  KerberosSection(PrefService* local_state,
+                  Profile* profile,
                   SearchTagRegistry* search_tag_registry,
                   KerberosCredentialsManager* kerberos_credentials_manager);
   ~KerberosSection() override;
@@ -48,6 +52,7 @@ class KerberosSection : public OsSettingsSection,
 
   void UpdateKerberosSearchConcepts();
 
+  const raw_ref<PrefService> local_state_;
   raw_ptr<KerberosCredentialsManager> kerberos_credentials_manager_;
 };
 

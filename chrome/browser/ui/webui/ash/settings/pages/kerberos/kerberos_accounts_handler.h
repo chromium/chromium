@@ -25,6 +25,7 @@ namespace kerberos {
 class ListAccountsResponse;
 }  // namespace kerberos
 
+class PrefService;
 class Profile;
 
 namespace ash::settings {
@@ -37,6 +38,7 @@ class KerberosAccountsHandler : public content::WebUIMessageHandler,
 
   // Adds load time strings to Kerberos settings UI.
   static void AddLoadTimeKerberosStrings(
+      const PrefService& local_state,
       content::WebUIDataSource* html_source,
       KerberosCredentialsManager* kerberos_credentials_manager);
 

@@ -95,7 +95,8 @@ OsSettingsSections::OsSettingsSections(
                                      profile, search_tag_registry, prefs));
 
   AddSection(mojom::Section::kKerberos,
-             std::make_unique<KerberosSection>(profile, search_tag_registry,
+             std::make_unique<KerberosSection>(local_state, profile,
+                                               search_tag_registry,
                                                kerberos_credentials_manager));
 
   AddSection(mojom::Section::kSystemPreferences,

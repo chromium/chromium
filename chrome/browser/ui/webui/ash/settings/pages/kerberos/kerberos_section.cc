@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/kerberos/kerberos_accounts_handler.h"
@@ -75,10 +76,12 @@ base::span<const SearchConcept> GetDynamicKerberosSearchConcepts() {
 }  // namespace
 
 KerberosSection::KerberosSection(
+    PrefService* local_state,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     KerberosCredentialsManager* kerberos_credentials_manager)
     : OsSettingsSection(profile, search_tag_registry),
+      local_state_(CHECK_DEREF(local_state)),
       kerberos_credentials_manager_(kerberos_credentials_manager) {
   if (kerberos_credentials_manager_) {
     // Kerberos search tags are added/removed dynamically.
@@ -98,7 +101,7 @@ void KerberosSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                                   IDS_OS_SETTINGS_KERBEROS);
 
   KerberosAccountsHandler::AddLoadTimeKerberosStrings(
-      html_source, kerberos_credentials_manager_);
+      local_state_.get(), html_source, kerberos_credentials_manager_);
 }
 
 void KerberosSection::AddHandlers(content::WebUI* web_ui) {

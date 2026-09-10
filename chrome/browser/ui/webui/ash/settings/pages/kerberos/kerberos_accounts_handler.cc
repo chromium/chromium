@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,7 +58,8 @@ void AddKerberosEnabledFlag(
 }
 
 // Adds load time strings to Kerberos Add Accounts dialog.
-void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
+void AddKerberosAddAccountDialogStrings(const PrefService& local_state,
+                                        content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"kerberosAccountsAdvancedConfigLabel",
        IDS_SETTINGS_KERBEROS_ACCOUNTS_ADVANCED_CONFIG_LABEL},
@@ -116,17 +116,15 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  PrefService* local_state = g_browser_process->local_state();
-
   // Whether the 'Remember password' checkbox is enabled.
   html_source->AddBoolean(
       "kerberosRememberPasswordEnabled",
-      local_state->GetBoolean(::ash::prefs::kKerberosRememberPasswordEnabled));
+      local_state.GetBoolean(::ash::prefs::kKerberosRememberPasswordEnabled));
 
   // Prefilled domain if policy is enabled. Note that Kerberos
   // domains should be in all uppercase.
   html_source->AddString("kerberosDomainAutocomplete",
-                         base::ToUpperASCII(local_state->GetString(
+                         base::ToUpperASCII(local_state.GetString(
                              ::ash::prefs::kKerberosDomainAutocomplete)));
 
   // Kerberos default prefilled configuration.
@@ -134,14 +132,15 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   // configuration comes from the 'KerberosCustomPrefilledConfig' policy.
   // Otherwise the default value is used.
   const std::string prefilledConfig =
-      local_state->GetBoolean(::ash::prefs::kKerberosUseCustomPrefilledConfig)
-          ? local_state->GetString(::ash::prefs::kKerberosCustomPrefilledConfig)
+      local_state.GetBoolean(::ash::prefs::kKerberosUseCustomPrefilledConfig)
+          ? local_state.GetString(::ash::prefs::kKerberosCustomPrefilledConfig)
           : KerberosCredentialsManager::GetDefaultKerberosConfig();
   html_source->AddString("defaultKerberosConfig", prefilledConfig);
 }
 
 // Adds load time strings to Kerberos Accounts page.
-void AddKerberosAccountsPageStrings(content::WebUIDataSource* html_source) {
+void AddKerberosAccountsPageStrings(const PrefService& local_state,
+                                    content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"kerberosAccountsAddAccountLabel",
        IDS_SETTINGS_KERBEROS_ACCOUNTS_ADD_ACCOUNT_LABEL},
@@ -166,12 +165,10 @@ void AddKerberosAccountsPageStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  PrefService* local_state = g_browser_process->local_state();
-
   // Whether new Kerberos accounts may be added.
   html_source->AddBoolean(
       "kerberosAddAccountsAllowed",
-      local_state->GetBoolean(::ash::prefs::kKerberosAddAccountsAllowed));
+      local_state.GetBoolean(::ash::prefs::kKerberosAddAccountsAllowed));
 
   // Kerberos accounts page with "Learn more" link.
   html_source->AddString(
@@ -198,12 +195,13 @@ KerberosAccountsHandler::CreateIfKerberosEnabled(Profile* profile) {
 
 // static
 void KerberosAccountsHandler::AddLoadTimeKerberosStrings(
+    const PrefService& local_state,
     content::WebUIDataSource* html_source,
     KerberosCredentialsManager* kerberos_credentials_manager) {
   AddKerberosEnabledFlag(html_source, kerberos_credentials_manager);
   AddKerberosTitleStrings(html_source);
-  AddKerberosAccountsPageStrings(html_source);
-  AddKerberosAddAccountDialogStrings(html_source);
+  AddKerberosAccountsPageStrings(local_state, html_source);
+  AddKerberosAddAccountDialogStrings(local_state, html_source);
 }
 
 KerberosAccountsHandler::~KerberosAccountsHandler() = default;
