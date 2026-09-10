@@ -446,7 +446,7 @@ void AddSignedInChipToProfileMenuItem(
     std::vector<base::CallbackListSubscription>&
         profile_menu_subscription_list) {
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) ||
-      profile->IsIncognitoProfile()) {
+      profile->IsPrimaryOTRProfileWithRegularParent()) {
     return;
   }
   constexpr int profile_chip_corner_radii = 100;

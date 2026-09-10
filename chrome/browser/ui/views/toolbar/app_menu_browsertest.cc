@@ -58,6 +58,7 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -299,6 +300,23 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, MAYBE_InvokeUi_main_guest) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_main_incognito) {
+  auto browser_resetter = SetBrowser(CreateIncognitoBrowser());
+  ShowAndVerifyUi();
+}
+
+class AppMenuBrowserIsolatedModeTest : public AppMenuBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AppMenuBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserIsolatedModeTest,
+                       DISABLED_InvokeUi_main_isolated) {
+  // Incognito browser with isolated mode enabled by switch.
   auto browser_resetter = SetBrowser(CreateIncognitoBrowser());
   ShowAndVerifyUi();
 }
