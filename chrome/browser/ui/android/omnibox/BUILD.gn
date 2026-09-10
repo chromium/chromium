@@ -389,6 +389,7 @@ android_resources("java_resources") {
     "java/res/drawable/fusebox_popover_plus_button_background_incognito.xml",
     "java/res/drawable/fusebox_popup_bg_tinted.xml",
     "java/res/drawable/fusebox_popup_bg_tinted_on_dark_bg.xml",
+    "java/res/drawable/gs_drive_vd_theme_24.xml",
     "java/res/drawable/ic_add_round_20dp_with_inset.xml",
     "java/res/drawable/ic_attach_file_24dp.xml",
     "java/res/drawable/ic_attach_image_24dp.xml",

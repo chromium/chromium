@@ -220,6 +220,17 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_DISABLE_TABS_FOR_CANVAS,
                     FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sComposeboxDriveContextMenuOption =
+            newFlag(OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION, FeatureState.DISABLED);
+
+    public static final CachedFlag sComposeboxDriveContextMenuOptionDisclaimer =
+            newFlag(
+                    OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION_DISCLAIMER,
+                    FeatureState.DISABLED);
+
+    public static final CachedFlag sForceDriveDisclaimerAccepted =
+            newFlag(OmniboxFeatureList.FORCE_DRIVE_DISCLAIMER_ACCEPTED, FeatureState.DISABLED);
+
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
                     sUseFusedLocationProvider,
