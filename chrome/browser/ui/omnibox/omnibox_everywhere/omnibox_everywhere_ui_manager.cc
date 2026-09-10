@@ -453,7 +453,6 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   widget_->Init(std::move(params));
 #if BUILDFLAG(IS_MAC)
   widget_->SetActivationIndependence(is_ephemeral);
-  widget_->SetVisibleOnAllWorkspaces(true);
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
 #if BUILDFLAG(IS_WIN)
@@ -486,6 +485,9 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   }
 
   is_demoted_ = false;
+#if BUILDFLAG(IS_MAC)
+  widget_->MoveToActiveFullscreenSpace();
+#endif
   widget_->Show();
   widget_->Activate();
 
@@ -683,6 +685,15 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
   if (!active && !HasOpenModalDialog() && !is_context_menu_open_ &&
       prefs::IsEphemeralModelEnabled()) {
     HandleWidgetDeactivated();
+  }
+}
+
+void OmniboxEverywhereUIManager::OnWidgetVisibilityOnScreenChanged(
+    views::Widget* widget,
+    bool visible) {
+  if (!visible && !HasOpenModalDialog() && !is_context_menu_open_ &&
+      prefs::IsEphemeralModelEnabled()) {
+    Close();
   }
 }
 

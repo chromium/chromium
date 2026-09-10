@@ -306,6 +306,90 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivationInEphemeralMode) {
   EXPECT_TRUE(ui_manager->widget());
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest, DismissOnSpaceSwitchInEphemeralMode) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Simulating the widget becoming invisible on screen (e.g., active Space
+  // change on macOS) in ephemeral mode should close/hide the widget.
+  ui_manager->OnWidgetVisibilityOnScreenChanged(widget, /*visible=*/false);
+  EXPECT_FALSE(widget->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, NoDismissOnSpaceSwitchInPersistentMode) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // In persistent mode, changing active space should not close/hide the widget.
+  ui_manager->OnWidgetVisibilityOnScreenChanged(widget, /*visible=*/false);
+  EXPECT_TRUE(widget->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DismissOnSpaceSwitchBypassedDuringModalDialog) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Mark a modal dialog as open.
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
+                                        gfx::Size(100, 100));
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // Becoming invisible on screen while a modal dialog is open should NOT close
+  // the widget.
+  ui_manager->OnWidgetVisibilityOnScreenChanged(widget, /*visible=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DismissOnSpaceSwitchBypassedDuringContextMenu) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Simulate context menu open.
+  ui_manager->set_is_context_menu_open_for_testing(true);
+  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+
+  // Becoming invisible on screen while a context menu is open should NOT close
+  // the widget.
+  ui_manager->OnWidgetVisibilityOnScreenChanged(widget, /*visible=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+}
+
 // TODO(crbug.com/546604786): Deactivation within grace period tests are flaky
 // on Linux due to lack of window manager activation synchronization in tests.
 #if BUILDFLAG(IS_LINUX)

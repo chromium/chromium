@@ -122,6 +122,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
+                                         bool visible) override;
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetUserDragStarted(views::Widget* widget) override;
   void OnWidgetUserDragEnded(views::Widget* widget) override;
