@@ -4,7 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"

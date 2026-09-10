@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
