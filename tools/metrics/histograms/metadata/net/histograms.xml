@@ -6541,14 +6541,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.QuicSession.GoogleSearch.EstablishmentReason{Initiator}{Used}"
+    name="Net.QuicSession.GoogleSearch.EstablishmentReason2{Initiator}{Used}"
     enum="QuicSessionEstablishmentReason" expires_after="2027-07-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
-    The session establishment reason for a QUIC session to GoogleSearch. This is
-    recorded when closing a session to GoogleSearch, indicating if it was
-    {Used}{Initiator}.
+    The session establishment reason for a QUIC session to GoogleSearch,
+    including in-flight connection tracking. This is recorded when closing a
+    session to GoogleSearch, indicating if it was {Used}{Initiator}.
   </summary>
   <token key="Initiator">
     <variant name="" summary=""/>

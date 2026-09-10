@@ -93,6 +93,7 @@ QuicSessionPool::AsyncDnsJob::AsyncDnsJob(
           std::move(key),
           std::move(client_config_handle),
           priority,
+          session_creation_initiator,
           quic_connection_reuse_details,
           NetLogWithSource::Make(
               net_log.net_log(),
@@ -104,7 +105,6 @@ QuicSessionPool::AsyncDnsJob::AsyncDnsJob(
       cert_verify_flags_(cert_verify_flags),
       retry_on_alternate_network_before_handshake_(
           retry_on_alternate_network_before_handshake),
-      session_creation_initiator_(session_creation_initiator),
       connection_management_config_(connection_management_config) {
   CHECK_EQ(quic_version_.IsKnown(), !require_dns_https_alpn_);
 }

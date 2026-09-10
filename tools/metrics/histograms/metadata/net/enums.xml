@@ -3188,6 +3188,8 @@ Called by update_net_trust_anchors.py.-->
       label="Existed in all_sessions_ (draining/going away) preconnect"/>
   <int value="4"
       label="Existed in all_sessions_ (both preconnect and non-preconnect)"/>
+  <int value="5" label="In-flight session existed, but was not preconnect"/>
+  <int value="6" label="In-flight session existed, and was preconnect"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/base/load_timing_internal_info.h:QuicSessionEstablishmentReason) -->

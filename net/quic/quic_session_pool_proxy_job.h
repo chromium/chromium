@@ -78,7 +78,6 @@ class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
   quic::ParsedQuicVersion target_quic_version_;
 
   NetworkTrafficAnnotationTag proxy_annotation_tag_;
-  MultiplexedSessionCreationInitiator session_creation_initiator_;
   std::optional<ConnectionManagementConfig> connection_management_config_;
   const int cert_verify_flags_;
   raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;

@@ -3549,13 +3549,13 @@ TEST_P(QuicChromiumClientSessionTest, GoogleSearchSessionMetricsUnused) {
       "Net.QuicSession.GoogleSearch.SessionCreationInitiator.Unused",
       MultiplexedSessionCreationInitiator::kPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Unused",
       QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Preconnect.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Unused",
       QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.NonPreconnect.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Unused",
       0);
 }
 
@@ -3573,13 +3573,13 @@ TEST_P(QuicChromiumClientSessionTest, GoogleSearchSessionMetricsUsed) {
       "Net.QuicSession.GoogleSearch.SessionCreationInitiator.Used",
       MultiplexedSessionCreationInitiator::kUnknown, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Used",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
       QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.NonPreconnect.Used",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
       QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Preconnect.Used", 0);
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Used", 0);
 }
 
 TEST_P(QuicChromiumClientSessionTest, GoogleSearchSessionMetricsNoSession) {
@@ -3591,13 +3591,13 @@ TEST_P(QuicChromiumClientSessionTest, GoogleSearchSessionMetricsNoSession) {
   QuicChromiumClientSessionPeer::SetHostname(session_.get(), "www.google.com");
   session_.reset();
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Unused",
       QuicSessionEstablishmentReason::kNoSessionExisted, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.NonPreconnect.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Unused",
       QuicSessionEstablishmentReason::kNoSessionExisted, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Preconnect.Unused", 0);
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Unused", 0);
 }
 
 TEST_P(QuicChromiumClientSessionTest,
@@ -3615,13 +3615,14 @@ TEST_P(QuicChromiumClientSessionTest,
       "Net.QuicSession.GoogleSearch.SessionCreationInitiator.Used",
       MultiplexedSessionCreationInitiator::kPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Used",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
       QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Preconnect.Used",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Used",
       QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.NonPreconnect.Used", 0);
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
+      0);
 }
 
 TEST_P(QuicChromiumClientSessionTest,
@@ -3644,7 +3645,7 @@ TEST_P(QuicChromiumClientSessionTest,
   histogram_tester.ExpectTotalCount(
       "Net.QuicSession.GoogleSearch.NonReuseReason.Preconnect.Unused", 0);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Unused",
       QuicSessionEstablishmentReason::kNoSessionExisted, 1);
 }
 
@@ -3670,7 +3671,7 @@ TEST_P(QuicChromiumClientSessionTest,
   histogram_tester.ExpectTotalCount(
       "Net.QuicSession.GoogleSearch.NonReuseReason.Preconnect.Unused", 0);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Unused",
       QuicSessionEstablishmentReason::kNoSessionExisted, 1);
 }
 
@@ -3694,7 +3695,7 @@ TEST_P(QuicChromiumClientSessionTest,
   histogram_tester.ExpectTotalCount(
       "Net.QuicSession.GoogleSearch.NonReuseReason.Preconnect.Unused", 0);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Unused",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Unused",
       QuicSessionEstablishmentReason::kSessionExistedBoth, 1);
 }
 
@@ -3720,13 +3721,57 @@ TEST_P(QuicChromiumClientSessionTest,
   histogram_tester.ExpectTotalCount(
       "Net.QuicSession.GoogleSearch.NonReuseReason.NonPreconnect.Used", 0);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Used",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
       QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.Preconnect.Used",
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Used",
       QuicSessionEstablishmentReason::kSessionExistedAndWasPreconnect, 1);
   histogram_tester.ExpectTotalCount(
-      "Net.QuicSession.GoogleSearch.EstablishmentReason.NonPreconnect.Used", 0);
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
+      0);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       GoogleSearchSessionMetricsInflightSessionPreconnect) {
+  base::HistogramTester histogram_tester;
+  QuicConnectionReuseDetails reuse_details;
+  reuse_details.establishment_reason =
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect;
+  Initialize(MultiplexedSessionCreationInitiator::kUnknown, reuse_details);
+  QuicChromiumClientSessionPeer::SetHostname(session_.get(), "www.google.com");
+  session_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Unused",
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Unused",
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Unused", 0);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       GoogleSearchSessionMetricsInflightSessionNonPreconnect) {
+  base::HistogramTester histogram_tester;
+  QuicConnectionReuseDetails reuse_details;
+  reuse_details.establishment_reason =
+      QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect;
+  Initialize(MultiplexedSessionCreationInitiator::kPreconnect, reuse_details);
+  QuicChromiumClientSessionPeer::SetHostname(session_.get(), "www.google.com");
+  QuicChromiumClientSessionPeer::SetNumTotalStreamsForTesting(session_.get(),
+                                                              1);
+  session_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
+      QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Preconnect.Used",
+      QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
+      0);
 }
 
 }  // namespace

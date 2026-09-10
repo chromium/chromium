@@ -41,6 +41,7 @@ QuicSessionPool::ProxyJob::ProxyJob(
           std::move(key),
           std::move(client_config_handle),
           priority,
+          session_creation_initiator,
           quic_connection_reuse_details,
           NetLogWithSource::Make(
               net_log.net_log(),
@@ -49,7 +50,6 @@ QuicSessionPool::ProxyJob::ProxyJob(
                                        base::Unretained(this))),
       target_quic_version_(target_quic_version),
       proxy_annotation_tag_(proxy_annotation_tag),
-      session_creation_initiator_(session_creation_initiator),
       connection_management_config_(connection_management_config),
       cert_verify_flags_(cert_verify_flags),
       http_user_agent_settings_(http_user_agent_settings) {
