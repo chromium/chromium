@@ -862,16 +862,15 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
   EXPECT_TRUE(actual_final_bounds.ApproximatelyEqual(moved_bounds, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(
+    PictureInPictureChildDialogResizeTest,
     MoveDuringPendingResizeForChildDialog_SingleChildDialog) {
   if (!PlatformSupportsScreenCoordinates()) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
   }
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  gfx::Rect initial_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect initial_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
 
   // Open a child dialog that is larger than the pip window.
   const gfx::Size child_dialog_size(initial_pip_bounds.width() + 50,
@@ -886,16 +885,15 @@ IN_PROC_BROWSER_TEST_F(
   // Move the window before the resize timer fires.
   gfx::Rect moved_bounds = initial_pip_bounds;
   moved_bounds.Offset(-100, -100);
-  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+  GetPipWidget()->SetBounds(moved_bounds);
 
   // Now, let the timer fire. On Mac, the timer may have already fired at this
   // point, however we call `RunPendingChildResizeForTesting` regardless since
   // if the timer is not running this will be a no-op.
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // The pip window should have the same origin as `moved_bounds`.
-  gfx::Rect final_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect final_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(final_pip_bounds.origin(), moved_bounds.origin());
 
   // The pip window should have greater or equal size than the `moved_bounds`.
@@ -905,16 +903,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GE(final_pip_bounds.height(), moved_bounds.height());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(
+    PictureInPictureChildDialogResizeTest,
     MoveDuringPendingResizeForChildDialog_MultipleChildDialogs) {
   if (!PlatformSupportsScreenCoordinates()) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
   }
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  gfx::Rect initial_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect initial_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
 
   // Open a child dialog that is larger than the pip window.
   const gfx::Size child_dialog_size(initial_pip_bounds.width() + 50,
@@ -929,22 +926,21 @@ IN_PROC_BROWSER_TEST_F(
   // Move the window before the resize timer fires.
   gfx::Rect moved_bounds = initial_pip_bounds;
   moved_bounds.Offset(-100, -100);
-  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+  GetPipWidget()->SetBounds(moved_bounds);
 
   // Now, let the timer fire. On Mac, the timer may have already fired at this
   // point, however we call `RunPendingChildResizeForTesting` regardless since
   // if the timer is not running this will be a no-op.
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // Opening a second dialog, that is larger than the pip window, should resize
   // the pip window.
   auto child_dialog_2 =
       OpenChildDialog(child_dialog_size, ui::mojom::ModalType::kWindow);
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // The pip window should have the same origin as `moved_bounds`.
-  gfx::Rect final_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect final_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(final_pip_bounds.origin(), moved_bounds.origin());
 
   // The pip window should have greater or equal size than the `moved_bounds`.
@@ -954,15 +950,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GE(final_pip_bounds.height(), moved_bounds.height());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
                        MoveDuringPendingResizeForChildDialogAndClose) {
   if (!PlatformSupportsScreenCoordinates()) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
   }
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  gfx::Rect initial_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect initial_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
 
   // Open a child dialog that fits in the pip window.
   const gfx::Size small_child_dialog_size(100, 100);
@@ -971,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   auto child_dialog =
       OpenChildDialogWithDelegate(small_child_dialog_size, delegate.get());
   // Should not be pending yet.
-  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
+  EXPECT_FALSE(IsChildResizePendingForTesting());
 
   // Now resize the child dialog to be larger than the pip window.
   const gfx::Size large_child_dialog_size(initial_pip_bounds.width() + 50,
@@ -980,36 +975,34 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   child_dialog->SetSize(large_child_dialog_size);
 
   // Now it should be pending.
-  ASSERT_TRUE(pip_frame_view()->IsChildResizePendingForTesting());
+  ASSERT_TRUE(IsChildResizePendingForTesting());
 
   // Move the window before the resize timer fires.
   gfx::Rect moved_bounds = initial_pip_bounds;
   moved_bounds.Offset(-100, -100);
-  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+  GetPipWidget()->SetBounds(moved_bounds);
 
   // Now, let the timer fire.
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // Close the dialog.
   child_dialog->CloseNow();
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // The window should return to its original size, but at the new location.
   gfx::Rect expected_final_bounds = moved_bounds;
   expected_final_bounds.set_size(initial_pip_bounds.size());
-  EXPECT_EQ(expected_final_bounds,
-            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(expected_final_bounds, GetPipWidget()->GetWindowBoundsInScreen());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureChildDialogResizeTest,
                        ResizeDuringPendingResizeForChildDialogAndClose) {
   if (!PlatformSupportsScreenCoordinates()) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
   }
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
-  gfx::Rect initial_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect initial_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
 
   // Open a child dialog that fits.
   const gfx::Size small_child_dialog_size(100, 100);
@@ -1017,32 +1010,31 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       std::make_unique<ModalWidgetDelegate>(ui::mojom::ModalType::kWindow);
   auto child_dialog =
       OpenChildDialogWithDelegate(small_child_dialog_size, delegate.get());
-  EXPECT_FALSE(pip_frame_view()->IsChildResizePendingForTesting());
+  EXPECT_FALSE(IsChildResizePendingForTesting());
 
   // Resize child dialog to be larger.
   const gfx::Size large_child_dialog_size(initial_pip_bounds.width() + 50,
                                           initial_pip_bounds.height() + 50);
   child_dialog->GetContentsView()->SetPreferredSize(large_child_dialog_size);
   child_dialog->SetSize(large_child_dialog_size);
-  ASSERT_TRUE(pip_frame_view()->IsChildResizePendingForTesting());
+  ASSERT_TRUE(IsChildResizePendingForTesting());
 
   // Manually resize the window before the timer fires.
   gfx::Rect user_resized_bounds = initial_pip_bounds;
   user_resized_bounds.Outset(1);
-  pip_frame_view()->GetWidget()->SetBounds(user_resized_bounds);
+  GetPipWidget()->SetBounds(user_resized_bounds);
 
   // The pip window should have the user-defined size.
-  gfx::Rect final_pip_bounds =
-      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  gfx::Rect final_pip_bounds = GetPipWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(user_resized_bounds.size(), final_pip_bounds.size());
 
   // Close the dialog.
   child_dialog->CloseNow();
-  pip_frame_view()->RunPendingChildResizeForTesting();
+  RunPendingChildResizeForTesting();
 
   // The size should not change, since the user took control.
   EXPECT_EQ(user_resized_bounds.size(),
-            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen().size());
+            GetPipWidget()->GetWindowBoundsInScreen().size());
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
