@@ -2673,8 +2673,9 @@ chromium-metrics-reviews@google.com.
   <owner>asvitkine@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <summary>
-    Logs which Chrome flags from about:flags were active on start up. Android
-    WebView supports flags differently than most platforms, see
+    Logs which Chrome flags from about:flags were active on start up, when at
+    least one non-default flag is configured. Android WebView supports flags
+    differently than most platforms, see
     https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md
     for details.
   </summary>
