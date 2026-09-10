@@ -282,10 +282,15 @@ class NSSInitSingleton {
       PK11_FreeSlot(slot);
     }
 
-    // Load nss's built-in root certs.
-    //
-    // TODO(mattm): DCHECK this succeeded when crbug.com/310972 is fixed.
-    // Failing to load root certs will it hard to talk to anybody via https.
+    // Load the NSS libnssckbi.so module. In a stock NSS configuration, this
+    // contains the NSS built-in root certs, which we don't actually need and
+    // will just be ignored by TrustStoreNSS.
+    // However in some alternate configurations, such as using pk11-kit, this
+    // module is replaced with a different one which can also present local
+    // system configured certificates, which we do want to respect.
+    // TODO(crbug.com/40918599): theoretically we could in some cases just not
+    // load this library, if we had a way to reliably tell whether it was the
+    // stock NSS library and not a replacement like from pk11-kit.
     LoadNSSModule("Root Certs", "libnssckbi.so", nullptr);
 
     // Disable MD5 certificate signatures. (They are disabled by default in
