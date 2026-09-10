@@ -39,6 +39,11 @@ BASE_EXPORT bool IsCurrentProcessInAppContainer();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
+// Returns true if the current process is responsible for itself according to
+// the macOS TCC responsibility subsystem (e.g., Chrome launched directly from
+// Finder or Dock).
+BASE_EXPORT bool IsCurrentProcessSelfResponsible();
+
 // Checks if the responsible process has Bluetooth metadata in its Info.plist
 // file. See https://bugs.chromium.org/p/chromium/issues/detail?id=945969 and
 // https://bugs.chromium.org/p/chromium/issues/detail?id=996993.

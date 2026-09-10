@@ -7,6 +7,10 @@
 #import <AppKit/AppKit.h>
 #include <unistd.h>
 
+#include <optional>
+
+#include "base/check.h"
+
 extern "C" {
 pid_t responsibility_get_pid_responsible_for_pid(pid_t);
 }
@@ -25,23 +29,34 @@ bool AppContainsBluetoothUsageDescription(NSRunningApplication* app) {
   return bluetooth_entry != nil;
 }
 
+std::optional<pid_t> ResponsiblePidIfNotSelf() {
+  const pid_t pid = getpid();
+  const pid_t responsible_pid = responsibility_get_pid_responsible_for_pid(pid);
+  PCHECK(responsible_pid != -1);
+  return pid != responsible_pid ? std::optional(responsible_pid) : std::nullopt;
+}
+
 }  // namespace
 
 namespace base {
 
+bool IsCurrentProcessSelfResponsible() {
+  return ResponsiblePidIfNotSelf() == std::nullopt;
+}
+
 bool DoesResponsibleProcessHaveBluetoothMetadata() {
-  const pid_t pid = getpid();
-  const pid_t responsible_pid = responsibility_get_pid_responsible_for_pid(pid);
-  // Returns true directly if this is a self-responsible app(e.g. Chrome opens
+  const std::optional<pid_t> responsible_pid = ResponsiblePidIfNotSelf();
+
+  // Returns true directly if this is a self-responsible app (e.g., Chrome opens
   // from Finder or Dock). This is an optimization to avoid the blocking-path
   // work in the common case. Because Chrome itself declares Bluetooth metadata
   // in Info.plist.
-  if (responsible_pid == pid) {
+  if (!responsible_pid) {
     return true;
   }
 
   NSRunningApplication* app = [NSRunningApplication
-      runningApplicationWithProcessIdentifier:responsible_pid];
+      runningApplicationWithProcessIdentifier:responsible_pid.value()];
   if (app) {
     return AppContainsBluetoothUsageDescription(app);
   }

@@ -129,6 +129,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
 #include "content/browser/gpu/browser_child_process_backgrounded_bridge.h"
 #include "content/browser/gpu/ca_transaction_gpu_coordinator.h"
 #endif
@@ -156,6 +157,13 @@ static_assert(RESULT_CODE_HUNG == static_cast<int>(gpu::RESULT_CODE_HUNG),
               "Please use the same enum value in both header files.");
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+// If enabled, the GPU process will not inherit the browser process's TCC
+// responsibilities (https://crbug.com/507596239).
+BASE_FEATURE(kMacDisclaimGpuTccResponsibility,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // UMA histogram names.
 constexpr char kFallbackEventCause[] = "GPU.FallbackEventCause";
@@ -470,6 +478,15 @@ class GpuSandboxedProcessLauncherDelegate
     return GetUnsandboxedZygote();
   }
 #endif  // BUILDFLAG(USE_ZYGOTE)
+
+#if BUILDFLAG(IS_MAC)
+  bool DisclaimResponsibility() override {
+    // Disclaim the GPU process if we've inherited TCC responsibilities from a
+    // different (possibly privileged) process.
+    return base::FeatureList::IsEnabled(kMacDisclaimGpuTccResponsibility) &&
+           !base::IsCurrentProcessSelfResponsible();
+  }
+#endif
 
   sandbox::mojom::Sandbox GetSandboxType() override {
     if (cmd_line_.HasSwitch(sandbox::policy::switches::kDisableGpuSandbox)) {
