@@ -54,7 +54,7 @@ using ::blink::WebRange;
 using ::blink::WebString;
 
 // If more time than this happens between two keystrokes, they're not considered
-// as belonging to the same coherent input (e.g., trigger string).
+// as belonging to the same coherent input (e.g., double Ctrl).
 constexpr base::TimeDelta kCoherentKeyDownThreshold = base::Milliseconds(500);
 
 // Returns true if `event` may produce a character.
@@ -71,30 +71,6 @@ bool IsPrintable(const WebKeyboardEvent& event) {
     return !(event.GetModifiers() & blink::WebInputEvent::kMetaKey);
   }
   return true;
-}
-
-bool IsModifierKey(const WebKeyboardEvent& event) {
-  switch (event.windows_key_code) {
-    case ui::VKEY_SHIFT:
-    case ui::VKEY_LSHIFT:
-    case ui::VKEY_RSHIFT:
-    case ui::VKEY_CONTROL:
-    case ui::VKEY_LCONTROL:
-    case ui::VKEY_RCONTROL:
-    case ui::VKEY_MENU:
-    case ui::VKEY_LMENU:
-    case ui::VKEY_RMENU:
-    case ui::VKEY_ALTGR:
-    case ui::VKEY_LWIN:  // VKEY_LWIN is an alias Mac's VKEY_COMMAND.
-    case ui::VKEY_RWIN:
-    case ui::VKEY_RIGHT_COMMAND:
-    case ui::VKEY_CAPITAL:
-    case ui::VKEY_NUMLOCK:
-    case ui::VKEY_SCROLL:
-      return true;
-    default:
-      return false;
-  }
 }
 
 bool IsSingleCtrlKey(const WebKeyboardEvent& event) {
@@ -138,30 +114,6 @@ bool IsSupportedField(const WebElement& field) {
   return field.IsContentEditable() && !field.DynamicTo<WebFormElement>();
 }
 
-// Returns the offset of the caret in `field`.
-// Returns std::string::npos if `field` is not fillable by AtMemory: if it
-// not focused, not a text-type form control or contenteditable, or there is a
-// non-empty text selection.
-size_t GetCaretOffset(const WebElement& field) {
-  if (!IsSupportedField(field) || !field.ContainsFrameSelection()) {
-    return std::string::npos;
-  }
-
-  WebLocalFrame* frame = field.GetDocument().GetFrame();
-  if (!frame) {
-    return std::string::npos;
-  }
-
-  const WebRange selection =
-      frame->GetInputMethodController()->GetSelectionOffsets();
-  const int begin = selection.StartOffset();
-  const int end = selection.EndOffset();
-  if (begin != end || begin < 0) {
-    return std::string::npos;
-  }
-  return static_cast<size_t>(begin);
-}
-
 size_t HashFieldValue(const WebElement& field) {
   const WebString value = [&] {
     if (auto form_control = field.DynamicTo<WebFormControlElement>()) {
@@ -179,29 +131,6 @@ AtMemoryHandler::AtMemoryHandler(AutofillAgent* agent)
 
 AtMemoryHandler::~AtMemoryHandler() = default;
 
-// Returns true if the trigger string occurs before the caret in `field`.
-bool AtMemoryHandler::HasTriggerStringNextToCaret(
-    const WebElement& field) const {
-  const WebString trigger = WebString(GetTriggerString());
-  if (trigger.IsEmpty()) {
-    return false;
-  }
-  const size_t offset = GetCaretOffset(field);
-  if (offset == std::string::npos) {
-    return false;
-  }
-  WebLocalFrame* frame = field.GetDocument().GetFrame();
-  if (!frame) {
-    return false;
-  }
-  return offset >= trigger.length() &&
-         frame
-             ->RangeAsText(
-                 WebRange(base::saturated_cast<int>(offset - trigger.length()),
-                          base::saturated_cast<int>(trigger.length())))
-             .Equals(trigger);
-}
-
 bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& field,
                                         const WebKeyboardEvent& event) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
@@ -210,7 +139,6 @@ bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& field,
   if (DidReceiveKeyDownForTriggerShortcut(field, event)) {
     return true;
   }
-  DidReceiveKeyDownForTriggerString(field, event);
   DidReceiveKeyDownForDoubleCtrl(field, event);
   return false;
 }
@@ -258,116 +186,6 @@ bool AtMemoryHandler::DidReceiveKeyDownForTriggerShortcut(
     return true;  // Prevent default.
   }
   return false;
-}
-
-void AtMemoryHandler::DidReceiveKeyDownForTriggerString(
-    const WebElement& field,
-    const WebKeyboardEvent& event) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemoryTriggerString)) {
-    return;
-  }
-
-  if (IsModifierKey(event)) {
-    return;
-  }
-
-  if (!IsPrintable(event) ||
-      (event.GetModifiers() & blink::WebInputEvent::kIsAutoRepeat)) {
-    trigger_state_ = {};
-    return;
-  }
-
-  const std::u16string& trigger = GetTriggerString();
-  if (trigger.empty()) {
-    trigger_state_ = {};
-    return;
-  }
-
-  const size_t offset = GetCaretOffset(field);
-  if (offset == std::string::npos) {
-    trigger_state_ = {};
-    return;
-  }
-
-  const FieldRendererId field_id = form_util::GetFieldRendererId(field);
-  const base::TimeTicks now = base::TimeTicks::Now();
-
-  auto is_plausible_offset = [](size_t last_offset, size_t current_offset) {
-    // Characters are not guaranteed to occur in the field.
-    // For example, non-numeric characters are suppressed in <input
-    // type=number>.
-    return last_offset == current_offset ||
-           (last_offset + 1 == current_offset &&
-            last_offset < std::string::npos);
-  };
-
-  if (trigger_state_.last_field_id != field_id ||
-      !is_plausible_offset(trigger_state_.last_offset, offset) ||
-      now - trigger_state_.last_time > kCoherentKeyDownThreshold) {
-    trigger_state_ = {};
-  }
-
-  trigger_state_.seen_trigger.push_back(event.text[0]);
-
-  // Truncate the seen trigger so that it is a prefix of the expected trigger.
-  while (!trigger_state_.seen_trigger.empty() &&
-         !trigger.starts_with(trigger_state_.seen_trigger)) {
-    trigger_state_.seen_trigger.erase(0, 1);
-  }
-  DCHECK(trigger.starts_with(trigger_state_.seen_trigger));
-
-  if (trigger_state_.seen_trigger.empty()) {
-    trigger_state_ = {};
-    return;
-  }
-
-  trigger_state_ = {.seen_trigger = trigger_state_.seen_trigger,
-                    .last_time = now,
-                    .last_field_id = field_id,
-                    .last_offset = offset};
-  if (trigger != trigger_state_.seen_trigger) {
-    // The trigger string isn't complete yet.
-    return;
-  }
-
-  // The trigger string is complete. We trigger AtMemory suggestions.
-  trigger_state_ = {};
-
-  // The character produced by this keydown event, if there is any, has not been
-  // appended to the field yet. The character is added synchronously after this
-  // event.
-  //
-  // We call AutofillAgent::ShowSuggestions() and
-  // AutofillAgent::ShowSuggestionsForContentEditable() asynchronously to give
-  // Blink time to add the character to the field. This is important because
-  // AutofillAgent calls MaybeUpdateAskForValuesToFill(), which takes a hash of
-  // the field value.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<AtMemoryHandler> self,
-             const FieldRendererId field_id) {
-            if (!self) {
-              return;
-            }
-            const WebElement field =
-                WebNode::FromDomNodeId(*field_id).DynamicTo<WebElement>();
-            if (!IsSupportedField(field)) {
-              return;
-            }
-            if (auto form_control = field.DynamicTo<WebFormControlElement>()) {
-              self->agent_->ShowSuggestions(
-                  form_control,
-                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-                  SynchronousFormCache(), std::nullopt);
-            } else {
-              DCHECK(field.IsContentEditable());
-              self->agent_->ShowSuggestionsForContentEditable(
-                  field,
-                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr(), field_id));
 }
 
 void AtMemoryHandler::DidReceiveKeyDownForDoubleCtrl(
@@ -424,13 +242,11 @@ void AtMemoryHandler::DidReceiveKeyDownForDoubleCtrl(
 
 void AtMemoryHandler::FocusedElementChanged(
     const WebElement& new_focused_element) {
-  trigger_state_ = {};
   ctrl_state_ = {};
 }
 
 void AtMemoryHandler::DidReceiveLeftMouseDownOrGestureTapInNode(
     const blink::WebNode& node) {
-  trigger_state_ = {};
   ctrl_state_ = {};
 }
 
@@ -500,26 +316,17 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
   field.Focus();
 
   if (!info.selection_range.IsNull()) {
-    // Restores the text selection at the time of AskForValuesToFill().
-    // When AtMemory was triggered with the trigger string, the selection is
-    // normally empty (but JavaScript may have interfered).
-    // When AtMemory was triggered by the context menu or keyboard shortcut, it
-    // may be non-empty and filling should replace the selected text.
+    // Restores the text selection at the time of AskForValuesToFill() so that
+    // filling replaces the selected text.
     frame->SetEditableSelectionOffsets(info.selection_range.StartOffset(),
                                        info.selection_range.EndOffset());
   }
 
-  int offset = 0;
-  if (info.caused_by_trigger_string && HasTriggerStringNextToCaret(field)) {
-    offset = GetTriggerString().size();
-  }
-
-  if (offset == 0 &&
-      base::FeatureList::IsEnabled(features::kAutofillAtMemoryPasteText)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillAtMemoryPasteText)) {
     field.PasteText(WebString::FromUtf16(value), /*replace_all=*/false,
                     /*smart_replace=*/true);
   } else {
-    frame->ExtendSelectionAndReplace(/*before=*/offset,
+    frame->ExtendSelectionAndReplace(/*before=*/0,
                                      /*after=*/0, WebString::FromUtf16(value));
   }
 }
@@ -563,9 +370,6 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
 
   last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
       .field_id = form_util::GetFieldRendererId(field),
-      .caused_by_trigger_string =
-          trigger_source ==
-          AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
       .value_hash = HashFieldValue(field),
       .selection_range =
           frame ? frame->GetInputMethodController()->GetSelectionOffsets()
@@ -581,14 +385,6 @@ const RendererPreferences* AtMemoryHandler::GetRendererPreferences() const {
     }
   }
   return nullptr;
-}
-
-const std::u16string& AtMemoryHandler::GetTriggerString() const {
-  const blink::RendererPreferences* prefs = GetRendererPreferences();
-  if (!prefs) {
-    return base::EmptyString16();
-  }
-  return prefs->autofill_trigger_string;
 }
 
 }  // namespace autofill
