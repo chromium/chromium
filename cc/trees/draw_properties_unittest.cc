@@ -5789,6 +5789,28 @@ TEST_F(DrawPropertiesAnchorPositionScrollTest, Basics) {
       GetImpl(anchored.get())->ScreenSpaceTransform().To2dTranslation());
 }
 
+TEST_F(DrawPropertiesAnchorPositionScrollTest, ScrollSnapping) {
+  CreateRoot();
+
+  scoped_refptr<Layer> container;
+  scoped_refptr<Layer> scroller;
+  std::tie(container, scroller) = CreateScroller(root_.get());
+
+  scoped_refptr<Layer> anchored =
+      CreateAnchored(root_.get(), {scroller->element_id()});
+  SetPostTranslation(anchored.get(), gfx::Vector2dF(10, 20));
+  Commit();
+
+  LayerImpl* anchored_impl = GetImpl(anchored.get());
+  EXPECT_FALSE(GetTransformNode(anchored_impl)->should_be_snapped);
+
+  SetScrollOffsetDelta(GetImpl(scroller.get()), gfx::Vector2dF(5.1f, 8.1f));
+  UpdateActiveTreeDrawProperties();
+
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 12),
+                      anchored_impl->ScreenSpaceTransform().To2dTranslation());
+}
+
 TEST_F(DrawPropertiesAnchorPositionScrollTest, NestedScrollers) {
   // Virtual layer hierarchy:
   // + root

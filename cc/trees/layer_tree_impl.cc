@@ -362,6 +362,7 @@ void LayerTreeImpl::UpdateScrollbarGeometries(const ScrollNode& scroll_node) {
     }
     bounds_size = ToCeiledSize(viewport_bounds);
   }
+  current_offset = gfx::PointF(gfx::ToRoundedPoint(current_offset));
   for (auto* scrollbar : ScrollbarsFor(scroll_node.element_id)) {
     if (scrollbar->orientation() == ScrollbarOrientation::kHorizontal) {
       scrollbar->SetCurrentPos(current_offset.x());

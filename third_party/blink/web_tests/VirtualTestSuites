@@ -1357,6 +1357,10 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-003.html",
+      "external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-004.html",
+      "external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-005.html",
+      "external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-006.html",
       "external/wpt/css/cssom-view/scrollTo-zoom.html",
       "external/wpt/css/css-position/sticky/",
       "external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom.html",

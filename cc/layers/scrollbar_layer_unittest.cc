@@ -1086,6 +1086,48 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
   EXPECT_TRUE(scrollbar_layer->CanScrollOrientation());
 }
 
+TEST_F(ScrollbarLayerTest, ScrollbarPositionUsesRoundedScrollOffset) {
+  LayerTreeImplTestBase impl;
+
+  LayerImpl* scroll_layer = impl.AddLayerInActiveTree<LayerImpl>();
+  scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
+  scroll_layer->SetBounds(gfx::Size(200, 200));
+
+  constexpr int kThumbThickness = 10;
+  constexpr int kTrackStart = 0;
+  constexpr bool kIsLeftSideVerticalScrollbar = false;
+  auto* horizontal_scrollbar =
+      impl.AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
+          ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
+          kIsLeftSideVerticalScrollbar);
+  auto* vertical_scrollbar =
+      impl.AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
+          ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
+          kIsLeftSideVerticalScrollbar);
+  horizontal_scrollbar->SetScrollElementId(scroll_layer->element_id());
+  vertical_scrollbar->SetScrollElementId(scroll_layer->element_id());
+
+  CopyProperties(impl.root_layer(), scroll_layer);
+  CreateTransformNode(scroll_layer);
+  CreateScrollNode(scroll_layer, gfx::Size(100, 100));
+  CopyProperties(scroll_layer, horizontal_scrollbar);
+  CopyProperties(scroll_layer, vertical_scrollbar);
+
+  SetScrollOffset(scroll_layer, gfx::PointF(10.4f, 20.6f));
+  impl.host_impl()->active_tree()->UpdateAllScrollbarGeometriesForTesting();
+
+  EXPECT_EQ(10.f, horizontal_scrollbar->current_pos());
+  EXPECT_EQ(21.f, vertical_scrollbar->current_pos());
+
+  impl.host_impl()->active_tree()->ResetAllChangeTracking();
+  SetScrollOffset(scroll_layer, gfx::PointF(10.f, 21.f));
+  impl.host_impl()->active_tree()->UpdateAllScrollbarGeometriesForTesting();
+
+  EXPECT_FALSE(
+      horizontal_scrollbar->LayerPropertyChangedNotFromPropertyTrees());
+  EXPECT_FALSE(vertical_scrollbar->LayerPropertyChangedNotFromPropertyTrees());
+}
+
 TEST_P(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
   // Scrollbar Layer can be created after SetScrollable is called and in a
   // separate commit. Ensure we do not missing the DidRequestShowFromMainThread

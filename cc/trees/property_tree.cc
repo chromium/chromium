@@ -679,9 +679,9 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
       // containers should have an invalid transform_id.
       DCHECK(container_transform_id != kInvalidPropertyNodeId);
       accumulated_offset += get_transformed_offset(
-          transform_node.scroll_offset().OffsetFromOrigin(),
+          transform_node.scroll_offset().OffsetFromOrigin() -
+              transform_node.snap_amount,
           transform_node.parent_id);
-      // TODO(crbug.com/325613705): Should we consider snap_amount here?
     } else if (TransformNode* container_transform =
                    property_trees()
                        ->transform_tree_mutable()
