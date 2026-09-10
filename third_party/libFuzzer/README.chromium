@@ -1,7 +1,7 @@
 Name: libFuzzer
 URL: http://llvm.org/docs/LibFuzzer.html
 Version: N/A
-Revision: 42af2c9785432da898f3a990156f9fb4499af2a0
+Revision: adc3407201e641a73a551d2f1181c684c33eea56
 Update Mechanism: Autoroll
 License: Apache-with-LLVM-Exception, NCSA, MIT
 License File: LICENSE.TXT
