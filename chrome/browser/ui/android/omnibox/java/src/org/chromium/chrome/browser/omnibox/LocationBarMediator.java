@@ -287,6 +287,10 @@ class LocationBarMediator
     private final HintTextUpdater mHintTextUpdater;
     private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mActivationChipSelectedSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final Callback<Boolean> mActivationChipSelectedObserver =
+            this::onActivationChipSelectionChanged;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             _ -> {
                 updateActivationChip();
@@ -479,8 +483,10 @@ class LocationBarMediator
                         mSearchEngineServiceSupplier,
                         mFuseboxCoordinator,
                         mActivationChipVisibilitySupplier,
+                        mActivationChipSelectedSupplier,
                         mProfileSupplier,
                         (hint) -> mUrlCoordinator.setUrlBarHintText(hint));
+        mActivationChipSelectedSupplier.addSyncObserver(mActivationChipSelectedObserver);
 
         @PageClassification
         int pageClass = mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
@@ -581,7 +587,7 @@ class LocationBarMediator
         mActivationChipSelectableView =
                 wrapSelectableView(
                         mLocationBarLayout.getActivationChip(),
-                        this::onActivationChipSelectionChanged);
+                        mActivationChipSelectedSupplier::set);
 
         mFuseboxAttachmentsSelectableView =
                 new SelectableView() {
@@ -658,6 +664,7 @@ class LocationBarMediator
             templateUrlService.removeObserver(this);
         }
         mLocationBarLayout.getActivationChip().setOnClickListener(null);
+        mActivationChipSelectedSupplier.removeObserver(mActivationChipSelectedObserver);
         mHintTextUpdater.destroy();
         mStatusCoordinator = null;
         mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(this);

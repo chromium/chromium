@@ -52,6 +52,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private final MonotonicObservableSupplier<SearchEngineService> mSearchEngineServiceSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final NonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mActivationChipSelectedSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final SearchEngineNameObserver mSearchEngineNameObserver = this::updateHintText;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
@@ -66,6 +67,8 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             (mode) -> updateHintText();
     private final Callback<Boolean> mActivationChipVisibilityObserver =
             (visible) -> updateHintText();
+    private final Callback<Boolean> mActivationChipSelectedObserver =
+            (selected) -> updateHintText();
     private final Callback<Profile> mProfileObserver = (profile) -> updateHintText();
     private final Callback<String> mUserTextObserver = (text) -> updateHintText();
     private final Callback<@DisplayState Integer> mDisplayStateObserver =
@@ -82,6 +85,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             MonotonicObservableSupplier<SearchEngineService> searchEngineServiceSupplier,
             FuseboxCoordinator fuseboxCoordinator,
             NonNullObservableSupplier<Boolean> activationChipVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> activationChipSelectedSupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
             Callback<CharSequence> updateHintTextCallback) {
         mResourceProvider = resourceProvider;
@@ -90,6 +94,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         mSearchEngineServiceSupplier = searchEngineServiceSupplier;
         mFuseboxCoordinator = fuseboxCoordinator;
         mActivationChipVisibilitySupplier = activationChipVisibilitySupplier;
+        mActivationChipSelectedSupplier = activationChipSelectedSupplier;
         mProfileSupplier = profileSupplier;
         mUpdateHintTextCallback = updateHintTextCallback;
         mLocationBarDataProvider.addObserver(this);
@@ -100,6 +105,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
                 .getFuseboxLayoutModeSupplier()
                 .addSyncObserver(mFuseboxLayoutModeObserver);
         mActivationChipVisibilitySupplier.addSyncObserver(mActivationChipVisibilityObserver);
+        mActivationChipSelectedSupplier.addSyncObserver(mActivationChipSelectedObserver);
         mProfileSupplier.addSyncObserver(mProfileObserver);
 
         updateHintText();
@@ -117,6 +123,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
                 .getFuseboxLayoutModeSupplier()
                 .removeObserver(mFuseboxLayoutModeObserver);
         mActivationChipVisibilitySupplier.removeObserver(mActivationChipVisibilityObserver);
+        mActivationChipSelectedSupplier.removeObserver(mActivationChipSelectedObserver);
         mProfileSupplier.removeObserver(mProfileObserver);
         endInput();
     }
@@ -177,11 +184,14 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return;
         }
 
-        @AutocompleteRequestType
-        int requestType =
-                mCurrentInput == null
-                        ? AutocompleteRequestType.SEARCH
-                        : mCurrentInput.getRequestType();
+        if (mActivationChipSelectedSupplier.get()) {
+            boolean showDefaultHint =
+                    mCurrentInput != null
+                            && mCurrentInput.getDisplayState() != DisplayState.SUGGESTIONS
+                            && TextUtils.isEmpty(mCurrentInput.getUserText());
+            mUpdateHintTextCallback.onResult(showDefaultHint ? getDefaultHintText() : "");
+            return;
+        }
 
         if (useAimActivationOrEmptyHint()) {
             if (triggerOrAlreadyShowingActivationHint()) {
@@ -197,9 +207,17 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return;
         }
 
+        mUpdateHintTextCallback.onResult(getDefaultHintText());
+    }
+
+    private String getDefaultHintText() {
+        @AutocompleteRequestType
+        int requestType =
+                mCurrentInput == null
+                        ? AutocompleteRequestType.SEARCH
+                        : mCurrentInput.getRequestType();
         FuseboxSessionState fuseboxSession = FuseboxSessionState.from(mLocationBarDataProvider);
-        String hint = getOmniboxHintText(requestType, fuseboxSession);
-        mUpdateHintTextCallback.onResult(hint);
+        return getOmniboxHintText(requestType, fuseboxSession);
     }
 
     private String getOmniboxHintText(
