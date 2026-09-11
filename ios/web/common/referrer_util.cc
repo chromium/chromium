@@ -33,7 +33,6 @@ net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
     case ReferrerPolicyOrigin:
       return net::ReferrerPolicy::ORIGIN;
     case ReferrerPolicyNoReferrerWhenDowngrade:
-    case ReferrerPolicyDefault:
       return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
     case ReferrerPolicyOriginWhenCrossOrigin:
       return net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
@@ -42,6 +41,7 @@ net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
     case ReferrerPolicyStrictOrigin:
       return net::ReferrerPolicy::
           ORIGIN_CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+    case ReferrerPolicyDefault:
     case ReferrerPolicyStrictOriginWhenCrossOrigin:
       return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }
