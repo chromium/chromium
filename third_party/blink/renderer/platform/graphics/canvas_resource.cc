@@ -80,28 +80,17 @@ CanvasResource::CanvasResource(
   subclass_manages_destruction_sync_token_ = true;
 }
 
-gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
+gpu::InterfaceBase* ExternalCanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())
     return nullptr;
   return ContextProviderWrapper()->ContextProvider().InterfaceBase();
 }
 
-gpu::gles2::GLES2Interface* CanvasResource::ContextGL() const {
-  if (!ContextProviderWrapper())
-    return nullptr;
-  return ContextProviderWrapper()->ContextProvider().ContextGL();
-}
-
-gpu::raster::RasterInterface* CanvasResource::RasterInterface() const {
+gpu::raster::RasterInterface* CanvasResourceSharedImage::RasterInterface()
+    const {
   if (!ContextProviderWrapper())
     return nullptr;
   return ContextProviderWrapper()->ContextProvider().RasterInterface();
-}
-
-gpu::webgpu::WebGPUInterface* CanvasResource::WebGPUInterface() const {
-  if (!ContextProviderWrapper())
-    return nullptr;
-  return ContextProviderWrapper()->ContextProvider().WebGPUInterface();
 }
 
 // static
