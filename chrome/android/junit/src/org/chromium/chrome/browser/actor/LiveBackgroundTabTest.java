@@ -92,11 +92,16 @@ public class LiveBackgroundTabTest {
 
     @Test
     public void testAttachTab_attachesAndRemovesFromPool() {
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
         mLiveBackgroundTab = new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID);
+
+        verify(mTab).addObserver(captor.capture());
+        TabObserver observer = captor.getValue();
 
         Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2);
 
         assertSame(mTab, attached);
+        verify(mTab).removeObserver(observer);
         verify(mTabModel)
                 .addTab(mTab, 2, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
         verify(mPool).removeTabById(TAB_ID);
@@ -220,7 +225,7 @@ public class LiveBackgroundTabTest {
         TabObserver observer = captor.getValue();
 
         observer.onDestroyed(mTab);
-        verify(mPool).removeTabById(TAB_ID);
+        verify(mPool).removeLiveTabByOriginalId(TAB_ID);
         verify(mTab).removeObserver(observer);
     }
 

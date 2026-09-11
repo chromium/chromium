@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -529,6 +530,70 @@ public class BackgroundTabPoolTest {
         assertEquals(2, allIds.size());
         assertTrue(allIds.contains(TAB_ID_1));
         assertTrue(allIds.contains(TAB_ID_2));
+    }
+
+    @Test
+    public void testRemoveLiveTabByOriginalId_evictsFromLiveEntriesRetainsCacheAndMapping() {
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+
+        mPool.addLiveTab(new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, TASK_ID));
+        mPool.onTabStateDirtinessChanged(tab, DirtinessState.DIRTY);
+        mExecutor.runAll();
+
+        assertTrue(mPool.getAllTabIds().contains(TAB_ID_1));
+        assertEquals(1, mPool.getLiveTabCount());
+        assertNotNull(mPool.getLiveTab(TAB_ID_1));
+        assertTrue(mPool.hasPlaceholder(PLACEHOLDER_ID));
+
+        mPool.removeLiveTabByOriginalId(TAB_ID_1);
+
+        // In-memory tab is evicted
+        assertNull(mPool.getLiveTab(TAB_ID_1));
+        assertEquals(0, mPool.getLiveTabCount());
+
+        // Cache and placeholder mapping are retained
+        assertTrue(mPool.hasPlaceholder(PLACEHOLDER_ID));
+        assertTrue(mPool.getAllTabIds().contains(TAB_ID_1));
+        assertEquals(
+                PLACEHOLDER_ID,
+                mPool.getAssociationStoreForTesting().getPlaceholderTabId(TAB_ID_1));
+
+        // Loading the tab degrades transparently to cold restore
+        Tab createdTab = createMockTab(TAB_ID_1);
+        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+        BackgroundPoolTab coldLoaded = mPool.loadTab(PLACEHOLDER_ID);
+        assertNotNull(coldLoaded);
+        assertTrue(coldLoaded instanceof ColdBackgroundTab);
+
+        coldLoaded.attachTab(mTabModel, 0);
+        verify(mTabCreator).createFrozenTab(any(), eq(TAB_ID_1), eq(0));
+    }
+
+    @Test
+    public void testRemoveLiveTabByOriginalId_callsNotifyIfEmptiedWhenLiveEntriesEmptied() {
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+
+        BackgroundTabPool spyPool = spy(mPool);
+        spyPool.addLiveTab(new LiveBackgroundTab(spyPool, tab, PLACEHOLDER_ID, TASK_ID));
+        assertEquals(1, spyPool.getLiveTabCount());
+
+        spyPool.removeLiveTabByOriginalId(TAB_ID_1);
+        assertEquals(0, spyPool.getLiveTabCount());
+
+        verify(spyPool).notifyIfEmptied();
+    }
+
+    @Test
+    public void testRemoveLiveTabByOriginalId_whenDestroyed_throwsAssertion() {
+        Tab tab = createMockTab(TAB_ID_1);
+        mPool.addLiveTab(new LiveBackgroundTab(mPool, tab, PLACEHOLDER_ID, TASK_ID));
+        mPool.destroy();
+
+        assertThrows(AssertionError.class, () -> mPool.removeLiveTabByOriginalId(TAB_ID_1));
     }
 
     private Tab createMockTab(@TabId int tabId) {
