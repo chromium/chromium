@@ -7,8 +7,7 @@ import 'chrome://settings/settings.js';
 import type {CrToastElement, SettingsGlicLoginPermissionsPageElement} from 'chrome://settings/lazy_load.js';
 import {GlicBrowserProxyImpl, loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 
@@ -42,32 +41,33 @@ suite('GlicLoginPermissionsPage', function() {
     Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
     page = document.createElement('settings-glic-login-permissions-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await browserProxy.whenCalled('getActorLoginPermissions');
+    await microtasksFinished();
   });
 
   test('login permissions list is visible', () => {
     const loginPermissionsList =
-        page.shadowRoot!.querySelector('#actorLoginPermissionsList');
+        page.shadowRoot.querySelector('#actorLoginPermissionsList');
     assertTrue(!!loginPermissionsList);
     assertEquals(
-        1, page.shadowRoot!.querySelectorAll('.permission-item').length);
+        1, page.shadowRoot.querySelectorAll('.permission-item').length);
   });
 
   test('remove dialog is shown', async () => {
     // Check that the remove dialog is not shown.
     assertNull(
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
 
     // Click the remove button.
     const removeButton =
-        page.shadowRoot!.querySelector<HTMLElement>('.icon-clear');
+        page.shadowRoot.querySelector<HTMLElement>('.icon-clear');
     assertTrue(!!removeButton);
     removeButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Check that the remove dialog is shown.
     const dialog =
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.bodyText.includes(displayName));
 
@@ -75,23 +75,23 @@ suite('GlicLoginPermissionsPage', function() {
     const closePromise = eventToPromise('close', dialog);
     dialog.$.cancel.click();
     await closePromise;
-    await flushTasks();
+    await microtasksFinished();
 
     // Check that the remove dialog is not shown.
     assertNull(
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
   });
 
   test('remove permission succeded', async () => {
     // Click the remove button.
     const removeButton =
-        page.shadowRoot!.querySelector<HTMLElement>('.icon-clear');
+        page.shadowRoot.querySelector<HTMLElement>('.icon-clear');
     assertTrue(!!removeButton);
     removeButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
     assertTrue(!!dialog);
 
     // Confirm dialog.
@@ -108,12 +108,12 @@ suite('GlicLoginPermissionsPage', function() {
     await whenClose;
     // Closing the dialog is done asynchronously, so still need to wait for the
     // dialog to close.
-    await flushTasks();
+    await microtasksFinished();
     assertNull(
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
 
     const toast =
-        page.shadowRoot!.querySelector<CrToastElement>('#removeErrorToast');
+        page.shadowRoot.querySelector<CrToastElement>('#removeErrorToast');
     assertTrue(!!toast);
     assertFalse(toast.open);
   });
@@ -123,13 +123,13 @@ suite('GlicLoginPermissionsPage', function() {
 
     // Click the remove button.
     const removeButton =
-        page.shadowRoot!.querySelector<HTMLElement>('.icon-clear');
+        page.shadowRoot.querySelector<HTMLElement>('.icon-clear');
     assertTrue(!!removeButton);
     removeButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const dialog =
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
     assertTrue(!!dialog);
     // Confirm dialog.
     const actionButton =
@@ -144,37 +144,37 @@ suite('GlicLoginPermissionsPage', function() {
 
     await whenClose;
     // Handling the closed dialog is done asynchronously, so still need to wait.
-    await flushTasks();
+    await microtasksFinished();
     assertNull(
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
 
     // Check that the error toast is shown.
     const toast =
-        page.shadowRoot!.querySelector<CrToastElement>('#removeErrorToast');
+        page.shadowRoot.querySelector<CrToastElement>('#removeErrorToast');
     assertTrue(!!toast);
     assertTrue(toast.open);
   });
 
   test('offline warning is shown', async () => {
     // Online by default.
-    assertFalse(isVisible(page.shadowRoot!.querySelector('#offlineWarning')));
+    assertFalse(isVisible(page.shadowRoot.querySelector('#offlineWarning')));
 
     const whenOffline = eventToPromise('offline', window);
     window.dispatchEvent(new Event('offline'));
     await whenOffline;
 
-    assertTrue(isVisible(page.shadowRoot!.querySelector('#offlineWarning')));
+    assertTrue(isVisible(page.shadowRoot.querySelector('#offlineWarning')));
 
     const whenOnline = eventToPromise('online', window);
     window.dispatchEvent(new Event('online'));
     await whenOnline;
 
-    assertFalse(isVisible(page.shadowRoot!.querySelector('#offlineWarning')));
+    assertFalse(isVisible(page.shadowRoot.querySelector('#offlineWarning')));
     const loginPermissionsList =
-        page.shadowRoot!.querySelector('#actorLoginPermissionsList');
+        page.shadowRoot.querySelector('#actorLoginPermissionsList');
     assertTrue(!!loginPermissionsList);
     assertEquals(
-        1, page.shadowRoot!.querySelectorAll('.permission-item').length);
+        1, page.shadowRoot.querySelectorAll('.permission-item').length);
   });
 
   test('start and stop observing on navigation', async () => {
@@ -194,7 +194,8 @@ suite('GlicLoginPermissionsPage', function() {
     Router.getInstance().navigateTo(routes.GEMINI);
     page = document.createElement('settings-glic-login-permissions-page');
     document.body.appendChild(page);
-    await flushTasks();
+    // Small delay to ensure proxy is not called.
+    await microtasksFinished();
 
     assertEquals(0, browserProxy.getCallCount('getActorLoginPermissions'));
 

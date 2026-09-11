@@ -209,9 +209,7 @@ build_webui("build") {
   ]
 
   if (!is_chromeos) {
-    web_component_files += [
-      "relaunch_confirmation_dialog.ts",
-    ]
+    web_component_files += [ "relaunch_confirmation_dialog.ts" ]
   } else {
     web_component_files += [ "site_settings/smart_card_readers_page.ts" ]
   }
@@ -525,6 +523,8 @@ build_webui("build") {
     "controls/settings_dropdown_menu.css",
     "controls/settings_slider.css",
     "downloads_page/downloads_page.css",
+    "glic_page/glic_login_permissions_page.css",
+    "glic_page/glic_page.css",
     "languages_page/add_languages_dialog.css",
     "languages_page/edit_dictionary_page.css",
     "languages_page/languages_page.css",

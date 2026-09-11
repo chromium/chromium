@@ -5,29 +5,32 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_page/settings_subpage.js';
 import '../simple_confirmation_dialog.js';
 import '../site_favicon.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {routes} from '../route.js';
-import {RouteObserverMixin} from '../router.js';
+import {RouteObserverMixinLit} from '../router.js';
 import type {Route} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
 import type {GlicBrowserProxy, LoginPermission} from './glic_browser_proxy.js';
-import {getTemplate} from './glic_login_permissions_page.html.js';
+import {getCss} from './glic_login_permissions_page.css.js';
+import {getHtml} from './glic_login_permissions_page.html.js';
 
 const SettingsGlicLoginPermissionsPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    RouteObserverMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
+
+export type GlicLoginPermissionsPageElement =
+    SettingsGlicLoginPermissionsPageElement;
 
 export class SettingsGlicLoginPermissionsPageElement extends
     SettingsGlicLoginPermissionsPageElementBase {
@@ -35,35 +38,28 @@ export class SettingsGlicLoginPermissionsPageElement extends
     return 'settings-glic-login-permissions-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      actorLoginPermissions_: {
-        type: Array,
-        value: () => [],
-      },
-
-      isOnline_: {
-        type: Boolean,
-        value: () => navigator.onLine,
-      },
-
-      selectedPermissionToRemove_: {
-        type: Object,
-        value: null,
-      },
+      actorLoginPermissions_: {type: Array},
+      isOnline_: {type: Boolean},
+      selectedPermissionToRemove_: {type: Object},
     };
   }
 
+  protected accessor actorLoginPermissions_: LoginPermission[] = [];
+  protected accessor selectedPermissionToRemove_: LoginPermission|null = null;
+  protected accessor isOnline_: boolean = navigator.onLine;
+
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
-  declare private actorLoginPermissions_: LoginPermission[];
-  declare private selectedPermissionToRemove_: LoginPermission|null;
-  declare private isOnline_: boolean;
-  private boundOnOnline_ = () => this.isOnline_ = true;
-  private boundOnOffline_ = () => this.isOnline_ = false;
+  private eventTracker_: EventTracker = new EventTracker();
 
   override currentRouteChanged(newRoute: Route, _oldRoute?: Route) {
     if (newRoute === routes.GEMINI_LOGIN) {
@@ -83,25 +79,25 @@ export class SettingsGlicLoginPermissionsPageElement extends
           this.actorLoginPermissions_ = permissions;
         });
 
-    window.addEventListener('online', this.boundOnOnline_);
-    window.addEventListener('offline', this.boundOnOffline_);
+    this.eventTracker_.add(window, 'online', () => this.isOnline_ = true);
+    this.eventTracker_.add(window, 'offline', () => this.isOnline_ = false);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.browserProxy_.stopObservingActorLoginPermissions();
-    window.removeEventListener('online', this.boundOnOnline_);
-    window.removeEventListener('offline', this.boundOnOffline_);
+    this.eventTracker_.removeAll();
   }
 
-  private onRemoveActorLoginPermissionClick_(
-      e: DomRepeatEvent<LoginPermission>) {
-    this.selectedPermissionToRemove_ = e.model.item;
+  protected onRemoveActorLoginPermissionClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    this.selectedPermissionToRemove_ = this.actorLoginPermissions_[index];
   }
 
-  private async onRemoveDialogClose_() {
+  protected async onRemoveDialogClose_() {
     const dialog =
-        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        this.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             'settings-simple-confirmation-dialog');
     assert(dialog);
     assert(this.selectedPermissionToRemove_);
@@ -111,7 +107,7 @@ export class SettingsGlicLoginPermissionsPageElement extends
           this.selectedPermissionToRemove_.username);
       if (!success) {
         const toast =
-            this.shadowRoot!.querySelector<CrToastElement>('#removeErrorToast');
+            this.shadowRoot.querySelector<CrToastElement>('#removeErrorToast');
         assert(toast);
         toast.show();
       }
@@ -119,8 +115,11 @@ export class SettingsGlicLoginPermissionsPageElement extends
     this.selectedPermissionToRemove_ = null;
   }
 
-  private getRemoveDialogDescription_(url: string): string {
-    return this.i18n('glicRemoveActorLoginDialogDescription', url);
+  protected getRemoveDialogDescription_(): string {
+    assert(this.selectedPermissionToRemove_);
+    return this.i18n(
+        'glicRemoveActorLoginDialogDescription',
+        this.selectedPermissionToRemove_.displayName);
   }
 }
 

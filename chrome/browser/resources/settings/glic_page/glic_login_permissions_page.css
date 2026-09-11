@@ -1,0 +1,62 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-icons-lit cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+.permission-item {
+  align-items: center;
+  border-bottom: var(--cr-separator-line);
+  display: flex;
+  flex: 1;
+  min-height: 48px;
+}
+
+.flex-centered {
+  align-items: center;
+  display: flex;
+}
+
+.favicon {
+  margin-inline-end: 16px;
+  margin-inline-start: 16px;
+}
+
+.section {
+  margin-inline-end: var(--cr-section-padding);
+  margin-inline-start: var(--cr-section-padding);
+}
+
+.no-sites {
+  padding-bottom: 32px;
+  padding-top: 16px;
+  padding-inline-start: 40px;
+}
+
+.header-container {
+  padding-bottom: 14px;
+}
+
+.url-column {
+  flex: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.username-column {
+  flex: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: 16px;
+}
