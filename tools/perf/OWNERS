@@ -1,15 +1,5 @@
 # Overall OWNERS
-ammedina@google.com
-carlosbarrera@google.com
-davidsegovia@google.com
-faridzad@google.com
-ggj@google.com
-gmarcoesau@google.com
-jeffyoon@google.com
-johnchen@chromium.org
-jrtm@google.com
-migueloruiz@google.com
-wenbinzhang@google.com
+file://infra/config/groups/perf/OWNERS
 
 # For gtest perf tests, perf data upload, and functional tests
 bsheedy@chromium.org

@@ -83,9 +83,7 @@ per-file internal.translatekit.json=mych@chromium.org
 
 # Perf owners
 per-file *chromium.perf*.json=hypan@google.com
-per-file *chromium.perf*.json=jeffyoon@google.com
-per-file *chromium.perf*.json=johnchen@chromium.org
-per-file *chromium.perf*.json=wenbinzhang@google.com
+per-file *chromium.perf*.json=file://infra/config/groups/perf/OWNERS
 
 # For Android perf related reviews
 per-file *chromium.perf*.json=wnwen@chromium.org
