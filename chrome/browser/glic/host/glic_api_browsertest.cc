@@ -1176,8 +1176,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testGetPanelStateAttachedHidden) {
   ASSERT_OK(OpenGlicForActiveTab());
 #endif
   ContinueJsTest();
-  EXPECT_EQ(instance->host().web_client_contents()->GetVisibility(),
-            content::Visibility::VISIBLE);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return instance->host().web_client_contents()->GetVisibility(); },
+      content::Visibility::VISIBLE));
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)
