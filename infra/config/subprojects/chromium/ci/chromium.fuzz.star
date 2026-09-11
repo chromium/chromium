@@ -337,6 +337,7 @@ def fuzz_target_builder(
         clusterfuzz_v8_targets_only = None,
         clusterfuzz_archive_path = None,
         contact_team_email = "chrome-fuzzing-core@google.com",
+        args_to_exclude_from_test_builder = [],
         **kwargs):
     if not name and not test_builder_name:
         fail("Must specify at least one of name or test_builder_name.")
@@ -413,6 +414,8 @@ def fuzz_target_builder(
 
     if not test_builder_name:
         return
+    for arg in args_to_exclude_from_test_builder:
+        kwargs.pop(arg, None)
 
     # Ensure that the test builder names follow a strict convention, but let
     # the caller specify the literal string for codesearchability.
@@ -431,6 +434,7 @@ def fuzz_target_builder(
     description = "Builds and runs fuzz target tests."
     if name:
         description += " Mirrors the build configuration of \"" + name + "\"."
+    kwargs["description_html"] = description
 
     if "ssd" in kwargs:
         kwargs["ssd"] = use_ssd_for_test_builder
@@ -440,7 +444,6 @@ def fuzz_target_builder(
 
     ci_builder(
         name = test_builder_name,
-        description_html = description,
         # We have 1 machine per builder.
         max_concurrent_invocations = 1,
         # Use the builderless machine pool.
