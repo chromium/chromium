@@ -1222,6 +1222,13 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   if (is_browser && chrome::IsIsolationEnabled(&command_line)) {
     const auto isolated_process =
         chrome::IsolatedBrowserProcess::Launch(command_line);
+    // Record the launch result HRESULT so that it can be reported to UMA once
+    // metrics reporting has been initialized. If the launch fails, this process
+    // falls through to run unisolated and reports the failure HRESULT. If the
+    // launch succeeds, this process acts as a stub and exits after WaitForExit
+    // without initializing metrics; the isolated child process will report
+    // S_OK.
+    chrome::SetIsolatedBrowserLaunchResult(isolated_process.error_or(S_OK));
     if (isolated_process.has_value()) {
       // Set the stub process's shutdown priority to a lower value than the
       // default value. The default priority is 0x280, so 0x27E is picked, which

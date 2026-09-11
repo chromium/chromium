@@ -379,6 +379,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.IsolatedBrowser.LaunchResult" enum="Hresult"
+    expires_after="2027-02-28">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-platform-security-core@google.com</owner>
+  <summary>
+    Records the HRESULT when an attempt to launch an isolated browser process is
+    made during startup. Recorded on startup in the browser process once metrics
+    reporting has initialized, only if isolation was requested. On launch
+    success, S_OK is recorded by the isolated browser process itself (the
+    launcher stub process terminates without initializing metrics). On launch
+    failure, the failure HRESULT is recorded by the browser process falling back
+    to running unisolated.
+  </summary>
+</histogram>
+
 <histogram name="Windows.IsPinnedToTaskbar" enum="IsPinnedToTaskbarResult"
     expires_after="never">
 <!-- expires-never: Used to assess Chrome usage on Windows -->

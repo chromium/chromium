@@ -44,6 +44,17 @@ namespace {
 
 constexpr wchar_t kIsolationStateValue[] = L"IsolationState";
 
+// Stored launch result HRESULT when launching an isolated browser process
+// during startup. This temporary storage is necessary because the launch
+// occurs early in process lifetime (in BasicStartupComplete) before the metrics
+// subsystem and UMA reporting have been initialized. On successful launches,
+// the initial process acts as a stub, waits for the child to exit, and
+// terminates without initializing metrics; the isolated child process skips
+// the launch attempt. Therefore, the result is only reported to UMA via
+// GetIsolatedBrowserLaunchResult if the launch fails and the process falls
+// through to run unisolated.
+std::optional<HRESULT> g_launch_result;
+
 base::expected<base::win::RegKey, LONG> GetIsolatedBrowserRegistryKey(
     REGSAM access) {
   base::win::RegKey regkey(HKEY_CURRENT_USER);
@@ -441,6 +452,28 @@ void SetIsolationState(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&CompleteRegistryPersistence, state,
                                 std::move(completed)));
+}
+
+void SetIsolatedBrowserLaunchResult(HRESULT hr) {
+  g_launch_result = hr;
+}
+
+std::optional<HRESULT> GetIsolatedBrowserLaunchResult() {
+  if (g_launch_result.has_value()) {
+    return g_launch_result;
+  }
+
+  // If the browser process has `--isolated` on its command line, it is running
+  // as the isolated browser process. By definition, the launch from the
+  // launcher process must have succeeded. Because the launcher stub process
+  // terminates after the child terminates and never initializes metrics, the
+  // successful launch result (S_OK) is reported by the isolated browser process
+  // itself.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIsolated)) {
+    return S_OK;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace chrome

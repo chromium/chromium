@@ -88,6 +88,21 @@ void SetIsolationState(
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
         completed);
 
+// Records the launch result HRESULT when launching an isolated browser process
+// during early startup (in BasicStartupComplete). Because metrics systems are
+// not yet initialized at this early stage, the result is held in temporary
+// storage until startup completes.
+void SetIsolatedBrowserLaunchResult(HRESULT hr);
+
+// Returns the launch result HRESULT if an isolated browser launch was attempted
+// or if the process is running as the isolated browser. If a launch failed and
+// the browser fell back to running unisolated, this returns the failure
+// HRESULT. If the browser is running as the isolated browser (with --isolated
+// on its command line), it must by definition have launched successfully and
+// returns S_OK (because the launcher stub process terminates without
+// initializing metrics). Returns std::nullopt if isolation was not attempted.
+std::optional<HRESULT> GetIsolatedBrowserLaunchResult();
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_WIN_ISOLATED_BROWSER_ISOLATED_BROWSER_SUPPORT_H_

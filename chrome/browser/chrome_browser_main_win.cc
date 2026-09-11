@@ -786,6 +786,16 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   }
 #endif  // GOOGLE_CHROME_BRANDING
 
+  // Record the launch result HRESULT if an attempt to launch an isolated
+  // browser was made during early startup. On launch failure, this records the
+  // failure HRESULT when the process falls through to run unisolated. On launch
+  // success, this records S_OK in the isolated browser process itself, because
+  // the launcher stub process terminates without initializing metrics.
+  if (auto launch_result = chrome::GetIsolatedBrowserLaunchResult()) {
+    base::UmaHistogramSparse("Windows.IsolatedBrowser.LaunchResult",
+                             *launch_result);
+  }
+
   // Record the parent process at a low priority.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
