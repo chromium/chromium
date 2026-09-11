@@ -7,14 +7,14 @@ Panel on origin view:
     <STYLE >
     </STYLE>
     <DIV class=title-section >
+        <#comment >
+        </#comment>
         <DIV class=title-section-header role=heading aria-level=1 >
+            <#comment >
+            </#comment>
 Origin
         </DIV>
         <DIV class=origin-display >
-            <#comment >
-            </#comment>
-            <#comment >
-            </#comment>
             <DEVTOOLS-ICON role=presentation name=lock class=security-property security-property-secure >
                 <#document-fragment >
                     <STYLE >
@@ -42,11 +42,11 @@ https
 foo.test
                 </SPAN>
             </SPAN>
-            <#comment >
-            </#comment>
         </DIV>
         <DIV class=view-network-button >
-            <DEVTOOLS-BUTTON role=link jslog=Action; track: click; context: reveal-in-network >
+            <DEVTOOLS-BUTTON role=presentation >
+                <#comment >
+                </#comment>
 View requests in Network panel
                 <#document-fragment >
                     <#comment >
@@ -57,7 +57,7 @@ View requests in Network panel
                         <#comment >
                         </#comment>
                     </STYLE>
-                    <BUTTON class=outlined >
+                    <BUTTON class= outlined  jslog=Action; track: click; context: reveal-in-network >
                         <#comment >
                         </#comment>
                         <#comment >
