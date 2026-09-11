@@ -55,6 +55,12 @@
   <message name="IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS_V3" desc="Label for the toggle to share open tabs in the composebox context menu.">
     Automatically share tabs
   </message>
+  <message name="IDS_STS_MEGAPLUS_AUTOMATICALLY_ADD_TABS_HEADER" desc="Header for the automatically add tabs section in the composebox context menu.">
+    Automatically add tabs
+  </message>
+  <message name="IDS_STS_MEGAPLUS_MANUALLY_ADD_TABS_HEADER" desc="Header for the manually add tabs section in the composebox context menu.">
+    Manually add tabs
+  </message>
 
   <!-- SmartTabSharingTryIt custom IPH promo -->
   <message name="IDS_STS_IPH_TRY_IT_HEADER" desc="Header for the custom IPH promoting smart tab sharing.">
