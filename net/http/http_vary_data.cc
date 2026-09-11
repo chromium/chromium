@@ -13,7 +13,6 @@
 #include "crypto/hash.h"
 #include "crypto/obsolete/md5.h"
 #include "net/http/http_request_headers.h"
-#include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 
@@ -29,12 +28,11 @@ using HasherVariant = std::variant<crypto::obsolete::Md5, crypto::hash::Hasher>;
 
 // Append to the given hash context for the given request header.
 template <typename Hasher>
-void AddField(const HttpRequestInfo& request_info,
+void AddField(const HttpRequestHeaders& request_headers,
               std::string_view request_header,
               Hasher& context) {
   std::string request_value =
-      request_info.extra_headers.GetHeader(request_header)
-          .value_or(std::string());
+      request_headers.GetHeader(request_header).value_or(std::string());
 
   // Append a character that cannot appear in the request header line so that we
   // protect against case where the concatenation of two request headers could
@@ -45,7 +43,7 @@ void AddField(const HttpRequestInfo& request_info,
 }
 
 // A helper to abstract away the hashing logic for different context types.
-bool UpdateVaryContext(const HttpRequestInfo& request_info,
+bool UpdateVaryContext(const HttpRequestHeaders& request_headers,
                        const HttpResponseHeaders& response_headers,
                        HasherVariant& context_variant) {
   bool processed_header = false;
@@ -57,7 +55,7 @@ bool UpdateVaryContext(const HttpRequestInfo& request_info,
     DCHECK_NE("*", *request_header);
     std::visit(
         [&](auto& context) {
-          AddField(request_info, *request_header, context);
+          AddField(request_headers, *request_header, context);
         },
         context_variant);
     processed_header = true;
@@ -68,7 +66,7 @@ bool UpdateVaryContext(const HttpRequestInfo& request_info,
 
 HttpVaryData::HttpVaryData() = default;
 
-bool HttpVaryData::Init(const HttpRequestInfo& request_info,
+bool HttpVaryData::Init(const HttpRequestHeaders& request_headers,
                         const HttpResponseHeaders& response_headers,
                         HashType hash_type) {
   is_valid_ = false;
@@ -92,7 +90,7 @@ bool HttpVaryData::Init(const HttpRequestInfo& request_info,
                           crypto::hash::HashKind::kSha256)
           : HasherVariant(MakeMd5HasherForHttpVaryData());
 
-  if (!UpdateVaryContext(request_info, response_headers, context_variant)) {
+  if (!UpdateVaryContext(request_headers, response_headers, context_variant)) {
     return false;
   }
 
@@ -180,7 +178,7 @@ void HttpVaryData::Persist(base::Pickle* pickle) const {
 }
 
 bool HttpVaryData::MatchesRequest(
-    const HttpRequestInfo& request_info,
+    const HttpRequestHeaders& request_headers,
     const HttpResponseHeaders& cached_response_headers) const {
   // Vary: * never matches.
   if (cached_response_headers.HasHeaderValue("vary", "*")) {
@@ -188,7 +186,8 @@ bool HttpVaryData::MatchesRequest(
   }
 
   HttpVaryData new_vary_data;
-  if (!new_vary_data.Init(request_info, cached_response_headers, hash_type())) {
+  if (!new_vary_data.Init(request_headers, cached_response_headers,
+                          hash_type())) {
     // This case can happen if |this| was loaded from a cache that was populated
     // by a build before crbug.com/469675 was fixed.
     return false;

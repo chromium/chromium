@@ -22,7 +22,7 @@ class PickleIterator;
 
 namespace net {
 
-struct HttpRequestInfo;
+class HttpRequestHeaders;
 class HttpResponseHeaders;
 
 using Md5Hash = std::array<uint8_t, crypto::obsolete::Md5::kSize>;
@@ -56,14 +56,14 @@ class NET_EXPORT_PRIVATE HttpVaryData {
 
   bool is_valid() const { return is_valid_; }
 
-  // Initialize from a request and its corresponding response headers.
+  // Initialize from request headers and their corresponding response headers.
   //
   // Returns true if a Vary header was found in the response headers and that
   // Vary header was not empty. Upon success, the object is also marked as valid
   // such that is_valid() will return true.  Otherwise, false is returned to
   // indicate that this object is marked as invalid.
   // New entries are created with SHA256.
-  bool Init(const HttpRequestInfo& request_info,
+  bool Init(const HttpRequestHeaders& request_headers,
             const HttpResponseHeaders& response_headers,
             HashType hash_type = HashType::kSHA256);
 
@@ -79,10 +79,11 @@ class NET_EXPORT_PRIVATE HttpVaryData {
   // invalid object.
   void Persist(base::Pickle* pickle) const;
 
-  // Call this method to test if the given request matches the previous request
-  // with which this vary data corresponds.  The |cached_response_headers| must
-  // be the same response headers used to generate this vary data.
-  bool MatchesRequest(const HttpRequestInfo& request_info,
+  // Call this method to test if the given request headers match the previous
+  // request headers with which this vary data corresponds. The
+  // |cached_response_headers| must be the same response headers used to
+  // generate this vary data.
+  bool MatchesRequest(const HttpRequestHeaders& request_headers,
                       const HttpResponseHeaders& cached_response_headers) const;
 
   HashType hash_type() const {

@@ -8,7 +8,7 @@
 #include <array>
 
 #include "base/pickle.h"
-#include "net/http/http_request_info.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,18 +21,18 @@ typedef testing::Test HttpVaryDataTest;
 using ExtraHeaders = std::vector<std::pair<std::string, std::string>>;
 
 struct TestTransaction {
-  HttpRequestInfo request;
+  HttpRequestHeaders request_headers;
   scoped_refptr<HttpResponseHeaders> response;
 
-  void Init(const ExtraHeaders& request_headers,
-            const std::string& response_headers) {
+  void Init(const ExtraHeaders& headers, const std::string& response_headers) {
     std::string temp(response_headers);
     std::replace(temp.begin(), temp.end(), '\n', '\0');
     response = base::MakeRefCounted<HttpResponseHeaders>(temp);
 
-    request.extra_headers.Clear();
-    for (const auto& [key, value] : request_headers)
-      request.extra_headers.SetHeader(key, value);
+    request_headers.Clear();
+    for (const auto& [key, value] : headers) {
+      request_headers.SetHeader(key, value);
+    }
   }
 };
 
@@ -55,7 +55,7 @@ TEST(HttpVaryDataTest, IsInvalid) {
 
     HttpVaryData v;
     EXPECT_FALSE(v.is_valid());
-    EXPECT_EQ(kExpectedValid[i], v.Init(t.request, *t.response.get()));
+    EXPECT_EQ(kExpectedValid[i], v.Init(t.request_headers, *t.response.get()));
     EXPECT_EQ(kExpectedValid[i], v.is_valid());
   }
 }
@@ -66,13 +66,13 @@ TEST(HttpVaryDataTest, MultipleInit) {
   // Init to something valid.
   TestTransaction t1;
   t1.Init({{"Foo", "1"}, {"bar", "23"}}, "HTTP/1.1 200 OK\nVary: foo, bar\n\n");
-  EXPECT_TRUE(v.Init(t1.request, *t1.response.get()));
+  EXPECT_TRUE(v.Init(t1.request_headers, *t1.response.get()));
   EXPECT_TRUE(v.is_valid());
 
   // Now overwrite by initializing to something invalid.
   TestTransaction t2;
   t2.Init({{"Foo", "1"}, {"bar", "23"}}, "HTTP/1.1 200 OK\n\n");
-  EXPECT_FALSE(v.Init(t2.request, *t2.response.get()));
+  EXPECT_FALSE(v.Init(t2.request_headers, *t2.response.get()));
   EXPECT_FALSE(v.is_valid());
 }
 
@@ -84,9 +84,9 @@ TEST(HttpVaryDataTest, DoesVary) {
   b.Init({{"Foo", "2"}}, "HTTP/1.1 200 OK\nVary: foo\n\n");
 
   HttpVaryData v;
-  EXPECT_TRUE(v.Init(a.request, *a.response.get()));
+  EXPECT_TRUE(v.Init(a.request_headers, *a.response.get()));
 
-  EXPECT_FALSE(v.MatchesRequest(b.request, *b.response.get()));
+  EXPECT_FALSE(v.MatchesRequest(b.request_headers, *b.response.get()));
 }
 
 TEST(HttpVaryDataTest, DoesVary2) {
@@ -97,9 +97,9 @@ TEST(HttpVaryDataTest, DoesVary2) {
   b.Init({{"Foo", "12"}, {"bar", "3"}}, "HTTP/1.1 200 OK\nVary: foo, bar\n\n");
 
   HttpVaryData v;
-  EXPECT_TRUE(v.Init(a.request, *a.response.get()));
+  EXPECT_TRUE(v.Init(a.request_headers, *a.response.get()));
 
-  EXPECT_FALSE(v.MatchesRequest(b.request, *b.response.get()));
+  EXPECT_FALSE(v.MatchesRequest(b.request_headers, *b.response.get()));
 }
 
 TEST(HttpVaryDataTest, DoesVaryStar) {
@@ -114,9 +114,9 @@ TEST(HttpVaryDataTest, DoesVaryStar) {
   b.Init(kRequestHeaders, kResponse);
 
   HttpVaryData v;
-  EXPECT_TRUE(v.Init(a.request, *a.response.get()));
+  EXPECT_TRUE(v.Init(a.request_headers, *a.response.get()));
 
-  EXPECT_FALSE(v.MatchesRequest(b.request, *b.response.get()));
+  EXPECT_FALSE(v.MatchesRequest(b.request_headers, *b.response.get()));
 }
 
 TEST(HttpVaryDataTest, DoesntVary) {
@@ -127,9 +127,9 @@ TEST(HttpVaryDataTest, DoesntVary) {
   b.Init({{"Foo", "1"}}, "HTTP/1.1 200 OK\nVary: foo\n\n");
 
   HttpVaryData v;
-  EXPECT_TRUE(v.Init(a.request, *a.response.get()));
+  EXPECT_TRUE(v.Init(a.request_headers, *a.response.get()));
 
-  EXPECT_TRUE(v.MatchesRequest(b.request, *b.response.get()));
+  EXPECT_TRUE(v.MatchesRequest(b.request_headers, *b.response.get()));
 }
 
 TEST(HttpVaryDataTest, DoesntVary2) {
@@ -141,9 +141,9 @@ TEST(HttpVaryDataTest, DoesntVary2) {
          "HTTP/1.1 200 OK\nVary: foo\nVary: bar\n\n");
 
   HttpVaryData v;
-  EXPECT_TRUE(v.Init(a.request, *a.response.get()));
+  EXPECT_TRUE(v.Init(a.request_headers, *a.response.get()));
 
-  EXPECT_TRUE(v.MatchesRequest(b.request, *b.response.get()));
+  EXPECT_TRUE(v.MatchesRequest(b.request_headers, *b.response.get()));
 }
 
 TEST(HttpVaryDataTest, DoesntVaryByCookieForRedirect) {
@@ -151,7 +151,7 @@ TEST(HttpVaryDataTest, DoesntVaryByCookieForRedirect) {
   a.Init({{"Cookie", "1"}}, "HTTP/1.1 301 Moved\nLocation: x\n\n");
 
   HttpVaryData v;
-  EXPECT_FALSE(v.Init(a.request, *a.response.get()));
+  EXPECT_FALSE(v.Init(a.request_headers, *a.response.get()));
 }
 
 TEST(HttpVaryDataTest, PersistAndLoadMD5) {
@@ -162,7 +162,7 @@ TEST(HttpVaryDataTest, PersistAndLoadMD5) {
   a.Init(kRequestHeaders, kResponse);
 
   HttpVaryData vary_data;
-  ASSERT_TRUE(vary_data.Init(a.request, *a.response.get(),
+  ASSERT_TRUE(vary_data.Init(a.request_headers, *a.response.get(),
                              HttpVaryData::HashType::kMD5));
   EXPECT_TRUE(vary_data.is_valid());
 
@@ -184,7 +184,7 @@ TEST(HttpVaryDataTest, PersistAndLoadSHA256) {
   a.Init(kRequestHeaders, kResponse);
 
   HttpVaryData vary_data;
-  ASSERT_TRUE(vary_data.Init(a.request, *a.response.get(),
+  ASSERT_TRUE(vary_data.Init(a.request_headers, *a.response.get(),
                              HttpVaryData::HashType::kSHA256));
   EXPECT_TRUE(vary_data.is_valid());
 
@@ -226,45 +226,47 @@ TEST(HttpVaryDataTest, PersistOldFormatAsNewFormat) {
 }
 
 TEST(HttpVaryDataTest, MatchesRequestMD5) {
-  HttpRequestInfo request_info;
-  request_info.extra_headers.SetHeader("accept-language", "en-US");
+  HttpRequestHeaders request_headers;
+  request_headers.SetHeader("accept-language", "en-US");
   std::string raw_headers = "HTTP/1.1 200 OK\nVary: accept-language\n\n";
   std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
   auto response_headers =
       base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
   HttpVaryData vary_data;
-  ASSERT_TRUE(vary_data.Init(request_info, *response_headers,
+  ASSERT_TRUE(vary_data.Init(request_headers, *response_headers,
                              HttpVaryData::HashType::kMD5));
 
   // Matching request.
-  EXPECT_TRUE(vary_data.MatchesRequest(request_info, *response_headers));
+  EXPECT_TRUE(vary_data.MatchesRequest(request_headers, *response_headers));
 
   // Mismatched request.
-  HttpRequestInfo other_request_info;
-  other_request_info.extra_headers.SetHeader("accept-language", "en-GB");
-  EXPECT_FALSE(vary_data.MatchesRequest(other_request_info, *response_headers));
+  HttpRequestHeaders other_request_headers;
+  other_request_headers.SetHeader("accept-language", "en-GB");
+  EXPECT_FALSE(
+      vary_data.MatchesRequest(other_request_headers, *response_headers));
 }
 
 TEST(HttpVaryDataTest, MatchesRequestSHA256) {
-  HttpRequestInfo request_info;
-  request_info.extra_headers.SetHeader("accept-language", "en-US");
+  HttpRequestHeaders request_headers;
+  request_headers.SetHeader("accept-language", "en-US");
   std::string raw_headers = "HTTP/1.1 200 OK\nVary: accept-language\n\n";
   std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
   auto response_headers =
       base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
   HttpVaryData vary_data;
-  ASSERT_TRUE(vary_data.Init(request_info, *response_headers,
+  ASSERT_TRUE(vary_data.Init(request_headers, *response_headers,
                              HttpVaryData::HashType::kSHA256));
 
   // Matching request.
-  EXPECT_TRUE(vary_data.MatchesRequest(request_info, *response_headers));
+  EXPECT_TRUE(vary_data.MatchesRequest(request_headers, *response_headers));
 
   // Mismatched request.
-  HttpRequestInfo other_request_info;
-  other_request_info.extra_headers.SetHeader("accept-language", "en-GB");
-  EXPECT_FALSE(vary_data.MatchesRequest(other_request_info, *response_headers));
+  HttpRequestHeaders other_request_headers;
+  other_request_headers.SetHeader("accept-language", "en-GB");
+  EXPECT_FALSE(
+      vary_data.MatchesRequest(other_request_headers, *response_headers));
 }
 
 TEST(HttpVaryDataTest, InitFromInvalidPickle) {

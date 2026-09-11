@@ -64,6 +64,7 @@
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -2231,7 +2232,7 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   // If the new response didn't have a vary header, we continue to use the
   // header from the stored response per the effect of headers->Update().
   // Update the data with the new/updated request headers.
-  response_.vary_data.Init(*request_, *response_.headers);
+  response_.vary_data.Init(request_->extra_headers, *response_.headers);
 
   if (UpdateAndReportCacheability(*response_.headers)) {
     if (!entry_->IsDoomed()) {
@@ -3225,7 +3226,7 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
   //  - watch out for cached responses that depend on authentication
 
   if (response_.vary_data.is_valid() &&
-      !response_.vary_data.MatchesRequest(*request_,
+      !response_.vary_data.MatchesRequest(request_->extra_headers,
                                           *response_.headers.get())) {
     vary_mismatch_ = true;
     return VALIDATION_SYNCHRONOUS;
@@ -4053,7 +4054,7 @@ void HttpCache::Transaction::SetResponse(const HttpResponseInfo& response) {
 
   if (response_.headers) {
     DCHECK(request_);
-    response_.vary_data.Init(*request_, *response_.headers);
+    response_.vary_data.Init(request_->extra_headers, *response_.headers);
   }
 
   // Clear zstd decompression state unconditionally. This covers:
