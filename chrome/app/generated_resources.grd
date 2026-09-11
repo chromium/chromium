@@ -7540,6 +7540,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_ACCESSIBLE_TEXT" desc="Accessible text for the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere." translateable="false">
         Ask anything about what's on your screen by sharing your screen.
       </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_CLOSE" desc="Label for the close option in the Loomnibox (Omnibox Everywhere) right-click context menu. Closes Loomnibox and removes the taskbar icon while keeping it invokable via hotkeys and notification area.">
+        Close
+      </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_MINIMIZE" desc="Label for the minimize option in the Loomnibox (Omnibox Everywhere) right-click context menu. Minimizes Loomnibox while keeping the taskbar icon visible.">
+        Minimize
+      </message>
 
       <!-- Contextual Search -->
       <if expr="use_titlecase">
