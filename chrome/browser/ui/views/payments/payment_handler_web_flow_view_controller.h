@@ -41,6 +41,10 @@ namespace blink {
 class WebInputEvent;
 }
 
+namespace permissions {
+class PermissionIndicatorsTabData;
+}
+
 namespace views {
 class View;
 }
@@ -236,6 +240,8 @@ class PaymentHandlerWebFlowViewController
   base::OneShotTimer indicator_chip_collapse_timer_;
   base::OneShotTimer indicator_dismiss_timer_;
   std::unique_ptr<PermissionPromptChipModel> chip_model_;
+  std::unique_ptr<permissions::PermissionIndicatorsTabData>
+      permission_indicators_tab_data_;
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;
   base::WeakPtr<PaymentHandlerOriginLabel> origin_label_;
   base::WeakPtr<PaymentHandlerCloseButton> close_button_;

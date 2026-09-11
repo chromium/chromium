@@ -2159,6 +2159,98 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewCameraUxTest,
+    BlockedCameraIndicator_RepeatRequestShowsCompactIconWithoutExpanding) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
+  ASSERT_NE(nullptr, dashboard);
+  PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
+
+  // First request: dismiss prompt and let verbose indicator expand and hide.
+  {
+    PermissionPromptWaiter prompt_waiter(manager);
+    content::ExecuteScriptAsync(payment_handler_contents, R"(
+      navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+    )");
+    prompt_waiter.WaitUntilPromptAdded();
+
+    ChipAnimationWaiter expand_waiter(indicator_chip);
+    manager->Dismiss(std::monostate());
+    expand_waiter.WaitForExpandAnimation();
+
+    ChipAnimationWaiter collapse_waiter(indicator_chip);
+    test_api(web_flow_controller).fire_indicator_chip_collapse_timer();
+    collapse_waiter.WaitForCollapseAnimation();
+
+    test_api(web_flow_controller).fire_indicator_dismiss_timer();
+    EXPECT_FALSE(indicator_chip->GetVisible());
+    EXPECT_TRUE(
+        test_api(web_flow_controller).location_icon_view()->GetVisible());
+  }
+
+  // Second request: re-request camera. Since verbose indicator was already
+  // displayed, subsequent disallow shows compact 24px icon directly.
+  {
+    PermissionPromptWaiter prompt_waiter(manager);
+    content::ExecuteScriptAsync(payment_handler_contents, R"(
+      navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});
+    )");
+    prompt_waiter.WaitUntilPromptAdded();
+
+    manager->Dismiss(std::monostate());
+
+    EXPECT_FALSE(dashboard->GetRequestChip()->GetVisible());
+    EXPECT_TRUE(dashboard->GetVisible());
+    EXPECT_TRUE(indicator_chip->GetVisible());
+    EXPECT_EQ(PermissionChipTheme::kBlockedActivityIndicator,
+              indicator_chip->GetThemeForTesting());
+    EXPECT_EQ(
+        PaymentHandlerWebFlowViewController::IndicatorDisplayPhase::kCompact,
+        test_api(web_flow_controller).indicator_phase());
+    EXPECT_FALSE(test_api(web_flow_controller)
+                     .is_indicator_chip_collapse_timer_running());
+    EXPECT_TRUE(
+        test_api(web_flow_controller).is_indicator_dismiss_timer_running());
+
+    test_api(web_flow_controller).fire_indicator_dismiss_timer();
+    EXPECT_FALSE(indicator_chip->GetVisible());
+    EXPECT_FALSE(dashboard->GetVisible());
+    EXPECT_TRUE(
+        test_api(web_flow_controller).location_icon_view()->GetVisible());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     PaymentHandlerWebFlowViewCameraTest,
