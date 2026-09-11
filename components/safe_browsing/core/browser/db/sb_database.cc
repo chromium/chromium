@@ -44,16 +44,9 @@ constexpr int kUmaNumBuckets = 50;
 
 // Returns the name of the metric by combining `prefix`, "V4" or "V5",
 // and `suffix`.
-std::string GetMetricName(std::string_view prefix,
-                          std::string_view suffix,
-                          bool allow_v5_logging = false) {
-  // TODO(crbug.com/362791941): handle v5 and SB. Eventually `allow_v5_logging`
-  // should be removed and always be true.
+std::string GetMetricName(std::string_view prefix, std::string_view suffix) {
   return base::StrCat(
-      {prefix,
-       allow_v5_logging && base::FeatureList::IsEnabled(kLocalListsUseSBv5)
-           ? "V5"
-           : "V4",
+      {prefix, base::FeatureList::IsEnabled(kLocalListsUseSBv5) ? "V5" : "V4",
        suffix});
 }
 
@@ -87,8 +80,7 @@ void RecordCheckStoresTimeTaken(const std::string& metric_name,
   base::UmaHistogramTimes(
       GetMetricName(
           "SafeBrowsing.",
-          base::StrCat({"CheckUrl.TimeTaken.LocalLookup.", metric_name}),
-          /*allow_v5_logging=*/true),
+          base::StrCat({"CheckUrl.TimeTaken.LocalLookup.", metric_name})),
       delta);
   base::UmaHistogramTimes(
       base::StrCat(
@@ -182,10 +174,10 @@ void SBDatabase::CreateOnTaskRunner(
     }
 
     SBStorePtr store = CreateStore(db_task_runner, base_path, it);
-    // Logs SafeBrowsing.V4Store.ReadyOnStartup
+    // Logs SafeBrowsing.V4Store.ReadyOnStartup or
+    // SafeBrowsing.V5Store.ReadyOnStartup
     base::UmaHistogramBoolean(
-        GetMetricName("SafeBrowsing.", "Store.ReadyOnStartup",
-                      /*allow_v5_logging=*/true),
+        GetMetricName("SafeBrowsing.", "Store.ReadyOnStartup"),
         store->HasValidData());
     base::UmaHistogramBoolean("SafeBrowsing.SBStore.ReadyOnStartup",
                               store->HasValidData());
@@ -442,8 +434,7 @@ int64_t SBDatabase::GetStoreSizeInBytes(
 
 void SBDatabase::RecordFileSizeHistograms() {
   // Logs SafeBrowsing.V4Database.Size or SafeBrowsing.V5Database.Size
-  std::string size_metric = GetMetricName("SafeBrowsing.", "Database.Size",
-                                          /*allow_v5_logging=*/true);
+  std::string size_metric = GetMetricName("SafeBrowsing.", "Database.Size");
   int64_t db_size = 0;
   for (const auto& store_map_iter : *store_map_) {
     const int64_t size =
@@ -458,9 +449,8 @@ void SBDatabase::RecordFileSizeHistograms() {
   // Logs SafeBrowsing.V4Database.SizeLinear or
   // SafeBrowsing.V5Database.SizeLinear
   base::UmaHistogramExactLinear(
-      GetMetricName("SafeBrowsing.", "Database.SizeLinear",
-                    /*allow_v5_logging=*/true),
-      db_size_megabytes, /*value_max=*/50);
+      GetMetricName("SafeBrowsing.", "Database.SizeLinear"), db_size_megabytes,
+      /*exclusive_max=*/50);
 }
 
 void SBDatabase::RecordDatabaseUpdateLatency() {
@@ -468,8 +458,7 @@ void SBDatabase::RecordDatabaseUpdateLatency() {
     // Logs SafeBrowsing.V4Database.UpdateLatency or
     // SafeBrowsing.V5Database.UpdateLatency
     base::UmaHistogramCustomTimes(
-        GetMetricName("SafeBrowsing.", "Database.UpdateLatency",
-                      /*allow_v5_logging=*/true),
+        GetMetricName("SafeBrowsing.", "Database.UpdateLatency"),
         base::Time::Now() - last_update_, kUmaMinTime, kUmaMaxTime,
         kUmaNumBuckets);
   }

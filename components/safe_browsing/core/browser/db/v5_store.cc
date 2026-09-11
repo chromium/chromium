@@ -429,8 +429,6 @@ V4ToV5MigrationResult V5Store::MigrateFromV4(
   if (!v5_ext.empty()) {
     V5HashFile* v5_hash_file = list_details->mutable_hash_file();
     v5_hash_file->set_extension(v5_ext);
-    // TODO(crbug.com/362791941): ensure this is the same as what V5 WriteToDisk
-    // eventually does
     v5_hash_file->set_file_size(file_size);
   }
 

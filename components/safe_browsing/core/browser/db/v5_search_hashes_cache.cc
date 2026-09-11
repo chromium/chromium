@@ -19,7 +19,6 @@ namespace safe_browsing {
 
 namespace {
 
-// TODO(crbug.com/362791941): Rename HPRT logs.
 void LogCacheHitOrMiss(bool is_hit) {
   if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
     base::UmaHistogramBoolean("SafeBrowsing.V5Cache.CacheHit", is_hit);

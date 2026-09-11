@@ -25,7 +25,6 @@
 class SafeBrowsingServiceTest;
 class TestSafeBrowsingDatabaseHelper;
 
-// TODO(crbug.com/362791941): Handle references to v4.
 namespace safe_browsing {
 
 class SBDatabase;

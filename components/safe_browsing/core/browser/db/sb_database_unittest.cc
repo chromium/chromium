@@ -35,7 +35,7 @@
 
 namespace safe_browsing {
 
-// TODO(crbug.com/362791941): Handle references to v4.
+// TODO(crbug.com/372395685): Delete references to v4.
 class FakeV4Store : public V4Store {
  public:
   FakeV4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,

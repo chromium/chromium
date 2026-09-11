@@ -77,7 +77,7 @@ void SBStore::LogHasValidDataHistograms() {
   std::string sb_store_suffix = suffix;
   // Make sure that the SBStore suffix does not have "_v5" at the end, that way
   // the SBStore logs are directly comparable between v4 and v5.
-  // TODO(crbug.com/362791941): Pull out a shared constant for "_v5".
+  // TODO(crbug.com/372395685): Remove all SB logs upon deprecation.
   if (base::EndsWith(sb_store_suffix, "_v5", base::CompareCase::SENSITIVE)) {
     sb_store_suffix = sb_store_suffix.substr(0, sb_store_suffix.length() - 3);
   }
