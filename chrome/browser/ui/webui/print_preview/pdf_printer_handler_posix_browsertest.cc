@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -143,6 +144,42 @@ IN_PROC_BROWSER_TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
     pdf_printer->StartPrintToPdf();
     EXPECT_EQ(kExpectedFileMode, GetFilePermissions(save_to_pdf_file));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(PdfPrinterHandlerPosixTest,
+                       OverwriteExistingPdfUpdatesTimestamps) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Create an initial file and backdate its timestamp to simulate an existing
+  // file.
+  base::FilePath pdf_file_path = temp_dir_.GetPath().Append("output.pdf");
+  ASSERT_TRUE(base::WriteFile(pdf_file_path, "original"));
+  base::Time past_time = base::Time::Now() - base::Minutes(1);
+  ASSERT_TRUE(base::TouchFile(pdf_file_path, past_time, past_time));
+
+  base::File::Info initial_info;
+  ASSERT_TRUE(base::GetFileInfo(pdf_file_path, &initial_info));
+
+  // Print a PDF to the same path as the initial file.
+  auto pdf_printer = std::make_unique<FakePdfPrinterHandler>(
+      GetProfile(), browser()->tab_strip_model()->GetActiveWebContents(),
+      pdf_file_path);
+  pdf_printer->StartPrintToPdf();
+
+  std::optional<std::vector<uint8_t>> bytes =
+      base::ReadFileToBytes(pdf_file_path);
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_EQ(base::span(bytes.value()), base::span(kDummyData));
+
+  base::File::Info updated_info;
+  ASSERT_TRUE(base::GetFileInfo(pdf_file_path, &updated_info));
+
+  EXPECT_GT(updated_info.last_modified, initial_info.last_modified);
+#if BUILDFLAG(IS_MAC)
+  // File creation time cannot be explicitly set on Linux, so only check this on
+  // Mac.
+  EXPECT_GT(updated_info.creation_time, initial_info.creation_time);
+#endif
 }
 
 }  // namespace printing

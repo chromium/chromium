@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/cloud_devices/common/printer_description.h"
+#include "components/download/public/common/download_file_utils.h"
 #include "components/pdf/common/constants.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_context.h"
@@ -183,7 +184,7 @@ base::DictValue GetPdfCapabilities(
 // Callback that stores a PDF file on disk.
 void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
                         const base::FilePath& path) {
-  base::WriteFile(path, *data);
+  download::WriteFileAtomicallyWithPermissions(path, *data);
 }
 
 // Callback that runs after `PrintToPdfCallback()` returns.

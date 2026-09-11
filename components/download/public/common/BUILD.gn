@@ -30,6 +30,8 @@ component("public") {
     "download_file.h",
     "download_file_factory.h",
     "download_file_impl.h",
+    "download_file_utils.cc",
+    "download_file_utils.h",
     "download_interrupt_reason_values.h",
     "download_interrupt_reasons.h",
     "download_interrupt_reasons_utils.h",
@@ -185,7 +187,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = []
+  sources = [ "download_file_utils_unittest.cc" ]
 
   if (is_android) {
     sources += [ "android/auto_resumption_handler_unittest.cc" ]

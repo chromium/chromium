@@ -102,6 +102,7 @@ source_set("impl") {
     "//components/cloud_devices/common",
     "//components/crash/core/common",
     "//components/device_event_log",
+    "//components/download/public/common:public",
     "//components/drive",
     "//components/enterprise/buildflags",
     "//components/pdf/common:constants",
