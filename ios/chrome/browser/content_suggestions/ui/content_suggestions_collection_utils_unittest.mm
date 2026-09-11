@@ -256,6 +256,33 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
   }
 }
 
+// Tests that HeaderSeparatorHeight returns 0 when kNewTabPageUICleanup is
+// enabled and kChromeNextIa is disabled, and a positive height otherwise.
+TEST_F(ContentSuggestionsCollectionUtilsTest, HeaderSeparatorHeight) {
+  // Control (Disabled).
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kNewTabPageUICleanup);
+    EXPECT_GT(HeaderSeparatorHeight(), 0);
+  }
+
+  // Enabled with kChromeNextIa disabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures({kNewTabPageUICleanup},
+                                         {kChromeNextIa});
+    EXPECT_EQ(0, HeaderSeparatorHeight());
+  }
+
+  // Enabled with kChromeNextIa enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures({kNewTabPageUICleanup, kChromeNextIa},
+                                         {});
+    EXPECT_GT(HeaderSeparatorHeight(), 0);
+  }
+}
+
 TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
   CGFloat expectedHeight = IsAimEnabledInNtp() ? 48 : 36;
   EXPECT_EQ(expectedHeight, PinnedFakeOmniboxHeight());

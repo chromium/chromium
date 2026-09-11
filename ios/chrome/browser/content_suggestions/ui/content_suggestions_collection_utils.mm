@@ -245,6 +245,9 @@ CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
 }
 
 CGFloat HeaderSeparatorHeight() {
+  if (!IsChromeNextIaEnabled() && IsNewTabPageUICleanupEnabled()) {
+    return 0;
+  }
   return AlignValueToUpperPixel(kToolbarSeparatorHeight);
 }
 

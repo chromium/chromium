@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/sync/test/test_sync_service.h"
@@ -61,6 +63,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -98,6 +101,8 @@ std::unique_ptr<KeyedService> BuildMockIOSChromeAimEligibilityService(
 
 @interface NewTabPageHeaderView (Testing)
 @property(nonatomic, readonly) UIButton* customizationMenuButton;
+@property(nonatomic, readonly) UIVisualEffectView* blurBackgroundView;
+- (void)updateFakeboxBackgroundWithProgress:(CGFloat)progress;
 @end
 
 // Test fixture for testing NewTabPageCoordinator class.
@@ -857,4 +862,66 @@ TEST_F(NewTabPageCoordinatorTest, ActivityReporting) {
   [coordinator_ stop];
   [coordinator_ setValue:nil forKey:@"activityReporter"];
   [mockInstance stopMocking];
+}
+
+// Tests that blurBackgroundView is created and updated according to fakebox
+// progress when kNewTabPageUICleanup is enabled and kChromeNextIa is disabled.
+TEST_F(NewTabPageCoordinatorTest, TestHeaderBlurBackgroundView) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kNewTabPageUICleanup}, {kChromeNextIa});
+
+  NewTabPageHeaderView* header_view =
+      [[NewTabPageHeaderView alloc] initWithUseNewBadgeForLensButton:NO
+                                     useNewBadgeForCustomizationMenu:NO];
+
+  ASSERT_NE(nil, header_view.blurBackgroundView);
+  ASSERT_NE(nil, header_view.blurBackgroundView.layer.mask);
+  EXPECT_FLOAT_EQ(0.0, header_view.blurBackgroundView.alpha);
+
+  // Layout header view to verify mask layer frame and gradient stops.
+  header_view.frame = CGRectMake(0, 0, 390, 100);
+  [header_view layoutIfNeeded];
+  EXPECT_FLOAT_EQ(130.0, header_view.blurBackgroundView.frame.size.height);
+  CAGradientLayer* mask_layer = base::apple::ObjCCast<CAGradientLayer>(
+      header_view.blurBackgroundView.layer.mask);
+  ASSERT_NE(nil, mask_layer);
+  ASSERT_EQ(3u, [mask_layer.locations count]);
+  EXPECT_FLOAT_EQ(0.0, [mask_layer.locations[0] floatValue]);
+  // 100pt header height / 130pt total blur height = stop at ~0.7692.
+  EXPECT_NEAR(100.0 / 130.0, [mask_layer.locations[1] floatValue], 0.001);
+  EXPECT_FLOAT_EQ(1.0, [mask_layer.locations[2] floatValue]);
+
+  // Updating progress should adjust blur alpha and keep background clear.
+  [header_view updateFakeboxBackgroundWithProgress:0.5];
+  EXPECT_FLOAT_EQ(0.5, header_view.blurBackgroundView.alpha);
+  EXPECT_TRUE([header_view.backgroundColor isEqual:UIColor.clearColor]);
+
+  [header_view updateFakeboxBackgroundWithProgress:1.0];
+  EXPECT_FLOAT_EQ(1.0, header_view.blurBackgroundView.alpha);
+}
+
+// Tests that blurBackgroundView is nil when kNewTabPageUICleanup is disabled.
+TEST_F(NewTabPageCoordinatorTest, TestHeaderBlurBackgroundViewDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kNewTabPageUICleanup);
+
+  NewTabPageHeaderView* header_view =
+      [[NewTabPageHeaderView alloc] initWithUseNewBadgeForLensButton:NO
+                                     useNewBadgeForCustomizationMenu:NO];
+
+  EXPECT_EQ(nil, header_view.blurBackgroundView);
+}
+
+// Tests that blurBackgroundView is nil when kChromeNextIa is enabled even if
+// kNewTabPageUICleanup is enabled.
+TEST_F(NewTabPageCoordinatorTest,
+       TestHeaderBlurBackgroundViewDisabledWhenChromeNextIaEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kNewTabPageUICleanup, kChromeNextIa}, {});
+
+  NewTabPageHeaderView* header_view =
+      [[NewTabPageHeaderView alloc] initWithUseNewBadgeForLensButton:NO
+                                     useNewBadgeForCustomizationMenu:NO];
+
+  EXPECT_EQ(nil, header_view.blurBackgroundView);
 }
