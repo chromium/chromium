@@ -32,6 +32,26 @@
 namespace mojo {
 
 template <>
+struct StructTraits<viz::mojom::SurfaceIdAndDeadlineDataView,
+                    viz::SurfaceIdAndDeadline> {
+  static const viz::SurfaceId& surface_id(
+      const viz::SurfaceIdAndDeadline& input) {
+    return input.surface_id;
+  }
+
+  static std::optional<uint32_t> deadline_in_frames(
+      const viz::SurfaceIdAndDeadline& input) {
+    return input.deadline_in_frames;
+  }
+
+  static bool Read(viz::mojom::SurfaceIdAndDeadlineDataView data,
+                   viz::SurfaceIdAndDeadline* out) {
+    out->deadline_in_frames = data.deadline_in_frames();
+    return data.ReadSurfaceId(&out->surface_id);
+  }
+};
+
+template <>
 struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
                     viz::CompositorFrameMetadata> {
   static float device_scale_factor(
@@ -103,7 +123,7 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.referenced_surfaces;
   }
 
-  static const std::vector<viz::SurfaceId>& activation_dependencies(
+  static const std::vector<viz::SurfaceIdAndDeadline>& activation_dependencies(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.activation_dependencies;
   }

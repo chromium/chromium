@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "cc/cc_export.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/surface_id.h"
 
 namespace cc {
@@ -36,10 +37,10 @@ class CC_EXPORT AppendQuadsData {
   // activation deadline.
   bool use_default_lower_bound_deadline = false;
 
-  // This is the set of surface IDs that must have corresponding
-  // active CompositorFrames so that this CompositorFrame can
+  // This is the set of surface IDs and their deadlines that must have
+  // corresponding active CompositorFrames so that this CompositorFrame can
   // activate.
-  std::vector<viz::SurfaceId> activation_dependencies;
+  std::vector<viz::SurfaceIdAndDeadline> activation_dependencies;
 
   // Indicates if any layer has ViewTransitionElementResourceIds which need to
   // be swapped with actual viz::ResourceIds in the Viz process.

@@ -382,7 +382,15 @@ void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
   // delay activation. Note, it's not part of invalidation heuristic, but for
   // safety we update deadline only on the new path, on the old path there are
   // almost no embedded surfaces anyway.
-  child_frame->frame->metadata.deadline = viz::FrameDeadline::MakeZero();
+  if (features::UsePerDependencyDeadlines()) {
+    for (auto& dep : child_frame->frame->metadata.activation_dependencies) {
+      dep.deadline_in_frames = 0u;
+    }
+  } else {
+    // TODO(crbug.com/540877772): Remove once kPerDependencyDeadlines is
+    // launched.
+    child_frame->frame->metadata.deadline = viz::FrameDeadline::MakeZero();
+  }
 
   child_sink_support_->SubmitCompositorFrame(
       child_frame->local_surface_id, std::move(*child_frame->frame),

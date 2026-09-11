@@ -71,6 +71,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "components/viz/common/features.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
@@ -1356,10 +1357,15 @@ void WebUIToolbarWebView::SetSurfaceSyncDeadline(
   if (auto* rwhv = web_view_->web_contents()->GetRenderWidgetHostView()) {
     rwhv->SetForceSpecifiedDeadline(deadline_in_frames);
   }
-  if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_)) {
-    if (auto* active_contents = browser_view->GetActiveWebContents()) {
-      if (auto* main_rwhv = active_contents->GetRenderWidgetHostView()) {
-        main_rwhv->SetForceSpecifiedDeadline(deadline_in_frames);
+  // When per-dependency deadlines are enabled, the toolbar and active tab
+  // surfaces have independent deadlines. We do not need to impose the
+  // toolbar's deadline on the active web contents tab.
+  if (!features::UsePerDependencyDeadlines()) {
+    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_)) {
+      if (auto* active_contents = browser_view->GetActiveWebContents()) {
+        if (auto* main_rwhv = active_contents->GetRenderWidgetHostView()) {
+          main_rwhv->SetForceSpecifiedDeadline(deadline_in_frames);
+        }
       }
     }
   }

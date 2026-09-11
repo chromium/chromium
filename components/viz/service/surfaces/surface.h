@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -335,6 +336,10 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
     return pending_copy_surface_id_;
   }
 
+  const SurfaceDependencyDeadline* deadline_for_testing() const {
+    return deadline_.get();
+  }
+
   void ClearNonRootCopyRequests();
 
  private:
@@ -385,6 +390,11 @@ class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
   // Resolve the activation deadline specified by `current_frame` into a wall
   // time to be used by SurfaceDependencyDeadline.
   FrameDeadline ResolveFrameDeadline(const CompositorFrame& current_frame);
+
+  // Resolve per-dependency activation deadlines specified by `current_frame`
+  // into wall times to be used by SurfaceDependencyDeadline.
+  base::flat_map<SurfaceId, base::TimeTicks> ResolveDependencyDeadlines(
+      const CompositorFrame& current_frame);
 
   // Resolves the view transition deadline into wall time to be used by
   // SurfaceDependencyDeadline. Returns a null base::TimeTicks if there are no

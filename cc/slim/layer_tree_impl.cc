@@ -27,6 +27,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree_client.h"
 #include "cc/slim/surface_layer.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -621,8 +622,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
   copy_requests_for_next_frame_.clear();
   out_frame.render_pass_list.push_back(std::move(render_pass));
   out_frame.metadata.activation_dependencies =
-      std::vector<viz::SurfaceId>(frame_data.activation_dependencies.begin(),
-                                  frame_data.activation_dependencies.end());
+      std::move(frame_data.activation_dependencies);
   out_frame.metadata.deadline = viz::FrameDeadline(
       args.frame_time, frame_data.deadline_in_frames.value_or(0u),
       args.interval, frame_data.use_default_lower_bound_deadline);

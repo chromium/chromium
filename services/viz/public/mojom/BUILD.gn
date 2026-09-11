@@ -142,6 +142,16 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.SurfaceIdAndDeadline"
+          cpp = "::viz::SurfaceIdAndDeadline"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.VerticalScrollDirection"
           cpp = "::viz::VerticalScrollDirection"
         },

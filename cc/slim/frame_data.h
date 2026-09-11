@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/slim/damage_data.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -31,7 +32,7 @@ struct FrameData {
 
   const raw_ref<viz::CompositorFrame> frame;
   const raw_ref<std::vector<viz::HitTestRegion>> hit_test_regions;
-  base::flat_set<viz::SurfaceId> activation_dependencies;
+  std::vector<viz::SurfaceIdAndDeadline> activation_dependencies;
   std::optional<uint32_t> deadline_in_frames;
   bool use_default_lower_bound_deadline = false;
 

@@ -851,10 +851,10 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
   SurfaceId id(FrameSinkId(1234, 4321),
                LocalSurfaceId(5678, base::UnguessableToken::Create()));
   referenced_surfaces.emplace_back(id);
-  std::vector<SurfaceId> activation_dependencies;
+  std::vector<SurfaceIdAndDeadline> activation_dependencies;
   SurfaceId id2(FrameSinkId(4321, 1234),
                 LocalSurfaceId(8765, base::UnguessableToken::Create()));
-  activation_dependencies.push_back(id2);
+  activation_dependencies.emplace_back(id2);
   uint32_t frame_token = 0xdeadbeef;
   uint64_t begin_frame_ack_sequence_number = 0xdeadbeef;
   FrameDeadline frame_deadline(base::TimeTicks(), 4u, base::TimeDelta(), true);
@@ -946,6 +946,33 @@ TEST_F(CompositingStructTraitsTest,
             input, output);
     EXPECT_FALSE(result);
   }
+}
+
+TEST_F(CompositingStructTraitsTest,
+       CompositorFrameMetadataActivationDependenciesWithDeadlines) {
+  CompositorFrameMetadata input;
+  input.device_scale_factor = 1.0f;
+  input.frame_token = 1u;
+  input.begin_frame_ack.frame_id.sequence_number = 1u;
+
+  SurfaceId surface_id1(
+      FrameSinkId(1337, 1234),
+      LocalSurfaceId(0xfbadbeef, base::UnguessableToken::Create()));
+  SurfaceId surface_id2(
+      FrameSinkId(1337, 5678),
+      LocalSurfaceId(0xdeadbeef, base::UnguessableToken::Create()));
+  input.activation_dependencies.emplace_back(surface_id1, std::nullopt);
+  input.activation_dependencies.emplace_back(surface_id2, 4u);
+
+  CompositorFrameMetadata output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(
+          input, output));
+  EXPECT_EQ(output.activation_dependencies.size(), 2u);
+  EXPECT_EQ(output.activation_dependencies[0].surface_id, surface_id1);
+  EXPECT_EQ(output.activation_dependencies[0].deadline_in_frames, std::nullopt);
+  EXPECT_EQ(output.activation_dependencies[1].surface_id, surface_id2);
+  EXPECT_EQ(output.activation_dependencies[1].deadline_in_frames, 4u);
 }
 
 TEST_F(CompositingStructTraitsTest, RenderPass) {

@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "cc/base/region.h"
@@ -25,6 +26,7 @@
 #include "cc/slim/test_layer_tree_impl.h"
 #include "cc/slim/texture_layer.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -908,8 +910,9 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SurfaceLayerAppendQuads) {
     viz::CompositorFrameMetadata& metadata = frame.metadata;
     EXPECT_EQ(metadata.referenced_surfaces,
               std::vector<viz::SurfaceRange>{viz::SurfaceRange(start, end)});
-    EXPECT_EQ(metadata.activation_dependencies,
-              std::vector<viz::SurfaceId>{end});
+    EXPECT_EQ(
+        metadata.activation_dependencies,
+        std::vector<viz::SurfaceIdAndDeadline>{viz::SurfaceIdAndDeadline(end)});
     EXPECT_FALSE(metadata.deadline.deadline_in_frames());
     EXPECT_TRUE(metadata.deadline.use_default_lower_bound_deadline());
   }
@@ -936,11 +939,42 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SurfaceLayerAppendQuads) {
     viz::CompositorFrameMetadata& metadata = frame.metadata;
     EXPECT_EQ(metadata.referenced_surfaces,
               std::vector<viz::SurfaceRange>{viz::SurfaceRange(start, end)});
-    EXPECT_EQ(metadata.activation_dependencies,
-              std::vector<viz::SurfaceId>{end});
+    EXPECT_EQ(
+        metadata.activation_dependencies,
+        std::vector<viz::SurfaceIdAndDeadline>{viz::SurfaceIdAndDeadline(end)});
     EXPECT_EQ(metadata.deadline.deadline_in_frames(), 2u);
     EXPECT_FALSE(metadata.deadline.use_default_lower_bound_deadline());
   }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest,
+       SurfaceLayerAppendQuadsWithPerDependencyDeadlines) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPerDependencyDeadlines);
+
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+  surface_layer->SetContentsOpaque(true);
+  layer_tree_->SetRoot(surface_layer);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(3u, 4u, token));
+  viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                     viz::LocalSurfaceId(5u, 7u, token));
+  cc::DeadlinePolicy deadline_policy =
+      cc::DeadlinePolicy::UseSpecifiedDeadline(2u);
+  surface_layer->SetOldestAcceptableFallback(start);
+  surface_layer->SetSurfaceId(end, deadline_policy);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  viz::CompositorFrameMetadata& metadata = frame.metadata;
+  EXPECT_EQ(metadata.referenced_surfaces,
+            std::vector<viz::SurfaceRange>{viz::SurfaceRange(start, end)});
+  EXPECT_EQ(metadata.activation_dependencies,
+            std::vector<viz::SurfaceIdAndDeadline>{
+                viz::SurfaceIdAndDeadline(end, 2u)});
 }
 
 TEST_F(SlimLayerTreeCompositorFrameTest, TextureLayerAppendQuads) {

@@ -5,6 +5,7 @@
 #ifndef CC_TREES_FRAME_DATA_H_
 #define CC_TREES_FRAME_DATA_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/trees/damage_reason.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -48,7 +50,7 @@ struct CC_EXPORT FrameData {
   bool checkerboarded_needs_raster = false;
   bool checkerboarded_needs_record = false;
 
-  std::vector<viz::SurfaceId> activation_dependencies;
+  std::vector<viz::SurfaceIdAndDeadline> activation_dependencies;
   std::optional<uint32_t> deadline_in_frames;
   bool use_default_lower_bound_deadline = false;
   viz::CompositorRenderPassList render_passes;
