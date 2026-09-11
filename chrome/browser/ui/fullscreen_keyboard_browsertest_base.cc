@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -161,6 +162,9 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
       GetEmbeddedTestServer()->GetURL(kFullscreenKeyboardLockHTML),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_NO_FATAL_FAILURE(FocusOnLastActiveBrowser());
+  GetActiveWebContents()->Focus();
+  ui_test_utils::FocusView(GetActiveBrowser(), VIEW_ID_TAB_CONTAINER);
 }
 
 void FullscreenKeyboardBrowserTestBase::SendShortcut(ui::KeyboardCode key,
@@ -226,6 +230,8 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
 #if !BUILDFLAG(IS_MAC)
   waiter.Wait();
 #endif
+  GetActiveWebContents()->Focus();
+  ui_test_utils::FocusView(GetActiveBrowser(), VIEW_ID_TAB_CONTAINER);
 }
 
 void FullscreenKeyboardBrowserTestBase::SendJsFullscreenShortcutAndWait() {
@@ -236,6 +242,8 @@ void FullscreenKeyboardBrowserTestBase::SendJsFullscreenShortcutAndWait() {
   expected_result_ += "KeyS ctrl:false shift:false alt:false meta:false\n";
   waiter.Wait();
   ASSERT_TRUE(IsActiveTabFullscreen());
+  GetActiveWebContents()->Focus();
+  ui_test_utils::FocusView(GetActiveBrowser(), VIEW_ID_TAB_CONTAINER);
 }
 
 void FullscreenKeyboardBrowserTestBase::SendEscape() {
@@ -252,6 +260,8 @@ void FullscreenKeyboardBrowserTestBase::
       GetActiveBrowser(), ui::VKEY_ESCAPE, false, false, false, false));
   waiter.Wait();
   ASSERT_FALSE(IsActiveTabFullscreen());
+  GetActiveWebContents()->Focus();
+  ui_test_utils::FocusView(GetActiveBrowser(), VIEW_ID_TAB_CONTAINER);
 }
 
 void FullscreenKeyboardBrowserTestBase::SendShortcutsAndExpectPrevented() {
