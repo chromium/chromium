@@ -26,6 +26,9 @@ class WebStateList;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects active request callbacks, failing them with `kExecutorDestroyed`.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_ACTUATION_HANDLER_H_

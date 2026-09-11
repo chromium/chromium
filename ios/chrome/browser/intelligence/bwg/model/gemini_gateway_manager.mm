@@ -110,6 +110,7 @@
   _pageStateChangeHandler = nil;
   _cameraHandler = nil;
   _tabPickerHandler = nil;
+  [_actuationHandler disconnect];
   _actuationHandler = nil;
   _suggestionHandler = nil;
   _gateway = nil;

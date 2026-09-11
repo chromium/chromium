@@ -13,6 +13,8 @@
 
 @protocol ActorTaskUpdatesObserver;
 @protocol ActorTaskInterventionDelegate;
+@class GeminiActuationRequest;
+@class GeminiActuationResponse;
 
 // Protocol for the Gemini actor delegate. This protocol is implemented by a
 // Gemini actuation handler passed downstream to enable it to communicate with
@@ -25,6 +27,22 @@
 // Creates a new task with the given title.
 - (actor::ActorTaskId)createTaskWithTitle:(NSString*)title;
 
+// Dispatches an actuation request for `taskID`.
+//
+// High-Level Flow:
+// - Downstream callers dispatch a `GeminiActuationRequest` (such as executing
+//   actions or yielding for user intervention).
+// - For long-lived or asynchronous operations, the `completionBlock` is held in
+//   memory per-task so that lifecycle events (such as external task stops, user
+//   cancellation, or session disconnect) can immediately respond to and unblock
+//   the model.
+// - Responds with a `GeminiActuationResponse` containing execution results,
+//   user feedback, or appropriate error status codes.
+- (void)dispatchActuationRequest:(GeminiActuationRequest*)request
+                       forTaskID:(actor::ActorTaskId)taskID
+                 completionBlock:(void (^)(GeminiActuationResponse* response))
+                                     completionBlock;
+
 // Asynchronously register an updates observer (1-to-N).
 - (void)addTaskUpdatesObserver:(id<ActorTaskUpdatesObserver>)observer
                      forTaskID:(actor::ActorTaskId)taskID;
@@ -33,8 +51,8 @@
 - (void)setTaskInterventionDelegate:(id<ActorTaskInterventionDelegate>)delegate
                           forTaskID:(actor::ActorTaskId)taskID;
 
-// TODO(crbug.com/501043031): Do not use, deprecated method. To be cleaned up
-// once the below one lands. Request to perform actions.
+// TODO(crbug.com/556739755): Cleanup deprecated method once
+// `dispatchActuationRequest` lands.
 - (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
                       taskUpdate:(NSString*)taskUpdate
           serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
@@ -42,17 +60,16 @@
                           (void (^)(BOOL success,
                                     std::vector<bool> results))completionBlock;
 
-// Request to perform actions with a callback to receive results and updated
-// PageContexts in a serialized `ActionsResult` proto. The proto will include
-// the PageContexts of all of the task's controlled WebStates.
+// TODO(crbug.com/556739755): Cleanup deprecated method once
+// `dispatchActuationRequest` lands.
 - (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
                       taskUpdate:(NSString*)taskUpdate
           serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
                  completionBlock:
                      (void (^)(NSData* serializedActionsResult))completionBlock;
 
-// Request PageContext with actionable mode APC for specific WebStates of a
-// given task.
+// TODO(crbug.com/556739755): Cleanup deprecated method once
+// `dispatchActuationRequest` lands.
 - (void)requestActionablePageContextForWebStateIDs:
             (NSArray<NSNumber*>*)webStateIDs
                                             taskID:(actor::ActorTaskId)taskID
@@ -61,16 +78,17 @@
                                                      serializedTabObservations))
                                            completionBlock;
 
-// Request to pause the task, cancelling in-progress actions and returning
-// WebState control to the user.
+// TODO(crbug.com/556739755): Cleanup deprecated method once
+// `dispatchActuationRequest` lands.
 - (void)pauseTaskWithID:(actor::ActorTaskId)taskID;
 
-// Request to interrupt the task to wait for user input, suspending ongoing
-// actions without cancelling them.
+// TODO(crbug.com/556739755): Cleanup deprecated method once
+// `dispatchActuationRequest` lands.
 - (void)interruptTaskWithID:(actor::ActorTaskId)taskID
                      reason:(actor::ActorTaskInterruptReason)reason;
 
-// Request to stop the task.
+// TODO(crbug.com/556739755): Cleanup deprecated method once
+// `dispatchActuationRequest` lands.
 - (void)stopTaskWithID:(actor::ActorTaskId)taskID
                 reason:(actor::ActorTaskStoppedReason)reason;
 

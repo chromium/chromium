@@ -5,6 +5,8 @@
 source_set("model") {
   sources = [
     "bwg_link_opening_delegate.h",
+    "gemini_actuation_data_types.h",
+    "gemini_actuation_data_types.mm",
     "gemini_actuation_delegate.h",
     "gemini_actuation_handler.h",
     "gemini_actuation_handler.mm",
@@ -42,8 +44,9 @@ source_set("model") {
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
-    "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/bwg/utils:prefs",
