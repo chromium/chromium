@@ -47,7 +47,7 @@ public class BrowserBoundKeyTest {
         KeyPairGenerator keyPairGenerator =
                 KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC);
         // Use any parameter spec with 256bit size for this test.
-        keyPairGenerator.initialize(new ECGenParameterSpec("prime256v1"));
+        keyPairGenerator.initialize(new ECGenParameterSpec("secp256r1"));
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         BrowserBoundKey browserBoundKey =
                 new BrowserBoundKey(/* identifier= */ new byte[0], keyPair);
