@@ -139,7 +139,7 @@ public class GroupWindowChecker {
      */
     public boolean hasOtherGroups(@Nullable Token currentGroupId) {
         for (GroupWindowInfo group : getDefaultSortedGroupList()) {
-            if (group.localId != null && !Objects.equals(currentGroupId, group.localId)) {
+            if (isOtherGroup(group, currentGroupId)) {
                 return true;
             }
         }
@@ -152,8 +152,11 @@ public class GroupWindowChecker {
      * @param state The {@link GroupWindowState} of the group.
      */
     public static boolean shouldShowGroupByState(@GroupWindowState int state) {
-        if (state == GroupWindowState.IN_CURRENT_CLOSING || state == GroupWindowState.HIDDEN) {
+        if (state == GroupWindowState.IN_CURRENT_CLOSING) {
             return false;
+        }
+        if (state == GroupWindowState.HIDDEN) {
+            return TabGroupUiUtils.isRemoteGroupOperationsEnabled();
         }
         if (state == GroupWindowState.IN_ANOTHER) {
             return TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled();
@@ -192,6 +195,12 @@ public class GroupWindowChecker {
         return isGroupFullyClosing(groupId)
                 ? GroupWindowState.IN_CURRENT_CLOSING
                 : GroupWindowState.IN_CURRENT;
+    }
+
+    private static boolean isOtherGroup(GroupWindowInfo group, @Nullable Token currentGroupId) {
+        return group.localId == null
+                ? TabGroupUiUtils.isRemoteGroupOperationsEnabled()
+                : !Objects.equals(group.localId, currentGroupId);
     }
 
     private boolean containsGroup(Token groupId) {
