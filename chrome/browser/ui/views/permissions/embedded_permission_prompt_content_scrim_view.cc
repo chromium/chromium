@@ -9,18 +9,45 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/permissions/permissions_client.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
 constexpr char kWidgetName[] = "EmbeddedPermissionPromptContentScrimWidget";
+}  // namespace
+
+// static
+bool EmbeddedPermissionPromptContentScrimView::IsOmniboxEverywhere(
+    content::WebContents& web_contents) {
+  return permissions::PermissionsClient::Get() &&
+         permissions::PermissionsClient::Get()->IsOmniboxEverywhere(
+             &web_contents);
+}
+
+// static
+gfx::Rect EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
+    content::WebContents& web_contents) {
+  gfx::Rect bounds = web_contents.GetContainerBounds();
+  // Inset top and left by 24px to align with the WebUI card inside the body.
+  // Right and bottom are not inset because `GetContainerBounds()` is only
+  // 24px larger than the card, so insetting all four sides would shrink
+  // width and height by 48px and leave a 24px gap.
+  if (IsOmniboxEverywhere(web_contents)) {
+    bounds.Inset(gfx::Insets::TLBR(kOmniboxEverywherePadding,
+                                   kOmniboxEverywherePadding, 0, 0));
+  }
+  return bounds;
 }
 
 // Only require web contents instance to be passed in and not widget instance
@@ -61,6 +88,13 @@ EmbeddedPermissionPromptContentScrimView::
             omnibox_content->GetRoundedCornerRadii());
         layer()->SetIsFastRoundedCorner(true);
       }
+    } else if (IsOmniboxEverywhere(web_contents)) {
+      SetPaintToLayer();
+      layer()->SetFillsBoundsOpaquely(false);
+      layer()->SetRoundedCornerRadius(
+          gfx::RoundedCornersF(kOmniboxEverywhereCornerRadius));
+      layer()->SetIsFastRoundedCorner(true);
+      layer()->SetMasksToBounds(true);
     }
   }
 }
@@ -86,7 +120,7 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
     return nullptr;
   }
   params.parent = top_level_widget->GetNativeView();
-  params.bounds = web_contents->GetContainerBounds();
+  params.bounds = GetScrimBounds(*web_contents);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = true;
   // The scrim should not be activatable to prevent it from stealing
@@ -94,13 +128,22 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
   // browser window during prompt dismissal.
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.name = kWidgetName;
+  if (IsOmniboxEverywhere(*web_contents)) {
+    params.rounded_corners =
+        gfx::RoundedCornersF(kOmniboxEverywhereCornerRadius);
+  }
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
 
   auto content_scrim_view =
       std::make_unique<EmbeddedPermissionPromptContentScrimView>(
           delegate, *web_contents, should_dismiss_on_click);
-  content_scrim_view->SetBackground(views::CreateSolidBackground(color));
+  if (IsOmniboxEverywhere(*web_contents)) {
+    content_scrim_view->SetBackground(views::CreateRoundedRectBackground(
+        color, kOmniboxEverywhereCornerRadius));
+  } else {
+    content_scrim_view->SetBackground(views::CreateSolidBackground(color));
+  }
   widget->SetContentsView(std::move(content_scrim_view));
   widget->SetVisibilityChangedAnimationsEnabled(false);
   widget->Show();
@@ -139,7 +182,7 @@ void EmbeddedPermissionPromptContentScrimView::FrameSizeChanged(
   if (render_frame_host != web_contents()->GetPrimaryMainFrame()) {
     return;
   }
-  GetWidget()->SetBounds(web_contents()->GetContainerBounds());
+  GetWidget()->SetBounds(GetScrimBounds(*web_contents()));
 }
 
 // views::WidgetObserver:
@@ -166,7 +209,7 @@ void EmbeddedPermissionPromptContentScrimView::OnWidgetBoundsChanged(
   // check that `web_contents()` is not null while the widget is still alive.
   // Ignore `new_bounds` since it represents the full window, but only the web
   // page matters.
-  GetWidget()->SetBounds(web_contents()->GetContainerBounds());
+  GetWidget()->SetBounds(GetScrimBounds(*web_contents()));
 }
 
 BEGIN_METADATA(EmbeddedPermissionPromptContentScrimView)

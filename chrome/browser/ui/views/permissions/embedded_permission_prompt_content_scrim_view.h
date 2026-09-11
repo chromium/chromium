@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -93,6 +94,20 @@ class EmbeddedPermissionPromptContentScrimView
       widget_observation_{this};
   base::WeakPtr<Delegate> delegate_;
   bool should_dismiss_on_click_;
+
+  static constexpr int kOmniboxEverywherePadding = 24;
+  static constexpr float kOmniboxEverywhereCornerRadius = 28.0f;
+
+  static gfx::Rect GetScrimBounds(content::WebContents& web_contents);
+  static bool IsOmniboxEverywhere(content::WebContents& web_contents);
+  FRIEND_TEST_ALL_PREFIXES(EmbeddedPermissionPromptLoomniboxInteractiveTest,
+                           ScrimRoundedCornersLoomnibox);
+  FRIEND_TEST_ALL_PREFIXES(EmbeddedPermissionPromptLoomniboxInteractiveTest,
+                           ScrimBoundsLoomnibox);
+  FRIEND_TEST_ALL_PREFIXES(EmbeddedPermissionPromptInteractiveTest,
+                           ScrimRoundedCornersNonLoomnibox);
+  FRIEND_TEST_ALL_PREFIXES(EmbeddedPermissionPromptInteractiveTest,
+                           ScrimBoundsNonLoomnibox);
 };
 
 // The concrete implementation of `permissions::PromptContentScrim` that creates
