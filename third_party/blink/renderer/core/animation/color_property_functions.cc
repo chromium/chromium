@@ -104,11 +104,11 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
     case CSSPropertyID::kWebkitTextStrokeColor:
       return OptionalStyleColor(style.InternalVisitedTextStrokeColor());
     case CSSPropertyID::kFloodColor:
-      return OptionalStyleColor(style.FloodColor());
+      return OptionalStyleColor(style.InternalVisitedFloodColor());
     case CSSPropertyID::kLightingColor:
-      return OptionalStyleColor(style.LightingColor());
+      return OptionalStyleColor(style.InternalVisitedLightingColor());
     case CSSPropertyID::kStopColor:
-      return OptionalStyleColor(style.StopColor());
+      return OptionalStyleColor(style.InternalVisitedStopColor());
     case CSSPropertyID::kWebkitTapHighlightColor:
       return OptionalStyleColor(style.TapHighlightColor());
     case CSSPropertyID::kTextDecorationColor:
@@ -214,16 +214,16 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       builder.SetInternalVisitedColor(style_color);
       return;
     case CSSPropertyID::kFloodColor:
-      builder.SetFloodColor(style_color);
+      builder.SetInternalVisitedFloodColor(style_color);
       return;
     case CSSPropertyID::kLightingColor:
-      builder.SetLightingColor(style_color);
+      builder.SetInternalVisitedLightingColor(style_color);
       return;
     case CSSPropertyID::kOutlineColor:
       builder.SetInternalVisitedOutlineColor(style_color);
       return;
     case CSSPropertyID::kStopColor:
-      builder.SetStopColor(style_color);
+      builder.SetInternalVisitedStopColor(style_color);
       return;
     case CSSPropertyID::kTextDecorationColor:
       builder.SetInternalVisitedTextDecorationColor(style_color);

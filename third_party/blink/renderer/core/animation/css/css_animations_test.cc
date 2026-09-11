@@ -3222,6 +3222,192 @@ TEST_P(CSSAnimationsTest, CSSTimelineScopeAttachedMultiple_NoCount_One) {
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSTimelineScopeAttachedMultiple));
 }
 
+TEST_P(CSSAnimationsTest, SVGColorAnimationVisitedCurrentColor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      a:link { color: rgb(0, 255, 0); }
+      a:visited { color: rgb(255, 0, 0); }
+
+      @keyframes anim_flood { from, to { flood-color: currentColor; } }
+      @keyframes anim_lighting { from, to { lighting-color: currentColor; } }
+      @keyframes anim_stop { from, to { stop-color: currentColor; } }
+
+      .probe_flood { color: inherit; animation: anim_flood 1s paused; }
+      .probe_lighting { color: inherit; animation: anim_lighting 1s paused; }
+      .probe_stop { color: inherit; animation: anim_stop 1s paused; }
+    </style>
+    <a id="visited" href="">
+      <svg>
+        <filter>
+          <feFlood id="flood_visited" class="probe_flood"></feFlood>
+          <feDiffuseLighting id="lighting_visited" class="probe_lighting">
+            <fePointLight x="0" y="0" z="0"></fePointLight>
+          </feDiffuseLighting>
+        </filter>
+        <linearGradient>
+          <stop id="stop_visited" class="probe_stop"></stop>
+        </linearGradient>
+      </svg>
+    </a>
+    <a id="unvisited" href="http://unvisited.example.com">
+      <svg>
+        <filter>
+          <feFlood id="flood_unvisited" class="probe_flood"></feFlood>
+          <feDiffuseLighting id="lighting_unvisited" class="probe_lighting">
+            <fePointLight x="0" y="0" z="0"></fePointLight>
+          </feDiffuseLighting>
+        </filter>
+        <linearGradient>
+          <stop id="stop_unvisited" class="probe_stop"></stop>
+        </linearGradient>
+      </svg>
+    </a>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* window = GetDocument().domWindow();
+  Element* flood_visited =
+      GetDocument().getElementById(AtomicString("flood_visited"));
+  Element* flood_unvisited =
+      GetDocument().getElementById(AtomicString("flood_unvisited"));
+  Element* lighting_visited =
+      GetDocument().getElementById(AtomicString("lighting_visited"));
+  Element* lighting_unvisited =
+      GetDocument().getElementById(AtomicString("lighting_unvisited"));
+  Element* stop_visited =
+      GetDocument().getElementById(AtomicString("stop_visited"));
+  Element* stop_unvisited =
+      GetDocument().getElementById(AtomicString("stop_unvisited"));
+
+  EXPECT_EQ(
+      window->getComputedStyle(flood_unvisited)
+          ->getPropertyValue("flood-color"),
+      window->getComputedStyle(flood_visited)->getPropertyValue("flood-color"));
+  EXPECT_EQ(
+      window->getComputedStyle(flood_visited)->getPropertyValue("flood-color"),
+      "rgb(0, 255, 0)");
+
+  EXPECT_EQ(window->getComputedStyle(lighting_unvisited)
+                ->getPropertyValue("lighting-color"),
+            window->getComputedStyle(lighting_visited)
+                ->getPropertyValue("lighting-color"));
+  EXPECT_EQ(window->getComputedStyle(lighting_visited)
+                ->getPropertyValue("lighting-color"),
+            "rgb(0, 255, 0)");
+
+  EXPECT_EQ(
+      window->getComputedStyle(stop_unvisited)->getPropertyValue("stop-color"),
+      window->getComputedStyle(stop_visited)->getPropertyValue("stop-color"));
+  EXPECT_EQ(
+      window->getComputedStyle(stop_visited)->getPropertyValue("stop-color"),
+      "rgb(0, 255, 0)");
+}
+
+TEST_P(CSSAnimationsTest, SVGColorTransitionVisitedCurrentColor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      a:link { color: rgb(0, 255, 0); }
+      a:visited { color: rgb(255, 0, 0); }
+
+      .probe_flood {
+        color: inherit;
+        flood-color: rgb(0, 0, 255);
+        transition: flood-color 10s steps(2, start);
+      }
+      .probe_lighting {
+        color: inherit;
+        lighting-color: rgb(0, 0, 255);
+        transition: lighting-color 10s steps(2, start);
+      }
+      .probe_stop {
+        color: inherit;
+        stop-color: rgb(0, 0, 255);
+        transition: stop-color 10s steps(2, start);
+      }
+      .transition_active {
+        flood-color: currentColor;
+        lighting-color: currentColor;
+        stop-color: currentColor;
+      }
+    </style>
+    <a id="visited" href="">
+      <svg>
+        <filter>
+          <feFlood class="probe_flood" id="flood_visited"></feFlood>
+          <feDiffuseLighting class="probe_lighting" id="lighting_visited">
+            <fePointLight x="0" y="0" z="0"></fePointLight>
+          </feDiffuseLighting>
+        </filter>
+        <linearGradient>
+          <stop class="probe_stop" id="stop_visited"></stop>
+        </linearGradient>
+      </svg>
+    </a>
+    <a id="unvisited" href="http://unvisited.example.com">
+      <svg>
+        <filter>
+          <feFlood class="probe_flood" id="flood_unvisited"></feFlood>
+          <feDiffuseLighting class="probe_lighting" id="lighting_unvisited">
+            <fePointLight x="0" y="0" z="0"></fePointLight>
+          </feDiffuseLighting>
+        </filter>
+        <linearGradient>
+          <stop class="probe_stop" id="stop_unvisited"></stop>
+        </linearGradient>
+      </svg>
+    </a>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* flood_visited =
+      GetDocument().getElementById(AtomicString("flood_visited"));
+  Element* flood_unvisited =
+      GetDocument().getElementById(AtomicString("flood_unvisited"));
+  Element* lighting_visited =
+      GetDocument().getElementById(AtomicString("lighting_visited"));
+  Element* lighting_unvisited =
+      GetDocument().getElementById(AtomicString("lighting_unvisited"));
+  Element* stop_visited =
+      GetDocument().getElementById(AtomicString("stop_visited"));
+  Element* stop_unvisited =
+      GetDocument().getElementById(AtomicString("stop_unvisited"));
+
+  flood_visited->classList().Add(AtomicString("transition_active"));
+  flood_unvisited->classList().Add(AtomicString("transition_active"));
+  lighting_visited->classList().Add(AtomicString("transition_active"));
+  lighting_unvisited->classList().Add(AtomicString("transition_active"));
+  stop_visited->classList().Add(AtomicString("transition_active"));
+  stop_unvisited->classList().Add(AtomicString("transition_active"));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* window = GetDocument().domWindow();
+  EXPECT_EQ(
+      window->getComputedStyle(flood_unvisited)
+          ->getPropertyValue("flood-color"),
+      window->getComputedStyle(flood_visited)->getPropertyValue("flood-color"));
+  EXPECT_EQ(
+      window->getComputedStyle(flood_visited)->getPropertyValue("flood-color"),
+      "rgb(0, 128, 128)");
+
+  EXPECT_EQ(window->getComputedStyle(lighting_unvisited)
+                ->getPropertyValue("lighting-color"),
+            window->getComputedStyle(lighting_visited)
+                ->getPropertyValue("lighting-color"));
+  EXPECT_EQ(window->getComputedStyle(lighting_visited)
+                ->getPropertyValue("lighting-color"),
+            "rgb(0, 128, 128)");
+
+  EXPECT_EQ(
+      window->getComputedStyle(stop_unvisited)->getPropertyValue("stop-color"),
+      window->getComputedStyle(stop_visited)->getPropertyValue("stop-color"));
+  EXPECT_EQ(
+      window->getComputedStyle(stop_visited)->getPropertyValue("stop-color"),
+      "rgb(0, 128, 128)");
+}
+
 class AnimatedSourceTest : public RenderingTest {
  public:
   AnimatedSourceTest()

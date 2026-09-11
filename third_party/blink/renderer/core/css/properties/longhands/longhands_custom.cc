@@ -5623,6 +5623,45 @@ const blink::Color InternalVisitedFill::ColorIncludingFallback(
                                     style.UsedColorScheme(), is_current_color);
 }
 
+const blink::Color InternalVisitedFloodColor::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style,
+    bool* is_current_color) const {
+  DCHECK(visited_link);
+  const StyleColor& flood_color = style.InternalVisitedFloodColor();
+  if (style.ShouldForceColor(flood_color)) {
+    return style.GetInternalForcedCurrentColor(is_current_color);
+  }
+  return flood_color.Resolve(style.GetInternalVisitedCurrentColor(),
+                             style.UsedColorScheme(), is_current_color);
+}
+
+const blink::Color InternalVisitedLightingColor::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style,
+    bool* is_current_color) const {
+  DCHECK(visited_link);
+  const StyleColor& lighting_color = style.InternalVisitedLightingColor();
+  if (style.ShouldForceColor(lighting_color)) {
+    return style.GetInternalForcedCurrentColor(is_current_color);
+  }
+  return lighting_color.Resolve(style.GetInternalVisitedCurrentColor(),
+                                style.UsedColorScheme(), is_current_color);
+}
+
+const blink::Color InternalVisitedStopColor::ColorIncludingFallback(
+    bool visited_link,
+    const ComputedStyle& style,
+    bool* is_current_color) const {
+  DCHECK(visited_link);
+  const StyleColor& stop_color = style.InternalVisitedStopColor();
+  if (style.ShouldForceColor(stop_color)) {
+    return style.GetInternalForcedCurrentColor(is_current_color);
+  }
+  return stop_color.Resolve(style.GetInternalVisitedCurrentColor(),
+                            style.UsedColorScheme(), is_current_color);
+}
+
 const CSSValue* ColumnRuleBreak::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
