@@ -11,10 +11,11 @@ import static org.hamcrest.Matchers.not;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Java unit tests for ChannelDefinitions. */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ChromeChannelDefinitionsTest {
 
     @Test

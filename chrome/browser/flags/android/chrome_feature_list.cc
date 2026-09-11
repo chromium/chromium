@@ -401,6 +401,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGlicBackgroundActuationTabGroupSync,
     &kGmsCoreBindServiceOptimization,
     &kGridTabSwitcherSurfaceColorUpdate,
+    &kHighPrioritySiteNotifications,
     &kHistoryPaneAndroid,
     &kHomeButtonRemoval,
     &kInAppWindowManagerDeprecation,
@@ -815,6 +816,7 @@ BASE_FEATURE(kGestureUserEducationBackSwipe, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicBackgroundActuationTabGroupSync, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGmsCoreBindServiceOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGridTabSwitcherSurfaceColorUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHighPrioritySiteNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHistoryPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHomeButtonRemoval, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInAppWindowManagerDeprecation, base::FEATURE_DISABLED_BY_DEFAULT);
