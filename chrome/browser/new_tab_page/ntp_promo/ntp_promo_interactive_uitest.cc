@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
@@ -55,9 +54,9 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
-#include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
 namespace {
@@ -120,13 +119,8 @@ struct NtpPromoUiTestParams {
   }
 };
 
-DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(OmniboxViewViews,
-                                                    GetText,
-                                                    kLocationBarTextValue);
-
-MATCHER_P(OptionalStringContains, text, "Optional string contains") {
-  return arg.has_value() && arg.value().find(text) != std::u16string::npos;
-}
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
+                                    kActiveTabUrlState);
 
 }  // namespace
 
@@ -369,20 +363,24 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
 
       // Since bots cannot navigate to actual pages, we can't use
       // WaitForWebContentsNavigation() or the like. Instead, verify that the
-      // browser *tries* to navigate to the account login page.
-      PollViewProperty(kLocationBarTextValue, kOmniboxElementId),
+      // browser *tries* to navigate to the webstore page.
+      PollState(kActiveTabUrlState,
+                [this]() {
+                  auto* const contents =
+                      browser()->tab_strip_model()->GetActiveWebContents();
+                  return contents ? contents->GetVisibleURL() : GURL();
+                }),
       // Click the promo button; this should navigate the current page.
       ClickPromo(),
-      // Note that the URL here may not match what users see, due to redirects.
-      WaitForState(
-          kLocationBarTextValue,
-          ::testing::AllOf(OptionalStringContains(u"webstore"),
-                           OptionalStringContains(base::UTF8ToUTF16(
-                               extension_urls::kNtpPromo1pUtmSource)))),
+      WaitForState(kActiveTabUrlState,
+                   extension_urls::AppendUtmSource(
+                       extension_urls::GetWebstoreLaunchURL(),
+                       extension_urls::kNtpPromo1pUtmSource)),
+      StopObservingState(kActiveTabUrlState),
       // The NTP tab should navigate, rather than opening a new tab.
       CheckOneTabOpen());
 
-  // TODD(https://crbug.com/433607240): Check model, histograms.
+  // TODO(https://crbug.com/433607240): Check model, histograms.
 }
 
 IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
@@ -393,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
                   WaitForPromoVisible(kCustomizationIconName), ClickPromo(),
                   WaitForShow(kSidePanelElementId));
 
-  // TODD(https://crbug.com/433607240): Check model, histograms.
+  // TODO(https://crbug.com/433607240): Check model, histograms.
 }
 
 // Regression test for crbug.com/485875459. With a second browser window open,
