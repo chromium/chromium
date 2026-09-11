@@ -42,9 +42,12 @@ div.folder > span.hidden {
     margin-left: 1em;
 }
 
-.comment,
-.cdata {
+.comment {
     white-space: pre;
+}
+
+.cdata {
+    white-space: pre-wrap;
 }
 
 .folder-button {

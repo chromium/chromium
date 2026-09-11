@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>XML tree viewer: a long CDATA line wraps instead of overflowing</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="viewer" src="resources/long-cdata.xml" width="400" height="300"></iframe>
+<script>
+promise_test(async () => {
+  const frame = document.getElementById('viewer');
+  await new Promise(resolve => frame.addEventListener('load', resolve));
+  const root = frame.contentDocument.documentElement;
+  assert_greater_than(root.clientWidth, 0, 'the viewer rendered');
+  assert_less_than_equal(root.scrollWidth, root.clientWidth,
+      'a long CDATA line must not overflow horizontally');
+}, 'Long CDATA wraps in the XML tree viewer (crbug.com/559426528)');
+</script>
