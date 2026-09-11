@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UNIVERSAL_OPTOUT_UNIVERSAL_OPTOUT_SERVICE_H_
 #define COMPONENTS_UNIVERSAL_OPTOUT_UNIVERSAL_OPTOUT_SERVICE_H_
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -12,6 +14,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/variations/service/variations_service.h"
 
 class PrefService;
@@ -65,11 +68,20 @@ class UniversalOptOutService : public KeyedService,
  public:
   static constexpr double kEligibilityThresholdRatio = 0.5;
 
+  using OptOutChangedCallback = base::RepeatingCallback<void(bool)>;
+
   explicit UniversalOptOutService(
       PrefService& pref_service,
       variations::VariationsService& variations_service,
       signin::IdentityManager& identity_manager,
-      const base::Clock& clock = *base::DefaultClock::GetInstance());
+      OptOutChangedCallback opt_out_changed_callback = base::NullCallback());
+
+  UniversalOptOutService(
+      PrefService& pref_service,
+      variations::VariationsService& variations_service,
+      signin::IdentityManager& identity_manager,
+      const base::Clock& clock,
+      OptOutChangedCallback opt_out_changed_callback = base::NullCallback());
 
   UniversalOptOutService(const UniversalOptOutService&) = delete;
   UniversalOptOutService& operator=(const UniversalOptOutService&) = delete;
@@ -90,6 +102,9 @@ class UniversalOptOutService : public KeyedService,
   bool IsEligible() const;
 
  private:
+  // Invoked when `kUniversalOptOutEnabled` preference changes.
+  void OnOptOutPrefChanged();
+
   // Records the current location for today if not already recorded, prunes
   // history older than the retention window, and updates eligibility.
   void RecordLocationAndUpdateEligibility();
@@ -121,6 +136,9 @@ class UniversalOptOutService : public KeyedService,
   raw_ptr<variations::VariationsService> variations_service_;
   raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<const base::Clock> clock_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+  OptOutChangedCallback opt_out_changed_callback_;
 
   base::ScopedObservation<variations::VariationsService,
                           variations::VariationsService::Observer>

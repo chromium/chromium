@@ -99,6 +99,10 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // in debug builds).
   void Purge();
 
+  // Updates whether Universal Opt-Out (Global Privacy Control) is enabled in
+  // the default webpage preferences of the configuration.
+  void SetUniversalOptOutEnabled(bool enabled) API_AVAILABLE(ios(27));
+
   // Returns WKContentRuleListProvider associated with WKWebViewConfiguration.
   // Callers must not retain the returned object.
   WKContentRuleListProvider& GetContentRuleListProvider();

@@ -244,6 +244,9 @@ class WebClient {
 
   // Returns whether smooth scrolling is supported.
   virtual bool IsSmoothScrollingSupported() const;
+
+  // Returns whether Universal Opt Out is enabled for `browser_state`.
+  virtual bool IsUniversalOptOutEnabled(BrowserState* browser_state) const;
 };
 
 }  // namespace web

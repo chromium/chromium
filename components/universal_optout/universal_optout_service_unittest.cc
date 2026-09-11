@@ -551,4 +551,29 @@ TEST_F(UniversalOptOutServiceTest,
       EligibilityTransition::kEligibleToIneligible, 1);
 }
 
+TEST_F(UniversalOptOutServiceTest, OptOutChangedCallback) {
+  std::vector<bool> observed_values;
+  pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, false);
+
+  auto service = std::make_unique<UniversalOptOutService>(
+      pref_service_, *variations_service_,
+      *identity_test_env_.identity_manager(), test_clock_,
+      base::BindRepeating([](std::vector<bool>* out,
+                             bool enabled) { out->push_back(enabled); },
+                          &observed_values));
+
+  // Initial state should be reported upon construction.
+  ASSERT_EQ(observed_values.size(), 1u);
+  EXPECT_FALSE(observed_values.back());
+
+  // Toggling the pref should invoke the callback.
+  pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, true);
+  ASSERT_EQ(observed_values.size(), 2u);
+  EXPECT_TRUE(observed_values.back());
+
+  pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, false);
+  ASSERT_EQ(observed_values.size(), 3u);
+  EXPECT_FALSE(observed_values.back());
+}
+
 }  // namespace universal_optout

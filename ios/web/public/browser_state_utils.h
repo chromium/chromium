@@ -28,6 +28,10 @@ void RemoveDataStorageForIdentifier(
     const base::Uuid& uuid,
     base::OnceCallback<void(NSError*)> callback);
 
+// Updates whether Universal Opt-Out (Global Privacy Control) is enabled for
+// `browser_state`.
+void SetUniversalOptOutEnabled(BrowserState* browser_state, bool enabled);
+
 }  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_BROWSER_STATE_UTILS_H_

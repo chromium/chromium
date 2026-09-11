@@ -9,6 +9,7 @@
 #import <string_view>
 
 #import "base/apple/bundle_locations.h"
+#import "base/check.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
@@ -38,6 +39,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
+#import "components/universal_optout/features.h"
+#import "components/universal_optout/prefs.h"
 #import "components/version_info/version_info.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
@@ -698,4 +701,21 @@ bool ChromeWebClient::IsSmoothScrollingSupported() const {
   // considered the same as FullscreenSmoothScrolling.
   return IsFullscreenRefactoringEnabled() ||
          ios::provider::IsFullscreenSmoothScrollingSupported();
+}
+
+bool ChromeWebClient::IsUniversalOptOutEnabled(
+    web::BrowserState* browser_state) const {
+  if (!base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOut) ||
+      !base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOutSettings)) {
+    return false;
+  }
+
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  CHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  return prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled);
 }

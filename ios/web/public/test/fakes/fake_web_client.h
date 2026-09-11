@@ -51,6 +51,7 @@ class FakeWebClient : public web::WebClient {
   UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                     const GURL& url) const override;
   bool IsSmoothScrollingSupported() const override;
+  bool IsUniversalOptOutEnabled(BrowserState* browser_state) const override;
 
   // Changes Java Script Features for testing.
   void SetJavaScriptFeatures(std::vector<JavaScriptFeature*> features);
@@ -60,6 +61,7 @@ class FakeWebClient : public web::WebClient {
  private:
   std::vector<JavaScriptFeature*> java_script_features_;
   UserAgentType default_user_agent_ = UserAgentType::MOBILE;
+  bool universal_opt_out_enabled_ = false;
 };
 
 }  // namespace web

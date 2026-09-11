@@ -27,4 +27,13 @@ void RemoveDataStorageForIdentifier(
       uuid, std::move(callback));
 }
 
+void SetUniversalOptOutEnabled(BrowserState* browser_state, bool enabled) {
+  CHECK(browser_state);
+  if (@available(iOS 27, *)) {
+    WKWebViewConfigurationProvider& provider =
+        WKWebViewConfigurationProvider::FromBrowserState(browser_state);
+    provider.SetUniversalOptOutEnabled(enabled);
+  }
+}
+
 }  // namespace web

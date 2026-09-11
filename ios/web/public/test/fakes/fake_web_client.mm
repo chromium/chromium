@@ -88,4 +88,9 @@ bool FakeWebClient::IsSmoothScrollingSupported() const {
   return base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault);
 }
 
+bool FakeWebClient::IsUniversalOptOutEnabled(
+    BrowserState* browser_state) const {
+  return universal_opt_out_enabled_;
+}
+
 }  // namespace web

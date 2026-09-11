@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -99,12 +100,33 @@ UniversalOptOutService::UniversalOptOutService(
     PrefService& pref_service,
     variations::VariationsService& variations_service,
     signin::IdentityManager& identity_manager,
-    const base::Clock& clock)
+    OptOutChangedCallback opt_out_changed_callback)
+    : UniversalOptOutService(pref_service,
+                             variations_service,
+                             identity_manager,
+                             *base::DefaultClock::GetInstance(),
+                             std::move(opt_out_changed_callback)) {}
+
+UniversalOptOutService::UniversalOptOutService(
+    PrefService& pref_service,
+    variations::VariationsService& variations_service,
+    signin::IdentityManager& identity_manager,
+    const base::Clock& clock,
+    OptOutChangedCallback opt_out_changed_callback)
     : pref_service_(pref_service),
       variations_service_(&variations_service),
       identity_manager_(identity_manager),
-      clock_(clock) {
+      clock_(clock),
+      opt_out_changed_callback_(std::move(opt_out_changed_callback)) {
   variations_service_observation_.Observe(&variations_service);
+  pref_change_registrar_.Init(&pref_service);
+  pref_change_registrar_.Add(
+      prefs::kUniversalOptOutEnabled,
+      base::BindRepeating(&UniversalOptOutService::OnOptOutPrefChanged,
+                          base::Unretained(this)));
+  if (opt_out_changed_callback_) {
+    OnOptOutPrefChanged();
+  }
   RecordLocationAndUpdateEligibility();
   RecordStartupMetrics();
 }
@@ -112,8 +134,16 @@ UniversalOptOutService::UniversalOptOutService(
 UniversalOptOutService::~UniversalOptOutService() = default;
 
 void UniversalOptOutService::Shutdown() {
+  pref_change_registrar_.RemoveAll();
   variations_service_observation_.Reset();
   variations_service_ = nullptr;
+}
+
+void UniversalOptOutService::OnOptOutPrefChanged() {
+  if (opt_out_changed_callback_) {
+    opt_out_changed_callback_.Run(
+        pref_service_->GetBoolean(prefs::kUniversalOptOutEnabled));
+  }
 }
 
 void UniversalOptOutService::OnSeedFetched() {

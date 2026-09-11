@@ -25,6 +25,8 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/universal_optout/features.h"
+#import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
@@ -658,4 +660,24 @@ TEST_F(ChromeWebClientTest, GetJavaScriptFeatures_ClientSideDetection) {
     EXPECT_FALSE(std::ranges::contains(
         features, ClientSideDetectionJavaScriptFeature::GetInstance()));
   }
+}
+
+// Tests that IsUniversalOptOutEnabled reflects the kUniversalOptOutEnabled
+// pref.
+TEST_F(ChromeWebClientTest, IsUniversalOptOutEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{universal_optout::features::kUniversalOptOut,
+                            universal_optout::features::
+                                kUniversalOptOutSettings},
+      /*disabled_features=*/{});
+
+  ChromeWebClient web_client;
+  profile()->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, false);
+  EXPECT_FALSE(web_client.IsUniversalOptOutEnabled(profile()));
+
+  profile()->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+  EXPECT_TRUE(web_client.IsUniversalOptOutEnabled(profile()));
 }
