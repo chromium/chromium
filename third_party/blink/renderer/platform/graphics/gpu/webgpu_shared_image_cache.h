@@ -175,7 +175,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
       const gpu::SyncToken& ready_sync_token);
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
-  bool IsGpuContextLost() const;
 
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
@@ -183,6 +182,7 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
 
  private:
   gpu::raster::RasterInterface* RasterInterface() const;
+  bool IsGpuContextLost() const;
 
   Resource resource_;
   base::WeakPtr<WebGpuSharedImageCache> cache_;

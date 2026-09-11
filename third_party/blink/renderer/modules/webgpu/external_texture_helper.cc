@@ -407,6 +407,11 @@ ExternalTexture CreateExternalTexture(
     return external_texture;
   }
 
+  scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
+  if (!shared_image) {
+    return {};
+  }
+
   viz::RasterContextProvider* raster_context_provider =
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
@@ -416,13 +421,10 @@ ExternalTexture CreateExternalTexture(
     // `use_copy_to_shared_image` is true. Below we are going to copy the
     // contents of that visible rect into the leased
     // SharedImage, completely overwriting the SharedImage.
-    if (!lease->IsGpuContextLost()) {
-      gpu::SyncToken sync_token = video_renderer->CopyVideoFrameToSharedImage(
-          raster_context_provider, std::move(media_video_frame),
-          lease->GetSharedImage(), lease->GetSyncToken(),
-          /*use_visible_rect=*/true);
-      lease->WaitSyncToken(sync_token);
-    }
+    gpu::SyncToken sync_token = video_renderer->CopyVideoFrameToSharedImage(
+        raster_context_provider, std::move(media_video_frame), shared_image,
+        lease->GetSyncToken(), /*use_visible_rect=*/true);
+    lease->WaitSyncToken(sync_token);
   } else {
     // Delegate video transformation to Dawn.
     if (media_video_frame->HasSharedImage()) {
@@ -439,15 +441,16 @@ ExternalTexture CreateExternalTexture(
     media_flags.setBlendMode(SkBlendMode::kSrc);
 
     media::PaintCanvasVideoRenderer::PaintParams params;
-    params.dest_rect = gfx::RectF(lease->GetSharedImage()->size());
+    params.dest_rect = gfx::RectF(shared_image->size());
     lease->DrawToBackingSharedImage([&](cc::PaintCanvas& canvas) {
       video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
                             params, raster_context_provider);
     });
   }
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image = lease->GetSharedImage();
-  if (!shared_image) {
+  // The copy or draw operation above might have encountered GPU context loss,
+  // in which case GetSharedImage() returns null.
+  if (!lease->GetSharedImage()) {
     return {};
   }
 
