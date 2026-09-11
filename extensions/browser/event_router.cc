@@ -1400,7 +1400,7 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
   }
 
   EventDispatchHelper::DispatchEvent(
-      *browser_context_, listeners_,
+      *browser_context_, listeners_, listener_registration_phases_,
       base::BindRepeating(&EventRouter::DispatchPendingEvent,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&EventRouter::DispatchEventToProcess,
@@ -1483,11 +1483,23 @@ void EventRouter::DispatchEventToProcess(const ExtensionId& extension_id,
   CHECK(event->will_dispatch_callback.is_null());
 
   int event_id = g_extension_event_id.GetNext();
+
+  const bool is_service_worker = worker_thread_id != kMainThreadId;
+
+  // Events dispatched during the listener registration phase are queued in the
+  // renderer and must not keep the worker alive: skip the keepalive and ignore
+  // their ack. NOTE: Unlike normal service worker events, which extend
+  // lifetime until acked, in-phase events do not prevent the worker from
+  // stopping at the idle timeout.
+  const bool in_listener_registration_phase =
+      is_service_worker &&
+      listener_registration_phases_.IsStarted(extension_id, *listener_context);
+
   mojom::EventDispatcher::DispatchEventCallback callback;
   // This mirrors the IncrementInFlightEvents below.
-  if (!extension) {
+  if (!extension || in_listener_registration_phase) {
     callback = base::DoNothing();
-  } else if (worker_thread_id != kMainThreadId) {
+  } else if (is_service_worker) {
     callback =
         base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
                        weak_factory_.GetWeakPtr(),
@@ -1525,17 +1537,16 @@ void EventRouter::DispatchEventToProcess(const ExtensionId& extension_id,
     observer.OnDidDispatchEventToProcess(*event, process->GetDeprecatedID());
   }
 
-  // TODO(lazyboy): This is wrong for extensions SW events. We need to:
-  // 1. Increment worker ref count
-  // 2. Add EventAck IPC to decrement that ref count.
   if (extension) {
     ReportEvent(event->histogram_value, extension, did_enqueue);
 
-    IncrementInFlightEvents(
-        listener_context, process, extension, event_id, event->event_name,
-        event->dispatch_start_time, service_worker_version_id, worker_thread_id,
-        EventDispatchSource::kDispatchEventToProcess,
-        event->lazy_background_active_on_dispatch, event->histogram_value);
+    if (!in_listener_registration_phase) {
+      IncrementInFlightEvents(
+          listener_context, process, extension, event_id, event->event_name,
+          event->dispatch_start_time, service_worker_version_id,
+          worker_thread_id, EventDispatchSource::kDispatchEventToProcess,
+          event->lazy_background_active_on_dispatch, event->histogram_value);
+    }
   }
 }
 
@@ -1734,17 +1745,26 @@ void EventRouter::DispatchPendingEvent(
   // the webRequest API (since a bug there can result in a request hanging
   // indefinitely). We don't do this in all cases yet because extensions may be
   // unknowingly relying on this behavior for listeners registered
-  // asynchronously (which is not supported, but may be happening).
-  bool check_for_specific_event =
-      base::StartsWith(event->event_name, "webRequest");
-  bool dispatch_to_process =
-      check_for_specific_event
+  // asynchronously (which is only supported with the
+  // `background.async_listener_registration` opt-in, but may be happening
+  // without it).
+  const bool has_process_listener =
+      base::StartsWith(event->event_name, "webRequest")
           ? listeners_.HasProcessListenerForEvent(
                 params->render_process_host, params->worker_thread_id,
                 params->extension_id, event->event_name)
           : listeners_.HasProcessListener(params->render_process_host,
                                           params->worker_thread_id,
                                           params->extension_id);
+
+  // During the listener registration phase, dispatch without checking for
+  // active process listeners. The renderer queues events until registration
+  // completes and drops any that lack a registered listener.
+  const bool dispatch_to_process =
+      has_process_listener ||
+      listener_registration_phases_.IsStarted(
+          params->extension_id,
+          *params->render_process_host->GetBrowserContext());
 
   if (dispatch_to_process) {
     DispatchEventToProcess(
@@ -1754,7 +1774,9 @@ void EventRouter::DispatchPendingEvent(
   } else if (event->cannot_dispatch_callback) {
     // Even after spinning up the lazy background context, there's no registered
     // event. This can happen if the extension asynchronously registers event
-    // listeners. In this case, notify the caller (if they subscribed via a
+    // listeners (which is only supported with the
+    // `background.async_listener_registration` opt-in, but may be happening
+    // without it). In this case, notify the caller (if they subscribed via a
     // callback) and drop the event.
     // TODO(crbug.com/40954888): We should provide feedback to
     // developers (e.g. emit a warning) when an event has no listeners.

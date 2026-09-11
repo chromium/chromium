@@ -4010,6 +4010,20 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.AsyncListenerRegistration.QueuedEvents"
+    units="events" expires_after="2027-08-19">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of events queued by the renderer during a service worker's
+    listener registration phase. Recorded when the extension calls
+    runtime.markListenerRegistrationComplete() and the queued events are
+    flushed. Only emitted for extensions using asynchronous listener
+    registration. Phases that end in worker termination record nothing.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result"
     enum="ServiceWorkerExternalRequestResult" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->

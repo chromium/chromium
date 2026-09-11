@@ -1898,8 +1898,8 @@ class RuntimeAsyncListenerRegistrationApiTest : public ExtensionApiTest {
 };
 
 // Tests that runtime.markListenerRegistrationComplete() succeeds for an
-// opted-in extension and that the browser commits its listener registration
-// phase only once the extension calls it.
+// opted-in extension, that the browser commits its listener registration
+// phase only once the extension calls it, and that a second call rejects.
 IN_PROC_BROWSER_TEST_F(RuntimeAsyncListenerRegistrationApiTest,
                        MarkCompleteCommitsPhase) {
   static constexpr char kManifest[] =
@@ -1917,6 +1917,12 @@ IN_PROC_BROWSER_TEST_F(RuntimeAsyncListenerRegistrationApiTest,
            async function markCompleteSucceeds() {
              await chrome.test.sendMessage('started');
              await chrome.runtime.markListenerRegistrationComplete();
+             chrome.test.succeed();
+           },
+           async function secondCallRejects() {
+             await chrome.test.assertPromiseRejects(
+                 chrome.runtime.markListenerRegistrationComplete(),
+                 'Error: No listener registration is in progress.');
              chrome.test.succeed();
            },
          ]);)";

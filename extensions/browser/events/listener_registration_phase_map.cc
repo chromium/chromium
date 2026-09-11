@@ -79,6 +79,15 @@ ListenerRegistrationPhaseMap::GetState(
   return it->second.state;
 }
 
+bool ListenerRegistrationPhaseMap::IsStarted(
+    const ExtensionId& extension_id,
+    content::BrowserContext& browser_context) const {
+  if (phases_.empty()) {
+    return false;
+  }
+  return GetState(extension_id, browser_context) == State::kStarted;
+}
+
 void ListenerRegistrationPhaseMap::RemoveAllForExtension(
     const ExtensionId& extension_id) {
   std::erase_if(phases_, [&](const auto& entry) {

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -50,6 +51,11 @@ class ServiceWorkerData
 
   void Init();
 
+  // Completes the listener registration phase for this worker and posts a task
+  // to flush queued events. Returns false if no registration phase is in
+  // progress.
+  bool MarkListenerRegistrationComplete();
+
   V8SchemaRegistry* v8_schema_registry() { return v8_schema_registry_.get(); }
   NativeExtensionBindingsSystem* bindings_system() {
     return bindings_system_.get();
@@ -67,7 +73,6 @@ class ServiceWorkerData
   }
 
   mojom::RendererHost* GetRendererHost();
-
   mojom::ServiceWorkerHost* GetServiceWorkerHost();
   mojom::EventRouter* GetEventRouter();
   mojom::RendererAutomationRegistry* GetAutomationRegistry();
@@ -93,8 +98,33 @@ class ServiceWorkerData
                      DispatchEventCallback callback) override;
 
  private:
+  // An event queued until the listener registration phase finishes and the
+  // flush task runs.
+  struct QueuedEvent {
+    mojom::DispatchEventParamsPtr params;
+    scoped_refptr<const EventArgs> event_args;
+  };
+
   void OnServiceWorkerRequest(
       mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver);
+
+  // Dispatches an event to the JS listeners and runs the post-dispatch
+  // bookkeeping.
+  void DispatchEventToListeners(const mojom::DispatchEventParams& params,
+                                const base::ListValue& event_args);
+
+  // Flushes queued events in FIFO order.
+  void FlushQueuedEvents();
+
+  // For extensions with `background.async_listener_registration`, true from
+  // worker initialization until `runtime.markListenerRegistrationComplete()`
+  // is called. While true, incoming events are queued in `queued_events_`.
+  bool in_listener_registration_phase_ = false;
+
+  // Events queued until the flush task runs. They have no keepalive, so they
+  // do not extend the worker's lifetime. If the worker stops before the flush
+  // task runs, they are discarded.
+  base::circular_deque<QueuedEvent> queued_events_;
 
   raw_ptr<blink::WebServiceWorkerContextProxy> proxy_;
   const int64_t service_worker_version_id_;

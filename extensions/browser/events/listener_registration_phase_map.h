@@ -84,6 +84,11 @@ class ListenerRegistrationPhaseMap {
   std::optional<State> GetState(const ExtensionId& extension_id,
                                 content::BrowserContext& browser_context) const;
 
+  // Returns true if the latest registration phase for `extension_id` is
+  // started.
+  bool IsStarted(const ExtensionId& extension_id,
+                 content::BrowserContext& browser_context) const;
+
   // Removes registration phases for `extension_id` across all BrowserContexts
   // on extension unload.
   void RemoveAllForExtension(const ExtensionId& extension_id);

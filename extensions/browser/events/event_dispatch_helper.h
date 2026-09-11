@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/events/listener_registration_phase_map.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/extension_id.h"
@@ -64,10 +65,12 @@ class EventDispatchHelper {
   EventDispatchHelper& operator=(const EventDispatchHelper&) = delete;
 
   // Dispatches the given `event` to any matching `listeners` (lazy and
-  // non-lazy).
+  // non-lazy). `listener_registration_phases` tracks which extensions are in
+  // their listener registration phase (see `TryQueueEventDispatch()`).
   static void DispatchEvent(
       content::BrowserContext& browser_context,
       EventListenerMap& listeners,
+      const ListenerRegistrationPhaseMap& listener_registration_phases,
       DispatchFunction dispatch_function,
       DispatchToProcessFunction dispatch_to_process_function,
       const ExtensionId& restrict_to_extension_id,
@@ -85,11 +88,13 @@ class EventDispatchHelper {
       mojom::ContextType target_context_type);
 
  private:
-  EventDispatchHelper(const ExtensionRegistry& extension_registry,
-                      content::BrowserContext& browser_context,
-                      EventListenerMap& listeners,
-                      DispatchFunction dispatch_function,
-                      DispatchToProcessFunction dispatch_to_process_function);
+  EventDispatchHelper(
+      const ExtensionRegistry& extension_registry,
+      content::BrowserContext& browser_context,
+      EventListenerMap& listeners,
+      const ListenerRegistrationPhaseMap& listener_registration_phases,
+      DispatchFunction dispatch_function,
+      DispatchToProcessFunction dispatch_to_process_function);
 
   ~EventDispatchHelper();
 
@@ -103,9 +108,9 @@ class EventDispatchHelper {
   // matching lazy context (for example, it was queued or canceled), false
   // otherwise.
   //
-  // NOTE: this method will not dispatch to a lazy listener if the context
-  // is active, so that it can be dispatched to the corresponding active
-  // (non-lazy) listener instead.
+  // NOTE: this method will not dispatch to a lazy listener if the context is
+  // active (deferring to the active listener instead), unless the extension is
+  // currently in its listener registration phase.
   bool DispatchEventToLazyListener(const ExtensionId& restrict_to_extension_id,
                                    const GURL& restrict_to_url,
                                    Event& event,
@@ -133,8 +138,9 @@ class EventDispatchHelper {
   // handled for this lazy context (either queued or canceled), false
   // otherwise.
   //
-  // NOTE: this method will not dispatch to a lazy listener if the context
-  // is active.
+  // NOTE: this method will not dispatch to a lazy listener if the context is
+  // active (deferring to the active listener instead), unless the extension is
+  // currently in its listener registration phase.
   bool TryQueueEventForLazyListener(Event& event,
                                     const LazyContextId& dispatch_context,
                                     const base::DictValue* listener_filter);
@@ -205,6 +211,8 @@ class EventDispatchHelper {
   const raw_ref<const ExtensionRegistry> extension_registry_;
   const raw_ref<content::BrowserContext> browser_context_;
   const raw_ref<EventListenerMap> listeners_;
+  const raw_ref<const ListenerRegistrationPhaseMap>
+      listener_registration_phases_;
   DispatchFunction dispatch_function_;
   DispatchToProcessFunction dispatch_to_process_function_;
 

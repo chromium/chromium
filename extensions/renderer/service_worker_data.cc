@@ -4,7 +4,13 @@
 
 #include "extensions/renderer/service_worker_data.h"
 
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_interaction_provider.h"
@@ -128,10 +134,31 @@ void ServiceWorkerData::Init() {
   const ExtensionId& extension_id = context_->GetExtensionID();
   CHECK(!extension_id.empty());
   CHECK(activation_sequence_.has_value());
+
+  // Set `in_listener_registration_phase_` before binding
+  // `event_dispatcher_receiver_` so incoming events are properly queued.
+  in_listener_registration_phase_ =
+      BackgroundInfo::HasAsyncListenerRegistration(context_->extension());
+
   GetServiceWorkerHost()->DidInitializeServiceWorkerContext(
       extension_id, *activation_sequence_, service_worker_version_id_,
       thread_id, service_worker_token_,
       event_dispatcher_receiver_.BindNewEndpointAndPassRemote());
+}
+
+bool ServiceWorkerData::MarkListenerRegistrationComplete() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!in_listener_registration_phase_) {
+    return false;
+  }
+  in_listener_registration_phase_ = false;
+  // Flush in a separate task. This method runs synchronously during
+  // `runtime.markListenerRegistrationComplete()`, so flushing immediately would
+  // run listeners reentrantly before the call returns.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ServiceWorkerData::FlushQueuedEvents,
+                                weak_ptr_factory_.GetWeakPtr()));
+  return true;
 }
 
 void ServiceWorkerData::DispatchEvent(
@@ -139,28 +166,71 @@ void ServiceWorkerData::DispatchEvent(
     const scoped_refptr<const EventArgs>& event_args,
     DispatchEventCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(event_args);
+  // Queue events while registration is in progress or earlier events are
+  // waiting to flush, preserving FIFO order.
+  if (in_listener_registration_phase_ || !queued_events_.empty()) {
+    // TODO(crbug.com/509627729): Bound the queue. When full, drop the oldest
+    // event while still completing its webRequest bookkeeping
+    // (`DidDispatchEvent()`).
+    queued_events_.push_back(QueuedEvent{std::move(params), event_args});
+  } else {
+    DispatchEventToListeners(*params, event_args->data);
+  }
+
+  // Queued events do not keep the worker alive: they have no browser keepalive
+  // and are acked at queue time. If the worker stops at the idle timeout
+  // before registration completes, the phase aborts and the queued events are
+  // lost.
+  std::move(callback).Run(
+      /*event_will_run_in_lazy_background_page_script=*/false);
+}
+
+void ServiceWorkerData::DispatchEventToListeners(
+    const mojom::DispatchEventParams& params,
+    const base::ListValue& event_args) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ScriptContext* script_context = context();
   // Note |scoped_extension_interaction| requires a HandleScope.
   v8::Isolate* isolate = script_context->isolate();
   v8::HandleScope handle_scope(isolate);
   std::unique_ptr<InteractionProvider::Scope> scoped_extension_interaction;
-  if (params->is_user_gesture) {
+  if (params.is_user_gesture) {
     scoped_extension_interaction =
         ExtensionInteractionProvider::Scope::ForWorker(
             script_context->v8_context());
   }
 
-  CHECK(event_args);
-  const base::ListValue& args = event_args->data;
-  bindings_system()->DispatchEventInContext(
-      params->event_name, args, std::move(params->filtering_info), context());
+  bindings_system()->DispatchEventInContext(params.event_name, event_args,
+                                            params.filtering_info, context());
   // The worker has a single context, so one dispatch notifies every listener.
-  bindings_system()->DidDispatchEvent(*params->host_id, params->event_name,
-                                      args);
+  bindings_system()->DidDispatchEvent(*params.host_id, params.event_name,
+                                      event_args);
+}
 
-  std::move(callback).Run(
-      // False since this is only possibly true for lazy background page.
-      /*event_will_run_in_lazy_background_page_script=*/false);
+void ServiceWorkerData::FlushQueuedEvents() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(!in_listener_registration_phase_);
+  base::UmaHistogramCounts10000(
+      "Extensions.ServiceWorkerBackground.AsyncListenerRegistration."
+      "QueuedEvents",
+      queued_events_.size());
+  // Flush queued events in FIFO order. Because this runs in a single task,
+  // new Mojo events cannot interleave. Events without matching JS listeners
+  // are discarded downstream in `APIEventHandler::FireEventInContext()`.
+  base::WeakPtr<ServiceWorkerData> weak_this = weak_ptr_factory_.GetWeakPtr();
+  while (!queued_events_.empty()) {
+    if (!context_->is_valid()) {
+      queued_events_.clear();
+      break;
+    }
+    QueuedEvent event = std::move(queued_events_.front());
+    queued_events_.pop_front();
+    DispatchEventToListeners(*event.params, event.event_args->data);
+    if (!weak_this) {
+      return;
+    }
+  }
 }
 
 void ServiceWorkerData::DispatchOnConnect(
