@@ -158,4 +158,40 @@ public class PageInfoConnectionSecurityControllerUnitTest {
         assertEquals(View.VISIBLE, details.getVisibility());
         assertEquals("You're viewing a PDF file", details.getText().toString());
     }
+
+    @Test
+    public void testSetSecurityDescription_offlinePage() {
+        when(mDelegate.getPdfPageType()).thenReturn(0);
+        when(mDelegate.getOfflinePageConnectionMessage()).thenReturn("Showing offline copy");
+
+        mController.showSecurityInfo();
+        mController.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[0][], false, new byte[0][], null);
+
+        TextView summary = mView.findViewById(R.id.security_description_summary);
+        TextView details = mView.findViewById(R.id.security_description_details);
+        assertNotNull(summary);
+        assertNotNull(details);
+        assertEquals(View.GONE, summary.getVisibility());
+        assertEquals(View.VISIBLE, details.getVisibility());
+        assertEquals("Showing offline copy", details.getText().toString());
+    }
+
+    @Test
+    public void testCreateViewForSubpage_offlinePage() {
+        when(mDelegate.getPdfPageType()).thenReturn(0);
+        when(mDelegate.getOfflinePageConnectionMessage()).thenReturn("Showing offline copy");
+
+        mController.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[0][], false, new byte[0][], null);
+        View subpageView = mController.createViewForSubpage(null);
+
+        TextView summary = subpageView.findViewById(R.id.security_description_summary);
+        TextView details = subpageView.findViewById(R.id.security_description_details);
+        assertNotNull(summary);
+        assertNotNull(details);
+        assertEquals(View.GONE, summary.getVisibility());
+        assertEquals(View.VISIBLE, details.getVisibility());
+        assertEquals("Showing offline copy", details.getText().toString());
+    }
 }

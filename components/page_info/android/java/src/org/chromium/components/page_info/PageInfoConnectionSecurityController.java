@@ -132,6 +132,10 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
             mViewParams.summary = "";
             mViewParams.details = mDelegate.getPdfPageConnectionMessage();
             mViewParams.iconResId = R.drawable.omnibox_info;
+        } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
+            mViewParams.summary = "";
+            mViewParams.details = mDelegate.getOfflinePageConnectionMessage();
+            mViewParams.iconResId = R.drawable.omnibox_info;
         } else {
             mViewParams.summary = summary;
             mViewParams.details = details;
