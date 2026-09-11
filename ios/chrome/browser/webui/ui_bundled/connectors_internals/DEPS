@@ -1,3 +1,5 @@
 include_rules = [
+  "+components/device_signals/core/browser",
   "+ios/chrome/browser/enterprise/connectors/device_trust",
+  "+ios/chrome/browser/enterprise/signals/model",
 ]

@@ -13,6 +13,8 @@ source_set("connectors_internals") {
   ]
   deps = [
     "//base",
+    "//components/device_signals/core/browser",
+    "//components/enterprise",
     "//components/enterprise/client_certificates/core",
     "//components/enterprise/client_certificates/ios",
     "//components/enterprise/connectors:mojom",
@@ -22,10 +24,13 @@ source_set("connectors_internals") {
     "//components/enterprise/device_trust/core",
     "//components/enterprise/device_trust/core:device_trust_connector_service",
     "//components/enterprise/device_trust/core:device_trust_service",
+    "//components/prefs",
     "//ios/chrome/browser/enterprise/client_certificates",
     "//ios/chrome/browser/enterprise/connectors/device_trust:features",
     "//ios/chrome/browser/enterprise/connectors/device_trust/model",
+    "//ios/chrome/browser/enterprise/signals/model",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:cloud_profile_reporting",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -33,3 +38,30 @@ source_set("connectors_internals") {
     "//ios/web/public/webui",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "connectors_internals_page_handler_unittest.mm" ]
+  deps = [
+    ":connectors_internals",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise",
+    "//components/enterprise/connectors:mojom",
+    "//components/enterprise/device_trust/core",
+    "//components/enterprise/device_trust/core:device_trust_connector_service",
+    "//components/enterprise/device_trust/core:device_trust_service",
+    "//components/enterprise/device_trust/core/attestation",
+    "//components/enterprise/device_trust/core/signals",
+    "//components/prefs",
+    "//ios/chrome/browser/enterprise/connectors/device_trust:features",
+    "//ios/chrome/browser/enterprise/connectors/device_trust/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:cloud_profile_reporting",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
+
