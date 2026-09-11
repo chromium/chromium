@@ -44,7 +44,11 @@ enum class ChromeInitiatorLocation : page_load_metrics::
       // Desktop: "Open link in new tab", "Open link in new window", "Open link
       // in Incognito window", etc. from the right-click menu on a link.
       kContextMenuOpenLink = 10,
-      kMaxValue = kContextMenuOpenLink
+
+      // This is form submission navigation triggered from the renderer with a
+      // user gesture.
+      kFormSubmission = 11,
+      kMaxValue = kFormSubmission
     };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationInitiatorType)
 

@@ -345,6 +345,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Reload"/>
   <int value="9" label="Context Menu Search"/>
   <int value="10" label="Context Menu Open Link"/>
+  <int value="11" label="Form Submission"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/page_load_metrics/chrome_initiator_location.h:ChromeInitiatorLocation) -->

@@ -42,10 +42,16 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
           navigation_handle_user_data->navigation_type());
     }
     if (navigation_handle.IsRendererInitiated() &&
-        navigation_handle.HasUserGesture() &&
-        ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                     ui::PAGE_TRANSITION_LINK)) {
-      return ChromeInitiatorLocation::kLinkClick;
+        navigation_handle.HasUserGesture()) {
+      if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                       ui::PAGE_TRANSITION_LINK)) {
+        return ChromeInitiatorLocation::kLinkClick;
+      }
+
+      if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                       ui::PAGE_TRANSITION_FORM_SUBMIT)) {
+        return ChromeInitiatorLocation::kFormSubmission;
+      }
     }
     return ChromeInitiatorLocation::kOther;
   }();

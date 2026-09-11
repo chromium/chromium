@@ -30,6 +30,8 @@ std::string StringifyChromeInitiatorLocation(
       return "ContextMenuSearch";
     case ChromeInitiatorLocation::kContextMenuOpenLink:
       return "ContextMenuOpenLink";
+    case ChromeInitiatorLocation::kFormSubmission:
+      return "FormSubmission";
     case ChromeInitiatorLocation::kOther:
       return "Other";
   }
