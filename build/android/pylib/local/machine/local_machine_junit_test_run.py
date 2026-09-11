@@ -139,6 +139,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             '-Drobolectric.dependency.dir=%s'
             % self._test_instance.robolectric_runtime_deps_dir,
             '-Ddir.source.root=%s' % constants.DIR_SOURCE_ROOT,
+            # Set the default to @ConscryptMode(ConscryptMode.Mode.OFF)
+            # Saves ~60ms of start-up time.
+            '-Drobolectric.conscryptMode=OFF',
             # Use locally available sdk jars from 'robolectric.dependency.dir'
             '-Drobolectric.offline=true',
             '-Drobolectric.resourcesMode=binary',
