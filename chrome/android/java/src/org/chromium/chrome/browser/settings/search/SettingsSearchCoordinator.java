@@ -1340,6 +1340,8 @@ public class SettingsSearchCoordinator
     }
 
     private void updateSingleColumnSearchUiWidth(int appBarWidth) {
+        assert !mUseMultiColumn;
+
         // If the available width is unknown, defer until the layout pass completes (via the
         // existing onLayoutChangeListener).
         if (appBarWidth == 0) return;
@@ -1357,7 +1359,9 @@ public class SettingsSearchCoordinator
         int menuWidth = getMenuWidth();
         int startMargin = margin;
         int endMargin = margin;
-        if (isOnWideScreen) {
+        // On wide screens and in SettingsInTab (e.g. tablet in split-screen mode), preference items
+        // always include itemMargin. Include itemMargin here so the search UI aligns.
+        if (isOnWideScreen || SettingsInTab.isEnabled()) {
             int itemMargin = getPixelSize(R.dimen.settings_item_margin);
             margin += itemMargin;
             if (menuWidth > 0) {
