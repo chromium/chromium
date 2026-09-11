@@ -18,7 +18,7 @@ import "services/audio/public/mojom/testing_api.mojom";
 // must only be bound by trusted processes, e.g. a browser process. Note that
 // the sandbox can be disabled (to kNoSandbox) by policy.
 [ServiceSandbox=sandbox.mojom.Sandbox.kAudio,
- RequireContext=sandbox.mojom.Context.kBrowswer]
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface AudioService {
   // Binds a SystemInfo interface receiver.
   [AllowedContext=sandbox.mojom.Context.kBrowser]

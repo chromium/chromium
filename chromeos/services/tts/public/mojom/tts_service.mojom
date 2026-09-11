@@ -19,7 +19,7 @@ struct AudioParameters {
 // interface, in the browser process, brokers a connection between TtsService
 // and two possible engine types, [Google|Playback]TtsStream.
 [ServiceSandbox=sandbox.mojom.Sandbox.kTts,
- RequireContext=sandbox.mojom.Context.kBrowswer]
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface TtsService {
   // Binds a GoogleTtsStream received by this service.
   // The remote lives in the Google tts component extension.
