@@ -318,6 +318,11 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_->UpdateLocalTabAttachmentState(tab_id, new_state);
   }
 
+  // Wrapper for `HasGivenAllLivePermissions`.
+  bool HasGivenAllLivePermissions() {
+    return gemini_browser_agent_->HasGivenAllLivePermissions();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
@@ -1930,5 +1935,40 @@ TEST_F(GeminiBrowserAgentTest,
 
   EXPECT_TRUE(completion_called);
   EXPECT_TRUE(completion_granted);
+  [mock_device stopMocking];
+}
+
+// Tests that switching to Live mode only records session started metrics if all
+// Live permissions and preferences have been granted.
+TEST_F(GeminiBrowserAgentTest,
+       TestOnModeChangedLiveSessionMetricsGatedOnPermissions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
+  base::UserActionTester user_action_tester;
+
+  // Initially, permissions are not granted.
+  EXPECT_FALSE(HasGivenAllLivePermissions());
+
+  gemini_browser_agent_->OnModeChanged(ios::provider::GeminiViewMode::kLive);
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("MobileGeminiLiveSessionStarted"));
+
+  // Grant user consent, intro played, and Chrome microphone preference.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveIntroPlayed, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
+                                   true);
+
+  // Stub OS-level microphone authorization.
+  id mock_device = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
+  EXPECT_TRUE(HasGivenAllLivePermissions());
+
+  gemini_browser_agent_->OnModeChanged(ios::provider::GeminiViewMode::kLive);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("MobileGeminiLiveSessionStarted"));
+
   [mock_device stopMocking];
 }

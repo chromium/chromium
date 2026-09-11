@@ -1394,11 +1394,11 @@ void GeminiBrowserAgent::OnModeChanged(ios::provider::GeminiViewMode mode) {
   }
 
   if (mode == ios::provider::GeminiViewMode::kLive) {
-    // We make sure the user already consented to Live, as the Live FRE causes
-    // a mode switch, and if the user dismisses it, metrics will be recorded
-    // without the user having ever used Live.
-    if (gemini::DidUserConsentToGeminiLive(
-            browser_->GetProfile()->GetPrefs())) {
+    // We make sure the user already granted all Live preferences and native
+    // microphone permission, as the Live FRE causes a mode switch, and if the
+    // user dismisses it, metrics will be recorded without the user having ever
+    // used Live.
+    if (HasGivenAllLivePermissions()) {
       RecordLiveSessionStarted();
       if (live_session_start_time_.is_null()) {
         live_session_start_time_ = base::TimeTicks::Now();
@@ -2260,6 +2260,22 @@ void GeminiBrowserAgent::OnMicrophonePrefChanged() {
       IsInGeminiLiveMode()) {
     SwitchToChatModeOrDismiss(/*animated=*/true);
   }
+}
+
+bool GeminiBrowserAgent::HasGivenAllLivePermissions() const {
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  if (!prefs) {
+    return false;
+  }
+
+  if (!gemini::DidUserConsentToGeminiLive(prefs) ||
+      !gemini::DidGeminiLiveIntroPlay(prefs) ||
+      !prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting)) {
+    return false;
+  }
+
+  return [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio] ==
+         AVAuthorizationStatusAuthorized;
 }
 
 void GeminiBrowserAgent::SetSessionCommandHandlers() {

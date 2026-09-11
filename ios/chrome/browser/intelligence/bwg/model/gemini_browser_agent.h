@@ -424,6 +424,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       NSString* tab_id,
       ios::provider::GeminiPageContextAttachmentState new_state);
 
+  // Returns whether all Gemini Live permissions and preferences have been
+  // granted (user consent, intro played, Chrome mic setting, and OS mic
+  // permission).
+  bool HasGivenAllLivePermissions() const;
+
   // Returns the attached page context for `tab_id`, or nil if not found.
   GeminiPageContext* GetAttachedPageContext(web::WebStateID tab_id) const;
 
