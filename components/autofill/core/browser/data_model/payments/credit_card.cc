@@ -367,6 +367,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kMagic:
     case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:
+    case Suggestion::Icon::kOpenInNew:
     case Suggestion::Icon::kOrder:
     case Suggestion::Icon::kOrderSpark:
     case Suggestion::Icon::kPassport:

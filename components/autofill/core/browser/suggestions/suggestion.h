@@ -439,6 +439,7 @@ struct Suggestion {
     kLoyalty,
     kMagic,
     kOfferTag,
+    kOpenInNew,
     kOrder,
     kOrderSpark,
     kPassport,

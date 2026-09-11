@@ -66,6 +66,20 @@ TEST(PopupCellUtilsTest,
                 : vector_icons::kSubmenuArrowChromeRefreshOldIcon.name);
 }
 
+TEST(PopupCellUtilsTest, GetIconImageModelFromIcon_GmailAndOpenInNew) {
+  std::optional<ui::ImageModel> gmail_model =
+      popup_cell_utils::GetIconImageModelFromIcon(Suggestion::Icon::kGmail);
+  ASSERT_TRUE(gmail_model.has_value());
+  EXPECT_FALSE(gmail_model->IsEmpty());
+
+  std::optional<ui::ImageModel> open_in_new_model =
+      popup_cell_utils::GetIconImageModelFromIcon(Suggestion::Icon::kOpenInNew);
+  ASSERT_TRUE(open_in_new_model.has_value());
+  EXPECT_FALSE(open_in_new_model->IsEmpty());
+  EXPECT_EQ(open_in_new_model->GetVectorIcon().vector_icon(),
+            &vector_icons::kOpenInNewFlippableIcon);
+}
+
 const VoiceOverTestParam kVoiceOverTestCases[] = {
     // This is a VCN suggestion without either product description nor
     // card nickname.
