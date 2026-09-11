@@ -8203,6 +8203,7 @@ crbug.com/365127791 [ Win11 ] inspector-protocol/layout-fonts/languages-emoji-ra
 crbug.com/365127791 [ Win11 ] svg/text/bidi-textlength.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] svg/text/surrogate-pair-queries.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
+crbug.com/365127791 [ Win11-arm64 ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/emoji-vs-system-fallback.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/emoticons.html [ Failure Pass ]
 crbug.com/365127791 [ Win11-arm64 ] virtual/text-antialias/emoticons.html [ Failure Pass ]
