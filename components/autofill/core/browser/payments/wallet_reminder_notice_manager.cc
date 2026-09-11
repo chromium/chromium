@@ -72,14 +72,15 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
 }
 
 bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
-    base::span<const EntityInstance> entities) {
+    const EntityType& type,
+    const EntityInstance::RecordType& record_type) {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableWalletReminderNoticePublicPass)) {
     return false;
   }
   // The notice applies to any entity that is a public pass upstreamed to
   // wallet (e.g., Vehicles) and is not read-only.
-  if (std::ranges::none_of(entities, &IsEligibleForWalletNotice)) {
+  if (!IsEligibleForWalletNotice(type, record_type)) {
     return false;
   }
   if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {

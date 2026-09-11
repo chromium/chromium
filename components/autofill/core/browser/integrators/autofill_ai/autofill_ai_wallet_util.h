@@ -9,12 +9,13 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/consent_auditor/consent_auditor.h"
 
 namespace autofill {
 
-class EntityInstance;
 class EntityDataManager;
 
 // Reacts to the response of a Wallet upsert request by writing to EDM and
@@ -50,12 +51,11 @@ consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
     consent_auditor::ConsentAuditor& consent_auditor,
     signin::IdentityManager& identity_manager);
 
-// Returns true if `entity_instance` is eligible for a Google Wallet notice
-// (i.e. it is a public pass stored in Google Wallet and its attributes are not
-// read-only). Note: The entity's `record_type` is determined based on Wallet
-// sync permissions, so checking for `kPublic` here safely encapsulates both the
-// type and permission checks.
-bool IsEligibleForWalletNotice(const EntityInstance& entity_instance);
+// Returns true if an entity with `type` and `record_type` is eligible for a
+// Google Wallet notice (i.e. it is a public pass stored in Google Wallet and
+// its type is not read-only).
+bool IsEligibleForWalletNotice(const EntityType& type,
+                               const EntityInstance::RecordType& record_type);
 
 }  // namespace autofill
 

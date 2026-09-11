@@ -539,12 +539,10 @@ TEST_F(AutofillAiImportUtilsTest,
 TEST_F(AutofillAiImportUtilsTest, IsEligibleForWalletPassDisclosure_ReadOnly) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableWalletDisclosureNoticePublicPass);
-  EntityInstance vehicle = test::GetVehicleEntityInstance(
-      {.record_type = EntityInstance::RecordType::kServerWallet,
-       .are_attributes_read_only =
-           EntityInstance::AreAttributesReadOnly(true)});
+  EntityInstance flight_reservation = test::GetFlightReservationEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
   EXPECT_FALSE(IsEligibleForWalletPassDisclosure(
-      /*is_save_prompt=*/true, vehicle));
+      /*is_save_prompt=*/true, flight_reservation));
 }
 
 TEST_F(AutofillAiImportUtilsTest,

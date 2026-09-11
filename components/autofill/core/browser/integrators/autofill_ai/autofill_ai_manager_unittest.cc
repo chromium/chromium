@@ -396,9 +396,6 @@ TEST_F(AutofillAiManagerTest,
   manager().OnAfterLoadedServerPredictions(autofill_manager(), {form_id});
 }
 
-
-
-
 TEST_F(AutofillAiManagerTest,
        FillingMomentSurvey_SuggestionAccepted_ShowSurvey) {
   EntityInstance passport_entity = test::GetPassportEntityInstance(

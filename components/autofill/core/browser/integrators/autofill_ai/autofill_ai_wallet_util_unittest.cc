@@ -26,6 +26,7 @@
 namespace autofill {
 namespace {
 
+using test::GetFlightReservationEntityInstance;
 using test::GetNationalIdCardEntityInstance;
 using test::GetPassportEntityInstance;
 using test::GetVehicleEntityInstance;
@@ -316,16 +317,14 @@ TEST_F(AutofillAiWalletUtilsTest, GetAddEntityTypeStringForI18n_Branded) {
 }
 
 TEST_F(AutofillAiWalletUtilsTest, IsEligibleForWalletNotice) {
-  EXPECT_TRUE(IsEligibleForWalletNotice(
-      GetVehicleEntityInstance({.record_type = kServerWallet})));
+  EXPECT_TRUE(IsEligibleForWalletNotice(EntityType(EntityTypeName::kVehicle),
+                                        kServerWallet));
+  EXPECT_FALSE(IsEligibleForWalletNotice(EntityType(EntityTypeName::kPassport),
+                                         kServerWallet));
+  EXPECT_FALSE(
+      IsEligibleForWalletNotice(EntityType(EntityTypeName::kVehicle), kLocal));
   EXPECT_FALSE(IsEligibleForWalletNotice(
-      GetPassportEntityInstance({.record_type = kServerWallet})));
-  EXPECT_FALSE(IsEligibleForWalletNotice(
-      GetVehicleEntityInstance({.record_type = kLocal})));
-  EXPECT_FALSE(IsEligibleForWalletNotice(GetVehicleEntityInstance(
-      {.record_type = kServerWallet,
-       .are_attributes_read_only =
-           EntityInstance::AreAttributesReadOnly(true)})));
+      EntityType(EntityTypeName::kFlightReservation), kServerWallet));
 }
 
 }  // namespace

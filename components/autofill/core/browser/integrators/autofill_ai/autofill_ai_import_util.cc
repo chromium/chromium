@@ -305,7 +305,8 @@ bool DidUserExplicitlyDeclineImportPrompt(
 
 bool IsEligibleForWalletPassDisclosure(bool is_save_prompt,
                                        const EntityInstance& entity) {
-  return is_save_prompt && IsEligibleForWalletNotice(entity) &&
+  return is_save_prompt &&
+         IsEligibleForWalletNotice(entity.type(), entity.record_type()) &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnableWalletDisclosureNoticePublicPass);
 }
