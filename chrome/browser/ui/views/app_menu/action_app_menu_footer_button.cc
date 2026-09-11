@@ -21,6 +21,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -52,6 +53,13 @@ ActionAppMenuFooterButton::ActionAppMenuFooterButton(PressedCallback callback)
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  // When hovered, InkDrop creates a non-opaque layer on the button. An explicit
+  // opaque background matching the menu is required so subpixel rendering on
+  // the child label can verify it paints over an opaque region in
+  // Label::PaintText().
+  SetBackground(views::CreateRoundedRectBackground(ui::kColorMenuBackground,
+                                                   corner_radius));
 
   auto* const ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
