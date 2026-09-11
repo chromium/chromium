@@ -119,6 +119,9 @@ template("clang_v8_toolchain") {
     toolchain_args = {
       current_os = "linux"
       forward_variables_from(invoker.toolchain_args, "*")
+      if (use_custom_libcxx_for_host) {
+        use_custom_libcxx = true
+      }
     }
   }
 }
