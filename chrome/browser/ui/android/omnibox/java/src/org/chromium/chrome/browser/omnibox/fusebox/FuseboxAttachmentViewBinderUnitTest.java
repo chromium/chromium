@@ -33,6 +33,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
@@ -396,5 +397,24 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
         assertNotNull(thumbnail);
         assertEquals(R.drawable.ic_globe_24dp, shadowOf(thumbnail).getCreatedFromResId());
+    }
+
+    @Test
+    public void testGetThumbnailDrawable_Drive_ReturnsThumb() {
+        FuseboxAttachment attachment =
+                FuseboxAttachment.forDrive(
+                        mContext,
+                        new DriveAttachmentMetadata(
+                                "drive_id",
+                                /* resourceKey= */ null,
+                                "Test Doc",
+                                DriveIconUtils.MIME_TYPE_GOOGLE_DOCS),
+                        TimeUtils.elapsedRealtimeMillis(),
+                        FuseboxAttachmentButtonType.DRIVE_FILES);
+
+        Drawable thumbnail = mBinder.getThumbnailDrawable(mModel, attachment, mContext);
+
+        assertNotNull(thumbnail);
+        assertEquals(R.drawable.ic_drive_docs_24dp, shadowOf(thumbnail).getCreatedFromResId());
     }
 }

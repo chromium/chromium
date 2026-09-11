@@ -30,7 +30,9 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -219,5 +221,37 @@ public class FuseboxAttachmentUnitTest {
 
         assertFalse(attachment.retryUpload(mBridge));
         assertEquals(CACHE_TOKEN, attachment.getToken());
+    }
+
+    private FuseboxAttachment createDriveAttachment(@Nullable String resourceKey) {
+        DriveAttachmentMetadata metadata =
+                new DriveAttachmentMetadata(
+                        "drive_id", resourceKey, "title", DriveIconUtils.MIME_TYPE_GOOGLE_DOCS);
+        return FuseboxAttachment.forDrive(
+                ApplicationProvider.getApplicationContext(),
+                metadata,
+                TimeUtils.elapsedRealtimeMillis(),
+                FuseboxAttachmentButtonType.DRIVE_FILES);
+    }
+
+    @Test
+    public void uploadToBackend_driveAttachment_success() {
+        FuseboxAttachment attachment = createDriveAttachment("resource_key");
+        when(mBridge.addDriveFile(
+                        "drive_id", "resource_key", "title", DriveIconUtils.MIME_TYPE_GOOGLE_DOCS))
+                .thenReturn(CAPTURE_TOKEN);
+
+        assertTrue(attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false));
+        assertEquals(CAPTURE_TOKEN, attachment.getToken());
+    }
+
+    @Test
+    public void uploadToBackend_driveAttachment_failure() {
+        FuseboxAttachment attachment = createDriveAttachment(/* resourceKey= */ null);
+        when(mBridge.addDriveFile("drive_id", null, "title", DriveIconUtils.MIME_TYPE_GOOGLE_DOCS))
+                .thenReturn(null);
+
+        assertFalse(attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false));
+        assertFalse(attachment.hasToken());
     }
 }

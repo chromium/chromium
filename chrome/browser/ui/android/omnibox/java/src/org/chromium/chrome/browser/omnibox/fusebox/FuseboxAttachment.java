@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.text.TextUtils;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,6 +38,8 @@ public final class FuseboxAttachment extends ListItem {
     public final long startTime;
     public final @FuseboxAttachmentButtonType int buttonType;
     public final boolean isSuggestedTab;
+    public final @Nullable String driveId;
+    public final @Nullable String resourceKey;
 
     private boolean mIsUploadComplete;
     private boolean mIsFetchingTabDataFromCache;
@@ -51,6 +56,34 @@ public final class FuseboxAttachment extends ListItem {
             @Nullable Long optionalStartTime,
             @FuseboxAttachmentButtonType int buttonType,
             boolean isSuggestedTab) {
+        this(
+                itemType,
+                thumbnail,
+                title,
+                mimeType,
+                data,
+                tab,
+                bypassTabCache,
+                optionalStartTime,
+                buttonType,
+                isSuggestedTab,
+                /* driveId= */ null,
+                /* resourceKey= */ null);
+    }
+
+    private FuseboxAttachment(
+            @FuseboxAttachmentType int itemType,
+            @Nullable Drawable thumbnail,
+            String title,
+            String mimeType,
+            byte[] data,
+            @Nullable Tab tab,
+            boolean bypassTabCache,
+            @Nullable Long optionalStartTime,
+            @FuseboxAttachmentButtonType int buttonType,
+            boolean isSuggestedTab,
+            @Nullable String driveId,
+            @Nullable String resourceKey) {
         super(itemType, new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS));
         this.thumbnail = thumbnail;
         this.title = title;
@@ -70,6 +103,8 @@ public final class FuseboxAttachment extends ListItem {
         startTime = optionalStartTime == null ? SystemClock.elapsedRealtime() : optionalStartTime;
         this.buttonType = buttonType;
         this.isSuggestedTab = isSuggestedTab;
+        this.driveId = driveId;
+        this.resourceKey = resourceKey;
 
         // Set the ATTACHMENT property to this instance after construction.
         model.set(FuseboxAttachmentProperties.ATTACHMENT, this);
@@ -178,6 +213,29 @@ public final class FuseboxAttachment extends ListItem {
                 isSuggestedTab);
     }
 
+    /** Creates a FuseboxAttachment for a Drive file. */
+    public static FuseboxAttachment forDrive(
+            Context context,
+            DriveAttachmentMetadata metadata,
+            long startTime,
+            @FuseboxAttachmentButtonType int buttonType) {
+        int iconRes = DriveIconUtils.getIconForDriveFile(metadata.mimeType, metadata.title);
+        Drawable icon = AppCompatResources.getDrawable(context, iconRes);
+        return new FuseboxAttachment(
+                FuseboxAttachmentType.ATTACHMENT_DRIVE,
+                icon,
+                metadata.title,
+                metadata.mimeType,
+                new byte[0],
+                /* tab= */ null,
+                /* bypassTabCache= */ false,
+                startTime,
+                buttonType,
+                /* isSuggestedTab= */ false,
+                metadata.driveId,
+                metadata.resourceKey);
+    }
+
     /**
      * Uploads this attachment using the provided bridge and sets its token.
      *
@@ -222,6 +280,8 @@ public final class FuseboxAttachment extends ListItem {
                     mToken = bridge.addTabContext(assumeNonNull(tab), isSuggestedTab);
                 }
             }
+        } else if (type == FuseboxAttachmentType.ATTACHMENT_DRIVE) {
+            mToken = bridge.addDriveFile(assumeNonNull(driveId), resourceKey, title, mimeType);
         } else {
             mToken = bridge.addFile(title, mimeType, data);
         }

@@ -98,10 +98,15 @@ class FuseboxAttachmentViewBinder {
             case FuseboxAttachmentType.ATTACHMENT_FILE ->
                     fileThumbnail(context, brandedColorScheme);
             case FuseboxAttachmentType.ATTACHMENT_PDF -> pdfThumbnail();
+            case FuseboxAttachmentType.ATTACHMENT_DRIVE -> driveThumbnail(attachment);
             case FuseboxAttachmentType.ATTACHMENT_TAB ->
                     tabThumbnail(context, brandedColorScheme, attachment);
             default -> null;
         };
+    }
+
+    private static @Nullable Drawable driveThumbnail(FuseboxAttachment attachment) {
+        return attachment.thumbnail;
     }
 
     private Drawable imageFallbackThumbnail(
