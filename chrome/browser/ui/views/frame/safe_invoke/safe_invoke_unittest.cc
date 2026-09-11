@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -74,9 +75,35 @@ class Leaf {
   int Process(int delta, int mult) { return (value + delta) * mult; }
 };
 
+class RefLeaf : public base::RefCounted<RefLeaf> {
+ public:
+  int value = 0;
+  explicit RefLeaf(int v) : value(v) {}
+  int GetValue() const { return value; }
+
+ private:
+  friend class base::RefCounted<RefLeaf>;
+  ~RefLeaf() = default;
+};
+
+class WeakLeaf {
+ public:
+  int value = 0;
+
+  void Add(int delta) { value += delta; }
+  int GetValue() const { return value; }
+  base::WeakPtr<WeakLeaf> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
+  void InvalidateWeakPtrs() { weak_factory_.InvalidateWeakPtrs(); }
+
+ private:
+  base::WeakPtrFactory<WeakLeaf> weak_factory_{this};
+};
+
 class Branch {
  public:
   std::unique_ptr<Leaf> leaf = std::make_unique<Leaf>();
+  std::unique_ptr<WeakLeaf> weak_leaf = std::make_unique<WeakLeaf>();
+  scoped_refptr<RefLeaf> ref_leaf = base::MakeRefCounted<RefLeaf>(100);
   MoveOnlyData move_only;
   OverloadedAddressOf overloaded_addr;
   int branch_id = 10;
@@ -84,6 +111,17 @@ class Branch {
   Leaf* GetLeaf() { return leaf.get(); }
   Leaf* GetLeafIf(bool condition) { return condition ? leaf.get() : nullptr; }
   const Leaf* GetConstLeaf() const { return leaf.get(); }
+
+  base::WeakPtr<WeakLeaf> GetWeakLeaf() {
+    return weak_leaf ? weak_leaf->AsWeakPtr() : nullptr;
+  }
+  base::WeakPtr<WeakLeaf> GetNullWeakLeaf() { return nullptr; }
+  base::WeakPtr<WeakLeaf> stored_weak_leaf;
+  base::WeakPtr<WeakLeaf> GetStoredWeakLeaf() { return stored_weak_leaf; }
+
+  scoped_refptr<RefLeaf> GetRefLeaf() { return ref_leaf; }
+  const scoped_refptr<RefLeaf>& GetConstRefLeaf() const { return ref_leaf; }
+  scoped_refptr<RefLeaf> GetNullRefLeaf() { return nullptr; }
 
   MoveOnlyData& GetMoveOnly() { return move_only; }
   OverloadedAddressOf& GetOverloadedAddr() { return overloaded_addr; }
@@ -369,6 +407,110 @@ TEST(SafeInvokeUnitTest, SmartPointersAndRawPtr) {
                  .Then(&Leaf::GetValue)
                  .value_or(0);
   EXPECT_EQ(val2, 30);
+}
+
+TEST(SafeInvokeUnitTest, IntermediateWeakPtrChaining) {
+  Branch branch;
+  branch.weak_leaf->value = 55;
+
+  std::optional<int> val =
+      SafeInvoke(&branch).Then(&Branch::GetWeakLeaf).Then(&WeakLeaf::GetValue);
+  ASSERT_TRUE(val.has_value());
+  EXPECT_EQ(val.value(), 55);
+
+  // Calling a modifying void method through a WeakPtr:
+  SafeInvoke(&branch).Then(&Branch::GetWeakLeaf).Then(&WeakLeaf::Add, 10);
+  EXPECT_EQ(branch.weak_leaf->value, 65);
+
+  // Extracting raw pointer via .get():
+  WeakLeaf* raw_leaf = SafeInvoke(&branch).Then(&Branch::GetWeakLeaf).get();
+  EXPECT_EQ(raw_leaf, branch.weak_leaf.get());
+}
+
+TEST(SafeInvokeUnitTest, IntermediateWeakPtrInvalidatedAndNull) {
+  Branch branch;
+  branch.weak_leaf->value = 88;
+  branch.stored_weak_leaf = branch.weak_leaf->AsWeakPtr();
+
+  // Invalidate the weak pointer:
+  branch.weak_leaf->InvalidateWeakPtrs();
+
+  std::optional<int> val = SafeInvoke(&branch)
+                               .Then(&Branch::GetStoredWeakLeaf)
+                               .Then(&WeakLeaf::GetValue);
+  EXPECT_FALSE(val.has_value());
+
+  // Also test when pointee object is destroyed:
+  branch.stored_weak_leaf = branch.weak_leaf->AsWeakPtr();
+  branch.weak_leaf.reset();
+  std::optional<int> destroyed_val = SafeInvoke(&branch)
+                                         .Then(&Branch::GetStoredWeakLeaf)
+                                         .Then(&WeakLeaf::GetValue);
+  EXPECT_FALSE(destroyed_val.has_value());
+
+  // Method returning explicitly null WeakPtr:
+  std::optional<int> null_val = SafeInvoke(&branch)
+                                    .Then(&Branch::GetNullWeakLeaf)
+                                    .Then(&WeakLeaf::GetValue);
+  EXPECT_FALSE(null_val.has_value());
+
+  // Chain starting from null Branch:
+  Branch* null_branch = nullptr;
+  std::optional<int> null_branch_val = SafeInvoke(null_branch)
+                                           .Then(&Branch::GetWeakLeaf)
+                                           .Then(&WeakLeaf::GetValue);
+  EXPECT_FALSE(null_branch_val.has_value());
+}
+
+TEST(SafeInvokeUnitTest, SafeInvokeWithInvalidWeakPtrRoot) {
+  WeakLeaf leaf;
+  leaf.value = 42;
+  base::WeakPtr<WeakLeaf> weak_ptr = leaf.AsWeakPtr();
+  leaf.InvalidateWeakPtrs();
+
+  // Passing an invalidated WeakPtr at the root of SafeInvoke should safely
+  // short-circuit without crashing or CHECK-failing.
+  std::optional<int> val = SafeInvoke(weak_ptr).Then(&WeakLeaf::GetValue);
+  EXPECT_FALSE(val.has_value());
+}
+
+TEST(SafeInvokeUnitTest, IntermediateScopedRefptrChaining) {
+  Branch branch;
+  branch.ref_leaf->value = 70;
+
+  // Value return:
+  std::optional<int> val =
+      SafeInvoke(&branch).Then(&Branch::GetRefLeaf).Then(&RefLeaf::GetValue);
+  ASSERT_TRUE(val.has_value());
+  EXPECT_EQ(val.value(), 70);
+
+  // Reference return (const scoped_refptr<T>&):
+  std::optional<int> const_ref_val = SafeInvoke(&branch)
+                                         .Then(&Branch::GetConstRefLeaf)
+                                         .Then(&RefLeaf::GetValue);
+  ASSERT_TRUE(const_ref_val.has_value());
+  EXPECT_EQ(const_ref_val.value(), 70);
+
+  // Extracting raw pointer via .get():
+  RefLeaf* raw_ref = SafeInvoke(&branch).Then(&Branch::GetRefLeaf).get();
+  EXPECT_EQ(raw_ref, branch.ref_leaf.get());
+}
+
+TEST(SafeInvokeUnitTest, IntermediateScopedRefptrNull) {
+  Branch branch;
+
+  // Method returning null scoped_refptr:
+  std::optional<int> null_val = SafeInvoke(&branch)
+                                    .Then(&Branch::GetNullRefLeaf)
+                                    .Then(&RefLeaf::GetValue);
+  EXPECT_FALSE(null_val.has_value());
+
+  // Chain starting from null branch:
+  Branch* null_branch = nullptr;
+  std::optional<int> null_branch_val = SafeInvoke(null_branch)
+                                           .Then(&Branch::GetRefLeaf)
+                                           .Then(&RefLeaf::GetValue);
+  EXPECT_FALSE(null_branch_val.has_value());
 }
 
 TEST(SafeInvokeUnitTest, ContextualBooleanConversion) {

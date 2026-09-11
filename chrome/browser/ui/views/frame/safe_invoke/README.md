@@ -91,14 +91,19 @@ views::ToggleImageButton* pin_button =
 
 ### Return Value Types
 
-If the final `.Then()` call has a function that returns:
+If a `.Then()` call has a function that returns:
 - **`void`**: return value is `void`, side-effects happen if the chain
   succeeded to that point.
+- **Pointer or reference (`T*` / `T&`)**: wraps the target in `SafeChain<T>`
+  allowing further `.Then()` chaining or `.get()` extraction.
+- **Smart pointers (`base::WeakPtr<T>` / `scoped_refptr<T>`)**: automatically
+  unwraps via `.get()` into `SafeChain<T>`, allowing continued chaining. If
+  the weak pointer has been invalidated or the pointer is null, all downstream
+  calls short-circuit safely.
+- **`std::unique_ptr<T>`**: explicitly disallowed at compile time with a
+  `static_assert` to prevent temporary ownership destruction and
+  Use-After-Free hazards.
 - **Value type `T`**: return value is `std::optional<T>`.
-- **Pointer or reference (`T*` / `T&`)**: an internal object;
-  - you can call `.Then()` to keep chaining, or
-  - you can call `.get()` to retrieve a raw pointer, which will be `nullptr` if
-    any step in the chain failed.
 
 ---
 

@@ -13,18 +13,14 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/to_address.h"
 
 template <typename T>
 class SafeChain;
 
 namespace internal {
-
-// TODO(crbug.com/555734133): Add trait support for intermediate `.Then()` calls
-// that return smart pointer types (`base::WeakPtr`, `scoped_refptr`) to
-// automatically unwrap them and continue chaining in `SafeChain<T>`.
-// Additionally, determine the policy for `std::unique_ptr` return types (e.g.
-// managing ownership transfer vs. explicitly failing at compile time).
 
 // TODO(crbug.com/555736563): Support pointer-like return types (such as
 // `gfx::NativeView` / `gfx::NativeWindow`, which are class wrappers on macOS
@@ -73,6 +69,58 @@ template <typename Fn, typename... Args>
 using InvokeResult =
     decltype(InvokeCallable(std::declval<Fn>(), std::declval<Args>()...));
 
+// Trait to detect std::unique_ptr to ensure that value-return ownership
+// transfers explicitly fail at compile time, preventing ownership ambiguity.
+template <typename T>
+struct IsUniquePtr : std::false_type {};
+
+template <typename T, typename Deleter>
+struct IsUniquePtr<std::unique_ptr<T, Deleter>> : std::true_type {
+  using ElementType = T;
+};
+
+template <typename T>
+inline constexpr bool is_unique_ptr_v =
+    IsUniquePtr<std::remove_cvref_t<T>>::value;
+
+// Unified trait registry to detect supported smart pointer types (base::WeakPtr
+// and scoped_refptr) and extract their underlying ElementType, allowing
+// SafeChain to unwrap them and continue chaining across intermediate calls.
+template <typename T>
+struct SmartPointerTraits {
+  static constexpr bool is_supported = false;
+};
+
+template <typename T>
+struct SmartPointerTraits<base::WeakPtr<T>> {
+  static constexpr bool is_supported = true;
+  using ElementType = T;
+};
+
+template <typename T>
+struct SmartPointerTraits<scoped_refptr<T>> {
+  static constexpr bool is_supported = true;
+  using ElementType = T;
+};
+
+template <typename T>
+inline constexpr bool is_unwrappable_smart_ptr_v =
+    SmartPointerTraits<std::remove_cvref_t<T>>::is_supported;
+
+// Safely extracts a raw pointer from raw pointers or smart pointers.
+// For unwrappable smart pointers (base::WeakPtr, scoped_refptr), uses .get()
+// instead of base::to_address() to avoid CHECK-failing on invalidated weak
+// pointers.
+template <typename Ptr>
+auto* ToRawPointer(Ptr&& ptr) {
+  using RawType = std::remove_cvref_t<Ptr>;
+  if constexpr (is_unwrappable_smart_ptr_v<RawType>) {
+    return ptr.get();
+  } else {
+    return base::to_address(ptr);
+  }
+}
+
 }  // namespace internal
 
 // A lightweight wrapper providing safe null-navigation and method chaining.
@@ -102,15 +150,36 @@ class SafeChain {
     using Result = internal::InvokeResult<Fn, T*, Args...>;
 
     const bool can_execute = ptr_ != nullptr;
+    using RawResult = std::remove_cvref_t<Result>;
 
-    if constexpr (std::is_pointer_v<std::decay_t<Result>>) {
+    if constexpr (std::is_pointer_v<RawResult>) {
       // For pointer-returning methods, wraps the resulting pointer in a new
       // SafeChain to allow further chaining.
-      using NextType = std::remove_pointer_t<std::decay_t<Result>>;
+      using NextType = std::remove_pointer_t<RawResult>;
       return SafeChain<NextType>(
           can_execute ? internal::InvokeCallable(std::forward<Fn>(fn), ptr_,
                                                  std::forward<Args>(args)...)
                       : nullptr);
+    } else if constexpr (internal::is_unwrappable_smart_ptr_v<RawResult>) {
+      // For smart pointer-returning methods (base::WeakPtr, scoped_refptr),
+      // automatically unwraps the underlying pointer via .get() to allow
+      // continued chaining in SafeChain.
+      using NextType =
+          typename internal::SmartPointerTraits<RawResult>::ElementType;
+      if (!can_execute) {
+        return SafeChain<NextType>(nullptr);
+      }
+      decltype(auto) smart_ptr = internal::InvokeCallable(
+          std::forward<Fn>(fn), ptr_, std::forward<Args>(args)...);
+      return SafeChain<NextType>(smart_ptr.get());
+    } else if constexpr (internal::is_unique_ptr_v<RawResult>) {
+      // std::unique_ptr implies transfer of exclusive ownership. Ephemeral
+      // chaining on temporary std::unique_ptr would lead to immediate
+      // destruction and Use-After-Free. Compile-time failure prevents this
+      // misuse.
+      static_assert(!internal::is_unique_ptr_v<RawResult>,
+                    "SafeChain does not support .Then() calls returning "
+                    "std::unique_ptr by value.");
     } else if constexpr (std::is_lvalue_reference_v<Result>) {
       // For reference-returning methods (e.g. `const T&`, `T&`), takes the
       // address via std::addressof without copying, enabling chaining on
@@ -171,7 +240,7 @@ class SafeChain {
 // Entry point for safe chaining.
 template <typename T>
 [[nodiscard]] auto SafeInvoke(T&& ptr) {
-  auto* raw = base::to_address(ptr);
+  auto* raw = internal::ToRawPointer(std::forward<T>(ptr));
   using ElementType = std::remove_pointer_t<decltype(raw)>;
   return SafeChain<ElementType>(raw);
 }
