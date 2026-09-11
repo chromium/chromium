@@ -130,7 +130,8 @@ cr-composebox-submit::part(submit) {
 
 :host([show-file-carousel]) #carouselContainer,
 :host([submit-enabled]) #carouselContainer {
-  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 8px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
+      8px;
   padding-block-end: var(--ntp-composebox-carousel-padding-block-end);
 }
 
@@ -162,6 +163,26 @@ cr-composebox-submit::part(submit) {
 :host([searchbox-next-enabled]) #voiceToolChipsContainer {
   padding-block-end: 0;
   padding-block-start: 6px;
+}
+
+ /* When there are tabs, both of these variables
+  * are used to control the padding of the plus button.
+  */
+:host([context-management-in-composebox-enabled]) #inputContainer:has(.has-tabs)
+    .carousel-container-inner {
+  /* Modifies padding in 'contextMenuContainer' (composebox shared styles),
+   * which wraps the 'cr-composebox-contextual-entrypoint-and-menu'.
+   */
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start:
+      12px;
+  /* Modifies padding in 'cr-composebox-contextual-entrypoint-and-menu',
+   * which wraps the plus button. This is the only variable for margin
+   * for the plus button when there are no tabs. Set it to 0 to keep
+   * the above variable as the sole source of truth when there are
+   * tabs.
+   */
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start:
+      0px;
 }
 
 :host([submit-enabled][searchbox-next-enabled]) cr-composebox-submit::part(submit) {

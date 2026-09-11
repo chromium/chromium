@@ -101,8 +101,11 @@ export const ComposeboxEmbedderMixin =
             showContextMenuDescription: {type: Boolean},
             smartTabSharingActive: {type: Boolean},
             smartTabSharingVisible: {type: Boolean},
-            contextManagementInComposeboxEnabled: {type: Boolean},
             composeboxContextMenuTooltipsEnabled: {type: Boolean},
+            contextManagementInComposeboxEnabled: {
+              reflect: true,
+              type: Boolean,
+            },
             shouldShowGhostFiles: {type: Boolean},
             showMenuOnClick: {type: Boolean},
             submitButtonIconType: {type: String},
