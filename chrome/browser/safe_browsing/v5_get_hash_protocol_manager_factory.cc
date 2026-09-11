@@ -8,7 +8,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/chrome_sb_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "components/keyed_service/core/service_access_type.h"

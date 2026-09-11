@@ -129,8 +129,8 @@ static_library("v4_get_hash_protocol_manager") {
 
   public_deps = [
     ":safebrowsing_proto",
+    ":sb_protocol_config",
     ":util",
-    ":v4_protocol_config",
   ]
   deps = [
     ":v4_protocol_manager_util",
@@ -181,7 +181,7 @@ source_set("v5_get_hash_protocol_manager") {
     ":v5_search_hashes_cache",
     "//base",
     "//components/keyed_service/core",
-    "//components/safe_browsing/core/browser/db:v4_protocol_config",
+    "//components/safe_browsing/core/browser/db:sb_protocol_config",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//services/network/public/cpp",
@@ -218,10 +218,10 @@ static_library("sb_local_database_manager") {
   ]
 }
 
-source_set("v4_protocol_config") {
+source_set("sb_protocol_config") {
   sources = [
-    "v4_protocol_config.cc",
-    "v4_protocol_config.h",
+    "sb_protocol_config.cc",
+    "sb_protocol_config.h",
   ]
 
   deps = [
@@ -241,7 +241,7 @@ source_set("v4_protocol_manager_util") {
 
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
-    ":v4_protocol_config",
+    ":sb_protocol_config",
     "//base",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -389,7 +389,7 @@ static_library("sb_update_protocol_manager") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    ":v4_protocol_config",
+    ":sb_protocol_config",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
   ]
 

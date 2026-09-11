@@ -35,7 +35,7 @@ source_set("browser") {
     # TODO(crbug.com/502615476): Remove this once all downstream targets depend
     # on these directly.
     ":client_side_detection_service_base",
-    "//components/safe_browsing/core/browser/db:v4_protocol_config",
+    "//components/safe_browsing/core/browser/db:sb_protocol_config",
     "//components/safe_browsing/core/common/fbs:client_model",
     "//google_apis",
   ]

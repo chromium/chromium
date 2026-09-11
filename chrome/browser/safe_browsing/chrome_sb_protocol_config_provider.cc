@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/chrome_sb_protocol_config_provider.h"
 
 #include <string>
 
 #include "base/command_line.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_util.h"

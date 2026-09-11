@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_PROTOCOL_CONFIG_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_PROTOCOL_CONFIG_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_PROTOCOL_CONFIG_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_PROTOCOL_CONFIG_H_
 
 #include <string>
 
@@ -39,4 +39,4 @@ V4ProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_PROTOCOL_CONFIG_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_PROTOCOL_CONFIG_H_
