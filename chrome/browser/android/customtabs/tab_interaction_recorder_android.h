@@ -70,7 +70,7 @@ class FormInteractionData
   bool GetHasFormInteractionData();
 
  private:
-  bool had_form_interaction_data_;
+  bool had_form_interaction_data_ = false;
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
