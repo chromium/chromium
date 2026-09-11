@@ -1377,6 +1377,80 @@ TEST_F(WebSocketSpdyStreamAdapterTest, ReentrantWriteAfterDeferredEndStream) {
       base::test::RunUntil([&] { return data.AllWriteDataConsumed(); }));
 }
 
+// When our END_STREAM is deferred behind an in-flight write, the completion
+// callback runs asynchronously to allow SpdyStream::OnFrameWriteComplete() to
+// complete and clear its write handler guard. If the callback disconnects the
+// adapter (e.g. when a subsequent write fails with ERR_CONNECTION_CLOSED, as in
+// WebSocketChannel::OnWriteDone()), it must not crash on
+// CHECK(!write_handler_guard_).
+TEST_F(WebSocketSpdyStreamAdapterTest,
+       WriteCallbackDisconnectsAfterDeferredEndStream) {
+  spdy::SpdySerializedFrame response_headers(
+      spdy_util_.ConstructSpdyResponseHeaders(1, ResponseHeaders(), false));
+  spdy::SpdySerializedFrame stream_end(
+      spdy_util_.ConstructSpdyDataFrame(1, "", true));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  MockRead reads[] = {CreateMockRead(response_headers, 1),
+                      MockRead(ASYNC, ERR_IO_PENDING, 2),  // pause here
+                      CreateMockRead(stream_end, 3), MockRead(ASYNC, 0, 7)};
+  spdy::SpdySerializedFrame request_headers(spdy_util_.ConstructSpdyHeaders(
+      1, RequestHeaders(), DEFAULT_PRIORITY, /* fin = */ false));
+  // Sequenced after the END_STREAM read, so it is still in flight when the
+  // peer's END_STREAM arrives and ours has to be deferred behind it.
+  spdy::SpdySerializedFrame client_data(
+      spdy_util_.ConstructSpdyDataFrame(1, "foo", false));
+  spdy::SpdySerializedFrame client_end_stream(
+      spdy_util_.ConstructSpdyDataFrame(1, "", true));
+  MockWrite writes[] = {
+      CreateMockWrite(request_headers, 0), CreateMockWrite(client_data, 4),
+      CreateMockWrite(client_end_stream, 5), CreateMockWrite(rst, 6)};
+  SequencedSocketData data(reads, writes);
+  AddSocketData(&data);
+  AddSSLSocketData();
+
+  base::WeakPtr<SpdySession> session = CreateSpdySession();
+  base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
+  WebSocketSpdyStreamAdapter adapter(stream, nullptr, NetLogWithSource());
+
+  int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(base::test::RunUntil([&] { return data.IsPaused(); }));
+
+  auto write_buf = base::MakeRefCounted<StringIOBuffer>("foo");
+  auto reentrant_buf = base::MakeRefCounted<StringIOBuffer>("bar");
+  TestCompletionCallback unused_callback;
+  int write_result = ERR_IO_PENDING;
+  int reentrant_result = ERR_IO_PENDING;
+
+  rv = adapter.Write(write_buf.get(), write_buf->size(),
+                     base::BindLambdaForTesting([&](int result) {
+                       write_result = result;
+                       reentrant_result = adapter.Write(
+                           reentrant_buf.get(), reentrant_buf->size(),
+                           unused_callback.callback(),
+                           TRAFFIC_ANNOTATION_FOR_TESTS);
+                       if (reentrant_result == ERR_CONNECTION_CLOSED) {
+                         adapter.Disconnect();
+                       }
+                     }),
+                     TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Deliver END_STREAM, which defers ours behind the pending write.
+  data.Resume();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return reentrant_result != ERR_IO_PENDING; }));
+  EXPECT_EQ(3, write_result);
+  EXPECT_THAT(reentrant_result, IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_FALSE(stream);
+
+  // Both our data frame and the END_STREAM that followed it were written.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return data.AllWriteDataConsumed(); }));
+}
+
 // Closing our half of the stream in response to END_STREAM must not discard
 // data that arrived but has not been read yet: the stream is gone, but buffered
 // data stays readable and Delegate::OnClose() is still deferred until it has

@@ -194,8 +194,17 @@ void WebSocketSpdyStreamAdapter::MaybeSendEndStream() {
            CompletionOnceCallback cb, int result) {
           if (self) {
             self->MaybeSendEndStream();
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::WeakPtr<WebSocketSpdyStreamAdapter> self,
+                       CompletionOnceCallback cb, int result) {
+                      if (self) {
+                        std::move(cb).Run(result);
+                      }
+                    },
+                    self, std::move(cb), result));
           }
-          std::move(cb).Run(result);
         },
         weak_factory_.GetWeakPtr(), std::move(write_callback_));
     return;
