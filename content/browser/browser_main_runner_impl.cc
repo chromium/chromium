@@ -25,6 +25,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/gfx/font_util.h"
@@ -45,6 +46,11 @@ namespace {
 base::AtomicFlag& GetExitedMainMessageLoopFlag() {
   static base::NoDestructor<base::AtomicFlag> flag;
   return *flag;
+}
+
+std::optional<int>& GetProcessResultCode() {
+  static std::optional<int> result_code;
+  return result_code;
 }
 
 }  // namespace
@@ -161,7 +167,6 @@ void BrowserMainRunnerImpl::Shutdown() {
 
   main_loop_->PreShutdown();
 
-
   {
     // The trace event has to stay between profiler creation and destruction.
     TRACE_EVENT0("shutdown", "BrowserMainRunner");
@@ -187,6 +192,17 @@ std::unique_ptr<BrowserMainRunner> BrowserMainRunner::Create() {
 // static
 bool BrowserMainRunner::ExitedMainMessageLoop() {
   return GetExitedMainMessageLoopFlag().IsSet();
+}
+
+// static
+void BrowserMainRunner::SetOverrideResultCode(int code) {
+  CHECK_GE(code, RESULT_CODE_LAST_CODE);
+  GetProcessResultCode() = code;
+}
+
+// static
+std::optional<int> BrowserMainRunnerImpl::GetOverrideResultCode() {
+  return GetProcessResultCode();
 }
 
 }  // namespace content

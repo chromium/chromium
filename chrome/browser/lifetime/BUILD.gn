@@ -86,7 +86,6 @@ source_set("impl") {
     "//build/config/compiler:compiler_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
-    "//chrome/browser:flags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/common:buildflags",

@@ -37,6 +37,9 @@ specific_include_rules = {
     "+chrome/test/base/testing_profile.h",
     "+chrome/test/base/testing_profile_manager.h",
   ],
+  "first_run_unittest\\.cc": [
+    "+chrome/browser/lifetime",
+  ],
   "first_run_browsertest\\.cc": [
     "+chrome/browser/extensions/component_loader.h",
     "+chrome/browser/history/history_service_factory.h",
@@ -48,6 +51,11 @@ specific_include_rules = {
   ],
   "first_run_internal_posix_browsertest\\.cc": [
     "+chrome/test/base/in_process_browser_test.h",
+  ],
+  "upgrade_util\\.cc": [
+    "+chrome/browser/about_flags.h",
+    "+chrome/browser/lifetime/browser_shutdown.h",
+    "+chrome/browser/lifetime/switch_utils.h",
   ],
   "upgrade_util_win\\.cc": [
     "+chrome/browser/win/browser_util.h",

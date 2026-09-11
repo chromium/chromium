@@ -140,15 +140,28 @@ enum ResultCode {
   // the exit of the process, so the browser must exit. This should not happen.
   CHROME_RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS,
 
+  // A relaunch was requested by the user or application during shutdown. This
+  // code is used when running with process isolation to communicate from the
+  // isolated browser to the stub that a relaunch of the stub should occur.
+  CHROME_RESULT_CODE_NORMAL_EXIT_RELAUNCH_REQUESTED,
+
+  // A relaunch in background mode was requested during shutdown. This code is
+  // used when running with process isolation to communicate from the isolated
+  // browser to the stub that a relaunch in the background should occur.
+  CHROME_RESULT_CODE_NORMAL_EXIT_RELAUNCH_BACKGROUND,
+
   // Last return code (keep this last).
   CHROME_RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(CHROME_RESULT_CODE_CHROME_LAST_CODE == 41,
+static_assert(CHROME_RESULT_CODE_CHROME_LAST_CODE == 43,
               "Please make sure the enum values are in sync with enums.xml");
 
 // Returns true if the result code should be treated as a normal exit code i.e.
 // content::RESULT_CODE_NORMAL_EXIT.
 bool IsNormalResultCode(ResultCode code);
+
+// Returns true if the result code indicates a relaunch has been requested.
+bool IsRelaunchResultCode(int code);
 
 #endif  // CHROME_COMMON_CHROME_RESULT_CODES_H_

@@ -87,6 +87,10 @@ source_set("impl") {
       sources += [ "first_run_internal_chromeos.cc" ]
     } else {
       sources += [ "upgrade_util.cc" ]
+      deps += [
+        "//chrome/browser:flags",
+        "//chrome/browser/lifetime",
+      ]
     }
 
     if (is_win) {
@@ -98,6 +102,7 @@ source_set("impl") {
         "//chrome/browser:chrome_process_singleton",
         "//chrome/browser/win",
         "//chrome/updater/app/server/win:updater_legacy_idl",
+        "//components/app_launch_prefetch",
       ]
     }
 
@@ -143,6 +148,7 @@ source_set("unit_tests") {
   sources = []
   deps = [
     ":impl",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/bookmarks",
@@ -153,6 +159,7 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/startup_metric_utils",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
@@ -161,6 +168,10 @@ source_set("unit_tests") {
       "bookmark_importer_unittest.cc",
       "first_run_unittest.cc",
     ]
+  }
+
+  if (is_win) {
+    deps += [ "//components/app_launch_prefetch" ]
   }
 }
 

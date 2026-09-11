@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BROWSER_MAIN_RUNNER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -27,6 +28,7 @@ class BrowserMainLoop;
 class BrowserMainRunnerImpl : public BrowserMainRunner {
  public:
   static std::unique_ptr<BrowserMainRunnerImpl> Create();
+  static std::optional<int> GetOverrideResultCode();
 
   BrowserMainRunnerImpl();
 

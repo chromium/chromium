@@ -113,7 +113,6 @@
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
-
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -197,6 +196,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/chrome_browser_main_win.h"  // nogncheck
+#include "chrome/browser/first_run/upgrade_util.h"   // nogncheck
 #include "chrome/browser/win/browser_util.h"  // nogncheck
 #include "chrome/browser/win/isolated_browser/isolated_browser_support.h"  // nogncheck
 #include "chrome/chrome_elf/chrome_elf_main.h"
@@ -1237,6 +1237,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       if (!exit_code.has_value()) {
         return CHROME_RESULT_CODE_INVALID_ISOLATED_BROWSER_PROCESS;
       }
+
       // A negative exit code indicates the browser crashed, however
       // `content::RunContentProcess` treats negative return code from
       // `BasicStartupComplete` as indicating that startup should continue, so
@@ -1245,6 +1246,40 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       if (*exit_code < 0) {
         base::Process::TerminateCurrentProcessImmediately(*exit_code);
       }
+
+      // If the isolated browser requested a relaunch on exit (for instance via
+      // chrome://restart or chrome://flags relaunch button), the stub process
+      // must launch a new stub process to initiate the restart sequence.
+      // Reuses the shared upgrade_util relaunch logic to normalize the
+      // executable path (handling in-use updates and old_chrome vs new_chrome),
+      // strip transient switches and autostart arguments according to the
+      // restart mode, and launch the new stub with force_breakaway_from_job_
+      // enabled so it can break away from the current stub's Job Object.
+      if (IsRelaunchResultCode(*exit_code)) {
+        browser_shutdown::RestartMode restart_mode =
+            browser_shutdown::RestartMode::kRestartLastSession;
+        if (*exit_code == CHROME_RESULT_CODE_NORMAL_EXIT_RELAUNCH_BACKGROUND) {
+          restart_mode = browser_shutdown::RestartMode::kRestartInBackground;
+        } else if (*exit_code == CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH ||
+                   *exit_code ==
+                       CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED) {
+          restart_mode = browser_shutdown::RestartMode::kRestartThisSession;
+        }
+        base::CommandLine new_cl =
+            upgrade_util::GetRelaunchCommandLine(command_line, restart_mode);
+        // Feature state cannot be queried this early in browser startup, so
+        // hard-code `wait_for_parent` to false. Because the stub already waits
+        // until all child processes have terminated before reaching this code
+        // (contained within a job monitored by `WaitForExit`), waiting for
+        // parent handle is not strictly necessary here.
+        // TODO(crbug.com/526636718): Enable `wait_for_parent` by default once
+        // the feature is fully launched.
+        upgrade_util::RelaunchChromeBrowser(new_cl,
+                                            /*force_breakaway_from_job=*/true,
+                                            /*wait_for_parent=*/false);
+        return content::RESULT_CODE_NORMAL_EXIT;
+      }
+
       return *exit_code;
     }
   }

@@ -18,6 +18,15 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/mock_callback.h"
+#include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
+#include "chrome/browser/first_run/upgrade_util.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "components/app_launch_prefetch/app_launch_prefetch.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#endif
+
 namespace first_run {
 
 namespace {
@@ -295,5 +304,76 @@ TEST_F(FirstRunTest, MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent) {
   ASSERT_TRUE(prefs);
   EXPECT_EQ(prefs->GetFirstRunTabs()[0], "https://www.chromium.org/legacy");
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(FirstRunTest, GetRelaunchCommandLine_RestartLastSession) {
+  base::CommandLine cl(base::FilePath(FILE_PATH_LITERAL("chrome.exe")));
+  cl.AppendSwitch(switches::kApp);
+  cl.AppendSwitchASCII("custom-switch", "custom-value");
+  cl.AppendArg("https://example.com");
+
+  base::CommandLine relaunch_cl = upgrade_util::GetRelaunchCommandLine(
+      cl, browser_shutdown::RestartMode::kRestartLastSession);
+
+  EXPECT_TRUE(relaunch_cl.HasSwitch(switches::kRestart));
+  EXPECT_FALSE(relaunch_cl.HasSwitch(switches::kApp));
+  EXPECT_TRUE(relaunch_cl.HasSwitch("custom-switch"));
+  EXPECT_EQ(relaunch_cl.GetSwitchValueASCII("custom-switch"), "custom-value");
+  EXPECT_TRUE(relaunch_cl.GetArgs().empty());
+}
+
+TEST_F(FirstRunTest, GetRelaunchCommandLine_RestartInBackground) {
+  base::CommandLine cl(base::FilePath(FILE_PATH_LITERAL("chrome.exe")));
+  cl.AppendSwitch(switches::kApp);
+  cl.AppendSwitchASCII("custom-switch", "custom-value");
+  cl.AppendArg("https://example.com");
+
+  base::CommandLine relaunch_cl = upgrade_util::GetRelaunchCommandLine(
+      cl, browser_shutdown::RestartMode::kRestartInBackground);
+
+  EXPECT_FALSE(relaunch_cl.HasSwitch(switches::kRestart));
+  EXPECT_TRUE(relaunch_cl.HasSwitch(switches::kNoStartupWindow));
+  EXPECT_FALSE(relaunch_cl.HasSwitch(switches::kApp));
+  EXPECT_TRUE(relaunch_cl.HasSwitch("custom-switch"));
+  EXPECT_EQ(relaunch_cl.GetSwitchValueASCII("custom-switch"), "custom-value");
+  ASSERT_EQ(relaunch_cl.GetArgs().size(), 1u);
+  EXPECT_EQ(relaunch_cl.GetArgs()[0],
+            app_launch_prefetch::GetPrefetchSwitch(
+                app_launch_prefetch::SubprocessType::kBrowserBackground));
+}
+
+TEST_F(FirstRunTest, GetRelaunchCommandLine_RestartThisSession) {
+  base::CommandLine cl(base::FilePath(FILE_PATH_LITERAL("chrome.exe")));
+  cl.AppendSwitchASCII("custom-switch", "custom-value");
+  cl.AppendArg("https://example.com");
+
+  base::CommandLine relaunch_cl = upgrade_util::GetRelaunchCommandLine(
+      cl, browser_shutdown::RestartMode::kRestartThisSession);
+
+  EXPECT_TRUE(relaunch_cl.HasSwitch(switches::kRestart));
+  EXPECT_FALSE(relaunch_cl.HasSwitch(switches::kNoStartupWindow));
+  EXPECT_TRUE(relaunch_cl.HasSwitch("custom-switch"));
+  EXPECT_EQ(relaunch_cl.GetSwitchValueASCII("custom-switch"), "custom-value");
+  ASSERT_EQ(relaunch_cl.GetArgs().size(), 1u);
+  EXPECT_EQ(relaunch_cl.GetArgs()[0], FILE_PATH_LITERAL("https://example.com"));
+}
+
+TEST_F(FirstRunTest, RelaunchChromeBrowser_WaitForParentFalseRemovesSwitch) {
+  base::CommandLine cl(base::FilePath(FILE_PATH_LITERAL("chrome.exe")));
+  cl.AppendSwitchASCII(switches::kWaitForParentHandle, "1234");
+
+  base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback> callback;
+  EXPECT_CALL(callback, Run(::testing::ResultOf(
+                            [](const base::CommandLine& command_line) {
+                              return command_line.HasSwitch(
+                                  switches::kWaitForParentHandle);
+                            },
+                            ::testing::IsFalse())))
+      .WillOnce(::testing::Return(true));
+  upgrade_util::ScopedRelaunchChromeBrowserOverride capture_cl(callback.Get());
+  upgrade_util::RelaunchChromeBrowser(cl, /*force_breakaway_from_job=*/false,
+                                      /*wait_for_parent=*/false);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace first_run

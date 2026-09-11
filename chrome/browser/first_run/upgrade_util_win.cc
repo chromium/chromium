@@ -52,7 +52,6 @@
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/win/browser_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
@@ -421,15 +420,14 @@ bool InvokeGoogleUpdateForRename() {
 
 namespace upgrade_util {
 
-bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
+bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line,
+                               bool force_breakaway_from_job,
+                               bool wait_for_parent) {
   TRACE_EVENT0("startup", "upgrade_util::RelaunchChromeBrowserImpl");
 
-  if (command_line.HasSwitch(switches::kIsolated)) {
-    // Isolated browser does not fully support relaunch, so rather than try and
-    // launch a browser which will shortly be killed by the job object
-    // termination in the parent stub process, simply don't launch any new
-    // browser to avoid polluting metrics with abnormal terminations.
-    // TODO(crbug.com/490449890): Fix this issue by solving isolated relaunch.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIsolated)) {
+    // For Isolated browser, the relaunch is handled by the stub process. See
+    // the relaunch logic in ChromeMainDelegate::BasicStartupComplete.
     return true;
   }
 
@@ -450,31 +448,35 @@ bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
   launch_options.current_directory = chrome_exe.DirName();
   // Give the new process the right to bring its windows to the foreground.
   launch_options.grant_foreground_privilege = true;
+  launch_options.force_breakaway_from_job_ = force_breakaway_from_job;
 
   // Ensure this process is terminated before letting the child process reach
   // ChromeMain(...).
   base::win::ScopedHandle parent_handle_for_child;
-  if (base::FeatureList::IsEnabled(features::kRelaunchWaitForParentProcess)) {
+  if (wait_for_parent) {
     // Create a real, inheritable duplicate of our own process handle.
     HANDLE handle;
-    BOOL duplicate_ok =
-        ::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentProcess(),
+    if (::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentProcess(),
                           ::GetCurrentProcess(), &handle, SYNCHRONIZE,
                           /*bInheritHandle=*/TRUE,
-                          /*dwOptions=*/0);
-
-    if (duplicate_ok) {
+                          /*dwOptions=*/0)) {
       parent_handle_for_child.Set(handle);
-
-      // Pass the handle value (as an integer string) to the child.
-      chrome_exe_command_line.AppendSwitchASCII(
-          switches::kWaitForParentHandle,
-          base::NumberToString(
-              base::win::HandleToUint32(parent_handle_for_child.get())));
-
       launch_options.handles_to_inherit.push_back(
           parent_handle_for_child.get());
     }
+  }
+
+  if (parent_handle_for_child.is_valid()) {
+    // Pass the handle value (as an integer string) to the child.
+    chrome_exe_command_line.AppendSwitchASCII(
+        switches::kWaitForParentHandle,
+        base::NumberToString(
+            base::win::HandleToUint32(parent_handle_for_child.get())));
+  } else {
+    // If waiting for the parent handle was not requested or failed, any stale
+    // handle switch from a previous restart must be removed so the child does
+    // not wait on an uninherited handle.
+    chrome_exe_command_line.RemoveSwitch(switches::kWaitForParentHandle);
   }
 
   return base::LaunchProcess(chrome_exe_command_line, launch_options).IsValid();

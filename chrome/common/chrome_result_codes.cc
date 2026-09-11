@@ -19,3 +19,9 @@ bool IsNormalResultCode(ResultCode code) {
   return false;
 }
 
+bool IsRelaunchResultCode(int code) {
+  return code == CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED ||
+         code == CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH ||
+         code == CHROME_RESULT_CODE_NORMAL_EXIT_RELAUNCH_REQUESTED ||
+         code == CHROME_RESULT_CODE_NORMAL_EXIT_RELAUNCH_BACKGROUND;
+}

@@ -15,11 +15,27 @@ namespace base {
 class CommandLine;
 }
 
+namespace browser_shutdown {
+enum class RestartMode;
+}
+
 namespace upgrade_util {
 
+// Returns a new command line for relaunching Chrome according to
+// |restart_mode|. Strips transient flags, normalizes switches, and handles
+// arguments according to the restart mode.
+base::CommandLine GetRelaunchCommandLine(
+    const base::CommandLine& current_command_line,
+    browser_shutdown::RestartMode restart_mode);
+
 // Launches Chrome again simulating a "user" launch. If Chrome could not be
-// launched, returns false.
-bool RelaunchChromeBrowser(const base::CommandLine& command_line);
+// launched, returns false. On Windows, if `force_breakaway_from_job` is true,
+// the launched process breaks away from the current process's Job Object.
+// `wait_for_parent` specifies whether the launched process should wait for
+// this parent process to terminate via kWaitForParentHandle.
+bool RelaunchChromeBrowser(const base::CommandLine& command_line,
+                           bool force_breakaway_from_job = false,
+                           bool wait_for_parent = false);
 
 #if !BUILDFLAG(IS_MAC)
 // Windows:
