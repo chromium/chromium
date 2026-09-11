@@ -42,6 +42,13 @@ class ActorOverlayProperties {
     public static final ReadableObjectPropertyKey<View.OnClickListener>
             ON_TAKE_OVER_CLICK_LISTENER = new ReadableObjectPropertyKey<>();
 
+    /** The position of browser controls (top or bottom). */
+    public static final WritableIntPropertyKey CONTROLS_POSITION = new WritableIntPropertyKey();
+
+    /** The top margin of the handoff button. */
+    public static final WritableIntPropertyKey HANDOFF_BUTTON_TOP_MARGIN =
+            new WritableIntPropertyKey();
+
     /** All keys for the property model. */
     public static final PropertyKey[] ALL_KEYS = {
         VISIBLE,
@@ -49,6 +56,8 @@ class ActorOverlayProperties {
         BOTTOM_MARGIN,
         LEFT_MARGIN,
         RIGHT_MARGIN,
+        CONTROLS_POSITION,
+        HANDOFF_BUTTON_TOP_MARGIN,
         ON_CLICK_LISTENER,
         TAKE_OVER_TASK_BUTTON_VISIBLE,
         ON_TAKE_OVER_CLICK_LISTENER

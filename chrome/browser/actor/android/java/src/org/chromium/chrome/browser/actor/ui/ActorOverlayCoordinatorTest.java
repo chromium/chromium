@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.transition.Transition;
+import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlaySta
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -86,8 +88,10 @@ public class ActorOverlayCoordinatorTest {
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
+    private FrameLayout mContainer;
     private ActorOverlayView mView;
     private ActorHandoffButtonView mHandoffButtonView;
+    private Activity mActivity;
     private static final int TAB_ID = 123;
 
     private ActorUiTabController mTabController;
@@ -103,30 +107,45 @@ public class ActorOverlayCoordinatorTest {
     @Before
     public void setUp() {
         GlicEnabling.setEnabledForTesting(true);
-        Activity activity = Robolectric.buildActivity(Activity.class).get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        ActorOverlayView realView =
-                (ActorOverlayView)
-                        LayoutInflater.from(activity).inflate(R.layout.actor_overlay, null);
-        realView.setLayoutParams(
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        FrameLayout realContainer =
+                (FrameLayout) LayoutInflater.from(mActivity).inflate(R.layout.actor_overlay, null);
+        realContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mContainer = Mockito.spy(realContainer);
+
+        ActorOverlayView realView = mContainer.findViewById(R.id.actor_overlay_scrim);
         mView = Mockito.spy(realView);
-        Mockito.when(mViewStub.getContext()).thenReturn(activity);
-        Mockito.when(mViewStub.inflate()).thenReturn(mView);
+        Mockito.doReturn(mView).when(mContainer).findViewById(R.id.actor_overlay_scrim);
 
         ActorHandoffButtonView realButtonView =
                 (ActorHandoffButtonView)
-                        LayoutInflater.from(activity).inflate(R.layout.actor_handoff_button, null);
-        realButtonView.setLayoutParams(
+                        LayoutInflater.from(mActivity).inflate(R.layout.actor_handoff_button, null);
+        FrameLayout.LayoutParams buttonLp =
                 new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        realButtonView.setLayoutParams(buttonLp);
         mHandoffButtonView = Mockito.spy(realButtonView);
-        Mockito.when(mHandoffButtonStub.getContext()).thenReturn(activity);
-        Mockito.when(mHandoffButtonStub.inflate()).thenReturn(mHandoffButtonView);
+
         Mockito.doReturn(mHandoffButtonStub)
-                .when(mView)
+                .when(mContainer)
                 .findViewById(R.id.actor_handoff_button_stub);
+        Mockito.when(mHandoffButtonStub.getContext()).thenReturn(mActivity);
+        Mockito.when(mHandoffButtonStub.inflate())
+                .thenAnswer(
+                        inv -> {
+                            if (mHandoffButtonView.getParent() == null) {
+                                mContainer.addView(mHandoffButtonView);
+                            }
+                            return mHandoffButtonView;
+                        });
+
+        Mockito.when(mViewStub.getContext()).thenReturn(mActivity);
+        Mockito.when(mViewStub.inflate()).thenReturn(mContainer);
 
         mTabObscuringHandler = new TabObscuringHandler();
         mUserDataHost = new UserDataHost();
@@ -672,14 +691,21 @@ public class ActorOverlayCoordinatorTest {
 
         observerCaptor.getValue().onTopControlsHeightChanged(100, 0);
         observerCaptor.getValue().onBottomControlsHeightChanged(50, 0);
+        observerCaptor.getValue().onControlsPositionChanged(ControlsPosition.BOTTOM);
 
         Assert.assertEquals(
                 100, mCoordinator.getModelForTesting().get(ActorOverlayProperties.TOP_MARGIN));
         Assert.assertEquals(
                 50, mCoordinator.getModelForTesting().get(ActorOverlayProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(
+                ControlsPosition.BOTTOM,
+                mCoordinator.getModelForTesting().get(ActorOverlayProperties.CONTROLS_POSITION));
 
         mCoordinator.showOverlayForTesting(true);
-        verify(mView, Mockito.atLeastOnce()).setMargins(0, 100, 0, 50);
+        verify(mView, Mockito.atLeastOnce()).setMargins(0, 100, 0, 0);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mContainer.getLayoutParams();
+        Assert.assertEquals(50, lp.bottomMargin);
+        Assert.assertEquals(0, lp.topMargin);
     }
 
     @Test
@@ -1015,7 +1041,12 @@ public class ActorOverlayCoordinatorTest {
         // Verify view is now inflated and all buffered properties are bound.
         Assert.assertTrue(mCoordinator.isViewInflatedForTesting());
         verify(mViewStub, Mockito.times(1)).inflate();
-        verify(mView, Mockito.atLeastOnce()).setMargins(20, 30, 40, 50);
+        verify(mView, Mockito.atLeastOnce()).setMargins(0, 30, 0, 0);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mContainer.getLayoutParams();
+        Assert.assertEquals(20, lp.leftMargin);
+        Assert.assertEquals(0, lp.topMargin);
+        Assert.assertEquals(40, lp.rightMargin);
+        Assert.assertEquals(50, lp.bottomMargin);
         verify(mHandoffButtonStub, Mockito.times(1)).inflate();
         Assert.assertNull(mCoordinator.getHandoffButtonStubForTesting());
         Assert.assertEquals(View.VISIBLE, mHandoffButtonView.getVisibility());
@@ -1023,6 +1054,122 @@ public class ActorOverlayCoordinatorTest {
         // Verify subsequent updates while inflated propagate directly to the view.
         model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
         Assert.assertEquals(View.GONE, mHandoffButtonView.getVisibility());
+    }
+
+    @Test
+    public void testHandoffButtonLayout_ControlsPositionTop() {
+        mCoordinator.showOverlayForTesting(true);
+        PropertyModel model = mCoordinator.getModelForTesting();
+        model.set(ActorOverlayProperties.TOP_MARGIN, 100);
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+
+        int buttonContainerHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.actor_overlay_button_height)
+                        + 2
+                                * mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.actor_overlay_button_glow_padding);
+        int expectedTopMargin = 100 - buttonContainerHeight / 2;
+        FrameLayout.LayoutParams lp =
+                (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(expectedTopMargin, lp.topMargin);
+    }
+
+    @Test
+    public void testHandoffButtonLayout_ControlsPositionBottom() {
+        mCoordinator.showOverlayForTesting(true);
+        PropertyModel model = mCoordinator.getModelForTesting();
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.BOTTOM);
+        model.set(ActorOverlayProperties.TOP_MARGIN, 0);
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+
+        int glowPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.actor_overlay_button_glow_padding);
+        int marginTop =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.actor_overlay_button_margin_top);
+        FrameLayout.LayoutParams lp =
+                (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(marginTop - glowPadding, lp.topMargin);
+    }
+
+    @Test
+    public void testHandoffButtonLayout_ControlsPositionChanged() {
+        mCoordinator.showOverlayForTesting(true);
+        PropertyModel model = mCoordinator.getModelForTesting();
+        model.set(ActorOverlayProperties.TOP_MARGIN, 100);
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+
+        int buttonContainerHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.actor_overlay_button_height)
+                        + 2
+                                * mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.actor_overlay_button_glow_padding);
+        int expectedTopMargin = 100 - buttonContainerHeight / 2;
+        FrameLayout.LayoutParams lp =
+                (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(expectedTopMargin, lp.topMargin);
+
+        // Switch to bottom controls.
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.BOTTOM);
+        model.set(ActorOverlayProperties.TOP_MARGIN, 0);
+
+        int glowPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.actor_overlay_button_glow_padding);
+        int marginTop =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.actor_overlay_button_margin_top);
+        lp = (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(marginTop - glowPadding, lp.topMargin);
+
+        // Update top controls height while in bottom controls.
+        model.set(ActorOverlayProperties.TOP_MARGIN, 50);
+        lp = (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(50 + marginTop - glowPadding, lp.topMargin);
+
+        // Switch back to top controls.
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
+        expectedTopMargin = 50 - buttonContainerHeight / 2;
+        lp = (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(expectedTopMargin, lp.topMargin);
+    }
+
+    @Test
+    public void testHandoffButtonLayout_MarginUpdated() {
+        mCoordinator.showOverlayForTesting(true);
+        PropertyModel model = mCoordinator.getModelForTesting();
+        model.set(ActorOverlayProperties.TOP_MARGIN, 100);
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+
+        int buttonContainerHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.actor_overlay_button_height)
+                        + 2
+                                * mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.actor_overlay_button_glow_padding);
+        int expectedTopMargin = 100 - buttonContainerHeight / 2;
+        FrameLayout.LayoutParams lp =
+                (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(expectedTopMargin, lp.topMargin);
+
+        // Mutate margins while button is visible.
+        model.set(ActorOverlayProperties.TOP_MARGIN, 200);
+        expectedTopMargin = 200 - buttonContainerHeight / 2;
+        lp = (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
+        Assert.assertEquals(expectedTopMargin, lp.topMargin);
     }
 
     @Test

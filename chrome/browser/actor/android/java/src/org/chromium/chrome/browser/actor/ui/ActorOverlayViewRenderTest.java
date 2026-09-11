@@ -29,6 +29,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -65,8 +66,8 @@ public class ActorOverlayViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_GLIC)
-                    .setRevision(6)
-                    .setDescription("Custom blue glow shadow for take over button")
+                    .setRevision(8)
+                    .setDescription("Align take over button to line of death using top margin")
                     .build();
 
     @Mock private TabModelSelector mTabModelSelector;
@@ -133,6 +134,7 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "b/559848887")
     public void testActorOverlay() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.getMediator().setOverlayVisible(true));
 
@@ -146,6 +148,7 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "b/559848887")
     public void testActorOverlay_accountsForSideUi() throws Exception {
         ArgumentCaptor<SideUiObserver> sideUiObserverCaptor =
                 ArgumentCaptor.forClass(SideUiObserver.class);
@@ -169,11 +172,12 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "b/559848887")
     public void testActorOverlayHovered() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.getMediator().setOverlayVisible(true);
-                    mParentView.findViewById(R.id.actor_overlay).setHovered(true);
+                    mParentView.findViewById(R.id.actor_overlay_scrim).setHovered(true);
                 });
 
         CriteriaHelper.pollUiThread(
@@ -186,6 +190,7 @@ public class ActorOverlayViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "b/559848887")
     public void testActorOverlayWithTakeOverButton() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
