@@ -362,9 +362,24 @@ TEST_F(OmniboxEverywhereControllerTest, NonGoogleDseBlocksOnInvoke) {
   EXPECT_FALSE(controller.IsVisible());
 }
 
+TEST_F(OmniboxEverywhereControllerTest, NoHotkeyByDefaultOnStartup) {
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  ui::Accelerator hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(fake_listener.IsRegistered(hotkey));
+}
+
 TEST_F(OmniboxEverywhereControllerTest, HotkeyPrefDisablesHotkey) {
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Alt+Space");
 
   // Initialize with pref enabled by default.
   EXPECT_TRUE(
@@ -395,6 +410,8 @@ TEST_F(OmniboxEverywhereControllerTest, HotkeyPrefDisablesHotkey) {
 TEST_F(OmniboxEverywhereControllerTest, ControllerInitWithDisabledHotkeyPref) {
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Alt+Space");
   local_state->SetBoolean(omnibox_everywhere::prefs::kHotkeyEnabled, false);
 
   FakeGlobalAcceleratorListener fake_listener;
@@ -592,6 +609,8 @@ TEST_F(OmniboxEverywhereControllerTest,
 TEST_F(OmniboxEverywhereControllerTest, ControllerUpdatesCustomHotkey) {
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Alt+Space");
 
   FakeGlobalAcceleratorListener fake_listener;
   omnibox_everywhere::OmniboxEverywhereController controller(
@@ -601,21 +620,23 @@ TEST_F(OmniboxEverywhereControllerTest, ControllerUpdatesCustomHotkey) {
           }),
       &fake_listener);
 
-  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
-  EXPECT_TRUE(fake_listener.IsRegistered(default_hotkey));
+  ui::Accelerator initial_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(fake_listener.IsRegistered(initial_hotkey));
 
   ui::Accelerator new_hotkey(ui::VKEY_SPACE,
                              ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
   local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
                          "Ctrl+Shift+Space");
 
-  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(initial_hotkey));
   EXPECT_TRUE(fake_listener.IsRegistered(new_hotkey));
 }
 TEST_F(OmniboxEverywhereControllerTest,
        ControllerUpdatesCustomHotkeyWhileSuspended) {
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Alt+Space");
 
   FakeGlobalAcceleratorListener fake_listener;
   omnibox_everywhere::OmniboxEverywhereController controller(
@@ -625,13 +646,13 @@ TEST_F(OmniboxEverywhereControllerTest,
           }),
       &fake_listener);
 
-  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
-  EXPECT_TRUE(fake_listener.IsRegistered(default_hotkey));
+  ui::Accelerator initial_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(fake_listener.IsRegistered(initial_hotkey));
 
   // Simulate WebUI <cr-shortcut-input> setting shortcut suspension during key
   // capture so key combinations aren't intercepted globally while typing.
   fake_listener.SetShortcutHandlingSuspended(true);
-  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(initial_hotkey));
 
   ui::Accelerator new_hotkey(ui::VKEY_SPACE,
                              ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
@@ -641,13 +662,13 @@ TEST_F(OmniboxEverywhereControllerTest,
   // While suspended, the platform listener should not be actively listening for
   // any hotkeys so keyboard events are not intercepted.
   EXPECT_TRUE(fake_listener.IsShortcutHandlingSuspended());
-  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(initial_hotkey));
   EXPECT_FALSE(fake_listener.IsRegistered(new_hotkey));
 
   // When key capture finishes and suspension ends, the new hotkey should be
   // actively registered with the platform listener and the old one should not.
   fake_listener.SetShortcutHandlingSuspended(false);
-  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(initial_hotkey));
   EXPECT_TRUE(fake_listener.IsRegistered(new_hotkey));
 }
 
@@ -665,11 +686,11 @@ TEST_F(OmniboxEverywhereControllerTest, ControllerLoadsCustomHotkeyOnStartup) {
           }),
       &fake_listener);
 
-  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  ui::Accelerator alt_space(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
   ui::Accelerator custom_hotkey(ui::VKEY_SPACE,
                                 ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 
-  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(alt_space));
   EXPECT_TRUE(fake_listener.IsRegistered(custom_hotkey));
 }
 
@@ -817,6 +838,8 @@ TEST_F(OmniboxEverywhereControllerTest,
        DisabledOmniboxEverywhereBlocksHotkeyRegistration) {
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Alt+Space");
 
   FakeGlobalAcceleratorListener fake_listener;
   omnibox_everywhere::OmniboxEverywhereController controller(
@@ -826,16 +849,16 @@ TEST_F(OmniboxEverywhereControllerTest,
           }),
       &fake_listener);
 
-  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
-  EXPECT_TRUE(fake_listener.IsRegistered(default_hotkey));
+  ui::Accelerator hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(fake_listener.IsRegistered(hotkey));
 
   local_state->SetBoolean(omnibox_everywhere::prefs::kOmniboxEverywhereEnabled,
                           false);
-  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(hotkey));
 
   local_state->SetBoolean(omnibox_everywhere::prefs::kOmniboxEverywhereEnabled,
                           true);
-  EXPECT_TRUE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_TRUE(fake_listener.IsRegistered(hotkey));
 }
 
 TEST_F(OmniboxEverywhereControllerTest,
