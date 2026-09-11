@@ -37,7 +37,7 @@
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/remoting_sender.h"
-#include "components/mirroring/service/rpc_dispatcher_impl.h"
+#include "components/mirroring/service/rpc_dispatcher.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "components/openscreen_platform/network_util.h"
 #include "components/openscreen_platform/socket_factory.h"
@@ -1177,7 +1177,7 @@ void OpenscreenSessionHost::InitMediaRemoter(
     const openscreen::cast::RemotingCapabilities& capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   rpc_dispatcher_ =
-      std::make_unique<RpcDispatcherImpl>(session_->session_messenger());
+      std::make_unique<RpcDispatcher>(session_->session_messenger());
   media_remoter_ = std::make_unique<MediaRemoter>(
       *this,
       media::cast::ToRemotingSinkMetadata(

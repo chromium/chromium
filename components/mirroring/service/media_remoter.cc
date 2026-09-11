@@ -36,6 +36,14 @@ void MediaRemoter::OnMessageFromSink(const std::vector<uint8_t>& response) {
   remoting_source_->OnMessageFromSink(response);
 }
 
+void MediaRemoter::OnRpcError() {
+  if (state_ != REMOTING_STARTED && state_ != STARTING_REMOTING) {
+    return;
+  }
+  Stop(media::mojom::RemotingStopReason::MESSAGE_SEND_FAILED);
+  state_ = REMOTING_DISABLED;
+}
+
 void MediaRemoter::OnRemotingStarted() {
   if (state_ != STARTING_REMOTING) {
     return;  // Start operation was canceled.
@@ -43,8 +51,11 @@ void MediaRemoter::OnRemotingStarted() {
 
   // A remoting streaming session started. Start RPC message transport and
   // notify the remoting source to start data streaming.
-  rpc_dispatcher_->Subscribe(base::BindRepeating(
-      &MediaRemoter::OnMessageFromSink, weak_factory_.GetWeakPtr()));
+  rpc_dispatcher_->Subscribe(
+      base::BindRepeating(&MediaRemoter::OnMessageFromSink,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaRemoter::OnRpcError,
+                          weak_factory_.GetWeakPtr()));
   state_ = REMOTING_STARTED;
   remoting_source_->OnStarted();
 }
@@ -83,7 +94,8 @@ void MediaRemoter::OnRemotingFailed() {
 }
 
 void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
-  if (state_ == STOPPING_REMOTING || state_ == MIRRORING) {
+  if (state_ == STOPPING_REMOTING || state_ == MIRRORING ||
+      state_ == REMOTING_DISABLED) {
     return;
   }
 
@@ -92,11 +104,7 @@ void MediaRemoter::Stop(media::mojom::RemotingStopReason reason) {
   audio_sender_.reset();
   video_sender_.reset();
 
-  // Don't change `state_` if remoting is disabled so that it won't attempt to
-  // start remoting again after mirroring resumed.
-  if (state_ != REMOTING_DISABLED) {
-    state_ = STOPPING_REMOTING;
-  }
+  state_ = STOPPING_REMOTING;
   remoting_source_->OnStopped(reason);
   // Prevent the start of remoting until switching completes.
   remoting_source_->OnSinkGone();

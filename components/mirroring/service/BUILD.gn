@@ -30,9 +30,8 @@ component("mirroring_service") {
     "openscreen_stats_client.h",
     "remoting_sender.cc",
     "remoting_sender.h",
+    "rpc_dispatcher.cc",
     "rpc_dispatcher.h",
-    "rpc_dispatcher_impl.cc",
-    "rpc_dispatcher_impl.h",
     "video_capture_client.cc",
     "video_capture_client.h",
   ]
@@ -93,7 +92,7 @@ source_set("unittests") {
     "openscreen_session_host_unittest.cc",
     "openscreen_stats_client_unittest.cc",
     "remoting_sender_unittest.cc",
-    "rpc_dispatcher_impl_unittest.cc",
+    "rpc_dispatcher_unittest.cc",
     "video_capture_client_unittest.cc",
   ]
 
