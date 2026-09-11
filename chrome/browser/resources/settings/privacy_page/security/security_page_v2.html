@@ -38,6 +38,28 @@
     background-color: var(--security-page-selected-card-background-color);
   }
 
+  :host-context([settings-refresh-2026]) {
+    .card {
+      background-color: transparent;
+      border-radius: var(--cr-card-border-radius);
+      transition: background-color 150ms ease-in-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card {
+        transition: none;
+      }
+    }
+
+    .card:hover:not(:has(controlled-radio-button[checked])) {
+      background-color: var(--cr-hover-background-color);
+    }
+
+    .card:has(controlled-radio-button[checked]) {
+      background-color: var(--color-settings-radio-card-selected);
+    }
+  }
+
   .settings-columned-section {
     padding: 0;
   }

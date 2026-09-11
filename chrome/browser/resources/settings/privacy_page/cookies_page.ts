@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/collapse_radio_button.js';
+import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
@@ -93,6 +94,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: String,
         computed: 'computePageTitle_(showUniversalOptOutSettings_)',
       },
+
+      isSettingsRefresh2026_: {
+        type: Boolean,
+        value: () => loadTimeData.getString('settingsRefresh2026') !== '',
+      },
     };
   }
 
@@ -101,6 +107,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   declare private cookiesContentSettingType_: ContentSettingsTypes;
   declare private showUniversalOptOutSettings_: boolean;
   declare private isRelatedWebsiteSetsUiEnabled_: boolean;
+  declare private isSettingsRefresh2026_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

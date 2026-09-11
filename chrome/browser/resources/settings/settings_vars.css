@@ -32,7 +32,22 @@ html {
 }
 
 html[settings-refresh-2026] {
+  --color-settings-radio-card-selected:
+      var(--color-sys-primary-container, var(--google-blue-50));
   --search-highlight-hit-background-color: transparent;
   --search-highlight-hit-color: inherit;
   --search-highlight-hit-font-weight: bold;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[settings-refresh-2026] {
+    --color-settings-radio-card-selected:
+        var(--color-sys-primary-container, rgba(0, 74, 119, 1));
+  }
+}
+
+@media (forced-colors: active) {
+  html[settings-refresh-2026] {
+    --color-settings-radio-card-selected: Highlight;
+  }
 }
