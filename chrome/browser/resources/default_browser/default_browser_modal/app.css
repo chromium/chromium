@@ -100,7 +100,7 @@
   height: 100%;
   object-fit: contain;
   padding-top: 32px;
-  padding-right: 32px;
+  padding-inline-end: 32px;
   box-shadow: 0 6px 10px 4px rgba(0, 0, 0, 0.15),
     0 2px 3px 0 rgba(0, 0, 0, 0.30);
 }
@@ -108,7 +108,8 @@
 #bottom-section {
   --space-gap: 24px;
   display: flex;
-  padding: 16px var(--space-gap) var(--space-gap) 56px;
+  padding-block: 16px var(--space-gap);
+  padding-inline: 56px var(--space-gap);
   flex-direction: column;
   align-items: center;
   gap: var(--space-gap);
