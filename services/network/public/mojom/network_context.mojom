@@ -1301,6 +1301,10 @@ interface NetworkContext {
   ClearSharedDictionaryCacheForIsolationKey(
       SharedDictionaryIsolationKey isolation_key) => ();
 
+  // Clears dictionaries from the shared dictionary cache for sites configured
+  // with session-only cookie policy.
+  ClearSharedDictionarySessionOnlyData() => ();
+
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.
   // |reporting_source| is a token which identifies the document or worker with

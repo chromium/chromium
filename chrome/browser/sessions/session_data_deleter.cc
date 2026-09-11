@@ -75,6 +75,7 @@ class SessionDataDeleterInternal
   void OnTrustTokenDeletionDone(bool any_data_deleted) {}
   void OnStorageDeletionDone() {}
   void OnMediaDeviceSaltDeletionDone() {}
+  void OnSharedDictionaryDeletionDone() {}
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -151,6 +152,10 @@ void SessionDataDeleterInternal::Run(
   storage_partition->GetNetworkContext()->ClearTrustTokenSessionOnlyData(
       base::BindOnce(&SessionDataDeleterInternal::OnTrustTokenDeletionDone,
                      this));
+
+  storage_partition->GetNetworkContext()->ClearSharedDictionarySessionOnlyData(
+      base::BindOnce(
+          &SessionDataDeleterInternal::OnSharedDictionaryDeletionDone, this));
 
   // Note that from this point on |*this| is kept alive by scoped_refptr<>
   // references automatically taken by |Bind()|, so when the last callback

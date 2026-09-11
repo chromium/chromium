@@ -589,6 +589,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void ClearSharedDictionaryCacheForIsolationKey(
       const net::SharedDictionaryIsolationKey& isolation_key,
       ClearSharedDictionaryCacheForIsolationKeyCallback callback) override;
+  void ClearSharedDictionarySessionOnlyData(
+      ClearSharedDictionarySessionOnlyDataCallback callback) override;
   void GetSharedDictionaryUsageInfo(
       GetSharedDictionaryUsageInfoCallback callback) override;
   void GetSharedDictionaryInfo(

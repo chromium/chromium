@@ -3690,6 +3690,34 @@ void NetworkContext::ClearSharedDictionaryCacheForIsolationKey(
                                                        std::move(callback));
 }
 
+void NetworkContext::ClearSharedDictionarySessionOnlyData(
+    ClearSharedDictionarySessionOnlyDataCallback callback) {
+  if (!shared_dictionary_manager_ || !cookie_manager_) {
+    std::move(callback).Run();
+    return;
+  }
+  DeleteCookiePredicate cookie_predicate =
+      cookie_manager_->cookie_settings().CreateDeleteCookieOnExitPredicate();
+  if (!cookie_predicate) {
+    std::move(callback).Run();
+    return;
+  }
+  auto url_matcher = base::BindRepeating(
+      [](DeleteCookiePredicate predicate, const GURL& url) {
+        if (!url.is_valid() || !url.has_host()) {
+          return false;
+        }
+        return predicate.Run(url.host(),
+                             url.SchemeIsCryptographic()
+                                 ? net::CookieSourceScheme::kSecure
+                                 : net::CookieSourceScheme::kNonSecure);
+      },
+      std::move(cookie_predicate));
+  shared_dictionary_manager_->ClearData(
+      /*start_time=*/base::Time(), /*end_time=*/base::Time::Max(),
+      std::move(url_matcher), std::move(callback));
+}
+
 void NetworkContext::GetSharedDictionaryUsageInfo(
     GetSharedDictionaryUsageInfoCallback callback) {
   if (!shared_dictionary_manager_) {

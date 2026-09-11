@@ -20,13 +20,16 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_data_deleter.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -342,7 +345,19 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
         browser()->GetProfile(), begin_time, end_time, result.GetCallback());
     helper->CountAndDestroySelfWhenFinished();
     return result.Get();
-    ;
+  }
+
+  std::vector<network::mojom::SharedDictionaryInfoPtr>
+  GetSharedDictionariesForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key) {
+    base::test::TestFuture<std::vector<network::mojom::SharedDictionaryInfoPtr>>
+        future;
+    browser()
+        ->GetProfile()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->GetSharedDictionaryInfo(isolation_key, future.GetCallback());
+    return future.Take();
   }
 
  private:
@@ -492,6 +507,105 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
   EXPECT_FALSE(CheckDictionaryHeaderByIframeNavigation(
       embedded_test_server()->GetURL("/path/check_header2.html"),
       /*expect_blocked=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, ClearOnExit) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+  EXPECT_TRUE(CheckDictionaryHeader(*embedded_test_server(),
+                                    /*expect_blocked=*/false));
+
+  const auto isolation_key = net::SharedDictionaryIsolationKey(
+      url::Origin::Create(url), net::SchemefulSite(url));
+  EXPECT_FALSE(GetSharedDictionariesForIsolationKey(isolation_key).empty());
+
+  // Set default cookie setting to clear on exit.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
+  settings->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+
+  // Trigger Clear On Exit deletion.
+  base::RunLoop run_loop;
+  auto deleter = std::make_unique<SessionDataDeleter>(browser()->GetProfile());
+  deleter->DeleteSessionOnlyData(
+      /*skip_session_cookies=*/false, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the shared dictionary was deleted.
+  EXPECT_FALSE(CheckDictionaryHeader(*embedded_test_server(),
+                                     /*expect_blocked=*/false));
+  EXPECT_TRUE(GetSharedDictionariesForIsolationKey(isolation_key).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       ClearOnExitOriginException) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+  EXPECT_TRUE(CheckDictionaryHeader(*embedded_test_server(),
+                                    /*expect_blocked=*/false));
+
+  const auto isolation_key = net::SharedDictionaryIsolationKey(
+      url::Origin::Create(url), net::SchemefulSite(url));
+  EXPECT_FALSE(GetSharedDictionariesForIsolationKey(isolation_key).empty());
+
+  // Set cookie setting to clear on exit for this host only.
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromString(url.host()),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+          CONTENT_SETTING_SESSION_ONLY);
+
+  // Trigger Clear On Exit deletion.
+  base::RunLoop run_loop;
+  auto deleter = std::make_unique<SessionDataDeleter>(browser()->GetProfile());
+  deleter->DeleteSessionOnlyData(
+      /*skip_session_cookies=*/false, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the shared dictionary was deleted.
+  EXPECT_FALSE(CheckDictionaryHeader(*embedded_test_server(),
+                                     /*expect_blocked=*/false));
+  EXPECT_TRUE(GetSharedDictionariesForIsolationKey(isolation_key).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       ClearOnExitAllowException) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+  EXPECT_TRUE(CheckDictionaryHeader(*embedded_test_server(),
+                                    /*expect_blocked=*/false));
+
+  const auto isolation_key = net::SharedDictionaryIsolationKey(
+      url::Origin::Create(url), net::SchemefulSite(url));
+  EXPECT_FALSE(GetSharedDictionariesForIsolationKey(isolation_key).empty());
+
+  // Set default cookie setting to clear on exit, but allow this host.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->GetProfile()).get();
+  settings->SetDefaultCookieSetting(CONTENT_SETTING_SESSION_ONLY);
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromString(url.host()),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
+          CONTENT_SETTING_ALLOW);
+
+  // Trigger Clear On Exit deletion.
+  base::RunLoop run_loop;
+  auto deleter = std::make_unique<SessionDataDeleter>(browser()->GetProfile());
+  deleter->DeleteSessionOnlyData(
+      /*skip_session_cookies=*/false, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the shared dictionary was NOT deleted because of the exception.
+  EXPECT_TRUE(CheckDictionaryHeader(*embedded_test_server(),
+                                    /*expect_blocked=*/false));
+  EXPECT_FALSE(GetSharedDictionariesForIsolationKey(isolation_key).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
