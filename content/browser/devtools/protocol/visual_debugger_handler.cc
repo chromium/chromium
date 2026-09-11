@@ -5,8 +5,10 @@
 #include "content/browser/devtools/protocol/visual_debugger_handler.h"
 
 #include <string.h>
+
 #include <algorithm>
 
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,16 +37,22 @@ void VisualDebuggerHandler::Wire(UberDispatcher* dispatcher) {
 
 DispatchResponse VisualDebuggerHandler::FilterStream(
     std::unique_ptr<base::DictValue> in_filter) {
-  auto* host = GpuProcessHost::Get();
+  auto* host = GetGpuProcessHost(/*force_create=*/true);
+  if (!host) {
+    return DispatchResponse::ServerError("GPU process is not available");
+  }
   host->gpu_host()->FilterVisualDebugStream(std::move(*in_filter));
 
   return DispatchResponse::Success();
 }
 
 DispatchResponse VisualDebuggerHandler::StartStream() {
+  auto* host = GetGpuProcessHost(/*force_create=*/true);
+  if (!host) {
+    enabled_ = false;
+    return DispatchResponse::ServerError("GPU process is not available");
+  }
   enabled_ = true;
-
-  auto* host = GpuProcessHost::Get();
   host->gpu_host()->StartVisualDebugStream(base::BindPostTask(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&VisualDebuggerHandler::OnFrameResponse,
@@ -64,11 +72,22 @@ void VisualDebuggerHandler::OnFrameResponse(base::Value json) {
 
 DispatchResponse VisualDebuggerHandler::StopStream() {
   if (enabled_) {
-    auto* host = GpuProcessHost::Get();
-    host->gpu_host()->StopVisualDebugStream();
+    // Cleanup must not launch a replacement GPU process.
+    auto* host = GetGpuProcessHost(/*force_create=*/false);
+    if (host) {
+      host->gpu_host()->StopVisualDebugStream();
+    }
   }
   enabled_ = false;
   return DispatchResponse::Success();
 }
+
+GpuProcessHost* VisualDebuggerHandler::GetGpuProcessHost(bool force_create) {
+  if (gpu_process_host_getter_for_testing_) {
+    return gpu_process_host_getter_for_testing_.Run(force_create);
+  }
+  return GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, force_create);
+}
+
 }  // namespace protocol
 }  // namespace content
