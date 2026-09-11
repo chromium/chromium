@@ -14,12 +14,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -199,12 +199,17 @@ class ManagedConfigurationVariablesBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up a fake user and capture its profile.
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
-    user_ =
-        fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    user_ = test_user_session_manager_->AddRegularUser(account_id);
     ASSERT_TRUE(user_);
+    test_user_session_manager_->LogIn(account_id);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        account_id, /*is_managed=*/is_affiliated,
+        /*is_affiliated=*/is_affiliated);
 
     // Set up fake device attributes.
     fake_device_attributes_ = std::make_unique<policy::FakeDeviceAttributes>();
@@ -217,7 +222,7 @@ class ManagedConfigurationVariablesBase {
   void DoTearDown() {
     fake_device_attributes_.reset();
     user_ = nullptr;
-    fake_user_manager_.Reset();
+    test_user_session_manager_.reset();
   }
 
   const user_manager::User& user() { return CHECK_DEREF(user_); }
@@ -228,9 +233,7 @@ class ManagedConfigurationVariablesBase {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   raw_ptr<user_manager::User> user_ = nullptr;
 
   ash::system::FakeStatisticsProvider statistics_provider_;

@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,12 +26,11 @@
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 
@@ -49,8 +47,6 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
 
   void SetUp() override {
     message_center::MessageCenter::Initialize();
-
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     // Initialize fake clients.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
@@ -69,16 +65,23 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
         kEnableVirtioBlkForData);
 
-    // Initialize a testing profile and a fake user manager.
-    // (Required for testing ARC.)
-    const AccountId account_id(
-        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+    // Initialize user session manager before profile manager.
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(
+        TestingProfile::kDefaultProfileUserName, GaiaId("1234567890")));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
 
-    ash::ScopedAccountIdAnnotator annotator(
-        testing_profile_manager_.profile_manager(), account_id);
-    testing_profile_ = testing_profile_manager_.CreateTestingProfile(
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    test_user_session_manager_->LogIn(account_id);
+
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
+    testing_profile_ = profile_manager_->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
 
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
@@ -102,13 +105,14 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     arc_dlc_installer_.reset();
 
     testing_profile_ = nullptr;
-    testing_profile_manager_.DeleteAllTestingProfiles();
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_manager_.reset();
 
     scoped_feature_list_.reset();
     ash::SpacedClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    fake_user_manager_.Reset();
+    test_user_session_manager_.reset();
     message_center::MessageCenter::Shutdown();
   }
 
@@ -119,9 +123,10 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   const message_center::Notification* GetNotification(
       const std::string& notification_id) const {
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-        ash::CreateUserScopedNotificationId(
-            notification_id,
-            fake_user_manager_->GetActiveUser()->username_hash()));
+        ash::CreateUserScopedNotificationId(notification_id,
+                                            user_manager::UserManager::Get()
+                                                ->GetActiveUser()
+                                                ->username_hash()));
   }
 
   ArcSessionManager* arc_session_manager() const {
@@ -138,12 +143,8 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-  TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal()};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_ = nullptr;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

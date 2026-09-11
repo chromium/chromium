@@ -9,9 +9,9 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,12 +29,18 @@ class ArcMigrationGuideNotificationTest : public ::testing::Test {
  protected:
   void SetUp() override {
     message_center::MessageCenter::Initialize();
-    user_ = fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user_->GetAccountId());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    user_ = test_user_session_manager_->AddRegularUser(
+        user_manager::StubAccountId());
+    ASSERT_TRUE(user_);
+    test_user_session_manager_->LogIn(user_->GetAccountId());
   }
 
   void TearDown() override {
     user_ = nullptr;
+    test_user_session_manager_.reset();
     message_center::MessageCenter::Shutdown();
   }
 
@@ -45,8 +51,7 @@ class ArcMigrationGuideNotificationTest : public ::testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   raw_ptr<const user_manager::User> user_ = nullptr;
 };
 

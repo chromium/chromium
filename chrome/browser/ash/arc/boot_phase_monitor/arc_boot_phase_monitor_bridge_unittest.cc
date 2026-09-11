@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -24,8 +24,8 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,11 +35,14 @@ namespace {
 
 class ArcBootPhaseMonitorBridgeTest : public testing::Test {
  public:
-  ArcBootPhaseMonitorBridgeTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+  ArcBootPhaseMonitorBridgeTest() {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::DlcserviceClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
+
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
@@ -47,15 +50,15 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
         arc_dlc_installer_.get());
-    testing_profile_ = std::make_unique<TestingProfile>();
-
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), GaiaId("1234567890")));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+        TestingProfile::kDefaultProfileUserName, GaiaId("1234567890")));
+    CHECK(test_user_session_manager_->AddRegularUser(account_id));
+    test_user_session_manager_->LogIn(account_id);
+
+    testing_profile_ = std::make_unique<TestingProfile>();
   }
 
   ArcBootPhaseMonitorBridgeTest(const ArcBootPhaseMonitorBridgeTest&) = delete;
@@ -64,6 +67,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
 
   ~ArcBootPhaseMonitorBridgeTest() override {
     testing_profile_.reset();
+    test_user_session_manager_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
@@ -148,8 +152,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   };
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

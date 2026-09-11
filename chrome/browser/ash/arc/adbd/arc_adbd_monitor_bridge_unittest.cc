@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -28,10 +27,9 @@
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_adbd_monitor_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -72,15 +70,19 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
             base::BindRepeating(arc::FakeArcSession::Create)),
         arc_dlc_installer_.get());
 
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId(kProfileName, GaiaId("1234567890")));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+
     // Log in as a primary profile to enable ARCVM.
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    const AccountId account_id(AccountId::FromUserEmail(kProfileName));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+    test_user_session_manager_->LogIn(account_id);
 
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
                                             account_id);
@@ -114,6 +116,8 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     bridge_.reset();
     instance_.reset();
     profile_manager_->DeleteTestingProfile(kProfileName);
+    profile_manager_.reset();
+    test_user_session_manager_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
@@ -143,16 +147,13 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<ArcAdbdMonitorBridge> bridge_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
 // Testing bridge constructor/destructor in setup/teardown.

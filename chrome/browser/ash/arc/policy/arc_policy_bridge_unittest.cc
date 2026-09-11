@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -53,12 +53,10 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/policy_constants.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -227,14 +225,23 @@ class ArcPolicyBridgeTestBase {
         .Times(1);
 
     // Set up user profile for ReportCompliance() tests.
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId("1111111111")));
-    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
-    fake_user_manager_->LoginUser(account_id);
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
+    test_user_session_manager_->LogIn(account_id);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        account_id, /*is_managed=*/is_affiliated,
+        /*is_affiliated=*/is_affiliated);
+
+    ash::ScopedAccountIdAnnotator annotator(
+        testing_profile_manager_->profile_manager(), account_id);
     profile_ = testing_profile_manager_->CreateTestingProfile(
         kTestUserEmail, IdentityTestEnvironmentProfileAdaptor::
                             GetIdentityTestEnvironmentFactories());
@@ -286,7 +293,9 @@ class ArcPolicyBridgeTestBase {
     arc_service_manager_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
+    profile_ = nullptr;
     testing_profile_manager_.reset();
+    test_user_session_manager_.reset();
   }
 
  protected:
@@ -364,10 +373,7 @@ class ArcPolicyBridgeTestBase {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;

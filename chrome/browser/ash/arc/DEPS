@@ -40,6 +40,9 @@ specific_include_rules = {
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
     "+chrome/browser/browser_process.h",
   ],
+  "arc_util_unittest\\.cc": [
+    "+chrome/browser/ash/policy/core/device_local_account.h",
+  ],
   "arc_support_host_unittest\\.cc": [
     "+chrome/browser/global_features.h",
   ],

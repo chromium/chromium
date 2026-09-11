@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,9 +22,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,17 +47,18 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 
-    // Set up user manager and profile and for ReportCloudDpcOperationTime tests
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    const auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+    test_user_session_manager_->LogIn(account_id);
 
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
                                             account_id);
@@ -91,7 +89,7 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
-    fake_user_manager_.Reset();
+    test_user_session_manager_.reset();
     arc_service_manager_.reset();
     ash::DlcserviceClient::Shutdown();
   }
@@ -107,15 +105,12 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
  private:
   raw_ptr<ArcEnterpriseReportingService, DanglingUntriaged> service_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
 TEST_F(ArcEnterpriseReportingServiceTest, ReportCloudDpcOperationTime_Success) {

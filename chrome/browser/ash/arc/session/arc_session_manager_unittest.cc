@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/arc/fake_android_management_client.h"
@@ -90,6 +89,7 @@
 #include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -196,11 +196,14 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
 class ArcSessionManagerInLoginScreenTest : public testing::Test {
  public:
-  ArcSessionManagerInLoginScreenTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+  ArcSessionManagerInLoginScreenTest() {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::DlcserviceClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
+
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
     ArcSessionManager::SetUiEnabledForTesting(false);
     SetArcBlockedDueToIncompatibleFileSystemForTesting(false);
@@ -223,6 +226,7 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
+    test_user_session_manager_.reset();
     ash::SessionManagerClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -241,11 +245,10 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
 };
 
 // We expect mini instance starts to run if EmitLoginPromptVisible signal is
