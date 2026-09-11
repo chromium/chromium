@@ -17,6 +17,7 @@ export {INITIAL_ITEM_COUNT, OrganizerListSectionElement} from './organizer_list_
 export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 export type {OrganizerListSectionItem, OrganizerListSectionItemActionButton, OrganizerListSectionItemIcon, OrganizerListSectionItemStackedFavicons} from './organizer_list_section_item.js';
 export {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
+export {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
 export {StackedFaviconsElement} from './stacked_favicons.js';
 export {Color} from './tab_group_types.mojom-webui.js';
 export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TokenRange} from './tab_search.mojom-webui.js';
