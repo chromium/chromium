@@ -77,8 +77,8 @@ class TabListEditorMediator
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
 
-    private final List<Tab> mVisibleTabs = new ArrayList<>();
-    private final List<String> mVisibleTabGroups = new ArrayList<>();
+    private final ArrayList<Tab> mVisibleTabs = new ArrayList<>();
+    private final ArrayList<String> mVisibleTabGroups = new ArrayList<>();
     private final TabListEditorLayout mTabListEditorLayout;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @CreationMode int mCreationMode;
@@ -425,7 +425,9 @@ class TabListEditorMediator
         }
         mTabListCoordinator.cleanupTabListView();
         mVisibleTabs.clear();
+        mVisibleTabs.trimToSize();
         mVisibleTabGroups.clear();
+        mVisibleTabGroups.trimToSize();
 
         if (mCreationMode != CreationMode.ITEM_PICKER) {
             mResetHandler.resetWithListOfTabs(

@@ -114,11 +114,11 @@ public class CloseAllTabsHelper {
     private static List<Integer> unarchiveTabsForTabClosure(
             ArchivedTabModelOrchestrator archivedOrchestrator, TabCreator regularTabCreator) {
         assert archivedOrchestrator.areTabModelsInitialized();
-        List<Integer> previouslyArchivedTabIds = new ArrayList<>();
 
         TabArchiver archiver = archivedOrchestrator.getTabArchiver();
         TabModel archivedTabModel = archivedOrchestrator.getTabModel();
         assumeNonNull(archivedTabModel);
+        List<Integer> previouslyArchivedTabIds = new ArrayList<>(archivedTabModel.getCount());
         for (Tab archivedTab : archivedTabModel) {
             previouslyArchivedTabIds.add(archivedTab.getId());
         }

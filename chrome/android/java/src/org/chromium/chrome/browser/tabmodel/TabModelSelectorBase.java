@@ -63,7 +63,7 @@ public abstract class TabModelSelectorBase
 
     private final Callback<TabModel> mIncognitoReauthDialogDelegateCallback;
 
-    private final List<TabModelObserver> mPendingObservers = new ArrayList<>();
+    private final ArrayList<TabModelObserver> mPendingObservers = new ArrayList<>();
 
     protected @Nullable IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
 
@@ -108,6 +108,7 @@ public abstract class TabModelSelectorBase
             }
         }
         mPendingObservers.clear();
+        mPendingObservers.trimToSize();
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
