@@ -5,10 +5,12 @@
 #ifndef EXTENSIONS_BROWSER_SAFE_BROWSING_DELEGATE_H_
 #define EXTENSIONS_BROWSER_SAFE_BROWSING_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/stack_frame.h"
 
 class GURL;
 
@@ -59,6 +61,28 @@ class SafeBrowsingDelegate {
   // are created.
   virtual void CreatePasswordReuseDetectionManager(
       content::WebContents* web_contents) const {}
+
+  // Notifies the extension telemetry service when the cookies.get API is
+  // invoked.
+  virtual void NotifyExtensionApiCookiesGet(content::BrowserContext* context,
+                                            const ExtensionId& extension_id,
+                                            const std::string& name,
+                                            const std::string& store_id,
+                                            const std::string& url,
+                                            StackTrace js_callstack) const {}
+
+  // Notifies the extension telemetry service when the cookies.getAll API is
+  // invoked.
+  virtual void NotifyExtensionApiCookiesGetAll(content::BrowserContext* context,
+                                               const ExtensionId& extension_id,
+                                               const std::string& domain,
+                                               const std::string& name,
+                                               const std::string& path,
+                                               std::optional<bool> secure,
+                                               const std::string& store_id,
+                                               const std::string& url,
+                                               std::optional<bool> is_session,
+                                               StackTrace js_callstack) const {}
 };
 
 }  // namespace extensions

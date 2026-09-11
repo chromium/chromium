@@ -4,8 +4,12 @@
 
 #include "chrome/browser/extensions/chrome_safe_browsing_delegate.h"
 
+#include <utility>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
@@ -19,26 +23,37 @@ static_assert(BUILDFLAG(FULL_SAFE_BROWSING));
 
 namespace extensions {
 
+namespace {
+// Returns the ExtensionTelemetryService for `context`, or nullptr if there
+// isn't one or it's disabled.
+safe_browsing::ExtensionTelemetryService* GetExtensionTelemetryServiceIfEnabled(
+    content::BrowserContext* context) {
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!telemetry_service || !telemetry_service->enabled()) {
+    return nullptr;
+  }
+  return telemetry_service;
+}
+
+}  // namespace
+
 ChromeSafeBrowsingDelegate::ChromeSafeBrowsingDelegate() = default;
 
 ChromeSafeBrowsingDelegate::~ChromeSafeBrowsingDelegate() = default;
 
 bool ChromeSafeBrowsingDelegate::IsExtensionTelemetryServiceEnabled(
     content::BrowserContext* context) const {
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  return telemetry_service && telemetry_service->enabled();
+  return GetExtensionTelemetryServiceIfEnabled(context) != nullptr;
 }
 
 void ChromeSafeBrowsingDelegate::NotifyExtensionApiTabExecuteScript(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const std::string& code) const {
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
+  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  if (!telemetry_service) {
     return;
   }
 
@@ -51,10 +66,8 @@ void ChromeSafeBrowsingDelegate::NotifyExtensionApiDeclarativeNetRequest(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const std::vector<api::declarative_net_request::Rule>& rules) const {
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
+  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  if (!telemetry_service) {
     return;
   }
 
@@ -71,10 +84,8 @@ void ChromeSafeBrowsingDelegate::
         const ExtensionId& extension_id,
         const GURL& request_url,
         const GURL& redirect_url) const {
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
+  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  if (!telemetry_service) {
     return;
   }
 
@@ -89,6 +100,45 @@ void ChromeSafeBrowsingDelegate::
 void ChromeSafeBrowsingDelegate::CreatePasswordReuseDetectionManager(
     content::WebContents* web_contents) const {
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+}
+
+void ChromeSafeBrowsingDelegate::NotifyExtensionApiCookiesGet(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& name,
+    const std::string& store_id,
+    const std::string& url,
+    StackTrace js_callstack) const {
+  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  if (!telemetry_service) {
+    return;
+  }
+
+  auto signal = std::make_unique<safe_browsing::CookiesGetSignal>(
+      extension_id, name, store_id, url, std::move(js_callstack));
+  telemetry_service->AddSignal(std::move(signal));
+}
+
+void ChromeSafeBrowsingDelegate::NotifyExtensionApiCookiesGetAll(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& domain,
+    const std::string& name,
+    const std::string& path,
+    std::optional<bool> secure,
+    const std::string& store_id,
+    const std::string& url,
+    std::optional<bool> is_session,
+    StackTrace js_callstack) const {
+  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  if (!telemetry_service) {
+    return;
+  }
+
+  auto signal = std::make_unique<safe_browsing::CookiesGetAllSignal>(
+      extension_id, domain, name, path, secure, store_id, url, is_session,
+      std::move(js_callstack));
+  telemetry_service->AddSignal(std::move(signal));
 }
 
 }  // namespace extensions

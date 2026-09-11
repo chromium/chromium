@@ -38,6 +38,22 @@ class ChromeSafeBrowsingDelegate : public SafeBrowsingDelegate {
       const GURL& redirect_url) const override;
   void CreatePasswordReuseDetectionManager(
       content::WebContents* web_contents) const override;
+  void NotifyExtensionApiCookiesGet(content::BrowserContext* context,
+                                    const ExtensionId& extension_id,
+                                    const std::string& name,
+                                    const std::string& store_id,
+                                    const std::string& url,
+                                    StackTrace js_callstack) const override;
+  void NotifyExtensionApiCookiesGetAll(content::BrowserContext* context,
+                                       const ExtensionId& extension_id,
+                                       const std::string& domain,
+                                       const std::string& name,
+                                       const std::string& path,
+                                       std::optional<bool> secure,
+                                       const std::string& store_id,
+                                       const std::string& url,
+                                       std::optional<bool> is_session,
+                                       StackTrace js_callstack) const override;
 };
 
 }  // namespace extensions
