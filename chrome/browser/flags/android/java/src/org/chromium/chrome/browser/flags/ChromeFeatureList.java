@@ -1175,7 +1175,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableAndroidSidePanel =
             newCachedFlag(
                     ENABLE_ANDROID_SIDE_PANEL,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ BuildConfig.IS_DESKTOP_ANDROID,
                     // In http://crrev.com/c/7689838, "defaultValueInTests" was set to
                     // true for testing purposes. Detailed reasons are in that CL's commit message.
                     //
