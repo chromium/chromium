@@ -106,6 +106,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 SharedPreferences.OnSharedPreferenceChangeListener,
                 SyncService.SyncStateChangedListener,
                 SigninManager.SignInStateObserver,
+                HomepageManager.HomepageStateListener,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
     private final CallbackController mCallbackController = new CallbackController();
     public static final String PREF_SETTINGS_PROMO_CARD = "settings_promo_card";
@@ -288,6 +289,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
+
+        // The homepage can be enabled or disabled from the homepage subpage, which stays visible
+        // alongside this fragment in multi-column mode, so listen for changes instead of relying
+        // on onStart() being called again.
+        HomepageManager.getInstance().addListener(this);
+
         if (mShouldShowSnackbar) {
             mShouldShowSnackbar = false;
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::showSignoutSnackbar);
@@ -299,6 +306,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onStop() {
         super.onStop();
+
+        HomepageManager.getInstance().removeListener(this);
+
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
@@ -574,12 +584,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAppearancePreference();
         addPreferenceIfAbsent(PREF_TABS);
 
-        if (!HomepageManager.shouldShowHomepageSettings()) {
-            removePreferenceIfPresent(PREF_HOMEPAGE);
-        } else {
-            Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
-            setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
-        }
+        updateHomepagePreference();
 
         if (shouldShowDeveloperSettings()) {
             addPreferenceIfAbsent(PREF_DEVELOPER);
@@ -827,6 +832,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
         pref.setTitle(AppearanceSettingsFragment.getTitle(getContext()));
     }
 
+    private void updateHomepagePreference() {
+        if (!HomepageManager.shouldShowHomepageSettings()) {
+            removePreferenceIfPresent(PREF_HOMEPAGE);
+        } else {
+            Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
+            setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
+        }
+    }
+
     private void setOnOffSummary(Preference pref, boolean isOn) {
         pref.setSummary(isOn ? R.string.text_on : R.string.text_off);
     }
@@ -905,6 +919,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void syncStateChanged() {
         updateAutofillPreferences();
+    }
+
+    /** HomepageManager.HomepageStateListener implementation. */
+    @Override
+    public void onHomepageStateUpdated() {
+        updateHomepagePreference();
     }
 
     public ManagedPreferenceDelegate getManagedPreferenceDelegateForTest() {

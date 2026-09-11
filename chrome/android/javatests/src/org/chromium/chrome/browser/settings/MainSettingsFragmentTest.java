@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
@@ -619,6 +620,45 @@ public class MainSettingsFragmentTest {
         Assert.assertEquals(
                 "Homepage summary is different than homepage state",
                 mMainSettings.getString(R.string.text_off),
+                mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE).getSummary().toString());
+    }
+
+    /**
+     * Regression test for crbug.com/559967063: the homepage summary must refresh while the main
+     * settings page is visible, because in multi-column mode the homepage subpage is shown next to
+     * it and toggling the homepage does not restart the main settings page.
+     */
+    @Test
+    @SmallTest
+    public void testHomepageSummaryUpdatesOnHomepageStateChange() {
+        // Start with the homepage enabled.
+        mHomepageTestRule.useDefaultHomepageForTest();
+        startSettings();
+
+        // The summary reflects the initial homepage state (on).
+        Assert.assertEquals(
+                "Homepage summary is different than homepage state",
+                mMainSettings.getString(R.string.text_on),
+                mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE).getSummary().toString());
+
+        // Simulate turning the homepage off from the homepage subpage.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(false));
+
+        // The summary updates without the main settings page being restarted.
+        Assert.assertEquals(
+                "Homepage summary did not update after the homepage was disabled",
+                mMainSettings.getString(R.string.text_off),
+                mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE).getSummary().toString());
+
+        // Simulate turning the homepage back on.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(true));
+
+        // The summary updates again.
+        Assert.assertEquals(
+                "Homepage summary did not update after the homepage was enabled",
+                mMainSettings.getString(R.string.text_on),
                 mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE).getSummary().toString());
     }
 
