@@ -49,5 +49,14 @@ bool IsLensSupported() {
   return false;
 }
 
+std::optional<std::string> GenerateLensSapisidHash(
+    const std::string& email,
+    const std::string& sapisid_cookie,
+    const std::string& origin,
+    base::Time timestamp) {
+  // Lens identity delegation is not supported for tests.
+  return std::nullopt;
+}
+
 }  // namespace provider
 }  // namespace ios

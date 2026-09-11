@@ -8,8 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import <optional>
+#import <string>
 
 #import "base/functional/callback.h"
+#import "base/time/time.h"
 #import "ios/public/provider/chrome/browser/lens/lens_image_metadata.h"
 #import "ios/public/provider/chrome/browser/lens/lens_query.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -86,6 +88,15 @@ NewChromeLensViewFinderController(LensConfiguration* config);
 
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
+
+// Generates the SAPISIDHASH Authorization header value for first-party
+// identity delegation requests (e.g. Lens / Composebox). Returns std::nullopt
+// if not supported or on failure.
+std::optional<std::string> GenerateLensSapisidHash(
+    const std::string& email,
+    const std::string& sapisid_cookie,
+    const std::string& origin,
+    base::Time timestamp);
 
 }  // namespace provider
 }  // namespace ios
