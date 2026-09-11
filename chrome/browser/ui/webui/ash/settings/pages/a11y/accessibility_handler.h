@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_ACCESSIBILITY_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace ash::settings {
@@ -18,7 +20,10 @@ namespace ash::settings {
 class AccessibilityHandler : public content::WebUIMessageHandler,
                              public speech::SodaInstaller::Observer {
  public:
-  explicit AccessibilityHandler(Profile* profile);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  AccessibilityHandler(
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile);
 
   AccessibilityHandler(const AccessibilityHandler&) = delete;
   AccessibilityHandler& operator=(const AccessibilityHandler&) = delete;
@@ -58,6 +63,7 @@ class AccessibilityHandler : public content::WebUIMessageHandler,
   speech::LanguageCode GetDictationLocale();
   std::u16string GetDictationLocaleDisplayName();
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   raw_ptr<Profile> profile_;  // Weak pointer.
 
   base::ScopedObservation<speech::SodaInstaller,

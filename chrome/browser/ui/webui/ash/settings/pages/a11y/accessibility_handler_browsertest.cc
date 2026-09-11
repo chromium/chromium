@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -51,8 +52,10 @@ constexpr GaiaId::Literal kTestUserGaiaId{"9876543210"};
 
 class TestAccessibilityHandler : public AccessibilityHandler {
  public:
-  explicit TestAccessibilityHandler(Profile* profile)
-      : AccessibilityHandler(profile) {}
+  TestAccessibilityHandler(
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile)
+      : AccessibilityHandler(application_locale_storage, profile) {}
   ~TestAccessibilityHandler() override = default;
 };
 
@@ -85,8 +88,9 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    handler_ =
-        std::make_unique<TestAccessibilityHandler>(browser()->GetProfile());
+    handler_ = std::make_unique<TestAccessibilityHandler>(
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        browser()->GetProfile());
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();

@@ -10,13 +10,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -41,8 +42,11 @@ namespace {
 
 }  // namespace
 
-AccessibilityHandler::AccessibilityHandler(Profile* profile)
-    : profile_(profile) {}
+AccessibilityHandler::AccessibilityHandler(
+    const ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      profile_(profile) {}
 
 AccessibilityHandler::~AccessibilityHandler() = default;
 
@@ -229,7 +233,7 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
       Dictation::GetAllSupportedLocales();
 
   // Get application locale.
-  std::string application_locale = g_browser_process->GetApplicationLocale();
+  const std::string& application_locale = application_locale_storage_->Get();
   std::pair<std::string_view, std::string_view> application_lang_and_locale =
       language::SplitIntoMainAndTail(application_locale);
 
@@ -295,7 +299,7 @@ std::u16string AccessibilityHandler::GetDictationLocaleDisplayName() {
 
   return l10n_util::GetDisplayNameForLocale(
       /*locale=*/dictation_locale,
-      /*display_locale=*/g_browser_process->GetApplicationLocale(),
+      /*display_locale=*/application_locale_storage_->Get(),
       /*is_ui=*/true);
 }
 

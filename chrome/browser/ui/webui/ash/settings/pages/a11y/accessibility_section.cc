@@ -1608,7 +1608,8 @@ void AccessibilitySection::AddLoadTimeData(
 void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::AccessibilityMainHandler>());
-  web_ui->AddMessageHandler(std::make_unique<AccessibilityHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<AccessibilityHandler>(
+      &application_locale_storage_.get(), profile()));
   web_ui->AddMessageHandler(
       std::make_unique<SwitchAccessHandler>(profile()->GetPrefs()));
   web_ui->AddMessageHandler(

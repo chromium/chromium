@@ -7,6 +7,7 @@
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -42,7 +43,11 @@ class AccessibilityHandlerTest : public testing::Test {
     Profile* profile = profile_manager_->CreateTestingProfile("test");
 
     // Initialize handler and webui.
-    auto handler = std::make_unique<AccessibilityHandler>(profile);
+    auto handler = std::make_unique<AccessibilityHandler>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        profile);
     handler_ = handler.get();
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(std::move(handler));
