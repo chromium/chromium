@@ -4215,6 +4215,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(anotherSelector.getCurrentModel()).thenReturn(anotherTabModel);
         when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
         when(anotherTabModel.getTabGroupCount()).thenReturn(1);
+        Token groupId = Token.createRandom();
+        when(anotherTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
+        when(anotherTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(anotherTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
+        when(anotherTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
 
         when(tabWindowManager.getAllTabModelSelectors())
                 .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));

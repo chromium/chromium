@@ -62,8 +62,10 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
@@ -94,6 +96,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -122,6 +125,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
     public static final String TAB_ID_BUNDLE_KEY = "TabId";
     public static final String TAB_GROUP_ID_BUNDLE_KEY = "TabGroupId";
+    public static final String SYNC_GROUP_ID_BUNDLE_KEY = "SyncGroupId";
     public static final String RECENT_ENTRY_SESSION_ID_BUNDLE_KEY = "RecentEntrySessionId";
     public static final String RECENT_ENTRY_INSTANCE_ID_BUNDLE_KEY = "RecentEntryInstanceId";
     public static final String RECENT_ENTRY_SESSION_TAG_BUNDLE_KEY = "RecentEntrySessionTag";
@@ -349,8 +353,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     /**
      * @param currentTab The currentTab for which the app menu is showing.
-     * @return Whether bookmark page menu item should be checked, indicating that the current tab
-     *         is bookmarked.
+     * @return Whether bookmark page menu item should be checked, indicating that the current tab is
+     *     bookmarked.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean shouldCheckBookmarkStar(Tab currentTab) {
@@ -696,6 +700,28 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 model);
     }
 
+    private static @Nullable Bundle getTabGroupBundleForMenuItem(PropertyModel model) {
+        Token tabGroupId =
+                model.containsKey(AppMenuTabGroupItemProperties.TAB_GROUP_ID)
+                        ? model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID)
+                        : null;
+        String syncGroupId =
+                model.containsKey(AppMenuTabGroupItemProperties.SYNC_GROUP_ID)
+                        ? model.get(AppMenuTabGroupItemProperties.SYNC_GROUP_ID)
+                        : null;
+        if (tabGroupId == null && syncGroupId == null) {
+            return null;
+        }
+        Bundle bundle = new Bundle();
+        if (tabGroupId != null) {
+            bundle.putBundle(TAB_GROUP_ID_BUNDLE_KEY, tabGroupId.toBundle());
+        }
+        if (syncGroupId != null) {
+            bundle.putString(SYNC_GROUP_ID_BUNDLE_KEY, syncGroupId);
+        }
+        return bundle;
+    }
+
     @Override
     public @Nullable Bundle getBundleForMenuItem(PropertyModel model) {
         if (model.containsKey(AppMenuBookmarkItemProperties.BOOKMARK_ID)) {
@@ -707,13 +733,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY, bookmarkId.toString());
             return bundle;
         }
-        if (model.containsKey(AppMenuTabGroupItemProperties.TAB_GROUP_ID)) {
-            Token tabGroupId = model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID);
-            if (tabGroupId != null) {
-                Bundle bundle = new Bundle();
-                bundle.putBundle(TAB_GROUP_ID_BUNDLE_KEY, tabGroupId.toBundle());
-                return bundle;
-            }
+        Bundle tabGroupBundle = getTabGroupBundleForMenuItem(model);
+        if (tabGroupBundle != null) {
+            return tabGroupBundle;
         }
         if (model.containsKey(AppMenuTabItemProperties.TAB_ID)) {
             Bundle bundle = new Bundle();
@@ -1198,7 +1220,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     public @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
         TabModel tabModel = mTabModelSelector.getCurrentModel();
-        return TabGroupUiUtils.getAddToGroupMenuItemString(tabModel, currentTabGroupId);
+        Profile profile = tabModel.getProfile();
+        TabGroupSyncService syncService =
+                profile != null && !profile.isOffTheRecord()
+                        ? TabGroupSyncServiceFactory.getForProfile(profile)
+                        : null;
+        GroupWindowChecker windowChecker = new GroupWindowChecker(mContext, syncService, tabModel);
+        return TabGroupUiUtils.getAddToGroupMenuItemString(
+                currentTabGroupId, windowChecker.hasOtherGroups(currentTabGroupId));
     }
 
     /** Returns whether to show the open in app menu item. */

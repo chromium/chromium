@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,13 +45,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -74,6 +77,8 @@ public class TabGroupMenuActionHandlerUnitTest {
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     @Mock private TabModel mTabModel;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
 
     private TabGroupMenuActionHandler mHandler;
     @Nullable private TabGroupCreationCallback mTabGroupCreationCallback;
@@ -84,7 +89,6 @@ public class TabGroupMenuActionHandlerUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        TabGroupSyncServiceFactory.setForTesting(mock());
         CollaborationServiceFactory.setForTesting(mock());
         DataSharingServiceFactory.setForTesting(mock());
         TrackerFactory.setTrackerForTests(mock());
@@ -105,6 +109,8 @@ public class TabGroupMenuActionHandlerUnitTest {
                         mTabModel,
                         mBottomSheetController,
                         mModalDialogManager,
+                        mTabGroupUiActionHandler,
+                        mTabGroupSyncService,
                         mProfile,
                         factory);
         when(mTab.getTabGroupId()).thenReturn(Token.createRandom());
@@ -179,7 +185,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
         when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(123);
 
-        assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId));
+        assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId, /* syncGroupId= */ null));
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
@@ -187,5 +193,32 @@ public class TabGroupMenuActionHandlerUnitTest {
                         eq(destTab),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testHandleAddToExistingGroupAction_remoteGroup() {
+        UserActionTester actionTester = new UserActionTester();
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "sync_group_id";
+        remoteGroup.localId = null;
+        remoteGroup.title = "Remote Group";
+
+        when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(remoteGroup);
+
+        assertTrue(
+                mHandler.handleAddToExistingGroupAction(
+                        mTab, /* groupId= */ null, "sync_group_id"));
+
+        verify(mTabGroupUiActionHandler).openTabGroup("sync_group_id");
+        assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
+    }
+
+    @Test
+    public void testHandleAddToExistingGroupAction_invalidDestination() {
+        assertFalse(
+                mHandler.handleAddToExistingGroupAction(
+                        mTab, /* groupId= */ null, /* syncGroupId= */ null));
     }
 }

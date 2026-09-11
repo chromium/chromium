@@ -17,10 +17,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collection;
@@ -33,6 +36,8 @@ public class TabGroupMenuActionHandler {
     private final TabModel mTabModel;
     private final BottomSheetController mBottomSheetController;
     private final ModalDialogManager mModalDialogManager;
+    private final @Nullable TabGroupUiActionHandler mTabGroupUiActionHandler;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final Profile mProfile;
     private final TabGroupListBottomSheetCoordinatorFactory mFactory;
 
@@ -44,6 +49,7 @@ public class TabGroupMenuActionHandler {
      * @param tabModel Used to interact with tab groups.
      * @param bottomSheetController For interacting with the bottom sheet.
      * @param modalDialogManager For showing the tab group creation dialog.
+     * @param uiActionHandler For UI actions on tab groups.
      * @param profile The current profile.
      */
     public TabGroupMenuActionHandler(
@@ -51,12 +57,15 @@ public class TabGroupMenuActionHandler {
             TabModel tabModel,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
+            @Nullable TabGroupUiActionHandler uiActionHandler,
             Profile profile) {
         this(
                 context,
                 tabModel,
                 bottomSheetController,
                 modalDialogManager,
+                uiActionHandler,
+                profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile),
                 profile,
                 TabGroupListBottomSheetCoordinator::new);
     }
@@ -67,12 +76,16 @@ public class TabGroupMenuActionHandler {
             TabModel tabModel,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
+            @Nullable TabGroupUiActionHandler uiActionHandler,
+            @Nullable TabGroupSyncService syncService,
             Profile profile,
             TabGroupListBottomSheetCoordinatorFactory factory) {
         mContext = context;
         mTabModel = tabModel;
         mBottomSheetController = bottomSheetController;
         mModalDialogManager = modalDialogManager;
+        mTabGroupUiActionHandler = uiActionHandler;
+        mTabGroupSyncService = syncService;
         mProfile = profile;
         mFactory = factory;
     }
@@ -130,19 +143,26 @@ public class TabGroupMenuActionHandler {
      *
      * @param tab The tab to be added to an existing group.
      * @param groupId The target tab group ID.
+     * @param syncGroupId The target sync group ID for remote groups.
      * @return Whether the action was handled.
      */
-    public boolean handleAddToExistingGroupAction(Tab tab, Token groupId) {
+    public boolean handleAddToExistingGroupAction(
+            Tab tab, @Nullable Token groupId, @Nullable String syncGroupId) {
         RecordUserAction.record("MobileMenuAddToExistingGroup");
         GroupWindowInfo destinationGroup =
-                GroupWindowInfo.forLocalGroup(
-                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext, mTabModel, mTabGroupSyncService, groupId, syncGroupId);
+        if (!TabGroupUiUtils.isValidDestination(
+                destinationGroup, mTabGroupSyncService, mTabGroupUiActionHandler)) {
+            return false;
+        }
+
         TabGroupUiUtils.addTabsToGroup(
                 mTabModel,
                 List.of(tab),
                 destinationGroup,
-                /* syncService= */ null,
-                /* uiActionHandler= */ null,
+                mTabGroupSyncService,
+                mTabGroupUiActionHandler,
                 /* tabMovedCallback= */ null,
                 /* bringToFront= */ true);
         return true;

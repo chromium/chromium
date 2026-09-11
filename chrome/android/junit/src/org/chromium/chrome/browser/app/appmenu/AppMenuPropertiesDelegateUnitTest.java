@@ -18,6 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -33,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -65,6 +67,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
@@ -520,6 +523,40 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.universal_install,
                 item.model.get(
                         org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    public void testGetBundleForMenuItem_tabGroupSyncId() {
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuTabGroupItemProperties.ALL_KEYS)
+                        .with(AppMenuTabGroupItemProperties.SYNC_GROUP_ID, "sync_group_123")
+                        .build();
+
+        Bundle bundle = mAppMenuPropertiesDelegate.getBundleForMenuItem(model);
+        assertNotNull(bundle);
+        assertEquals(
+                "sync_group_123",
+                bundle.getString(AppMenuPropertiesDelegateImpl.SYNC_GROUP_ID_BUNDLE_KEY));
+    }
+
+    @Test
+    public void testGetBundleForMenuItem_tabGroupLocalAndSyncId() {
+        Token groupId = Token.createRandom();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuTabGroupItemProperties.ALL_KEYS)
+                        .with(AppMenuTabGroupItemProperties.TAB_GROUP_ID, groupId)
+                        .with(AppMenuTabGroupItemProperties.SYNC_GROUP_ID, "sync_group_456")
+                        .build();
+
+        Bundle bundle = mAppMenuPropertiesDelegate.getBundleForMenuItem(model);
+        assertNotNull(bundle);
+        assertEquals(
+                groupId,
+                Token.maybeCreateFromBundle(
+                        bundle.getBundle(AppMenuPropertiesDelegateImpl.TAB_GROUP_ID_BUNDLE_KEY)));
+        assertEquals(
+                "sync_group_456",
+                bundle.getString(AppMenuPropertiesDelegateImpl.SYNC_GROUP_ID_BUNDLE_KEY));
     }
 
     private void setUpIncognitoMocks() {

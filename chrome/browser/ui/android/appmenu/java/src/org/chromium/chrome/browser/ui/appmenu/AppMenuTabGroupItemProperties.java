@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -17,7 +18,11 @@ public class AppMenuTabGroupItemProperties {
     public static final WritableObjectPropertyKey<Token> TAB_GROUP_ID =
             new WritableObjectPropertyKey<>("TAB_GROUP_ID");
 
-    public static final PropertyKey[] TAB_GROUP_KEYS = new PropertyKey[] {TAB_GROUP_ID};
+    public static final WritableObjectPropertyKey<@Nullable String> SYNC_GROUP_ID =
+            new WritableObjectPropertyKey<>("SYNC_GROUP_ID");
+
+    public static final PropertyKey[] TAB_GROUP_KEYS =
+            new PropertyKey[] {TAB_GROUP_ID, SYNC_GROUP_ID};
 
     public static final PropertyKey[] ALL_KEYS =
             Arrays.copyOf(
