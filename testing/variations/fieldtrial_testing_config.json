@@ -1804,6 +1804,7 @@
                         "AtMemoryMqlsLogging",
                         "AutofillAtMemory",
                         "AutofillAtMemoryDoubleCtrl",
+                        "AutofillAtMemorySearchStatefulness",
                         "AutofillAtMemorySupportContenteditableOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
                         "AutofillAtMemoryTriggerString",
