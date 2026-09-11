@@ -666,6 +666,12 @@ void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
   SetHeaderColors(header_view(), origin_label_.get(), progress_bar_.get(),
                   close_button_.get(), theme_color);
 
+  if (permission_dashboard_view() && header_view() &&
+      header_view()->GetWidget()) {
+    permission_dashboard_view()->SetDividerBackgroundColor(
+        GetEffectiveHeaderBackgroundColor(header_view(), theme_color));
+  }
+
   if (origin_label_) {
     origin_label_->SetText(url_formatter::FormatOriginForSecurityDisplay(
         web_contents()

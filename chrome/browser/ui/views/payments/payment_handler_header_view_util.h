@@ -122,6 +122,14 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
     const std::u16string& origin_text,
     views::Button::PressedCallback close_callback);
 
+// Computes the effective background color for header subviews (e.g. origin
+// label, progress bar, close button). If `theme_color` is provided (e.g. from
+// an HTML head <meta name="theme-color"> tag), it is blended over the dialog's
+// background color (`ui::kColorDialogBackground`). Otherwise, the dialog's
+// background color is returned directly.
+SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
+                                          std::optional<SkColor> theme_color);
+
 // Computes and applies header backgrounds and item colors based on theme color.
 void SetHeaderColors(views::View* header_view,
                      PaymentHandlerOriginLabel* origin_label,

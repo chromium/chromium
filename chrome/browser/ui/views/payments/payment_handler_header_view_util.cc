@@ -69,24 +69,6 @@ SkColor GetContrastingGoogleColor(SkColor light_mode_color,
                                       contrast_ratio);
 }
 
-// Computes the effective background color for header subviews (e.g. origin
-// label, progress bar, close button). If `theme_color` is provided (e.g. from
-// an HTML head <meta name="theme-color"> tag), it is blended over the dialog's
-// background color (`ui::kColorDialogBackground`). Otherwise, the dialog's
-// background color is returned directly.
-SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
-                                          std::optional<SkColor> theme_color) {
-  if (!view || !view->GetWidget()) {
-    return gfx::kPlaceholderColor;
-  }
-  const SkColor dialog_background_color =
-      view->GetColorProvider()->GetColor(ui::kColorDialogBackground);
-  return theme_color.has_value()
-             ? color_utils::GetResultingPaintColor(theme_color.value(),
-                                                   dialog_background_color)
-             : dialog_background_color;
-}
-
 void AddAppIconView(views::View* container, const SkBitmap* icon_bitmap) {
   views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
       /*icon_resource_id=*/0, icon_bitmap,
@@ -387,6 +369,19 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
       std::make_unique<PaymentHandlerCloseButton>(std::move(close_callback)));
 
   return {origin_label->GetWeakPtr(), close_button->GetWeakPtr()};
+}
+
+SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
+                                          std::optional<SkColor> theme_color) {
+  if (!view || !view->GetWidget()) {
+    return gfx::kPlaceholderColor;
+  }
+  const SkColor dialog_background_color =
+      view->GetColorProvider()->GetColor(ui::kColorDialogBackground);
+  return theme_color.has_value()
+             ? color_utils::GetResultingPaintColor(theme_color.value(),
+                                                   dialog_background_color)
+             : dialog_background_color;
 }
 
 void SetHeaderColors(views::View* header_view,

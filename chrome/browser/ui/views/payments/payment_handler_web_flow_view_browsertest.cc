@@ -2295,6 +2295,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto* dashboard = test_api(web_flow_controller).permission_dashboard_view();
   ASSERT_NE(nullptr, dashboard);
+  EXPECT_NE(nullptr, dashboard->GetDividerView()->background());
 
   PermissionChipView* const indicator_chip = dashboard->GetIndicatorChip();
   ChipAnimationWaiter expand_waiter(indicator_chip);
