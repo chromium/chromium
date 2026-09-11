@@ -187,7 +187,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // We want to remember whether it was previously maximized, for cases like
   // restoring from fullscreen or compositor-initiated tiling, so we can
   // restore back to the correct state.
-  void UpdatePreviouslyMaximized(PlatformWindowState new_state);
+  void UpdatePreviouslyMaximized(PlatformWindowState previous_state,
+                                 PlatformWindowState new_state);
 
   // Activates the surface using XDG activation given an activation token.
   void ActivateWithToken(std::string token);
@@ -223,6 +224,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   // True if it's maximized before requesting the window state change from the
   // client.
   bool previously_maximized_ = false;
+
+  // The window state carried by the last xdg_toplevel configure, independent of
+  // states the client applied without waiting for the compositor.
+  PlatformWindowState last_configured_window_state_ =
+      PlatformWindowState::kUnknown;
 
   bool pending_minimize_ = false;
 
