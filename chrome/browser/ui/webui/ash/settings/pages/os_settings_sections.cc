@@ -84,8 +84,8 @@ OsSettingsSections::OsSettingsSections(
 
   AddSection(
       mojom::Section::kPrivacyAndSecurity,
-      std::make_unique<PrivacySection>(application_locale_storage, profile,
-                                       search_tag_registry, prefs));
+      std::make_unique<PrivacySection>(local_state, application_locale_storage,
+                                       profile, search_tag_registry, prefs));
 
   AddSection(
       mojom::Section::kAccessibility,

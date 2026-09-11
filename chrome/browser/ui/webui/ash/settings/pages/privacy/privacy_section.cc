@@ -330,11 +330,13 @@ void AddChromeOsSecureDnsStrings(content::WebUIDataSource* html_source) {
 }  // namespace
 
 PrivacySection::PrivacySection(
+    PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      local_state_(CHECK_DEREF(local_state)),
       sync_subsection_(application_locale_storage,
                        profile,
                        search_tag_registry),
@@ -392,8 +394,8 @@ PrivacySection::PrivacySection(
 PrivacySection::~PrivacySection() = default;
 
 void PrivacySection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(
-      std::make_unique<PeripheralDataAccessHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<PeripheralDataAccessHandler>(
+      &local_state_.get(), profile()));
 
   web_ui->AddMessageHandler(std::make_unique<MetricsChoiceHandler>(
       profile(), g_browser_process->metrics_service(),
