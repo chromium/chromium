@@ -390,10 +390,6 @@ class NavigationManagerImpl final : public NavigationManager {
       const GURL& previous_url,
       const std::vector<BrowserURLRewriter::URLRewriter>* url_rewriters) const;
 
-  // Returns the most recent NavigationItem with an URL that generates an HTTP
-  // request.
-  NavigationItem* GetLastCommittedItemWithUserAgentType() const;
-
   // Returns true if `last_committed_item` matches WKWebView.URL when expected.
   // WKWebView is more aggressive than Chromium is in updating the committed
   // URL, and there are cases where, even though WKWebView's URL has updated,

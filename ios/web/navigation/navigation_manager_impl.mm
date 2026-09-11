@@ -1397,18 +1397,6 @@ NavigationManagerImpl::CreateNavigationItemWithRewriters(
   return item;
 }
 
-NavigationItem* NavigationManagerImpl::GetLastCommittedItemWithUserAgentType()
-    const {
-  for (int index = GetLastCommittedItemIndex(); index >= 0; index--) {
-    NavigationItem* item = GetItemAtIndex(index);
-    if (wk_navigation_util::URLNeedsUserAgentType(item->GetURL())) {
-      DCHECK_NE(item->GetUserAgentType(), UserAgentType::NONE);
-      return item;
-    }
-  }
-  return nullptr;
-}
-
 bool NavigationManagerImpl::CanTrustLastCommittedItem(
     const NavigationItem* last_committed_item) const {
   DCHECK(last_committed_item);

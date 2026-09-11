@@ -66,10 +66,6 @@ class WKBackForwardListItemHolder;
 - (void)navigationHandlerWebProcessDidCrash:
     (CRWWKNavigationHandler*)navigationHandler;
 
-// Instructs the delegate to load current URL.
-- (void)navigationHandler:(CRWWKNavigationHandler*)navigationHandler
-    loadCurrentURLWithRendererInitiatedNavigation:(BOOL)rendererInitiated;
-
 // Notifies the delegate that load has completed.
 - (void)navigationHandler:(CRWWKNavigationHandler*)navigationHandler
     didCompleteLoadWithSuccess:(BOOL)loadSuccess

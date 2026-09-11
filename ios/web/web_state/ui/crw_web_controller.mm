@@ -1915,11 +1915,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)navigationHandler:(CRWWKNavigationHandler*)navigationHandler
-    loadCurrentURLWithRendererInitiatedNavigation:(BOOL)rendererInitiated {
-  [self loadCurrentURLWithRendererInitiatedNavigation:rendererInitiated];
-}
-
-- (void)navigationHandler:(CRWWKNavigationHandler*)navigationHandler
     didCompleteLoadWithSuccess:(BOOL)loadSuccess
                     forContext:(web::NavigationContextImpl*)context {
   [self loadCompleteWithSuccess:loadSuccess forContext:context];

@@ -32,7 +32,6 @@
 #import "url/origin.h"
 
 using web::wk_navigation_util::kReferrerHeaderName;
-using web::wk_navigation_util::URLNeedsUserAgentType;
 
 @interface CRWWebRequestController ()
 
