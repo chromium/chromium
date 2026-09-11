@@ -1613,7 +1613,8 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<SwitchAccessHandler>(profile()->GetPrefs()));
   web_ui->AddMessageHandler(
       std::make_unique<TtsHandler>(&application_locale_storage_.get()));
-  web_ui->AddMessageHandler(std::make_unique<SelectToSpeakHandler>());
+  web_ui->AddMessageHandler(std::make_unique<SelectToSpeakHandler>(
+      &application_locale_storage_.get()));
   web_ui->AddMessageHandler(
       std::make_unique<::settings::FontHandler>(profile()));
   web_ui->AddMessageHandler(
