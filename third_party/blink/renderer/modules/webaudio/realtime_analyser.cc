@@ -71,13 +71,15 @@ float EnsureFinite(float x, float default_value) {
 
 }  // namespace
 
-RealtimeAnalyser::RealtimeAnalyser() : fft_size_(kDefaultFFTSize) {
-  analysis_frame_ = std::make_unique<FFTFrame>(kDefaultFFTSize);
-}
+RealtimeAnalyser::RealtimeAnalyser() : fft_size_(kDefaultFFTSize) {}
 
 bool RealtimeAnalyser::InitializeBuffers(unsigned render_quantum_frames) {
   down_mix_bus_ = AudioBus::TryCreate(1, render_quantum_frames);
   if (!down_mix_bus_) {
+    return false;
+  }
+  analysis_frame_ = FFTFrame::TryCreate(kDefaultFFTSize);
+  if (!analysis_frame_) {
     return false;
   }
   return input_buffer_.TryAllocate(kInputBufferSize) &&
@@ -93,10 +95,14 @@ bool RealtimeAnalyser::SetFftSize(uint32_t size) {
   }
 
   if (fft_size_ != size) {
-    analysis_frame_ = std::make_unique<FFTFrame>(size);
-    // m_magnitudeBuffer has size = fftSize / 2 because it contains floats
-    // reduced from complex values in m_analysisFrame.
-    magnitude_buffer_.Allocate(size / 2);
+    auto frame = FFTFrame::TryCreate(size);
+    if (!frame) {
+      return false;
+    }
+    if (!magnitude_buffer_.TryAllocate(size / 2)) {
+      return false;
+    }
+    analysis_frame_ = std::move(frame);
     fft_size_ = size;
   }
 

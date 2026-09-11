@@ -49,6 +49,10 @@ class PLATFORM_EXPORT FFTFrame final {
   USING_FAST_MALLOC(FFTFrame);
 
  public:
+  // Allocates an FFTFrame instance, or returns nullptr if memory allocation
+  // fails or if `fft_size` is invalid.
+  static std::unique_ptr<FFTFrame> TryCreate(unsigned fft_size);
+
   explicit FFTFrame(unsigned fft_size);
   FFTFrame() = delete;
   FFTFrame(const FFTFrame&) = delete;
@@ -90,6 +94,9 @@ class PLATFORM_EXPORT FFTFrame final {
   void ScaleFFT(float factor);
 
  private:
+  FFTFrame(unsigned fft_size, bool allocate_buffers);
+  bool InitializeBuffers();
+
   void InterpolateFrequencyComponents(const FFTFrame& frame1,
                                       const FFTFrame& frame2,
                                       double x);

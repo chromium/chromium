@@ -33,6 +33,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
@@ -53,12 +54,34 @@ unsigned CheckedFftSize(unsigned fft_size) {
 
 }  // namespace
 
+bool FFTFrame::InitializeBuffers() {
+  const unsigned packed_size = (fft_size_ + 1) / 2;
+  return real_data_.TryAllocate(packed_size) &&
+         imag_data_.TryAllocate(packed_size);
+}
+
 FFTFrame::FFTFrame(unsigned fft_size)
+    : FFTFrame(fft_size, /*allocate_buffers=*/true) {}
+
+FFTFrame::FFTFrame(unsigned fft_size, bool allocate_buffers)
     : fft_size_(CheckedFftSize(fft_size)),
       rust_fft_(blink::rust_fft::rustfft_new(fft_size_)) {
-  const unsigned packed_size = (fft_size_ + 1) / 2;
-  real_data_.Allocate(packed_size);
-  imag_data_.Allocate(packed_size);
+  if (allocate_buffers) {
+    CHECK(InitializeBuffers());
+  }
+}
+
+// static
+std::unique_ptr<FFTFrame> FFTFrame::TryCreate(unsigned fft_size) {
+  if (fft_size < MinFFTSize() || fft_size > MaxFFTSize()) {
+    return nullptr;
+  }
+  auto frame =
+      base::WrapUnique(new FFTFrame(fft_size, /*allocate_buffers=*/false));
+  if (!frame->InitializeBuffers()) {
+    return nullptr;
+  }
+  return frame;
 }
 
 void FFTFrame::DoFFT(base::span<const float> data) {

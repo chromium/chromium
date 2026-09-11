@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/analyser_handler.h"
 
+#include <bit>
+
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -85,18 +87,29 @@ void AnalyserHandler::Process(uint32_t frames_to_process) {
 
 void AnalyserHandler::SetFftSize(unsigned size,
                                  ExceptionState& exception_state) {
-  if (!analyser_.SetFftSize(size)) {
+  if (size < RealtimeAnalyser::kMinFFTSize ||
+      size > RealtimeAnalyser::kMaxFFTSize) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        (size < RealtimeAnalyser::kMinFFTSize ||
-         size > RealtimeAnalyser::kMaxFFTSize)
-            ? ExceptionMessages::IndexOutsideRange(
-                  "FFT size", size, RealtimeAnalyser::kMinFFTSize,
-                  ExceptionMessages::kInclusiveBound,
-                  RealtimeAnalyser::kMaxFFTSize,
-                  ExceptionMessages::kInclusiveBound)
-            : StrCat({"The value provided (", String::Number(size),
-                      ") is not a power of two."}));
+        ExceptionMessages::IndexOutsideRange(
+            "FFT size", size, RealtimeAnalyser::kMinFFTSize,
+            ExceptionMessages::kInclusiveBound,
+            RealtimeAnalyser::kMaxFFTSize,
+            ExceptionMessages::kInclusiveBound));
+    return;
+  }
+  if (!std::has_single_bit(size)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrCat({"The value provided (", String::Number(size),
+                ") is not a power of two."}));
+    return;
+  }
+  if (!analyser_.SetFftSize(size)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Failed to resize AnalyserNode buffers due to insufficient memory.");
+    return;
   }
 }
 
