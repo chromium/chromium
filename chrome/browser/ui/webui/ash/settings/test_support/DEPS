@@ -19,4 +19,7 @@ specific_include_rules = {
     '+ash/auth/active_session_auth_controller_impl.h',
     '+ash/shell.h',
   ],
+  'os_settings_browser_test_mixin\\.cc': [
+    '+chrome/browser/browser_process.h',
+  ],
 }

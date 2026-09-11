@@ -23,6 +23,7 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chrome/grit/os_settings_resources_map.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
@@ -72,6 +73,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -105,14 +107,27 @@ class AppManagementDelegate : public AppManagementPageHandlerBase::Delegate {
 
 namespace ash::settings {
 
+OSSettingsUIConfig::OSSettingsUIConfig(PrefService* local_state)
+    : WebUIConfig(content::kChromeUIScheme, ash::kChromeUIOSSettingsHost),
+      local_state_(CHECK_DEREF(local_state)) {}
+
+OSSettingsUIConfig::~OSSettingsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+OSSettingsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                          const GURL& url) {
+  return std::make_unique<OSSettingsUI>(&local_state_.get(), web_ui);
+}
+
 // static
 void OSSettingsUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(ash::prefs::kSyncOsWallpaper, false);
 }
 
-OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
+OSSettingsUI::OSSettingsUI(PrefService* local_state, content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      local_state_(CHECK_DEREF(local_state)),
       time_when_opened_(base::TimeTicks::Now()),
       webui_load_timer_(web_ui->GetWebContents(),
                         "ChromeOS.Settings.LoadDocumentTime",
@@ -126,9 +141,8 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
                               std::make_unique<SanitizedImageSource>(profile));
 
   // Set up the chrome://userimage/ source for <settings-user-list>.
-  // TODO(crbug.com/489929293): Avoid using g_browser_process.
-  content::URLDataSource::Add(profile, std::make_unique<ash::UserImageSource>(
-                                           g_browser_process->local_state()));
+  content::URLDataSource::Add(
+      profile, std::make_unique<ash::UserImageSource>(&local_state_.get()));
 
   OsSettingsManager* manager = OsSettingsManagerFactory::GetForProfile(profile);
   manager->AddHandlers(web_ui);
@@ -379,14 +393,14 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver) {
   auth::BindToAuthFactorConfig(std::move(receiver),
                                quick_unlock::QuickUnlockFactory::GetDelegate(),
-                               g_browser_process->local_state());
+                               &local_state_.get());
 }
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver) {
   auth::BindToRecoveryFactorEditor(
       std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate(),
-      g_browser_process->local_state());
+      &local_state_.get());
 }
 
 void OSSettingsUI::BindInterface(
@@ -395,14 +409,14 @@ void OSSettingsUI::BindInterface(
   CHECK(pin_backend);
   auth::BindToPinFactorEditor(std::move(receiver),
                               quick_unlock::QuickUnlockFactory::GetDelegate(),
-                              g_browser_process->local_state(), *pin_backend);
+                              &local_state_.get(), *pin_backend);
 }
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver) {
   auth::BindToPasswordFactorEditor(
       std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate(),
-      g_browser_process->local_state());
+      &local_state_.get());
 }
 
 void OSSettingsUI::BindInterface(

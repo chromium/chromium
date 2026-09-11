@@ -11,6 +11,7 @@
 
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
@@ -67,7 +68,8 @@ std::unique_ptr<content::WebUIController>
 OSSettingsBrowserTestMixin::OSSettingsUIProvider::NewWebUI(
     content::WebUI* web_ui,
     const GURL& url) {
-  auto controller = std::make_unique<OSSettingsUI>(web_ui);
+  auto controller =
+      std::make_unique<OSSettingsUI>(g_browser_process->local_state(), web_ui);
   webui::CreateAndAddWebUITestDataSource(
       web_ui->GetWebContents()->GetBrowserContext());
   return controller;

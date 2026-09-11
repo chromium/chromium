@@ -12,6 +12,7 @@
 #include "ash/webui/common/mojom/accelerator_fetcher.mojom.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom-forward.h"
@@ -53,6 +54,7 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 class AppManagementPageHandlerFactory;
+class PrefService;
 
 namespace ash::settings {
 
@@ -67,11 +69,23 @@ class OSSettingsUI;
 // Even though OSSettings is a System Web App, it is used in profiles where SWAs
 // are not installed (e.g. kiosk mode) so it can't use
 // ash::SystemWebAppUIConfig.
-class OSSettingsUIConfig : public content::DefaultWebUIConfig<OSSettingsUI> {
+class OSSettingsUIConfig : public content::WebUIConfig {
  public:
-  OSSettingsUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           ash::kChromeUIOSSettingsHost) {}
+  // `local_state` must be non-null and must outlive `this`.
+  explicit OSSettingsUIConfig(PrefService* local_state);
+
+  OSSettingsUIConfig(const OSSettingsUIConfig&) = delete;
+  OSSettingsUIConfig& operator=(const OSSettingsUIConfig&) = delete;
+
+  ~OSSettingsUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 // The WebUI handler for chrome://os-settings.
@@ -79,7 +93,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  explicit OSSettingsUI(content::WebUI* web_ui);
+  // `local_state` must be non-null and must outlive `this`.
+  OSSettingsUI(PrefService* local_state, content::WebUI* web_ui);
 
   OSSettingsUI(const OSSettingsUI&) = delete;
   OSSettingsUI& operator=(const OSSettingsUI&) = delete;
@@ -244,6 +259,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
           receiver);
 
  private:
+  const raw_ref<PrefService> local_state_;
+
   base::TimeTicks time_when_opened_;
 
   WebuiLoadTimer webui_load_timer_;

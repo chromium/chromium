@@ -440,7 +440,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<OobeUIConfig>());
   AddWebUIConfig(std::make_unique<OSCreditsUI>());
   AddWebUIConfig(MakeOSFeedbackUIConfig(&application_locale_storage_.get()));
-  AddWebUIConfig(std::make_unique<settings::OSSettingsUIConfig>());
+  AddWebUIConfig(
+      std::make_unique<settings::OSSettingsUIConfig>(&local_state_.get()));
   AddWebUIConfig(std::make_unique<ParentAccessUIConfig>(
       &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<PasswordChangeUIConfig>());
