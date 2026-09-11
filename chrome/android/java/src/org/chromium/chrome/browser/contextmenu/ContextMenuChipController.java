@@ -17,8 +17,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -147,10 +145,7 @@ class ContextMenuChipController implements View.OnClickListener {
 
         mChipView
                 .getPrimaryTextView()
-                .setText(
-                        SpanApplier.removeSpanText(
-                                mContext.getString(chipRenderParams.titleResourceId),
-                                new SpanInfo("<new>", "</new>")));
+                .setText(mContext.getString(chipRenderParams.titleResourceId));
         // TODO(benwgold): Consult with Chrome UX owners to see if Chip UI hierarchy should be
         // refactored.
         mChipView
