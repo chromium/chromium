@@ -121,7 +121,7 @@ bool ShouldRunProvider(AutocompleteProviderClient* client,
                        const AutocompleteInput& input) {
   bool zps_or_empty = input.IsZeroSuggest() || input.text().empty();
   if (is_android) {
-    return !zps_or_empty || !client->IsIncognitoProfile();
+    return !zps_or_empty || !client->IsPrimaryOTRProfileWithRegularParent();
   } else {
     return !zps_or_empty;
   }

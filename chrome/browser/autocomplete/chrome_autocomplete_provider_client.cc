@@ -260,7 +260,7 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
   pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
       *this,
-      GetPedalImplementations(profile_->IsIncognitoProfile(),
+      GetPedalImplementations(profile_->IsPrimaryOTRProfileWithRegularParent(),
                               profile_->IsGuestSession(), /*testing=*/false));
 }
 
@@ -655,7 +655,8 @@ bool ChromeAutocompleteProviderClient::IsLensEnabled() const {
   if (base::FeatureList::IsEnabled(lens::features::kLensOverlayAndroid)) {
     JNIEnv* env = base::android::AttachCurrentThread();
     return Java_LensSupportStatusHelper_isLensSearchSupported(
-        env, profile_->GetJavaObject(), profile_->IsIncognitoProfile());
+        env, profile_->GetJavaObject(),
+        profile_->IsPrimaryOTRProfileWithRegularParent());
   }
 
 #else
@@ -793,7 +794,7 @@ void ChromeAutocompleteProviderClient::OpenIncognitoClearBrowsingDataDialog() {
 
 void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (profile_->IsIncognitoProfile()) {
+  if (profile_->IsPrimaryOTRProfileWithRegularParent()) {
     chrome::CloseAllBrowsersWithIncognitoProfile(profile_);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

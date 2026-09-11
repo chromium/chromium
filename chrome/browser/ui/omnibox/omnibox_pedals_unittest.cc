@@ -46,7 +46,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
     // checks all trigger grit strings.
     client.set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
         client,
-        GetPedalImplementations(client.IsIncognitoProfile(),
+        GetPedalImplementations(client.IsPrimaryOTRProfileWithRegularParent(),
                                 client.IsGuestSession(), /*testing=*/true)));
     EXPECT_EQ(client.GetPedalProvider()->FindPedalMatch(u""), nullptr);
   }
