@@ -39,7 +39,6 @@ OmniboxAutofillBubbleView::OmniboxAutofillBubbleView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
 
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   GetViewAccessibility().SetName(GetWindowTitle());
 }
