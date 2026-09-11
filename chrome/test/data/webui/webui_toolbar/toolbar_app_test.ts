@@ -719,10 +719,10 @@ suite('ToolbarAppTest', () => {
 
       if (hasLinearGradientRing) {
         assertTrue(innerButton.hasAttribute('has-linear-gradient-ring'));
-        assertEquals('30px', iconStyle.width);
-        assertEquals('30px', iconStyle.height);
-        assertEquals('5px', buttonStyle.paddingLeft);
-        assertEquals('7px', buttonStyle.paddingRight);
+        assertEquals('28px', iconStyle.width);
+        assertEquals('28px', iconStyle.height);
+        assertEquals('6px', buttonStyle.paddingLeft);
+        assertEquals('8px', buttonStyle.paddingRight);
       } else {
         assertFalse(innerButton.hasAttribute('has-linear-gradient-ring'));
         assertEquals('20px', iconStyle.width);

@@ -29,6 +29,7 @@ TEST_F(WebUIToolbarLayoutCssHelperTest, GenerateLayoutConstantsCss) {
   std::string css = WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss();
   EXPECT_FALSE(css.empty());
   EXPECT_TRUE(css.find("--toolbar-button-icon-size:") != std::string::npos);
+  EXPECT_TRUE(css.find("--avatar-ring-delta:") != std::string::npos);
 
   // We can't actually test the font family (since the platform will substitute
   // something real), and size isn't controlled here, but weight is at least

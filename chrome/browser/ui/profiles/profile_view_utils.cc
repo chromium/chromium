@@ -50,6 +50,11 @@
 #include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
 #endif
 
+int GetAvatarRingThickness(int avatar_size) {
+  return avatar_size <= kSmallAvatarThresholdDip ? kAvatarRingThicknessSmallDip
+                                                 : kAvatarRingThicknessDip;
+}
+
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
   // Create a URL so that the account chooser is shown if the account with
   // |email| is not signed into the web. Include a UTM parameter to signal the
@@ -203,11 +208,13 @@ gfx::ImageSkia AddLinearGradientRingToAvatar(
     const ui::ColorProvider& color_provider,
     int avatar_size,
     int gap_width,
-    int ring_thickness) {
+    std::optional<int> ring_thickness) {
+  const int thickness =
+      ring_thickness.value_or(GetAvatarRingThickness(avatar_size));
   return profiles::AddLinearGradientRingToAvatar(
       avatar_image, color_provider,
       color_provider.GetColor(kAvatarRingGradientStartColorId),
       color_provider.GetColor(kAvatarRingGradientEndColorId),
       kAvatarRingGradientPositions, kAvatarRingGradientP1Normalized,
-      kAvatarRingGradientP2Normalized, avatar_size, gap_width, ring_thickness);
+      kAvatarRingGradientP2Normalized, avatar_size, gap_width, thickness);
 }

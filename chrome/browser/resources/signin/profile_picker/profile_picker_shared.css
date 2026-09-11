@@ -96,10 +96,10 @@
 }
 
 .profile-avatar.with-avatar-ring {
-  /* LINT.IfChange(AvatarRingSpecs) */
+  /* LINT.IfChange(AvatarRingStandardSpecs) */
   --avatar-ring-gap: 2px;
   --avatar-ring-thickness: 3px;
-  /* LINT.ThenChange(//chrome/browser/ui/profiles/profile_view_utils.h:AvatarRingSpecs) */
+  /* LINT.ThenChange(//chrome/browser/ui/profiles/profile_view_utils.h:AvatarRingStandardSpecs) */
 
   /* The avatar with avatar ring is already cropped as circular image,
   we remove the border-radius otherwise this crops part of the ring. */

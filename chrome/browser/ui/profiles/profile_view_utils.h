@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_PROFILES_PROFILE_VIEW_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,14 +24,25 @@ class ColorProvider;
 class ImageModel;
 }  // namespace ui
 
-// LINT.IfChange(AvatarRingSpecs)
+// Thickness in DIPs of the surrounding gradient ring for small avatars (<=
+// 24px).
+inline constexpr int kAvatarRingThicknessSmallDip = 2;
+
+// LINT.IfChange(AvatarRingStandardSpecs)
 // Gap in DIPs between the circular avatar icon and the surrounding ring.
 inline constexpr int kAvatarRingGapDip = 2;
 
-// Thickness in DIPs of the surrounding gradient ring.
+// Thickness in DIPs of the surrounding gradient ring for default/large avatars
+// (> 24px).
 inline constexpr int kAvatarRingThicknessDip = 3;
-// LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/profile_picker_shared.css:AvatarRingSpecs,
-// //chrome/browser/resources/webui_toolbar/avatar_button.css:AvatarRingSpecs)
+
+// Threshold in DIPs below which (or equal to which) an avatar is considered
+// small and receives a smaller gradient ring.
+inline constexpr int kSmallAvatarThresholdDip = 24;
+// LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/profile_picker_shared.css:AvatarRingStandardSpecs)
+
+// Returns the gradient ring thickness in DIPs for the given avatar size.
+int GetAvatarRingThickness(int avatar_size);
 
 // Navigates to the Google Account page.
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email);
@@ -72,11 +84,13 @@ bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url);
 bool ShouldShowAvatarGradientRing(Profile* profile);
 
 // Returns the avatar image with the linear gradient ring.
+// If `ring_thickness` is not provided, the default values for the
+// avatar's size are used.
 gfx::ImageSkia AddLinearGradientRingToAvatar(
     const ui::ImageModel& avatar_image,
     const ui::ColorProvider& color_provider,
     int avatar_size,
     int gap_width = kAvatarRingGapDip,
-    int ring_thickness = kAvatarRingThicknessDip);
+    std::optional<int> ring_thickness = std::nullopt);
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_VIEW_UTILS_H_

@@ -67,6 +67,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",
