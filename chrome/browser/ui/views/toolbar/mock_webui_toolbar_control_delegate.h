@@ -116,6 +116,10 @@ class MockWebUIToolbarControlDelegate
               (toolbar_ui_api::mojom::AvatarControlStatePtr),
               (override));
   MOCK_METHOD(void,
+              OnMediaControlStateChanged,
+              (toolbar_ui_api::mojom::MediaControlStatePtr),
+              (override));
+  MOCK_METHOD(void,
               OnFocusRequested,
               (toolbar_ui_api::mojom::FocusRequestTarget target),
               (override));

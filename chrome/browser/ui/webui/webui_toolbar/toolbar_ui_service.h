@@ -115,6 +115,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnPerformanceInterventionButtonClicked(
         bool is_mouse_interaction) = 0;
     virtual void OnPerformanceInterventionButtonMousePressed() = 0;
+    virtual void OnMediaButtonClicked(bool is_mouse_interaction) = 0;
+    virtual void OnMediaButtonMousePressed() = 0;
   };
 
   ToolbarUIService(
@@ -218,6 +220,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnPerformanceInterventionButtonClicked(
       bool is_mouse_interaction) override;
   void OnPerformanceInterventionButtonMousePressed() override;
+  void OnMediaButtonClicked(bool is_mouse_interaction) override;
+  void OnMediaButtonMousePressed() override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

@@ -248,4 +248,10 @@ interface ToolbarUIService {
   // Called when the performance intervention button is pressed
   // (e.g. pointerdown).
   OnPerformanceInterventionButtonMousePressed();
+
+  // Called when the media button is clicked.
+  OnMediaButtonClicked(bool is_mouse_interaction);
+
+  // Called when the media button is pressed (e.g. pointerdown).
+  OnMediaButtonMousePressed();
 };
