@@ -1073,6 +1073,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'chrome/services/sharing/nearby/platform/input_file.h',
             r'chrome/services/sharing/nearby/platform/output_file.cc',
             r'chrome/services/sharing/nearby/platform/output_file.h',
+            r'chrome/services/sharing/nearby/platform/scheduled_executor.cc',
             r'components/cross_device/nearby/system_clock.cc',
             _THIRD_PARTY_EXCEPT_BLINK  # Not an error in third_party folders.
         ],
