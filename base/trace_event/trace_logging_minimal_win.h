@@ -257,7 +257,7 @@ class BASE_EXPORT TlmProvider {
   // WriteEvent method). Event metadata consists of nul-terminated event
   // name, nul-terminated field names, field types (1 or 2 bytes per field),
   // and a few bytes for sizes and flags.
-  static constexpr uint16_t kMaxEventMetadataSize = 256;
+  static constexpr uint16_t kMaxEventMetadataSize = 512;
 
   template <class... FieldTys>
   struct DataDescCountSum;  // undefined
