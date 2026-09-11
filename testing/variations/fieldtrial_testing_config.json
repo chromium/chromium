@@ -7566,6 +7566,35 @@
             ]
         }
     ],
+    "DownloadIndicatorIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_DownloadIndicator"
+                    ],
+                    "disable_features": []
+                },
+                {
+                    "name": "Enabled_IPHTrackingOnly",
+                    "params": {
+                        "IPH_DownloadIndicator_availability": "any",
+                        "IPH_DownloadIndicator_event_trigger": "name:download_indicator_iph_trigger;comparator:<2;window:360;storage:360",
+                        "IPH_DownloadIndicator_event_used": "name:download_home_opened;comparator:==0;window:90;storage:360",
+                        "IPH_DownloadIndicator_session_rate": "any"
+                    },
+                    "enable_features": [
+                        "IPH_DownloadIndicator"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "DseIntegrity": [
         {
             "platforms": [
