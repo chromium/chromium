@@ -22,6 +22,7 @@ export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
       }
       const bootMessage = event.data as GlicApiBootMessage;
       if (bootMessage?.type === 'glic-bootstrap' && bootMessage.glicApiSource) {
+        performance.mark('glic-client-bootstrap-received');
         window.removeEventListener('message', messageHandler);
         const glicApiSource = bootMessage.glicApiSource;
         const scriptElement = document.createElement('script');

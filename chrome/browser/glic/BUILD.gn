@@ -910,6 +910,7 @@ source_set("browser_tests") {
     "host/glic_no_webview_contents_manager_browsertest.cc",
     "host/glic_overlay_browsertest.cc",
     "host/glic_permission_enforcement_browsertest.cc",
+    "host/glic_start_benchmark_browsertest.cc",
     "host/glic_web_contents_warming_pool_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
     "service/glic_instance_helper_browsertest.cc",
