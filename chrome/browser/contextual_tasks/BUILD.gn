@@ -256,6 +256,7 @@ source_set("ui") {
     ]
   } else {
     sources += [
+      "contextual_tasks_ghost_loader_view.h",
       "contextual_tasks_panel_host_desktop.h",
       "contextual_tasks_web_view.h",
       "location_bar_stub.h",
@@ -446,6 +447,7 @@ source_set("ui_impl") {
     ]
   } else {
     sources += [
+      "contextual_tasks_ghost_loader_view.cc",
       "contextual_tasks_panel_host_desktop.cc",
       "contextual_tasks_web_view.cc",
       "location_bar_stub.cc",
@@ -570,6 +572,7 @@ if (!is_android) {
       "contextual_tasks_composebox_handler_browsertest.cc",
       "contextual_tasks_context_service_browsertest.cc",
       "contextual_tasks_extension_handler_browsertest.cc",
+      "contextual_tasks_ghost_loader_pixel_test.cc",
       "contextual_tasks_page_handler_browsertest.cc",
       "contextual_tasks_ui_browsertest.cc",
       "contextual_tasks_ui_service_browsertest.cc",
@@ -597,6 +600,8 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/test:dialog",
+      "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/test:test_support",
@@ -668,6 +673,7 @@ source_set("unit_tests") {
       "contextual_tasks_panel_host_desktop_unittest.cc",
       "contextual_tasks_utils_unittest.cc",
       "contextual_tasks_web_contents_user_data_unittest.cc",
+      "contextual_tasks_web_view_unittest.cc",
     ]
   }
 

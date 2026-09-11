@@ -10,6 +10,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -33,10 +34,13 @@ class WebContentsModalDialogHost;
 
 namespace contextual_tasks {
 
+class ContextualTasksGhostLoaderView;
+
 class ContextualTasksWebView
     : public views::View,
       public web_modal::WebContentsModalDialogManagerDelegate,
-      public content::WebContentsDelegate {
+      public content::WebContentsDelegate,
+      public content::WebContentsObserver {
   METADATA_HEADER(ContextualTasksWebView, views::View)
 
  public:
@@ -51,6 +55,12 @@ class ContextualTasksWebView
   // Returns the WebContents currently displayed in the content WebView.
   content::WebContents* web_contents() const;
 
+  // Toggles the visibility of the ghost loader overlay.
+  void SetGhostLoaderVisible(bool visible);
+
+  // Returns whether the ghost loader overlay is currently visible.
+  bool IsGhostLoaderVisible() const;
+
   // content::WebContentsDelegate:
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -64,6 +74,16 @@ class ContextualTasksWebView
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
 
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFirstVisuallyNonEmptyPaint() override;
+  void DidStopLoading() override;
+
   // web_modal::WebContentsModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
       content::WebContents* web_contents) override;
@@ -75,6 +95,11 @@ class ContextualTasksWebView
   // Returns the main content WebView.
   views::WebView* content_web_view() { return content_web_view_; }
 
+  // Returns the ghost loader view overlaying the main content.
+  ContextualTasksGhostLoaderView* ghost_loader_view() {
+    return ghost_loader_view_;
+  }
+
  private:
   // Attach a modal dialog manager to a WebContents so that dialogs can be
   // displayed correctly while in the side panel.
@@ -84,12 +109,18 @@ class ContextualTasksWebView
   // happen when the contents is detached from the side panel.
   void DetachWebContentsModalDialogManager(content::WebContents* web_contents);
 
+  // The browser window interface associated with this view.
+  raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
+
   // The WebView used for the toolbar/header (only active when the
   // rearchitecture feature is enabled).
   raw_ptr<views::WebView> toolbar_web_view_ = nullptr;
 
   // The WebView used for the main content.
   raw_ptr<views::WebView> content_web_view_ = nullptr;
+
+  // The placeholder ghost loader view overlaying the content WebView.
+  raw_ptr<ContextualTasksGhostLoaderView> ghost_loader_view_ = nullptr;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

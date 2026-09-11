@@ -90,6 +90,8 @@ inline constexpr char kChromeUIContextualTasksURL[] =
     "chrome://contextual-tasks/";
 inline constexpr char kChromeUIContextualTasksToolbarURL[] =
     "chrome://contextual-tasks/toolbar.html";
+inline constexpr char kChromeUIContextualTasksGhostLoaderURL[] =
+    "chrome://contextual-tasks/ghost_loader.html";
 inline constexpr char kChromeUIContentSettingsHost[] = "content-settings";
 inline constexpr char kChromeUIContentSettingsURL[] =
     "chrome://settings/content";

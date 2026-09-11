@@ -21,6 +21,7 @@ build_webui("build") {
 
   static_files = [
     "contextual_tasks.html",
+    "ghost_loader.html",
     "internals/contextual_tasks_internals.html",
     "toolbar.html",
   ]

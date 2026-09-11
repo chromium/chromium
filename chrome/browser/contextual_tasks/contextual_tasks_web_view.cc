@@ -6,6 +6,10 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +20,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -31,7 +36,8 @@
 namespace contextual_tasks {
 
 ContextualTasksWebView::ContextualTasksWebView(
-    BrowserWindowInterface* browser_window) {
+    BrowserWindowInterface* browser_window)
+    : browser_window_(browser_window) {
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksSidePanelWebViewElementId);
 
@@ -60,9 +66,21 @@ ContextualTasksWebView::ContextualTasksWebView(
     webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
                                      browser_window);
 
-    content_web_view_ = AddChildView(
+    auto content_container = std::make_unique<views::View>();
+    content_container->SetLayoutManager(std::make_unique<views::FillLayout>());
+
+    content_web_view_ = content_container->AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
-    layout->SetFlexForView(content_web_view_, 1);
+
+    ghost_loader_view_ = content_container->AddChildView(
+        std::make_unique<ContextualTasksGhostLoaderView>(
+            browser_window->GetProfile()));
+    ghost_loader_view_->SetVisible(false);
+    webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
+                                     browser_window);
+
+    auto* container_ptr = AddChildView(std::move(content_container));
+    layout->SetFlexForView(container_ptr, 1);
   } else {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     content_web_view_ = AddChildView(
@@ -71,8 +89,13 @@ ContextualTasksWebView::ContextualTasksWebView(
 }
 
 ContextualTasksWebView::~ContextualTasksWebView() {
+  Observe(nullptr);
   if (toolbar_web_view_ && toolbar_web_view_->web_contents()) {
     webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
+                                     nullptr);
+  }
+  if (ghost_loader_view_ && ghost_loader_view_->web_contents()) {
+    webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
                                      nullptr);
   }
   SetWebContents(nullptr);
@@ -98,6 +121,37 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
   AttachWebContentsModalDialogManager(wc);
   content_web_view_->SetWebContents(wc);
 
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    Observe(wc);
+    if (wc) {
+      bool should_show_ghost_loader = false;
+      if (browser_window_ && browser_window_->GetProfile()) {
+        auto* ui_service =
+            ContextualTasksUiServiceFactory::GetForBrowserContext(
+                browser_window_->GetProfile());
+        if (ui_service) {
+          auto* helper = ContextualSearchWebContentsHelper::FromWebContents(wc);
+          bool is_waiting =
+              helper && helper->task_id().has_value() &&
+              ui_service->IsTaskWaitingForUrl(helper->task_id().value());
+          bool is_loading = wc->IsLoading();
+          const GURL& url = wc->GetVisibleURL();
+          bool is_ai = ui_service->IsAiUrl(url);
+          if (is_waiting) {
+            should_show_ghost_loader = true;
+          } else if (is_loading) {
+            if (!url.is_empty() && !url.IsAboutBlank() && !is_ai) {
+              should_show_ghost_loader = true;
+            }
+          }
+        }
+      }
+      SetGhostLoaderVisible(should_show_ghost_loader);
+    } else {
+      SetGhostLoaderVisible(false);
+    }
+  }
+
   if (wc) {
     wc->WasShown();
     wc->SetDelegate(this);
@@ -107,6 +161,106 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
 
 content::WebContents* ContextualTasksWebView::web_contents() const {
   return content_web_view_ ? content_web_view_->web_contents() : nullptr;
+}
+
+void ContextualTasksWebView::SetGhostLoaderVisible(bool visible) {
+  if (!ghost_loader_view_) {
+    return;
+  }
+  if (visible && !GetIsGhostLoaderEnabled()) {
+    return;
+  }
+  ghost_loader_view_->SetVisible(visible);
+}
+
+bool ContextualTasksWebView::IsGhostLoaderVisible() const {
+  return ghost_loader_view_ && ghost_loader_view_->GetVisible();
+}
+
+void ContextualTasksWebView::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  const GURL& url = navigation_handle->GetURL();
+  if (url.is_empty() || url.IsAboutBlank()) {
+    return;
+  }
+
+  bool is_ai_url = false;
+  if (browser_window_ && browser_window_->GetProfile()) {
+    auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+        browser_window_->GetProfile());
+    if (ui_service && ui_service->IsAiUrl(url)) {
+      is_ai_url = true;
+    }
+  }
+
+  if (is_ai_url) {
+    SetGhostLoaderVisible(false);
+  } else {
+    SetGhostLoaderVisible(true);
+  }
+}
+
+void ContextualTasksWebView::DidRedirectNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  const GURL& url = navigation_handle->GetURL();
+  if (url.is_empty() || url.IsAboutBlank()) {
+    return;
+  }
+
+  bool is_ai_url = false;
+  if (browser_window_ && browser_window_->GetProfile()) {
+    auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+        browser_window_->GetProfile());
+    if (ui_service && ui_service->IsAiUrl(url)) {
+      is_ai_url = true;
+    }
+  }
+
+  if (is_ai_url) {
+    SetGhostLoaderVisible(false);
+  } else {
+    SetGhostLoaderVisible(true);
+  }
+}
+
+void ContextualTasksWebView::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+    SetGhostLoaderVisible(false);
+  }
+}
+
+void ContextualTasksWebView::DidFirstVisuallyNonEmptyPaint() {
+  SetGhostLoaderVisible(false);
+}
+
+void ContextualTasksWebView::DidStopLoading() {
+  if (browser_window_ && browser_window_->GetProfile() && web_contents()) {
+    auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+        browser_window_->GetProfile());
+    auto* helper =
+        ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+    if (ui_service && helper && helper->task_id().has_value() &&
+        ui_service->IsTaskWaitingForUrl(helper->task_id().value())) {
+      return;
+    }
+  }
+  SetGhostLoaderVisible(false);
 }
 
 void ContextualTasksWebView::RequestMediaAccessPermission(

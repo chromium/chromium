@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html dir="$i18n{textdirection}" lang="$i18n{language}"
+    $i18n{webuiRoundedIconsAttribute}>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1.0">
+    <title>$i18n{title}</title>
+    <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+<if expr="not is_android">
+    <link rel="stylesheet" href="//theme/colors.css?sets=chrome">
+</if>
+    <style>
+      :root {
+        --ghost-loader-base: #F3F5F6;
+        --ghost-loader-highlight: #DEE1E3;
+      }
+
+      html, body {
+        background-color: #FFFFFF;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        overscroll-behavior-x: contain;
+        padding: 0;
+        width: 100%;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ghost-loader-base: #333438;
+          --ghost-loader-highlight: #3A3F50;
+        }
+
+        html, body {
+          background-color: rgba(34, 36, 43, 1);
+        }
+      }
+
+      body {
+        align-items: center;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      ghost-loader {
+        box-sizing: border-box;
+        max-width: 654px;
+        padding-left: 20px;
+        padding-right: 20px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <ghost-loader></ghost-loader>
+    <script type="module" src="ghost_loader.js"></script>
+  </body>
+</html>
