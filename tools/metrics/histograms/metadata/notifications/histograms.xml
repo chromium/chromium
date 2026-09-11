@@ -1256,6 +1256,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Webapk.ChannelMigration.Result"
+    enum="ChannelMigrationResult" expires_after="2027-09-02">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
+  <summary>
+    Recorded when a notification channel for a WebAPK is resolved on Android
+    (e.g. when displaying a WebAPK notification or requesting notification
+    permissions). Measures whether the WebAPK's notification channel migrated
+    from default priority to high priority, from high priority to default
+    priority, or whether no migration was needed.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.WebPlatformV2.{Action}.TimeToActivity"
     units="ms" expires_after="M112">
   <owner>peconn@chromium.org</owner>

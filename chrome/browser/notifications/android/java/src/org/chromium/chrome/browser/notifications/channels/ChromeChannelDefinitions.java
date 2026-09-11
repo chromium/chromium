@@ -48,7 +48,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}
      * changes.
      */
-    static final int CHANNELS_VERSION = 8;
+    static final int CHANNELS_VERSION = 9;
 
     private static class LazyHolder {
         private static final ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
@@ -62,9 +62,15 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
 
     /**
      * Keeps the value consistent with {@link
-     * org.chromium.webapk.shell_apk.WebApkServiceImplWrapper#DEFAULT_NOTIFICATION_CHANNEL_ID}.
+     * org.chromium.webapk.lib.common.WebApkConstants#DEFAULT_NOTIFICATION_CHANNEL_ID}.
      */
     public static final String CHANNEL_ID_WEBAPKS = "default_channel_id";
+
+    /**
+     * Keeps the value consistent with {@link
+     * org.chromium.webapk.lib.common.WebApkConstants#HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID}.
+     */
+    public static final String CHANNEL_ID_WEBAPKS_HIGH_PRIORITY = "default_channel_id_high";
 
     public static boolean isHighPrioritySiteNotificationsEnabled() {
         return DeviceInfo.isDesktop()
@@ -152,7 +158,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     // clang-format off
     // LINT.ThenChange(
     //   //tools/metrics/histograms/metadata/mobile/histograms.xml:NotificationChannelId,
-    //   //chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:NotificationChannelId
+    //   ../NotificationUmaTracker.java:NotificationChannelId
     // )
     // clang-format on
 
@@ -510,6 +516,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     @Override
     public boolean isValidNonPredefinedChannelId(String channelId) {
         return SiteChannelsManager.isValidSiteChannelId(channelId)
-                || TextUtils.equals(channelId, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                || TextUtils.equals(channelId, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS)
+                || TextUtils.equals(
+                        channelId, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS_HIGH_PRIORITY);
     }
 }

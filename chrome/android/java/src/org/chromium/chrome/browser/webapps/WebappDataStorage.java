@@ -70,6 +70,7 @@ public class WebappDataStorage {
     static final String KEY_WEBAPK_MANIFEST_ID = "webapk_manifest_id";
     static final String KEY_WEBAPK_VERSION_CODE = "webapk_version_code";
     static final String KEY_LOCAL_REGISTRATION_TIMESTAMP = "local_registration_timestamp";
+    static final String KEY_WEBAPK_NOTIFICATION_CHANNEL_ID = "webapk_notification_channel_id";
 
     // The completion time of the last check for whether the WebAPK's Web Manifest was updated.
     static final String KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME =
@@ -396,6 +397,18 @@ public class WebappDataStorage {
     /** Returns the package name if the data is for a WebAPK, null otherwise. */
     public @Nullable String getWebApkPackageName() {
         return mPreferences.getString(KEY_WEBAPK_PACKAGE_NAME, null);
+    }
+
+    /**
+     * Returns the last known notification channel ID used for this WebAPK, or null if never set.
+     */
+    public @Nullable String getNotificationChannelId() {
+        return mPreferences.getString(KEY_WEBAPK_NOTIFICATION_CHANNEL_ID, null);
+    }
+
+    /** Updates the stored notification channel ID for this WebAPK. */
+    public void updateNotificationChannelId(String channelId) {
+        mPreferences.edit().putString(KEY_WEBAPK_NOTIFICATION_CHANNEL_ID, channelId).apply();
     }
 
     /**
