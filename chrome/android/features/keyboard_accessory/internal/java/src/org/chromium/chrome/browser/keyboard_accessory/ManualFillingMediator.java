@@ -387,6 +387,20 @@ class ManualFillingMediator
         mKeyboardAccessory.setSuggestions(suggestions, delegate);
     }
 
+    void setSelectedSuggestion(@Nullable Integer suggestionIndex) {
+        if (!isInitialized() || mKeyboardAccessory == null) {
+            return;
+        }
+        mKeyboardAccessory.setSelectedSuggestion(suggestionIndex);
+    }
+
+    boolean navigateSuggestions(@NavigationDirection int direction) {
+        if (!isInitialized() || mKeyboardAccessory == null) {
+            return false;
+        }
+        return mKeyboardAccessory.navigateSuggestions(direction);
+    }
+
     void setFieldBounds(RectF bounds) {
         mModel.set(FIELD_BOUNDS, bounds);
     }

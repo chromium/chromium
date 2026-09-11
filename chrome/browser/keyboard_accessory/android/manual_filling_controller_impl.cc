@@ -35,6 +35,7 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::AddressAccessoryController;
+using autofill::NavigationDirection;
 using autofill::PaymentMethodAccessoryController;
 using autofill::mojom::FocusedFieldType;
 
@@ -150,6 +151,16 @@ void ManualFillingControllerImpl::ShowAccessorySheetTab(
         << tab_type;
   }
   view_->ShowAccessorySheetTab(tab_type);
+}
+
+void ManualFillingControllerImpl::SetSelectedSuggestion(
+    std::optional<int> suggestion_index) {
+  view_->SetSelectedSuggestion(suggestion_index);
+}
+
+bool ManualFillingControllerImpl::NavigateSuggestions(
+    NavigationDirection direction) {
+  return view_->NavigateSuggestions(direction);
 }
 
 void ManualFillingControllerImpl::UpdateSourceAvailability(

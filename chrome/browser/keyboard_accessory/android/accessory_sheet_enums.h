@@ -110,6 +110,13 @@ enum class AccessoryToggleType {
   COUNT,
 };
 
+// Direction for navigating suggestions in the keyboard accessory bar.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
+enum class NavigationDirection {
+  kForward = 0,
+  kBackward = 1,
+};
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_SHEET_ENUMS_H_

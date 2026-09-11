@@ -30,6 +30,7 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessorySuggestionType;
 using autofill::AccessoryTabType;
+using autofill::NavigationDirection;
 using autofill::TestAutofillClientInjector;
 using autofill::TestContentAutofillClient;
 using autofill::mojom::FocusedFieldType;
@@ -639,6 +640,27 @@ TEST_F(ManualFillingControllerTest,
 
   controller()->NotifyFocusedInputChanged(
       kFocusedFieldId, FocusedFieldType::kContenteditableField);
+}
+
+// Tests that setting the selected suggestion forwards the call to the view.
+TEST_F(ManualFillingControllerTest, SetSelectedSuggestion) {
+  EXPECT_CALL(*view(), SetSelectedSuggestion(testing::Optional(1)));
+  controller()->SetSelectedSuggestion(1);
+
+  EXPECT_CALL(*view(), SetSelectedSuggestion(testing::Eq(std::nullopt)));
+  controller()->SetSelectedSuggestion(std::nullopt);
+}
+
+// Tests that navigating suggestions forwards the call to the view.
+TEST_F(ManualFillingControllerTest, NavigateSuggestions) {
+  EXPECT_CALL(*view(), NavigateSuggestions(NavigationDirection::kForward))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller()->NavigateSuggestions(NavigationDirection::kForward));
+
+  EXPECT_CALL(*view(), NavigateSuggestions(NavigationDirection::kBackward))
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(
+      controller()->NavigateSuggestions(NavigationDirection::kBackward));
 }
 
 }  // namespace

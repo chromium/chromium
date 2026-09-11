@@ -189,6 +189,16 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
+    public void setSelectedSuggestion(@Nullable Integer suggestionIndex) {
+        mMediator.setSelectedSuggestion(suggestionIndex);
+    }
+
+    @Override
+    public boolean navigateSuggestions(@NavigationDirection int direction) {
+        return mMediator.navigateSuggestions(direction);
+    }
+
+    @Override
     public void show(
             boolean waitForKeyboard,
             boolean shouldShowOnLargeFormFactor,

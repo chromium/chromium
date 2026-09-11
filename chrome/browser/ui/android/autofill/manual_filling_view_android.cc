@@ -245,6 +245,23 @@ void ManualFillingViewAndroid::ShowAccessorySheetTab(
   }
 }
 
+void ManualFillingViewAndroid::SetSelectedSuggestion(
+    std::optional<int> suggestion_index) {
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_setSelectedSuggestion(
+        base::android::AttachCurrentThread(), obj, suggestion_index);
+  }
+}
+
+bool ManualFillingViewAndroid::NavigateSuggestions(
+    autofill::NavigationDirection direction) {
+  if (auto obj = GetOrCreateJavaObject()) {
+    return Java_ManualFillingComponentBridge_navigateSuggestions(
+        base::android::AttachCurrentThread(), obj, direction);
+  }
+  return false;
+}
+
 void ManualFillingViewAndroid::OnAccessoryActionAvailabilityChanged(
     ShouldShowAction shouldShowAction,
     autofill::AccessoryAction action) {

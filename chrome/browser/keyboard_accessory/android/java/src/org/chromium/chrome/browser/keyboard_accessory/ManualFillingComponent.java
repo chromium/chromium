@@ -8,12 +8,12 @@ import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -28,8 +28,6 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -188,13 +186,21 @@ public interface ManualFillingComponent extends BackPressHandler {
      */
     void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate);
 
-    /** Direction for navigating suggestions in the keyboard accessory bar. */
-    @IntDef({NavigationDirection.FORWARD, NavigationDirection.BACKWARD})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface NavigationDirection {
-        int FORWARD = 0;
-        int BACKWARD = 1;
-    }
+    /**
+     * Sets the selected suggestion in the accessory bar.
+     *
+     * @param suggestionIndex The index of the suggestion to set as selected, or null to unselect.
+     */
+    void setSelectedSuggestion(@Nullable Integer suggestionIndex);
+
+    /**
+     * Navigates to the next or previous suggestion in the accessory bar.
+     *
+     * @param direction The {@link NavigationDirection} indicating whether to navigate forward or
+     *     backward.
+     * @return True if a suggestion was selected, false otherwise.
+     */
+    boolean navigateSuggestions(@NavigationDirection int direction);
 
     /**
      * Signals that the accessory has permission to show.

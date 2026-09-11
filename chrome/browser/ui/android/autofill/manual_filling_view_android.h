@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -47,7 +49,8 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void Hide() override;
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
-
+  void SetSelectedSuggestion(std::optional<int> suggestion_index) override;
+  bool NavigateSuggestions(autofill::NavigationDirection direction) override;
   // Called from Java via JNI:
   void OnFillingTriggered(
       JNIEnv* env,

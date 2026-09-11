@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_VIEW_INTERFACE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/types/strong_alias.h"
@@ -68,6 +69,13 @@ class ManualFillingViewInterface {
   // Shows the accessory sheet for the given `tab_type`.
   virtual void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) = 0;
+
+  // Highlights a suggestion visually when navigated via keyboard or selection.
+  // Passing `std::nullopt` clears the selection.
+  virtual void SetSelectedSuggestion(std::optional<int> suggestion_index) = 0;
+
+  // Navigates to the next or previous suggestion in the accessory bar.
+  virtual bool NavigateSuggestions(autofill::NavigationDirection direction) = 0;
 
  private:
   friend class ManualFillingControllerImpl;

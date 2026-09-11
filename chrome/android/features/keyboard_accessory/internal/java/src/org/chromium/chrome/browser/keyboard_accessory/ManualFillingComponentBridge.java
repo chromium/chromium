@@ -15,6 +15,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
@@ -140,6 +141,26 @@ class ManualFillingComponentBridge {
         if (getManualFillingComponent() != null) {
             getManualFillingComponent().showAccessorySheetTab(tabType);
         }
+    }
+
+    @CalledByNative
+    private void setSelectedSuggestion(
+            @JniType("std::optional<int>") @Nullable Integer suggestionIndex) {
+        ManualFillingComponent component = getManualFillingComponent();
+        if (component == null) {
+            return;
+        }
+        component.setSelectedSuggestion(suggestionIndex);
+    }
+
+    @CalledByNative
+    private boolean navigateSuggestions(
+            @JniType("autofill::NavigationDirection") @NavigationDirection int direction) {
+        ManualFillingComponent component = getManualFillingComponent();
+        if (component == null) {
+            return false;
+        }
+        return component.navigateSuggestions(direction);
     }
 
     @CalledByNative
