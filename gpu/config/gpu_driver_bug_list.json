@@ -3948,7 +3948,7 @@
     },
     {
       "id": 498,
-"cr_bugs": [
+      "cr_bugs": [
         551065272
       ],
       "description": "Recreate mipmap levels before calling glGenerateMipmap on Mali GPUs",
@@ -3967,6 +3967,22 @@
       "gl_vendor": "ARM.*",
       "features": [
         "adjust_src_dst_region_for_blitframebuffer"
+      ]
+    },
+    {
+      "id": 500,
+      "cr_bugs": [556576976],
+      "description": "Older intel iHD drivers allocate too few tiles for AV1 decode, leading to potential memory corruption.",
+      "os": {
+        "type": "linux"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "23.2.4"
+      },
+      "features": [
+        "disable_accelerated_av1_decode"
       ]
     }
   ]
