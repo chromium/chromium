@@ -42,4 +42,5 @@ found in the LICENSE file.
     <dimen name="actor_button_glow_v_offset">0.8dp</dimen>
     <dimen name="actor_button_glow_soft_blur">8dp</dimen>
     <dimen name="actor_button_glow_strong_blur">2dp</dimen>
+    <dimen name="actor_overlay_elevation">16dp</dimen>
 </resources>

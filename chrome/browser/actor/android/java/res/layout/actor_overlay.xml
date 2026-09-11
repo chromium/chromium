@@ -12,6 +12,7 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
+    android:elevation="@dimen/actor_overlay_elevation"
     android:visibility="gone">
 
     <org.chromium.chrome.browser.actor.ui.ActorOverlayView
