@@ -142,3 +142,7 @@ crbug.com/559198907 [ iOS26 Device ] SnapshotTabHelperTest/UpdateSnapshotWithCal
 
 # Gardening suppression 2026-09-10
 crbug.com/521844463 OmniboxPopupWithFakeSuggestionTestCase/testScrollingDismissesKeyboard [ Pass Failure ]
+
+# Gardening suppression 2026-09-11
+crbug.com/560127176 FormInputAccessoryEGTest/testFillPassportForm [ Pass Failure ]
+crbug.com/560127176 FormInputAccessoryEGTest/testReauthPriorToFillPassportForm [ Pass Failure ]
