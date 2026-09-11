@@ -27,8 +27,13 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/base/page_transition_types.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
+#endif
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -42,11 +47,14 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/crx_file/id_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -65,6 +73,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -605,8 +614,8 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   PermissionsData::SetDefaultPolicyHostRestrictions(
       util::GetBrowserContextId(profile()), default_blocked_hosts,
       URLPatternSet());
-  EXPECT_TRUE(
-      RunAttachFunction(blob_web_contents, "Cannot attach to this target."));
+  EXPECT_TRUE(RunAttachFunction(blob_web_contents,
+                                "Host access is restricted by policy."));
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
@@ -1132,7 +1141,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
       util::GetBrowserContextId(profile()), default_blocked_hosts,
       URLPatternSet());
 
-  EXPECT_TRUE(RunAttachFunction(url, "Cannot attach to this target.",
+  EXPECT_TRUE(RunAttachFunction(url, "Host access is restricted by policy.",
                                 /*ignore_navigation_errors=*/true));
 }
 
@@ -1155,53 +1164,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DebuggerMv3) {
   ASSERT_TRUE(RunExtensionTest("debugger_mv3")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
-                       FetchFulfillRequestCannotSetRestrictedCookie) {
-  // Using HTTPS to allow testing secure http only cookies.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server.Start());
-
-  GURL allowed_url = https_server.GetURL("a.test", "/index.html");
-  GURL restricted_url = https_server.GetURL("b.test", "/index.html");
-
-  URLPatternSet default_blocked_hosts;
-  default_blocked_hosts.AddPattern(
-      URLPattern(URLPattern::SCHEME_ALL,
-                 base::StringPrintf(
-                     "*://%s/*", std::string(restricted_url.host()).c_str())));
-  PermissionsData::SetDefaultPolicyHostRestrictions(
-      util::GetBrowserContextId(profile()), default_blocked_hosts,
-      URLPatternSet());
-
-  std::string custom_arg = allowed_url.spec() + ";" + restricted_url.spec();
-  ASSERT_TRUE(RunExtensionTest("debugger_fetch_cookie",
-                               {.custom_arg = custom_arg.c_str()}))
-      << message_;
-
-  // We cannot verify the cookies from the extension because it would not
-  // have access.
-  base::test::TestFuture<const std::vector<net::CanonicalCookie>&>
-      futureCookies;
-  profile()
-      ->GetDefaultStoragePartition()
-      ->GetCookieManagerForBrowserProcess()
-      ->GetAllCookies(futureCookies.GetCallback());
-  bool found_restricted = false;
-  bool found_allowed = false;
-  for (const auto& cookie : futureCookies.Get()) {
-    if (cookie.Name() == "restricted") {
-      found_restricted = true;
-    }
-    if (cookie.Name() == "allowed") {
-      found_allowed = true;
-    }
-  }
-  EXPECT_FALSE(found_restricted) << "Restricted cookie was found";
-  EXPECT_TRUE(found_allowed) << "Allowed cookie was not found";
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
@@ -1366,24 +1328,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
-                       NavigateSubframePolicyRestriction) {
-  URLPatternSet default_blocked_hosts;
-  default_blocked_hosts.AddPattern(
-      URLPattern(URLPattern::SCHEME_HTTP, "http://c.com/*"));
-  PermissionsData::SetDefaultPolicyHostRestrictions(
-      util::GetBrowserContextId(profile()), default_blocked_hosts,
-      URLPatternSet());
-
-  GURL url(embedded_test_server()->GetURL(
-      "a.com",
-      "/extensions/api_test/debugger_navigate_subframe_policy_restriction/"
-      "inspected_page.html"));
-  ASSERT_TRUE(RunExtensionTest("debugger_navigate_subframe",
-                               {.custom_arg = url.spec().c_str()}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
                        AutoAttachPermissions) {
   GURL url(embedded_test_server()->GetURL(
       "a.com",
@@ -1430,6 +1374,316 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
   ASSERT_TRUE(RunExtensionTest("debugger_oopif_auto_attach_war_bypass",
                                {.custom_arg = custom_arg.c_str()}))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AttachRejectedWhenScreenshotsDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  ASSERT_TRUE(RunExtensionTest(
+      "debugger_disable_screenshots",
+      {.custom_arg = "Screenshot capture is restricted by policy."}))
+      << message_;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Target-level screenshot restrictions via Data Leak Prevention (DLP) are
+// currently only supported on ChromeOS.
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AttachRejectedWhenScreenshotsRestrictedByDlp) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager,
+              IsScreenshotApiRestricted(web_contents()))
+      .WillOnce(testing::Return(true));
+
+  ASSERT_TRUE(RunExtensionTest(
+      "debugger_disable_screenshots",
+      {.custom_arg = "Screenshot capture is restricted on this target."}))
+      << message_;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Tests that a trusted component extension is exempt from global screenshot
+// restrictions and can attach to the browser target even when enterprise
+// policy disables screenshots.
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessDebuggerExtensionApiTest,
+    BrowserTargetAllowedForTrustedExtensionWhenScreenshotsDisabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  scoped_refptr<const Extension> component_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      component_trusted_extension.get());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(component_trusted_extension.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(component_trusted_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
+class DebuggerExtensionManagementPolicyTest
+    : public ExtensionApiTestWithManagementPolicy {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTestWithManagementPolicy::SetUpCommandLine(command_line);
+    content::IsolateAllSitesForTesting(command_line);
+  }
+};
+
+// Tests that attaching the debugger to a blocked host is rejected when
+// runtime blocked hosts are configured globally via enterprise policy (*).
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionManagementPolicyTest,
+                       AttachRejectedWithPolicyBlockedHostsGlobal_BlockedHost) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://a.test");
+  }
+
+  // Attempting to attach to a blocked host fails with policy error.
+  ASSERT_TRUE(
+      RunExtensionTest("debugger_policy_blocked_hosts",
+                       {.custom_arg = "Host access is restricted by policy."}))
+      << message_;
+}
+
+// Tests that under the all-or-nothing model, attaching the debugger to an
+// unblocked host is also rejected when runtime blocked hosts are configured
+// globally via enterprise policy (*).
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    AttachRejectedWithPolicyBlockedHostsGlobal_UnblockedHost) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("b.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Set up runtime blocked hosts globally for all extensions (blocking a.test).
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://a.test");
+  }
+
+  // Attempting to attach to an unblocked host (b.test) also fails.
+  ASSERT_TRUE(
+      RunExtensionTest("debugger_policy_blocked_hosts",
+                       {.custom_arg = "Host access is restricted by policy."}))
+      << message_;
+}
+
+// Tests that attaching the debugger is rejected when runtime blocked hosts are
+// configured specifically for this extension.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionManagementPolicyTest,
+                       AttachRejectedWithPolicyBlockedHostsPerExtension) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  ExtensionId extension_id = crx_file::id_util::GenerateIdForPath(
+      test_data_dir_.AppendASCII("debugger_policy_blocked_hosts"));
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost(extension_id, "*://a.test");
+  }
+
+  ASSERT_TRUE(
+      RunExtensionTest("debugger_policy_blocked_hosts",
+                       {.custom_arg = "Host access is restricted by policy."}))
+      << message_;
+}
+
+// Tests that an extension can attach when it explicitly overrides the global
+// blocked hosts policy with empty blocked hosts.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionManagementPolicyTest,
+                       AttachAllowedWhenPolicyBlockedHostsOverridden) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  ExtensionId extension_id = crx_file::id_util::GenerateIdForPath(
+      test_data_dir_.AppendASCII("debugger_policy_blocked_hosts"));
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://a.test");
+    pref.ClearPolicyBlockedHosts(extension_id);
+  }
+
+  ASSERT_TRUE(RunExtensionTest("debugger_policy_blocked_hosts")) << message_;
+}
+
+// Tests that when enterprise policy uses runtime_blocked_hosts and
+// runtime_allowed_hosts to configure an allowlist of URLs, attaching the
+// debugger is still rejected even on an allowlisted host.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionManagementPolicyTest,
+                       AttachRejectedWithPolicyAllowlist) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Set up an allowlist: block all hosts, but allow a.test.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+    pref.AddPolicyAllowedHost("*", "*://a.test");
+  }
+
+  // Under the all-or-nothing model, attaching is rejected even on an
+  // allowlisted host.
+  ASSERT_TRUE(
+      RunExtensionTest("debugger_policy_blocked_hosts",
+                       {.custom_arg = "Host access is restricted by policy."}))
+      << message_;
+}
+
+// Tests that an extension can attach normally when no runtime blocked hosts
+// are configured by enterprise policy.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionManagementPolicyTest,
+                       AttachAllowedWithoutPolicyBlockedHosts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(RunExtensionTest("debugger_policy_blocked_hosts")) << message_;
+}
+
+// Tests that a trusted component extension is exempt from the
+// policy_blocked_hosts check and can attach to the browser target even when
+// runtime blocked hosts are configured globally via enterprise policy (*).
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    BrowserTargetAllowedForComponentTrustedExtensionWithPolicyBlockedHosts) {
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+  }
+
+  scoped_refptr<const Extension> component_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      component_trusted_extension.get());
+  // Verify that policy blocked hosts were populated from enterprise policy.
+  ASSERT_FALSE(component_trusted_extension->permissions_data()
+                   ->policy_blocked_hosts()
+                   .is_empty());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(component_trusted_extension.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(component_trusted_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
+// Tests that an unpacked trusted extension is exempt from the
+// policy_blocked_hosts check when the allow unpacked switch is set.
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    BrowserTargetAllowedForUnpackedTrustedExtensionWithFlagAndPolicyBlockedHosts) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kAllowUnpackedPerfettoExtension);
+
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+  }
+
+  scoped_refptr<const Extension> unpacked_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      unpacked_trusted_extension.get());
+  // Verify that policy blocked hosts were populated from enterprise policy.
+  ASSERT_FALSE(unpacked_trusted_extension->permissions_data()
+                   ->policy_blocked_hosts()
+                   .is_empty());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(unpacked_trusted_extension.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(unpacked_trusted_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
+// Tests that an unpacked extension without the command line flag is not
+// treated as trusted and cannot attach to the browser target when policy
+// blocked hosts are configured.
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    BrowserTargetNotAllowedForUnpackedTrustedExtensionWithPolicyBlockedHosts) {
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+  }
+
+  scoped_refptr<const Extension> unpacked_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      unpacked_trusted_extension.get());
+  // Verify that policy blocked hosts were populated from enterprise policy.
+  ASSERT_FALSE(unpacked_trusted_extension->permissions_data()
+                   ->policy_blocked_hosts()
+                   .is_empty());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(unpacked_trusted_extension.get());
+
+  std::string actual_error = api_test_utils::RunFunctionAndReturnError(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile());
+
+  EXPECT_EQ("Host access is restricted by policy.", actual_error);
 }
 
 }  // namespace extensions
