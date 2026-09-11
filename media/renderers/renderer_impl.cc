@@ -1003,23 +1003,6 @@ void RendererImpl::CleanUpTrackChange(base::OnceClosure on_finished,
   std::move(on_finished).Run();
 }
 
-void RendererImpl::HandleInBandTrackChange(
-    DemuxerStream::Type type,
-    base::OnceClosure change_completed_cb) {
-  if (type == DemuxerStream::AUDIO) {
-    {
-      base::AutoLock lock(restarting_audio_lock_);
-      pending_audio_track_change_ = false;
-    }
-    CleanUpTrackChange(std::move(change_completed_cb), &audio_ended_,
-                       &audio_playing_);
-  } else if (type == DemuxerStream::VIDEO) {
-    pending_video_track_change_ = false;
-    CleanUpTrackChange(std::move(change_completed_cb), &video_ended_,
-                       &video_playing_);
-  }
-}
-
 void RendererImpl::OnTracksChanged(DemuxerStream::Type track_type,
                                    DemuxerStream* stream,
                                    base::OnceClosure change_completed_cb) {
@@ -1036,8 +1019,9 @@ void RendererImpl::OnTracksChanged(DemuxerStream::Type track_type,
         return;
       }
 
-      if (stream && stream->ManagesTrackSwitchesInternally()) {
-        HandleInBandTrackChange(track_type, std::move(change_completed_cb));
+      if (stream && stream->ManagesTrackSwitchesInternally() &&
+          audio_playing_ && !audio_ended_) {
+        std::move(change_completed_cb).Run();
         return;
       }
       if (stream && stream != current_audio_stream_) {
@@ -1072,8 +1056,9 @@ void RendererImpl::OnTracksChanged(DemuxerStream::Type track_type,
         return;
       }
 
-      if (stream && stream->ManagesTrackSwitchesInternally()) {
-        HandleInBandTrackChange(track_type, std::move(change_completed_cb));
+      if (stream && stream->ManagesTrackSwitchesInternally() &&
+          video_playing_ && !video_ended_) {
+        std::move(change_completed_cb).Run();
         return;
       }
 
