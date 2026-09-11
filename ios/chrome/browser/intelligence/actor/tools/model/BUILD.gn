@@ -452,6 +452,8 @@ source_set("java_script_features") {
     "attempt_form_filling_tool_java_script_feature.mm",
     "click_tool_java_script_feature.h",
     "click_tool_java_script_feature.mm",
+    "drag_and_release_tool_java_script_feature.h",
+    "drag_and_release_tool_java_script_feature.mm",
     "page_stability_java_script_feature.h",
     "page_stability_java_script_feature.mm",
     "scroll_tool_java_script_feature.h",
@@ -468,6 +470,7 @@ source_set("java_script_features") {
     ":actor_tool_interface",
     ":attempt_form_filling_tool_ts",
     ":click_tool_ts",
+    ":drag_and_release_tool_ts",
     ":page_stability_ts",
     ":scroll_tool_ts",
     ":select_tool_ts",
@@ -542,6 +545,7 @@ source_set("actor_tool_java_script_feature_test_base") {
     "actor_tool_java_script_feature_test_base.h",
     "actor_tool_java_script_feature_test_base.mm",
   ]
+  public_deps = [ ":action_target" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -569,6 +573,7 @@ source_set("unit_tests") {
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
     "click_tool_unittest.mm",
+    "drag_and_release_tool_java_script_feature_unittest.mm",
     "drag_and_release_tool_js_unittest.mm",
     "fake_tool_delegate.h",
     "fake_tool_delegate.mm",

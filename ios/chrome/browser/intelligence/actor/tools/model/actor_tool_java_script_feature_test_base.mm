@@ -67,4 +67,20 @@ base::WeakPtr<web::WebFrame> ActorToolJavaScriptFeatureTestBase::GetMainFrame(
   return frame->AsWeakPtr();
 }
 
+ActionTarget ActorToolJavaScriptFeatureTestBase::CreateTargetWithCoordinates() {
+  optimization_guide::proto::ActionTarget target;
+  target.mutable_coordinate()->set_x(1);
+  target.mutable_coordinate()->set_y(2);
+  target.mutable_coordinate()->set_pixel_type(
+      optimization_guide::proto::Coordinate::PIXEL_TYPE_UNSPECIFIED);
+  return ActionTarget::FromProto(target);
+}
+
+ActionTarget ActorToolJavaScriptFeatureTestBase::CreateTargetWithNodeId() {
+  optimization_guide::proto::ActionTarget target;
+  target.set_content_node_id(123);
+  target.mutable_document_identifier()->set_serialized_token("doc_id");
+  return ActionTarget::FromProto(target);
+}
+
 }  // namespace actor

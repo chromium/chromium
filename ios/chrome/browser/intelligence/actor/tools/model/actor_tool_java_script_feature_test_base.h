@@ -9,6 +9,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -33,6 +34,11 @@ class ActorToolJavaScriptFeatureTestBase : public IOSChromeTestWithWebState {
 
   // Gets the main frame of the web state as a WeakPtr.
   base::WeakPtr<web::WebFrame> GetMainFrame(web::JavaScriptFeature* feature);
+
+  // Helper methods to create ActionTargets with arbitrary values for testing
+  // when the specific target values don't matter.
+  ActionTarget CreateTargetWithCoordinates();
+  ActionTarget CreateTargetWithNodeId();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
