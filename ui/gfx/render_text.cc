@@ -389,11 +389,11 @@ void SkiaTextRenderer::DrawUnderline(int x,
                                      SkScalar thickness_factor) {
   SkScalar x_scalar = SkIntToScalar(x);
   const SkScalar text_size = font_.getSize();
-  SkRect r = SkRect::MakeLTRB(
-      x_scalar, y + text_size * kUnderlineOffset, x_scalar + width,
-      y + (text_size *
-           (kUnderlineOffset +
-            (thickness_factor * RenderText::kLineThicknessFactor))));
+  // Underline should have a minimum height of 1.0f.
+  const SkScalar height = std::max(
+      1.0f, text_size * thickness_factor * RenderText::kLineThicknessFactor);
+  const SkScalar top = y + text_size * kUnderlineOffset;
+  SkRect r = SkRect::MakeLTRB(x_scalar, top, x_scalar + width, top + height);
   canvas_skia_->drawRect(r, flags_);
 }
 

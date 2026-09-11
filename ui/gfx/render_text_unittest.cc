@@ -9374,6 +9374,54 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1193815) {
   render_text->Draw(canvas());
 }
 
+class SkiaTextRendererTest : public testing::Test, public SkCanvas {
+ protected:
+  SkiaTextRendererTest()
+      : SkCanvas(100, 100),
+        canvas_(recorder_.beginRecording(), 1.0f),
+        renderer_(&canvas_) {}
+
+  void onDrawRect(const SkRect& rect, const SkPaint& paint) override {
+    rects_.push_back(rect);
+  }
+
+  internal::SkiaTextRenderer* renderer() { return &renderer_; }
+
+  const std::vector<SkRect>& GetDrawnRects() {
+    recorder_.finishRecordingAsPicture().Playback(this);
+    return rects_;
+  }
+
+ private:
+  cc::PaintRecorder recorder_;
+  Canvas canvas_;
+  internal::SkiaTextRenderer renderer_;
+  std::vector<SkRect> rects_;
+};
+
+// Ensure underline thickness is clamped to at least 1.0f on small fonts to
+// prevent faint subpixel lines. See crbug.com/553093012.
+TEST_F(SkiaTextRendererTest, DrawUnderlineMinimumThickness) {
+  // Font size 11px: 11 * (1/18) = 0.61px, clamps to 1.0f.
+  renderer()->SetTextSize(11);
+  renderer()->DrawUnderline(0, 0, 100);
+
+  // Font size 36px: 36 * (1/18) = 2.0px, not clamped.
+  renderer()->SetTextSize(36);
+  renderer()->DrawUnderline(0, 0, 100);
+
+  // Font size 11px with thickness_factor = 2.0: 1.22px, not clamped.
+  renderer()->SetTextSize(11);
+  renderer()->DrawUnderline(0, 0, 100, 2.0f);
+
+  const auto& rects = GetDrawnRects();
+  ASSERT_EQ(rects.size(), 3u);
+  EXPECT_FLOAT_EQ(rects[0].height(), 1.0f);
+  EXPECT_FLOAT_EQ(rects[1].height(), 2.0f);
+  EXPECT_FLOAT_EQ(rects[2].height(),
+                  11.0f * 2.0f * RenderText::kLineThicknessFactor);
+}
+
 class RenderTextDirectionTest
     : public testing::Test,
       public testing::WithParamInterface<std::string> {
