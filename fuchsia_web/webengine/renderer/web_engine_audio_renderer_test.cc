@@ -946,7 +946,8 @@ INSTANTIATE_TEST_SUITE_P(ConfigChange,
                                          ConfigChangeTestConfig{true, false},
                                          ConfigChangeTestConfig{true, true}));
 
-TEST_P(WebEngineAudioRendererConfgChangeTest, ConfigChange) {
+// TODO(crbug.com/559860633): Re-enable once TestAudioConsumer future is fixed.
+TEST_P(WebEngineAudioRendererConfgChangeTest, DISABLED_ConfigChange) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
