@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -108,9 +107,10 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     notification_presenter_ = std::make_unique<TetherNotificationPresenter>(
         profile(), test_network_connect_.get());
 
-    test_settings_ui_delegate_ = new TestSettingsUiDelegate();
+    auto delegate = std::make_unique<TestSettingsUiDelegate>();
+    test_settings_ui_delegate_ = delegate.get();
     notification_presenter_->SetSettingsUiDelegateForTesting(
-        base::WrapUnique(test_settings_ui_delegate_.get()));
+        std::move(delegate));
     has_verified_metrics_ = false;
   }
 
