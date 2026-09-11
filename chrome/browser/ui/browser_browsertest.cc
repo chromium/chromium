@@ -26,6 +26,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -815,17 +816,25 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DialogDefersNavigationCommit) {
     manager.ResumeNavigation();
 
     content::NavigationHandle* handle = manager.GetNavigationHandle();
+    ASSERT_TRUE(handle);
     EXPECT_FALSE(handle->IsWaitingToCommit());
     EXPECT_TRUE(handle->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
   }
 
-  // Dismiss the dialog. This should resume the navigation.
+  // Dismiss the dialog. This should post a task that resumes the navigation.
   {
     js_dialog_manager->ClickDialogButtonForTesting(true, std::u16string());
     ASSERT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 
+    // Wait for the dialog close task to execute.
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
     content::NavigationHandle* handle = manager.GetNavigationHandle();
+    ASSERT_TRUE(handle);
     EXPECT_FALSE(handle->IsCommitDeferringConditionDeferredForTesting());
     EXPECT_TRUE(handle->IsWaitingToCommit());
   }
