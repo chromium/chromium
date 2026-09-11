@@ -94,9 +94,10 @@ void ChromeCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
   CHECK(::GetModuleFileName(nullptr, exe_file, std::size(exe_file)));
   GetProductNameAndVersion(exe_file, &product_name, &version, &special_build,
                            &channel_name);
-  product_info->product_name = base::WideToUTF8(product_name);
-  product_info->version = base::WideToUTF8(version);
-  product_info->channel = base::WideToUTF8(channel_name);
+
+  *product_info =
+      ProductInfo(base::WideToUTF8(product_name), base::WideToUTF8(version),
+                  base::WideToUTF8(channel_name));
 }
 
 bool ChromeCrashReporterClient::GetShouldDumpLargerDumps() {

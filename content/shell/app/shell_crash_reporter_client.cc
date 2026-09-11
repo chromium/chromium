@@ -79,8 +79,7 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
 }
 
 void ShellCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
-  product_info->product_name = "content_shell";
-  product_info->version = CONTENT_SHELL_VERSION;
+  *product_info = ProductInfo("content_shell", CONTENT_SHELL_VERSION, "");
 }
 
 bool ShellCrashReporterClient::EnableBreakpadForProcess(

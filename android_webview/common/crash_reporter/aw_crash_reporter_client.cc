@@ -56,10 +56,9 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
   }
 
   void GetProductInfo(ProductInfo* product_info) override {
-    product_info->product_name = "AndroidWebView";
-    product_info->version = PRODUCT_VERSION;
-    product_info->channel =
-        version_info::GetChannelString(version_info::android::GetChannel());
+    *product_info = ProductInfo(
+        "AndroidWebView", PRODUCT_VERSION,
+        version_info::GetChannelString(version_info::android::GetChannel()));
   }
 
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override {

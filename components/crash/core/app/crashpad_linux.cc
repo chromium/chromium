@@ -8,6 +8,7 @@
 #include <sys/prctl.h>
 
 #include <limits>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -185,22 +186,23 @@ bool PlatformCrashpadInitialization(
     crash_reporter_client->GetProductInfo(&product_info);
 
     std::map<std::string, std::string> annotations;
-    annotations["prod"] = product_info.product_name;
-    annotations["ver"] = product_info.version;
+    annotations["prod"] = std::string(product_info.product_name());
+    annotations["ver"] = std::string(product_info.version());
 
+    std::string_view channel = product_info.channel();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Empty means stable.
     const bool allow_empty_channel = true;
-    if (product_info.channel == "extended") {
+    if (channel == "extended") {
       // Extended stable reports as stable (empty string) with an extra bool.
-      product_info.channel.clear();
+      channel = "";
       annotations["extended_stable_channel"] = "true";
     }
 #else
     const bool allow_empty_channel = false;
 #endif
-    if (allow_empty_channel || !product_info.channel.empty()) {
-      annotations["channel"] = product_info.channel;
+    if (allow_empty_channel || !channel.empty()) {
+      annotations["channel"] = std::string(channel);
     }
 
     annotations["plat"] = std::string("Linux");

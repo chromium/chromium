@@ -53,5 +53,5 @@ IN_PROC_BROWSER_TEST_F(CrashClientUploadInfoTest, GetClientProductInfo) {
 
   crash_reporter::ProductInfo product_info;
   crash_reporter::GetClientProductInfo(&product_info);
-  EXPECT_EQ(product_info.product_name, kProductName);
+  EXPECT_EQ(product_info.product_name(), kProductName);
 }

@@ -1074,9 +1074,9 @@ void HandleCrashDump(const BreakpadInfo& info) {
     GetCrashReporterClient()->GetProductInfo(&product_info);
 
     writer.AddBoundary();
-    writer.AddPairString("prod", product_info.product_name.c_str());
+    writer.AddPairString("prod", product_info.product_name().data());
     writer.AddBoundary();
-    writer.AddPairString("ver", product_info.version.c_str());
+    writer.AddPairString("ver", product_info.version().data());
     writer.AddBoundary();
     if (info.pid > 0) {
       char pid_value_buf[kUint64StringSize];

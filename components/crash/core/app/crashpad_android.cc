@@ -362,19 +362,20 @@ void BuildHandlerArgs(CrashReporterClient* crash_reporter_client,
 
   ProductInfo product_info;
   crash_reporter_client->GetProductInfo(&product_info);
-  (*process_annotations)["prod"] = product_info.product_name;
-  (*process_annotations)["ver"] = product_info.version;
+  (*process_annotations)["prod"] = std::string(product_info.product_name());
+  (*process_annotations)["ver"] = std::string(product_info.version());
 
   SetBuildInfoAnnotations(process_annotations);
 
+  std::string_view channel = product_info.channel();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Empty means stable.
   const bool allow_empty_channel = true;
 #else
   const bool allow_empty_channel = false;
 #endif
-  if (allow_empty_channel || !product_info.channel.empty()) {
-    (*process_annotations)["channel"] = product_info.channel;
+  if (allow_empty_channel || !channel.empty()) {
+    (*process_annotations)["channel"] = std::string(channel);
   }
 
   (*process_annotations)["plat"] = std::string("Android");
