@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
@@ -200,20 +199,17 @@ public class SuspendedTab implements TabObserver, UserData, TabViewProvider {
         Context context = mTab.getContext();
         View settingsLink = mView.findViewById(R.id.suspended_tab_settings_button);
         settingsLink.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(DIGITAL_WELLBEING_SITE_DETAILS_ACTION);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra(EXTRA_FQDN_NAME, mFqdn);
-                        intent.putExtra(
-                                Intent.EXTRA_PACKAGE_NAME,
-                                ContextUtils.getApplicationContext().getPackageName());
-                        try {
-                            context.startActivity(intent);
-                        } catch (ActivityNotFoundException e) {
-                            Log.e(TAG, "No activity found for site details intent", e);
-                        }
+                _ -> {
+                    Intent intent = new Intent(DIGITAL_WELLBEING_SITE_DETAILS_ACTION);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra(EXTRA_FQDN_NAME, mFqdn);
+                    intent.putExtra(
+                            Intent.EXTRA_PACKAGE_NAME,
+                            ContextUtils.getApplicationContext().getPackageName());
+                    try {
+                        context.startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        Log.e(TAG, "No activity found for site details intent", e);
                     }
                 });
     }

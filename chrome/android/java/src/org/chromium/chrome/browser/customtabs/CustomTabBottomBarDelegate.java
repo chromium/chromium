@@ -104,23 +104,7 @@ public class CustomTabBottomBarDelegate
      */
     private int mBottomBarHeightOverride = -1;
 
-    private final OnClickListener mBottomBarClickListener =
-            new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mClickPendingIntent == null) return;
-                    Intent extraIntent = new Intent();
-                    int originalId = (Integer) v.getTag(R.id.view_id_tag_key);
-                    extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, originalId);
-                    sendPendingIntentWithUrl(
-                            mClickPendingIntent,
-                            extraIntent,
-                            mActivity,
-                            mTabProvider,
-                            mDataProvider,
-                            originalId);
-                }
-            };
+    private final OnClickListener mBottomBarClickListener;
 
     public CustomTabBottomBarDelegate(
             Activity activity,
@@ -148,6 +132,20 @@ public class CustomTabBottomBarDelegate
         mShadowHeightPx =
                 activity.getResources()
                         .getDimensionPixelSize(R.dimen.custom_tabs_bottom_bar_shadow_height);
+        mBottomBarClickListener =
+                v -> {
+                    if (mClickPendingIntent == null) return;
+                    Intent extraIntent = new Intent();
+                    int originalId = (Integer) v.getTag(R.id.view_id_tag_key);
+                    extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, originalId);
+                    sendPendingIntentWithUrl(
+                            mClickPendingIntent,
+                            extraIntent,
+                            mActivity,
+                            mTabProvider,
+                            mDataProvider,
+                            originalId);
+                };
     }
 
     /** Cleans up observers registered in the constructor. */
@@ -217,7 +215,7 @@ public class CustomTabBottomBarDelegate
             OnClickListener clickListener = null;
             if (pendingIntent != null) {
                 clickListener =
-                        v ->
+                        _ ->
                                 sendPendingIntentWithUrl(
                                         pendingIntent,
                                         null,

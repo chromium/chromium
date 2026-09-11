@@ -46,8 +46,7 @@ import org.chromium.ui.widget.Toast;
  * should be notified about credentials user have chosen and also if user haven't chosen anything.
  */
 @NullMarked
-public class AccountChooserDialog
-        implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
+public class AccountChooserDialog implements DialogInterface.OnDismissListener {
     private final Context mContext;
     private final Credential[] mCredentials;
 
@@ -175,15 +174,11 @@ public class AccountChooserDialog
                 if (!originUrl.isEmpty()) {
                     pslInfoButton.setVisibility(View.VISIBLE);
                     pslInfoButton.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
+                            view ->
                                     showTooltip(
                                             view,
                                             UrlFormatter.formatUrlForSecurityDisplay(originUrl),
-                                            R.layout.material_tooltip);
-                                }
-                            });
+                                            R.layout.material_tooltip));
                 }
 
                 return convertView;
@@ -202,17 +197,15 @@ public class AccountChooserDialog
         final AlertDialog.Builder builder =
                 new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setCustomTitle(titleView)
-                        .setNegativeButton(R.string.cancel, this)
-                        .setAdapter(
-                                mAdapter,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int item) {
-                                        mCredential = mCredentials[item];
-                                    }
-                                });
+                        .setNegativeButton(R.string.cancel, (_, _) -> {})
+                        .setAdapter(mAdapter, (_, item) -> mCredential = mCredentials[item]);
         if (!TextUtils.isEmpty(mSigninButtonText)) {
-            builder.setPositiveButton(mSigninButtonText, this);
+            builder.setPositiveButton(
+                    mSigninButtonText,
+                    (_, _) -> {
+                        mCredential = mCredentials[0];
+                        mSigninButtonClicked = true;
+                    });
         }
         mDialog = builder.create();
         mDialog.setOnDismissListener(this);
@@ -301,14 +294,6 @@ public class AccountChooserDialog
     private void notifyNativeDestroyed() {
         mNativeAccountChooserDialog = 0;
         if (mDialog != null) mDialog.dismiss();
-    }
-
-    @Override
-    public void onClick(DialogInterface dialog, int whichButton) {
-        if (whichButton == DialogInterface.BUTTON_POSITIVE) {
-            mCredential = mCredentials[0];
-            mSigninButtonClicked = true;
-        }
     }
 
     @Override
