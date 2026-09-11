@@ -6085,6 +6085,28 @@ Keep consistent with active providers. Doesn't need to include every provider in
       variants="NavigationOrSuggestionPrefetch"/>
 </histogram>
 
+<histogram name="OmniboxEverywhere.InvocationSource"
+    enum="OmniboxEverywhereInvocationSource" expires_after="2027-09-01">
+  <owner>alsan@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chrome-sis-eng@google.com</owner>
+  <summary>
+    Recorded when Omnibox Everywhere is invoked or reactivated, categorizing the
+    entry point (global hotkey, status tray icon, profile picker, or shortcut).
+  </summary>
+</histogram>
+
+<histogram name="OmniboxEverywhere.Screenshare.OptionSelected"
+    enum="OmniboxEverywhereScreenshareOption" expires_after="2027-09-01">
+  <owner>alsan@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chrome-sis-eng@google.com</owner>
+  <summary>
+    Recorded when the user selects a screenshot modality from the Omnibox
+    Everywhere screenshot menu (Entire Screen, Window, or Region Selection).
+  </summary>
+</histogram>
+
 <histogram name="ShortcutsProvider.DatabaseSize" units="units"
     expires_after="2027-01-17">
   <owner>jdonnelly@chromium.org</owner>

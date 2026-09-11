@@ -381,6 +381,29 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Blurred"/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxEverywhereInvocationSource) -->
+
+<enum name="OmniboxEverywhereInvocationSource">
+  <summary>The entry point used to invoke Omnibox Everywhere.</summary>
+  <int value="0" label="Global hotkey"/>
+  <int value="1" label="Status tray / menu bar icon"/>
+  <int value="2" label="Profile picker"/>
+  <int value="3" label="Shortcut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h:OmniboxEverywhereInvocationSource) -->
+
+<!-- LINT.IfChange(OmniboxEverywhereScreenshareOption) -->
+
+<enum name="OmniboxEverywhereScreenshareOption">
+  <summary>The screensharing modality selected in Omnibox Everywhere.</summary>
+  <int value="0" label="Entire Screen"/>
+  <int value="1" label="Window"/>
+  <int value="2" label="Region Selection"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h:OmniboxEverywhereScreenshareOption) -->
+
 <!-- LINT.IfChange(OmniboxInlineLocationSuggestionShown) -->
 
 <enum name="OmniboxInlineLocationSuggestionShown">

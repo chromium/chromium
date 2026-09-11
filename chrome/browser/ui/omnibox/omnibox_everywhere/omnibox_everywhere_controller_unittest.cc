@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -1061,3 +1062,54 @@ TEST_F(OmniboxEverywhereControllerTest,
   EXPECT_EQ(last_used_profile, controller.target_profile());
 }
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_InvocationSourceMetricRecorded InvocationSourceMetricRecorded
+#else
+#define MAYBE_InvocationSourceMetricRecorded \
+  DISABLED_InvocationSourceMetricRecorded
+#endif
+TEST_F(OmniboxEverywhereControllerTest, MAYBE_InvocationSourceMetricRecorded) {
+  base::HistogramTester histogram_tester;
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 1);
+
+  // Toggle dismiss via hotkey should not record an invocation metric.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kGlobalHotkey, 1);
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kStatusTrayIcon,
+                      profile_.get(), GetContext());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kStatusTrayIcon, 1);
+  controller.Hide();
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kProfilePicker,
+                      profile_.get(), GetContext());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kProfilePicker, 1);
+  controller.Hide();
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
+                      profile_.get(), GetContext());
+  histogram_tester.ExpectBucketCount(
+      "OmniboxEverywhere.InvocationSource",
+      omnibox_everywhere::InvocationSource::kCommandLine, 1);
+
+  histogram_tester.ExpectTotalCount("OmniboxEverywhere.InvocationSource", 4);
+}

@@ -83,6 +83,19 @@ class OmniboxEverywhereUI
     kScreenshotWindow,
     kScreenshotRegion,
   };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(OmniboxEverywhereScreenshareOption)
+  enum class ScreenshareOption {
+    kEntireScreen = 0,
+    kWindow = 1,
+    kRegion = 2,
+    kMaxValue = kRegion,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxEverywhereScreenshareOption)
+
   ~OmniboxEverywhereUI() override;
 
   static constexpr std::string_view GetWebUIName() {

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
@@ -404,6 +405,8 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
     case InvocationSource::kCommandLine:
       break;
   }
+
+  base::UmaHistogramEnumeration("OmniboxEverywhere.InvocationSource", source);
 
   ui_manager_->ShowForProfile(profile, context);
 }

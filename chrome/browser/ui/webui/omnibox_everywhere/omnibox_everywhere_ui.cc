@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -823,14 +824,23 @@ void OmniboxEverywhereUI::ExecuteScreenshotCommand(
 
   switch (command_id) {
     case kScreenshotEntireScreen:
+      base::UmaHistogramEnumeration(
+          "OmniboxEverywhere.Screenshare.OptionSelected",
+          ScreenshareOption::kEntireScreen);
       controller->StartScreenshare(
           /*prefer_entire_screen=*/true, base::DoNothing());
       break;
     case kScreenshotWindow:
+      base::UmaHistogramEnumeration(
+          "OmniboxEverywhere.Screenshare.OptionSelected",
+          ScreenshareOption::kWindow);
       controller->StartScreenshare(
           /*prefer_entire_screen=*/false, base::DoNothing());
       break;
     case kScreenshotRegion:
+      base::UmaHistogramEnumeration(
+          "OmniboxEverywhere.Screenshare.OptionSelected",
+          ScreenshareOption::kRegion);
       controller->CaptureRegionScreenshot(base::DoNothing());
       break;
     default:

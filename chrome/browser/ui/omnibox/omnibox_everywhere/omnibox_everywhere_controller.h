@@ -35,16 +35,22 @@ namespace omnibox_everywhere {
 class OmniboxEverywhereBackgroundModeManager;
 
 // The source of the Omnibox Everywhere invocation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(OmniboxEverywhereInvocationSource)
 enum class InvocationSource {
   // Triggered by a global system hotkey registration.
-  kGlobalHotkey,
-  // Triggered by the profile picker.
-  kProfilePicker,
+  kGlobalHotkey = 0,
   // Triggered from the status tray/menu bar icon.
-  kStatusTrayIcon,
+  kStatusTrayIcon = 1,
+  // Triggered by the profile picker.
+  kProfilePicker = 2,
   // Triggered by command-line switch or OS shortcut.
-  kCommandLine,
+  kCommandLine = 3,
+  kMaxValue = kCommandLine,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxEverywhereInvocationSource)
 
 // Coordinator class that manages the Omnibox Everywhere desktop feature.
 // Exists as a process-global singleton owned by GlobalFeatures.
