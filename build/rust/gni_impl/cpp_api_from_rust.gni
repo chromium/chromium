@@ -5,6 +5,12 @@
 import("//build/config/rust.gni")
 import("//build/toolchain/kythe.gni")
 
+_globally_enabled_crubit_features = [
+  # TODO(b/558605603): Remove this feature from the list once it becomes the
+  # default in Crubit.
+  "always_specialize_generics_in_cpp_api_from_rust",
+]
+
 # Defines a C++ `source_set` (and supporting targets) that contains C++
 # bindings for using/calling-into a given Rust crate.
 #
@@ -118,6 +124,7 @@ template("cpp_api_from_rust") {
     forward_variables_from(_original_attributes, [ "deps" ])
     outputs = [ _action_rsp_path ]
     data_keys = [
+      "crate_feature",
       "crate_header",
       "crate_namespace",
     ]
@@ -192,6 +199,12 @@ template("cpp_api_from_rust") {
       "--crate-namespace",
       "self=${_cpp_namespace}",
     ]
+    foreach(_feature, _globally_enabled_crubit_features) {
+      args += [
+        "--crate-feature",
+        "self=${_feature}",
+      ]
+    }
     if (defined(_clang_format_exe_path)) {
       inputs += [ _clang_format_exe_path ]
       args += [
@@ -261,7 +274,12 @@ template("cpp_api_from_rust") {
     public_deps = [ "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps" ]
 
     _gen_dir_relative_h_out = rebase_path(_h_out, root_gen_dir)
+    _crate_feature = []
+    foreach(_feature, _globally_enabled_crubit_features) {
+      _crate_feature += [ "--crate-feature=${_crate_name}=${_feature}" ]
+    }
     metadata = {
+      crate_feature = _crate_feature
       crate_header =
           [ "--crate-header=${_crate_name}=${_gen_dir_relative_h_out}" ]
       crate_namespace = [ "--crate-namespace=${_crate_name}=${_cpp_namespace}" ]

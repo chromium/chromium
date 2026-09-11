@@ -24,7 +24,6 @@
 #include <utility>
 
 #include "base/bit_cast.h"
-#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ref.h"
@@ -121,12 +120,11 @@ const char kUnknownError[] = "An unknown error occured.";
 Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
   switch (rust_key.kind().tag) {
     case cbor::rust::MapKeyKind::Tag::Int:
-      return Value(CHECK_DEREF(rust_key.as_int()));
+      return Value(*rust_key.as_int());
     case cbor::rust::MapKeyKind::Tag::String:
-      return Value(CHECK_DEREF(rust_key.as_string()).to_string_view(),
-                   Value::Type::STRING);
+      return Value(rust_key.as_string()->to_string_view(), Value::Type::STRING);
     case cbor::rust::MapKeyKind::Tag::Bytestring:
-      return Value(CHECK_DEREF(rust_key.as_bytestring()).to_span());
+      return Value(rust_key.as_bytestring()->to_span());
   }
   NOTREACHED();
 }
@@ -176,30 +174,29 @@ Reader::~Reader() = default;
 Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
   switch (rust_val.kind().tag) {
     case cbor::rust::ValueKind::Tag::Int:
-      return Value(CHECK_DEREF(rust_val.as_int()));
+      return Value(*rust_val.as_int());
     case cbor::rust::ValueKind::Tag::Boolean:
-      return Value(CHECK_DEREF(rust_val.as_bool()));
+      return Value(*rust_val.as_bool());
     case cbor::rust::ValueKind::Tag::Null:
       return Value(Value::SimpleValue::NULL_VALUE);
     case cbor::rust::ValueKind::Tag::Undefined:
       return Value(Value::SimpleValue::UNDEFINED);
     case cbor::rust::ValueKind::Tag::Bytestring:
-      return Value(CHECK_DEREF(rust_val.as_bytestring()).to_span(),
+      return Value(rust_val.as_bytestring()->to_span(),
                    Value::Type::BYTE_STRING);
     case cbor::rust::ValueKind::Tag::String:
-      return Value(CHECK_DEREF(rust_val.as_string()).to_string_view(),
-                   Value::Type::STRING);
+      return Value(rust_val.as_string()->to_string_view(), Value::Type::STRING);
     case cbor::rust::ValueKind::Tag::InvalidUtf8:
-      return Value(CHECK_DEREF(rust_val.as_invalid_utf8()).to_span(),
+      return Value(rust_val.as_invalid_utf8()->to_span(),
                    Value::Type::INVALID_UTF8);
     case cbor::rust::ValueKind::Tag::Array: {
-      return Value(base::ToVector(CHECK_DEREF(rust_val.as_array()).to_span(),
+      return Value(base::ToVector(rust_val.as_array()->to_span(),
                                   ConvertRustValueToCpp));
     }
     case cbor::rust::ValueKind::Tag::Map: {
       return Value(Value::MapValue(
           base::sorted_unique,
-          base::ToVector(CHECK_DEREF(rust_val.map_entries()).to_span(),
+          base::ToVector(rust_val.map_entries()->to_span(),
                          [](const auto& entry) {
                            return std::pair(ConvertRustMapKeyToCpp(entry.key),
                                             ConvertRustValueToCpp(entry.value));
