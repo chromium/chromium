@@ -232,7 +232,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     ON_CALL(autofill_popup_controller_, GetMainFillingProduct)
         .WillByDefault([&controller = autofill_popup_controller_]() {
           if (controller.GetAutofillSuggestionTriggerSource() ==
-              AutofillSuggestionTriggerSource::kAtMemoryTriggerString) {
+              AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl) {
             return FillingProduct::kAtMemory;
           }
           return controller.GetLineCount() > 0
@@ -3494,7 +3494,7 @@ TEST_F(PopupViewViewsPayNowPayLaterTabsTest,
 TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
       .WillByDefault(
-          Return(AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+          Return(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
   CreateAndShowView(
       /*ids=*/{}, CreateParamsForTestWidget(),
       AutofillPopupView::SearchBarConfig{.placeholder = u"Recall from memory",
@@ -3516,7 +3516,7 @@ TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
 TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
       .WillByDefault(
-          Return(AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+          Return(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
   input::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
@@ -3573,7 +3573,7 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
 TEST_F(PopupViewViewsTest, AtMemory_KeyboardArrowsNavigationBetweenPopups) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
       .WillByDefault(
-          Return(AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+          Return(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
 
   controller().set_suggestions({
       CreateSuggestionWithChildren(

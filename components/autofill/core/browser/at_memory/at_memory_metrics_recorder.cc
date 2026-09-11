@@ -305,9 +305,6 @@ void AtMemoryMetricsRecorder::OnPopupShown(
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
       source_ = AutofillMetrics::AtMemoryTriggerSource::kKeyboardShortcut;
       break;
-    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
-      source_ = AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger;
-      break;
     case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
     case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:

@@ -1440,7 +1440,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenNotEligible) {
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
 
   OnAskForValuesToFill(form, form.fields()[0],
-                       AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+                       AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // No suggestions should be returned, not even empty ones.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -1458,7 +1458,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenToggleOff) {
       false);
 
   OnAskForValuesToFill(form, form.fields()[0],
-                       AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+                       AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // No suggestions should be returned, not even empty ones.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -1471,12 +1471,12 @@ TEST_F(BrowserAutofillManagerAtMemoryTest,
 
   // Trigger suggestions with AtMemory.
   OnAskForValuesToFill(form, form.fields()[0],
-                       AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+                       AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // Verify that suggestions were shown (empty suggestions for AtMemory).
   EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
   EXPECT_EQ(external_delegate()->trigger_source(),
-            AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+            AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // Trigger suggestions with ComposeDelayedProactiveNudge.
   // This should be ignored because AtMemory suggestions are already showing.
@@ -1488,7 +1488,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest,
   // or replaced by the nudge).
   EXPECT_TRUE(autofill_client().IsShowingAutofillPopup());
   EXPECT_EQ(external_delegate()->trigger_source(),
-            AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+            AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 }
 
 // Tests that if the main frame URL is blocked, AtMemory is blocked.
@@ -1511,7 +1511,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest,
       .WillByDefault(Return(false));
 
   OnAskForValuesToFill(form, form.fields()[0],
-                       AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+                       AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // Trigger should be dropped, no suggestions returned.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -1535,7 +1535,7 @@ TEST_F(BrowserAutofillManagerAtMemoryTest, TriggerDroppedWhenFieldUrlBlocked) {
   ON_CALL(*decider, ShouldBlockAtMemory(field_url)).WillByDefault(Return(true));
 
   OnAskForValuesToFill(form, form.fields()[0],
-                       AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+                       AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // Trigger should be dropped, no suggestions returned.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -5409,7 +5409,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
   autofill_manager().DidShowSuggestions(
       {Suggestion(SuggestionType::kAddressEntry)}, /*metadata=*/{},
       insecure_form.global_id(), test::MakeFieldGlobalId(), update_callback,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
+      AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
 
   // Submit search query. This should invoke Query on mock query service.
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;

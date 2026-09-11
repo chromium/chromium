@@ -70,20 +70,6 @@ class AtMemoryMetricsRecorderTest : public testing::Test {
 };
 
 // Tests that `OnPopupShown` correctly logs the "SearchBarDisplayed" metric when
-// triggered by typing the invocation sequence.
-TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_TypedTrigger) {
-  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
-                                  GURL(), std::u16string(), FieldGlobalId(),
-                                  FormSignature(0), FieldSignature(0));
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-                       /*metadata=*/{});
-
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.AtMemory.SearchBarDisplayed",
-      AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
-}
-
-// Tests that `OnPopupShown` correctly logs the "SearchBarDisplayed" metric when
 // triggered via the context menu.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_ContextMenu) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
@@ -117,7 +103,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                   GURL(), std::u16string(), FieldGlobalId(),
                                   FormSignature(0), FieldSignature(0));
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
                        /*metadata=*/{});
   // Second call should be ignored.
   metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
@@ -125,7 +111,7 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.SearchBarDisplayed",
-      AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
+      AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1);
 }
 
 // Tests that the destructor correctly logs that a query was submitted.
@@ -134,9 +120,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_True) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"some query");
   }
 
@@ -151,9 +136,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_QuerySubmitted_False) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     // No query submitted.
   }
 
@@ -167,9 +151,8 @@ TEST_F(AtMemoryMetricsRecorderTest, Destructor_SuggestionAccepted_True) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     SendResponse(metrics);
     metrics.OnSuggestionAccepted(
@@ -199,9 +182,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     // No query submitted, no suggestion accepted.
   }
 
@@ -220,9 +202,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     SendResponse(metrics);
     // No suggestion accepted.
@@ -245,9 +226,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
 
     // Query 1: suggestion not accepted.
     metrics.OnQuerySubmitted(u"query 1");
@@ -279,7 +259,7 @@ TEST_F(AtMemoryMetricsRecorderTest, AcceptedSuggestionDataType) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                   GURL(), std::u16string(), FieldGlobalId(),
                                   FormSignature(0), FieldSignature(0));
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
                        /*metadata=*/{});
   metrics.OnQuerySubmitted(u"query");
   SendResponse(metrics);
@@ -296,7 +276,7 @@ TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_OneQuery) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                   GURL(), std::u16string(), FieldGlobalId(),
                                   FormSignature(0), FieldSignature(0));
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
                        /*metadata=*/{});
   metrics.OnQuerySubmitted(u"query 1");
   SendResponse(metrics);
@@ -317,9 +297,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query 1");
     SendResponse(metrics);
     metrics.OnQuerySubmitted(u"query 2");
@@ -341,9 +320,8 @@ TEST_F(AtMemoryMetricsRecorderTest, QueryCountBeforeAcceptance_NoAcceptance) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query 1");
     SendResponse(metrics);
     metrics.OnQuerySubmitted(u"query 2");
@@ -363,9 +341,8 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
     metrics.MarkFilled();
   }
@@ -377,9 +354,8 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
     AtMemoryMetricsRecorder metrics2(
         nullptr, &test_ukm_recorder_, kTestSourceId, GURL(), std::u16string(),
         FieldGlobalId(), FormSignature(0), FieldSignature(0));
-    metrics2.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics2.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                          /*metadata=*/{});
     metrics2.OnSuggestionAccepted(MemoryDataType::kAddressFull);
   }
 
@@ -395,9 +371,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query 1");
     SendResponse(metrics);
     metrics.OnQuerySubmitted(u"query 2");
@@ -457,7 +432,7 @@ TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategoryMultipleTypes) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                   GURL(), std::u16string(), FieldGlobalId(),
                                   FormSignature(0), FieldSignature(0));
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
                        /*metadata=*/{});
   metrics.OnQuerySubmitted(u"query");
   task_environment_.FastForwardBy(base::Seconds(2));
@@ -479,7 +454,7 @@ TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategoryUnknown) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                   GURL(), std::u16string(), FieldGlobalId(),
                                   FormSignature(0), FieldSignature(0));
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
                        /*metadata=*/{});
   metrics.OnQuerySubmitted(u"query");
   task_environment_.FastForwardBy(base::Seconds(4));
@@ -540,9 +515,8 @@ TEST_P(AtMemoryMetricsRecorderFetchPiiLatencyTest, FetchPiiLatency) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
     metrics.OnFetchPiiStarted(test_case.source);
     task_environment_.FastForwardBy(base::Seconds(2));
@@ -580,9 +554,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded) {
         uploader_service_.get(), &test_ukm_recorder_, kTestSourceId,
         GURL("https://example.com"), u"Example Page", FieldGlobalId(),
         FormSignature(123), FieldSignature(456));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"test query");
     task_environment_.FastForwardBy(base::Milliseconds(100));
     MemorySearchResult local_suggestion(MemoryDataType::kAddressFull, u"key 1",
@@ -634,9 +607,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_MultipleQueries) {
         uploader_service_.get(), &test_ukm_recorder_, kTestSourceId,
         GURL("https://example.com"), u"Example Page", FieldGlobalId(),
         FormSignature(123), FieldSignature(456));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"test query");
 
     // The first query should be pending, not uploaded yet.
@@ -678,9 +650,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Root) {
         uploader_service_.get(), &test_ukm_recorder_, kTestSourceId,
         GURL("https://example.com"), u"Example Page", FieldGlobalId(),
         FormSignature(123), FieldSignature(456));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"test query");
 
     MemorySearchResult local_suggestion(MemoryDataType::kAddressFull, u"key 1",
@@ -714,9 +685,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
         uploader_service_.get(), &test_ukm_recorder_, kTestSourceId,
         GURL("https://example.com"), u"Example Page", FieldGlobalId(),
         FormSignature(123), FieldSignature(456));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"test query");
 
     MemorySearchResult local_suggestion(MemoryDataType::kAddressFull, u"key 1",
@@ -727,7 +697,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_SuggestionAccepted_Sub) {
         MemorySearchStatus::kFinalResponseSuccess, {local_suggestion}));
 
     metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+        AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
         AutofillSuggestionDelegate::SuggestionUiMetadata{.multi_index = {0}});
 
     metrics.OnSuggestionAccepted(
@@ -757,9 +727,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_PopupShown) {
         uploader_service_.get(), &test_ukm_recorder_, kTestSourceId,
         GURL("https://example.com"), u"Example Page", FieldGlobalId(),
         FormSignature(123), FieldSignature(456));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"test query");
 
     MemorySearchResult local_suggestion(MemoryDataType::kAddressFull, u"key 1",
@@ -770,7 +739,7 @@ TEST_F(AtMemoryMetricsRecorderTest, LogEntryUploaded_PopupShown) {
         MemorySearchStatus::kFinalResponseSuccess, {local_suggestion}));
 
     metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+        AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
         AutofillSuggestionDelegate::SuggestionUiMetadata{.multi_index = {0}});
   }
 
@@ -795,9 +764,8 @@ TEST_F(AtMemoryMetricsRecorderTest, OnSuggestionAccepted_LogsIndices) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnSuggestionAccepted(
         MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2}});
@@ -813,9 +781,8 @@ TEST_F(AtMemoryMetricsRecorderTest, OnSuggestionAccepted_LogsIndices) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnSuggestionAccepted(
         MemoryDataType::kAddressFull, /*sources_bitmask=*/0,
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {2, 1}});
@@ -832,9 +799,8 @@ TEST_F(AtMemoryMetricsRecorderTest, EmptyResponse_NoSuggestionAcceptedMetric) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
 
     // Simulate empty response.
@@ -851,9 +817,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsUiSessionUkm) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), field_id,
                                     FormSignature(1), FieldSignature(2));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     metrics.MarkFilled();
   }
@@ -884,9 +849,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_NoAcceptance) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
 
     task_environment_.FastForwardBy(base::Milliseconds(100));
@@ -919,9 +883,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_WithAcceptanceAndFill) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     metrics.OnQueryResponseReceived(
         MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
@@ -970,9 +933,8 @@ TEST_F(AtMemoryMetricsRecorderTest, LogsSearchQueryUkm_MultipleQueries) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
 
     // 1st query
     metrics.OnQuerySubmitted(u"query 1");
@@ -1099,9 +1061,8 @@ TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeQuery) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
   }
 
   histogram_tester_.ExpectUniqueSample(
@@ -1116,9 +1077,8 @@ TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeResults) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     task_environment_.FastForwardBy(base::Seconds(2));
     // Destructor called before SendResponse(metrics).
@@ -1139,9 +1099,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     SendResponse(metrics);
   }
@@ -1159,9 +1118,8 @@ TEST_F(AtMemoryMetricsRecorderTest,
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     SendResponse(metrics);
     metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
@@ -1178,9 +1136,8 @@ TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_SuggestionFilled) {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                     GURL(), std::u16string(), FieldGlobalId(),
                                     FormSignature(0), FieldSignature(0));
-    metrics.OnPopupShown(
-        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-        /*metadata=*/{});
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
     SendResponse(metrics);
     metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);

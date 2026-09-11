@@ -29,7 +29,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
       return AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet;

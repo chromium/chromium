@@ -600,7 +600,7 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by the GLIC service.
   kGlic = 21,
   // Suggestions triggered by the AtMemory feature (typing "@@").
-  kAtMemoryTriggerString = 22,
+  // kAtMemoryTriggerString = 22 is deprecated
   // Suggestions triggered by the AtMemory feature via context menu.
   kAtMemoryContextMenu = 23,
   // Suggestions triggered by the inactivity timer.

@@ -441,7 +441,6 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return false;
   }
   NOTREACHED();
@@ -470,7 +469,6 @@ bool CanReplaceCurrentSuggestions(AutofillSuggestionTriggerSource source) {
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-    case mojom::AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
       return true;
     case mojom::AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case mojom::AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
@@ -529,7 +527,6 @@ FillingProductSet GetFillingProductsToSuggest(
     case kAtMemoryContextMenu:
     case kAtMemoryDoubleCtrl:
     case kAtMemoryKeyboardShortcut:
-    case kAtMemoryTriggerString:
       return {FillingProduct::kAtMemory};
     case kAtMemoryInactivityNudge:
       return {FillingProduct::kNone};

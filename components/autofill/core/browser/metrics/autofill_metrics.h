@@ -465,7 +465,7 @@ class AutofillMetrics {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class AtMemoryTriggerSource {
-    kTypedTrigger = 0,
+    // Deprecated: kTypedTrigger = 0,
     kContextMenu = 1,
     kKeyboardShortcut = 2,
     kDoubleCtrl = 3,
