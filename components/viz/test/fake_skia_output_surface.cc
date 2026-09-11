@@ -380,7 +380,7 @@ void FakeSkiaOutputSurface::InitDelegatedInkPointRendererReceiver(
   delegated_ink_renderer_receiver_arrived_ = true;
 }
 
-scoped_refptr<gpu::ClientSharedImage> FakeSkiaOutputSurface::CreateSharedImage(
+gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -388,17 +388,16 @@ scoped_refptr<gpu::ClientSharedImage> FakeSkiaOutputSurface::CreateSharedImage(
     gpu::SharedImageUsageSet usage,
     std::string_view debug_label,
     gpu::SurfaceHandle surface_handle) {
-  return gpu::ClientSharedImage::CreateForTesting();
+  return gpu::Mailbox::Generate();
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-FakeSkiaOutputSurface::CreateSolidColorSharedImage(
+gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
     const SkColor4f& color,
     const gfx::ColorSpace& color_space) {
-  return gpu::ClientSharedImage::CreateForTesting();
+  return gpu::Mailbox::Generate();
 }
 
-void FakeSkiaOutputSurface::OnDestroySharedImage(const gpu::Mailbox& mailbox) {
+void FakeSkiaOutputSurface::DestroySharedImage(const gpu::Mailbox& mailbox) {
   destroyed_mailboxes_.push_back(mailbox);
 }
 

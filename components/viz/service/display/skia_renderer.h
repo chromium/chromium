@@ -10,18 +10,15 @@
 #include <tuple>
 #include <unordered_set>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
-#include "components/viz/service/display/render_pass_backing_shared_image.h"
 #include "components/viz/service/display_embedder/buffer_queue.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -273,20 +270,17 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void FlushOutputSurface();
 
   struct RenderPassBacking {
-    using BufferOwner = std::variant<std::unique_ptr<BufferQueue>,
-                                     base::WeakPtr<BufferQueue>,
-                                     RenderPassBackingSharedImage>;
-
     RenderPassBacking();
     RenderPassBacking(gfx::Size size,
                       bool generate_mipmap,
                       gfx::ColorSpace color_space,
                       RenderPassAlphaType alpha_type,
                       SharedImageFormat format,
-                      BufferOwner buffer,
+                      gpu::Mailbox mailbox,
                       bool is_root,
                       bool is_scanout,
-                      bool scanout_dcomp_surface);
+                      bool scanout_dcomp_surface,
+                      std::unique_ptr<BufferQueue> buffer_queue);
     RenderPassBacking(RenderPassBacking&&);
     RenderPassBacking& operator=(RenderPassBacking&&);
     ~RenderPassBacking();
@@ -294,27 +288,21 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     bool IsSufficientForRequirements(
         const RenderPassRequirements& requirements) const;
 
-    const gpu::Mailbox& GetCurrentMailbox() const;
-    BufferQueue* GetBufferQueue() const;
-
     gfx::Size size;
     bool generate_mipmap = false;
     gfx::ColorSpace color_space;
     RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
     SharedImageFormat format;
-
-    // A render pass backing's buffer(s) can be owned by:
-    // - `BufferQueue`: render passes affected by BufferQueuePerRenderPass.
-    // - Non-owning `BufferQueue` ref: special case for the root buffer queue.
-    // - Shared image: for non-scanout backings and scanout backings on Windows.
-    BufferOwner buffer;
-
+    gpu::Mailbox mailbox;
     bool is_root = false;
     bool is_scanout = false;
     bool scanout_dcomp_surface = false;
     // This is the rect that has been drawn to this backing. It starts out as
     // empty and is expanded as drawing operations are made to this backing.
     gfx::Rect drawn_rect;
+    // BufferQueue used to allocate and manage buffers for this render pass.
+    // It is only used when the render pass is eligible for scanout.
+    std::unique_ptr<BufferQueue> buffer_queue;
   };
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
