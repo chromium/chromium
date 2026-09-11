@@ -83,6 +83,9 @@ int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
   // LINT.IfChange(ThreatTypeSeverity)
   switch (detail.threat_type()) {
     case V5::ThreatType::MALWARE:
+    // POTENTIALLY_HARMFUL_APPLICATION is used for mobile/iOS malware
+    // ("pha-4b").
+    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
     case V5::ThreatType::SOCIAL_ENGINEERING:
     case V5::ThreatType::MALICIOUS_BINARY:
       return 0;
@@ -100,7 +103,6 @@ int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
       return 15;
     case V5::ThreatType::SUBRESOURCE_FILTER:
     case V5::ThreatType::THREAT_TYPE_UNSPECIFIED:
-    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
       NOTREACHED();
       // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatType)
     default:
@@ -171,6 +173,9 @@ SBThreatType MapFullHashDetailToSbThreatType(
   // LINT.IfChange(ThreatTypeMap)
   switch (detail.threat_type()) {
     case V5::ThreatType::MALWARE:
+    // POTENTIALLY_HARMFUL_APPLICATION is used for mobile/iOS malware
+    // ("pha-4b").
+    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
       return SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
     case V5::ThreatType::SOCIAL_ENGINEERING:
       return SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
@@ -187,7 +192,6 @@ SBThreatType MapFullHashDetailToSbThreatType(
       return SBThreatType::SB_THREAT_TYPE_API_ABUSE;
     case V5::ThreatType::THREAT_TYPE_UNSPECIFIED:
     case V5::ThreatType::SUBRESOURCE_FILTER:
-    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
       NOTREACHED();
       // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatType)
     default:

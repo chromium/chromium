@@ -104,6 +104,9 @@ bool IsHashDetailRelevantForLocalChecks(
       return true;
 
     case V5::ThreatType::MALWARE:
+    // POTENTIALLY_HARMFUL_APPLICATION is used for mobile/iOS malware
+    // ("pha-4b").
+    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
     case V5::ThreatType::MALICIOUS_BINARY:
     case V5::ThreatType::UNWANTED_SOFTWARE:
     case V5::ThreatType::TRICK_TO_BILL:
@@ -112,7 +115,6 @@ bool IsHashDetailRelevantForLocalChecks(
       return !has_canary;
 
     case V5::ThreatType::THREAT_TYPE_UNSPECIFIED:
-    case V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION:
     case V5::ThreatType::SUBRESOURCE_FILTER:
       // These types are not supported/relevant for V5 local DB queries.
       return false;

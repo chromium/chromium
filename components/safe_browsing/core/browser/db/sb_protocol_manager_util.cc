@@ -384,17 +384,35 @@ std::string GetV5ListName(const ListIdentifier& list_identifier) {
     case SBThreatType::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       return "gc-32b";
     case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+#if BUILDFLAG(IS_IOS)
+      // iOS uses the Android/mobile malware list ("pha-4b", Potentially Harmful
+      // Applications) to match the v4 server-side behavior.
+      return "pha-4b";
+#else
       return "mw-4b";
+#endif
     case SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE:
       return "mwb-4b";
     case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+#if BUILDFLAG(IS_IOS)
+      // iOS uses the Android/mobile social engineering list ("sea-4b") to match
+      // the v4 server-side behavior.
+      return "sea-4b";
+#else
       return "se-4b";
+#endif
     case SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
       return "srf-4b";
     case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
       return "sus-4b";
     case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+#if BUILDFLAG(IS_IOS)
+      // iOS uses the Android/mobile unwanted software list ("uwsa-4b") to
+      // match the v4 server-side behavior.
+      return "uwsa-4b";
+#else
       return "uws-4b";
+#endif
     case SBThreatType::SB_THREAT_TYPE_UNUSED:
     case SBThreatType::SB_THREAT_TYPE_SAFE:
     case SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:

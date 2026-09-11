@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/sb_test_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v5_rice.h"
@@ -382,6 +384,39 @@ TEST_F(V5UpdateProtocolManagerTest, TestGetUpdatesWithOneBackoff) {
   EXPECT_FALSE(IsUpdateScheduled(pm.get()));
 }
 
+TEST_F(V5UpdateProtocolManagerTest,
+       TestGetBase64SerializedUpdateRequestProto_PlatformSpecificLists) {
+  std::vector<V5UpdateProtocolManager::ListIdentifierAndVersion> mapping = {
+      {ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_MALWARE), "version_1"},
+      {ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_PHISHING), "version_2"},
+      {ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_UNWANTED), "version_3"},
+  };
+  std::string encoded_request = GetBase64SerializedUpdateRequestProto(mapping);
+  std::string decoded_request;
+  ASSERT_TRUE(base::Base64UrlDecode(
+      encoded_request, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
+      &decoded_request));
+
+  V5::BatchGetHashListsRequest request;
+  ASSERT_TRUE(request.ParseFromString(decoded_request));
+  ASSERT_EQ(request.names_size(), 3);
+  ASSERT_EQ(request.version_size(), 3);
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(request.names(0), "pha-4b");
+  EXPECT_EQ(request.names(1), "sea-4b");
+  EXPECT_EQ(request.names(2), "uwsa-4b");
+#else
+  EXPECT_EQ(request.names(0), "mw-4b");
+  EXPECT_EQ(request.names(1), "se-4b");
+  EXPECT_EQ(request.names(2), "uws-4b");
+#endif
+  EXPECT_EQ(request.version(0), "version_1");
+  EXPECT_EQ(request.version(1), "version_2");
+  EXPECT_EQ(request.version(2), "version_3");
+
+  EXPECT_FALSE(request.has_size_constraints());
+}
+
 TEST_F(V5UpdateProtocolManagerTest, TestBase64EncodingUsesUrlEncoding) {
   // Picked by generating random strings until one led to a '-' in the base64
   // url encoded request output.
@@ -389,14 +424,14 @@ TEST_F(V5UpdateProtocolManagerTest, TestBase64EncodingUsesUrlEncoding) {
   auto pm = CreateProtocolManager(/*expected_updates=*/{});
   std::unique_ptr<StoreStateMap> store_state_map =
       std::make_unique<StoreStateMap>();
-  ListIdentifier malware(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
-  store_state_map->insert({malware, magic_string});
+  ListIdentifier billing(SBThreatType::SB_THREAT_TYPE_BILLING);
+  store_state_map->insert({billing, magic_string});
   std::vector<V5UpdateProtocolManager::ListIdentifierAndVersion> mapping;
   mapping.push_back(
-      V5UpdateProtocolManager::ListIdentifierAndVersion(malware, magic_string));
+      V5UpdateProtocolManager::ListIdentifierAndVersion(billing, magic_string));
   std::string encoded_request_with_minus =
       GetBase64SerializedUpdateRequestProto(mapping);
-  std::string expected = "CgVtdy00YhIKQU5vPlFxZWw-Qw==";
+  std::string expected = "CgViaS00YhIKQU5vPlFxZWw-Qw==";
   ASSERT_TRUE(encoded_request_with_minus.find("-") != std::string::npos);
   EXPECT_EQ(expected, encoded_request_with_minus);
 }
