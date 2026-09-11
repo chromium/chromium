@@ -12,6 +12,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -543,4 +545,37 @@ TEST_F(TaskRequestForURLContextTest,
             TabOpeningPostOpeningAction::EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS);
   EXPECT_TRUE(tab_opener.completionActionExecuted);
   EXPECT_TRUE(tab_opener.dismissOmnibox);
+}
+
+// Tests that an external action AppStoreGeminiPromo URL opens the Gemini promo
+// URL, sets TRIGGER_GEMINI_PROMO, and sets the pref.
+TEST_F(TaskRequestForURLContextTest,
+       TestExternalActionAppStoreGeminiPromoExecution) {
+  NSURL* url = [NSURL
+      URLWithString:@"googlechrome://ChromeExternalAction/appstoregeminipromo"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+            GURL(kGeminiAppStorePromoURL));
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+  EXPECT_EQ(tab_opener.completionAction,
+            TabOpeningPostOpeningAction::TRIGGER_GEMINI_PROMO);
+  EXPECT_TRUE(tab_opener.completionActionExecuted);
+  EXPECT_TRUE(tab_opener.dismissOmnibox);
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(prefs::kAppStoreGeminiPromoTriggered));
 }

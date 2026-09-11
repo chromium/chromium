@@ -6,14 +6,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check_deref.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -153,7 +158,11 @@ void RecordExternalActionMetrics(NSURL* url) {
             TabOpeningPostOpeningAction::EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
       }
     } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
-      // TODO(crbug.com/493816082): Add implementation.
+      externalGURL = GURL(kGeminiAppStorePromoURL);
+      postOpeningAction = TabOpeningPostOpeningAction::TRIGGER_GEMINI_PROMO;
+      ProfileIOS* profile = sceneState.profileState.profile;
+      CHECK_DEREF(profile).GetPrefs()->SetBoolean(
+          prefs::kAppStoreGeminiPromoTriggered, true);
     } else if (IsAppSwitcherAISummarizationEnabled() &&
                [path isEqualToString:kExternalActionAppSwitcherTesting]) {
       // TODO(crbug.com/493816082): Add implementation.
