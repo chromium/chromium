@@ -90,8 +90,8 @@ impl Feature {
 
 impl<'a> From<&'a Feature> for &'a ffi::Feature {
     fn from(feature: &'a Feature) -> Self {
-        // Safety: Feature is ABI-compatible with ffi::Feature (checked by static
-        // asserts above).
+        // Safety: Feature is ABI-compatible with ffi::Feature (checked by
+        // static asserts above).
         unsafe { std::mem::transmute(feature) }
     }
 }
@@ -195,6 +195,15 @@ macro_rules! base_feature {
     ($id:ident, $default:expr) => {
         #[unsafe(no_mangle)]
         #[allow(non_upper_case_globals)]
+        #[cfg_attr(
+            any(
+                target_os = "android",
+                target_os = "linux",
+                target_os = "chromeos",
+                target_os = "fuchsia"
+            ),
+            unsafe(link_section = ".data..cr_features")
+        )]
         pub static $id: $crate::Feature = unsafe {
             // Safety: The string constructed here is explicitly null-terminated.
             $crate::Feature::from_id(

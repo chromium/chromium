@@ -80,6 +80,8 @@ def _FlagsFromMangledName(name):
     return models.FLAG_REL
   if name.startswith('hot.'):
     return models.FLAG_HOT
+  if name.startswith('.cr_features'):
+    return models.FLAG_FEATURE
   return 0
 
 
@@ -364,8 +366,9 @@ class MapFileParserGold:
 
               flags = _FlagsFromMangledName(mangled_name)
               if full_name:
-                if flags:
-                  full_name = full_name[_STRIP_NAME_PREFIX[flags] :]
+                strip_len = _STRIP_NAME_PREFIX.get(flags)
+                if strip_len:
+                  full_name = full_name[strip_len:]
                 else:
                   full_name = _NormalizeName(full_name)
 

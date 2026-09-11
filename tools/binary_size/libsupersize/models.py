@@ -166,6 +166,9 @@ FLAG_COVERED = 256
 # Relevant for non-locale .pak symbols. Indicates a pak entry is stored
 # uncompressed.
 FLAG_UNCOMPRESSED = 512
+# Relevant for .data & .rodata symbols. Indicates the symbol is a Feature flag
+# placed in the .data..cr_features section.
+FLAG_FEATURE = 1024
 
 
 DIFF_STATUS_UNCHANGED = 0
@@ -647,6 +650,10 @@ class BaseSymbol:
       self.flags &= ~FLAG_GENERATED_SOURCE
 
   @property
+  def is_feature(self):
+    return bool(self.flags & FLAG_FEATURE)
+
+  @property
   def num_aliases(self):
     return len(self.aliases) if self.aliases else 1
 
@@ -676,6 +683,8 @@ class BaseSymbol:
       parts.append('covered')
     if flags & FLAG_UNCOMPRESSED:
       parts.append('uncompressed')
+    if flags & FLAG_FEATURE:
+      parts.append('feature')
     return '{%s}' % ','.join(parts)
 
   def IsArsc(self):
@@ -1329,6 +1338,9 @@ class SymbolGroup(BaseSymbol):
 
   def WhereIsTemplate(self):
     return self.Filter(lambda s: s.template_name is not s.name)
+
+  def WhereIsFeature(self):
+    return self.Filter(lambda s: s.is_feature)
 
   def WhereHasFlag(self, flag):
     return self.Filter(lambda s: s.flags & flag)

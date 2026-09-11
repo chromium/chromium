@@ -116,35 +116,6 @@ def _FindFeaturesInFile(filepath: str) -> List[str]:
   return feature_names
 
 
-def FindFeatureSymbolNamesInFile(filepath: str) -> List[str]:
-  """Finds the C++ symbol/identifier names of features in a file.
-
-  Unlike _FindFeaturesInFile, this returns the C++ symbol name (e.g.
-  kMyFeature) as it appears as the symbol in the binary, rather than the
-  feature's string name (e.g. MyFeature).
-  """
-  # Work on bytes to avoid utf-8 decode errors outside feature declarations
-  file_contents = pathlib.Path(filepath).read_bytes()
-  symbol_names = []
-
-  if filepath.endswith('.rs'):
-    matches = RUST_BASE_FEATURE_RE.finditer(file_contents)
-    for m in matches:
-      args = [arg.strip() for arg in m.group(1).split(b',')]
-      if len(args) >= 1:
-        symbol_names.append(args[0].decode('utf-8'))
-    return symbol_names
-
-  matches = BASE_FEATURE_RE.finditer(file_contents)
-  for m in matches:
-    # Split the arguments to handle both 2- and 3-argument versions of
-    # BASE_FEATURE.
-    args = [arg.strip() for arg in m.group(1).split(b',')]
-    if len(args) >= 2:
-      symbol_names.append(args[0].decode('utf-8'))
-  return symbol_names
-
-
 def _FindDeclaredFeaturesImpl(repository_root: pathlib.Path) -> Set[str]:
   # Features are supposed to be defined in .cc or .rs files.
   # Iterate over the search folders in the root.

@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 import unittest
-import unittest.mock as mock
 
 import trybot_commit_size_checker
 
@@ -164,15 +163,28 @@ pkg.Clz -> Ja1:
     DeltaSymbol = trybot_commit_size_checker.models.DeltaSymbol
     DeltaSymbolGroup = trybot_commit_size_checker.models.DeltaSymbolGroup
 
-    cpp_feature = DeltaSymbol(
+    cpp_feature_added = DeltaSymbol(
       None,
       Symbol(
         '.data',
         8,
-        full_name='kMyFeatureName',
-        name='kMyFeatureName',
+        full_name='kMyFeatureAdded',
+        name='kMyFeatureAdded',
         source_path='chrome/browser/my_feature.cc',
+        flags=trybot_commit_size_checker.models.FLAG_FEATURE,
       ),
+    )
+
+    cpp_feature_removed = DeltaSymbol(
+      Symbol(
+        '.data',
+        8,
+        full_name='kMyFeatureRemoved',
+        name='kMyFeatureRemoved',
+        source_path='chrome/browser/my_feature.cc',
+        flags=trybot_commit_size_checker.models.FLAG_FEATURE,
+      ),
+      None,
     )
 
     cpp_normal_const = DeltaSymbol(
@@ -188,66 +200,24 @@ pkg.Clz -> Ja1:
 
     symbols = DeltaSymbolGroup(
       [
-        cpp_feature,
+        cpp_feature_added,
+        cpp_feature_removed,
         cpp_normal_const,
       ]
     )
 
-    # Clear any lru_cache to make sure mock works reliably
-    trybot_commit_size_checker._GetFeatureSymbolNamesCached.cache_clear()
+    lines, delta = trybot_commit_size_checker._CreateMutableConstantsDelta(
+      symbols
+    )
 
-    with (
-      mock.patch('pathlib.Path.exists', return_value=True),
-      mock.patch(
-        'find_features.FindFeatureSymbolNamesInFile',
-        return_value=['kMyFeatureName'],
-      ),
-    ):
-      lines, delta = trybot_commit_size_checker._CreateMutableConstantsDelta(
-        symbols
-      )
-
-    # Since cpp_feature is identified as a feature, it should be filtered out.
+    # Since cpp_features have FLAG_FEATURE, they should be filtered out.
     # cpp_normal_const is not a feature, so it remains.
     self.assertEqual(1, delta.actual)
 
     output_text = '\n'.join(lines)
     self.assertIn('kMyNormalConstant', output_text)
-    self.assertNotIn('kMyFeatureName', output_text)
-
-  def testCreateMutableConstantsDeltaWithGeneratedFeatures(self):
-    Symbol = trybot_commit_size_checker.models.Symbol
-    DeltaSymbol = trybot_commit_size_checker.models.DeltaSymbol
-    DeltaSymbolGroup = trybot_commit_size_checker.models.DeltaSymbolGroup
-
-    cpp_generated_feature = Symbol(
-      '.data',
-      8,
-      full_name='kMyGenFeatureName',
-      name='kMyGenFeatureName',
-      source_path='third_party/blink/common/features_generated.cc',
-    )
-    cpp_generated_feature.generated_source = True
-    cpp_feature = DeltaSymbol(None, cpp_generated_feature)
-
-    symbols = DeltaSymbolGroup([cpp_feature])
-
-    trybot_commit_size_checker._GetFeatureSymbolNamesCached.cache_clear()
-
-    exists_mock = mock.MagicMock(return_value=True)
-
-    with (
-      mock.patch('pathlib.Path.exists', exists_mock),
-      mock.patch(
-        'find_features.FindFeatureSymbolNamesInFile',
-        return_value=['kMyGenFeatureName'],
-      ),
-    ):
-      _, delta = trybot_commit_size_checker._CreateMutableConstantsDelta(
-        symbols, out_directory='out/Release'
-      )
-
-    self.assertEqual(0, delta.actual)
+    self.assertNotIn('kMyFeatureAdded', output_text)
+    self.assertNotIn('kMyFeatureRemoved', output_text)
 
 
 if __name__ == '__main__':

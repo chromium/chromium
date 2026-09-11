@@ -39,10 +39,20 @@ consteval auto MakeCountryCodeStorage(Args... args) {
 
 }  // namespace base::internal
 
+// Puts a variable into the .data..cr_features ELF section so that SuperSize
+// can distinguish feature flags from mutable constants. __attribute__ is used
+// rather than [[gnu::section]] because C++ attribute syntax cannot appear
+// after declaration specifiers (e.g., `static BASE_FEATURE(...)`).
+#if defined(__ELF__)
+#define BASE_FEATURE_SECTION __attribute__((section(".data..cr_features")))
+#else
+#define BASE_FEATURE_SECTION
+#endif
+
 // Three-argument version of BASE_FEATURE macro.
 #define BASE_FEATURE_INTERNAL_3_ARGS(is_runtime_mutable, feature, name,     \
                                      default_state)                         \
-  constinit const base::Feature feature(                                    \
+  BASE_FEATURE_SECTION constinit const base::Feature feature(               \
       name,                                                                 \
       []() {                                                                \
         static_assert(!base::IsCountrySpecificFeatureState(default_state)); \
@@ -53,7 +63,7 @@ consteval auto MakeCountryCodeStorage(Args... args) {
 // Two-argument version of BASE_FEATURE macro.
 #define BASE_FEATURE_INTERNAL_2_ARGS(is_runtime_mutable, feature,           \
                                      default_state)                         \
-  constinit const base::Feature feature(                                    \
+  BASE_FEATURE_SECTION constinit const base::Feature feature(               \
       []() {                                                                \
         static_assert(#feature[0] == 'k');                                  \
         return std::string_view(#feature).substr(1).data();                 \
@@ -73,25 +83,26 @@ consteval auto MakeCountryCodeStorage(Args... args) {
 //
 // Implementation note: `MakeCountryCodeStorage` is used to guarantee static
 // storage duration.
-#define BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature, default_state, ...) \
-  constinit const base::FeatureWithCountryRestriction feature(              \
-      []() {                                                                \
-        static_assert(#feature[0] == 'k');                                  \
-        return std::string_view(#feature).substr(1).data();                 \
-      }(),                                                                  \
-      []() {                                                                \
-        static_assert(base::IsCountrySpecificFeatureState(default_state));  \
-        return default_state;                                               \
-      }(),                                                                  \
-      []() {                                                                \
-        static constexpr auto countries =                                   \
-            base::internal::MakeCountryCodeStorage(__VA_ARGS__);            \
-        static_assert(base::internal::AreCountryCodesValid(countries),      \
-                      "All country parameters must consist of two "         \
-                      "characters between a and z");                        \
-        return base::span(countries);                                       \
-      }(),                                                                  \
-      base::internal::FeatureMacroHandshake::kSecret)
+#define BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature, default_state, ...)    \
+  BASE_FEATURE_SECTION constinit const base::FeatureWithCountryRestriction     \
+      feature(                                                                 \
+          []() {                                                               \
+            static_assert(#feature[0] == 'k');                                 \
+            return std::string_view(#feature).substr(1).data();                \
+          }(),                                                                 \
+          []() {                                                               \
+            static_assert(base::IsCountrySpecificFeatureState(default_state)); \
+            return default_state;                                              \
+          }(),                                                                 \
+          []() {                                                               \
+            static constexpr auto countries =                                  \
+                base::internal::MakeCountryCodeStorage(__VA_ARGS__);           \
+            static_assert(base::internal::AreCountryCodesValid(countries),     \
+                          "All country parameters must consist of two "        \
+                          "characters between a and z");                       \
+            return base::span(countries);                                      \
+          }(),                                                                 \
+          base::internal::FeatureMacroHandshake::kSecret)
 
 #define BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kFeature) \
   extern constinit const base::FeatureWithCountryRestriction kFeature
