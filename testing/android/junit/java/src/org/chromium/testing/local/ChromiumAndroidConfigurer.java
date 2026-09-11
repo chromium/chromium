@@ -57,5 +57,9 @@ public class ChromiumAndroidConfigurer extends AndroidConfigurer {
         if (mExtraConfig.isPresent()) {
             mExtraConfig.get().withConfig(builder, config);
         }
+        // Exclude Mockito and ByteBuddy so they are loaded by the AppClassLoader,
+        // allowing them to be pre-warmed concurrently in JunitTestMain.
+        builder.doNotAcquirePackage("org.mockito.");
+        builder.doNotAcquirePackage("net.bytebuddy.");
     }
 }

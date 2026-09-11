@@ -12,6 +12,7 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.RunListener;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -174,6 +175,8 @@ public final class JunitTestMain {
     }
 
     private static Result runTestsMain(JunitTestArgParser parser) throws Exception {
+        prewarmMockito();
+
         String data = new String(Files.readAllBytes(Paths.get(parser.mJsonConfig)));
         JSONObject jsonConfig = new JSONObject(data);
         ChromiumAndroidConfigurer.setJsonConfig(jsonConfig);
@@ -194,6 +197,21 @@ public final class JunitTestMain {
         Request testRequest =
                 Request.classes(computer, classes).filterWith(new ConfigFilter(jsonConfig));
         return core.run(testRequest);
+    }
+
+    @SuppressWarnings("MockNotUsedInProduction")
+    private static void prewarmMockito() {
+        // Pre-warm Mockito in the background to avoid paying the ByteBuddy initialization penalty
+        // during the first test that uses mocks.
+        // At the time of adding this, it saves ~600ms on a dev machine.
+        Thread prewarmThread =
+                new Thread(
+                        () -> {
+                            var unused = Mockito.mock(Runnable.class);
+                        },
+                        "mockito-prewarmer");
+        prewarmThread.setDaemon(true);
+        prewarmThread.start();
     }
 
     public static void main(String[] args) throws Exception {
