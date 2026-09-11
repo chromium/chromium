@@ -36,6 +36,7 @@ class NavigationCapturingSettingsCrosImpl : public NavigationCapturingSettings {
   // Otherwise falls back to default implementation.
   bool ShouldAuxiliaryContextsKeepSameContainer(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const GURL& opener_url,
       const GURL& url) override;
 };
 

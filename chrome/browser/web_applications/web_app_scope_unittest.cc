@@ -4,7 +4,14 @@
 
 #include "chrome/browser/web_applications/web_app_scope.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -367,6 +374,57 @@ TEST_F(WebAppScopeTest, GetScopeScoreExcludeScopeExtensions) {
                 WebAppScopeScoreOptions{.exclude_scope_extensions = false}),
             0);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(WebAppScopeTest, GetScopeScoreExcludeScopeExtensionsChromeOsExperiment) {
+  const GURL scope("https://example.com/");
+  webapps::AppId app_id = InstallWebAppWithScope(scope);
+
+  ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting();
+  ChromeOsWebAppExperiments::SetScopeExtensionsForTesting(
+      {"https://example.org"});
+  base::ScopedClosureRunner cleanup(
+      base::BindOnce(&ChromeOsWebAppExperiments::ClearOverridesForTesting));
+
+  std::optional<WebAppScope> web_app_scope =
+      registrar().GetEffectiveScope(app_id);
+  ASSERT_TRUE(web_app_scope);
+
+  const GURL in_scope_url("https://example.com/page.html");
+  const GURL extended_scope_url("https://example.org/page.html");
+
+  // A URL in the primary manifest scope has a score regardless of
+  // exclude_scope_extensions.
+  EXPECT_GT(web_app_scope->GetScopeScore(
+                in_scope_url,
+                WebAppScopeScoreOptions{.exclude_scope_extensions = false}),
+            0);
+  EXPECT_GT(web_app_scope->GetScopeScore(
+                in_scope_url,
+                WebAppScopeScoreOptions{.exclude_scope_extensions = true}),
+            0);
+  EXPECT_TRUE(registrar().IsUrlInAppScope(in_scope_url, app_id));
+  EXPECT_TRUE(registrar().IsUrlInAppExtendedScope(in_scope_url, app_id));
+
+  // A URL in the ChromeOS experimental extended scope has a score when scope
+  // extensions are included, but has 0 score when exclude_scope_extensions is
+  // true.
+  EXPECT_GT(web_app_scope->GetScopeScore(
+                extended_scope_url,
+                WebAppScopeScoreOptions{.exclude_scope_extensions = false}),
+            0);
+  EXPECT_EQ(web_app_scope->GetScopeScore(
+                extended_scope_url,
+                WebAppScopeScoreOptions{.exclude_scope_extensions = true}),
+            0);
+
+  // Registrar methods should reflect the scope score behavior:
+  // IsUrlInAppScope uses exclude_scope_extensions = true and must return false,
+  // while IsUrlInAppExtendedScope includes extended scopes and returns true.
+  EXPECT_FALSE(registrar().IsUrlInAppScope(extended_scope_url, app_id));
+  EXPECT_TRUE(registrar().IsUrlInAppExtendedScope(extended_scope_url, app_id));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(WebAppScopeTest, RegularScopeHasHigherScoreThanExtendedScope) {
   // App A has a regular scope.

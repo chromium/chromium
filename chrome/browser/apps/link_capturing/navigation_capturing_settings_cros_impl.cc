@@ -74,15 +74,24 @@ NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
 bool NavigationCapturingSettingsCrosImpl::
     ShouldAuxiliaryContextsKeepSameContainer(
         const std::optional<webapps::AppId>& source_browser_app_id,
+        const GURL& opener_url,
         const GURL& url) {
+  // Only apply the experiment-specific behavior when the page that opened the
+  // auxiliary context is within the app's manifest scope. Pages that are only
+  // in the app's extended scope (which can include third-party origins) fall
+  // back to the default behavior of opening in a browser tab.
   if (source_browser_app_id.has_value() &&
       ChromeOsWebAppExperiments::IsNavigationCapturingReimplEnabledForSourceApp(
           *source_browser_app_id, url)) {
-    return true;
+    if (WebAppProvider::GetForWebApps(&profile_.get())
+            ->registrar_unsafe()
+            .IsUrlInAppScope(opener_url, *source_browser_app_id)) {
+      return true;
+    }
   }
 
   return NavigationCapturingSettings::ShouldAuxiliaryContextsKeepSameContainer(
-      source_browser_app_id, url);
+      source_browser_app_id, opener_url, url);
 }
 
 }  // namespace web_app

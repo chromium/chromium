@@ -32,6 +32,7 @@ NavigationCapturingSettings::NavigationCapturingSettings(Profile& profile)
 // Either this will be rolled out separately or removed.
 bool NavigationCapturingSettings::ShouldAuxiliaryContextsKeepSameContainer(
     const std::optional<webapps::AppId>& source_browser_app_id,
+    const GURL& opener_url,
     const GURL& url) {
   if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing) ||
       !kEnableAuxContextKeepSameContainer.Get()) {
@@ -43,6 +44,9 @@ bool NavigationCapturingSettings::ShouldAuxiliaryContextsKeepSameContainer(
     return false;
   }
 
+  // Note: `opener_url` is intentionally not checked here; if `url` is in-scope
+  // of the app, keeping the app container is safe and intended even if
+  // triggered from an out-of-scope or extended-scope context.
   WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForWebApps(&profile_.get())
           ->registrar_unsafe();

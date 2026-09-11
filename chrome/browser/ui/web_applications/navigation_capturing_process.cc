@@ -49,6 +49,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/navigation_capturing_log.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -116,15 +117,14 @@ bool IsPageTransitionValidForNavigationCapturing(
   return true;
 }
 
-// Returns true if an auxiliary browsing context is getting created, so
-// navigation should be done in the same container that it was triggered in.
-bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
-  if ((nav_params.contents_to_insert &&
-       nav_params.contents_to_insert->HasOpener()) ||
-      nav_params.opener) {
-    return true;
+content::RenderFrameHost* GetOpener(const NavigateParams& nav_params) {
+  if (nav_params.opener) {
+    return nav_params.opener.get();
   }
-  return false;
+  if (nav_params.contents_to_insert) {
+    return nav_params.contents_to_insert->GetOpener();
+  }
+  return nullptr;
 }
 
 BrowserWindowInterface* CreateWebAppWindowFromNavigationParams(
@@ -689,17 +689,18 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
   // Case: Any click (user modified or non-modified) with auxiliary browsing
   // context. Only needs to be handled if it is triggered in the context of an
   // app browser.
-  if (IsAuxiliaryBrowsingContext(params)) {
+  if (content::RenderFrameHost* opener = GetOpener(params)) {
     debug_data_.Set("is_auxiliary_browsing_context", true);
+    const GURL opener_url = opener->GetLastCommittedURL();
+    debug_data_.Set("opener_url", opener_url.possibly_invalid_spec());
     if (!navigation_capturing_settings_
-             ->ShouldAuxiliaryContextsKeepSameContainer(source_browser_app_id_,
-                                                        params.url)) {
+             ->ShouldAuxiliaryContextsKeepSameContainer(
+                 source_browser_app_id_, opener_url, params.url)) {
       return CapturingDisabled();
     }
     if (source_browser_app_id_.has_value()) {
       // Isolated Web Apps have Cross-Origin Opener Policy = Same Site and they
-      // should never have opener relationship with any window. However, if
-      // opener is passed, then IsAuxiliaryBrowsingContext would be true.
+      // should never have opener relationship with any window.
       // This case won't trigger for same-origin, because navigations to
       // isolated-app:// are handled above in HandleIsolatedWebAppNavigation.
       if (registrar.AppMatches(*source_browser_app_id_,
@@ -962,7 +963,7 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
 
   if (ui::PageTransitionCoreTypeIs(params.transition,
                                    ui::PAGE_TRANSITION_LINK) &&
-      IsAuxiliaryBrowsingContext(params)) {
+      GetOpener(params)) {
     debug_data_.Set("is_auxiliary_browsing_context", true);
     BrowserWindowInterface* aux_window =
         CreateWebAppWindowFromNavigationParams(iwa_id, params);
@@ -970,7 +971,7 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   }
 
   // Auxiliary browsing contexts should only be openable via link transitions.
-  CHECK(!IsAuxiliaryBrowsingContext(params));
+  CHECK(!GetOpener(params));
   debug_data_.Set("is_auxiliary_browsing_context", false);
 
   // As per https://bit.ly/pwa-navigation-capturing, user modified clicks (AKA

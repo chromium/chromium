@@ -217,8 +217,8 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
 
   ~ChromeOsWebAppExperimentsNavigationBrowserTest() override = default;
 
-  void AddAndClickLinkWithCode(content::WebContents* web_contents,
-                               const std::string& on_click_code) {
+  void AddAndClickLinkWithCodeInFrame(content::RenderFrameHost* frame,
+                                      const std::string& on_click_code) {
     const std::string script = base::StringPrintf(
         R"(
           (() => {
@@ -240,15 +240,23 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
           })();
         )",
         on_click_code.c_str());
-    ASSERT_TRUE(content::ExecJs(web_contents, script));
+    ASSERT_TRUE(content::ExecJs(frame, script));
 
     // Input events to a page may not work right after a page load. See
     // browser_test_utils.h for details.
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(frame);
     SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 
     content::SimulateMouseClick(web_contents,
                                 blink::WebInputEvent::Modifiers::kNoModifiers,
                                 blink::WebMouseEvent::Button::kLeft);
+  }
+
+  void AddAndClickLinkWithCode(content::WebContents* web_contents,
+                               const std::string& on_click_code) {
+    AddAndClickLinkWithCodeInFrame(web_contents->GetPrimaryMainFrame(),
+                                   on_click_code);
   }
 
   std::string GetFormBasedRedirectorCode(const GURL& target_url) const {
@@ -395,6 +403,102 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                 ->GetActiveWebContents()
                 ->GetVisibleURL(),
             extended_scope_page_);
+}
+
+// Test that opening an empty target=_blank window from a page that is only in
+// the app's extended scope (not its manifest scope) ends up in a browser tab
+// rather than a new app window.
+IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+                       OpenBlankWindowFromExtendedScopePage) {
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+
+  // Navigate the app window to a page that is only in extended scope.
+  NavigateViaLinkClickToURLAndWait(app_browser, extended_scope_page_);
+  content::WebContents* app_web_contents =
+      app_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_EQ(app_web_contents->GetLastCommittedURL(), extended_scope_page_);
+
+  // Navigate the auxiliary context to a URL that is not handled by the app so
+  // link capturing does not reparent it back into an app window.
+  const GURL target_url = embedded_https_test_server().GetURL("/empty.html");
+  const std::string on_click_code = base::StringPrintf(
+      R"(
+        const w = window.open('', '_blank');
+        w.open('%s', '_top');
+      )",
+      target_url.spec().c_str());
+
+  ActiveBrowserWindowNavigationObserver observer(target_url);
+  AddAndClickLinkWithCode(app_web_contents, on_click_code);
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
+
+  // The auxiliary context opens in a browser tab, not a new app window.
+  ASSERT_TRUE(active_browser);
+  EXPECT_NE(active_browser, app_browser);
+  EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
+  EXPECT_EQ(active_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            target_url);
+}
+
+// Test that opening an empty target=_blank window from an iframe that is only
+// in the app's extended scope (while the main frame is in manifest scope) ends
+// up in a browser tab rather than a new app window.
+IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+                       OpenBlankWindowFromExtendedScopeIFrame) {
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  content::WebContents* app_web_contents =
+      app_browser->GetTabStripModel()->GetActiveWebContents();
+
+  // Create an iframe pointing to extended_scope_page_ within the
+  // manifest-scoped app window.
+  ASSERT_TRUE(content::ExecJs(app_web_contents,
+                              base::StringPrintf(
+                                  R"(
+            new Promise((resolve) => {
+              const iframe = document.createElement('iframe');
+              iframe.id = 'test_iframe';
+              iframe.src = '%s';
+              iframe.style.position = 'fixed';
+              iframe.style.top = '0';
+              iframe.style.left = '0';
+              iframe.style.width = '100vw';
+              iframe.style.height = '100vh';
+              iframe.style.border = 'none';
+              iframe.onload = resolve;
+              document.body.appendChild(iframe);
+            });
+          )",
+                                  extended_scope_page_.spec().c_str())));
+
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(app_web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+  ASSERT_EQ(child_frame->GetLastCommittedURL(), extended_scope_page_);
+
+  // Navigate the auxiliary context to a URL that is not handled by the app so
+  // link capturing does not reparent it back into an app window.
+  const GURL target_url = embedded_https_test_server().GetURL("/empty.html");
+  const std::string on_click_code = base::StringPrintf(
+      R"(
+        const w = window.open('', '_blank');
+        w.open('%s', '_top');
+      )",
+      target_url.spec().c_str());
+
+  ActiveBrowserWindowNavigationObserver observer(target_url);
+  AddAndClickLinkWithCodeInFrame(child_frame, on_click_code);
+  BrowserWindowInterface* const active_browser = observer.WaitForActiveWindow();
+
+  // The auxiliary context opens in a browser tab, not a new app window.
+  ASSERT_TRUE(active_browser);
+  EXPECT_NE(active_browser, app_browser);
+  EXPECT_FALSE(AppBrowserController::IsForWebApp(active_browser, app_id_));
+  EXPECT_EQ(active_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            target_url);
 }
 
 // Test that submitting a form that redirects to the app-controlled URL results
