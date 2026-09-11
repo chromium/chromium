@@ -516,6 +516,11 @@ bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
 }
 
+bool ChromeAutocompleteProviderClient::IsPrimaryOTRProfileWithRegularParent()
+    const {
+  return profile_->IsPrimaryOTRProfileWithRegularParent();
+}
+
 bool ChromeAutocompleteProviderClient::IsIncognitoProfile() const {
   return profile_->IsIncognitoProfile();
 }

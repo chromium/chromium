@@ -162,6 +162,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // In mobile platforms, we don't have a guest mode and therefore, it returns
   // true only for Incognito mode.
   virtual bool IsOffTheRecord() const = 0;
+  virtual bool IsPrimaryOTRProfileWithRegularParent() const = 0;
   virtual bool IsIncognitoProfile() const = 0;
   virtual bool IsGuestSession() const = 0;
 

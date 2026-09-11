@@ -257,6 +257,11 @@ bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
 }
 
+bool AutocompleteProviderClientImpl::IsPrimaryOTRProfileWithRegularParent()
+    const {
+  return profile_->IsOffTheRecord();
+}
+
 bool AutocompleteProviderClientImpl::IsIncognitoProfile() const {
   return profile_->IsOffTheRecord();
 }
